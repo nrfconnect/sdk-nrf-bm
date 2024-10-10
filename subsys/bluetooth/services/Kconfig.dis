@@ -1,0 +1,107 @@
+#
+# Copyright (c) 2024 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+menuconfig BLE_DIS
+	bool "Device Information service"
+
+if BLE_DIS
+
+config BLE_DIS_MANUFACTURER_NAME
+	string "Manufacturer name"
+	default "Nordic Semiconductor"
+	help
+	  The device manufacturer name inside Device Information Service.
+
+config BLE_DIS_MODEL_NUMBER
+	string "Model number"
+	default SOC
+	help
+	  The device module number inside Device Information Service.
+
+config BLE_DIS_SERIAL_NUMBER
+	string "Serial number"
+	help
+	  The device serial number inside Device Information Service.
+
+config BLE_DIS_HW_REVISION
+	string "Hardware revision"
+	help
+	  The device hardware revision inside Device Information Service.
+
+config BLE_DIS_FW_REVISION
+	string "Firmware revision"
+	help
+	  The device firmware revision inside Device Information Service.
+
+config BLE_DIS_SW_REVISION
+	string "Software revision"
+	help
+	  The device software revision inside Device Information Service.
+
+config BLE_DIS_SYSTEM_ID
+	bool "Include System ID characteristic"
+	help
+	  Include the System ID characteristic in Device Information Serivce.
+
+config BLE_DIS_SYSTEM_ID_OUI
+	hex "Organizationally unique ID"
+	depends on BLE_DIS_SYSTEM_ID
+	range 0 0xFFFFFF # 3 bytes
+
+config BLE_DIS_SYSTEM_ID_MID
+	hex "Manufacturer unique ID"
+	depends on BLE_DIS_SYSTEM_ID
+	range 0 0xFFFFFFFFFF # 5 bytes
+
+config BLE_DIS_PNP_ID
+	bool "Include Plug and Play ID characteristic"
+	help
+	  Include the Plug and Play ID characteristic in Device Information Serivce.
+
+if BLE_DIS_PNP_ID
+
+config BLE_DIS_PNP_VID_SRC
+	hex "PnP vendor ID source"
+	range 1 2
+	default 1
+
+config BLE_DIS_PNP_VID
+	hex "PnP vendor ID"
+	range 0 0xFFFF
+	default 0
+
+config BLE_DIS_PNP_PID
+	hex "PnP product ID"
+	range 0 0xFFFF
+	default 0
+
+config BLE_DIS_PNP_VER
+	hex "PnP product version"
+	range 0 0xFFFF
+	default 1
+
+endif # BLE_DIS_PNP
+
+config BLE_DIS_REGULATORY_CERT
+	bool "Include IEEE regulatory certifications"
+
+if BLE_DIS_REGULATORY_CERT
+
+config BLE_DIS_REGULATORY_CERT_LIST
+	hex "Regulatory certification list"
+	range 0 0xFFFFFFFFFFFFFFFF # 8 bytes, 1 byte per entry
+
+endif
+
+characteristic=BLE_DIS_CHAR
+characteristic-str=Device Information Service characterstics
+rsource "Kconfig.template.sec_mode"
+
+module=BLE_DIS
+module-dep=LOG
+module-str=BLE Device information service
+source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+
+endif # BLE_DIS

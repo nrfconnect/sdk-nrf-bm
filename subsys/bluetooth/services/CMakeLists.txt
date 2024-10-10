@@ -1,0 +1,7 @@
+#
+# Copyright (c) 2024 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+zephyr_sources_ifdef(CONFIG_BLE_BAS bas.c)
+zephyr_sources_ifdef(CONFIG_BLE_DIS dis.c)

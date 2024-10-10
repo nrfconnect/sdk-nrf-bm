@@ -1,0 +1,32 @@
+#
+# Copyright (c) 2024 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+menu "SoftDevice"
+
+config SOFTDEVICE
+	bool
+	depends on ZERO_LATENCY_IRQS
+	depends on !CLOCK_CONTROL
+
+config SOFTDEVICE_PERIPHERAL
+	bool
+config SOFTDEVICE_CENTRAL
+	bool
+
+choice SOFTDEVICE_CHOICE
+	prompt "SoftDevice"
+
+config SOFTDEVICE_S140
+	bool "S140"
+	select SOFTDEVICE
+	select SOFTDEVICE_PERIPHERAL
+	select SOFTDEVICE_CENTRAL
+
+endchoice
+
+config SOFTDEVICE_STRING_TABLES
+	bool "Compile tables for stringified events and errors"
+
+endmenu

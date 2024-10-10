@@ -1,0 +1,27 @@
+# The west manifest file for the Nordic Modem Library.
+#
+# The per-installation west configuration file specifies the location of this
+# manifest file. The "path" option in the [manifest] section of .west/config
+# defines the folder that contains west.yml. The path is relative to the folder
+# that contains .west. See the west documentation for more information.
+
+manifest:
+  defaults:
+    remote: ncs
+
+  remotes:
+    - name: ncs
+      url-base: https://github.com/nrfconnect
+    - name: lemrey
+      url-base: https://github.com/lemrey
+
+  projects:
+    - name: sdk-nrf
+      remote: lemrey
+      repo-path: sdk-nrf
+      path: nrf
+      revision: baremetal
+      import: true
+
+  self:
+    path: nrf-lite

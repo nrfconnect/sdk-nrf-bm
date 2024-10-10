@@ -1,0 +1,6 @@
+
+menu "SoftDevice BLE services"
+
+rsource "services/Kconfig"
+
+endmenu

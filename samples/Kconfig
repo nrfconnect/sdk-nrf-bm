@@ -1,0 +1,26 @@
+#
+# Copyright (c) 2024 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+# This file provides a basic set of Kconfig requirements for samples in this repo
+
+# All these samples shall run without multithreading
+config MULTITHREADING
+	bool
+	default n
+
+# Needed by SoftDevice
+config CLOCK_CONTROL
+	bool
+	default n if SOFTDEVICE
+# Needed by SoftDevice
+config ZERO_LATENCY_IRQS
+	bool
+	default y if SOFTDEVICE
+
+# No need
+config PARTITION_MANAGER_ENABLED
+	bool
+	default n

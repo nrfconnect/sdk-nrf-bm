@@ -1,0 +1,122 @@
+
+menuconfig BLE_ADV
+	bool "BLE Advertising"
+
+if BLE_ADV
+
+config BLE_ADV_NAME
+	string "Advertising name"
+	default "nRF5 is life"
+
+config BLE_ADV_RESTART_ON_DISCONNECT
+	bool "Start advertising upon disconnection"
+	default y
+
+config BLE_ADV_USE_WHITELIST
+	bool "Use whitelist"
+
+config BLE_ADV_EXTENDED_ADVERTISING
+	bool "Extended advertising"
+	default y
+
+config BLE_ADV_DIRECTED_ADVERTISING
+	bool "Directed advertising"
+	default y
+
+config BLE_ADV_DIRECTED_ADVERTISING_HIGY_DUTY
+	bool "High duty"
+	depends on BLE_ADV_DIRECTED_ADVERTISING
+	default y
+
+config BLE_ADV_DIRECTED_ADVERTISING_TIMEOUT
+	int "Directed advertising timeout (10 ms units)"
+	depends on BLE_ADV_DIRECTED_ADVERTISING
+	range 0 18000
+	default 100
+
+config BLE_ADV_DIRECTED_ADVERTISING_INTERVAL
+	int "Directed advertising interval (0.625 ms units)"
+	depends on BLE_ADV_DIRECTED_ADVERTISING
+	range 32 16384
+	default 32
+
+config BLE_ADV_FAST_ADVERTISING
+	bool "Fast advertising"
+	default y
+
+config BLE_ADV_FAST_ADVERTISING_TIMEOUT
+	int "Fast advertising timeout (10 ms units)"
+	depends on BLE_ADV_FAST_ADVERTISING
+	range 0 18000
+	default 1000
+
+config BLE_ADV_FAST_ADVERTISING_INTERVAL
+	int "Fast advertising interval (0.625 ms units)"
+	depends on BLE_ADV_FAST_ADVERTISING
+	range 32 16384
+	default 32
+
+config BLE_ADV_SLOW_ADVERTISING
+	bool "Slow advertising"
+	default y
+
+config BLE_ADV_SLOW_ADVERTISING_TIMEOUT
+	int "Slow advertising timeout (10 ms units)"
+	depends on BLE_ADV_SLOW_ADVERTISING
+	range 0 18000
+	default 18000
+
+config BLE_ADV_SLOW_ADVERTISING_INTERVAL
+	int "Slow advertising interval (0.625 ms units)"
+	depends on BLE_ADV_SLOW_ADVERTISING
+	range 32 16384
+	default 64
+
+choice
+	prompt "Primary PHY"
+	default BLE_ADV_PRIMARY_PHY_AUTO
+
+config BLE_ADV_PRIMARY_PHY_AUTO
+	bool "Auto"
+config BLE_ADV_PRIMARY_PHY_1MBPS
+	bool "1 Megabit"
+config BLE_ADV_PRIMARY_PHY_2MBPS
+	bool "2 Megabits"
+config BLE_ADV_PRIMARY_PHY_CODED
+	bool "Coded"
+endchoice
+
+config BLE_ADV_PRIMARY_PHY
+	hex
+	default 0x00 if BLE_ADV_PRIMARY_PHY_AUTO
+	default 0x01 if BLE_ADV_PRIMARY_PHY_1MBPS
+	default 0x02 if BLE_ADV_PRIMARY_PHY_2MBPS
+	default 0x04 if BLE_ADV_PRIMARY_PHY_CODED
+
+choice
+	prompt "Secondary PHY"
+	default BLE_ADV_SECONDARY_PHY_AUTO
+
+config BLE_ADV_SECONDARY_PHY_AUTO
+	bool "Auto"
+config BLE_ADV_SECONDARY_PHY_1MBPS
+	bool "1 Megabit"
+config BLE_ADV_SECONDARY_PHY_2MBPS
+	bool "2 Megabits"
+config BLE_ADV_SECONDARY_PHY_CODED
+	bool "Coded"
+endchoice
+
+config BLE_ADV_SECONDARY_PHY
+	hex
+	default 0x00 if BLE_ADV_SECONDARY_PHY_AUTO
+	default 0x01 if BLE_ADV_SECONDARY_PHY_1MBPS
+	default 0x02 if BLE_ADV_SECONDARY_PHY_2MBPS
+	default 0x04 if BLE_ADV_SECONDARY_PHY_CODED
+
+module=BLE_ADV
+module-dep=LOG
+module-str=BLE Advertising
+source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+
+endif # BLE_ADV

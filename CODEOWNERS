@@ -1,0 +1,26 @@
+# CODEOWNERS for autoreview assigning in github
+
+# Order is important; the last matching pattern takes the most
+# precedence.
+
+# Root folder
+/CODEOWNERS                               @lemrey
+/CMakeLists.txt                           @lemrey
+/west.yml                                 @lemrey
+/.clang-format                            @lemrey
+/.checkpatch.conf                         @lemrey
+Jenkinsfile                               @lemrey
+
+/README.md                                @lemrey
+
+# All Kconfig related files
+Kconfig*                                  @lemrey
+
+
+/include/                                 @lemrey
+/lib/                                     @lemrey
+/tests/                                   @lemrey
+/zephyr/                                  @lemrey
+/scripts/                                 @lemrey
+/scripts/ci/                              @lemrey
+/.github/                                 @lemrey

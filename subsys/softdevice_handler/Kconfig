@@ -1,0 +1,122 @@
+#
+# Copyright (c) 2024 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+menuconfig NRF_SDH
+	bool "Softdevice handler"
+	depends on SOFTDEVICE
+
+if NRF_SDH
+
+config NRF_SDH_SOC
+	bool "SoC events"
+	default y
+
+config NRF_SDH_BLE
+	bool "BLE events"
+	default y
+
+choice
+	prompt "Dispatch model"
+	default NRF_SDH_DISPATCH_MODEL_IRQ
+
+config NRF_SDH_DISPATCH_MODEL_IRQ
+	bool "Interrupt"
+	help
+	  SoftDevice events are passed to the application in
+	  the SoftDevice event interrupt context.
+
+config NRF_SDH_DISPATCH_MODEL_SCHED
+	bool "Scheduler"
+	help
+	  SoftDevice events are passed to the application using the scheduler.
+
+config NRF_SDH_DISPATCH_MODEL_POLL
+	bool "Poll"
+	help
+	  In this mode, a user application can also implement SD_EVT_IRQHandler()
+	  to receive a notification about incoming events.
+
+endchoice
+
+config NRF_SDH_DISPATCH_MODEL
+	int
+	default 0 if NRF_SDH_DISPATCH_MODEL_IRQ
+	default 1 if NRF_SDH_DISPATCH_MODEL_SCHED
+	default 2 if NRF_SDH_DISPATCH_MODEL_POLL
+
+config NRF_SDH_CLOCK_LF_SRC
+	int "LF Clock"
+	default 1
+
+config NRF_SDH_CLOCK_LF_RC_CTIV
+	int "Calibration timer interval"
+	default 0
+
+config NRF_SDH_CLOCK_LF_RC_TEMP_CTIV
+	int "Calibration timer interval"
+	default 0
+
+config NRF_SDH_CLOCK_LF_ACCURACY
+	int "Accuracy"
+	default 0
+
+if NRF_SDH_BLE
+
+config NRF_SDH_BLE_PERIPHERAL_LINK_COUNT
+	int "Maximum number of peripheral links"
+	default 1
+
+config NRF_SDH_BLE_CENTRAL_LINK_COUNT
+	int "Maximum number of central links"
+	default 0
+
+config NRF_SDH_BLE_TOTAL_LINK_COUNT
+	int "Maximum number of total concurrent connections"
+	range 1 64
+	default 1
+
+config NRF_SDH_BLE_GAP_DATA_LENGTH
+	int "GAP data length"
+	# TODO confirm
+	default 27
+
+config NRF_SDH_BLE_GAP_EVENT_LENGTH
+	int "GAP event length"
+	default 3
+
+config NRF_SDH_BLE_GATT_MAX_MTU_SIZE
+	int "Static maximum MTU size"
+	# TODO confirm
+	range 23 256
+	default 23
+
+config NRF_SDH_BLE_GATTS_ATTR_TAB_SIZE
+	int "Attribute Table size in bytes"
+	default 1408
+	help
+	  The size must be a multiple of 4.
+
+config NRF_SDH_BLE_VS_UUID_COUNT
+	int "Number of vendor-specific UUIDs"
+	default 0
+
+config NRF_SDH_BLE_SERVICE_CHANGED
+	bool "Include the Service Changed characteristic in the Attribute Table"
+
+endif # NRF_SDH_BLE
+
+config NRF_SDH_STR_TABLES
+	bool "Build string tables"
+	default y
+	help
+	  Make prints nicer by printing the stringified version of certain enumerations.
+	  Disable to save non-volatile memory.
+
+module=NRF_SDH
+module-dep=LOG
+module-str= SoftDevice handler log level
+source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+
+endif # NRF_SDH
