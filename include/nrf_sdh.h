@@ -96,6 +96,10 @@ enum nrf_sdh_state_evt {
 	 */
 	NRF_SDH_STATE_EVT_ENABLED,
 	/**
+	 * @brief Bluetooth enabled.
+	 */
+	NRF_SDH_STATE_EVT_BLE_ENABLED,
+	/**
 	 * @brief SoftDevice is going to be disabled.
 	 */
 	NRF_SDH_STATE_EVT_DISABLE_PREPARE,

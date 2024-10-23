@@ -157,6 +157,10 @@ int nrf_sdh_ble_enable(uint32_t app_ram_start)
 
 	LOG_DBG("SoftDevice BLE enabled");
 
+	TYPE_SECTION_FOREACH(struct nrf_sdh_state_evt_observer, nrf_sdh_state_evt_observers, obs) {
+		obs->handler(NRF_SDH_STATE_EVT_BLE_ENABLED, obs->context);
+	}
+
 	return 0;
 }
 

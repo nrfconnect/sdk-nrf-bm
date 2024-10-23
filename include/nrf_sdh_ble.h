@@ -57,8 +57,8 @@ struct nrf_sdh_ble_evt_observer {
  *		The lower the number, the higher the priority.
  */
 #define NRF_SDH_BLE_OBSERVER(_observer, _handler, _ctx, _prio)                                     \
-	const TYPE_SECTION_ITERABLE(struct nrf_sdh_ble_evt_observer, _observer,                    \
-				    nrf_sdh_ble_evt_observers, _prio) = {                          \
+	static const TYPE_SECTION_ITERABLE(struct nrf_sdh_ble_evt_observer, _observer,             \
+					   nrf_sdh_ble_evt_observers, _prio) = {                   \
 		.handler = _handler,                                                               \
 		.context = _ctx,                                                                   \
 	};
