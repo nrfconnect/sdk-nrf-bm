@@ -6,5 +6,6 @@
 menu "Libraries"
 
 rsource "ble_adv/Kconfig"
+rsource "ble_conn_params/Kconfig"
 
 endmenu
