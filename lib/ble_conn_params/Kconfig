@@ -1,0 +1,115 @@
+#
+# Copyright (c) 2024 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+menuconfig BLE_CONN_PARAMS
+	bool "BLE Connection Parameters"
+
+if BLE_CONN_PARAMS
+
+menuconfig BLE_CONN_PARAMS_AUTO_GAP_CONN_PARAM_UPDATE
+	bool "Handle GAP connection parameter updates"
+	default y
+
+if BLE_CONN_PARAMS_AUTO_GAP_CONN_PARAM_UPDATE
+
+config BLE_CONN_PARAMS_MIN_CONN_INTERVAL
+	int "Minimum connection interval (1.25 ms units)"
+	range 6 3200
+	default 6
+	help
+	  Minimum onnection interval, in 1.25 ms units.
+	  Min 7.5 ms, Max 4 sec.
+
+config BLE_CONN_PARAMS_MAX_CONN_INTERVAL
+	int "Maximum connection interval (1.25 ms units)"
+	range 6 3200
+	default 6
+	help
+	  Maximum connection interval.
+	  Min 7.5 ms, Max 4 sec.
+
+config BLE_CONN_PARAMS_SLAVE_LATENCY
+	int "Slave latency (1.25 ms units)"
+	range 0 499
+	default 0
+	help
+	  Highest slave latency permitted in connection events.
+
+
+config BLE_CONN_PARAMS_SUP_TIMEOUT
+	int "Connection supervision timeout (10ms units)"
+	range 10 3200
+	default 10
+	help
+	  Connection supervision timeout, in units of 10 milliseconds.
+	  Min 100 ms, Max 32 sec.
+
+config BLE_CONN_PARAMS_MAX_SLAVE_LATENCY_DEVIATION
+	int "Maximum slave latency deviation (1.25 ms units)"
+	range 0 499
+	default 0
+	help
+	  How much can the slave latency deviate from the desired value.
+
+config BLE_CONN_PARAMS_MAX_SUP_TIMEOUT_DEVIATION
+	int "Maximum supervision timeout deviation (10ms units)"
+	range 0 3190
+	default 400
+	help
+	  How much can the connection supervision timeout deviate from the desired value.
+
+config BLE_CONN_PARAMS_NEGOTIATION_RETRIES
+	int "Number of attempts to negotiate parameters"
+	default 2
+	help
+	  Maximum number of attempts to negotiate connection parameters.
+
+config BLE_CONN_PARAMS_DISCONNECT_ON_FAILURE
+	bool "Disconnect upon failure to negotiate configured parameters"
+
+endif # BLE_CONN_PARAMS_AUTO_GAP_CONN_PARAM_UPDATE
+
+config BLE_CONN_PARAMS_AUTO_ATT_MTU
+	bool "Handle ATT MTU exchanges"
+	default y
+
+if BLE_CONN_PARAMS_AUTO_ATT_MTU
+
+# Define a hidden KConfig for this module
+config BLE_CONN_PARAMS_ATT_MTU
+	int
+	default NRF_SDH_BLE_GATT_MAX_MTU_SIZE
+
+# Show the SDH Kconfig entry
+config NRF_SDH_BLE_GATT_MAX_MTU_SIZE
+	int "ATT MTU"
+
+config BLE_CONN_PARAMS_INITIATE_ATT_MTU_EXCHANGE
+	bool "Initiate ATT MTU exchange on connection" if BLE_CONN_PARAMS_ATT_MTU != 23
+
+endif # BLE_CONN_PARAMS_AUTO_ATT_MTU
+
+config BLE_CONN_PARAMS_AUTO_DATA_LENGTH
+	bool "Handle data length updates"
+	default y
+
+if BLE_CONN_PARAMS_AUTO_DATA_LENGTH
+
+config BLE_CONN_PARAMS_DATA_LENGTH
+	int "Data length"
+	range 27 251
+	default 27
+
+config BLE_CONN_PARAMS_INITIATE_DATA_LENGTH_UPDATE
+	bool "Initiate data length update on connection" if BLE_CONN_PARAMS_DATA_LENGTH != 27
+
+endif # BLE_CONN_PARAMS_AUTO_DATA_LENGTH
+
+module=BLE_CONN_PARAMS
+module-dep=LOG
+module-str=BLE Connection Parameters
+source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+
+endif # BLE_CONN_PARAMS
