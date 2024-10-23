@@ -1,0 +1,34 @@
+name: Checkpatch
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+jobs:
+  checkpatch:
+    runs-on: ubuntu-latest
+    name: Run checkpatch script on PR
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+        with:
+          path: .
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: cache-pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-doc-pip
+
+      - name: Run checkpatch
+        continue-on-error: false
+        id: checkpatch
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        working-directory: .
+        run: |
+          git diff origin/${BASE_REF} | scripts/checkpatch.pl --no-tree --ignore COMPLEX_MACRO -
