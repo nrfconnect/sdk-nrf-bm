@@ -18,7 +18,6 @@ manifest:
   projects:
     - name: sdk-nrf
       remote: lemrey
-      repo-path: sdk-nrf
       path: nrf
       revision: baremetal
       import: true
