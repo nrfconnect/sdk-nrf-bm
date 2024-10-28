@@ -1,0 +1,90 @@
+name: Build samples
+
+#  Controls when the workflow will run
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build_samples_job:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    name: Build all samples within the project
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - name: Checkout the code
+      uses: actions/checkout@v4
+      with:
+        path: nrf-lite
+        ref: ${{ github.event.pull_request.head.sha }}
+        fetch-depth: 0
+
+    - name: cache-pip
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-doc-pip
+
+    - name: Install python dependencies
+      working-directory: nrf-lite
+      run: |
+        export PATH="$HOME/.local/bin:$PATH"
+        pip3 install -U -r scripts/requirements-build.txt
+        pip3 show -f west
+        sudo apt install -y cmake ninja-build gperf ccache dfu-util device-tree-compiler xz-utils file make gcc gcc-multilib
+    - name: West init and update
+      env:
+        BASE_REF: ${{ github.base_ref }}
+      working-directory: nrf-lite
+      run: |
+        git config --global user.email "you@example.com"
+        git config --global user.name "Your Name"
+        git remote -v
+        # Ensure there's no merge commits in the PR
+        #[[ "$(git rev-list --merges --count origin/${BASE_REF}..)" == "0" ]] || \
+        #(echo "::error ::Merge commits not allowed, rebase instead";false)
+        git rebase origin/${BASE_REF}
+        # debug
+        git log  --pretty=oneline | head -n 10
+        west init -l . || true
+        west config manifest.group-filter -- +ci,-optional
+        west update -o=--depth=1 -n 2>&1 1> west.update.log || west update -o=--depth=1 -n 2>&1 1> west.update2.log
+
+    - name: Install Zephyr SDK
+      shell: sh
+      run: |
+        wget -nv https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.17.0/zephyr-sdk-0.17.0_linux-x86_64.tar.xz
+        wget -nv -O - https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.17.0/sha256.sum | shasum --check --ignore-missing
+        tar -xf zephyr-sdk-0.17.0_linux-x86_64.tar.xz
+        mv zephyr-sdk-0.17.0 zephyr-sdk
+
+    - name: Build samples
+      working-directory: nrf-lite
+      run: |
+        export PATH="$HOME/.local/bin:$PATH"
+        export PATH="$HOME/bin:$PATH"
+        export ZEPHYR_BASE="$(dirname "$(pwd)")/zephyr"
+        export ZEPHYR_TOOLCHAIN_VARIANT="zephyr"
+        export ZEPHYR_SDK_INSTALL_DIR="$(dirname "$(pwd)")/zephyr-sdk"
+
+        for sample in $(find samples -type f -name 'prj.conf' -exec dirname {} \;); do
+          echo "Building sample: $sample"
+          west build -b nrf52840dk/nrf52840 -s $sample -d build/$sample
+          if [ $? -ne 0 ]; then
+            echo "::error ::Build failed for sample: $sample"
+            exit 1
+          fi
+        done
+
+    - name: upload-results
+      uses: actions/upload-artifact@v4
+      if: contains(github.event.pull_request.user.login, 'dependabot[bot]') != true
+      with:
+        name: build-artifacts
+        path: nrf-lite/build/**
