@@ -30,3 +30,5 @@ twister-out*
 doc/_build
 doc/*_warnings.txt
 doc/*_doc.log
+
+.west/

@@ -1,0 +1,125 @@
+name: Compliance
+
+#  Controls when the workflow will run
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  compliance_job:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    name: Run compliance checks on patch series (PR)
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - name: Checkout the code
+      uses: actions/checkout@v4
+      with:
+        path: nrf-lite
+        ref: ${{ github.event.pull_request.head.sha }}
+        fetch-depth: 0
+
+    - name: cache-pip
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-doc-pip
+
+    - name: Install python dependencies
+      working-directory: nrf-lite
+      run: |
+        export PATH="$HOME/.local/bin:$PATH"
+        pip3 install -U -r scripts/requirements.txt
+        pip3 show -f west
+
+    - name: West init and update
+      env:
+        BASE_REF: ${{ github.base_ref }}
+      working-directory: nrf-lite
+      run: |
+        git config --global user.email "you@example.com"
+        git config --global user.name "Your Name"
+        git remote -v
+        # Ensure there's no merge commits in the PR
+        #[[ "$(git rev-list --merges --count origin/${BASE_REF}..)" == "0" ]] || \
+        #(echo "::error ::Merge commits not allowed, rebase instead";false)
+        git rebase origin/${BASE_REF}
+        # debug
+        git log  --pretty=oneline | head -n 10
+        west init -l . || true
+        west config manifest.group-filter -- +ci,-optional
+        west update -o=--depth=1 -n 2>&1 1> west.update.log || west update -o=--depth=1 -n 2>&1 1> west.update2.log
+
+    - name: Install zephyr compliance dependencies
+      working-directory: zephyr
+      continue-on-error: false
+      run: pip3 install -U -r scripts/requirements-compliance.txt
+
+    - name: Run Compliance Tests
+      continue-on-error: true
+      id: compliance
+      env:
+        BASE_REF: ${{ github.base_ref }}
+      working-directory: nrf-lite
+      if: contains(github.event.pull_request.user.login, 'dependabot[bot]') != true
+      run: |
+        export PATH="$HOME/.local/bin:$PATH"
+        export PATH="$HOME/bin:$PATH"
+        export ZEPHYR_BASE="$(dirname "$(pwd)")/zephyr"
+        # debug
+        ls -la
+        git log --pretty=oneline | head -n 10
+        exec 2> compliance_errors.txt
+        $ZEPHYR_BASE/scripts/ci/check_compliance.py -m Codeowners -m Devicetree -m Identity -m Nits -m Gitlint -m pylint -c origin/${BASE_REF}..
+        if [[ $? -ne 0 ]]; then
+          echo "$?" >&2
+        fi
+        # Gitlint for repository specific rules
+        exec 2> gitlint_local_errors.txt
+        gitlint_output=$(gitlint --commits origin/${BASE_REF}.. --config .gitlint_local)
+        if [[ $? -ne 0 ]]; then
+          echo "$gitlint_output" >&2
+        fi
+
+    - name: upload-results
+      uses: actions/upload-artifact@v4
+      continue-on-error: True
+      if: contains(github.event.pull_request.user.login, 'dependabot[bot]') != true
+      with:
+        name: compliance.xml
+        path: nrf-lite/compliance.xml
+
+    - name: check-warns
+      working-directory: nrf-lite
+      run: |
+        if [[ -s 'compliance_errors.txt' ]]; then
+         echo "ERRORS FOUND! Exiting"
+         echo "$(<compliance_errors.txt )"
+         exit 1;
+        fi
+
+    - name: check-warns
+      working-directory: nrf-lite
+      run: |
+        for file in Codeowners.txt Devicetree.txt Gitlint.txt Identity.txt Nits.txt pylint.txt gitlint_local_errors.txt
+        do
+          if [[ -s $file ]]; then
+            errors=$(cat $file)
+            errors="${errors//'%'/'%25'}"
+            errors="${errors//$'\n'/'%0A'}"
+            errors="${errors//$'\r'/'%0D'}"
+            echo "::error file=${file}::$errors"
+            exit=1
+          fi
+        done
+
+        if [[ $exit == 1 ]]; then
+          exit 1
+        fi

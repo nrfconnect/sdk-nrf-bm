@@ -1,0 +1,6 @@
+[body-match-regex]
+# Regex that the commit-msg body should contain. It points to the issue that prompted
+# the commit. The format of this inclusion should be "Ref: <project>-xxxx". This is
+# used to track changes to the codebase and have a reference to the origins of the
+# proposed changes. A workaround can be used by specifying "Ref: NONE".
+regex=(R|r)ef:( {0,4})((([A-Z0-9]*)(-?)(NONE|((N|n)one)))|(([A-Z0-9]+)-([0-9]+)))
