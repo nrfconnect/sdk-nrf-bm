@@ -52,17 +52,6 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		}
 		break;
 
-	case BLE_GAP_EVT_DATA_LENGTH_UPDATE_REQUEST: {
-		printk("BLE_GAP_EVT_DATA_LENGTH_UPDATE_REQUEST\n");
-		ble_gap_data_length_params_t dl_params = {0};
-
-		/* Auto */
-		err = sd_ble_gap_data_length_update(evt->evt.gap_evt.conn_handle, &dl_params, NULL);
-		if (err) {
-			printk("Failed to reply with data length, nrf_error %d\n", err);
-		}
-	} break;
-
 	case BLE_GATTS_EVT_SYS_ATTR_MISSING:
 		printk("BLE_GATTS_EVT_SYS_ATTR_MISSING\n");
 		/* No system attributes have been stored */
