@@ -77,11 +77,6 @@ config NRF_SDH_BLE_TOTAL_LINK_COUNT
 	range 1 64
 	default 1
 
-config NRF_SDH_BLE_GAP_DATA_LENGTH
-	int "GAP data length"
-	# TODO confirm
-	default 27
-
 config NRF_SDH_BLE_GAP_EVENT_LENGTH
 	int "GAP event length"
 	default 3
