@@ -82,9 +82,8 @@ config NRF_SDH_BLE_GAP_EVENT_LENGTH
 	default 3
 
 config NRF_SDH_BLE_GATT_MAX_MTU_SIZE
-	int "Static maximum MTU size"
-	# TODO confirm
-	range 23 256
+	int "Maximum MTU size"
+	range 23 247
 	default 23
 
 config NRF_SDH_BLE_GATTS_ATTR_TAB_SIZE
