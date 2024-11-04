@@ -19,7 +19,7 @@ config NRF_SDH_BLE
 
 choice
 	prompt "Dispatch model"
-	default NRF_SDH_DISPATCH_MODEL_IRQ
+	default NRF_SDH_DISPATCH_MODEL_SCHED
 
 config NRF_SDH_DISPATCH_MODEL_IRQ
 	bool "Interrupt"
@@ -29,11 +29,12 @@ config NRF_SDH_DISPATCH_MODEL_IRQ
 
 config NRF_SDH_DISPATCH_MODEL_SCHED
 	bool "Scheduler"
+	depends on EVENT_SCHEDULER
 	help
 	  SoftDevice events are passed to the application using the scheduler.
 
 config NRF_SDH_DISPATCH_MODEL_POLL
-	bool "Poll"
+	bool "Manual (poll)"
 	help
 	  In this mode, a user application can also implement SD_EVT_IRQHandler()
 	  to receive a notification about incoming events.
