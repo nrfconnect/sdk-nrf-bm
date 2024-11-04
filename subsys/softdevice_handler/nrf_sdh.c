@@ -7,6 +7,7 @@
 #include <nrf_sdh.h>
 #include <nrf_sdm.h>
 #include <nrf_nvic.h>
+#include <event_scheduler.h>
 #include <zephyr/toolchain.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/atomic.h>
@@ -249,7 +250,7 @@ void nrf_sdh_suspend(void)
 {
 	int err;
 
-	if (!sdh_enabled) {
+	if (!sdh_enabled || sdh_suspended) {
 		return;
 	}
 
@@ -306,10 +307,10 @@ void SD_EVT_IRQHandler(void)
 
 #elif defined(CONFIG_NRF_SDH_DISPATCH_MODEL_SCHED)
 
-static void appsh_events_poll(void *p_event_data, uint16_t event_size)
+static void sdh_events_poll(void *data, size_t len)
 {
-	UNUSED_PARAMETER(p_event_data);
-	UNUSED_PARAMETER(event_size);
+	(void)data;
+	(void)len;
 
 	nrf_sdh_evts_poll();
 }
@@ -318,7 +319,7 @@ void SD_EVT_IRQHandler(void)
 {
 	int err;
 
-	err = app_sched_event_put(NULL, 0, appsh_events_poll);
+	err = event_scheduler_defer(sdh_events_poll, NULL, 0);
 	if (err) {
 		LOG_WRN("Unable to schedule SoftDevice event, err %d", err);
 	}
