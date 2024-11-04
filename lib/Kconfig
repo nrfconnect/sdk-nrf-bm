@@ -7,5 +7,6 @@ menu "Libraries"
 
 rsource "ble_adv/Kconfig"
 rsource "ble_conn_params/Kconfig"
+rsource "event_scheduler/Kconfig"
 
 endmenu

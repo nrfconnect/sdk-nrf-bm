@@ -6,3 +6,4 @@
 
 add_subdirectory_ifdef(CONFIG_BLE_ADV ble_adv)
 add_subdirectory_ifdef(CONFIG_BLE_CONN_PARAMS ble_conn_params)
+add_subdirectory_ifdef(CONFIG_EVENT_SCHEDULER event_scheduler)
