@@ -7,6 +7,7 @@
 #include <nrf_sdh.h>
 #include <nrf_sdh_ble.h>
 #include <nrf_sdh_soc.h>
+#include <event_scheduler.h>
 #include <ble_adv.h>
 #include <ble_gap.h>
 #include <bluetooth/services/ble_bas.h>
@@ -78,10 +79,10 @@ static void ble_bas_evt_handler(struct ble_bas *bas, const struct ble_bas_evt *e
 {
 	switch (evt->evt_type) {
 	case BLE_BAS_EVT_NOTIFICATION_ENABLED:
-		printk("Battery level notifications enabled");
+		printk("Battery level notifications enabled\n");
 		break;
 	case BLE_BAS_EVT_NOTIFICATION_DISABLED:
-		printk("Battery level notifications disabled");
+		printk("Battery level notifications disabled\n");
 		break;
 	}
 }
@@ -164,6 +165,7 @@ int main(void)
 		sd_app_evt_wait();
 		k_busy_wait(1 * USEC_PER_SEC);
 		ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level++ % 100);
+		event_scheduler_process();
 	}
 
 	err = nrf_sdh_disable_request();
