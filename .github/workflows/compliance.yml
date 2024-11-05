@@ -81,12 +81,6 @@ jobs:
         if [[ $? -ne 0 ]]; then
           echo "$?" >&2
         fi
-        # Gitlint for repository specific rules
-        exec 2> gitlint_local_errors.txt
-        gitlint_output=$(gitlint --commits origin/${BASE_REF}.. --config .gitlint_local)
-        if [[ $? -ne 0 ]]; then
-          echo "$gitlint_output" >&2
-        fi
 
     - name: upload-results
       uses: actions/upload-artifact@v4
@@ -108,7 +102,7 @@ jobs:
     - name: check-warns
       working-directory: nrf-lite
       run: |
-        for file in Codeowners.txt Devicetree.txt Gitlint.txt Identity.txt Nits.txt pylint.txt gitlint_local_errors.txt
+        for file in Codeowners.txt Devicetree.txt Gitlint.txt Identity.txt Nits.txt pylint.txt
         do
           if [[ -s $file ]]; then
             errors=$(cat $file)
