@@ -36,11 +36,11 @@ extern "C" {
  */
 enum ble_bas_evt_type {
 	/**
-	 * @brief Battery level notification enabled
+	 * @brief Battery level notification enabled.
 	 */
 	BLE_BAS_EVT_NOTIFICATION_ENABLED,
 	/**
-	 * @brief Battery level notification disenabled
+	 * @brief Battery level notification disabled.
 	 */
 	BLE_BAS_EVT_NOTIFICATION_DISABLED
 };
@@ -63,12 +63,12 @@ struct  ble_bas_evt {
 struct ble_bas;
 
 /**
- * @brief Battery Service event handler type.
+ * @brief Battery service event handler type.
  */
 typedef void (*ble_bas_evt_handler_t)(struct ble_bas *bas, const struct ble_bas_evt *evt);
 
 /**
- * @brief Battery Service configuration.
+ * @brief Battery service configuration.
  */
 struct ble_bas_config {
 	/**
@@ -156,9 +156,9 @@ struct ble_bas {
  * @param bas Battery service.
  * @param bas_config Battery service configuration.
  *
- * @return 0 On success.
- * @return -EFAULT If @p bas or @p bas_config are @c NULL.
- * @return -EINVAL Invalid parameters.
+ * @retval 0 On success.
+ * @retval -EFAULT If @p bas or @p bas_config are @c NULL.
+ * @retval -EINVAL Invalid parameters.
  */
 int ble_bas_init(struct ble_bas *bas, const struct ble_bas_config *bas_config);
 
@@ -172,9 +172,9 @@ int ble_bas_init(struct ble_bas *bas, const struct ble_bas_config *bas_config);
  * @param conn_handle Connection handle.
  * @param battery_level Battery level (in percent of full capacity).
  *
- * @return 0 On success.
- * @return -FAULT If @p bas is @c NULL.
- * @return -EINVAL Invalid parameters.
+ * @retval 0 On success.
+ * @retval -EFAULT If @p bas is @c NULL.
+ * @retval -EINVAL Invalid parameters.
  */
 int ble_bas_battery_level_update(struct ble_bas *bas, uint16_t conn_handle, uint8_t battery_level);
 
@@ -188,9 +188,9 @@ int ble_bas_battery_level_update(struct ble_bas *bas, uint16_t conn_handle, uint
  * @param bas Battery service.
  * @param conn_handle Connection handle.
  *
- * @return 0 On success.
- * @return -FAULT If @p bas is @c NULL.
- * @return -EINVAL Invalid parameters.
+ * @retval 0 On success.
+ * @retval -EFAULT If @p bas is @c NULL.
+ * @retval -EINVAL Invalid parameters.
  */
 int ble_bas_battery_level_notify(struct ble_bas *bas, uint16_t conn_handle);
 
