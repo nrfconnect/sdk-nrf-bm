@@ -5,3 +5,4 @@
 #
 zephyr_sources_ifdef(CONFIG_BLE_BAS bas.c)
 zephyr_sources_ifdef(CONFIG_BLE_DIS dis.c)
+zephyr_sources_ifdef(CONFIG_BLE_HRS hrs.c)

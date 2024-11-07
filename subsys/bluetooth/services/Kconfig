@@ -5,3 +5,4 @@
 #
 rsource "Kconfig.bas"
 rsource "Kconfig.dis"
+rsource "Kconfig.hrs"

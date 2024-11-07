@@ -1,0 +1,21 @@
+#
+# Copyright (c) 2024 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+menuconfig BLE_HRS
+	bool "Heart rate service"
+	depends on BLE_CONN_PARAMS_AUTO_ATT_MTU
+
+if BLE_HRS
+
+config BLE_HRS_MAX_BUFFERED_RR_INTERVALS
+	int "Size of RR Interval buffers"
+	default 20
+
+module=BLE_HRS
+module-dep=LOG
+module-str=BLE Heart rate service
+source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+
+endif
