@@ -1,0 +1,111 @@
+#
+# Copyright (c) 2024 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "BLE HRS sample"
+
+menu "Battery level simulation"
+
+config BATTERY_LEVEL_MEAS_INTERVAL
+	int "Battery level measurement interval (ms)"
+	default 2000
+	help
+	  Battery level measurement interval in milliseconds
+
+config BATTERY_LEVEL_MIN
+	int "Minimum simulated battery level (%)"
+	default 81
+	help
+	  Minimum battery level as returned by the simulated measurement function
+
+config BATTERY_LEVEL_MAX
+	int "Maximum simulated battery level (%)"
+	default 100
+	help
+	  Maximum battery level as returned by the simulated measurement function
+
+config BATTERY_LEVEL_INCREMENT
+	int "Simulated battery level increment/decrement (%)"
+	default 1
+	help
+	  Value by which the battery level is incremented/decremented for each
+	  call to the simulated measurement function
+
+endmenu # "Battery level simulation"
+
+menu "Heart rate simulation"
+
+config HEART_RATE_MEAS_INTERVAL
+	int "Heart rate measurement interval (ms)"
+	default 1000
+	help
+	  Heart rate measurement interval in milliseconds
+
+config HEART_RATE_MIN
+	int "Minimum simulated heart rate (bpm)"
+	default 140
+	help
+	  Minimum heart rate as returned by the simulated measurement function
+
+config HEART_RATE_MAX
+	int "Maximum simulated heart rate (bpm)"
+	default 300
+	help
+	  Maximum heart rate as returned by the simulated measurement function
+
+config HEART_RATE_INCREMENT
+	int "Simulated heart rate increment/decrement (bpm)"
+	default 10
+	help
+	  Value by which the heart rate is incremented/decremented for each
+	  call to the simulated measurement function
+
+endmenu # "Heart rate simulation"
+
+menu "RR interval simulation"
+
+config RR_INTERVAL_MEAS_INTERVAL
+	int "RR interval measurement interval (ms)"
+	default 300
+	help
+	  RR interval measurement interval in milliseconds
+
+config RR_INTERVAL_MIN
+	int "Minimum simulated RR interval (in 1/1024 sec units)"
+	default 100
+	help
+	  Minimum RR interval as returned by the simulated measurement function.
+	  Represented in '1/1024 seconds' unit.
+
+config RR_INTERVAL_MAX
+	int "Maximum simulated RR interval (in 1/1024 sec units)"
+	default 500
+	help
+	  Maximum RR interval as returned by the simulated measurement function.
+	  Represented in '1/1024 seconds' unit.
+
+config RR_INTERVAL_INCREMENT
+	int "Simulated RR interval increment/decrement (in 1/1024 sec units)"
+	default 1
+	help
+	  Value by which the RR interval is incremented/decremented for each
+	  call to the simulated measurement function.
+	  Represented in '1/1024 seconds' unit.
+
+endmenu # "RR interval simulation"
+
+menu "Sensor contact detected simulation"
+
+config SENSOR_CONTACT_DETECTED_INTERVAL
+	int "Sensor contact detected toggle interval (ms)"
+	default 5000
+	help
+	  Sensor contact detected toggle interval in milliseconds
+
+endmenu # "Sensor contact simulation"
+
+endmenu # "BLE HRS sample"
+
+source "Kconfig.zephyr"
