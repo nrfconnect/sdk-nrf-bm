@@ -35,7 +35,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		conn_handle = evt->evt.gap_evt.conn_handle;
 		err = sd_ble_gatts_sys_attr_set(conn_handle, NULL, 0, 0);
 		if (err) {
-			printk("Failed to set system attributes, nrf_error %d", err);
+			printk("Failed to set system attributes, nrf_error %d\n", err);
 		}
 		break;
 
@@ -58,7 +58,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		/* No system attributes have been stored */
 		err = sd_ble_gatts_sys_attr_set(conn_handle, NULL, 0, 0);
 		if (err) {
-			printk("Failed to set system attributes, nrf_error %d", err);
+			printk("Failed to set system attributes, nrf_error %d\n", err);
 		}
 		break;
 	}
@@ -92,7 +92,7 @@ int main(void)
 	int err;
 	uint32_t ram_start;
 	uint8_t battery_level = 77;
-	struct ble_adv_config ble_adv_config = {
+	struct ble_adv_config ble_adv_cfg = {
 		.conn_cfg_tag = CONN_TAG,
 		.evt_handler = ble_adv_evt_handler,
 		.error_handler = ble_adv_error_handler,
@@ -104,7 +104,7 @@ int main(void)
 	struct ble_bas_config bas_cfg = {
 		.evt_handler = ble_bas_evt_handler,
 		.can_notify = true,
-		.battery_level = 77,
+		.battery_level = battery_level,
 	};
 
 	err = nrf_sdh_enable_request();
@@ -141,7 +141,7 @@ int main(void)
 		return -1;
 	}
 
-	printk("BAS initialized");
+	printk("BAS initialized\n");
 
 	err = ble_dis_init();
 	if (err) {
@@ -149,7 +149,7 @@ int main(void)
 		return -1;
 	}
 
-	err = ble_adv_init(&ble_adv, &ble_adv_config);
+	err = ble_adv_init(&ble_adv, &ble_adv_cfg);
 	if (err) {
 		printk("Failed to initialize BLE advertising, err %d\n", err);
 		return -1;
@@ -164,8 +164,8 @@ int main(void)
 	while (true) {
 		sd_app_evt_wait();
 		k_busy_wait(1 * USEC_PER_SEC);
-		ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level++ % 100);
 		event_scheduler_process();
+		ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level++ % 100);
 	}
 
 	err = nrf_sdh_disable_request();
