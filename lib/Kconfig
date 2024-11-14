@@ -9,5 +9,6 @@ rsource "ble_adv/Kconfig"
 rsource "ble_conn_params/Kconfig"
 rsource "event_scheduler/Kconfig"
 rsource "lite_timer/Kconfig"
+rsource "sensorsim/Kconfig"
 
 endmenu
