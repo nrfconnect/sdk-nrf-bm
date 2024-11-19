@@ -8,7 +8,7 @@
 #include <nrf_sdh_ble.h>
 #include <zephyr/logging/log.h>
 
-LOG_MODULE_DECLARE(ble_conn_params);
+LOG_MODULE_DECLARE(ble_conn_params, CONFIG_BLE_CONN_PARAMS_LOG_LEVEL);
 
 #define BLE_GAP_DATA_LENGTH_DEFAULT 27
 #define BLE_GAP_DATA_LENGTH_MAX 251
