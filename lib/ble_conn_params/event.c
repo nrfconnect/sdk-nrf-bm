@@ -26,7 +26,7 @@ int ble_conn_params_event_handler_set(ble_conn_params_evt_handler_t handler)
 		return -EFAULT;
 	}
 
-	event_handler = event_handler;
+	event_handler = handler;
 
 	return 0;
 }
