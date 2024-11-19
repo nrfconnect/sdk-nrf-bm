@@ -30,7 +30,6 @@ static struct {
 	}
 };
 
-
 static void conn_params_negotiate(uint16_t conn_handle)
 {
 	int err;
@@ -106,7 +105,8 @@ static void on_connected(uint16_t conn_handle, const ble_gap_evt_connected_t *ev
 
 static void on_conn_params_update(uint16_t conn_handle, const ble_gap_evt_conn_param_update_t *evt)
 {
-	LOG_DBG("GAP connection params updated, min %#x max %#x, lat %d, timeout %x",
+	LOG_DBG("GAP connection params updated, conn. interval min %u max %u,"
+		" slave latency %u, sup. timeout %u",
 		evt->conn_params.min_conn_interval,
 		evt->conn_params.max_conn_interval,
 		evt->conn_params.slave_latency,
@@ -156,10 +156,11 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 	switch (evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:
 		on_connected(conn_handle, &evt->evt.gap_evt.params.connected);
-		return;
+		break;
+
 	case BLE_GAP_EVT_DISCONNECTED:
 		on_disconnected(conn_handle, &evt->evt.gap_evt.params.disconnected);
-		return;
+		break;
 
 	case BLE_GAP_EVT_CONN_PARAM_UPDATE:
 		on_conn_params_update(
@@ -187,7 +188,7 @@ static void on_state_evt(enum nrf_sdh_state_evt evt, void *ctx)
 		return;
 	}
 
-	LOG_DBG("conn. interval min %#x max %#x, slave latency %#x, sup. timeout %#x",
+	LOG_DBG("conn. interval min %u max %u, slave latency %u, sup. timeout %u",
 		ppcp.min_conn_interval, ppcp.max_conn_interval,
 		ppcp.slave_latency,
 		ppcp.conn_sup_timeout);

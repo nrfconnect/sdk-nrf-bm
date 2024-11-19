@@ -19,27 +19,27 @@ config BLE_CONN_PARAMS_MIN_CONN_INTERVAL
 	range 6 3200
 	default 6
 	help
-	  Minimum onnection interval, in 1.25 ms units.
+	  Minimum connection interval, in 1.25 ms units.
 	  Min 7.5 ms, Max 4 sec.
 
 config BLE_CONN_PARAMS_MAX_CONN_INTERVAL
 	int "Maximum connection interval (1.25 ms units)"
-	range 6 3200
-	default 6
+	range BLE_CONN_PARAMS_MIN_CONN_INTERVAL 3200
+	default BLE_CONN_PARAMS_MIN_CONN_INTERVAL
 	help
 	  Maximum connection interval.
 	  Min 7.5 ms, Max 4 sec.
 
 config BLE_CONN_PARAMS_SLAVE_LATENCY
-	int "Slave latency (1.25 ms units)"
+	int "Slave latency"
 	range 0 499
 	default 0
 	help
-	  Highest slave latency permitted in connection events.
+	  Number of connection events that peripheral is allowed to skip.
 
 
 config BLE_CONN_PARAMS_SUP_TIMEOUT
-	int "Connection supervision timeout (10ms units)"
+	int "Connection supervision timeout (10 ms units)"
 	range 10 3200
 	default 10
 	help
@@ -54,7 +54,7 @@ config BLE_CONN_PARAMS_MAX_SLAVE_LATENCY_DEVIATION
 	  How much can the slave latency deviate from the desired value.
 
 config BLE_CONN_PARAMS_MAX_SUP_TIMEOUT_DEVIATION
-	int "Maximum supervision timeout deviation (10ms units)"
+	int "Maximum supervision timeout deviation (10 ms units)"
 	range 0 3190
 	default 400
 	help
