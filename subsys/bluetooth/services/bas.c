@@ -108,13 +108,13 @@ static void on_write(struct ble_bas *bas, const ble_gatts_evt_t *gatts_evt)
 	bas_evt.conn_handle = gatts_evt->conn_handle;
 	if (is_notification_enabled(gatts_evt->params.write.data)) {
 		bas_evt.evt_type = BLE_BAS_EVT_NOTIFICATION_ENABLED;
-		LOG_INF("Battery level notifications enabled for peer %#x",
-			gatts_evt->conn_handle);
 	} else {
 		bas_evt.evt_type = BLE_BAS_EVT_NOTIFICATION_DISABLED;
-		LOG_INF("Battery level notifications disabled for peer %#x",
-			gatts_evt->conn_handle);
 	}
+
+	LOG_INF("Battery level notifications %sabled for peer %#x",
+		(bas_evt.evt_type == BLE_BAS_EVT_NOTIFICATION_ENABLED ? "en" : "dis"),
+		gatts_evt->conn_handle);
 
 	bas->evt_handler(bas, &bas_evt);
 }
