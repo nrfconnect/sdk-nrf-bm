@@ -144,10 +144,6 @@ struct ble_bas {
 	 * @brief Whether notifications of battery level changes are supported.
 	 */
 	bool can_notify;
-	/**
-	 * @brief Whether notifications of battery level changes are enabled.
-	 */
-	bool do_notify;
 };
 
 /**
@@ -175,6 +171,8 @@ int ble_bas_init(struct ble_bas *bas, const struct ble_bas_config *bas_config);
  * @retval 0 On success.
  * @retval -EFAULT If @p bas is @c NULL.
  * @retval -EINVAL Invalid parameters.
+ * @retval -ENOTCONN Invalid connection handle.
+ * @retval -EPIPE Notifications not enabled in the CCCD.
  */
 int ble_bas_battery_level_update(struct ble_bas *bas, uint16_t conn_handle, uint8_t battery_level);
 
@@ -191,6 +189,8 @@ int ble_bas_battery_level_update(struct ble_bas *bas, uint16_t conn_handle, uint
  * @retval 0 On success.
  * @retval -EFAULT If @p bas is @c NULL.
  * @retval -EINVAL Invalid parameters.
+ * @retval -ENOTCONN Invalid connection handle.
+ * @retval -EPIPE Notifications not enabled in the CCCD.
  */
 int ble_bas_battery_level_notify(struct ble_bas *bas, uint16_t conn_handle);
 
