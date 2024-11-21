@@ -108,12 +108,10 @@ static void on_write(struct ble_bas *bas, const ble_gatts_evt_t *gatts_evt)
 	bas_evt.conn_handle = gatts_evt->conn_handle;
 	if (is_notification_enabled(gatts_evt->params.write.data)) {
 		bas_evt.evt_type = BLE_BAS_EVT_NOTIFICATION_ENABLED;
-		bas->do_notify = true;
 		LOG_INF("Battery level notifications enabled for peer %#x",
 			gatts_evt->conn_handle);
 	} else {
 		bas_evt.evt_type = BLE_BAS_EVT_NOTIFICATION_DISABLED;
-		bas->do_notify = false;
 		LOG_INF("Battery level notifications disabled for peer %#x",
 			gatts_evt->conn_handle);
 	}
@@ -130,6 +128,7 @@ void ble_bas_on_ble_evt(const ble_evt_t *ble_evt, void *bas_instance)
 	case BLE_GATTS_EVT_WRITE:
 		on_write(bas_instance, &ble_evt->evt.gatts_evt);
 		break;
+
 	default:
 		break;
 	}
@@ -207,7 +206,7 @@ int ble_bas_battery_level_update(struct ble_bas *bas, uint16_t conn_handle, uint
 	LOG_INF("Battery level: %d%%", battery_level);
 	bas->battery_level = battery_level;
 
-	if (!bas->can_notify || !bas->do_notify) {
+	if (!bas->can_notify) {
 		/* We are done */
 		return 0;
 	}
@@ -220,12 +219,17 @@ int ble_bas_battery_level_update(struct ble_bas *bas, uint16_t conn_handle, uint
 	hvx.p_data = gatts_value.p_value;
 
 	err = sd_ble_gatts_hvx(conn_handle, &hvx);
-	if (err) {
+	switch (err) {
+	case NRF_SUCCESS:
+		return 0;
+	case BLE_ERROR_INVALID_CONN_HANDLE:
+		return -ENOTCONN;
+	case NRF_ERROR_INVALID_STATE:
+		return -EPIPE;
+	default:
 		LOG_ERR("Failed to notify battery level, nrf_error %#x", err);
 		return -EINVAL;
 	}
-
-	return 0;
 }
 
 int ble_bas_battery_level_notify(struct ble_bas *bas, uint16_t conn_handle)
@@ -237,7 +241,7 @@ int ble_bas_battery_level_notify(struct ble_bas *bas, uint16_t conn_handle)
 	if (!bas) {
 		return -EFAULT;
 	}
-	if (!bas->can_notify || !bas->do_notify) {
+	if (!bas->can_notify) {
 		return -EINVAL;
 	}
 
@@ -248,10 +252,15 @@ int ble_bas_battery_level_notify(struct ble_bas *bas, uint16_t conn_handle)
 	hvx.p_data = &bas->battery_level;
 
 	err = sd_ble_gatts_hvx(conn_handle, &hvx);
-	if (err) {
+	switch (err) {
+	case NRF_SUCCESS:
+		return 0;
+	case BLE_ERROR_INVALID_CONN_HANDLE:
+		return -ENOTCONN;
+	case NRF_ERROR_INVALID_STATE:
+		return -EPIPE;
+	default:
 		LOG_ERR("Failed to notify battery level, nrf_error %#x", err);
 		return -EINVAL;
 	}
-
-	return 0;
 }
