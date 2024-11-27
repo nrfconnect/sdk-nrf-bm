@@ -17,6 +17,7 @@ config SOFTDEVICE_CENTRAL
 
 choice SOFTDEVICE_CHOICE
 	prompt "SoftDevice"
+	optional
 
 config SOFTDEVICE_S140
 	bool "S140"
