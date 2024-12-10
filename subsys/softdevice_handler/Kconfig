@@ -79,8 +79,12 @@ config NRF_SDH_BLE_TOTAL_LINK_COUNT
 	default 1
 
 config NRF_SDH_BLE_GAP_EVENT_LENGTH
-	int "GAP event length"
+	int "GAP event length (1.25 ms units)"
+	range 2 3200
 	default 3
+	help
+	  The event length in milliseconds must be shorter than the connection interval.
+	  Must be 6 or larger when coded PHY is used.
 
 config NRF_SDH_BLE_GATT_MAX_MTU_SIZE
 	int "Maximum MTU size"
