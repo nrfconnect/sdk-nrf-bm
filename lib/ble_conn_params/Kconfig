@@ -107,6 +107,38 @@ config BLE_CONN_PARAMS_INITIATE_DATA_LENGTH_UPDATE
 
 endif # BLE_CONN_PARAMS_AUTO_DATA_LENGTH
 
+config BLE_CONN_PARAMS_AUTO_PHY_UPDATE
+	bool "Handle PHY mode updates"
+	default y
+if BLE_CONN_PARAMS_AUTO_PHY_UPDATE
+
+choice
+	prompt "Preferred radio PHY mode in connection"
+	default BLE_CONN_PARAMS_PHY_AUTO
+
+config BLE_CONN_PARAMS_PHY_AUTO
+	bool "Auto"
+config BLE_CONN_PARAMS_PHY_1MBPS
+	bool "1 Megabit"
+config BLE_CONN_PARAMS_PHY_2MBPS
+	bool "2 Megabits"
+config BLE_CONN_PARAMS_PHY_CODED
+	bool "Coded"
+endchoice
+
+config BLE_CONN_PARAMS_PHY
+	hex
+	default 0x00 if BLE_CONN_PARAMS_PHY_AUTO
+	default 0x01 if BLE_CONN_PARAMS_PHY_1MBPS
+	default 0x02 if BLE_CONN_PARAMS_PHY_2MBPS
+	default 0x04 if BLE_CONN_PARAMS_PHY_CODED
+
+config BLE_CONN_PARAMS_INITIATE_PHY_UPDATE
+	bool "Initiate PHY mode update on connection"
+	depends on BLE_CONN_PARAMS_AUTO_PHY_UPDATE
+
+endif # BLE_CONN_PARAMS_AUTO_PHY_UPDATE
+
 module=BLE_CONN_PARAMS
 module-dep=LOG
 module-str=BLE Connection Parameters
