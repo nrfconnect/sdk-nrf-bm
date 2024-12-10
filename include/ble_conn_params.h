@@ -27,6 +27,10 @@ enum ble_conn_params_evt_id {
 	 * @brief GAP data length update procedure completed.
 	 */
 	BLE_CONN_PARAMS_EVT_DATA_LENGTH_UPDATED,
+	/**
+	 * @brief GAP radio phy mode update procedure completed.
+	 */
+	BLE_CONN_PARAMS_EVT_RADIO_PHY_MODE_UPDATED,
 };
 
 /**
@@ -54,6 +58,12 @@ struct ble_conn_params_evt {
 		 * From @ref BLE_CONN_PARAMS_EVT_DATA_LENGTH_UPDATED.
 		 */
 		uint8_t data_length;
+		/**
+		 * @brief Negotiated radio PHY mode and procedure status.
+		 *
+		 * From @ref BLE_CONN_PARAMS_EVT_RADIO_PHY_MODE_UPDATED.
+		 */
+		ble_gap_evt_phy_update_t phy_update_evt;
 	};
 };
 
@@ -153,3 +163,31 @@ int ble_conn_params_data_length_set(uint16_t conn_handle, uint8_t data_length);
  * @return -ENOTCONN Peer is not connected.
  */
 int ble_conn_params_data_length_get(uint16_t conn_handle, uint8_t *data_length);
+
+/**
+ * @brief Initiate a GAP radio PHY mode update procedure for a given connection.
+ *
+ * The radio PHY mode update procedure is executed asynchronously, and its completion
+ * is signalled by the @ref BLE_CONN_PARAMS_EVT_RADIO_PHY_MODE_UPDATED event.
+ *
+ * @param conn_handle Handle to the connection.
+ * @param phy_pref Desired GAP radio PHY mode.
+ *
+ * @return 0 On success.
+ * @return -EINVAL Invalid data length or connection handle.
+ * @return -ENOTCONN Peer is not connected.
+ */
+int ble_conn_params_phy_radio_mode_set(uint16_t conn_handle, ble_gap_phys_t phy_pref);
+
+/**
+ * @brief Retrieve the current GAP radio PHY mode for a given connection.
+ *
+ * @param conn_handle Handle to the connection.
+ * @param[out] phy_pref The radio PHY mode.
+ *
+ * @return 0 On success.
+ * @return -EINVAL Invalid connection handle.
+ * @return -EFAULT @p phy_pref is @c NULL.
+ * @return -ENOTCONN Peer is not connected.
+ */
+int ble_conn_params_phy_radio_mode_get(uint16_t conn_handle, ble_gap_phys_t *phy_pref);
