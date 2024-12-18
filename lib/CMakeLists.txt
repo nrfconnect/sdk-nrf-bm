@@ -7,5 +7,6 @@
 add_subdirectory_ifdef(CONFIG_BLE_ADV ble_adv)
 add_subdirectory_ifdef(CONFIG_BLE_CONN_PARAMS ble_conn_params)
 add_subdirectory_ifdef(CONFIG_EVENT_SCHEDULER event_scheduler)
+add_subdirectory_ifdef(CONFIG_LITE_BUTTONS lite_buttons)
 add_subdirectory_ifdef(CONFIG_LITE_TIMER lite_timer)
 add_subdirectory_ifdef(CONFIG_SENSORSIM sensorsim)
