@@ -344,6 +344,7 @@ bool lite_buttons_is_pressed(uint8_t pin)
 	}
 
 	struct lite_buttons_config const *config = button_get(pin);
+
 	if (config) {
 		bool is_set = nrfx_gpiote_in_is_set(config->pin_number);
 
