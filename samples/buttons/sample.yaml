@@ -1,0 +1,11 @@
+sample:
+  name: Buttons sample
+tests:
+  sample.buttons:
+    sysbuild: true
+    build_only: true
+    integration_platforms:
+      - nrf52840dk/nrf52840
+    platform_allow:
+      - nrf52840dk/nrf52840
+    tags: ci_build
