@@ -1,0 +1,17 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menuconfig BLE_LBS
+	bool "BLE LED Button service"
+
+if BLE_LBS
+
+module=BLE_LBS
+module-dep=LOG
+module-str=BLE LED Button service
+source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+
+endif
