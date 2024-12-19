@@ -6,3 +6,4 @@
 rsource "Kconfig.bas"
 rsource "Kconfig.dis"
 rsource "Kconfig.hrs"
+rsource "Kconfig.lbs"
