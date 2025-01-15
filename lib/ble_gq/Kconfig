@@ -20,13 +20,9 @@ config BLE_GQ_HEAP_SIZE
 	int "Datapool heap size (bytes)"
 	default 256
 
-config BLE_GQ_GATTC_WRITE_MAX_DATA_LEN
-	int "Max size of the data inside GATTC write request (bytes)"
-	default 32
-
-config BLE_GQ_GATTS_HVX_MAX_DATA_LEN
-	int "Max size of the data inside GATTS notification or indication request (bytes)"
-	default 32
+config BLE_GQ_OBSERVER_PRIO
+	int "Softdevice event observer priority"
+	default 0
 
 module=BLE_GQ
 module-dep=LOG

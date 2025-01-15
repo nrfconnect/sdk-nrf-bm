@@ -38,19 +38,19 @@ extern "C" {
  * @param _name Name of the intance.
  */
 #define BLE_GQ_DEF(_name)                                                                          \
-	BLE_GQ_CUSTOM_DEF(_name, CONFIG_BLE_GQ_MAX_CONNECTIONS, CONFIG_BLE_GQ_QUEUE_SIZE,          \
-			  CONFIG_BLE_GQ_HEAP_SIZE)
+	BLE_GQ_CUSTOM_DEF(_name, CONFIG_BLE_GQ_MAX_CONNECTIONS, CONFIG_BLE_GQ_HEAP_SIZE,           \
+			  (CONFIG_BLE_GQ_MAX_CONNECTIONS * CONFIG_BLE_GQ_QUEUE_SIZE))
 
 /**
  * @brief Macro for defining a BLE GATT queue instance.
  *
- * @param _name Name of the instance.
- * @param _max_conns The maximum number of connection handles that can be registered.
- * @param _queue_size The maximum number of request insntances that the queue can hold.
- * @param _heap_size Size of heap used for storing attribute values for write, notify and indicate
- *                   operations.
+ * @param _name            Name of the instance.
+ * @param _max_conns       Maximum number of connection handles that can be registered.
+ * @param _heap_size       Size of heap used for storing additional data for
+ *                         write, notify and indicate operations.
+ * @param _max_req_blocks  Maximum number of requests that can be held at any point in time.
  */
-#define BLE_GQ_CUSTOM_DEF(_name, _max_conns, _queue_size, _heap_size)                              \
+#define BLE_GQ_CUSTOM_DEF(_name, _max_conns, _heap_size, _max_req_blocks)                          \
 	static uint16_t CONCAT(_name, _conn_handles_arr)[] = {                                     \
 		LISTIFY(_max_conns, BLE_GQ_CONN_HANDLE_INIT, (,)),                                 \
 	};                                                                                         \
@@ -63,8 +63,8 @@ extern "C" {
 		LISTIFY(_max_conns, BLE_GQ_REQ_QUEUE_INIT, (,), _name),                            \
 	};                                                                                         \
 	BUILD_ASSERT(ARRAY_SIZE(CONCAT(_name, _req_queues)) == (_max_conns));                      \
-	K_MEM_SLAB_DEFINE_STATIC(_name##_req_slabs, sizeof(struct ble_gq_req),                     \
-				 ((_max_conns) * (_queue_size)), sizeof(void *));                  \
+	K_MEM_SLAB_DEFINE_STATIC(_name##_req_slabs, sizeof(struct ble_gq_req), (_max_req_blocks),  \
+				 sizeof(void *));                                                  \
 	static K_HEAP_DEFINE(_name##_heap, (_heap_size));                                          \
 	static const struct ble_gq _name = {                                                       \
 		.max_conns = (_max_conns),                                                         \
@@ -72,10 +72,10 @@ extern "C" {
 		.purge_list = CONCAT(_name, _purge_arr),                                           \
 		.req_queue = (sys_slist_t *)&CONCAT(_name, _req_queues),                           \
 		.req_blocks = &CONCAT(_name, _req_slabs),                                          \
-		.value_heap = &CONCAT(_name, _heap),                                               \
+		.data_pool = &CONCAT(_name, _heap),                                                \
 	};                                                                                         \
 	NRF_SDH_BLE_OBSERVER(CONCAT(_name, _obs), ble_gq_on_ble_evt, (void *)&_name,               \
-			     NRF_BLE_GQ_BLE_OBSERVER_PRIO)
+			     CONFIG_BLE_GQ_OBSERVER_PRIO)
 
 /**
  * @brief Helper macro for initializing connection handle array. Used in @ref BLE_GQ_CUSTOM_DEF.
@@ -239,7 +239,7 @@ struct ble_gq {
 	/**
 	 * @brief Heap for allocating memory for write, notification, and indication request values.
 	 */
-	struct k_heap *const value_heap;
+	struct k_heap *const data_pool;
 };
 
 /**
@@ -254,11 +254,10 @@ struct ble_gq {
  * @param[in] req          Pointer to the request.
  * @param[in] conn_handle  Connection handle associated with the request.
  *
- * @retval 0         If the request was added successfully.
- * @retval -EFAULT   Any parameter was NULL.
- * @retval -ENOMEM   There was no room in the queue or in the data pool.
- * @retval -EINVAL   If @p conn_handle is not registered or type of request @p req is not valid.
- * @retval err_code  Other request specific error codes may be returned.
+ * @retval 0        Request was added successfully.
+ * @retval -EFAULT  Any parameter was NULL.
+ * @retval -EINVAL  If @p conn_handle is not registered or type of request @p req is not valid.
+ * @retval -ENOMEM  There was no room in the queue or in the data pool.
  */
 int ble_gq_item_add(const struct ble_gq *gatt_queue, struct ble_gq_req *req, uint16_t conn_handle);
 
@@ -272,9 +271,9 @@ int ble_gq_item_add(const struct ble_gq *gatt_queue, struct ble_gq_req *req, uin
  * @param[in] gatt_queue   Pointer to the BGQ instance.
  * @param[in] conn_handle  Connection handle.
  *
- * @retval 0        If the registration was successful.
- * @retval -EFAULT  If @p p_gatt_queue was NULL.
- * @retval -ENOMEM  If there was no space for another connection handle.
+ * @retval 0        Connection handle was successful registered.
+ * @retval -EFAULT  If @p gatt_queue was NULL.
+ * @retval -ENOMEM  No space for another connection handle.
  */
 int ble_gq_conn_handle_register(const struct ble_gq *gatt_queue, uint16_t conn_handle);
 

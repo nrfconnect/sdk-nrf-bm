@@ -18,86 +18,96 @@
 #include <zephyr/logging/log.h>
 LOG_MODULE_DECLARE(ble_gatt_queue, CONFIG_BLE_GQ_LOG_LEVEL);
 
-typedef int (*req_data_alloc_t)(struct k_heap *data_pool, struct ble_gq_req *req);
+/**
+ * @brief Function prototype for preparing a request for storage.
+ *
+ * Functions of this type should:
+ * 1. Allocate memory for additinal request data.
+ * 2. Copy request to the storage buffer.
+ *
+ * @param[in]    data_pool  Pointer to memory pool for additional request data.
+ * @param[in]    req        Pointer to request to be stored.
+ * @param[inout] req_buf    Pointer to request storage buffer.
+ *
+ * @retval 0        Preparations to storage request was successful.
+ * @retval -ENOMEM  No room in the data pool for a new allocation.
+ */
+typedef int (*req_data_store_t)(struct k_heap *data_pool, const struct ble_gq_req *req,
+				struct ble_gq_req *req_buf);
 
 /**
- * @brief Allocate memory for data associated with GATTC write request.
- *
- * @param[in] data_pool  Pointer to memory pool.
- * @param[in] req        Pointer to GATTC write request.
- *
- * @retval 0         If the data was allocated successfully.
- * @retval -EMGSIZE  If data to be written is too long.
- * @retval -ENOMEM   If there is no room in the data pool for a new allocation.
+ * @brief Prepare a GATTC write request for storage.
  */
-static int gattc_write_alloc(struct k_heap *data_pool, struct ble_gq_req *req)
+static int gattc_write_store(struct k_heap *data_pool, const struct ble_gq_req *req,
+			     struct ble_gq_req *req_buf)
 {
-	ble_gattc_write_params_t *gattc_write = &req->params.gattc_write;
+	const ble_gattc_write_params_t *const gattc_write = &req->params.gattc_write;
+	uint8_t *data;
 
-	/* Check if payload data is smaller than the configured max. */
-	if (gattc_write->len > CONFIG_BLE_GQ_GATTC_WRITE_MAX_DATA_LEN) {
-		return -EMSGSIZE;
-	}
-
-	/* Allocate memory for GATTC write request data. */
-	req->data = k_heap_aligned_alloc(data_pool, sizeof(void *), gattc_write->len, K_NO_WAIT);
-	if (req->data == NULL) {
+	/* Allocate additional memory for GATTC write request data. */
+	data = k_heap_aligned_alloc(data_pool, sizeof(void *), gattc_write->len, K_NO_WAIT);
+	if (data == NULL) {
 		return -ENOMEM;
 	}
 
-	LOG_DBG("Allocated heap memory with addr: %#lx", (uintptr_t)req->data);
+	LOG_DBG("Allocated heap memory with addr: %#lx", (uintptr_t)data);
 
 	/* Copy relevant data to the allocated heap space. */
-	memcpy(req->data, (void *)gattc_write->p_value, gattc_write->len);
+	memcpy(data, (void *)gattc_write->p_value, gattc_write->len);
+
+	/* Copy request to storage. */
+	*req_buf = *req;
+
+	/* Update pointers to point onto allocated data. */
+	req_buf->data = data;
+	req_buf->params.gattc_write.p_value = data;
 
 	return 0;
 }
 
 /**
- * @brief Allocate memory for data associated with GATTS notification or indication request.
- *
- * @param[in] data_pool  Pointer to memory pool.
- * @param[in] req        Pointer to GATTS notification or indication request.
- *
- * @retval 0         If the data was allocated successfully.
- * @retval -EMGSIZE  If data to be written is too long.
- * @retval -ENOMEM   If there is no room in the data pool for a new allocation.
+ * @brief Prepare a GATTS notification or indication request for storage.
  */
-static int gatts_hvx_alloc(struct k_heap *data_pool, struct ble_gq_req *req)
+static int gatts_hvx_store(struct k_heap *data_pool, const struct ble_gq_req *req,
+			   struct ble_gq_req *req_buf)
 {
-	ble_gatts_hvx_params_t *gatts_hvx = &req->params.gatts_hvx;
+	const ble_gatts_hvx_params_t *const gatts_hvx = &req->params.gatts_hvx;
+	uint8_t *data;
 
-	/* Check if payload data is smaller than the configured max. */
-	if (*gatts_hvx->p_len > CONFIG_BLE_GQ_GATTS_HVX_MAX_DATA_LEN) {
-		return -EMSGSIZE;
-	}
-
-	/* Allocate memory for GATTS notification or indication request data. */
-	req->data = k_heap_aligned_alloc(data_pool, sizeof(void *),
-					 *gatts_hvx->p_len + sizeof(uint16_t), K_NO_WAIT);
-	if (req->data == NULL) {
+	/* Allocate additional memory for GATTS notification or indication request data. */
+	data = k_heap_aligned_alloc(data_pool, sizeof(void *), *gatts_hvx->p_len + sizeof(uint16_t),
+				    K_NO_WAIT);
+	if (data == NULL) {
 		return -ENOMEM;
 	}
 
-	LOG_DBG("Allocated heap memory with addr: %#lx", (uintptr_t)req->data);
+	LOG_DBG("Allocated heap memory with addr: %#lx", (uintptr_t)data);
 
 	/* Copy relevant data to the allocated heap space. */
-	memcpy(&req->data[0], (void *)gatts_hvx->p_len, sizeof(uint16_t));
-	memcpy(&req->data[sizeof(uint16_t)], (void *)gatts_hvx->p_data, *gatts_hvx->p_len);
+	memcpy(&data[0], (void *)gatts_hvx->p_len, sizeof(uint16_t));
+	memcpy(&data[sizeof(uint16_t)], (void *)gatts_hvx->p_data, *gatts_hvx->p_len);
+
+	/* Copy request to storage. */
+	*req_buf = *req;
+
+	/* Update pointers to point onto allocated data. */
+	req_buf->data = data;
+	req_buf->params.gatts_hvx.p_len = (uint16_t *)&data[0];
+	req_buf->params.gatts_hvx.p_data = &data[sizeof(uint16_t)];
 
 	return 0;
 }
 
 /**
- * @brief Array of memory allocators for different GATT request types.
+ * @brief Array of memory store functions for different GATT request types.
  */
-static const req_data_alloc_t req_data_alloc[BLE_GQ_REQ_NUM] = {
+static const req_data_store_t req_data_store[BLE_GQ_REQ_NUM] = {
 	[BLE_GQ_REQ_GATTC_READ] = NULL,
-	[BLE_GQ_REQ_GATTC_WRITE] = gattc_write_alloc,
+	[BLE_GQ_REQ_GATTC_WRITE] = gattc_write_store,
 	[BLE_GQ_REQ_SRV_DISCOVERY] = NULL,
 	[BLE_GQ_REQ_CHAR_DISCOVERY] = NULL,
 	[BLE_GQ_REQ_DESC_DISCOVERY] = NULL,
-	[BLE_GQ_REQ_GATTS_HVX] = gatts_hvx_alloc,
+	[BLE_GQ_REQ_GATTS_HVX] = gatts_hvx_store,
 };
 
 /**
@@ -122,177 +132,13 @@ static void request_error_handle(const struct ble_gq_req *req, uint16_t conn_han
 }
 
 /**
- * @brief Process a request from the GATT queue instance.
- *
- * @param[in] gq           Pointer to the GATT queue instance.
- * @param[in] conn_handle  Connection handle.
- */
-static void queue_process(const struct ble_gq *gq, uint16_t conn_handle, uint16_t conn_id)
-{
-	uint32_t err_code;
-	sys_snode_t *elem;
-	struct ble_gq_req *req;
-	uint16_t len;
-
-	elem = sys_slist_peek_head(&gq->req_queue[conn_id]);
-	if (elem == NULL) {
-		/* Queue is empty */
-		return;
-	}
-
-	req = CONTAINER_OF(elem, struct ble_gq_req, node);
-
-	switch(req->type) {
-	case BLE_GQ_REQ_GATTC_READ:
-		LOG_DBG("GATTC read request");
-		err_code = sd_ble_gattc_read(conn_handle, req->params.gattc_read.handle,
-					     req->params.gattc_read.offset);
-		break;
-	case BLE_GQ_REQ_GATTC_WRITE:
-		req->params.gattc_write.p_value = req->data;
-		LOG_DBG("GATTC write request");
-		err_code = sd_ble_gattc_write(conn_handle, &req->params.gattc_write);
-		break;
-	case BLE_GQ_REQ_SRV_DISCOVERY:
-		LOG_DBG("GATTC primary services discovery request");
-		err_code = sd_ble_gattc_primary_services_discover(conn_handle,
-			req->params.gattc_srv_disc.start_handle,
-			&req->params.gattc_srv_disc.srvc_uuid);
-		break;
-	case BLE_GQ_REQ_CHAR_DISCOVERY:
-		LOG_DBG("GATTC characteristics discovery request");
-		err_code = sd_ble_gattc_characteristics_discover(conn_handle,
-								 &req->params.gattc_char_disc);
-		break;
-	case BLE_GQ_REQ_DESC_DISCOVERY:
-		LOG_DBG("GATTC characteristic descriptors discovery request");
-		err_code = sd_ble_gattc_descriptors_discover(conn_handle,
-							     &req->params.gattc_desc_disc);
-		break;
-	case BLE_GQ_REQ_GATTS_HVX:
-		req->params.gatts_hvx.p_len = (uint16_t *)&req->data[0];
-		req->params.gatts_hvx.p_data = &req->data[sizeof(uint16_t)];
-		LOG_DBG("GATTS notification or indication");
-		len = *(req->params.gatts_hvx.p_len);
-		err_code = sd_ble_gatts_hvx(conn_handle, &req->params.gatts_hvx);
-		if (err_code == NRF_SUCCESS && len != *(req->params.gatts_hvx.p_len)) {
-			err_code = NRF_ERROR_DATA_SIZE;
-		}
-		break;
-	default:
-		err_code = NRF_ERROR_NOT_SUPPORTED;
-		LOG_WRN("Unimplemented GATT request with type: %d", req->type);
-		break;
-	}
-
-	if (err_code == NRF_ERROR_BUSY) {
-		LOG_DBG("SD is currently busy. The GATT procedure will be attempted again later.");
-		return;
-	}
-
-	/* Peeking was successful above. Queue should have at least one element.
-	 * The first element is already known. Dequeue it.
-	 */
-	(void)sys_slist_get_not_empty(&gq->req_queue[conn_id]);
-
-	/* Clear any additional data associated with the request. */
-	if (req->type >= BLE_GQ_REQ_NUM || req_data_alloc[req->type] != NULL) {
-		LOG_DBG("Freeing heap memory with addr %#lx", (uintptr_t)req->data);
-		k_heap_free(gq->value_heap, req->data);
-	}
-
-	/* Release the memory block back to its associated memory slab. */
-	k_mem_slab_free(gq->req_blocks, req);
-
-	request_error_handle(req, conn_handle, err_code);
-}
-
-/**
- * @brief Clear all requests from the specified queue.
- *
- * @param[in] gq       Pointer to the GATT queue instance.
- * @param[in] conn_id  Connection ID of the list to clear.
- */
-static void req_queue_clear(const struct ble_gq *gq, uint16_t conn_id)
-{
-	sys_snode_t *elem;
-	struct ble_gq_req *req;
-
-	while (true) {
-		elem = sys_slist_get(&gq->req_queue[conn_id]);
-		if (elem == NULL) {
-			/* Clearing of request queue is done. Request queue is empty. */
-			break;
-		}
-
-		/* Based on offset, get pointer to the structure containing the list element. */
-		req = CONTAINER_OF(elem, struct ble_gq_req, node);
-
-		/* Clear any additional data associated with the request. */
-		if (req_data_alloc[req->type] != NULL) {
-			LOG_DBG("Freeing heap memory with addr %#lx", (uintptr_t)req->data);
-			k_heap_free(gq->value_heap, req->data);
-		}
-
-		/* Release the memory block back to its associated memory slab. */
-		k_mem_slab_free(gq->req_blocks, req);
-	}
-}
-
-/**
- * @brief Clear all requests from all queues marked for purging.
- *
- * @param[in] gq  Pointer to the GATT queue instance.
- */
-static void req_queues_purge(const struct ble_gq *gq)
-{
-	uint16_t conn_id;
-
-	__ASSERT_NO_MSG(gq != NULL);
-
-	for (uint32_t i = 0; i < gq->max_conns; i++) {
-		conn_id = gq->purge_list[i];
-		if (conn_id >= gq->max_conns) {
-			continue;
-		}
-
-		LOG_DBG("Purging request queue with id: %d", conn_id);
-
-		req_queue_clear(gq, conn_id);
-		gq->purge_list[i] = gq->max_conns;
-	}
-}
-
-/**
- * @brief Mark a request queue for purging. Freeing all pending requests when
- *        @ref req_queues_purge is called.
- *
- * @param[in] gq       Pointer to the GATT queue instance.
- * @param[in] conn_id  Connection ID of the list that should be purged.
- */
-static void req_queue_purge_schedule(const struct ble_gq *gq, uint16_t conn_id)
-{
-	uint32_t idx;
-
-	for (idx = 0; idx < gq->max_conns; idx++) {
-		if (gq->purge_list[idx] >= gq->max_conns) {
-			gq->purge_list[idx] = conn_id;
-			break;
-		}
-	}
-
-	/* Assert if there was no space in array to schedule purge of a request queue. */
-	__ASSERT_NO_MSG(idx == gq->max_conns);
-}
-
-/**
- * @brief Process a single GATT request without queuing it first.
+ * @brief Process a single GATT request.
  *
  * @param[in] req          Pointer to GATT request.
  * @param[in] conn_handle  Connection handle.
  *
- * @retval true   If request is accepted by Softdevice.
- * @retval false  If Softdevice is busy and the request should be queued.
+ * @retval true   Request is accepted by Softdevice.
+ * @retval false  Softdevice is busy.
  */
 static bool request_process(const struct ble_gq_req *req, uint16_t conn_handle)
 {
@@ -349,6 +195,124 @@ static bool request_process(const struct ble_gq_req *req, uint16_t conn_handle)
 }
 
 /**
+ * @brief Process a request from the GATT queue instance.
+ *
+ * @param[in] gq           Pointer to the GATT queue instance.
+ * @param[in] conn_handle  Connection handle.
+ */
+static void queue_process(const struct ble_gq *gq, uint16_t conn_handle, uint16_t conn_id)
+{
+	sys_snode_t *elem;
+	struct ble_gq_req *req;
+
+	elem = sys_slist_peek_head(&gq->req_queue[conn_id]);
+	if (elem == NULL) {
+		/* Queue is empty */
+		return;
+	}
+
+	req = CONTAINER_OF(elem, struct ble_gq_req, node);
+
+	const bool req_processed = request_process(req, conn_handle);
+
+	if (!req_processed) {
+		return;
+	}
+
+	/* Peeking was successful above. Queue should have at least one element.
+	 * The first element is already known. Dequeue it.
+	 */
+	(void)sys_slist_get_not_empty(&gq->req_queue[conn_id]);
+
+	/* Clear any additional data associated with the request. */
+	if (req->type >= BLE_GQ_REQ_NUM || req_data_store[req->type] != NULL) {
+		LOG_DBG("Freeing heap memory with addr %#lx", (uintptr_t)req->data);
+		k_heap_free(gq->data_pool, req->data);
+	}
+
+	/* Release the memory block back to its associated memory slab. */
+	k_mem_slab_free(gq->req_blocks, req);
+}
+
+/**
+ * @brief Clear all requests from the specified queue.
+ *
+ * @param[in] gq       Pointer to the GATT queue instance.
+ * @param[in] conn_id  Connection ID of the list to clear.
+ */
+static void req_queue_clear(const struct ble_gq *gq, uint16_t conn_id)
+{
+	sys_snode_t *elem;
+	struct ble_gq_req *req;
+
+	while (true) {
+		elem = sys_slist_get(&gq->req_queue[conn_id]);
+		if (elem == NULL) {
+			/* Clearing of request queue is done. Request queue is empty. */
+			break;
+		}
+
+		/* Based on offset, get pointer to the structure containing the list element. */
+		req = CONTAINER_OF(elem, struct ble_gq_req, node);
+
+		/* Clear any additional data associated with the request. */
+		if (req_data_store[req->type] != NULL) {
+			LOG_DBG("Freeing heap memory with addr %#lx", (uintptr_t)req->data);
+			k_heap_free(gq->data_pool, req->data);
+		}
+
+		/* Release the memory block back to its associated memory slab. */
+		k_mem_slab_free(gq->req_blocks, req);
+	}
+}
+
+/**
+ * @brief Clear all requests from all queues marked for purging.
+ *
+ * @param[in] gq  Pointer to the GATT queue instance.
+ */
+static void req_queues_purge(const struct ble_gq *gq)
+{
+	uint16_t conn_id;
+
+	__ASSERT_NO_MSG(gq != NULL);
+
+	for (uint32_t i = 0; i < gq->max_conns; i++) {
+		conn_id = gq->purge_list[i];
+		if (conn_id >= gq->max_conns) {
+			continue;
+		}
+
+		LOG_DBG("Purging request queue with id: %d", conn_id);
+
+		req_queue_clear(gq, conn_id);
+		gq->purge_list[i] = gq->max_conns;
+	}
+}
+
+/**
+ * @brief Mark a request queue for purging. Freeing all pending requests when
+ *        @ref req_queues_purge is called.
+ *
+ * @param[in] gq       Pointer to the GATT queue instance.
+ * @param[in] conn_id  Connection ID of the list that should be purged.
+ */
+static void req_queue_purge_schedule(const struct ble_gq *gq, uint16_t conn_id)
+{
+	uint32_t idx;
+
+	for (idx = 0; idx < gq->max_conns; idx++) {
+		if (gq->purge_list[idx] >= gq->max_conns) {
+			gq->purge_list[idx] = conn_id;
+			break;
+		}
+	}
+
+	/* Assert if there was no space in array to schedule purge of a request queue. */
+	__ASSERT_NO_MSG(idx == gq->max_conns);
+}
+
+/**
  * @brief Find ID for the provided connection handle within the GATT queue instance registery.
  *
  * @param[in] gq           Pointer to the GATT queue instance.
@@ -375,9 +339,8 @@ static uint16_t conn_handle_id_find(const struct ble_gq *gq, uint16_t conn_handl
  * @param[in] gq           Pointer to the GATT queue instance.
  * @param[in] conn_handle  Connection handle.
  *
- * @retval 0          If registration was successful.
- * @retval -EALREADY  If connection handle has already been registered.
- * @retval -ENOMEM    If there was no space for another connection handle.
+ * @retval 0        Connection handle registration was successful or it was already registered.
+ * @retval -ENOMEM  No space for another connection handle.
  */
 static int conn_handle_register(const struct ble_gq *gq, uint16_t conn_handle)
 {
@@ -385,7 +348,7 @@ static int conn_handle_register(const struct ble_gq *gq, uint16_t conn_handle)
 
 	for (uint16_t id = 0; id < gq->max_conns; id++) {
 		if (gq->conn_handles[id] == conn_handle) {
-			return -EALREADY;
+			return 0;
 		}
 		if (gq->conn_handles[id] == BLE_CONN_HANDLE_INVALID && unused_id == gq->max_conns) {
 			unused_id = id;
@@ -421,7 +384,8 @@ int ble_gq_item_add(const struct ble_gq *gq, struct ble_gq_req *req, uint16_t co
 
 	/* Try processing a request without buffering. */
 	if (sys_slist_is_empty(&gq->req_queue[conn_id])) {
-		bool req_processed = request_process(req, conn_handle);
+		const bool req_processed = request_process(req, conn_handle);
+
 		if (req_processed) {
 			return 0;
 		}
@@ -430,27 +394,26 @@ int ble_gq_item_add(const struct ble_gq *gq, struct ble_gq_req *req, uint16_t co
 	/* Request must be buffered for later processing. */
 
 	/* Allocate memory for holding the request. */
+	__ASSERT_NO_MSG(gq->req_blocks != NULL);
 	err = k_mem_slab_alloc(gq->req_blocks, (void **)&buffered_req, K_NO_WAIT);
 	if (err) {
 		return err;
 	}
 
 	/* Allocate extra memory if required by the request type. */
-	if (req_data_alloc[req->type] != NULL) {
-		if (gq->value_heap == NULL) {
-			k_mem_slab_free(gq->req_blocks, buffered_req);
-			return -EFAULT;
-		}
-
-		err = req_data_alloc[req->type](gq->value_heap, req);
+	if (req_data_store[req->type] != NULL) {
+		__ASSERT_NO_MSG(gq->data_pool != NULL);
+		err = req_data_store[req->type](gq->data_pool, req, buffered_req);
 		if (err) {
 			k_mem_slab_free(gq->req_blocks, buffered_req);
 			return err;
 		}
+	} else {
+		/* Copy request. No extra memory needed. */
+		*buffered_req = *req;
 	}
 
-	/* Copy request to the allocated memory block and add request to pending queue. */
-	memcpy((void *)buffered_req, (void *)req, sizeof(struct ble_gq_req));
+	/* Queue request for later processing when Softdevice is ready (not busy). */
 	sys_slist_append(&gq->req_queue[conn_id], &buffered_req->node);
 
 	/* Check if Softdevice is still busy. */
@@ -466,7 +429,7 @@ int ble_gq_conn_handle_register(const struct ble_gq *gq, uint16_t conn_handle)
 		return -EFAULT;
 	}
 
-	/* Purge queues that are no longer used by any connection. */
+	/* Purge the queues that are no longer used by any connection. */
 	req_queues_purge(gq);
 
 	/* Find a free spot in the connection handle registery and register the connection. */
@@ -493,14 +456,12 @@ void ble_gq_on_ble_evt(const ble_evt_t *ble_evt, void *context)
 	/* Obtain connection handle and filter out events that do not trigger queue processing. */
 	if (ble_evt->header.evt_id == BLE_GAP_EVT_DISCONNECTED) {
 		conn_handle = ble_evt->evt.gap_evt.conn_handle;
-	} else if ((ble_evt->header.evt_id >= BLE_GATTC_EVT_BASE) &&
-		   (ble_evt->header.evt_id <= BLE_GATTC_EVT_LAST)) {
+	} else if (IN_RANGE(ble_evt->header.evt_id, BLE_GATTC_EVT_BASE, BLE_GATTC_EVT_LAST)) {
 		conn_handle = ble_evt->evt.gattc_evt.conn_handle;
-	} else if ((ble_evt->header.evt_id >= BLE_GATTS_EVT_BASE) &&
-		   (ble_evt->header.evt_id <= BLE_GATTS_EVT_LAST)) {
+	} else if (IN_RANGE(ble_evt->header.evt_id, BLE_GATTS_EVT_BASE, BLE_GATTS_EVT_LAST)) {
 		conn_handle = ble_evt->evt.gatts_evt.conn_handle;
 	} else {
-		/* Irrelevant event. Do nothing. */
+		/* Irrelevant event for this module. Do nothing. */
 		return;
 	}
 
@@ -510,7 +471,7 @@ void ble_gq_on_ble_evt(const ble_evt_t *ble_evt, void *context)
 		return;
 	}
 
-	/* Perform operations on the queue. */
+	/* Perform operation on the queue. */
 	if (ble_evt->header.evt_id == BLE_GAP_EVT_DISCONNECTED) {
 		/* Remove connection from GATT queue registry on a disconnect event. */
 		gq->conn_handles[conn_id] = BLE_CONN_HANDLE_INVALID;
