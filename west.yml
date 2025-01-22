@@ -20,7 +20,21 @@ manifest:
       remote: lemrey
       path: nrf
       revision: baremetal
-      import: true
+      import:
+        name-allowlist:
+          - cmsis
+          - dragoon
+          - hal_nordic
+          - lz4
+          - mbedtls
+          - mcuboot
+          - nrfxlib
+          - picolibc
+          - oberon-psa-crypto
+          - qcbor
+          - segger
+          - tinycrypt
+          - zephyr
 
   self:
     path: nrf-lite
