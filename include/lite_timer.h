@@ -32,7 +32,7 @@ extern "C" {
 /**
  * @brief Minimum value of the timeout_ticks parameter of lite_timer_start().
  */
-#define LITE_TIMER_MIN_TIMEOUT_TICKS k_us_to_ticks_ceil32(MIN_TIMEOUT_US)
+#define LITE_TIMER_MIN_TIMEOUT_TICKS k_us_to_ticks_ceil32(LITE_TIMER_MIN_TIMEOUT_US)
 
 /**
  * @brief Convert milliseconds to timer ticks.
