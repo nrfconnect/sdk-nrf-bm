@@ -18,20 +18,14 @@
 	reg = <0x20003400 DT_SIZE_K(200)>;
 };
 
-&uart1 {
-	status = "okay";
+/* UART 0 */
+&uart0 {
+	status = "disabled";
 };
-
 
 / {
 	chosen {
 		zephyr,flash = &app_rom;
 		zephyr,sram = &sram0;
-		nordic,nus-uart = &uart1;
 	};
-};
-
-/* Lower the priority of the application RTC. Required when timeout handlers call softdevice svcs */
-&rtc1 {
-	interrupts = <0x11 3>;
 };
