@@ -8,6 +8,11 @@
 #include <ble_gatts.h>
 #include <ble_gattc.h>
 #include <nrf_error.h>
+#include <errno.h>
+#include <zephyr/sys/__assert.h>
+#include <zephyr/logging/log.h>
+
+LOG_MODULE_REGISTER(sd_tables, CONFIG_LOG_DEFAULT_LEVEL);
 
 const char *sd_evt_tostr(int evt)
 {
@@ -63,7 +68,7 @@ const char *sd_evt_tostr(int evt)
 	}
 }
 
-const char *nrf_error_tostr(int err)
+const char *sd_error_tostr(int err)
 {
 	switch (err) {
 	case NRF_SUCCESS:
@@ -106,7 +111,89 @@ const char *nrf_error_tostr(int err)
 		return "NRF_ERROR_CONN_COUNT";
 	case NRF_ERROR_RESOURCES:
 		return "NRF_ERROR_RESOURCES";
+
+	/* BLE errors */
+	case BLE_ERROR_NOT_ENABLED:
+		return "BLE_ERROR_NOT_ENABLED";
+	case BLE_ERROR_INVALID_CONN_HANDLE:
+		return "BLE_ERROR_INVALID_CONN_HANDLE";
+	case BLE_ERROR_INVALID_ATTR_HANDLE:
+		return "BLE_ERROR_INVALID_ATTR_HANDLE";
+	case BLE_ERROR_INVALID_ADV_HANDLE:
+		return "BLE_ERROR_INVALID_ADV_HANDLE";
+	case BLE_ERROR_INVALID_ROLE:
+		return "BLE_ERROR_INVALID_ROLE";
+	case BLE_ERROR_BLOCKED_BY_OTHER_LINKS:
+		return "BLE_ERROR_BLOCKED_BY_OTHER_LINKS";
+
 	default:
 		return "unknown";
 	}
+}
+
+const int sd_error_to_errno(int sd_error)
+{
+	LOG_DBG("SoftDevice error %d (%s)", sd_error, sd_error_tostr(sd_error));
+	switch (sd_error) {
+	case NRF_SUCCESS:
+		return 0;
+	case NRF_ERROR_SVC_HANDLER_MISSING:
+		return -EXDEV;
+	case NRF_ERROR_SOFTDEVICE_NOT_ENABLED:
+		return -ENOSYS;
+	case NRF_ERROR_INTERNAL:
+		return -EIO;
+	case NRF_ERROR_NO_MEM:
+		return -ENOMEM;
+	case NRF_ERROR_NOT_FOUND:
+		return -EBADF;
+	case NRF_ERROR_NOT_SUPPORTED:
+		return -ENOTSUP;
+	case NRF_ERROR_INVALID_PARAM:
+		return -EINVAL;
+	case NRF_ERROR_INVALID_STATE:
+		return -EPIPE;
+	case NRF_ERROR_INVALID_LENGTH:
+		return -ERANGE;
+	case NRF_ERROR_INVALID_FLAGS:
+		return -EPROTOTYPE;
+	case NRF_ERROR_INVALID_DATA:
+		return -EBADMSG;
+	case NRF_ERROR_DATA_SIZE:
+		return -EMSGSIZE;
+	case NRF_ERROR_TIMEOUT:
+		return -ETIMEDOUT;
+	case NRF_ERROR_NULL:
+		return -EFAULT;
+	case NRF_ERROR_FORBIDDEN:
+		return -EPERM;
+	case NRF_ERROR_INVALID_ADDR:
+		return -EADDRNOTAVAIL;
+	case NRF_ERROR_BUSY:
+		return -EBUSY;
+	case NRF_ERROR_CONN_COUNT:
+		return -EMLINK;
+	case NRF_ERROR_RESOURCES:
+		return -EAGAIN;
+
+	/* BLE errors */
+	case BLE_ERROR_NOT_ENABLED:
+		return -ESRCH;
+	case BLE_ERROR_INVALID_CONN_HANDLE:
+		return -ENOTCONN;
+	case BLE_ERROR_INVALID_ATTR_HANDLE:
+		return -ENOENT;
+	case BLE_ERROR_INVALID_ADV_HANDLE:
+		return -EINVAL; /* TODO duplicate */
+	case BLE_ERROR_INVALID_ROLE:
+		return -ENODEV;
+	case BLE_ERROR_BLOCKED_BY_OTHER_LINKS:
+		return -EWOULDBLOCK; /* TODO duplicates EAGAIN */
+	default:
+		break;
+	}
+
+	__ASSERT(false, "Unknown sd error %d", sd_error);
+	LOG_ERR("SoftDevice returned error %d, translated to -EIO", sd_error);
+	return -EIO; /* Bad error */
 }
