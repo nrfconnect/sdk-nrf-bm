@@ -1,0 +1,14 @@
+# Clear dependencies for BLE_BMS and enable it to allow
+# testing the features without enabling the library.
+config BLE_BMS
+	default y
+
+# Redefine Kconfigs used by the tested module that is defined in
+# other modules we do not want to enable.
+config BLE_QWR_MAX_ATTR
+	default 1
+
+config NRF_SDH_BLE_TOTAL_LINK_COUNT
+	default 1
+
+source "Kconfig.zephyr"
