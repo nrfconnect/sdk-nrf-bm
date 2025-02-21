@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 rsource "ble_bas/Kconfig"
+rsource "ble_bms/Kconfig"
 rsource "ble_cgms/Kconfig"
 rsource "ble_dis/Kconfig"
 rsource "ble_hrs/Kconfig"
