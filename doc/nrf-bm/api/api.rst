@@ -191,6 +191,15 @@ Battery Service
    :inner:
    :members:
 
+.. _api_ble_bms:
+
+Bond Management Service
+=======================
+
+.. doxygengroup:: ble_bms
+   :inner:
+   :members:
+
 .. _api_ble_cgms:
 
 Continuous Glucose Monitoring Service
