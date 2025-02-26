@@ -18,6 +18,9 @@ LOG_MODULE_REGISTER(lite_buttons, CONFIG_LITE_BUTTONS_LOG_LEVEL);
 #include <stdint.h>
 #include <nrf.h>
 
+#if defined(CONFIG_SOFTDEVICE)
+#include <nrf_nvic.h>
+#else
 static uint32_t inside_critical_section;
 
 static void lite_irq_disable(void)
@@ -33,6 +36,7 @@ static void lite_irq_enable(void)
 		__enable_irq();
 	}
 }
+#endif
 
 static void lite_critical_section_enter(uint8_t *nested)
 {
@@ -60,7 +64,7 @@ static void lite_critical_section_exit(uint8_t nested)
  *       CRITICAL_SECTION_EXIT() for each call to CRITICAL_SECTION_ENTER(), and they must be located
  *       in the same scope.
  */
-#ifdef SOFTDEVICE_PRESENT
+#if defined(CONFIG_SOFTDEVICE)
 #define LITE_CRITICAL_SECTION_ENTER()                                                              \
 	{                                                                                          \
 		uint8_t __CS_NESTED = 0;                                                           \
@@ -75,7 +79,7 @@ static void lite_critical_section_exit(uint8_t nested)
  *       CRITICAL_SECTION_EXIT() for each call to CRITICAL_SECTION_ENTER(), and they must be located
  *       in the same scope.
  */
-#ifdef SOFTDEVICE_PRESENT
+#if defined(CONFIG_SOFTDEVICE)
 #define LITE_CRITICAL_SECTION_EXIT()                                                               \
 		lite_critical_section_exit(__CS_NESTED);                                           \
 	}
