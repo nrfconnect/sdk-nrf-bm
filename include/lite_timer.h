@@ -40,6 +40,11 @@ extern "C" {
 #define LITE_TIMER_MS_TO_TICKS(ms) k_ms_to_ticks_floor32(ms)
 
 /**
+ * @brief Convert microseconds to timer ticks.
+ */
+#define LITE_TIMER_US_TO_TICKS(us) k_us_to_ticks_floor32(us)
+
+/**
  * @brief Timer modes.
  */
 enum lite_timer_mode {
