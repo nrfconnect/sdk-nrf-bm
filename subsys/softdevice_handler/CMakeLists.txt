@@ -10,6 +10,17 @@ zephyr_library_sources(
   irq_connect.c
 )
 
+if (CONFIG_SOFTDEVICE_S115)
+  zephyr_library_sources(irq_forward.s)
+  # Suppress the swap_helper.S file so that z_arm_svc can be defined manually
+  set(cortex_m_dir ${ZEPHYR_BASE}/arch/arm/core/cortex_m)
+  set_property(SOURCE ${cortex_m_dir}/swap_helper.S
+               DIRECTORY ${cortex_m_dir}
+               PROPERTY HEADER_FILE_ONLY ON)
+
+  target_link_options(app PUBLIC "-Wl,--defsym=z_arm_svc=SVC_Handler")
+endif()
+
 if (CONFIG_NRF_SDH_SOC)
   zephyr_library_sources(nrf_sdh_soc.c)
 endif()
