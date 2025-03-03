@@ -38,6 +38,10 @@ int lite_timer_start(struct lite_timer *timer, uint32_t timeout_ticks, void *con
 		return -EFAULT;
 	}
 
+	if (timeout_ticks < LITE_TIMER_MIN_TIMEOUT_TICKS) {
+		return -EINVAL;
+	}
+
 	k_timeout_t duration = { .ticks = timeout_ticks };
 	k_timeout_t period = (timer->mode == LITE_TIMER_MODE_SINGLE_SHOT) ? K_NO_WAIT : duration;
 

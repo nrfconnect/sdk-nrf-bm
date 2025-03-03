@@ -92,6 +92,7 @@ int lite_timer_init(struct lite_timer *timer, enum lite_timer_mode mode,
  *
  * @retval 0 On success.
  * @retval -EFAULT If @p timer is @c NULL.
+ * @retval -EINVAL If @p timeout_ticks is less than @ref LITE_TIMER_MIN_TIMEOUT_TICKS.
  */
 int lite_timer_start(struct lite_timer *timer, uint32_t timeout_ticks, void *context);
 
