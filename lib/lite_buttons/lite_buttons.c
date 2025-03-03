@@ -111,9 +111,7 @@ static void lite_critical_section_exit(uint8_t nested)
  * |  0    | IDLE             | IDLE                   |
  * |  1    | IDLE             | PRESS_ARMED            |
  * |  0    | PRESS_ARMED      | IDLE                   |
- * |  1    | PRESS_ARMED      | PRESS_DETECTED         |
- * |  1    | PRESS_DETECTED   | PRESSED (push event)   |
- * |  0    | PRESS_DETECTED   | PRESS_ARMED            |
+ * |  1    | PRESS_ARMED      | PRESSED (push event)   |
  * |  0    | PRESSED          | RELEASE_DETECTED       |
  * |  1    | PRESSED          | PRESSED                |
  * |  0    | RELEASE_DETECTED | IDLE (release event)   |
@@ -124,7 +122,6 @@ static void lite_critical_section_exit(uint8_t nested)
 enum button_state {
 	BUTTON_IDLE,
 	BUTTON_PRESS_ARMED,
-	BUTTON_PRESS_DETECTED,
 	BUTTON_PRESSED,
 	BUTTON_RELEASE_DETECTED
 };
@@ -195,39 +192,34 @@ static void evt_handle(uint8_t pin, uint8_t value)
 			global.pin_active |= 1ULL << pin;
 			LITE_CRITICAL_SECTION_EXIT();
 		} else {
-			/* stay in IDLE */
+			/* Stay in BUTTON_IDLE. */
 		}
 		break;
 	case BUTTON_PRESS_ARMED:
-		state_set(pin, value ? BUTTON_PRESS_DETECTED : BUTTON_IDLE);
 		LOG_DBG("Pin %d %s -> %s", pin, STRINGIFY(BUTTON_PRESS_ARMED),
-			value ? STRINGIFY(BUTTON_PRESS_DETECTED) : STRINGIFY(BUTTON_IDLE));
-		if (value == 0) {
+			value ? STRINGIFY(BUTTON_PRESSED) : STRINGIFY(BUTTON_IDLE));
+		if (value) {
+			state_set(pin, BUTTON_PRESSED);
+			user_event(pin, LITE_BUTTONS_PRESS);
+		} else {
+			state_set(pin, BUTTON_IDLE);
 			LITE_CRITICAL_SECTION_ENTER();
 			global.pin_active &= ~(1ULL << pin);
 			LITE_CRITICAL_SECTION_EXIT();
 		}
 		break;
-	case BUTTON_PRESS_DETECTED:
-		if (value) {
-			state_set(pin, BUTTON_PRESSED);
-			user_event(pin, LITE_BUTTONS_PRESS);
-		} else {
-			state_set(pin, BUTTON_PRESS_ARMED);
-		}
-		LOG_DBG("Pin %d %s -> %s", pin, STRINGIFY(BUTTON_PRESS_DETECTED),
-			value ? STRINGIFY(BUTTON_PRESSED) : STRINGIFY(BUTTON_PRESS_ARMED));
-		break;
 	case BUTTON_PRESSED:
-		if (value == 0) {
-			state_set(pin, BUTTON_RELEASE_DETECTED);
+		if (value) {
+			/* Stay in BUTTON_PRESSED. */
+		} else {
 			LOG_DBG("Pin %d %s -> %s", pin, STRINGIFY(BUTTON_PRESSED),
 				STRINGIFY(BUTTON_RELEASE_DETECTED));
-		} else {
-			/* stay in pressed */
+			state_set(pin, BUTTON_RELEASE_DETECTED);
 		}
 		break;
 	case BUTTON_RELEASE_DETECTED:
+		LOG_DBG("Pin %d %s -> %s", pin, STRINGIFY(BUTTON_RELEASE_DETECTED),
+			value ? STRINGIFY(BUTTON_PRESSED) : STRINGIFY(BUTTON_IDLE));
 		if (value) {
 			state_set(pin, BUTTON_PRESSED);
 		} else {
@@ -237,8 +229,6 @@ static void evt_handle(uint8_t pin, uint8_t value)
 			global.pin_active &= ~(1ULL << pin);
 			LITE_CRITICAL_SECTION_EXIT();
 		}
-		LOG_DBG("Pin %d %s -> %s", pin, STRINGIFY(BUTTON_RELEASE_DETECTED),
-			value ? STRINGIFY(BUTTON_PRESSED) : STRINGIFY(BUTTON_IDLE));
 		break;
 	}
 }
@@ -247,8 +237,8 @@ static void timer_start(void)
 {
 	int err;
 
-	/* Timer needs to trigger three times before the button is detected as pressed. */
-	err = lite_timer_start(&global.timer, LITE_TIMER_US_TO_TICKS(global.detection_delay / 3),
+	/* Timer needs to trigger two times before the button is detected as pressed/released. */
+	err = lite_timer_start(&global.timer, LITE_TIMER_US_TO_TICKS(global.detection_delay / 2),
 			       NULL);
 	if (err) {
 		LOG_WRN("Failed to start app_timer (err:%d)", err);
@@ -324,8 +314,8 @@ int lite_buttons_init(struct lite_buttons_config const *configs, uint8_t num_con
 		return -EINVAL;
 	}
 
-	/* Timer needs to trigger three times before the button is detected as pressed. */
-	if (LITE_TIMER_US_TO_TICKS(detection_delay) < 3 * LITE_TIMER_MIN_TIMEOUT_TICKS) {
+	/* Timer needs to trigger two times before the button is detected as pressed/released. */
+	if (LITE_TIMER_US_TO_TICKS(detection_delay) < 2 * LITE_TIMER_MIN_TIMEOUT_TICKS) {
 		return -EINVAL;
 	}
 
