@@ -247,7 +247,9 @@ static void timer_start(void)
 {
 	int err;
 
-	err = lite_timer_start(&global.timer, global.detection_delay / 2, NULL);
+	/* Timer needs to trigger three times before the button is detected as pressed. */
+	err = lite_timer_start(&global.timer, LITE_TIMER_US_TO_TICKS(global.detection_delay / 3),
+			       NULL);
 	if (err) {
 		LOG_WRN("Failed to start app_timer (err:%d)", err);
 	}
@@ -322,8 +324,8 @@ int lite_buttons_init(struct lite_buttons_config const *configs, uint8_t num_con
 		return -EINVAL;
 	}
 
-	/* todo: define limit somewhere (lite_timer?). */
-	if (detection_delay < 2 * LITE_TIMER_MIN_TIMEOUT_US) {
+	/* Timer needs to trigger three times before the button is detected as pressed. */
+	if (LITE_TIMER_US_TO_TICKS(detection_delay) < 3 * LITE_TIMER_MIN_TIMEOUT_TICKS) {
 		return -EINVAL;
 	}
 

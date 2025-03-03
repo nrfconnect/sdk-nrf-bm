@@ -24,11 +24,20 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include <lite_timer.h>
 #include <nrfx_gpiote.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**
+ * @brief Minimum detection delay in microseconds.
+ *
+ * Value will depend on the value of CONFIG_SYS_CLOCK_TICKS_PER_SEC.
+ */
+#define LITE_BUTTONS_DETECTION_DELAY_MIN_US                                                        \
+	(3*k_ticks_to_us_ceil32(MAX(1, LITE_TIMER_MIN_TIMEOUT_TICKS)))
 
 enum lite_buttons_event_type {
 	/* Indicates that a button is released. */
@@ -89,8 +98,9 @@ struct lite_buttons_config {
  *
  * @param[in] configs Array of button configurations to be used.
  * @param[in] num_configs Number of button configurations.
- * @param[in] detection_delay Delay (in microseconds) from a GPIOTE event until a button is reported
- *                            as pressed. Must be higher than twice @ref LITE_TIMER_MIN_TIMEOUT_US.
+ * @param[in] detection_delay Delay (in microseconds) from a GPIOTE event until a button
+ *                            is reported as pressed. Must be higher than
+ *                            @ref LITE_BUTTONS_DETECTION_DELAY_MIN_US.
  *
  * @retval 0 on success.
  * @retval -NRF_EPERM If the lite_buttons library is already initialized.

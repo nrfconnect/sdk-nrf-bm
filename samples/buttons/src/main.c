@@ -19,8 +19,6 @@ LOG_MODULE_REGISTER(buttons_sample, LOG_LEVEL_INF);
 #define PIN_BTN_2 24
 #define PIN_BTN_3 25
 
-#define DETECTION_TIME_US (2 * LITE_TIMER_MIN_TIMEOUT_US + 1)
-
 static volatile bool running;
 
 static void button_handler(uint8_t pin, uint8_t action)
@@ -68,7 +66,7 @@ int main(void)
 		},
 	};
 
-	err = lite_buttons_init(configs, ARRAY_SIZE(configs), DETECTION_TIME_US);
+	err = lite_buttons_init(configs, ARRAY_SIZE(configs), LITE_BUTTONS_DETECTION_DELAY_MIN_US);
 	if (err) {
 		LOG_ERR("lite_buttons_init error: %d", err);
 		return err;
@@ -81,8 +79,8 @@ int main(void)
 	}
 
 	while (running) {
-		/* Highly responsive to detect quickly when to stop running. */
-		k_busy_wait(DETECTION_TIME_US);
+		/* Sleep */
+		__WFE();
 	}
 
 	err = lite_buttons_deinit();
