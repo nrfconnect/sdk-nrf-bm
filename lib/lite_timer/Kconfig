@@ -12,6 +12,15 @@ menuconfig LITE_TIMER
 
 if LITE_TIMER
 
+config LITE_TIMER_IRQ_PRIO
+	int "Timer interrupt priority (NVIC level)"
+	range 0 8
+	default 5 if SOFTDEVICE
+	default 3
+	help
+	  Interrupt priority level must be greater than 4 (softdevice low priority)
+	  when softdevice is used.
+
 module=LITE_TIMER
 module-dep=LOG
 module-str=Lite Timer

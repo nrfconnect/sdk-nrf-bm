@@ -25,8 +25,3 @@
 		zephyr,sram = &sram0;
 	};
 };
-
-/* Lower the priority of the application RTC. Required when timeout handlers call softdevice svcs */
-&rtc1 {
-	interrupts = <0x11 3>;
-};
