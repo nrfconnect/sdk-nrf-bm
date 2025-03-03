@@ -55,18 +55,18 @@ int nrf_sdh_ble_default_cfg_set(uint8_t conn_cfg_tag)
 
 	/* Configure the connection roles. */
 	memset(&ble_cfg, 0, sizeof(ble_cfg));
-	if (IS_ENABLED(CONFIG_SOFTDEVICE_PERIPHERAL)) {
+#if CONFIG_SOFTDEVICE_PERIPHERAL
 		ble_cfg.gap_cfg.role_count_cfg.periph_role_count =
 			CONFIG_NRF_SDH_BLE_PERIPHERAL_LINK_COUNT;
-	}
+#endif
 
-	if (IS_ENABLED(CONFIG_SOFTDEVICE_CENTRAL)) {
+#if CONFIG_SOFTDEVICE_CENTRAL
 		ble_cfg.gap_cfg.role_count_cfg.central_role_count =
 			CONFIG_NRF_SDH_BLE_CENTRAL_LINK_COUNT;
 		ble_cfg.gap_cfg.role_count_cfg.central_sec_count =
 			MIN(CONFIG_NRF_SDH_BLE_CENTRAL_LINK_COUNT,
 			    BLE_GAP_ROLE_COUNT_CENTRAL_SEC_DEFAULT);
-	}
+#endif
 
 	err = sd_ble_cfg_set(BLE_GAP_CFG_ROLE_COUNT, &ble_cfg, app_ram_start);
 	if (err) {
