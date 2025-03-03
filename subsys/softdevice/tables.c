@@ -36,8 +36,10 @@ const char *sd_evt_tostr(int evt)
 		return "BLE_GAP_EVT_CONN_SEC_UPDATE";
 	case BLE_GAP_EVT_TIMEOUT:
 		return "BLE_GAP_EVT_TIMEOUT";
+#if CONFIG_SOFTDEVICE_S140
 	case BLE_GAP_EVT_RSSI_CHANGED:
 		return "BLE_GAP_EVT_RSSI_CHANGED";
+#endif
 	case BLE_GAP_EVT_ADV_REPORT:
 		return "BLE_GAP_EVT_ADV_REPORT";
 	case BLE_GAP_EVT_SEC_REQUEST:

@@ -7,4 +7,8 @@ if (CONFIG_SOFTDEVICE_S140)
   zephyr_include_directories(${NRF_LITE_DIR}/include/s140/)
 endif()
 
+if (CONFIG_SOFTDEVICE_SD115)
+  zephyr_include_directories(${NRF_LITE_DIR}/include/sd115/)
+endif()
+
 zephyr_sources(tables.c)

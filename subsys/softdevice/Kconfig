@@ -6,7 +6,7 @@
 menu "SoftDevice"
 
 config SOFTDEVICE
-	bool
+	bool "SoftDevice is present"
 	depends on ZERO_LATENCY_IRQS
 	depends on !CLOCK_CONTROL
 
@@ -15,19 +15,24 @@ config SOFTDEVICE_PERIPHERAL
 config SOFTDEVICE_CENTRAL
 	bool
 
-choice SOFTDEVICE_CHOICE
-	prompt "SoftDevice"
-	optional
+if SOFTDEVICE
 
 config SOFTDEVICE_S140
-	bool "S140"
-	select SOFTDEVICE
+	bool
+	depends on SOC_SERIES_NRF52X
 	select SOFTDEVICE_PERIPHERAL
 	select SOFTDEVICE_CENTRAL
+	default y
 
-endchoice
+config SOFTDEVICE_SD115
+	bool
+	depends on SOC_SERIES_NRF54LX
+	select SOFTDEVICE_PERIPHERAL
+	default y
 
 config SOFTDEVICE_STRING_TABLES
 	bool "Compile tables for stringified events and errors"
+
+endif
 
 endmenu
