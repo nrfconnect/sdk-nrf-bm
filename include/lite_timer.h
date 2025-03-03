@@ -30,14 +30,14 @@ extern "C" {
 #define LITE_TIMER_MIN_TIMEOUT_US (uint32_t)((5 * 1000000) / 32768)
 
 /**
- * @brief Minimum value of the timeout_ticks parameter of lite_timer_start().
+ * @brief Minimum value of the timeout_ticks parameter of @ref lite_timer_start.
  */
 #define LITE_TIMER_MIN_TIMEOUT_TICKS k_us_to_ticks_ceil32(LITE_TIMER_MIN_TIMEOUT_US)
 
 /**
  * @brief Convert milliseconds to timer ticks.
  */
-#define LITE_TIMER_MS_TO_TICKS(MS) k_ms_to_ticks_floor32(MS)
+#define LITE_TIMER_MS_TO_TICKS(ms) k_ms_to_ticks_floor32(ms)
 
 /**
  * @brief Timer modes.
@@ -77,7 +77,7 @@ struct lite_timer {
  * @param timeout_handler Function to be executed when time timer expires.
  *
  * @retval 0 On success.
- * @retval -EFAULT If If @p timer or @p timeout_handler is @c NULL.
+ * @retval -EFAULT If @p timer or @p timeout_handler is @c NULL.
  */
 int lite_timer_init(struct lite_timer *timer, enum lite_timer_mode mode,
 		    lite_timer_timeout_handler_t timeout_handler);
@@ -91,7 +91,7 @@ int lite_timer_init(struct lite_timer *timer, enum lite_timer_mode mode,
  *                when the timer expires.
  *
  * @retval 0 On success.
- * @retval -EFAULT If If @p timer is @c NULL.
+ * @retval -EFAULT If @p timer is @c NULL.
  */
 int lite_timer_start(struct lite_timer *timer, uint32_t timeout_ticks, void *context);
 
