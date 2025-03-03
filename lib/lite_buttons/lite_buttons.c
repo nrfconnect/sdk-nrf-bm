@@ -202,6 +202,11 @@ static void evt_handle(uint8_t pin, uint8_t value)
 		state_set(pin, value ? BUTTON_PRESS_DETECTED : BUTTON_IDLE);
 		LOG_DBG("Pin %d %s -> %s", pin, STRINGIFY(BUTTON_PRESS_ARMED),
 			value ? STRINGIFY(BUTTON_PRESS_DETECTED) : STRINGIFY(BUTTON_IDLE));
+		if (value == 0) {
+			LITE_CRITICAL_SECTION_ENTER();
+			global.pin_active &= ~(1ULL << pin);
+			LITE_CRITICAL_SECTION_EXIT();
+		}
 		break;
 	case BUTTON_PRESS_DETECTED:
 		if (value) {
