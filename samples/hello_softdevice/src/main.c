@@ -46,16 +46,6 @@ int main(void)
 
 	printk("SoftDevice enabled\n");
 
-#define DEST 0x3e000
-#define word_size(x) ((sizeof((x)) + 3) % sizeof(uint32_t))
-	__aligned(4) uint32_t dummy = 0xdeadbeef;
-
-	err = sd_flash_write((void *)DEST, &dummy, word_size(dummy));
-	if (err) {
-		printk("Error %d", err);
-		return -1;
-	}
-
 	nrf_sdh_ble_app_ram_start_get(&ram_start);
 
 	err = nrf_sdh_ble_default_cfg_set(CONN_TAG);
@@ -72,7 +62,7 @@ int main(void)
 
 	printk("Bluetooth is enabled!\n");
 
-	k_busy_wait(1 * USEC_PER_SEC);
+	k_busy_wait(2 * USEC_PER_SEC);
 
 	err = nrf_sdh_disable_request();
 	if (err) {
