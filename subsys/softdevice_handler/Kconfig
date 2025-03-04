@@ -66,11 +66,11 @@ config NRF_SDH_CLOCK_LF_ACCURACY
 if NRF_SDH_BLE
 
 config NRF_SDH_BLE_PERIPHERAL_LINK_COUNT
-	int "Maximum number of peripheral links"
+	int "Maximum number of peripheral links" if SOFTDEVICE_PERIPHERAL
 	default 1
 
 config NRF_SDH_BLE_CENTRAL_LINK_COUNT
-	int "Maximum number of central links"
+	int "Maximum number of central links" if SOFTDEVICE_CENTRAL
 	default 0
 
 config NRF_SDH_BLE_TOTAL_LINK_COUNT
