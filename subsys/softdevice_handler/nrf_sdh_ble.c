@@ -12,18 +12,11 @@
 #include <zephyr/logging/log.h>
 
 #define RAM_START 0x20000000
+#define APP_RAM_START DT_REG_ADDR(DT_CHOSEN(zephyr_sram))
 
 LOG_MODULE_DECLARE(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
 
 const char *sd_evt_tostr(int evt);
-
-static uint32_t ram_end_address_get(void)
-{
-	/** TODO: rework for nrf54 */
-	const uint32_t ram_total_size = NRF_FICR->INFO.RAM * 1024;
-
-	return RAM_START + ram_total_size;
-}
 
 int nrf_sdh_ble_app_ram_start_get(uint32_t *app_ram_start)
 {
@@ -31,7 +24,7 @@ int nrf_sdh_ble_app_ram_start_get(uint32_t *app_ram_start)
 		return -EFAULT;
 	}
 
-	*app_ram_start = DT_REG_ADDR(DT_CHOSEN(zephyr_sram));
+	*app_ram_start = APP_RAM_START;
 
 	return 0;
 }
@@ -40,12 +33,8 @@ int nrf_sdh_ble_default_cfg_set(uint8_t conn_cfg_tag)
 {
 	int err;
 	ble_cfg_t ble_cfg;
-	uint32_t app_ram_start;
 
-	err = nrf_sdh_ble_app_ram_start_get(&app_ram_start);
-	if (err) {
-		return err;
-	}
+	const uint32_t app_ram_start = APP_RAM_START;
 
 	/* Overwrite some of the default settings of the BLE stack.
 	 * If any of the calls to sd_ble_cfg_set() fail, log the error but carry on so that
@@ -141,13 +130,8 @@ int nrf_sdh_ble_enable(uint32_t app_ram_start)
 	if (app_ram_minimum > app_ram_start_link) {
 		LOG_ERR("Insufficient RAM allocated for the SoftDevice (have %#x, need %#x)",
 			app_ram_start_link, app_ram_minimum);
-		LOG_ERR("Maximum RAM size for application is %#x",
-			ram_end_address_get() - (app_ram_minimum));
-	} else {
-		if (app_ram_minimum != app_ram_start_link) {
-			LOG_DBG("RAM start location can be adjusted to %#x, size to %#x",
-				app_ram_minimum, ram_end_address_get() - app_ram_minimum);
-		}
+	} else if (app_ram_minimum != app_ram_start_link) {
+		LOG_DBG("RAM start location can be adjusted to %#x", app_ram_minimum);
 	}
 
 	if (err) {
