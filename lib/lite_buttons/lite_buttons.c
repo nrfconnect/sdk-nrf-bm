@@ -184,8 +184,9 @@ static void evt_handle(uint8_t pin, uint8_t value)
 	switch (state_get(pin)) {
 	case BUTTON_IDLE:
 		if (value) {
-			LOG_DBG("Pin %d idle->armed", pin);
 			state_set(pin, BUTTON_PRESS_ARMED);
+			LOG_DBG("Pin %d %s -> %s", pin, STRINGIFY(BUTTON_IDLE),
+				STRINGIFY(BUTTON_PRESS_ARMED));
 			LITE_CRITICAL_SECTION_ENTER();
 			global.pin_active |= 1ULL << pin;
 			LITE_CRITICAL_SECTION_EXIT();
@@ -195,7 +196,8 @@ static void evt_handle(uint8_t pin, uint8_t value)
 		break;
 	case BUTTON_PRESS_ARMED:
 		state_set(pin, value ? BUTTON_PRESS_DETECTED : BUTTON_IDLE);
-		LOG_DBG("Pin %d armed->%s", pin, value ? "detected" : "idle");
+		LOG_DBG("Pin %d %s -> %s", pin, STRINGIFY(BUTTON_PRESS_ARMED),
+			value ? STRINGIFY(BUTTON_PRESS_DETECTED) : STRINGIFY(BUTTON_IDLE));
 		break;
 	case BUTTON_PRESS_DETECTED:
 		if (value) {
@@ -204,12 +206,14 @@ static void evt_handle(uint8_t pin, uint8_t value)
 		} else {
 			state_set(pin, BUTTON_PRESS_ARMED);
 		}
-		LOG_DBG("Pin %d detected->%s", pin, value ? "pressed" : "armed");
+		LOG_DBG("Pin %d %s -> %s", pin, STRINGIFY(BUTTON_PRESS_DETECTED),
+			value ? STRINGIFY(BUTTON_PRESSED) : STRINGIFY(BUTTON_PRESS_ARMED));
 		break;
 	case BUTTON_PRESSED:
 		if (value == 0) {
-			LOG_DBG("Pin %d pressed->release_detected", pin);
 			state_set(pin, BUTTON_RELEASE_DETECTED);
+			LOG_DBG("Pin %d %s -> %s", pin, STRINGIFY(BUTTON_PRESSED),
+				STRINGIFY(BUTTON_RELEASE_DETECTED));
 		} else {
 			/* stay in pressed */
 		}
@@ -224,7 +228,8 @@ static void evt_handle(uint8_t pin, uint8_t value)
 			global.pin_active &= ~(1ULL << pin);
 			LITE_CRITICAL_SECTION_EXIT();
 		}
-		LOG_DBG("Pin %d release_detected->%s", pin, value ? "pressed" : "idle");
+		LOG_DBG("Pin %d %s -> %s", pin, STRINGIFY(BUTTON_RELEASE_DETECTED),
+			value ? STRINGIFY(BUTTON_PRESSED) : STRINGIFY(BUTTON_IDLE));
 		break;
 	}
 }
