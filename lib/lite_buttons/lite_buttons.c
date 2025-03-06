@@ -105,18 +105,18 @@ static void lite_critical_section_exit(uint8_t nested)
  * State transitions are based on the sampled values of the buttons.
  * The state machine has the following transitions:
  *
- * -----------------------------------------------------
- * | value | current state    | new state              |
- * |---------------------------------------------------|
- * |  0    | IDLE             | IDLE                   |
- * |  1    | IDLE             | PRESS_ARMED            |
- * |  0    | PRESS_ARMED      | IDLE                   |
- * |  1    | PRESS_ARMED      | PRESSED (push event)   |
- * |  0    | PRESSED          | RELEASE_DETECTED       |
- * |  1    | PRESSED          | PRESSED                |
- * |  0    | RELEASE_DETECTED | IDLE (release event)   |
- * |  1    | RELEASE_DETECTED | PRESSED                |
- * -----------------------------------------------------
+ * -----------------------------------------------------------------
+ * | value (is_active) | current state    | new state              |
+ * |---------------------------------------------------------------|
+ * |         0         | IDLE             | IDLE                   |
+ * |         1         | IDLE             | PRESS_ARMED            |
+ * |         0         | PRESS_ARMED      | IDLE                   |
+ * |         1         | PRESS_ARMED      | PRESSED (push event)   |
+ * |         0         | PRESSED          | RELEASE_DETECTED       |
+ * |         1         | PRESSED          | PRESSED                |
+ * |         0         | RELEASE_DETECTED | IDLE (release event)   |
+ * |         1         | RELEASE_DETECTED | PRESSED                |
+ * -----------------------------------------------------------------
  *
  */
 enum button_state {
@@ -180,11 +180,11 @@ static void user_event(uint8_t pin, enum lite_buttons_event_type type)
 	}
 }
 
-static void evt_handle(uint8_t pin, uint8_t value)
+static void evt_handle(uint8_t pin, bool is_active)
 {
 	switch (state_get(pin)) {
 	case BUTTON_IDLE:
-		if (value) {
+		if (is_active) {
 			state_set(pin, BUTTON_PRESS_ARMED);
 			LOG_DBG("Pin %d %s -> %s", pin, STRINGIFY(BUTTON_IDLE),
 				STRINGIFY(BUTTON_PRESS_ARMED));
@@ -197,8 +197,8 @@ static void evt_handle(uint8_t pin, uint8_t value)
 		break;
 	case BUTTON_PRESS_ARMED:
 		LOG_DBG("Pin %d %s -> %s", pin, STRINGIFY(BUTTON_PRESS_ARMED),
-			value ? STRINGIFY(BUTTON_PRESSED) : STRINGIFY(BUTTON_IDLE));
-		if (value) {
+			is_active ? STRINGIFY(BUTTON_PRESSED) : STRINGIFY(BUTTON_IDLE));
+		if (is_active) {
 			state_set(pin, BUTTON_PRESSED);
 			user_event(pin, LITE_BUTTONS_PRESS);
 		} else {
@@ -209,7 +209,7 @@ static void evt_handle(uint8_t pin, uint8_t value)
 		}
 		break;
 	case BUTTON_PRESSED:
-		if (value) {
+		if (is_active) {
 			/* Stay in BUTTON_PRESSED. */
 		} else {
 			LOG_DBG("Pin %d %s -> %s", pin, STRINGIFY(BUTTON_PRESSED),
@@ -219,8 +219,8 @@ static void evt_handle(uint8_t pin, uint8_t value)
 		break;
 	case BUTTON_RELEASE_DETECTED:
 		LOG_DBG("Pin %d %s -> %s", pin, STRINGIFY(BUTTON_RELEASE_DETECTED),
-			value ? STRINGIFY(BUTTON_PRESSED) : STRINGIFY(BUTTON_IDLE));
-		if (value) {
+			is_active ? STRINGIFY(BUTTON_PRESSED) : STRINGIFY(BUTTON_IDLE));
+		if (is_active) {
 			state_set(pin, BUTTON_PRESSED);
 		} else {
 			state_set(pin, BUTTON_IDLE);
