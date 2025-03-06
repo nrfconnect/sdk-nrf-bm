@@ -137,7 +137,7 @@ struct lite_buttons_state {
 	uint8_t num_configs;
 	uint32_t detection_delay;
 	struct lite_timer timer;
-	uint8_t pin_states[NUM_PINS * BITS_PER_PIN / 8];
+	uint8_t pin_states[((NUM_PINS + 1) * BITS_PER_PIN) / 8];
 	uint64_t pin_active;
 };
 
