@@ -15,7 +15,10 @@ if LITE_BUTTONS
 
 config LITE_BUTTONS_NUM_PINS
 	int "Number of available pins for buttons"
-	default 32 if SOC_NRF52840
+	range 1 32 if SOC_SERIES_NRF52X
+	range 1 24 if SOC_SERIES_NRF54LX
+	default 32 if SOC_SERIES_NRF52X
+	default 24 if SOC_SERIES_NRF54LX
 
 module=LITE_BUTTONS
 module-dep=LOG
