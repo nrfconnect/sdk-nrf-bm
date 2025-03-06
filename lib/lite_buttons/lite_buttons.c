@@ -129,13 +129,13 @@ enum button_state {
 static const nrfx_gpiote_t gpio_instance = NRFX_GPIOTE_INSTANCE(GPIOTE_INST);
 
 struct lite_buttons_state {
-	bool is_init;
-	struct lite_buttons_config const *configs;
-	uint8_t num_configs;
+	uint32_t pin_active;
 	uint32_t detection_delay;
 	struct lite_timer timer;
+	struct lite_buttons_config const *configs;
+	uint8_t num_configs;
+	bool is_init;
 	uint8_t pin_states[((NUM_PINS + 1) * BITS_PER_PIN) / 8];
-	uint32_t pin_active;
 };
 
 static struct lite_buttons_state global;
