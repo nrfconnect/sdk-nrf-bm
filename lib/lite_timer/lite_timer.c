@@ -6,7 +6,10 @@
 
 #include <lite_timer.h>
 #include <zephyr/kernel.h>
+#include <zephyr/logging/log.h>
 #include <zephyr/sys/__assert.h>
+
+LOG_MODULE_REGISTER(lite_timer, CONFIG_LITE_TIMER_LOG_LEVEL);
 
 static void lite_timer_handler(struct k_timer *timer)
 {

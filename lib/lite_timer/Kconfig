@@ -9,3 +9,12 @@ menuconfig LITE_TIMER
 	help
 	  A library to create and use multiple timer instances
 	  based on a single RTC peripheral.
+
+if LITE_TIMER
+
+module=LITE_TIMER
+module-dep=LOG
+module-str=Lite Timer
+source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+
+endif # LITE_TIMER
