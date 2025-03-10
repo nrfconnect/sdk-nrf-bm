@@ -90,8 +90,12 @@ struct lite_buttons_config {
  *
  * @details This function will initialize the specified pins as buttons, and configure them.
  *
- * @note The @p configs configurations are referenced internally so it is the user's responsibility
- *       to take care of their lifetime.
+ * @note After this function returns, the @p configs configurations will still be referenced
+ *       internally by the library. It is the user's responsibility to ensure that the @p configs
+ *       configurations remain valid and exist until the end of the program or until
+ *       @ref lite_buttons_deinit is called.
+ *       If the @p configs configurations are altered or destroyed prematurely, it will result in
+ *       undefined behavior.
  *
  * @note The @ref lite_buttons_enable function must be called in order to enable the button
  *       detection.
