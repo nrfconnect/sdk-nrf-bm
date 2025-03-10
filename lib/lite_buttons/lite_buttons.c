@@ -314,6 +314,10 @@ int lite_buttons_init(struct lite_buttons_config const *configs, uint8_t num_con
 		return -EINVAL;
 	}
 
+	if (num_configs > CONFIG_LITE_BUTTONS_NUM_PINS) {
+		return -EINVAL;
+	}
+
 	/* Timer needs to trigger two times before the button is detected as pressed/released. */
 	if (LITE_TIMER_US_TO_TICKS(detection_delay) < 2 * LITE_TIMER_MIN_TIMEOUT_TICKS) {
 		return -EINVAL;
