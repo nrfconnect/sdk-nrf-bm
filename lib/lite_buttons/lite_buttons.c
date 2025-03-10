@@ -140,10 +140,10 @@ struct lite_buttons_state {
 
 static struct lite_buttons_state global;
 
-static enum button_state state_get(uint8_t pin)
+static enum button_state state_get(uint8_t pin_index)
 {
-	uint8_t pair_state = global.pin_states[pin >> 1];
-	uint8_t state = (pin & 0x1) ? (pair_state >> BITS_PER_PIN) : (pair_state & 0x0F);
+	uint8_t pair_state = global.pin_states[pin_index >> 1];
+	uint8_t state = (pin_index & 0x1) ? (pair_state >> BITS_PER_PIN) : (pair_state & 0x0F);
 
 	return (enum button_state)state;
 }
@@ -161,13 +161,13 @@ static struct lite_buttons_config const *button_get(uint8_t pin)
 	return NULL;
 }
 
-static void state_set(uint8_t pin, uint8_t state)
+static void state_set(uint8_t pin_index, uint8_t state)
 {
-	uint8_t mask = (pin & 1) ? 0x0F : 0xF0;
-	uint8_t state_mask = (pin & 1) ? ((uint8_t)state << BITS_PER_PIN) : (uint8_t)state;
+	uint8_t mask = (pin_index & 1) ? 0x0F : 0xF0;
+	uint8_t state_mask = (pin_index & 1) ? ((uint8_t)state << BITS_PER_PIN) : (uint8_t)state;
 
-	global.pin_states[pin >> 1] &= mask;
-	global.pin_states[pin >> 1] |= state_mask;
+	global.pin_states[pin_index >> 1] &= mask;
+	global.pin_states[pin_index >> 1] |= state_mask;
 }
 
 static void user_event(uint8_t pin, enum lite_buttons_event_type type)
@@ -180,16 +180,16 @@ static void user_event(uint8_t pin, enum lite_buttons_event_type type)
 	}
 }
 
-static void evt_handle(uint8_t pin, bool is_active)
+static void evt_handle(uint8_t pin, uint8_t index, bool is_active)
 {
-	switch (state_get(pin)) {
+	switch (state_get(index)) {
 	case BUTTON_IDLE:
 		if (is_active) {
-			state_set(pin, BUTTON_PRESS_ARMED);
+			state_set(index, BUTTON_PRESS_ARMED);
 			LOG_DBG("Pin %d %s -> %s", pin, STRINGIFY(BUTTON_IDLE),
 				STRINGIFY(BUTTON_PRESS_ARMED));
 			LITE_CRITICAL_SECTION_ENTER();
-			global.pin_active |= 1ULL << pin;
+			global.pin_active |= 1ULL << index;
 			LITE_CRITICAL_SECTION_EXIT();
 		} else {
 			/* Stay in BUTTON_IDLE. */
@@ -199,12 +199,12 @@ static void evt_handle(uint8_t pin, bool is_active)
 		LOG_DBG("Pin %d %s -> %s", pin, STRINGIFY(BUTTON_PRESS_ARMED),
 			is_active ? STRINGIFY(BUTTON_PRESSED) : STRINGIFY(BUTTON_IDLE));
 		if (is_active) {
-			state_set(pin, BUTTON_PRESSED);
+			state_set(index, BUTTON_PRESSED);
 			user_event(pin, LITE_BUTTONS_PRESS);
 		} else {
-			state_set(pin, BUTTON_IDLE);
+			state_set(index, BUTTON_IDLE);
 			LITE_CRITICAL_SECTION_ENTER();
-			global.pin_active &= ~(1ULL << pin);
+			global.pin_active &= ~(1ULL << index);
 			LITE_CRITICAL_SECTION_EXIT();
 		}
 		break;
@@ -214,19 +214,19 @@ static void evt_handle(uint8_t pin, bool is_active)
 		} else {
 			LOG_DBG("Pin %d %s -> %s", pin, STRINGIFY(BUTTON_PRESSED),
 				STRINGIFY(BUTTON_RELEASE_DETECTED));
-			state_set(pin, BUTTON_RELEASE_DETECTED);
+			state_set(index, BUTTON_RELEASE_DETECTED);
 		}
 		break;
 	case BUTTON_RELEASE_DETECTED:
 		LOG_DBG("Pin %d %s -> %s", pin, STRINGIFY(BUTTON_RELEASE_DETECTED),
 			is_active ? STRINGIFY(BUTTON_PRESSED) : STRINGIFY(BUTTON_IDLE));
 		if (is_active) {
-			state_set(pin, BUTTON_PRESSED);
+			state_set(index, BUTTON_PRESSED);
 		} else {
-			state_set(pin, BUTTON_IDLE);
+			state_set(index, BUTTON_IDLE);
 			user_event(pin, LITE_BUTTONS_RELEASE);
 			LITE_CRITICAL_SECTION_ENTER();
-			global.pin_active &= ~(1ULL << pin);
+			global.pin_active &= ~(1ULL << index);
 			LITE_CRITICAL_SECTION_EXIT();
 		}
 		break;
@@ -276,7 +276,7 @@ static void detection_delay_timeout_handler(void *ctx)
 		is_set = nrfx_gpiote_in_is_set(config->pin_number);
 		is_active = !((config->active_state == LITE_BUTTONS_ACTIVE_HIGH) ^ is_set);
 
-		evt_handle(config->pin_number, is_active);
+		evt_handle(config->pin_number, i, is_active);
 	}
 
 	if (global.pin_active) {
