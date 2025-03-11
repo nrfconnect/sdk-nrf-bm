@@ -13,11 +13,17 @@
 
 LOG_MODULE_REGISTER(buttons_sample, LOG_LEVEL_INF);
 
-/* Buttons #1-4 of the nRF52840 DK. */
-#define PIN_BTN_0 11
-#define PIN_BTN_1 12
-#define PIN_BTN_2 24
-#define PIN_BTN_3 25
+#if defined(CONFIG_SOC_SERIES_NRF52X)
+#define PIN_BTN_0 NRF_PIN_PORT_TO_PIN_NUMBER(11, 0)
+#define PIN_BTN_1 NRF_PIN_PORT_TO_PIN_NUMBER(12, 0)
+#define PIN_BTN_2 NRF_PIN_PORT_TO_PIN_NUMBER(24, 0)
+#define PIN_BTN_3 NRF_PIN_PORT_TO_PIN_NUMBER(25, 0)
+#elif defined(CONFIG_SOC_SERIES_NRF54LX)
+#define PIN_BTN_0 NRF_PIN_PORT_TO_PIN_NUMBER(13, 1)
+#define PIN_BTN_1 NRF_PIN_PORT_TO_PIN_NUMBER(9, 1)
+#define PIN_BTN_2 NRF_PIN_PORT_TO_PIN_NUMBER(8, 1)
+#define PIN_BTN_3 NRF_PIN_PORT_TO_PIN_NUMBER(4, 0)
+#endif
 
 static volatile bool running;
 

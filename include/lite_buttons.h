@@ -37,7 +37,7 @@ extern "C" {
  * Value will depend on the value of CONFIG_SYS_CLOCK_TICKS_PER_SEC.
  */
 #define LITE_BUTTONS_DETECTION_DELAY_MIN_US                                                        \
-	(2*k_ticks_to_us_ceil32(MAX(1, LITE_TIMER_MIN_TIMEOUT_TICKS)))
+	(2 * k_ticks_to_us_ceil32(MAX(1, LITE_TIMER_MIN_TIMEOUT_TICKS)))
 
 enum lite_buttons_event_type {
 	/* Indicates that a button is released. */

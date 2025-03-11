@@ -6,7 +6,6 @@
 
 menuconfig LITE_BUTTONS
 	bool "Buttons library"
-	depends on NRFX_GPIOTE0
 	depends on LITE_TIMER
 	help
 	  A library to manage buttons.
