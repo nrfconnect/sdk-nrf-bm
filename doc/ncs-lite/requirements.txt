@@ -1,0 +1,4 @@
+Sphinx
+sphinx_rtd_theme
+sphinx-tabs>=3.4
+sphinx-togglebutton

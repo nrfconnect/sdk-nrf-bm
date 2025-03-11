@@ -1,0 +1,9 @@
+.. |NCSL| replace:: nRF Connect SDK Lite
+.. |NCS| replace:: nRF Connect SDK
+
+.. ### Versions
+
+.. |ncs_release| replace:: v2.9.0
+.. |release| replace:: v0.1.0
+
+.. |jlink_ver| replace:: v8.10f
