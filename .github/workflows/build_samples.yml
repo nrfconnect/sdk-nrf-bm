@@ -12,7 +12,9 @@ on:
 jobs:
   build_samples_job:
     name: Build all samples within the project
-    runs-on: ubuntu-22.04
+    runs-on:
+      - runs-on=${{ github.run_id }}
+      - runner=4cpu-linux-x64
     # Keep aligned with target NCS version
     container: ghcr.io/nrfconnect/sdk-nrf-toolchain:v2.7.99
     defaults:
