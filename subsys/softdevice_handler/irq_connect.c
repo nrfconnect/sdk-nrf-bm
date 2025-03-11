@@ -28,7 +28,7 @@ static int irq_init(void)
 #endif
 
 	err = sd_softdevice_vector_table_base_set(VECTOR_ADDRESS);
-	__ASSERT("Failed to set the vector table, nrf_error %d", err);
+	__ASSERT(err == NRF_SUCCESS, "Failed to set the vector table, nrf_error %d", err);
 
 	return (err == NRF_SUCCESS) ? 0 : -EIO;
 }
