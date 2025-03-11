@@ -1,0 +1,11 @@
+# Document tags for Zoomin.
+
+# Tags for all topics:
+mapping_global:
+  - ncs-lite
+  - ncs-lite-__VERSION__
+  - cluster-ncs-lite-__VERSION__
+
+# Tags for individual topics:
+mapping_topics:
+  - ncs-lite/*.html: ["nrf54-series"]
