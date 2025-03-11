@@ -1,0 +1,26 @@
+.. ### This page lists links used in NCS Lite docs.
+       Links are grouped by source URL if three or more have the same source URL.
+       Otherwise, they are placed in "Source: other".
+       Links not separated by blank line are related to one another.
+
+.. ### Source: github.com
+
+.. _`GitHub`: https://github.com/
+.. _`sdk-ncs-lite`: https://github.com/nrfconnect/sdk-ncs-lite
+
+.. ### Source: docs.nordicsemi
+
+.. _`nRF54L15 DK`: https://docs.nordicsemi.com/bundle/ncs-latest/page/zephyr/boards/nordic/nrf54l15dk/doc/index.html#nrf54l15dk-nrf54l15
+.. _`nRF52840 DK`: https://docs.nordicsemi.com/bundle/ncs-latest/page/zephyr/boards/nordic/nrf52840dk/doc/index.html#nrf52840dk-nrf52840
+
+.. ### Installation
+
+.. _`nRF Util`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/installation/recommended_versions.html#nrf_util
+.. _`nRF Command Line Tools`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/installation/recommended_versions.html#nrf_command_line_tools
+.. _`operating system versions that support this tool`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/installation/recommended_versions.html#additional-nordic-sw-tools
+.. _`nRF Util Downloads`: https://www.nordicsemi.com/Products/Development-tools/nRF-Util/Download#infotabs
+.. _`nRF Command Line Tools Downloads`: https://www.nordicsemi.com/Products/Development-tools/nRF-Command-Line-Tools/Download?lang=en#infotabs
+.. _`J-Link Software and Documentation Pack`: https://www.segger.com/downloads/jlink
+.. _`nRF Util prerequisites`: https://docs.nordicsemi.com/bundle/nrfutil/page/guides/installing.html#prerequisites
+.. _`Toolchain Manager command`: https://docs.nordicsemi.com/bundle/nrfutil/page/nrfutil-toolchain-manager/nrfutil-toolchain-manager_0.14.1.html
+.. _`nrf-udev`: https://github.com/NordicSemiconductor/nrf-udev
