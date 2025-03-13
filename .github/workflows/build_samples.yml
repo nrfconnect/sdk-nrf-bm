@@ -50,12 +50,22 @@ jobs:
       run: |
         west twister -T samples --build-only -v --inline-logs --integration
 
-    - name: upload-results
+    - name: upload-logs
       uses: actions/upload-artifact@v4
       if: contains(github.event.pull_request.user.login, 'dependabot[bot]') != true
       with:
+        name: build-logs
+        path: nrf-lite/twister-out/**/*.log
+        retention-days: 5
+
+    - name: upload-artifacts-dispatch
+      uses: actions/upload-artifact@v4
+      if: contains(github.event.pull_request.user.login, 'dependabot[bot]') != true &&
+          github.event_name == 'workflow_dispatch'
+      with:
         name: build-artifacts
         path: nrf-lite/twister-out/**
+        retention-days: 5
 
     - name: save-cache-sdk
       if: always() && steps.cache-sdk.outputs.cache-hit != 'true'
