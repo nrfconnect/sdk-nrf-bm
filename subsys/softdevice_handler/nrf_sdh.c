@@ -20,9 +20,6 @@ LOG_MODULE_REGISTER(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
 #warning Please select NRF_CLOCK_LF_ACCURACY_500_PPM when using NRF_CLOCK_LF_SRC_RC
 #endif
 
-/* Global NVIC state instance, required by nrf_nvic.h */
-nrf_nvic_state_t nrf_nvic_state;
-
 static atomic_t sdh_enabled;	/* Whether the SoftDevice is enabled. */
 static atomic_t sdh_suspended;	/* Whether this module is suspended. */
 static atomic_t sdh_transition; /* Whether enable/disable process was started. */
