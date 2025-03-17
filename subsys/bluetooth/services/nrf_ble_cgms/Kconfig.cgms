@@ -1,0 +1,21 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+menuconfig BLE_CGMS
+	bool "Continuous glucose measurement service"
+	select EXPERIMENTAL
+
+if BLE_CGMS
+
+config NRF_BLE_CGMS_BLE_OBSERVER_PRIO
+	int "Softdevice event observer priority"
+	default 0
+
+module=BLE_CGMS
+module-dep=LOG
+module-str=BLE CGMS
+source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+
+endif
