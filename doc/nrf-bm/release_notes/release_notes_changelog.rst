@@ -54,6 +54,8 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Libraries
 =========
 
+* Added the ``ble_conn_state`` library.
+
 * :ref:`lib_bm_zms` library:
 
    * Updated:
