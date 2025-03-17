@@ -1,0 +1,27 @@
+&flash0 {
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+		softdevice: partition@0 {
+			label = "sd";
+			reg = <0x00000000 0x00027000>;
+		};
+		app_rom: partition@27000 {
+			label = "app";
+			reg = <0x00027000 0x000d9000>;
+		};
+	};
+};
+
+&sram0 {
+	reg = <0x20003400 DT_SIZE_K(200)>;
+};
+
+
+/ {
+	chosen {
+		zephyr,flash = &app_rom;
+		zephyr,sram = &sram0;
+	};
+};
