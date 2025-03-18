@@ -25,6 +25,9 @@ config BLE_CONN_PARAMS_MIN_CONN_INTERVAL
 config BLE_CONN_PARAMS_MAX_CONN_INTERVAL
 	int "Maximum connection interval (1.25 ms units)"
 	range BLE_CONN_PARAMS_MIN_CONN_INTERVAL 3200
+	# Temporary tweak for s115 to reduce the chance of a crash during a connection parameter
+	# update procedure.
+	default 256 if SOFTDEVICE_S115
 	default BLE_CONN_PARAMS_MIN_CONN_INTERVAL
 	help
 	  Maximum connection interval.
@@ -41,6 +44,9 @@ config BLE_CONN_PARAMS_SLAVE_LATENCY
 config BLE_CONN_PARAMS_SUP_TIMEOUT
 	int "Connection supervision timeout (10 ms units)"
 	range 10 3200
+	# Temporary tweak for s115 to reduce the chance of a crash during a connection parameter
+	# update procedure.
+	default 100 if SOFTDEVICE_S115
 	default 10
 	help
 	  Connection supervision timeout, in units of 10 milliseconds.
@@ -84,7 +90,7 @@ config BLE_CONN_PARAMS_ATT_MTU
 
 # Show the SDH Kconfig entry
 config NRF_SDH_BLE_GATT_MAX_MTU_SIZE
-	int "ATT MTU"
+	int "ATT MTU" if !SOFTDEVICE_S115
 
 config BLE_CONN_PARAMS_INITIATE_ATT_MTU_EXCHANGE
 	bool "Initiate ATT MTU exchange on connection" if BLE_CONN_PARAMS_ATT_MTU != 23
@@ -98,7 +104,7 @@ config BLE_CONN_PARAMS_AUTO_DATA_LENGTH
 if BLE_CONN_PARAMS_AUTO_DATA_LENGTH
 
 config BLE_CONN_PARAMS_DATA_LENGTH
-	int "Data length"
+	int "Data length" if !SOFTDEVICE_S115
 	range 27 251
 	default 27
 
