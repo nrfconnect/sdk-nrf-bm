@@ -10,6 +10,7 @@
 #include <event_scheduler.h>
 #include <ble_adv.h>
 #include <ble_gap.h>
+#include <nrf_soc.h>
 #include <bluetooth/services/ble_bas.h>
 #include <bluetooth/services/ble_dis.h>
 #include <zephyr/kernel.h> /* k_busy_wait() */

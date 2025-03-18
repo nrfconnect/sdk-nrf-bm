@@ -8,6 +8,7 @@
 #include <nrf_sdh_ble.h>
 #include <ble_adv.h>
 #include <ble_gap.h>
+#include <nrf_soc.h>
 #include <bluetooth/services/ble_lbs.h>
 #include <bluetooth/services/ble_dis.h>
 #include <zephyr/sys/printk.h>
