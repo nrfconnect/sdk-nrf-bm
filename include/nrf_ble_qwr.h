@@ -96,7 +96,7 @@ typedef uint16_t (*nrf_ble_qwr_evt_handler_t)(struct nrf_ble_qwr *qwr, struct nr
 /**
  * @brief Type definition for error handler function that will be called in case of an error.
  */
-typedef void (*nrf_ble_qwr_error_handler)(int err);
+typedef void (*nrf_ble_qwr_error_handler_t)(int err);
 
 /**
  * @brief Queued Writes structure.
@@ -108,7 +108,7 @@ struct nrf_ble_qwr {
 	/** Connection handle. */
 	uint16_t conn_handle;
 	/** Error handler. */
-	nrf_ble_qwr_error_handler error_handler;
+	nrf_ble_qwr_error_handler_t error_handler;
 	/** Flag that indicates whether a mem_reply is pending
 	 *  (because a previous attempt returned busy).
 	 */
@@ -144,7 +144,7 @@ struct nrf_ble_qwr {
  */
 struct nrf_ble_qwr_init {
 	/** Error handler. */
-	nrf_ble_qwr_error_handler error_handler;
+	nrf_ble_qwr_error_handler_t error_handler;
 #if (CONFIG_NRF_BLE_QWR_MAX_ATTR > 0)
 	/** Memory buffer that is provided to the SoftDevice on an ON_USER_MEM_REQUEST event. */
 	ble_user_mem_block_t mem_buffer;
