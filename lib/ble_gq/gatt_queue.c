@@ -16,7 +16,7 @@
 #include <zephyr/sys/util.h>
 
 #include <zephyr/logging/log.h>
-LOG_MODULE_DECLARE(ble_gatt_queue, CONFIG_BLE_GQ_LOG_LEVEL);
+LOG_MODULE_REGISTER(ble_gatt_queue, CONFIG_BLE_GQ_LOG_LEVEL);
 
 /**
  * @brief Function prototype for preparing a request for storage.
