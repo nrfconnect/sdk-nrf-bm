@@ -1,9 +1,24 @@
 sample:
   name: Timer sample
+common:
+  sysbuild: true
+  build_only: true
+  tags:
+    - ci_build
 tests:
   sample.timer:
     integration_platforms:
       - nrf52840dk/nrf52840
+      - nrf54l15dk/nrf54l15/cpuapp
     platform_allow:
       - nrf52840dk/nrf52840
-    tags: ci_build
+      - nrf54l15dk/nrf54l15/cpuapp
+
+  sample.timer.softdevice:
+    integration_platforms:
+      - nrf52840dk/nrf52840
+      - nrf54l15dk/nrf54l15/cpuapp
+    platform_allow:
+      - nrf52840dk/nrf52840
+      - nrf54l15dk/nrf54l15/cpuapp
+    extra_args: EXTRA_CONF_FILE="overlay-softdevice.conf"
