@@ -2,3 +2,8 @@ name: nrf-lite
 build:
   cmake: .
   kconfig: Kconfig.nrf-lite
+  settings:
+    soc_root: .
+    board_root: .
+    dts_root: .
+    snippet_root: .
