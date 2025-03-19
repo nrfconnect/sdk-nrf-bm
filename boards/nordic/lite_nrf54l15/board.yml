@@ -1,0 +1,9 @@
+board:
+  name: lite_nrf54l15
+  full_name: Lite nRF54L15
+  vendor: nordic
+  socs:
+  - name: nrf54l15
+    variants:
+    - name: no_softdevice
+      cpucluster: cpuapp

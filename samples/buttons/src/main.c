@@ -11,6 +11,10 @@
 #include <lite_timer.h>
 #include <lite_buttons.h>
 
+#ifndef CONFIG_SOC_SERIES_NRF52X
+#include <board-config.h>
+#endif
+
 LOG_MODULE_REGISTER(buttons_sample, LOG_LEVEL_INF);
 
 #if defined(CONFIG_SOC_SERIES_NRF52X)
@@ -19,10 +23,10 @@ LOG_MODULE_REGISTER(buttons_sample, LOG_LEVEL_INF);
 #define PIN_BTN_2 NRF_PIN_PORT_TO_PIN_NUMBER(24, 0)
 #define PIN_BTN_3 NRF_PIN_PORT_TO_PIN_NUMBER(25, 0)
 #elif defined(CONFIG_SOC_SERIES_NRF54LX)
-#define PIN_BTN_0 NRF_PIN_PORT_TO_PIN_NUMBER(13, 1)
-#define PIN_BTN_1 NRF_PIN_PORT_TO_PIN_NUMBER(9, 1)
-#define PIN_BTN_2 NRF_PIN_PORT_TO_PIN_NUMBER(8, 1)
-#define PIN_BTN_3 NRF_PIN_PORT_TO_PIN_NUMBER(4, 0)
+#define PIN_BTN_0 BOARD_PIN_BTN_0
+#define PIN_BTN_1 BOARD_PIN_BTN_1
+#define PIN_BTN_2 BOARD_PIN_BTN_2
+#define PIN_BTN_3 BOARD_PIN_BTN_3
 #endif
 
 static volatile bool running;

@@ -1,0 +1,56 @@
+/*
+ * Copyright (c) 2025 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/dts-v1/;
+
+#include <nordic/nrf54l15_cpuapp.dtsi>
+#include "lite_nrf54l15_cpuapp_common.dtsi"
+
+/ {
+	chosen {
+		/delete-property/ zephyr,code-partition;
+		zephyr,flash = &app_rom;
+		zephyr,sram = &app_ram;
+	};
+};
+
+&cpuapp_rram {
+	status = "okay";
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+		app_rom: partition@0 {
+			label = "app_rom";
+			reg = <0x0 DT_SIZE_K(1312)>;
+		};
+		softdevice_rom: partition@148000 {
+			label = "softdevice_rom";
+			reg = <0x00148000 DT_SIZE_K(100)>;
+		};
+	};
+};
+
+&cpuapp_sram {
+	status = "okay";
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+		softdevice_static_ram: partition@20000000 {
+			label = "softdevice_static_ram";
+			reg = <0x20000000 DT_SIZE_K(5)>;
+		};
+		softdevice_dynamic_ram: partition@20001678 {
+			label = "softdevice_dynamic_ram";
+			reg = <0x20001678 DT_SIZE_K(12)>;
+		};
+		app_ram: partition@20004678 {
+			label = "app_ram";
+			reg = <0x20004678 DT_SIZE_K(238)>;
+		};
+	};
+};
