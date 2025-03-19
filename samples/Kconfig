@@ -8,19 +8,9 @@
 
 # All these samples shall run without multithreading
 config MULTITHREADING
-	bool
 	default n
 
-# Needed by SoftDevice
-config CLOCK_CONTROL
-	bool
-	default n if SOFTDEVICE
-# Needed by SoftDevice
-config ZERO_LATENCY_IRQS
-	bool
-	default y if SOFTDEVICE
-
-# No need
+# Prevent moving SoftDevice RAM region
+# Need this when building without sysbuild
 config PARTITION_MANAGER_ENABLED
-	bool
 	default n

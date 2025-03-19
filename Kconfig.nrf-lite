@@ -9,5 +9,5 @@ config NRF_LITE
 	default y
 
 rsource "lib/Kconfig"
-#rsource "samples/Kconfig"
+rsource "samples/Kconfig"
 rsource "subsys/Kconfig"
