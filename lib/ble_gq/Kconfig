@@ -1,0 +1,42 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+menuconfig BLE_GATT_QUEUE
+	bool "BLE GATT Queue"
+
+if BLE_GATT_QUEUE
+
+config BLE_GQ_MAX_CONNECTIONS
+	int "Max simultaneous connections"
+	default 1
+	help
+	  Default value used for GATT queue instances defined using BLE_GQ_DEF.
+	  Sets the max number of connections that a default GATT queue instance can manage.
+
+config BLE_GQ_QUEUE_SIZE
+	int "Request queue size (per connection)"
+	default 8
+	help
+	  Default value used for GATT queue instances defined using BLE_GQ_DEF.
+	  Sets the max number of requests that can be queued for each connection that
+	  have been registered to a GATT queue instance with default configuration.
+
+config BLE_GQ_HEAP_SIZE
+	int "Datapool heap size (bytes)"
+	default 256
+	help
+	  Default value used for GATT queue instances defined using BLE_GQ_DEF. Sets the heap size
+	  for storing additional data that can be of variable size.
+
+config BLE_GQ_OBSERVER_PRIO
+	int "SoftDevice event observer priority"
+	default 0
+
+module=BLE_GQ
+module-dep=LOG
+module-str=BLE GATT Queue
+source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+
+endif # BLE_GATT_QUEUE
