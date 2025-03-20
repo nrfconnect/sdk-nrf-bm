@@ -6,7 +6,6 @@
 
 #include <nrf_sdh.h>
 #include <nrf_sdh_ble.h>
-#include <nrf_sdh_soc.h>
 #include <ble_adv.h>
 #include <ble_conn_params.h>
 #include <ble_gap.h>
@@ -253,8 +252,9 @@ void on_conn_params_evt(const struct ble_conn_params_evt *evt)
 		if (err) {
 			printk("Disconnect failed on conn params update rejection, nrf_error %#x\n",
 			       err);
+		} else {
+			printk("Disconnected from peer, unacceptable conn params\n");
 		}
-		printk("Disconnected from peer, unacceptable conn params\n");
 		break;
 
 	case BLE_CONN_PARAMS_EVT_ATT_MTU_UPDATED:
