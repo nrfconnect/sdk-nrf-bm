@@ -32,7 +32,7 @@ BLE_LBS_DEF(ble_lbs); /* BLE LED Button Service instance */
 
 /* Device information service is single-instance */
 
-static uint16_t conn_handle;
+static uint16_t conn_handle = BLE_CONN_HANDLE_INVALID;
 
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {
@@ -45,6 +45,13 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		err = sd_ble_gatts_sys_attr_set(conn_handle, NULL, 0, 0);
 		if (err) {
 			printk("Failed to set system attributes, nrf_error %#x\n", err);
+		}
+		break;
+
+	case BLE_GAP_EVT_DISCONNECTED:
+		printk("Peer disconnected\n");
+		if (conn_handle == evt->evt.gap_evt.conn_handle) {
+			conn_handle = BLE_CONN_HANDLE_INVALID;
 		}
 		break;
 
