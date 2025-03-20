@@ -12,9 +12,8 @@
 
 LOG_MODULE_REGISTER(ble_bas, CONFIG_BLE_BAS_LOG_LEVEL);
 
-static int battery_level_char_add(struct ble_bas *bas, const struct ble_bas_config *cfg)
+static uint32_t battery_level_char_add(struct ble_bas *bas, const struct ble_bas_config *cfg)
 {
-	int err;
 	ble_uuid_t char_uuid = {
 		.type = BLE_UUID_TYPE_BLE,
 		.uuid = BLE_UUID_BATTERY_LEVEL_CHAR,
@@ -49,19 +48,13 @@ static int battery_level_char_add(struct ble_bas *bas, const struct ble_bas_conf
 	}
 
 	/* Add characteristic */
-	err = sd_ble_gatts_characteristic_add(bas->service_handle, &char_md, &attr_char_value,
-					      &bas->battery_level_handles);
-	if (err) {
-		LOG_ERR("Failed to add GATT characteristic, nrf_error %#x", err);
-		return err;
-	}
-
-	return 0;
+	return sd_ble_gatts_characteristic_add(bas->service_handle, &char_md, &attr_char_value,
+					       &bas->battery_level_handles);
 }
 
-static int report_reference_descriptor_add(struct ble_bas *bas, const struct ble_bas_config *cfg)
+static uint32_t report_reference_descriptor_add(struct ble_bas *bas,
+						const struct ble_bas_config *cfg)
 {
-	int err;
 	ble_uuid_t desc_uuid = {
 		.type = BLE_UUID_TYPE_BLE,
 		.uuid = BLE_UUID_REPORT_REF_DESCR,
@@ -83,14 +76,8 @@ static int report_reference_descriptor_add(struct ble_bas *bas, const struct ble
 	encoded_report_ref[1] = cfg->report_ref->report_type;
 
 	/* Add the descriptor */
-	err = sd_ble_gatts_descriptor_add(bas->battery_level_handles.value_handle, &descr_params,
-					  &bas->report_ref_handle);
-	if (err) {
-		LOG_ERR("Failed to add GATT report reference descriptor, nrf_error %#x", err);
-		return -EINVAL;
-	}
-
-	return 0;
+	return sd_ble_gatts_descriptor_add(bas->battery_level_handles.value_handle, &descr_params,
+					   &bas->report_ref_handle);
 }
 
 static void on_write(struct ble_bas *bas, const ble_gatts_evt_t *gatts_evt)
@@ -163,6 +150,7 @@ int ble_bas_init(struct ble_bas *bas, const struct ble_bas_config *cfg)
 	/* Add battery level characteristic */
 	err =  battery_level_char_add(bas, cfg);
 	if (err) {
+		LOG_ERR("Failed to add battery service characteristic, nrf_error %#x", err);
 		return -EINVAL;
 	}
 
@@ -170,6 +158,7 @@ int ble_bas_init(struct ble_bas *bas, const struct ble_bas_config *cfg)
 	if (cfg->report_ref != NULL) {
 		err = report_reference_descriptor_add(bas, cfg);
 		if (err) {
+			LOG_ERR("Failed to add report reference descriptor, nrf_error %#x", err);
 			return -EINVAL;
 		}
 	}

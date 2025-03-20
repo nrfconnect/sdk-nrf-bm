@@ -84,9 +84,9 @@ static uint8_t hrm_encode(struct ble_hrs *hrs, uint16_t heart_rate, uint8_t *enc
 	return len;
 }
 
-static int heart_rate_measurement_char_add(struct ble_hrs *hrs, const struct ble_hrs_config *cfg)
+static uint32_t heart_rate_measurement_char_add(struct ble_hrs *hrs,
+						const struct ble_hrs_config *cfg)
 {
-	int err;
 	uint8_t encoded_initial_hrm[MAX_HRM_LEN_CALC(CONFIG_NRF_SDH_BLE_GATT_MAX_MTU_SIZE)];
 	ble_uuid_t char_uuid = {
 		.type = BLE_UUID_TYPE_BLE,
@@ -117,19 +117,12 @@ static int heart_rate_measurement_char_add(struct ble_hrs *hrs, const struct ble
 	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.read_perm);
 
 	/* Add Heart rate measurement characteristic declaration, value, and CCCD attributes. */
-	err = sd_ble_gatts_characteristic_add(hrs->service_handle, &char_md, &attr_char_value,
-					      &hrs->hrm_handles);
-	if (err) {
-		LOG_ERR("Failed to add GATT characteristic, nrf_error %#x", err);
-		return err;
-	}
-
-	return 0;
+	return sd_ble_gatts_characteristic_add(hrs->service_handle, &char_md, &attr_char_value,
+					       &hrs->hrm_handles);
 }
 
-static int body_sensor_location_char_add(struct ble_hrs *hrs, const struct ble_hrs_config *cfg)
+static uint32_t body_sensor_location_char_add(struct ble_hrs *hrs, const struct ble_hrs_config *cfg)
 {
-	int err;
 	ble_uuid_t char_uuid = {
 		.type = BLE_UUID_TYPE_BLE,
 		.uuid = BLE_UUID_BODY_SENSOR_LOCATION_CHAR,
@@ -152,14 +145,8 @@ static int body_sensor_location_char_add(struct ble_hrs *hrs, const struct ble_h
 	};
 
 	/* Add Body sensor location characteristic declaration and value attributes. */
-	err = sd_ble_gatts_characteristic_add(hrs->service_handle, &char_md, &attr_char_value,
-					      &hrs->bsl_handles);
-	if (err) {
-		LOG_ERR("Failed to add GATT characteristic, nrf_error %#x", err);
-		return err;
-	}
-
-	return 0;
+	return sd_ble_gatts_characteristic_add(hrs->service_handle, &char_md, &attr_char_value,
+					       &hrs->bsl_handles);
 }
 
 static void on_connect(struct ble_hrs *hrs, const ble_gap_evt_t *gap_evt)
@@ -253,12 +240,14 @@ int ble_hrs_init(struct ble_hrs *hrs, const struct ble_hrs_config *cfg)
 	/* Add Heart rate measurement characteristic. */
 	err = heart_rate_measurement_char_add(hrs, cfg);
 	if (err) {
+		LOG_ERR("Failed to add heart rate measurement characteristic, nrf_error %#x", err);
 		return -EINVAL;
 	}
 
 	/* Add Body sensor location characteristic. */
 	err = body_sensor_location_char_add(hrs, cfg);
 	if (err) {
+		LOG_ERR("Failed to add body sensor location characteristic, nrf_error %#x", err);
 		return -EINVAL;
 	}
 
