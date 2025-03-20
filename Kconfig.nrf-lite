@@ -8,6 +8,7 @@ config NRF_LITE
 	bool
 	default y
 
+rsource "drivers/Kconfig"
 rsource "lib/Kconfig"
 rsource "samples/Kconfig"
 rsource "subsys/Kconfig"

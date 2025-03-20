@@ -1,0 +1,29 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menuconfig LITE_UARTE_CONSOLE
+	bool "Lite UARTE console"
+	depends on CONSOLE
+	select CONSOLE_HAS_DRIVER
+
+if LITE_UARTE_CONSOLE
+
+config DEPRECATED_UART_NRFX_UARTE_LEGACY_SHIM
+	bool
+	default n
+
+config LITE_UARTE_CONSOLE_UARTE_IRQ_PRIO
+	int "IRQ priority"
+	range 3 7
+	default 3
+
+config LITE_UARTE_CONSOLE_UARTE_USE_HWFC
+	bool "Use hardware flow control"
+
+config LITE_UARTE_CONSOLE_UARTE_PARITY_INCLUDED
+	bool "Use parity"
+
+endif # LITE_UARTE_CONSOLE
