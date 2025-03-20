@@ -1,4 +1,0 @@
-/* Needed until uart console PR merged */
-&uart0 {
-	status = "disabled";
-};
