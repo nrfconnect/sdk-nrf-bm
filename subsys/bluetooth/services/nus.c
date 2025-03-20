@@ -274,7 +274,7 @@ int ble_nus_init(struct ble_nus *nus, struct ble_nus_config const *cfg)
 	/* Add a custom base UUID. */
 	err = sd_ble_uuid_vs_add(&uuid_base, &nus->uuid_type);
 	if (err) {
-		LOG_ERR("sd_ble_uuid_vs_add failed, err %d", err);
+		LOG_ERR("sd_ble_uuid_vs_add failed, nrf_error %#x", err);
 		return -EINVAL;
 	}
 

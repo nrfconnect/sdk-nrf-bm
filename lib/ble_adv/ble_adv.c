@@ -120,7 +120,7 @@ static int flags_set(struct ble_adv *ble_adv, uint8_t flags)
 	err = sd_ble_gap_adv_set_configure(&ble_adv->adv_handle, &ble_adv->adv_data,
 					   &ble_adv->adv_params);
 	if (err) {
-		LOG_ERR("Failed to set advertising flags, nrf_error %d", err);
+		LOG_ERR("Failed to set advertising flags, nrf_error %#x", err);
 		return -EINVAL;
 	}
 
@@ -303,7 +303,7 @@ int ble_adv_init(struct ble_adv *ble_adv, struct ble_adv_config *ble_adv_config)
 
 	err = sd_ble_gap_adv_set_configure(&ble_adv->adv_handle, NULL, &ble_adv->adv_params);
 	if (err) {
-		LOG_ERR("Failed to set GAP advertising parameters, nrf_error %d", err);
+		LOG_ERR("Failed to set GAP advertising parameters, nrf_error %#x", err);
 		return -EINVAL;
 	}
 
@@ -404,13 +404,13 @@ int ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 		err = sd_ble_gap_adv_set_configure(&ble_adv->adv_handle, &ble_adv->adv_data,
 						   &ble_adv->adv_params);
 		if (err) {
-			LOG_ERR("Failed to set advertising data, nrf_error %d", err);
+			LOG_ERR("Failed to set advertising data, nrf_error %#x", err);
 			return -EINVAL;
 		}
 
 		err = sd_ble_gap_adv_start(ble_adv->adv_handle, ble_adv->conn_cfg_tag);
 		if (err) {
-			LOG_ERR("Failed to start advertising, nrf_error %d", err);
+			LOG_ERR("Failed to start advertising, nrf_error %#x", err);
 			return -EINVAL;
 		}
 	}
@@ -550,7 +550,7 @@ int ble_adv_data_update(struct ble_adv *ble_adv, const struct ble_adv_data *adv_
 
 	err = sd_ble_gap_adv_set_configure(&ble_adv->adv_handle, &ble_adv->adv_data, NULL);
 	if (err) {
-		LOG_ERR("Failed to set GAP advertising data, nrf_error %d", err);
+		LOG_ERR("Failed to set GAP advertising data, nrf_error %#x", err);
 		return -EINVAL;
 	}
 

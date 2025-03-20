@@ -72,7 +72,7 @@ static int device_addr_encode(uint8_t *buf, uint16_t *offset, uint16_t max_size)
 	/* Get BLE address */
 	err = sd_ble_gap_addr_get(&device_addr);
 	if (err) {
-		LOG_ERR("Failed to get device GAP address, nrf_error %d", err);
+		LOG_ERR("Failed to get device GAP address, nrf_error %#x", err);
 		return -EINVAL;
 	}
 
@@ -123,7 +123,7 @@ static int device_name_encode(const struct ble_adv_data *ble_adv_data, uint8_t *
 	/* Get GAP device name and length */
 	err = sd_ble_gap_device_name_get(&data[*offset + AD_DATA_OFFSET], &actual_length);
 	if (err) {
-		LOG_ERR("Failed to get device GAP name, nrf_error %d", err);
+		LOG_ERR("Failed to get device GAP name, nrf_error %#x", err);
 		return -EINVAL;
 	}
 
@@ -184,7 +184,7 @@ static int appearance_encode(uint8_t *buf, uint16_t *offset, uint16_t max_size)
 	/* Get GAP appearance field */
 	err = sd_ble_gap_appearance_get(&appearance);
 	if (err) {
-		LOG_ERR("Failed to get GAP appearance, nrf_error %d", err);
+		LOG_ERR("Failed to get GAP appearance, nrf_error %#x", err);
 		return -EINVAL;
 	}
 
@@ -258,7 +258,7 @@ static int uuid_list_sized_encode(const struct ble_adv_data_uuid_list *list, uin
 		/* Find encoded uuid size */
 		err = sd_ble_uuid_encode(&uuid, &encoded_size, NULL);
 		if (err) {
-			LOG_ERR("Failed to encode UUID, nrf_error %d", err);
+			LOG_ERR("Failed to encode UUID, nrf_error %#x", err);
 			return -EINVAL;
 		}
 
@@ -282,7 +282,7 @@ static int uuid_list_sized_encode(const struct ble_adv_data_uuid_list *list, uin
 			/* Write UUID */
 			err = sd_ble_uuid_encode(&uuid, &encoded_size, &buf[*offset]);
 			if (err) {
-				LOG_ERR("Failed to encode UUID, nrf_error %d", err);
+				LOG_ERR("Failed to encode UUID, nrf_error %#x", err);
 				return -EINVAL;
 			}
 

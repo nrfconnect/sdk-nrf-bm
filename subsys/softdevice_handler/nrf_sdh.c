@@ -91,7 +91,7 @@ static int softdevices_evt_irq_enable(void)
 
 	err = sd_nvic_EnableIRQ((IRQn_Type)SD_EVT_IRQn);
 	if (err) {
-		LOG_ERR("Unable to enable SoftDevice IRQ, nrf_error %d", err);
+		LOG_ERR("Unable to enable SoftDevice IRQ, nrf_error %#x", err);
 	}
 
 	return err;
@@ -103,7 +103,7 @@ static int softdevice_evt_irq_disable(void)
 
 	err = sd_nvic_DisableIRQ((IRQn_Type)SD_EVT_IRQn);
 	if (err) {
-		LOG_ERR("Unable to disable SoftDevice IRQ, nrf_error %d", err);
+		LOG_ERR("Unable to disable SoftDevice IRQ, nrf_error %#x", err);
 	}
 
 	return err;
@@ -163,7 +163,7 @@ int nrf_sdh_enable_request(void)
 
 	err = sd_softdevice_enable(&clock_lf_cfg, softdevice_fault_handler);
 	if (err) {
-		LOG_ERR("Failed to enable SoftDevice, nrf_error %d", err);
+		LOG_ERR("Failed to enable SoftDevice, nrf_error %#x", err);
 		return -EINVAL;
 	}
 
@@ -208,7 +208,7 @@ int nrf_sdh_disable_request(void)
 
 	err = sd_softdevice_disable();
 	if (err) {
-		LOG_ERR("Failed to disable SoftDevice, nrf_error %d", err);
+		LOG_ERR("Failed to disable SoftDevice, nrf_error %#x", err);
 		return -EINVAL;
 	}
 
@@ -270,7 +270,7 @@ void nrf_sdh_resume(void)
 	/* Force calling ISR again to make sure we dispatch pending events */
 	err = sd_nvic_SetPendingIRQ((IRQn_Type)SD_EVT_IRQn);
 	if (err) {
-		LOG_ERR("Unable to set SoftDevice IRQ, nrf_error %d", err);
+		LOG_ERR("Unable to set SoftDevice IRQ, nrf_error %#x", err);
 		return;
 	}
 
