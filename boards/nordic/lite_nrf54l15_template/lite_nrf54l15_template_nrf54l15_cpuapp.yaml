@@ -1,0 +1,14 @@
+# Copyright (c) 2025 Nordic Semiconductor ASA
+# SPDX-License-Identifier: Apache-2.0
+
+identifier: lite_nrf54l15_template/nrf54l15/cpuapp # Update
+name: Lite-nRF54l15-Template-nRF54l15-Application # Update
+type: mcu
+arch: arm
+toolchain:
+  - gnuarmemb
+  - xtools
+  - zephyr
+sysbuild: true
+ram: 238
+flash: 1312

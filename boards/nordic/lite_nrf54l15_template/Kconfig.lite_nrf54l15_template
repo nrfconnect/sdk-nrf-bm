@@ -1,0 +1,6 @@
+# Copyright (c) 2025 Nordic Semiconductor ASA
+# SPDX-License-Identifier: Apache-2.0
+
+# Update to match your board name
+config BOARD_LITE_NRF54L15_TEMPLATE
+	select SOC_NRF54L15_CPUAPP
