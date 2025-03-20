@@ -92,7 +92,10 @@ static int heart_rate_measurement_char_add(struct ble_hrs *hrs, const struct ble
 		.type = BLE_UUID_TYPE_BLE,
 		.uuid = BLE_UUID_HEART_RATE_MEASUREMENT_CHAR,
 	};
-	ble_gatts_attr_md_t cccd_md = {0};
+	ble_gatts_attr_md_t cccd_md = {
+		.vloc = BLE_GATTS_VLOC_STACK,
+		.write_perm = cfg->hrm_cccd_wr_sec,
+	};
 	ble_gatts_char_md_t char_md = {
 		.char_props = {
 			.notify = true,
@@ -111,10 +114,7 @@ static int heart_rate_measurement_char_add(struct ble_hrs *hrs, const struct ble
 		.max_len = sizeof(encoded_initial_hrm),
 	};
 
-	/* Setup CCCD */
-	cccd_md.vloc = BLE_GATTS_VLOC_STACK;
 	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.read_perm);
-	cccd_md.write_perm = cfg->hrm_cccd_wr_sec,
 
 	/* Add Heart rate measurement characteristic declaration, value, and CCCD attributes. */
 	err = sd_ble_gatts_characteristic_add(hrs->service_handle, &char_md, &attr_char_value,
