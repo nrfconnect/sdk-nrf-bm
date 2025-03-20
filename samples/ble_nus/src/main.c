@@ -160,7 +160,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 
 	case BLE_GAP_EVT_AUTH_STATUS:
 		LOG_INF("Authentication status: %#x",
-		       evt->evt.gap_evt.params.auth_status.auth_status);
+			evt->evt.gap_evt.params.auth_status.auth_status);
 		break;
 
 	case BLE_GAP_EVT_SEC_PARAMS_REQUEST:
@@ -199,8 +199,9 @@ void on_conn_params_evt(const struct ble_conn_params_evt *evt)
 		if (err) {
 			LOG_ERR("Disconnect failed on conn params update rejection, nrf_error %#x",
 				err);
+		} else {
+			LOG_INF("Disconnected from peer, unacceptable conn params");
 		}
-		LOG_INF("Disconnected from peer, unacceptable conn params");
 		break;
 
 	case BLE_CONN_PARAMS_EVT_ATT_MTU_UPDATED:
@@ -212,6 +213,7 @@ void on_conn_params_evt(const struct ble_conn_params_evt *evt)
 		ble_nus_max_data_len = evt->att_mtu - OPCODE_LENGTH - HANDLE_LENGTH;
 		LOG_INF("Attribute MTU updated to %d", ble_nus_max_data_len);
 		break;
+
 	default:
 		break;
 	}
@@ -246,8 +248,7 @@ static void ble_nus_data_handler(struct ble_nus_evt *evt)
 	}
 
 	/* Handle incoming data */
-	LOG_DBG("Received data from BLE NUS: %s",
-		evt->params.rx_data.data);
+	LOG_DBG("Received data from BLE NUS: %s", evt->params.rx_data.data);
 
 	for (uint32_t i = 0; i < evt->params.rx_data.length; i++) {
 		nrfx_uarte_tx(&uarte_inst, &evt->params.rx_data.data[i], 1, NRFX_UARTE_TX_BLOCKING);
@@ -385,7 +386,7 @@ int main(void)
 
 	err = nrfx_uarte_tx(&uarte_inst, out, sizeof(out), NRFX_UARTE_TX_BLOCKING);
 	if (err != NRFX_SUCCESS) {
-		LOG_ERR("UARTE TX failed, err %d", err);
+		LOG_ERR("UARTE TX failed, nrfx err %d", err);
 		return -1;
 	}
 
