@@ -44,7 +44,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		conn_handle = evt->evt.gap_evt.conn_handle;
 		err = sd_ble_gatts_sys_attr_set(conn_handle, NULL, 0, 0);
 		if (err) {
-			printk("Failed to set system attributes, nrf_error %d", err);
+			printk("Failed to set system attributes, nrf_error %#x\n", err);
 		}
 		break;
 
@@ -58,7 +58,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		err = sd_ble_gap_sec_params_reply(evt->evt.gap_evt.conn_handle,
 						  BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP, NULL, NULL);
 		if (err) {
-			printk("Failed to reply with Security params, nrf_error %d\n", err);
+			printk("Failed to reply with Security params, nrf_error %#x\n", err);
 		}
 		break;
 
@@ -67,7 +67,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		/* No system attributes have been stored */
 		err = sd_ble_gatts_sys_attr_set(conn_handle, NULL, 0, 0);
 		if (err) {
-			printk("Failed to set system attributes, nrf_error %d", err);
+			printk("Failed to set system attributes, nrf_error %#x\n", err);
 		}
 		break;
 	}

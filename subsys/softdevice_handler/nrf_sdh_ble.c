@@ -50,7 +50,7 @@ int nrf_sdh_ble_default_cfg_set(uint8_t conn_cfg_tag)
 
 	err = sd_ble_cfg_set(BLE_CONN_CFG_GAP, &ble_cfg, app_ram_start);
 	if (err) {
-		LOG_WRN("Failed to set BLE_CONN_CFG_GAP, nrf_error %d", err);
+		LOG_WRN("Failed to set BLE_CONN_CFG_GAP, nrf_error %#x", err);
 	}
 
 	/* Configure the connection roles. */
@@ -70,7 +70,7 @@ int nrf_sdh_ble_default_cfg_set(uint8_t conn_cfg_tag)
 
 	err = sd_ble_cfg_set(BLE_GAP_CFG_ROLE_COUNT, &ble_cfg, app_ram_start);
 	if (err) {
-		LOG_WRN("Failed to set BLE_GAP_CFG_ROLE_COUNT, nrf_error %d", err);
+		LOG_WRN("Failed to set BLE_GAP_CFG_ROLE_COUNT, nrf_error %#x", err);
 	}
 
 	/* Configure the maximum ATT MTU. */
@@ -81,7 +81,7 @@ int nrf_sdh_ble_default_cfg_set(uint8_t conn_cfg_tag)
 
 	err = sd_ble_cfg_set(BLE_CONN_CFG_GATT, &ble_cfg, app_ram_start);
 	if (err) {
-		LOG_WRN("Failed to set BLE_CONN_CFG_GATT, nrf_error %d", err);
+		LOG_WRN("Failed to set BLE_CONN_CFG_GATT, nrf_error %#x", err);
 	}
 #endif /* NRF_SDH_BLE_GATT_MAX_MTU_SIZE != 23 */
 
@@ -91,7 +91,7 @@ int nrf_sdh_ble_default_cfg_set(uint8_t conn_cfg_tag)
 
 	err = sd_ble_cfg_set(BLE_COMMON_CFG_VS_UUID, &ble_cfg, app_ram_start);
 	if (err) {
-		LOG_WRN("Failed to set BLE_COMMON_CFG_VS_UUID, nrf_error %d", err);
+		LOG_WRN("Failed to set BLE_COMMON_CFG_VS_UUID, nrf_error %#x", err);
 	}
 
 	/* Configure the GATTS attribute table. */
@@ -100,7 +100,7 @@ int nrf_sdh_ble_default_cfg_set(uint8_t conn_cfg_tag)
 
 	err = sd_ble_cfg_set(BLE_GATTS_CFG_ATTR_TAB_SIZE, &ble_cfg, app_ram_start);
 	if (err) {
-		LOG_WRN("Failed to set BLE_GATTS_CFG_ATTR_TAB_SIZE, nrf_error %d", err);
+		LOG_WRN("Failed to set BLE_GATTS_CFG_ATTR_TAB_SIZE, nrf_error %#x", err);
 	}
 
 	/* Configure Service Changed characteristic. */
@@ -110,7 +110,7 @@ int nrf_sdh_ble_default_cfg_set(uint8_t conn_cfg_tag)
 
 	err = sd_ble_cfg_set(BLE_GATTS_CFG_SERVICE_CHANGED, &ble_cfg, app_ram_start);
 	if (err) {
-		LOG_WRN("Failed to set BLE_GATTS_CFG_SERVICE_CHANGED, nrf_error %d", err);
+		LOG_WRN("Failed to set BLE_GATTS_CFG_SERVICE_CHANGED, nrf_error %#x", err);
 	}
 
 	LOG_DBG("SoftDevice configuration applied");
@@ -135,7 +135,7 @@ int nrf_sdh_ble_enable(uint32_t app_ram_start)
 	}
 
 	if (err) {
-		LOG_ERR("Failed to enable BLE, nrf_error %d", err);
+		LOG_ERR("Failed to enable BLE, nrf_error %#x", err);
 		return err;
 	}
 
@@ -177,7 +177,7 @@ static void ble_evt_poll(void *context)
 	}
 
 	__ASSERT(err == NRF_ERROR_NOT_FOUND,
-		"Failed to receive SoftDevice event, nrf_error %d", err);
+		"Failed to receive SoftDevice event, nrf_error %#x", err);
 }
 
 /* Listen to SoftDevice events */
