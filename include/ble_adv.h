@@ -139,7 +139,7 @@ typedef void (*ble_adv_evt_handler_t)(enum ble_adv_evt adv_evt);
 /**
  * @brief BLE advertising error handler type.
  */
-typedef void (*ble_adv_error_handler_t)(uint32_t nrf_error);
+typedef void (*ble_adv_error_handler_t)(int error);
 
 /**
  * @brief BLE advertising instance.
