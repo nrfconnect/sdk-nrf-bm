@@ -168,7 +168,7 @@ struct nrf_ble_qwr_init {
  * @param[in] qwr_init Initialization structure.
  *
  * @retval 0 If the Queued Writes module was initialized successfully.
- * @retval -EFAULT If @p qwr or @p qwr_init is @p NULL.
+ * @retval -EFAULT If @p qwr or @p qwr_init is @c NULL.
  * @retval -EPERM If the given @p qwr instance has already been initialized.
  */
 int nrf_ble_qwr_init(struct nrf_ble_qwr *qwr, struct nrf_ble_qwr_init const *qwr_init);
@@ -185,7 +185,7 @@ int nrf_ble_qwr_init(struct nrf_ble_qwr *qwr, struct nrf_ble_qwr_init const *qwr
  * @param[in] conn_handle Connection handle to be associated with the given Queued Writes instance.
  *
  * @retval 0 If the assignment was successful.
- * @retval -EFAULT If @p qwr is @p NULL.
+ * @retval -EFAULT If @p qwr is @c NULL.
  * @retval -EPERM If the given @p qwr instance has not been initialized.
  */
 int nrf_ble_qwr_conn_handle_assign(struct nrf_ble_qwr *qwr, uint16_t conn_handle);
@@ -212,7 +212,7 @@ void nrf_ble_qwr_on_ble_evt(ble_evt_t const *ble_evt, void *context);
  *
  * @retval 0 If the registration was successful.
  * @retval -ENOMEM If no more memory is available to add this registration.
- * @retval -EFAULT If @p qwr is @p NULL.
+ * @retval -EFAULT If @p qwr is @c NULL.
  * @retval -EPERM If the given @p qwr instance has not been initialized.
  */
 int nrf_ble_qwr_attr_register(struct nrf_ble_qwr *qwr, uint16_t attr_handle);
@@ -231,7 +231,7 @@ int nrf_ble_qwr_attr_register(struct nrf_ble_qwr *qwr, uint16_t attr_handle);
  *
  * @retval 0 If the data was retrieved and stored successfully.
  * @retval -ENOMEM If the provided buffer was smaller than the received data.
- * @retval -EFAULT If @p qwr, @p mem or @p len is @p NULL.
+ * @retval -EFAULT If @p qwr, @p mem or @p len is @c NULL.
  * @retval -EPERM If the given @p qwr instance has not been initialized.
  */
 int nrf_ble_qwr_value_get(
