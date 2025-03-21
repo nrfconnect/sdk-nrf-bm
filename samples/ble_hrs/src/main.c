@@ -311,10 +311,9 @@ static void ble_hrs_evt_handler(struct ble_hrs *hrs, const struct ble_hrs_evt *e
 int main(void)
 {
 	int err;
-	uint32_t ram_start;
 	uint8_t body_sensor_location = BLE_HRS_BODY_SENSOR_LOCATION_FINGER;
 	struct ble_adv_config ble_adv_cfg = {
-		.conn_cfg_tag = CONN_TAG,
+		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
 		.evt_handler = ble_adv_evt_handler,
 		.error_handler = ble_adv_error_handler,
 		.adv_data = {
@@ -349,15 +348,7 @@ int main(void)
 
 	printk("SoftDevice enabled\n");
 
-	nrf_sdh_ble_app_ram_start_get(&ram_start);
-
-	err = nrf_sdh_ble_default_cfg_set(CONN_TAG);
-	if (err) {
-		printk("Failed to setup default configuration, err %d\n", err);
-		return -1;
-	}
-
-	err = nrf_sdh_ble_enable(ram_start);
+	err = nrf_sdh_ble_enable(CONFIG_NRF_SDH_BLE_CONN_TAG);
 	if (err) {
 		printk("Failed to enable BLE, err %d\n", err);
 		return -1;

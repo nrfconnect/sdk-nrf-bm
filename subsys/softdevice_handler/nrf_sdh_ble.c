@@ -11,7 +11,6 @@
 #include <ble.h>
 #include <zephyr/logging/log.h>
 
-#define RAM_START 0x20000000
 #define APP_RAM_START DT_REG_ADDR(DT_CHOSEN(zephyr_sram))
 
 LOG_MODULE_DECLARE(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
@@ -29,14 +28,15 @@ int nrf_sdh_ble_app_ram_start_get(uint32_t *app_ram_start)
 	return 0;
 }
 
-int nrf_sdh_ble_default_cfg_set(uint8_t conn_cfg_tag)
+static int default_cfg_set(void)
 {
 	int err;
 	ble_cfg_t ble_cfg;
 
 	const uint32_t app_ram_start = APP_RAM_START;
+	const uint8_t  conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG;
 
-	/* Overwrite some of the default settings of the BLE stack.
+	/* Save a configuration fo the BLE stack in a given connection tag.
 	 * If any of the calls to sd_ble_cfg_set() fail, log the error but carry on so that
 	 * wrong RAM settings can be caught by nrf_sdh_ble_enable() and a meaningful error
 	 * message will be printed to the user suggesting the correct value.
@@ -118,11 +118,13 @@ int nrf_sdh_ble_default_cfg_set(uint8_t conn_cfg_tag)
 	return 0;
 }
 
-int nrf_sdh_ble_enable(uint32_t app_ram_start)
+int nrf_sdh_ble_enable(uint8_t conn_cfg_tag)
 {
 	int err;
-	uint32_t app_ram_minimum = app_ram_start;
-	uint32_t const app_ram_start_link = app_ram_start;
+	uint32_t app_ram_minimum = APP_RAM_START;
+	uint32_t const app_ram_start_link = APP_RAM_START;
+
+	default_cfg_set();
 
 	LOG_DBG("Application RAM starts at 0x%x", app_ram_start_link);
 

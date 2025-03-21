@@ -6,10 +6,6 @@
 
 menu "BLE NUS sample"
 
-config CONN_TAG
-	int "Connection configuration tag"
-	default 1
-
 config BLE_UART_IRQ_PRIO
 	int "BLE UART IRQ priority"
 	default 3

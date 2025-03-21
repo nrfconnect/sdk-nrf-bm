@@ -74,31 +74,13 @@ struct nrf_sdh_ble_evt_observer {
 int nrf_sdh_ble_app_ram_start_get(uint32_t *app_ram_start);
 
 /**
- * @brief Set the default BLE stack configuration.
- *
- * Configure the BLE stack with the settings specified in the SoftDevice handler BLE configuration.
- * The following configurations will be set:
- * - Number of peripheral links
- * - Number of central links
- * - ATT MTU size (for the given connection)
- * - Vendor specific UUID count
- * - GATTS Attribute table size
- * - Service changed (on/off)
- *
- * @param[in] conn_cfg_tag The tag identifying the connection to configure.
- *
- * @retval 0 On success.
- */
-int nrf_sdh_ble_default_cfg_set(uint8_t conn_cfg_tag);
-
-/**
  * @brief Enable the SoftDevice Bluetooth stack.
  *
- * @param[in] app_ram_start The starting address of the application's RAM.
+ * @param[in] conn_tag Connection configuration tag.
  *
  * @retval 0 On success.
  */
-int nrf_sdh_ble_enable(uint32_t app_ram_start);
+int nrf_sdh_ble_enable(uint8_t conn_cfg_tag);
 
 #ifdef __cplusplus
 }
