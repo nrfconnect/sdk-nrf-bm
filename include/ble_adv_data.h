@@ -226,7 +226,7 @@ int ble_adv_data_encode(const struct ble_adv_data *ble_adv_data, uint8_t *buf, u
  * @param[in] ad_type The type of data to search for.
  *
  * @returns The length of the data if found, or 0 if no data was found with the type @p ad_type,
- *          or if @p buf or @p offset were NULL.
+ *          or if @p buf or @p offset were @c NULL.
  */
 uint16_t ble_adv_data_search(const uint8_t *buf, uint16_t len, uint16_t *offset, uint8_t ad_type);
 
@@ -243,8 +243,8 @@ uint16_t ble_adv_data_search(const uint8_t *buf, uint16_t len, uint16_t *offset,
  * @param[in] len Buffer length.
  * @param[in] ad_type Type of data to search for.
  *
- * @returns A pointer to the data if found, or NULL if no data was found with the type @p ad_type,
- *          or if @p buf was NULL.
+ * @returns A pointer to the data if found, or @c NULL if no data was found with the type
+ *          @p ad_type, or if @p buf was @c NULL.
  */
 uint8_t *ble_adv_data_parse(const uint8_t *buf, uint16_t len, uint8_t ad_type);
 
@@ -257,7 +257,7 @@ uint8_t *ble_adv_data_parse(const uint8_t *buf, uint16_t len, uint8_t ad_type);
  *
  * @retval true   If @p name was found among @p buf, as a complete local name.
  * @retval false  If @p name was not found among @p buf, or if @p buf
- *                or @p name was NULL.
+ *                or @p name was @c NULL.
  */
 bool ble_adv_data_name_find(const uint8_t *buf, uint16_t len, const char *name);
 
@@ -275,7 +275,7 @@ bool ble_adv_data_name_find(const uint8_t *buf, uint16_t len, const char *name);
  *
  * @retval true   If @p name was found among @p buf, as short local name.
  * @retval false  If @p name was not found among @p buf, or if @p buf
- *                or @p name was NULL.
+ *                or @p name was @c NULL.
  */
 bool ble_adv_data_short_name_find(const uint8_t *buf, uint16_t len, const char *name,
 				  const uint8_t short_name_min_len);
@@ -289,7 +289,7 @@ bool ble_adv_data_short_name_find(const uint8_t *buf, uint16_t len, const char *
  *
  * @retval true   If @p uuid was found among @p buf.
  * @retval false  If @p uuid was not found among @p buf, or if @p buf
- *                or @p uuid was NULL.
+ *                or @p uuid was @c NULL.
  */
 bool ble_adv_data_uuid_find(const uint8_t *buf, uint16_t len, const ble_uuid_t *uuid);
 
@@ -302,7 +302,7 @@ bool ble_adv_data_uuid_find(const uint8_t *buf, uint16_t len, const ble_uuid_t *
  *
  * @retval true   If @p appearance was found among @p buf.
  * @retval false  If @p appearance was not found among @p buf, or if @p buf
- *                or @p appearance was NULL.
+ *                or @p appearance was @c NULL.
  */
 bool ble_adv_data_appearance_find(const uint8_t *buf, uint16_t len, const uint16_t *appearance);
 
