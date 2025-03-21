@@ -227,7 +227,7 @@ static void ble_adv_evt_handler(enum ble_adv_evt evt)
 	/* ignore */
 }
 
-static void ble_adv_error_handler(uint32_t error)
+static void ble_adv_error_handler(int error)
 {
 	LOG_ERR("Advertising error %d", error);
 }
