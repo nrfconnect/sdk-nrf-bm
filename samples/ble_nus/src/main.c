@@ -314,9 +314,8 @@ static int uarte_init(void)
 int main(void)
 {
 	int err;
-	uint32_t ram_start;
 	struct ble_adv_config ble_adv_cfg = {
-		.conn_cfg_tag = CONFIG_CONN_TAG,
+		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
 		.evt_handler = ble_adv_evt_handler,
 		.error_handler = ble_adv_error_handler,
 		.adv_data = {
@@ -342,15 +341,7 @@ int main(void)
 		return -1;
 	}
 
-	nrf_sdh_ble_app_ram_start_get(&ram_start);
-
-	err = nrf_sdh_ble_default_cfg_set(CONFIG_CONN_TAG);
-	if (err) {
-		LOG_ERR("Failed to setup default configuration, err %d", err);
-		return -1;
-	}
-
-	err = nrf_sdh_ble_enable(ram_start);
+	err = nrf_sdh_ble_enable(CONFIG_NRF_SDH_BLE_CONN_TAG);
 	if (err) {
 		LOG_ERR("Failed to enable BLE, err %d", err);
 		return -1;

@@ -15,8 +15,6 @@
 
 #include <lite_buttons.h>
 
-#define CONN_TAG 1
-
 #if defined(CONFIG_SOC_SERIES_NRF52X)
 #define PIN_BTN_0 NRF_PIN_PORT_TO_PIN_NUMBER(11, 0)
 #define PIN_LED_0 NRF_PIN_PORT_TO_PIN_NUMBER(13, 0)
@@ -127,9 +125,8 @@ static void led_write_handler(uint16_t conn_handle, struct ble_lbs *lbs, uint8_t
 int main(void)
 {
 	int err;
-	uint32_t ram_start;
 	struct ble_adv_config ble_adv_config = {
-		.conn_cfg_tag = CONN_TAG,
+		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
 		.evt_handler = ble_adv_evt_handler,
 		.error_handler = ble_adv_error_handler,
 		.adv_data = {
@@ -149,15 +146,7 @@ int main(void)
 
 	printk("SoftDevice enabled\n");
 
-	nrf_sdh_ble_app_ram_start_get(&ram_start);
-
-	err = nrf_sdh_ble_default_cfg_set(CONN_TAG);
-	if (err) {
-		printk("Failed to setup default configuration, err %d\n", err);
-		return -1;
-	}
-
-	err = nrf_sdh_ble_enable(ram_start);
+	err = nrf_sdh_ble_enable(CONFIG_NRF_SDH_BLE_CONN_TAG);
 	if (err) {
 		printk("Failed to enable BLE, err %d\n", err);
 		return -1;

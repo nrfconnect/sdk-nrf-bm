@@ -11,17 +11,15 @@
 #include <zephyr/sys_clock.h> /* USEC_PER_SEC */
 #include <zephyr/sys/printk.h>
 
-#define CONN_TAG 1
-
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {
-	printk("BLE EVENT %d\n", evt->header.evt_id);
+	printk("BLE event %d\n", evt->header.evt_id);
 }
 NRF_SDH_BLE_OBSERVER(sdh_ble, on_ble_evt, NULL, 0);
 
 static void on_soc_evt(uint32_t evt, void *ctx)
 {
-	printk("SoC event!!\n");
+	printk("SoC event\n");
 }
 NRF_SDH_SOC_OBSERVER(sdh_soc, on_soc_evt, NULL, 0);
 
@@ -34,7 +32,6 @@ NRF_SDH_STATE_EVT_OBSERVER(sdh_state, on_state_change, NULL, 0);
 int main(void)
 {
 	int err;
-	uint32_t ram_start;
 
 	printk("Hello World! %s\n", CONFIG_BOARD_TARGET);
 
@@ -46,15 +43,7 @@ int main(void)
 
 	printk("SoftDevice enabled\n");
 
-	nrf_sdh_ble_app_ram_start_get(&ram_start);
-
-	err = nrf_sdh_ble_default_cfg_set(CONN_TAG);
-	if (err) {
-		printk("Failed to setup default configuration, err %d\n", err);
-		return -1;
-	}
-
-	err = nrf_sdh_ble_enable(ram_start);
+	err = nrf_sdh_ble_enable(CONFIG_NRF_SDH_BLE_CONN_TAG);
 	if (err) {
 		printk("Failed to enable BLE, err %d\n", err);
 		return -1;
