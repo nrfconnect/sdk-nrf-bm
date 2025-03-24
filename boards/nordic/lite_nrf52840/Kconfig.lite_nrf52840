@@ -1,0 +1,8 @@
+# Copyright (c) 2025 Nordic Semiconductor ASA
+# SPDX-License-Identifier: Apache-2.0
+
+# This board is for internal development use only.
+# nRF52840 is not planned to be supported in the final version of NCS Lite.
+
+config BOARD_LITE_NRF52840
+	select SOC_NRF52840_QIAA

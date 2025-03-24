@@ -13,21 +13,18 @@
 #include <bluetooth/services/ble_dis.h>
 #include <zephyr/sys/printk.h>
 
-#ifndef CONFIG_SOC_SERIES_NRF52X
 #include <board-config.h>
-#endif
 
 #include <lite_buttons.h>
 
 #if defined(CONFIG_SOC_SERIES_NRF52X)
-#define PIN_BTN_0 NRF_PIN_PORT_TO_PIN_NUMBER(11, 0)
-#define PIN_LED_0 NRF_PIN_PORT_TO_PIN_NUMBER(13, 0)
 #define LED_ACTIVE_STATE 0 /* GPIO_ACTIVE_LOW */
 #elif defined(CONFIG_SOC_SERIES_NRF54LX)
-#define PIN_BTN_0 BOARD_PIN_BTN_0
-#define PIN_LED_0 BOARD_PIN_LED_0
 #define LED_ACTIVE_STATE 1 /* GPIO_ACTIVE_HIGH */
 #endif
+
+#define PIN_BTN_0 BOARD_PIN_BTN_0
+#define PIN_LED_0 BOARD_PIN_LED_0
 
 BLE_ADV_DEF(ble_adv); /* BLE advertising instance */
 BLE_LBS_DEF(ble_lbs); /* BLE LED Button Service instance */

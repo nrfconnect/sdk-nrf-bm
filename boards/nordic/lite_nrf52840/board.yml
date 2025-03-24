@@ -1,0 +1,8 @@
+board:
+  name: lite_nrf52840
+  full_name: Lite nRF52840
+  vendor: nordic
+  socs:
+  - name: nrf52840
+    variants:
+    - name: no_softdevice
