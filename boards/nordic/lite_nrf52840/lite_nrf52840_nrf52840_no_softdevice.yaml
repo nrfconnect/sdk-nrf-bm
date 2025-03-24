@@ -1,0 +1,13 @@
+identifier: lite_nrf52840/nrf52840/no_softdevice
+name: Lite-nRF52840-NRF52840-No-SoftDevice
+type: mcu
+arch: arm
+ram: 256
+flash: 1024
+toolchain:
+  - zephyr
+  - gnuarmemb
+  - xtools
+supported:
+  - watchdog
+vendor: nordic

@@ -11,23 +11,19 @@
 #include <lite_timer.h>
 #include <lite_buttons.h>
 
-#ifndef CONFIG_SOC_SERIES_NRF52X
+#if CONFIG_SOFTDEVICE
+#include <nrf_sdh.h>
+#include <nrf_sdh_ble.h>
+#endif /* CONFIG_SOFTDEVICE */
+
 #include <board-config.h>
-#endif
 
 LOG_MODULE_REGISTER(buttons_sample, LOG_LEVEL_INF);
 
-#if defined(CONFIG_SOC_SERIES_NRF52X)
-#define PIN_BTN_0 NRF_PIN_PORT_TO_PIN_NUMBER(11, 0)
-#define PIN_BTN_1 NRF_PIN_PORT_TO_PIN_NUMBER(12, 0)
-#define PIN_BTN_2 NRF_PIN_PORT_TO_PIN_NUMBER(24, 0)
-#define PIN_BTN_3 NRF_PIN_PORT_TO_PIN_NUMBER(25, 0)
-#elif defined(CONFIG_SOC_SERIES_NRF54LX)
 #define PIN_BTN_0 BOARD_PIN_BTN_0
 #define PIN_BTN_1 BOARD_PIN_BTN_1
 #define PIN_BTN_2 BOARD_PIN_BTN_2
 #define PIN_BTN_3 BOARD_PIN_BTN_3
-#endif
 
 static volatile bool running;
 
@@ -46,6 +42,21 @@ int main(void)
 
 	LOG_INF("Buttons sample started\n");
 
+#if CONFIG_SOFTDEVICE
+	err = nrf_sdh_enable_request();
+	if (err) {
+		printk("Failed to enable SoftDevice, err %d\n", err);
+		return -1;
+	}
+
+	printk("SoftDevice enabled\n");
+
+	err = nrf_sdh_ble_enable(CONFIG_NRF_SDH_BLE_CONN_TAG);
+	if (err) {
+		printk("Failed to enable BLE, err %d\n", err);
+		return -1;
+	}
+#endif /* CONFIG_SOFTDEVICE */
 
 	running = true;
 
