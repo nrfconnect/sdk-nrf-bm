@@ -84,7 +84,7 @@ int main(void)
 		return err;
 	}
 
-	LOG_INF("Buttons initialized, press button 4 to terminate");
+	LOG_INF("Buttons initialized, press button 3 to terminate");
 
 	while (running) {
 		/* Sleep */
