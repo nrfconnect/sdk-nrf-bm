@@ -338,6 +338,8 @@ int main(void)
 	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&hrs_cfg.hrm_cccd_wr_sec);
 	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&hrs_cfg.bsl_rd_sec);
 
+	printk("BLE HRS sample started\n");
+
 	simulated_meas_init();
 
 	err = nrf_sdh_enable_request();

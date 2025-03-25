@@ -76,6 +76,8 @@ int main(void)
 {
 	int err;
 
+	printk("Timer sample started\n");
+
 #if CONFIG_SOFTDEVICE
 	err = nrf_sdh_enable_request();
 	if (err) {
@@ -116,7 +118,7 @@ int main(void)
 		return -1;
 	}
 
-	printk("Timer sample started\n");
+	printk("Timers initialized\n");
 
 	while (!done) {
 		/* Sleep */
