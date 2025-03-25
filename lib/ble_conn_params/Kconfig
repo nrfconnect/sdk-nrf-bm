@@ -100,6 +100,7 @@ endif # BLE_CONN_PARAMS_AUTO_ATT_MTU
 config BLE_CONN_PARAMS_AUTO_DATA_LENGTH
 	bool "Handle data length updates"
 	default y
+	depends on SOFTDEVICE_DATA_LENGTH_UPDATE
 
 if BLE_CONN_PARAMS_AUTO_DATA_LENGTH
 
