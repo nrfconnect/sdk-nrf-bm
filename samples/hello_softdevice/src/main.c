@@ -33,7 +33,7 @@ int main(void)
 {
 	int err;
 
-	printk("Hello World! %s\n", CONFIG_BOARD_TARGET);
+	printk("Hello SoftDevice sample started\n");
 
 	err = nrf_sdh_enable_request();
 	if (err) {

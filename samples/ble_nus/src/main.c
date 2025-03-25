@@ -329,6 +329,8 @@ int main(void)
 	};
 	struct nrf_ble_qwr_init qwr_init_params = {0};
 
+	LOG_INF("BLE NUS sample started\n");
+
 	err = uarte_init();
 	if (err) {
 		LOG_ERR("Failed to enable UARTE, err %d", err);

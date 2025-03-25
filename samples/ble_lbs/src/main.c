@@ -138,6 +138,8 @@ int main(void)
 		.led_write_handler = led_write_handler,
 	};
 
+	printk("BLE LBS sample started\n");
+
 	err = nrf_sdh_enable_request();
 	if (err) {
 		printk("Failed to enable SoftDevice, err %d\n", err);

@@ -40,8 +40,8 @@ int main(void)
 {
 	int err;
 
-	LOG_INF("Buttons sample on %s", CONFIG_BOARD);
-	LOG_INF("Press button 4 to terminate.");
+	LOG_INF("Buttons sample started\n");
+
 
 	running = true;
 
@@ -83,6 +83,8 @@ int main(void)
 		LOG_ERR("lite_buttons_enable error: %d", err);
 		return err;
 	}
+
+	LOG_INF("Buttons initialized, press button 4 to terminate");
 
 	while (running) {
 		/* Sleep */
