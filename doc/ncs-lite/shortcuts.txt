@@ -1,9 +1,12 @@
 .. |NCSL| replace:: nRF Connect SDK Lite
 .. |NCS| replace:: nRF Connect SDK
 
+.. |VSC| replace:: Visual Studio Code
+.. |nRFVSC| replace:: nRF Connect for VS Code extension
+
 .. ### Versions
 
-.. |ncs_release| replace:: v2.9.0
+.. |ncs_release| replace:: v2.9.1
 .. |release| replace:: v0.1.0
 
 .. |jlink_ver| replace:: v8.10f

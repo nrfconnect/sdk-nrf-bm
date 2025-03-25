@@ -31,15 +31,13 @@ The sample supports the following development kits:
 Overview
 ********
 
-The sample demonstrates the basic lifecycle management of the SoftDevice in a Zephyr-based environment.
-It shows how to enable and disable the SoftDevice, handle various types of events related to the SoftDevice, and manage BLE functionality.
+The sample demonstrates the basic management of the SoftDevice in NCS Lite.
+It shows how to enable and disable the SoftDevice, handle various types of events related to the SoftDevice, and manage Bluetooth LE functionality.
 
-1. The sample starts by printing "Hello World!" along with the target board configuration.
+1. The sample starts by printing "Hello SoftDevice sample started".
 #. It then proceeds to enable the SoftDevice using ``nrf_sdh_enable_request()``.
-#. After successfully enabling the SoftDevice, it retrieves the start address of the application RAM required by the Bluetooth LE functionality using ``nrf_sdh_ble_app_ram_start_get()``.
-#. It sets up a default Bluetooth LE configuration with ``nrf_sdh_ble_default_cfg_set()`` using the previously defined CONN_TAG.
-#. The Bluetooth LE functionality of the SoftDevice is enabled with ``nrf_sdh_ble_enable()``, passing the start address of the application RAM.
-#. After enabling BLE, the function waits for 2 seconds using ``k_busy_wait()``.
+#. The Bluetooth LE functionality of the SoftDevice is enabled with ``nrf_sdh_ble_enable()``, passing the default connection configuration tag.
+#. After enabling Bluetooth LE, the function waits for 2 seconds using ``k_busy_wait()``.
 #. The SoftDevice is then disabled using ``nrf_sdh_disable_request()``.
 #. Finally, it prints that the SoftDevice is disabled and ends the program with a goodbye message.
 
@@ -48,30 +46,23 @@ Building and running
 
 This sample can be found under :file:`samples/hello_softdevice/` in the |NCSL| folder structure.
 
+.. include:: /includes/build_sample.txt
+
+.. include:: /includes/program_sample.txt
+
 Programming the S115 SoftDevice
 *******************************
 
-The SoftDevice binary is located in :file:`subsys/softdevice/hex/s115` in the |NCSL| folder structure.
-
-You must program the SoftDevice using the command line:
-
-1.
-#.
-
-.. _hello_softdevice_testing:
+.. include:: /includes/softdevice_flash.txt
 
 Testing
 =======
 
-After programming the sample to your development kit, complete the following steps to test it:
+You can test this sample by performing the following steps:
 
-1.
-#.
-
-Dependencies
-************
-
-This sample uses the following |NCS| libraries:
-
-* file:`include/nrf_sdh.h`
-* file:`include/nrf_sdh_ble.h`
+1. Compile and program the application.
+#. Observe that the ``Hello SoftDevice sample started`` message is printed.
+#. Observe that the ``SoftDevice enabled`` message is printed.
+#. Observe that the ``Bluetooth enabled`` message is printed.
+#. Observe that the ``SoftDevice disabled`` message is printed.
+#. Observe that the ``Bye`` message is printed.

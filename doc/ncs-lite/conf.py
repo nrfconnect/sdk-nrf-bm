@@ -17,7 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'nRF Connect SDK Lite'
+project = 'nRF Connect SDK Lite 0.1.0'
 copyright = '2025, Nordic Semiconductor'
 author = 'Nordic Semiconductor'
 

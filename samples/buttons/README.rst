@@ -19,11 +19,9 @@ The sample supports the following development kits:
 
    * - Hardware platform
      - PCA
-     - SoftDevice
      - Board target
    * - `nRF54L15 DK`_
      - PCA10156
-     - S115
      - nrf54l15dk/nrf54l15/cpuapp
 
 Overview
@@ -49,29 +47,18 @@ Building and running
 
 This sample can be found under :file:`samples/buttons/` in the |NCSL| folder structure.
 
-Programming the S115 SoftDevice
-*******************************
+.. include:: /includes/build_sample.txt
 
-The SoftDevice binary is located in :file:`subsys/softdevice/hex/s115` in the |NCSL| folder structure.
-
-You must program the SoftDevice using the command line:
-
-1.
-#.
-
-.. _buttons_sample_testing:
+.. include:: /includes/program_sample.txt
 
 Testing
 =======
 
-After programming the sample to your development kit, complete the following steps to test it:
+You can test this sample by performing the following steps:
 
-1.
-#.
-
-Dependencies
-************
-
-This sample uses the following |NCS| libraries:
-
-* file:`include/lite_buttons.h`
+1. Compile and program the application.
+#. Observe that the ``Buttons sample started`` message is printed.
+#. Observe that the ``Buttons initialized, press Button 3 to terminate`` message is printed.
+#. Press the buttons on the development kit.
+   Observe the application printing a message when the buttons are pressed.
+#. Press Button 3 on the development kit to terminate the application.
