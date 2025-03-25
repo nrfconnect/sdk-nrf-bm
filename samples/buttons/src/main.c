@@ -74,13 +74,13 @@ int main(void)
 
 	err = lite_buttons_init(configs, ARRAY_SIZE(configs), LITE_BUTTONS_DETECTION_DELAY_MIN_US);
 	if (err) {
-		LOG_ERR("lite_buttons_init error: %d", err);
+		LOG_ERR("Failed to initialize buttons, err: %d", err);
 		return err;
 	}
 
 	err = lite_buttons_enable();
 	if (err) {
-		LOG_ERR("lite_buttons_enable error: %d", err);
+		LOG_ERR("Failed to enable buttons, err: %d", err);
 		return err;
 	}
 
@@ -93,11 +93,11 @@ int main(void)
 
 	err = lite_buttons_deinit();
 	if (err) {
-		LOG_ERR("lite_buttons_deinit error: %d", err);
+		LOG_ERR("Failed to deinitialize buttons, err: %d", err);
 		return err;
 	}
 
-	LOG_INF("Terminating.");
+	LOG_INF("Bye");
 
 	return 0;
 }

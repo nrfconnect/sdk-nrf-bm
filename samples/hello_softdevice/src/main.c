@@ -49,7 +49,7 @@ int main(void)
 		return -1;
 	}
 
-	printk("Bluetooth is enabled!\n");
+	printk("Bluetooth enabled\n");
 
 	k_busy_wait(2 * USEC_PER_SEC);
 
