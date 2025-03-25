@@ -96,37 +96,6 @@ extern "C" {
 
 #define NRF_RADIO_START_JITTER_US         (1)                 /**< The maximum jitter in @ref NRF_RADIO_CALLBACK_SIGNAL_TYPE_START relative to the requested start time. */
 
-/**@brief Mask of PPI channels reserved by the SoftDevice when the SoftDevice is disabled. */
-#define NRF_SOC_SD_PPI_CHANNELS_SD_DISABLED_MSK ((uint32_t)(0))
-
-/**@brief Mask of PPI channels reserved by the SoftDevice when the SoftDevice is enabled. */
-#define NRF_SOC_SD_PPI_CHANNELS_SD_ENABLED_MSK  ((uint32_t)( \
-      (1U << 17) \
-    | (1U << 18) \
-    | (1U << 19) \
-    | (1U << 20) \
-    | (1U << 21) \
-    | (1U << 22) \
-    | (1U << 23) \
-    | (1U << 24) \
-    | (1U << 25) \
-    | (1U << 26) \
-    | (1U << 27) \
-    | (1U << 28) \
-    | (1U << 29) \
-    | (1U << 30) \
-    | (1U << 31) \
-  ))
-
-/**@brief Mask of PPI groups reserved by the SoftDevice when the SoftDevice is disabled. */
-#define NRF_SOC_SD_PPI_GROUPS_SD_DISABLED_MSK    ((uint32_t)(0))
-
-/**@brief Mask of PPI groups reserved by the SoftDevice when the SoftDevice is enabled. */
-#define NRF_SOC_SD_PPI_GROUPS_SD_ENABLED_MSK     ((uint32_t)( \
-      (1U << 4) \
-    | (1U << 5) \
-  ))
-
 /**@} */
 
 /**@addtogroup NRF_SOC_ENUMS Enumerations
