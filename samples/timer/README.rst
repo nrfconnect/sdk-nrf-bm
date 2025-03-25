@@ -7,7 +7,7 @@ Timer
    :local:
    :depth: 2
 
-The Timer sample demonstrates the use of both single-shot and periodic timers in a Zephyr-based application.
+The Timer sample demonstrates the use of both single-shot and periodic timers.
 
 Requirements
 ************
@@ -19,46 +19,33 @@ The sample supports the following development kits:
 
    * - Hardware platforms
      - PCA
-     - SoftDevice
      - Board target
    * - `nRF54L15 DK`_
      - PCA10156
-     - S115
      - nrf54l15dk/nrf54l15/cpuapp
 
 Overview
 ********
 
-The single-shot timer is used to sequence a series of actions (printing "Hello", "world!", and "bye!\n"), while the periodic timer provides a visual indication of ongoing activity.
+The single-shot timer is used to sequence a series of actions (printing "Hello", "world!", and "bye!"), while the periodic timer provides a visual indication of ongoing activity.
 
 Building and running
 ********************
 
 This sample can be found under :file:`samples/timer/` in the |NCSL| folder structure.
 
-Programming the S115 SoftDevice
-*******************************
+.. include:: /includes/build_sample.txt
 
-The SoftDevice binary is located in :file:`subsys/softdevice/hex/s115` in the |NCSL| folder structure.
-
-You must program the SoftDevice using the command line:
-
-1.
-#.
-
-.. _timer_sample_testing:
+.. include:: /includes/program_sample.txt
 
 Testing
 =======
 
-After programming the sample to your development kit, complete the following steps to test it:
+You can test this sample by performing the following steps:
 
-1.
-#.
+1. Compile and program the application.
+#. Observe that the ``Timer sample started`` message is printed.
+#. Observe that the ``Timers initialized`` message is printed.
+#. Observe that the three words ``Hello``, ``world!``, and ``Bye!`` are printed one after another interlaced with period signs that are printed every half second.
 
-Dependencies
-************
-
-This sample uses the following |NCS| libraries:
-
-* file:`include/lite_timer.h`
+   With the default Kconfig options of the sample, the words ``Hello``, ``world!``, and ``Bye!`` are printed after one, three, and seven seconds, respectively.

@@ -1,0 +1,13 @@
+To flash the S115 SoftDevice binary to your device, open the terminal and run the following commands from the :file:`nrf-lite` folder:
+
+1. First, make sure that your device is erased:
+
+   .. code-block:: console
+
+      nrfutil device erase
+
+#. Then, flash the SoftDevice binary:
+
+   .. code-block:: console
+
+      nrfutil device program --firmware subsys/softdevice/hex/s115/s115_9.0.0-1.prototype_softdevice.hex

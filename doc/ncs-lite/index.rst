@@ -16,3 +16,4 @@ You can use this add-on for the following:
 
    install_ncsl.rst
    samples.rst
+   release_notes_0.1.0.rst
