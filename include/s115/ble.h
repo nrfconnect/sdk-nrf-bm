@@ -119,9 +119,7 @@ enum BLE_COMMON_CFGS
  */
 enum BLE_COMMON_OPTS
 {
-  BLE_COMMON_OPT_PA_LNA             = BLE_OPT_BASE + 0, /**< PA and LNA options */
   BLE_COMMON_OPT_CONN_EVT_EXT       = BLE_OPT_BASE + 1, /**< Extended connection events option */
-  BLE_COMMON_OPT_EXTENDED_RC_CAL    = BLE_OPT_BASE + 2, /**< Extended RC calibration option */
   BLE_COMMON_OPT_NUMBER                                 /**< Number of common options. */
 };
 
@@ -236,39 +234,6 @@ typedef struct
 } ble_version_t;
 
 /**
- * @brief Configuration parameters for the PA and LNA.
- */
-typedef struct
-{
-  uint8_t enable :1;      /**< Enable toggling for this amplifier. */
-  uint8_t active_high :1; /**< Set the pin to be active high. */
-  uint8_t gpio_pin :6;    /**< The GPIO pin to toggle for this amplifier. */
-  uint8_t gpiote_ch_id;   /**< The GPIOTE channel used for toggling the GPIO pin at the appropriate time. */
-} ble_pa_lna_cfg_t;
-
-/**
- * @brief PA & LNA GPIO toggle configuration
- *
- * This option configures the SoftDevice to toggle pins when the radio is active for use with a power amplifier and/or
- * a low noise amplifier.
- *
- * Toggling the pins is achieved by using two (D)PPI channels and two GPIOTE channels. The hardware channel IDs are provided
- * by the application and should be regarded as reserved as long as any PA/LNA toggling is enabled.
- *
- * @note  @ref sd_ble_opt_get is not supported for this option.
- * @note  Setting this option while the radio is in use (i.e. any of the roles are active) may have undefined consequences
- * and must be avoided by the application.
- */
-typedef struct
-{
-  ble_pa_lna_cfg_t pa_cfg;   /**< Power Amplifier configuration. */
-  ble_pa_lna_cfg_t lna_cfg;  /**< Low Noise Amplifier configuration. */
-
-  uint8_t ppi_ch_id_set;     /**< (D)PPI channel used for radio pin setting. */
-  uint8_t ppi_ch_id_clr;     /**< (D)PPI channel used for radio pin clearing. */
-} ble_common_opt_pa_lna_t;
-
-/**
  * @brief Configuration of extended BLE connection events.
  *
  * When enabled the SoftDevice will dynamically extend the connection event when possible.
@@ -284,34 +249,13 @@ typedef struct
   uint8_t enable : 1; /**< Enable extended BLE connection events, disabled by default. */
 } ble_common_opt_conn_evt_ext_t;
 
-/**
- * @brief Enable/disable extended RC calibration.
- *
- * If extended RC calibration is enabled and the internal RC oscillator (@ref NRF_CLOCK_LF_SRC_RC) is used as the SoftDevice
- * LFCLK source, the SoftDevice as a peripheral will by default try to increase the receive window if two consecutive packets
- * are not received. If it turns out that the packets were not received due to clock drift, the RC calibration is started.
- * This calibration comes in addition to the periodic calibration that is configured by @ref sd_softdevice_enable(). When
- * using only peripheral connections, the periodic calibration can therefore be configured with a much longer interval as the
- * peripheral will be able to detect and adjust automatically to clock drift, and calibrate on demand.
- *
- * If extended RC calibration is disabled and the internal RC oscillator is used as the SoftDevice LFCLK source, the
- * RC oscillator is calibrated periodically as configured by @ref sd_softdevice_enable().
- *
- * @note @ref sd_ble_opt_get is not supported for this option.
- */
-typedef struct
-{
-  uint8_t enable : 1; /**< Enable extended RC calibration, enabled by default. */
-} ble_common_opt_extended_rc_cal_t;
 
 
 
 /**@brief Option structure for common options. */
 typedef union
 {
-  ble_common_opt_pa_lna_t             pa_lna;             /**< Parameters for controlling PA and LNA pin toggling. */
   ble_common_opt_conn_evt_ext_t       conn_evt_ext;       /**< Parameters for enabling extended connection events. */
-  ble_common_opt_extended_rc_cal_t    extended_rc_cal;    /**< Parameters for enabling extended RC calibration. */
 } ble_common_opt_t;
 
 /**@brief Common BLE Option type, wrapping the module specific options. */
@@ -397,7 +341,6 @@ typedef union
  *          is referenced in the event documentation.
  *          If the application fails to do so, the BLE connection may timeout, or the SoftDevice may stop
  *          communicating with the peer device.
- *          - @ref BLE_GAP_EVT_DATA_LENGTH_UPDATE_REQUEST
  *          - @ref BLE_GAP_EVT_PHY_UPDATE_REQUEST
  *          - @ref BLE_GAP_EVT_SEC_PARAMS_REQUEST
  *          - @ref BLE_GAP_EVT_SEC_INFO_REQUEST
