@@ -154,7 +154,7 @@ int main(void)
 		return -1;
 	}
 
-	printk("Bluetooth is enabled!\n");
+	printk("Bluetooth enabled\n");
 
 	led_init();
 
@@ -168,13 +168,13 @@ int main(void)
 		1,
 		LITE_BUTTONS_DETECTION_DELAY_MIN_US);
 	if (err) {
-		printk("lite_buttons_init error: %d\n", err);
+		printk("Failed to initialize buttons, err: %d\n", err);
 		return -1;
 	}
 
 	err = lite_buttons_enable();
 	if (err) {
-		printk("lite_buttons_enable error: %d\n", err);
+		printk("Failed to enable button detection, err: %d\n", err);
 		return -1;
 	}
 
@@ -184,13 +184,13 @@ int main(void)
 		return -1;
 	}
 
-	printk("LBS initialized\n");
-
 	err = ble_dis_init();
 	if (err) {
 		printk("Failed to initialize device information service, err %d\n", err);
 		return -1;
 	}
+
+	printk("Services initialized\n");
 
 	err = ble_adv_init(&ble_adv, &ble_adv_config);
 	if (err) {
@@ -203,6 +203,8 @@ int main(void)
 		printk("Failed to start advertising, err %d\n", err);
 		return -1;
 	}
+
+	printk("Advertising as %s\n", CONFIG_BLE_ADV_NAME);
 
 	while (true) {
 		sd_app_evt_wait();

@@ -339,9 +339,11 @@ int main(void)
 
 	err = nrf_sdh_enable_request();
 	if (err) {
-		LOG_ERR("Failed to setup default configuration, err %d", err);
+		LOG_ERR("Failed to enable SoftDevice, err %d\n", err);
 		return -1;
 	}
+
+	LOG_INF("SoftDevice enabled\n");
 
 	err = nrf_sdh_ble_enable(CONFIG_NRF_SDH_BLE_CONN_TAG);
 	if (err) {
@@ -349,13 +351,7 @@ int main(void)
 		return -1;
 	}
 
-	LOG_INF("Bluetooth is enabled");
-
-	err = ble_conn_params_event_handler_set(on_conn_params_evt);
-	if (err) {
-		LOG_ERR("Failed to setup conn param event handler, err %d", err);
-		return -1;
-	}
+	LOG_INF("Bluetooth enabled");
 
 	err = nrf_ble_qwr_init(&ble_qwr, &qwr_init_params);
 	if (err) {
@@ -369,9 +365,17 @@ int main(void)
 		return -1;
 	}
 
+	LOG_INF("Services initialized\n");
+
+	err = ble_conn_params_event_handler_set(on_conn_params_evt);
+	if (err) {
+		LOG_ERR("Failed to setup conn param event handler, err %d", err);
+		return -1;
+	}
+
 	err = ble_adv_init(&ble_adv, &ble_adv_cfg);
 	if (err) {
-		LOG_ERR("Failed to initialize BLE advertising, err %d", err);
+		LOG_ERR("Failed to initialize advertising, err %d", err);
 		return -1;
 	}
 
@@ -394,7 +398,7 @@ int main(void)
 		return -1;
 	}
 
-	LOG_INF("NUS is ready");
+	LOG_INF("Advertising as %s\n", CONFIG_BLE_ADV_NAME);
 #if defined(CONFIG_SOC_SERIES_NRF54LX)
 	LOG_INF("The NUS service is handled at a separate uart instance");
 #endif

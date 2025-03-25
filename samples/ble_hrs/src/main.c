@@ -344,7 +344,7 @@ int main(void)
 
 	err = nrf_sdh_enable_request();
 	if (err) {
-		printk("Failed to setup default configuration, err %d\n", err);
+		printk("Failed to enable SoftDevice, err %d\n", err);
 		return -1;
 	}
 
@@ -356,13 +356,7 @@ int main(void)
 		return -1;
 	}
 
-	printk("Bluetooth is enabled\n");
-
-	err = ble_conn_params_event_handler_set(on_conn_params_evt);
-	if (err) {
-		printk("Failed to setup conn param event handler, err %d\n", err);
-		return -1;
-	}
+	printk("Bluetooth enabled\n");
 
 	err = ble_hrs_init(&ble_hrs, &hrs_cfg);
 	if (err) {
@@ -382,13 +376,19 @@ int main(void)
 		return -1;
 	}
 
-	err = ble_adv_init(&ble_adv, &ble_adv_cfg);
+	printk("Services initialized\n");
+
+	err = ble_conn_params_event_handler_set(on_conn_params_evt);
 	if (err) {
-		printk("Failed to initialize BLE advertising, err %d\n", err);
+		printk("Failed to setup conn param event handler, err %d\n", err);
 		return -1;
 	}
 
-	printk("Heart Rate Sensor sample started\n");
+	err = ble_adv_init(&ble_adv, &ble_adv_cfg);
+	if (err) {
+		printk("Failed to initialize advertising, err %d\n", err);
+		return -1;
+	}
 
 	simulated_meas_start();
 
@@ -397,6 +397,8 @@ int main(void)
 		printk("Failed to start advertising, err %d\n", err);
 		return -1;
 	}
+
+	printk("Advertising as %s\n", CONFIG_BLE_ADV_NAME);
 
 	while (true) {
 		sd_app_evt_wait();
