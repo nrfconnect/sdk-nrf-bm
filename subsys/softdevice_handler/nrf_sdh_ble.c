@@ -58,6 +58,7 @@ static int default_cfg_set(void)
 #if CONFIG_SOFTDEVICE_PERIPHERAL
 		ble_cfg.gap_cfg.role_count_cfg.periph_role_count =
 			CONFIG_NRF_SDH_BLE_PERIPHERAL_LINK_COUNT;
+		ble_cfg.gap_cfg.role_count_cfg.adv_set_count = BLE_GAP_ADV_SET_COUNT_DEFAULT;
 #endif
 
 #if CONFIG_SOFTDEVICE_CENTRAL
