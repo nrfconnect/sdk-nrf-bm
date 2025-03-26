@@ -1,0 +1,3437 @@
+%PDF-1.4
+%“Œ‹ž ReportLab Generated PDF document http://www.reportlab.com
+1 0 obj
+<<
+/F1 2 0 R /F2 3 0 R /F3 4 0 R /F4 5 0 R /F5 6 0 R /F6 40 0 R 
+  /F7 42 0 R
+>>
+endobj
+2 0 obj
+<<
+/BaseFont /Helvetica /Encoding /WinAnsiEncoding /Name /F1 /Subtype /Type1 /Type /Font
+>>
+endobj
+3 0 obj
+<<
+/BaseFont /Times-Roman /Encoding /WinAnsiEncoding /Name /F2 /Subtype /Type1 /Type /Font
+>>
+endobj
+4 0 obj
+<<
+/BaseFont /Courier /Encoding /WinAnsiEncoding /Name /F3 /Subtype /Type1 /Type /Font
+>>
+endobj
+5 0 obj
+<<
+/BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding /Name /F4 /Subtype /Type1 /Type /Font
+>>
+endobj
+6 0 obj
+<<
+/BaseFont /Helvetica-Oblique /Encoding /WinAnsiEncoding /Name /F5 /Subtype /Type1 /Type /Font
+>>
+endobj
+7 0 obj
+<<
+/Contents 89 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 88 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+8 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 7 0 R /XYZ 57.02362 705.0236 0 ] /Rect [ 57.02362 724.8236 237.4361 735.0236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+9 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 7 0 R /XYZ 57.02362 705.0236 0 ] /Rect [ 533.526 725.4611 538.252 735.6611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+10 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 7 0 R /XYZ 57.02362 672.0236 0 ] /Rect [ 77.02362 708.6236 153.0986 718.8236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+11 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 7 0 R /XYZ 57.02362 672.0236 0 ] /Rect [ 533.526 709.2611 538.252 719.4611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+12 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 39 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 57.02362 692.4236 148.6706 702.6236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+13 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 39 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 533.526 693.0611 538.252 703.2611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+14 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 39 0 R /XYZ 57.02362 702.0236 0 ] /Rect [ 77.02362 676.2236 146.0011 686.4236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+15 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 39 0 R /XYZ 57.02362 702.0236 0 ] /Rect [ 533.526 676.8611 538.252 687.0611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+16 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 39 0 R /XYZ 57.02362 672.0236 0 ] /Rect [ 77.02362 660.0236 141.2666 670.2236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+17 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 39 0 R /XYZ 57.02362 672.0236 0 ] /Rect [ 533.526 660.6611 538.252 670.8611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+18 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 41 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 57.02362 643.8236 125.0661 654.0236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+19 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 41 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 533.526 644.4611 538.252 654.6611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+20 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 41 0 R /XYZ 57.02362 690.0236 0 ] /Rect [ 77.02362 627.6236 141.2666 637.8236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+21 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 41 0 R /XYZ 57.02362 690.0236 0 ] /Rect [ 533.526 628.2611 538.252 638.4611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+22 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 43 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 57.02362 611.4236 125.0661 621.6236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+23 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 43 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 533.526 612.0611 538.252 622.2611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+24 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 43 0 R /XYZ 57.02362 690.0236 0 ] /Rect [ 77.02362 595.2236 146.0011 605.4236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+25 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 43 0 R /XYZ 57.02362 690.0236 0 ] /Rect [ 533.526 595.8611 538.252 606.0611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+26 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 43 0 R /XYZ 57.02362 564.0236 0 ] /Rect [ 77.02362 579.0236 141.2666 589.2236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+27 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 43 0 R /XYZ 57.02362 564.0236 0 ] /Rect [ 533.526 579.6611 538.252 589.8611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+28 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 45 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 57.02362 562.8236 125.0661 573.0236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+29 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 45 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 533.526 563.4611 538.252 573.6611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+30 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 45 0 R /XYZ 57.02362 678.0236 0 ] /Rect [ 77.02362 546.6236 141.2666 556.8236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+31 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 45 0 R /XYZ 57.02362 678.0236 0 ] /Rect [ 533.526 547.2611 538.252 557.4611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+32 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 47 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 57.02362 530.4236 125.0661 540.6236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+33 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 47 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 533.526 531.0611 538.252 541.2611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+34 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 47 0 R /XYZ 57.02362 620.0236 0 ] /Rect [ 77.02362 514.2236 141.2666 524.4236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+35 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 47 0 R /XYZ 57.02362 620.0236 0 ] /Rect [ 533.526 514.8611 538.252 525.0611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+36 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 47 0 R /XYZ 57.02362 349.2236 0 ] /Rect [ 77.02362 498.0236 146.0011 508.2236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+37 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 47 0 R /XYZ 57.02362 349.2236 0 ] /Rect [ 533.526 498.6611 538.252 508.8611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+38 0 obj
+<<
+/Annots [ 8 0 R 9 0 R 10 0 R 11 0 R 12 0 R 13 0 R 14 0 R 15 0 R 16 0 R 17 0 R 
+  18 0 R 19 0 R 20 0 R 21 0 R 22 0 R 23 0 R 24 0 R 25 0 R 26 0 R 27 0 R 
+  28 0 R 29 0 R 30 0 R 31 0 R 32 0 R 33 0 R 34 0 R 35 0 R 36 0 R 37 0 R ] /Contents 90 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 88 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 
+  /Trans <<
+
+>> /Type /Page
+>>
+endobj
+39 0 obj
+<<
+/Contents 91 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 88 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+40 0 obj
+<<
+/BaseFont /Courier-Bold /Encoding /WinAnsiEncoding /Name /F6 /Subtype /Type1 /Type /Font
+>>
+endobj
+41 0 obj
+<<
+/Contents 92 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 88 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+42 0 obj
+<<
+/BaseFont /Courier-Oblique /Encoding /WinAnsiEncoding /Name /F7 /Subtype /Type1 /Type /Font
+>>
+endobj
+43 0 obj
+<<
+/Contents 93 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 88 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+44 0 obj
+<<
+/Contents 94 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 88 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+45 0 obj
+<<
+/Contents 95 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 88 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+46 0 obj
+<<
+/Contents 96 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 88 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+47 0 obj
+<<
+/Contents 97 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 88 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+48 0 obj
+<<
+/Contents 98 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 88 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+49 0 obj
+<<
+/Contents 99 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 88 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+50 0 obj
+<<
+/Contents 100 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 88 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+51 0 obj
+<<
+/Contents 101 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 88 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+52 0 obj
+<<
+/Outlines 54 0 R /PageLabels 102 0 R /PageMode /UseNone /Pages 88 0 R /Type /Catalog
+>>
+endobj
+53 0 obj
+<<
+/Author () /CreationDate (D:20250325153827-01'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20250325153827-01'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
+  /Subject (\(unspecified\)) /Title (s115 migration document) /Trapped /False
+>>
+endobj
+54 0 obj
+<<
+/Count 27 /First 55 0 R /Last 75 0 R /Type /Outlines
+>>
+endobj
+55 0 obj
+<<
+/Count 1 /Dest [ 7 0 R /XYZ 57.02362 705.0236 0 ] /First 56 0 R /Last 56 0 R /Next 57 0 R /Parent 54 0 R 
+  /Title (Introduction to the s115 migration document)
+>>
+endobj
+56 0 obj
+<<
+/Dest [ 7 0 R /XYZ 57.02362 672.0236 0 ] /Parent 55 0 R /Title (About the document)
+>>
+endobj
+57 0 obj
+<<
+/Count 2 /Dest [ 39 0 R /XYZ 57.02362 765.0236 0 ] /First 58 0 R /Last 59 0 R /Next 60 0 R /Parent 54 0 R 
+  /Prev 55 0 R /Title (s115_9.0.0-1.prototype)
+>>
+endobj
+58 0 obj
+<<
+/Dest [ 39 0 R /XYZ 57.02362 702.0236 0 ] /Next 59 0 R /Parent 57 0 R /Title (Required changes)
+>>
+endobj
+59 0 obj
+<<
+/Dest [ 39 0 R /XYZ 57.02362 672.0236 0 ] /Parent 57 0 R /Prev 58 0 R /Title (New functionality)
+>>
+endobj
+60 0 obj
+<<
+/Count 1 /Dest [ 41 0 R /XYZ 57.02362 765.0236 0 ] /First 61 0 R /Last 61 0 R /Next 63 0 R /Parent 54 0 R 
+  /Prev 57 0 R /Title (s112_nrf52_7.2.0)
+>>
+endobj
+61 0 obj
+<<
+/Count -1 /Dest [ 41 0 R /XYZ 57.02362 690.0236 0 ] /First 62 0 R /Last 62 0 R /Parent 60 0 R /Title (New functionality)
+>>
+endobj
+62 0 obj
+<<
+/Dest [ 41 0 R /XYZ 57.02362 660.0236 0 ] /Parent 61 0 R /Title (Efficient discovery of 128-bit UUIDs)
+>>
+endobj
+63 0 obj
+<<
+/Count 2 /Dest [ 43 0 R /XYZ 57.02362 765.0236 0 ] /First 64 0 R /Last 65 0 R /Next 68 0 R /Parent 54 0 R 
+  /Prev 60 0 R /Title (s112_nrf52_7.0.1)
+>>
+endobj
+64 0 obj
+<<
+/Dest [ 43 0 R /XYZ 57.02362 690.0236 0 ] /Next 65 0 R /Parent 63 0 R /Title (Required changes)
+>>
+endobj
+65 0 obj
+<<
+/Count -2 /Dest [ 43 0 R /XYZ 57.02362 564.0236 0 ] /First 66 0 R /Last 67 0 R /Parent 63 0 R /Prev 64 0 R 
+  /Title (New functionality)
+>>
+endobj
+66 0 obj
+<<
+/Dest [ 43 0 R /XYZ 57.02362 534.0236 0 ] /Next 67 0 R /Parent 65 0 R /Title (Configurable inclusion of Central Address Resolution \(CAR\) characteristic and Peripheral Preferred Connection Parameters \(PPCP\))
+>>
+endobj
+67 0 obj
+<<
+/Dest [ 44 0 R /XYZ 57.02362 765.0236 0 ] /Parent 65 0 R /Prev 66 0 R /Title (Other additions to the API)
+>>
+endobj
+68 0 obj
+<<
+/Count 1 /Dest [ 45 0 R /XYZ 57.02362 765.0236 0 ] /First 69 0 R /Last 69 0 R /Next 75 0 R /Parent 54 0 R 
+  /Prev 63 0 R /Title (s112_nrf52_6.1.0)
+>>
+endobj
+69 0 obj
+<<
+/Count -5 /Dest [ 45 0 R /XYZ 57.02362 678.0236 0 ] /First 70 0 R /Last 74 0 R /Parent 68 0 R /Title (New functionality)
+>>
+endobj
+70 0 obj
+<<
+/Dest [ 45 0 R /XYZ 57.02362 648.0236 0 ] /Next 71 0 R /Parent 69 0 R /Title (API for removing a Vendor Specific base UUID)
+>>
+endobj
+71 0 obj
+<<
+/Dest [ 45 0 R /XYZ 57.02362 543.0236 0 ] /Next 72 0 R /Parent 69 0 R /Prev 70 0 R /Title (API to enable or disable extended RC calibration)
+>>
+endobj
+72 0 obj
+<<
+/Dest [ 45 0 R /XYZ 57.02362 396.0236 0 ] /Next 73 0 R /Parent 69 0 R /Prev 71 0 R /Title (API to get the advertiser Bluetooth device address)
+>>
+endobj
+73 0 obj
+<<
+/Dest [ 45 0 R /XYZ 57.02362 261.0236 0 ] /Next 74 0 R /Parent 69 0 R /Prev 72 0 R /Title (Hardware resource usage API)
+>>
+endobj
+74 0 obj
+<<
+/Dest [ 46 0 R /XYZ 57.02362 671.0236 0 ] /Parent 69 0 R /Prev 73 0 R /Title (Other additions to the API)
+>>
+endobj
+75 0 obj
+<<
+/Count 2 /Dest [ 47 0 R /XYZ 57.02362 765.0236 0 ] /First 76 0 R /Last 79 0 R /Parent 54 0 R /Prev 68 0 R 
+  /Title (s112_nrf52_6.0.0)
+>>
+endobj
+76 0 obj
+<<
+/Count -2 /Dest [ 47 0 R /XYZ 57.02362 620.0236 0 ] /First 77 0 R /Last 78 0 R /Next 79 0 R /Parent 75 0 R 
+  /Title (New functionality)
+>>
+endobj
+77 0 obj
+<<
+/Dest [ 47 0 R /XYZ 57.02362 590.0236 0 ] /Next 78 0 R /Parent 76 0 R /Title (Write to SoftDevice protected registers)
+>>
+endobj
+78 0 obj
+<<
+/Dest [ 47 0 R /XYZ 57.02362 479.0236 0 ] /Parent 76 0 R /Prev 77 0 R /Title (Usage)
+>>
+endobj
+79 0 obj
+<<
+/Count -7 /Dest [ 47 0 R /XYZ 57.02362 349.2236 0 ] /First 80 0 R /Last 87 0 R /Parent 75 0 R /Prev 76 0 R 
+  /Title (Required changes)
+>>
+endobj
+80 0 obj
+<<
+/Dest [ 47 0 R /XYZ 57.02362 319.2236 0 ] /Next 81 0 R /Parent 79 0 R /Title (Updated advertiser API)
+>>
+endobj
+81 0 obj
+<<
+/Dest [ 47 0 R /XYZ 57.02362 152.2236 0 ] /Next 82 0 R /Parent 79 0 R /Prev 80 0 R /Title (Configuring and updating an advertising set)
+>>
+endobj
+82 0 obj
+<<
+/Dest [ 48 0 R /XYZ 57.02362 711.0236 0 ] /Next 83 0 R /Parent 79 0 R /Prev 81 0 R /Title (Configuring advertising parameters for an advertising set)
+>>
+endobj
+83 0 obj
+<<
+/Count -1 /Dest [ 49 0 R /XYZ 57.02362 543.0236 0 ] /First 84 0 R /Last 84 0 R /Next 85 0 R /Parent 79 0 R 
+  /Prev 82 0 R /Title (Other Advertising API changes)
+>>
+endobj
+84 0 obj
+<<
+/Dest [ 50 0 R /XYZ 57.02362 765.0236 0 ] /Parent 83 0 R /Title (Usage)
+>>
+endobj
+85 0 obj
+<<
+/Dest [ 50 0 R /XYZ 57.02362 209.8236 0 ] /Next 86 0 R /Parent 79 0 R /Prev 83 0 R /Title (Updated RSSI API)
+>>
+endobj
+86 0 obj
+<<
+/Dest [ 51 0 R /XYZ 57.02362 701.0236 0 ] /Next 87 0 R /Parent 79 0 R /Prev 85 0 R /Title (TX power API)
+>>
+endobj
+87 0 obj
+<<
+/Dest [ 51 0 R /XYZ 57.02362 622.0236 0 ] /Parent 79 0 R /Prev 86 0 R /Title (Updated Flash API)
+>>
+endobj
+88 0 obj
+<<
+/Count 13 /Kids [ 7 0 R 38 0 R 39 0 R 41 0 R 43 0 R 44 0 R 45 0 R 46 0 R 47 0 R 48 0 R 
+  49 0 R 50 0 R 51 0 R ] /Type /Pages
+>>
+endobj
+89 0 obj
+<<
+/Length 2973
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 741.0236 cm
+q
+.133333 .133333 .133333 rg
+BT 1 0 0 1 0 4 Tm /F2 20 Tf 24 TL (s115 migration document) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 684.0236 cm
+q
+BT 1 0 0 1 0 3.5 Tm 21 TL /F2 17.5 Tf .133333 .133333 .133333 rg (Introduction to the s115 migration document) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 654.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (About the document) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 624.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (This document describes how to migrate to new versions of the s115 SoftDevice. The s115 release notes) Tj T* (should be read in conjunction with this document.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 606.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (For each version, we have the following sections:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 600.0236 cm
+Q
+q
+1 0 0 1 57.02362 600.0236 cm
+Q
+q
+1 0 0 1 57.02362 576.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL ("Required changes" describes the changes that need to be done in the application when migrating from) Tj T* (an older version of the SoftDevice.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 570.0236 cm
+Q
+q
+1 0 0 1 57.02362 534.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F1 10 Tf 0 0 0 rg ("New functionality" describes how to use new features and functionality offered by this version of the) Tj T* (SoftDevice. ) Tj /F4 10 Tf (Note) Tj /F1 10 Tf ( : Not all new functionality may be covered; the release notes will contain a full list of) Tj T* (new features and functionality.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 530.0236 cm
+Q
+q
+1 0 0 1 57.02362 476.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 38 Tm /F1 10 Tf 12 TL (Each section describes how to migrate to a given version from the previous version. If you are migrating to) Tj T* (the current version from the previous version, follow the instructions in that section. To migrate between) Tj T* (versions that are more than one version apart, follow the migration steps for all intermediate versions in) Tj T* (order.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 446.0236 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F4 10 Tf 0 0 0 rg (Example) Tj /F1 10 Tf (: To migrate from version 5.0.0 to version 5.2.0, first follow the instructions to migrate to 5.1.0 from) Tj T* (5.0.0, then follow the instructions to migrate to 5.2.0 from 5.1.0.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 428.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Copyright \251 Nordic Semiconductor ASA. All rights reserved.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 428.0236 cm
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F5 10 Tf 0 0 0 rg (Page 1) Tj T* -230.7692 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+90 0 obj
+<<
+/Length 3824
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 744.0236 cm
+q
+BT 1 0 0 1 0 3.5 Tm 21 TL /F2 17.5 Tf .133333 .133333 .133333 rg (Contents) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 495.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 0 229.8 cm
+q
+BT 1 0 0 1 0 1.7 Tm 10.2 TL /F4 8.5 Tf 0 .4 .6 rg (Introduction to the s115 migration document) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 229.8 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F4 8.5 Tf 10.2 TL 67.274 0 Td (1) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 213.6 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (About the document) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 213.6 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (1) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 197.4 cm
+q
+BT 1 0 0 1 0 1.7 Tm 10.2 TL /F4 8.5 Tf 0 .4 .6 rg (s115_9.0.0-1.prototype) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 197.4 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F4 8.5 Tf 10.2 TL 67.274 0 Td (3) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 181.2 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (Required changes) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 181.2 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (3) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 165 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (New functionality) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 165 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (3) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 148.8 cm
+q
+BT 1 0 0 1 0 1.7 Tm 10.2 TL /F4 8.5 Tf 0 .4 .6 rg (s112_nrf52_7.2.0) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 148.8 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F4 8.5 Tf 10.2 TL 67.274 0 Td (4) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 132.6 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (New functionality) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 132.6 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (4) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 116.4 cm
+q
+BT 1 0 0 1 0 1.7 Tm 10.2 TL /F4 8.5 Tf 0 .4 .6 rg (s112_nrf52_7.0.1) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 116.4 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F4 8.5 Tf 10.2 TL 67.274 0 Td (5) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 100.2 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (Required changes) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 100.2 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (5) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 84 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (New functionality) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 84 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (5) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 67.8 cm
+q
+BT 1 0 0 1 0 1.7 Tm 10.2 TL /F4 8.5 Tf 0 .4 .6 rg (s112_nrf52_6.1.0) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 67.8 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F4 8.5 Tf 10.2 TL 67.274 0 Td (7) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 51.6 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (New functionality) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 51.6 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (7) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 35.4 cm
+q
+BT 1 0 0 1 0 1.7 Tm 10.2 TL /F4 8.5 Tf 0 .4 .6 rg (s112_nrf52_6.0.0) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 35.4 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F4 8.5 Tf 10.2 TL 67.274 0 Td (9) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 19.2 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (New functionality) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 19.2 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (9) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 3 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (Required changes) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 3 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (9) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 495.0236 cm
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F5 10 Tf 0 0 0 rg (Page 2) Tj T* -230.7692 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+91 0 obj
+<<
+/Length 800
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 744.0236 cm
+q
+BT 1 0 0 1 0 3.5 Tm 21 TL /F2 17.5 Tf .133333 .133333 .133333 rg (s115_9.0.0-1.prototype) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 714.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (This section describes how to use the new features of s115_9.0.0-1.prototype when migrating from) Tj T* (s115_7.2.0.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 684.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Required changes) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 654.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (New functionality) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 648.0236 cm
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F5 10 Tf 0 0 0 rg (Page 3) Tj T* -230.7692 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+92 0 obj
+<<
+/Length 2113
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 744.0236 cm
+q
+BT 1 0 0 1 0 3.5 Tm 21 TL /F2 17.5 Tf .133333 .133333 .133333 rg (s112_nrf52_7.2.0) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 702.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 26 Tm /F1 10 Tf 12 TL (This section describes how to use the new features of s112_nrf52_7.2.0 when migrating from) Tj T* (s112_nrf52_7.0.1. As with all minor releases, the s112_nrf52_7.2.0 is binary compatible with) Tj T* (s112_nrf52_7.0.1.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 672.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (New functionality) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 645.0236 cm
+q
+BT 1 0 0 1 0 2.5 Tm 15 TL /F4 12.5 Tf .133333 .133333 .133333 rg (Efficient discovery of 128-bit UUIDs) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 615.0236 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (By default, any discovered 128-bit UUIDs that are not present in the Vendor Specific UUID table, will have) Tj T* (the ) Tj /F3 10 Tf (ble_uuid_t::type) Tj /F1 10 Tf ( set to ) Tj /F3 10 Tf (BLE_UUID_TYPE_UNKNOWN) Tj /F1 10 Tf (.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 585.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (To change this default behavior and enable the automatic insertion of discovered 128-bit UUIDs to the) Tj T* (Vendor Specific UUID table, the following option can be used:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 543.4236 cm
+q
+q
+1 0 0 1 0 0 cm
+q
+1 0 0 1 6.6 6.6 cm
+q
+.662745 .662745 .662745 RG
+.5 w
+n -6 -6 480.0283 32.4 re S
+Q
+q
+BT 1 0 0 1 0 11.9 Tm 10.2 TL /F3 8.5 Tf 0 0 0 rg (sd_ble_opt_set) Tj (\() Tj (BLE_GATTC_OPT_UUID_DISC) Tj (,) Tj .733333 .733333 .733333 rg  T* (              ) Tj 0 0 0 rg (&) Tj (\() Tj (ble_opt_t) Tj (\){.) Tj (gattc_opt) Tj (.) Tj (uuid_disc) Tj (.) Tj (auto_add_vs_enable) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj /F6 8.5 Tf 0 0 .866667 rg (1) Tj /F3 8.5 Tf 0 0 0 rg (}\);) Tj .733333 .733333 .733333 rg  T* ET
+Q
+Q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 535.4236 cm
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F5 10 Tf 0 0 0 rg (Page 4) Tj T* -230.7692 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+93 0 obj
+<<
+/Length 7511
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 744.0236 cm
+q
+BT 1 0 0 1 0 3.5 Tm 21 TL /F2 17.5 Tf .133333 .133333 .133333 rg (s112_nrf52_7.0.1) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 702.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 26 Tm /F1 10 Tf 12 TL (This section describes how to use the new features of s112_nrf52_7.0.1 when migrating from) Tj T* (s112_nrf52_6.1.1. The s112_nrf52_7.0.1 has changed the \(Application Programming Interface\) API) Tj T* (compared to s112_nrf52_6.1.1 which requires applications to be recompiled.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 672.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Required changes) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 642.0236 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (The application can no longer use the option ) Tj /F3 10 Tf 1 0 0 rg (BLE_COMMON_OPT_ADV_SCHED_CFG) Tj /F1 10 Tf 0 0 0 rg (. The advertiser will) Tj T* (always use improved scheduling. This was previously defined as ) Tj /F3 10 Tf 1 0 0 rg (ADV_SCHED_CFG_IMPROVED) Tj /F1 10 Tf 0 0 0 rg (.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 576.0236 cm
+q
+BT 1 0 0 1 0 50 Tm 12 TL /F1 10 Tf 0 0 0 rg (The macros ) Tj /F3 10 Tf 1 0 0 rg (NRF_SOC_APP_PPI_CHANNELS_SD_DISABLED_MSK) Tj /F1 10 Tf 0 0 0 rg (,) Tj T* /F3 10 Tf 1 0 0 rg (NRF_SOC_APP_PPI_CHANNELS_SD_ENABLED_MSK) Tj /F1 10 Tf 0 0 0 rg (, ) Tj /F3 10 Tf 1 0 0 rg (NRF_SOC_APP_PPI_GROUPS_SD_DISABLED_MSK) Tj /F1 10 Tf 0 0 0 rg (,) Tj T* (and ) Tj /F3 10 Tf 1 0 0 rg (NRF_SOC_APP_PPI_GROUPS_SD_ENABLED_MSK) Tj /F1 10 Tf 0 0 0 rg ( are removed. The application can use the macros) Tj T* /F3 10 Tf 1 0 0 rg (NRF_SOC_SD_PPI_CHANNELS_SD_ENABLED_MSK) Tj /F1 10 Tf 0 0 0 rg ( and ) Tj /F3 10 Tf 1 0 0 rg (NRF_SOC_SD_PPI_GROUPS_SD_ENABLED_MSK) Tj /F1 10 Tf 0 0 0 rg ( to) Tj T* (deduce the PPI channels and groups available to the application.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 546.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (New functionality) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 504.0236 cm
+q
+BT 1 0 0 1 0 17.5 Tm 15 TL /F4 12.5 Tf .133333 .133333 .133333 rg (Configurable inclusion of Central Address Resolution \(CAR\) characteristic and) Tj T* (Peripheral Preferred Connection Parameters \(PPCP\)) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 486.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F4 10 Tf 12 TL (API Updates) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 480.0236 cm
+Q
+q
+1 0 0 1 57.02362 480.0236 cm
+Q
+q
+1 0 0 1 57.02362 456.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F3 10 Tf 0 .501961 0 rg (BLE_GAP_CFG_CAR_INCL_CONFIG) Tj /F1 10 Tf 0 0 0 rg (: This allows the application to include or exclude the CAR) Tj T* (characteristic from the GAP Service.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 450.0236 cm
+Q
+q
+1 0 0 1 57.02362 426.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F3 10 Tf 0 .501961 0 rg (BLE_GAP_CFG_PPCP_INCL_CONFIG) Tj /F1 10 Tf 0 0 0 rg (: This allows the application to include or exclude the PPCP) Tj T* (characteristic from the GAP Service.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 422.0236 cm
+Q
+q
+1 0 0 1 57.02362 404.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (For the above inclusion configuration APIs, the application can use:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 398.0236 cm
+Q
+q
+1 0 0 1 57.02362 398.0236 cm
+Q
+q
+1 0 0 1 57.02362 386.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F3 10 Tf 0 .501961 0 rg (BLE_GAP_CHAR_INCL_CONFIG_INCLUDE) Tj /F1 10 Tf 0 0 0 rg (: The characteristic is included.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 380.0236 cm
+Q
+q
+1 0 0 1 57.02362 356.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F3 10 Tf 0 .501961 0 rg (BLE_GAP_CHAR_INCL_CONFIG_EXCLUDE_WITH_SPACE) Tj /F1 10 Tf 0 0 0 rg (: The characteristic is excluded, but the) Tj T* (SoftDevice will reserve the attribute handles which are otherwise used for this characteristic.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 350.0236 cm
+Q
+q
+1 0 0 1 57.02362 338.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F3 10 Tf 0 .501961 0 rg (BLE_GAP_CHAR_INCL_CONFIG_EXCLUDE_WITHOUT_SPACE) Tj /F1 10 Tf 0 0 0 rg (: The characteristic is excluded.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 334.0236 cm
+Q
+q
+1 0 0 1 57.02362 316.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F4 10 Tf 12 TL (Usage) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 286.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (The code snippet below illustrates how to configure the SoftDevice to exclude both CAR and PPCP from the) Tj T* (GAP Service.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 98.14954 cm
+q
+q
+.868957 0 0 .868957 0 0 cm
+q
+1 0 0 1 6.6 7.595313 cm
+q
+.662745 .662745 .662745 RG
+.5 w
+n -6 -6 552.6 205.8 re S
+Q
+q
+BT 1 0 0 1 0 185.3 Tm 10.2 TL /F6 8.5 Tf .533333 .533333 .533333 rg (int) Tj /F3 8.5 Tf .733333 .733333 .733333 rg ( ) Tj /F6 8.5 Tf 0 .4 .733333 rg (main) Tj /F3 8.5 Tf 0 0 0 rg (\() Tj /F6 8.5 Tf .533333 .533333 .533333 rg (void) Tj /F3 8.5 Tf 0 0 0 rg (\)) Tj .733333 .733333 .733333 rg  T* 0 0 0 rg ({) Tj .733333 .733333 .733333 rg  T* (  ) Tj 0 0 0 rg (ble_cfg_t) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (cfg) Tj (;) Tj .733333 .733333 .733333 rg  T*  T*  T* (  ) Tj /F7 8.5 Tf .533333 .533333 .533333 rg (/* Exclude CAR from GAP service, but reserve the ATT Handles that will otherwise be used up by CAR. */) Tj /F3 8.5 Tf .733333 .733333 .733333 rg  T* (  ) Tj 0 0 0 rg (cfg) Tj (.) Tj (gap_cfg) Tj (.) Tj (car_include_cfg) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (BLE_GAP_CHAR_INCL_CONFIG_EXCLUDE_WITH_SPACE) Tj (;) Tj .733333 .733333 .733333 rg  T* (  ) Tj 0 0 0 rg (sd_ble_cfg_set) Tj (\() Tj (BLE_GAP_CFG_CAR_INCL_CONFIG) Tj (,) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (&) Tj (cfg) Tj (,) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (..\);) Tj .733333 .733333 .733333 rg  T*  T*  T* (  ) Tj /F7 8.5 Tf .533333 .533333 .533333 rg (/* Exclude PPCP from GAP service, but reserve the ATT Handles that will otherwise be used up by PPCP. */) Tj /F3 8.5 Tf .733333 .733333 .733333 rg  T* (  ) Tj 0 0 0 rg (cfg) Tj (.) Tj (gap_cfg) Tj (.) Tj (ppcp_include_cfg) Tj (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (BLE_GAP_CHAR_INCL_CONFIG_EXCLUDE_WITH_SPACE) Tj (;) Tj .733333 .733333 .733333 rg  T* (  ) Tj 0 0 0 rg (sd_ble_cfg_set) Tj (\() Tj (BLE_GAP_CFG_PPCP_INCL_CONFIG) Tj (,) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (&) Tj (cfg) Tj (,) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (..\);) Tj .733333 .733333 .733333 rg  T*  T* (  ) Tj /F7 8.5 Tf .533333 .533333 .533333 rg (/* Enable the BLE Stack. */) Tj /F3 8.5 Tf .733333 .733333 .733333 rg  T* (  ) Tj 0 0 0 rg (sd_ble_enable) Tj (\(...\);) Tj .733333 .733333 .733333 rg  T*  T* (  ) Tj 0 0 0 rg ([...]) Tj .733333 .733333 .733333 rg  T* 0 0 0 rg (}) Tj .733333 .733333 .733333 rg  T* ET
+Q
+Q
+Q
+Q
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F5 10 Tf 0 0 0 rg (Page 5) Tj T* -230.7692 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+94 0 obj
+<<
+/Length 839
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 750.0236 cm
+q
+BT 1 0 0 1 0 2.5 Tm 15 TL /F4 12.5 Tf .133333 .133333 .133333 rg (Other additions to the API) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 738.0236 cm
+Q
+q
+1 0 0 1 57.02362 738.0236 cm
+Q
+q
+1 0 0 1 57.02362 714.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F3 10 Tf 0 .501961 0 rg (sd_ble_gap_next_conn_evt_counter_get\(\)) Tj /F1 10 Tf 0 0 0 rg (. This API can be used to retrieve the next) Tj T* (connection event counter.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 710.0236 cm
+Q
+q
+1 0 0 1 57.02362 710.0236 cm
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F5 10 Tf 0 0 0 rg (Page 6) Tj T* -230.7692 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+95 0 obj
+<<
+/Length 7275
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 744.0236 cm
+q
+BT 1 0 0 1 0 3.5 Tm 21 TL /F2 17.5 Tf .133333 .133333 .133333 rg (s112_nrf52_6.1.0) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 690.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 38 Tm /F1 10 Tf 12 TL (This section describes how to use the new features of s112_nrf52_6.1.0 when migrating from) Tj T* (s112_nrf52_6.0.0. As with all minor releases, the s112_nrf52_6.1.0 is binary compatible with) Tj T* (s112_nrf52_6.0.0. Hence existing applications running on s112_nrf52_6.0.0 need not be recompiled unless) Tj T* (the new features are needed.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 660.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (New functionality) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 633.0236 cm
+q
+BT 1 0 0 1 0 2.5 Tm 15 TL /F4 12.5 Tf .133333 .133333 .133333 rg (API for removing a Vendor Specific base UUID) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 555.0236 cm
+q
+BT 1 0 0 1 0 62 Tm 12 TL /F1 10 Tf 0 0 0 rg (Using ) Tj /F3 10 Tf 0 .501961 0 rg (sd_ble_uuid_vs_remove\(\)) Tj /F1 10 Tf 0 0 0 rg (, the application can now remove a Vendor Specific base UUID that) Tj T* (has been added with ) Tj /F3 10 Tf (sd_ble_uuid_vs_add\(\)) Tj /F1 10 Tf (. This allows the application to reuse memory allocated for) Tj T* (Vendor Specific base UUIDs. The application must provide a pointer to the UUID type to be removed as an) Tj T* (input parameter to ) Tj /F3 10 Tf 0 .501961 0 rg (sd_ble_uuid_vs_remove\(\)) Tj /F1 10 Tf 0 0 0 rg (. The UUID type must not be in use by the ATT Server. A) Tj T* (limitation with the current implementation is that the input parameter can only point to) Tj T* /F3 10 Tf (BLE_UUID_TYPE_UNKNOWN) Tj /F1 10 Tf ( or the last added UUID type.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 528.0236 cm
+q
+BT 1 0 0 1 0 2.5 Tm 15 TL /F4 12.5 Tf .133333 .133333 .133333 rg (API to enable or disable extended RC calibration) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 450.0236 cm
+q
+BT 1 0 0 1 0 62 Tm -0.005444 Tw 12 TL /F1 10 Tf 0 0 0 rg (Extended RC calibration is a new SoftDevice feature that performs additional RC oscillator drift detection and) Tj T* 0 Tw (calibration when the SoftDevice is acting as a peripheral and the RC oscillator is used as the SoftDevice) Tj T* (clock source. The extended RC calibration is performed in addition to the periodic calibration which is) Tj T* (configured when calling ) Tj /F3 10 Tf (sd_softdevice_enable\(\)) Tj /F1 10 Tf (. If using only peripheral connections, the periodic) Tj T* (calibration can then be configured with a much longer interval because the peripheral can detect and adjust) Tj T* (automatically to clock drift and calibrate when required.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 408.0236 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F1 10 Tf 0 0 0 rg (The extended RC calibration is enabled by default. The option ) Tj /F3 10 Tf 0 .501961 0 rg (BLE_COMMON_OPT_EXTENDED_RC_CAL) Tj /F1 10 Tf 0 0 0 rg ( is) Tj T* (added to the BLE option API, allowing the application to enable or disable this feature. When using this API,) Tj T* (set ) Tj /F3 10 Tf 0 .501961 0 rg (ble_common_opt_t::extended_rc_cal::enable) Tj /F1 10 Tf 0 0 0 rg ( to '1' to enable, or to '0' to disable.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 381.0236 cm
+q
+BT 1 0 0 1 0 2.5 Tm 15 TL /F4 12.5 Tf .133333 .133333 .133333 rg (API to get the advertiser Bluetooth device address) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 327.0236 cm
+q
+BT 1 0 0 1 0 38 Tm 12 TL /F1 10 Tf 0 0 0 rg (A new API ) Tj /F3 10 Tf 0 .501961 0 rg (sd_ble_gap_adv_addr_get\(\)) Tj /F1 10 Tf 0 0 0 rg ( enables the application to get the local Bluetooth device) Tj T* (address that is used by the advertiser. The application must provide the advertising handle of the advertiser) Tj T* -0.030647 Tw (for the ) Tj /F3 10 Tf 0 .501961 0 rg (adv_handle) Tj /F1 10 Tf 0 0 0 rg ( input parameter, and a pointer to an address structure ) Tj /F3 10 Tf 0 .501961 0 rg (p_addr) Tj /F1 10 Tf 0 0 0 rg ( to be used as the output) Tj T* 0 Tw (parameter. The function may only be called when advertising is enabled.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 273.0236 cm
+q
+BT 1 0 0 1 0 38 Tm 12 TL /F1 10 Tf 0 0 0 rg (Note: If privacy is enabled, the SoftDevice will generate a new private address every) Tj T* /F3 10 Tf (ble_gap_privacy_params_t::private_addr_cycle_s) Tj /F1 10 Tf (, which is configured when calling) Tj T* /F3 10 Tf (sd_ble_gap_privacy_set\(\)) Tj /F1 10 Tf (. Depending on when ) Tj /F3 10 Tf 0 .501961 0 rg (sd_ble_gap_adv_addr_get\(\)) Tj /F1 10 Tf 0 0 0 rg ( is called, the) Tj T* (returned address may not be the address that is currently used by the advertiser.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 246.0236 cm
+q
+BT 1 0 0 1 0 2.5 Tm 15 TL /F4 12.5 Tf .133333 .133333 .133333 rg (Hardware resource usage API) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 216.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (The API now contains new macros to inform the application about the hardware resources used by the) Tj T* (SoftDevice.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 210.0236 cm
+Q
+q
+1 0 0 1 57.02362 210.0236 cm
+Q
+q
+1 0 0 1 57.02362 198.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (The macro ) Tj /F3 10 Tf 0 .501961 0 rg (__NRF_NVIC_SD_IRQ_PRIOS) Tj /F1 10 Tf 0 0 0 rg ( indicates the interrupt priority levels used by the SoftDevice.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 192.0236 cm
+Q
+q
+1 0 0 1 57.02362 168.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (The macro ) Tj /F3 10 Tf 0 .501961 0 rg (__NRF_NVIC_APP_IRQ_PRIOS) Tj /F1 10 Tf 0 0 0 rg ( indicates the interrupt priority levels available to the) Tj T* (application.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 162.0236 cm
+Q
+q
+1 0 0 1 57.02362 126.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F1 10 Tf 0 0 0 rg (The macros ) Tj /F3 10 Tf 0 .501961 0 rg (NRF_SOC_SD_PPI_CHANNELS_SD_ENABLED_MSK) Tj /F1 10 Tf 0 0 0 rg ( and) Tj T* /F3 10 Tf 0 .501961 0 rg (NRF_SOC_SD_PPI_CHANNELS_SD_DISABLED_MSK) Tj /F1 10 Tf 0 0 0 rg ( can be used to identify the PPI channels reserved) Tj T* (by the SoftDevice when the SoftDevice is enabled or disabled respectively.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 120.0236 cm
+Q
+q
+1 0 0 1 57.02362 84.02362 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F1 10 Tf 0 0 0 rg (The macros ) Tj /F3 10 Tf 0 .501961 0 rg (NRF_SOC_APP_PPI_CHANNELS_SD_ENABLED_MSK) Tj /F1 10 Tf 0 0 0 rg ( and) Tj T* /F3 10 Tf 0 .501961 0 rg (NRF_SOC_APP_PPI_CHANNELS_SD_DISABLED_MSK) Tj /F1 10 Tf 0 0 0 rg ( can be used to identify the PPI channels) Tj T* (available to the application when the SoftDevice is enabled or disabled respectively.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 78.02362 cm
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F5 10 Tf 0 0 0 rg (Page 7) Tj T* -230.7692 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+96 0 obj
+<<
+/Length 2467
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 729.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F1 10 Tf 0 0 0 rg (The macros ) Tj /F3 10 Tf 0 .501961 0 rg (NRF_SOC_SD_PPI_GROUPS_SD_ENABLED_MSK) Tj /F1 10 Tf 0 0 0 rg ( and) Tj T* /F3 10 Tf 0 .501961 0 rg (NRF_SOC_SD_PPI_GROUPS_SD_DISABLED_MSK) Tj /F1 10 Tf 0 0 0 rg ( can be used to identify the PPI groups reserved by) Tj T* (the SoftDevice when the SoftDevice is enabled or disabled respectively.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 723.0236 cm
+Q
+q
+1 0 0 1 57.02362 687.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F1 10 Tf 0 0 0 rg (The macros ) Tj /F3 10 Tf 0 .501961 0 rg (NRF_SOC_APP_PPI_GROUPS_SD_ENABLED_MSK) Tj /F1 10 Tf 0 0 0 rg ( and) Tj T* /F3 10 Tf 0 .501961 0 rg (NRF_SOC_APP_PPI_GROUPS_SD_DISABLED_MSK) Tj /F1 10 Tf 0 0 0 rg ( can be used to identify the PPI groups available to) Tj T* (the application when the SoftDevice is enabled or disabled respectively.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 683.0236 cm
+Q
+q
+1 0 0 1 57.02362 656.0236 cm
+q
+BT 1 0 0 1 0 2.5 Tm 15 TL /F4 12.5 Tf .133333 .133333 .133333 rg (Other additions to the API) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 644.0236 cm
+Q
+q
+1 0 0 1 57.02362 644.0236 cm
+Q
+q
+1 0 0 1 57.02362 632.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (The macro ) Tj /F3 10 Tf 0 .501961 0 rg (SD_VARIANT_ID) Tj /F1 10 Tf 0 0 0 rg ( indicates the SoftDevice variant.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 626.0236 cm
+Q
+q
+1 0 0 1 57.02362 614.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (The macro ) Tj /F3 10 Tf 0 .501961 0 rg (SD_FLASH_SIZE) Tj /F1 10 Tf 0 0 0 rg ( indicates the amount of flash memory used by the SoftDevice.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 610.0236 cm
+Q
+q
+1 0 0 1 57.02362 610.0236 cm
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F5 10 Tf 0 0 0 rg (Page 8) Tj T* -230.7692 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+97 0 obj
+<<
+/Length 7926
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 744.0236 cm
+q
+BT 1 0 0 1 0 3.5 Tm 21 TL /F2 17.5 Tf .133333 .133333 .133333 rg (s112_nrf52_6.0.0) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 714.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (This section describes how to migrate to s112_nrf52_6.0.0 from s132_nrf52_5.1.0 \(which is API compatible) Tj T* (with s112_nrf52810_5.1.0\).) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 696.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Notes:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 690.0236 cm
+Q
+q
+1 0 0 1 57.02362 690.0236 cm
+Q
+q
+1 0 0 1 57.02362 666.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (s112_nrf52_6.0.0 has changed the API compared to s132_nrf52_5.1.0 which requires applications to) Tj T* (be recompiled.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 660.0236 cm
+Q
+q
+1 0 0 1 57.02362 636.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL -0.026281 Tw (s112_nrf52_6.0.0 includes some features that are not Bluetooth qualified. For more information, see the) Tj T* 0 Tw (release notes.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 632.0236 cm
+Q
+q
+1 0 0 1 57.02362 602.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (New functionality) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 575.0236 cm
+q
+BT 1 0 0 1 0 2.5 Tm 15 TL /F4 12.5 Tf .133333 .133333 .133333 rg (Write to SoftDevice protected registers) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 533.0236 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F1 10 Tf 0 0 0 rg (A new API, ) Tj /F3 10 Tf 0 .501961 0 rg (sd_protected_register_write\(\)) Tj /F1 10 Tf 0 0 0 rg ( , has been added to give the application the possibility to) Tj T* (write to a register that is write-protected by the SoftDevice . A write-protected peripheralshall only be) Tj T* (accessed through the SoftDevice API when the SoftDevice is enabled.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 491.0236 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F1 10 Tf 0 0 0 rg (The new API supports writing to the Block Protection \() Tj /F3 10 Tf (BPROT) Tj /F1 10 Tf (\) peripheral. The application can use) Tj T* /F3 10 Tf 0 .501961 0 rg (sd_protected_register_write\(\)) Tj /F1 10 Tf 0 0 0 rg ( instead of ) Tj /F3 10 Tf (sd_flash_protect\(\)) Tj /F1 10 Tf ( to set the flash protection) Tj T* (configuration registers.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 464.0236 cm
+q
+BT 1 0 0 1 0 2.5 Tm 15 TL /F4 12.5 Tf .133333 .133333 .133333 rg (Usage) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 361.2236 cm
+q
+q
+1 0 0 1 0 0 cm
+q
+1 0 0 1 6.6 6.6 cm
+q
+.662745 .662745 .662745 RG
+.5 w
+n -6 -6 480.0283 93.6 re S
+Q
+q
+BT 1 0 0 1 0 73.1 Tm 10.2 TL /F7 8.5 Tf .533333 .533333 .533333 rg (/* Old API: */) Tj /F3 8.5 Tf .733333 .733333 .733333 rg  T* 0 0 0 rg (errcode) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (sd_flash_protect) Tj (\() Tj (value0) Tj (,) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (value1) Tj (,) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (value2) Tj (,) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (value3) Tj (\)) Tj .733333 .733333 .733333 rg  T*  T* /F7 8.5 Tf .533333 .533333 .533333 rg (/* New API: */) Tj /F3 8.5 Tf .733333 .733333 .733333 rg  T* 0 0 0 rg (errcode) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (sd_protected_register_write) Tj (\() Tj (&) Tj (\() Tj (NRF_BPROT) Tj (-) Tj (>) Tj (CONFIG0) Tj (\),) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (value0) Tj (\)) Tj .733333 .733333 .733333 rg  T* 0 0 0 rg (errcode) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (sd_protected_register_write) Tj (\() Tj (&) Tj (\() Tj (NRF_BPROT) Tj (-) Tj (>) Tj (CONFIG1) Tj (\),) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (value1) Tj (\)) Tj .733333 .733333 .733333 rg  T* 0 0 0 rg (errcode) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (sd_protected_register_write) Tj (\() Tj (&) Tj (\() Tj (NRF_BPROT) Tj (-) Tj (>) Tj (CONFIG2) Tj (\),) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (value2) Tj (\)) Tj .733333 .733333 .733333 rg  T* 0 0 0 rg (errcode) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (sd_protected_register_write) Tj (\() Tj (&) Tj (\() Tj (NRF_BPROT) Tj (-) Tj (>) Tj (CONFIG3) Tj (\),) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (value3) Tj (\)) Tj .733333 .733333 .733333 rg  T* ET
+Q
+Q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 331.2236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Required changes) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 304.2236 cm
+q
+BT 1 0 0 1 0 2.5 Tm 15 TL /F4 12.5 Tf .133333 .133333 .133333 rg (Updated advertiser API) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 286.2236 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F3 10 Tf 1 0 0 rg (sd_ble_gap_adv_data_set\(\)) Tj /F1 10 Tf 0 0 0 rg ( has been removed.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 268.2236 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (A new API, ) Tj /F3 10 Tf 0 .501961 0 rg (sd_ble_gap_adv_set_configure\(\)) Tj /F1 10 Tf 0 0 0 rg (, has been added with the following functionalities:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 262.2236 cm
+Q
+q
+1 0 0 1 57.02362 262.2236 cm
+Q
+q
+1 0 0 1 57.02362 250.2236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Configuring and updating the advertising parameters of an advertising set.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 244.2236 cm
+Q
+q
+1 0 0 1 57.02362 168.2236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 61 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 61 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Setting, clearing, or updating advertising and scan response data.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 55 cm
+Q
+q
+1 0 0 1 23 55 cm
+Q
+q
+1 0 0 1 23 31 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (Note: The advertising data must be kept alive in memory until advertising is terminated. Not doing) Tj T* (so will lead to undefined behavior.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 25 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (Note: Updating advertising data while advertising can only be done by providing new advertising) Tj T* (data buffers.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 164.2236 cm
+Q
+q
+1 0 0 1 57.02362 137.2236 cm
+q
+BT 1 0 0 1 0 2.5 Tm 15 TL /F4 12.5 Tf .133333 .133333 .133333 rg (Configuring and updating an advertising set) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 119.2236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Advertising Set is a term introduced in Bluetooth Core Specification v5.0.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 77.22362 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F1 10 Tf 0 0 0 rg (Each advertising set is identified by an advertising handle. To configure a new advertising set and obtain a) Tj T* (new advertising handle, ) Tj /F3 10 Tf 0 .501961 0 rg (sd_ble_gap_adv_set_configure\(\)) Tj /F1 10 Tf 0 0 0 rg ( should be called with a pointer) Tj T* /F3 10 Tf 0 .501961 0 rg (p_adv_handle) Tj /F1 10 Tf 0 0 0 rg ( pointing to an advertising handle set to ) Tj /F3 10 Tf (BLE_GAP_ADV_SET_HANDLE_NOT_SET.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F5 10 Tf 0 0 0 rg (Page 9) Tj T* -230.7692 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+98 0 obj
+<<
+/Length 10576
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 741.0236 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (To update an existing advertising set, ) Tj /F3 10 Tf 0 .501961 0 rg (sd_ble_gap_adv_set_configure\(\)) Tj /F1 10 Tf 0 0 0 rg ( should be called with a) Tj T* (previously configured advertising handle.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 723.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Note: Currently only one advertising set can be configured in the SoftDevice.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 696.0236 cm
+q
+BT 1 0 0 1 0 2.5 Tm 15 TL /F4 12.5 Tf .133333 .133333 .133333 rg (Configuring advertising parameters for an advertising set) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 666.0236 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (Setting advertising parameters has been moved from ) Tj /F3 10 Tf (sd_ble_gap_adv_start\(\)) Tj /F1 10 Tf ( to) Tj T* /F3 10 Tf 0 .501961 0 rg (sd_ble_gap_adv_set_configure\(\)) Tj /F1 10 Tf 0 0 0 rg (.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 648.0236 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (The content of ) Tj /F3 10 Tf (ble_gap_adv_params_t) Tj /F1 10 Tf ( has changed:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 642.0236 cm
+Q
+q
+1 0 0 1 57.02362 642.0236 cm
+Q
+q
+1 0 0 1 57.02362 630.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F3 10 Tf 1 0 0 rg (ble_gap_adv_params_t::type) Tj /F1 10 Tf 0 0 0 rg ( has been removed.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 624.0236 cm
+Q
+q
+1 0 0 1 57.02362 342.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 267 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 267 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (A new parameter, ) Tj /F3 10 Tf 0 .501961 0 rg (properties) Tj /F1 10 Tf 0 0 0 rg (, of the new type ) Tj /F3 10 Tf 0 .501961 0 rg (ble_gap_adv_properties_t) Tj /F1 10 Tf 0 0 0 rg ( has been added.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 261 cm
+Q
+q
+1 0 0 1 23 261 cm
+Q
+q
+1 0 0 1 23 249 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (The advertising type must now be set through ) Tj /F3 10 Tf 0 .501961 0 rg (ble_gap_adv_properties_t::type) Tj /F1 10 Tf 0 0 0 rg (.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 243 cm
+Q
+q
+1 0 0 1 23 143 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 85 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 73 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (The advertising type definitions \() Tj /F3 10 Tf (BLE_GAP_ADV_TYPES) Tj /F1 10 Tf (\) have changed, and new types have been) Tj T* (added. These advertising types are referred to as ) Tj /F5 10 Tf (legacy) Tj /F1 10 Tf ( advertising types:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 67 cm
+Q
+q
+1 0 0 1 23 67 cm
+Q
+q
+1 0 0 1 23 55 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+1 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL (type = BLE_GAP_ADV_TYPE_ADV_IND) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 49 cm
+Q
+q
+1 0 0 1 23 37 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+1 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL (type = BLE_GAP_ADV_TYPE_ADV_DIRECT_IND) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 31 cm
+Q
+q
+1 0 0 1 23 19 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+1 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL (type = BLE_GAP_ADV_TYPE_ADV_SCAN_IND) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 13 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+1 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL (type = BLE_GAP_ADV_TYPE_ADV_NONCONN_IND) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 139 cm
+Q
+q
+1 0 0 1 23 133 cm
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+BT 1 0 0 1 0 2 Tm  T* ET
+q
+1 0 0 1 20 124 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Their corresponding new types are:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 20 118 cm
+Q
+q
+1 0 0 1 20 118 cm
+Q
+q
+1 0 0 1 20 106 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 .501961 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL (properties.type = BLE_GAP_ADV_TYPE_CONNECTABLE_SCANNABLE_UNDIRECTED) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 20 100 cm
+Q
+q
+1 0 0 1 20 64 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F3 10 Tf 0 .501961 0 rg (properties.type =) Tj T* (BLE_GAP_ADV_TYPE_CONNECTABLE_NONSCANNABLE_DIRECTED_HIGH_DUTY_CYCLE) Tj /F1 10 Tf 0 0 0 rg ( or) Tj T* /F3 10 Tf 0 .501961 0 rg (BLE_GAP_ADV_TYPE_CONNECTABLE_NONSCANNABLE_DIRECTED) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 20 58 cm
+Q
+q
+1 0 0 1 20 34 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 .501961 0 rg
+BT 1 0 0 1 0 14 Tm /F3 10 Tf 12 TL (properties.type =) Tj T* (BLE_GAP_ADV_TYPE_NONCONNECTABLE_SCANNABLE_UNDIRECTED) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 20 28 cm
+Q
+q
+1 0 0 1 20 4 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 .501961 0 rg
+BT 1 0 0 1 0 14 Tm /F3 10 Tf 12 TL (properties.type =) Tj T* (BLE_GAP_ADV_TYPE_NONCONNECTABLE_NONSCANNABLE_UNDIRECTED) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 20 0 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 336.0236 cm
+Q
+q
+1 0 0 1 57.02362 324.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F3 10 Tf 1 0 0 rg (ble_gap_adv_params_t::fp) Tj /F1 10 Tf 0 0 0 rg ( has been renamed ) Tj /F3 10 Tf 0 .501961 0 rg (ble_gap_adv_params_t::filter_policy) Tj /F1 10 Tf 0 0 0 rg (.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 318.0236 cm
+Q
+q
+1 0 0 1 57.02362 294.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F3 10 Tf 1 0 0 rg (ble_gap_adv_params_t::timeout) Tj /F1 10 Tf 0 0 0 rg ( has been renamed ) Tj /F3 10 Tf 0 .501961 0 rg (ble_gap_adv_params_t::duration) Tj /F1 10 Tf 0 0 0 rg  T* (and is now measured in 10 ms units.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 288.0236 cm
+Q
+q
+1 0 0 1 57.02362 110.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 163 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 151 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F3 10 Tf 1 0 0 rg (ble_gap_adv_params_t::channel_mask) Tj /F1 10 Tf 0 0 0 rg ( type has been changed from) Tj T* /F3 10 Tf 1 0 0 rg (ble_gap_adv_ch_mask_t) Tj /F1 10 Tf 0 0 0 rg ( to the new type ) Tj /F3 10 Tf 0 .501961 0 rg (ble_gap_ch_mask_t) Tj /F1 10 Tf 0 0 0 rg (.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 145 cm
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+BT 1 0 0 1 0 2 Tm  T* ET
+q
+1 0 0 1 20 142 cm
+Q
+q
+1 0 0 1 20 142 cm
+Q
+q
+1 0 0 1 20 130 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Note: At least one of the primary channels that is channel index 37-39 must be set to 0.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 20 124 cm
+Q
+q
+1 0 0 1 20 112 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Note: Masking away secondary channels is currently not supported.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 20 106 cm
+Q
+q
+1 0 0 1 20 4 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 87 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 75 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (The mapping from old type ) Tj /F3 10 Tf 1 0 0 rg (ble_gap_adv_ch_mask_t) Tj /F1 10 Tf 0 0 0 rg ( to the new type) Tj T* /F3 10 Tf 0 .501961 0 rg (ble_gap_ch_mask_t) Tj /F1 10 Tf 0 0 0 rg ( is shown below:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 69 cm
+Q
+q
+1 0 0 1 23 -3 cm
+q
+1 1 1 rg
+n 0 72 415.2283 -18 re f*
+.878431 .878431 .878431 rg
+n 0 54 415.2283 -18 re f*
+1 1 1 rg
+n 0 36 415.2283 -18 re f*
+.878431 .878431 .878431 rg
+n 0 18 415.2283 -18 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 57 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F4 10 Tf 12 TL (Old) Tj T* ET
+Q
+Q
+q
+1 0 0 1 210.5155 57 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F4 10 Tf 12 TL (New) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 39 cm
+q
+1 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL (channel_mask.ch_37_off = 1) Tj T* ET
+Q
+Q
+q
+1 0 0 1 210.5155 39 cm
+q
+0 .501961 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL (channel_mask = 0x2000000000) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 21 cm
+q
+1 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL (channel_mask.ch_38_off = 1) Tj T* ET
+Q
+Q
+q
+1 0 0 1 210.5155 21 cm
+q
+0 .501961 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL (channel_mask = 0x4000000000) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 3 cm
+q
+1 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL (channel_mask.ch_39_off = 1) Tj T* ET
+Q
+Q
+q
+1 0 0 1 210.5155 3 cm
+q
+0 .501961 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL (channel_mask = 0x8000000000) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+0 0 0 RG
+.25 w
+n 0 54 m 415.2283 54 l S
+n 0 36 m 415.2283 36 l S
+n 0 18 m 415.2283 18 l S
+n 204.5155 0 m 204.5155 72 l S
+n 0 72 m 415.2283 72 l S
+n 0 0 m 415.2283 0 l S
+n 0 0 m 0 72 l S
+n 415.2283 0 m 415.2283 72 l S
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 20 0 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 104.0236 cm
+Q
+q
+1 0 0 1 57.02362 86.02362 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F3 10 Tf 0 0 0 rg (ble_gap_adv_params_t) Tj /F1 10 Tf ( has several new parameters:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 227.9892 0 Td 12 TL /F5 10 Tf 0 0 0 rg (Page 10) Tj T* -227.9892 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+99 0 obj
+<<
+/Length 7582
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 559.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+BT 1 0 0 1 6 193 Tm  T* ET
+q
+1 0 0 1 23 179 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F3 10 Tf 0 .501961 0 rg (max_adv_evts) Tj /F1 10 Tf 0 0 0 rg ( has been added to allow the application to advertise for a given number of) Tj T* (advertising events.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 173 cm
+Q
+q
+1 0 0 1 23 137 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F3 10 Tf 0 .501961 0 rg (scan_req_notification) Tj /F1 10 Tf 0 0 0 rg ( flag has been added to give the application the possibility to receive) Tj T* (events of type ) Tj /F3 10 Tf 0 .501961 0 rg (ble_gap_evt_scan_req_report_t) Tj /F1 10 Tf 0 0 0 rg (. This replaces) Tj T* /F3 10 Tf 1 0 0 rg (BLE_GAP_OPT_SCAN_REQ_REPORT) Tj /F1 10 Tf 0 0 0 rg ( .) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 131 cm
+Q
+q
+1 0 0 1 23 19 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 97 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 85 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F3 10 Tf 0 .501961 0 rg (primary_phy) Tj /F1 10 Tf 0 0 0 rg ( and ) Tj /F3 10 Tf 0 .501961 0 rg (secondary_phy) Tj /F1 10 Tf 0 0 0 rg ( allow the application to select PHYs for primary and) Tj T* (secondary advertising channels.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 79 cm
+Q
+q
+1 0 0 1 23 79 cm
+Q
+q
+1 0 0 1 23 43 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F3 10 Tf 0 .501961 0 rg (primary_phy) Tj /F1 10 Tf 0 0 0 rg ( should be set to ) Tj /F3 10 Tf (BLE_GAP_PHY_AUTO) Tj /F1 10 Tf ( or ) Tj /F3 10 Tf (BLE_GAP_PHY_1MBPS) Tj /F1 10 Tf ( for legacy) Tj T* (advertising types. For extended advertising types, it should be set to ) Tj /F3 10 Tf (BLE_GAP_PHY_1MBPS) Tj /F1 10 Tf  T* (or ) Tj /F3 10 Tf (BLE_GAP_PHY_CODED) Tj /F1 10 Tf ( if supported by the SoftDevice.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 37 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F3 10 Tf 0 .501961 0 rg (secondary_phy) Tj /F1 10 Tf 0 0 0 rg ( can be ignored for legacy advertising. For extended advertising types, it) Tj T* (should be set to ) Tj /F3 10 Tf (BLE_GAP_PHY_1MBPS,) Tj ( ) Tj (BLE_GAP_PHY_2MBPS,) Tj /F1 10 Tf ( or ) Tj /F3 10 Tf (BLE_GAP_PHY_CODED) Tj /F1 10 Tf  T* (if supported by the SoftDevice.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 13 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F3 10 Tf 0 .501961 0 rg (set_id) Tj /F1 10 Tf 0 0 0 rg ( has been added to allow the application to choose the set ID of an extended advertiser .) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 555.0236 cm
+Q
+q
+1 0 0 1 57.02362 528.0236 cm
+q
+BT 1 0 0 1 0 2.5 Tm 15 TL /F4 12.5 Tf .133333 .133333 .133333 rg (Other Advertising API changes) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 516.0236 cm
+Q
+q
+1 0 0 1 57.02362 516.0236 cm
+Q
+q
+1 0 0 1 57.02362 458.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 43 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 43 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F3 10 Tf 1 0 0 rg (BLE_GAP_TIMEOUT_SRC_ADVERTISING) Tj /F1 10 Tf 0 0 0 rg ( has been removed.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 37 cm
+Q
+q
+1 0 0 1 23 37 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F1 10 Tf 0 0 0 rg (A new event, ) Tj /F3 10 Tf 0 .501961 0 rg (BLE_GAP_EVT_ADVERTISING_SET_TERMINATED) Tj /F1 10 Tf 0 0 0 rg ( with structure) Tj T* /F3 10 Tf 0 .501961 0 rg (ble_gap_evt_adv_set_terminated_t) Tj /F1 10 Tf 0 0 0 rg (, has been introduced to let the application know when) Tj T* (and why an advertising set has terminated.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 452.0236 cm
+Q
+q
+1 0 0 1 57.02362 416.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F1 10 Tf 0 0 0 rg (A new configuration parameter, ) Tj /F3 10 Tf 0 .501961 0 rg (ble_gap_cfg_role_count_t::adv_set_count) Tj /F1 10 Tf 0 0 0 rg (, has been) Tj T* (introduced to set the maximum number of advertising sets. Note: The maximum number of supported) Tj T* (advertising sets is ) Tj /F3 10 Tf 0 .501961 0 rg (BLE_GAP_ADV_SET_COUNT_MAX) Tj /F1 10 Tf 0 0 0 rg (.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 410.0236 cm
+Q
+q
+1 0 0 1 57.02362 398.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F3 10 Tf 1 0 0 rg (BLE_GAP_ADV_MAX_SIZE) Tj /F1 10 Tf 0 0 0 rg ( has been replaced with ) Tj /F3 10 Tf 0 .501961 0 rg (BLE_GAP_ADV_SET_DATA_SIZE_MAX) Tj /F1 10 Tf 0 0 0 rg (.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 392.0236 cm
+Q
+q
+1 0 0 1 57.02362 368.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F3 10 Tf 0 0 0 rg (ble_gap_evt_connected_t) Tj /F1 10 Tf ( now includes ) Tj /F3 10 Tf 0 .501961 0 rg (adv_handle) Tj /F1 10 Tf 0 0 0 rg ( and ) Tj /F3 10 Tf 0 .501961 0 rg (adv_data) Tj /F1 10 Tf 0 0 0 rg ( of the new type) Tj T* /F3 10 Tf 0 .501961 0 rg (ble_gap_adv_data_t) Tj /F1 10 Tf 0 0 0 rg ( .These are set when the device connects as a peripheral.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 362.0236 cm
+Q
+q
+1 0 0 1 57.02362 350.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F3 10 Tf 0 0 0 rg (ble_gap_evt_scan_req_report_t) Tj /F1 10 Tf ( now includes ) Tj /F3 10 Tf 0 .501961 0 rg (adv_handle) Tj /F1 10 Tf 0 0 0 rg (.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 344.0236 cm
+Q
+q
+1 0 0 1 57.02362 332.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F3 10 Tf 1 0 0 rg (BLE_GAP_OPT_SCAN_REQ_REPORT) Tj /F1 10 Tf 0 0 0 rg ( has been removed.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 326.0236 cm
+Q
+q
+1 0 0 1 57.02362 302.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F3 10 Tf 0 0 0 rg (BLE_GAP_ADV_TIMEOUT_LIMITED_MAX) Tj /F1 10 Tf ( has been changed from 180 to 18000 as) Tj T* /F3 10 Tf 0 .501961 0 rg (sd_ble_gap_adv_params_t::duration) Tj /F1 10 Tf 0 0 0 rg ( is now measured in 10 ms units.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 298.0236 cm
+Q
+q
+1 0 0 1 57.02362 298.0236 cm
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 227.9892 0 Td 12 TL /F5 10 Tf 0 0 0 rg (Page 11) Tj T* -227.9892 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+100 0 obj
+<<
+/Length 10545
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 753.0236 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F4 10 Tf .133333 .133333 .133333 rg (Usage) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 221.8236 cm
+q
+q
+1 0 0 1 0 0 cm
+q
+1 0 0 1 6.6 6.6 cm
+q
+.662745 .662745 .662745 RG
+.5 w
+n -6 -6 480.0283 522 re S
+Q
+q
+BT 1 0 0 1 0 501.5 Tm 10.2 TL /F6 8.5 Tf 0 .533333 0 rg (static) Tj /F3 8.5 Tf .733333 .733333 .733333 rg ( ) Tj /F6 8.5 Tf .533333 .533333 .533333 rg (uint8_t) Tj /F3 8.5 Tf .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (raw_adv_data_buffer1) Tj ([) Tj (BLE_GAP_ADV_SET_DATA_SIZE_MAX) Tj (];) Tj .733333 .733333 .733333 rg  T* /F6 8.5 Tf 0 .533333 0 rg (static) Tj /F3 8.5 Tf .733333 .733333 .733333 rg ( ) Tj /F6 8.5 Tf .533333 .533333 .533333 rg (uint8_t) Tj /F3 8.5 Tf .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (raw_scan_rsp_data_buffer1) Tj ([) Tj (BLE_GAP_ADV_SET_DATA_SIZE_MAX) Tj (];) Tj .733333 .733333 .733333 rg  T* /F6 8.5 Tf 0 .533333 0 rg (static) Tj /F3 8.5 Tf .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (ble_gap_adv_data_t) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (adv_data1) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg ({) Tj .733333 .733333 .733333 rg  T* (       ) Tj 0 0 0 rg (.) Tj (adv_data) Tj (.) Tj (p_data) Tj .733333 .733333 .733333 rg (      ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (raw_adv_data_buffer1) Tj (,) Tj .733333 .733333 .733333 rg  T* (       ) Tj 0 0 0 rg (.) Tj (adv_data) Tj (.) Tj (len) Tj .733333 .733333 .733333 rg (         ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj /F6 8.5 Tf 0 .533333 0 rg (sizeof) Tj /F3 8.5 Tf 0 0 0 rg (\() Tj (raw_adv_data_buffer1) Tj (\),) Tj .733333 .733333 .733333 rg  T* (       ) Tj 0 0 0 rg (.) Tj (scan_rsp_data) Tj (.) Tj (p_data) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (raw_scan_rsp_data_buffer1) Tj (,) Tj .733333 .733333 .733333 rg  T* (       ) Tj 0 0 0 rg (.) Tj (scan_rsp_data) Tj (.) Tj (len) Tj .733333 .733333 .733333 rg (    ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj /F6 8.5 Tf 0 .533333 0 rg (sizeof) Tj /F3 8.5 Tf 0 0 0 rg (\() Tj (raw_scan_rsp_data_buffer1) Tj (\)};) Tj .733333 .733333 .733333 rg  T*  T* /F7 8.5 Tf .533333 .533333 .533333 rg (/* A second advertising data buffer for later updating advertising data while) Tj T* ( * advertising */) Tj /F3 8.5 Tf .733333 .733333 .733333 rg  T* /F6 8.5 Tf 0 .533333 0 rg (static) Tj /F3 8.5 Tf .733333 .733333 .733333 rg ( ) Tj /F6 8.5 Tf .533333 .533333 .533333 rg (uint8_t) Tj /F3 8.5 Tf .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (raw_adv_data_buffer2) Tj ([) Tj (BLE_GAP_ADV_SET_DATA_SIZE_MAX) Tj (];) Tj .733333 .733333 .733333 rg  T* /F6 8.5 Tf 0 .533333 0 rg (static) Tj /F3 8.5 Tf .733333 .733333 .733333 rg ( ) Tj /F6 8.5 Tf .533333 .533333 .533333 rg (uint8_t) Tj /F3 8.5 Tf .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (raw_scan_rsp_data_buffer2) Tj ([) Tj (BLE_GAP_ADV_SET_DATA_SIZE_MAX) Tj (];) Tj .733333 .733333 .733333 rg  T* /F6 8.5 Tf 0 .533333 0 rg (static) Tj /F3 8.5 Tf .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (ble_gap_adv_data_t) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (adv_data2) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg ({) Tj .733333 .733333 .733333 rg  T* (       ) Tj 0 0 0 rg (.) Tj (adv_data) Tj (.) Tj (p_data) Tj .733333 .733333 .733333 rg (      ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (raw_adv_data_buffer2) Tj (,) Tj .733333 .733333 .733333 rg  T* (       ) Tj 0 0 0 rg (.) Tj (adv_data) Tj (.) Tj (len) Tj .733333 .733333 .733333 rg (         ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj /F6 8.5 Tf 0 .533333 0 rg (sizeof) Tj /F3 8.5 Tf 0 0 0 rg (\() Tj (raw_adv_data_buffer2) Tj (\),) Tj .733333 .733333 .733333 rg  T* (       ) Tj 0 0 0 rg (.) Tj (scan_rsp_data) Tj (.) Tj (p_data) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (raw_scan_rsp_data_buffer2) Tj (,) Tj .733333 .733333 .733333 rg  T* (       ) Tj 0 0 0 rg (.) Tj (scan_rsp_data) Tj (.) Tj (len) Tj .733333 .733333 .733333 rg (    ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj /F6 8.5 Tf 0 .533333 0 rg (sizeof) Tj /F3 8.5 Tf 0 0 0 rg (\() Tj (raw_scan_rsp_data_buffer2) Tj (\)};) Tj .733333 .733333 .733333 rg  T*  T* /F6 8.5 Tf .533333 .533333 .533333 rg (int) Tj /F3 8.5 Tf .733333 .733333 .733333 rg ( ) Tj /F6 8.5 Tf 0 .4 .733333 rg (main) Tj /F3 8.5 Tf 0 0 0 rg (\() Tj /F6 8.5 Tf .533333 .533333 .533333 rg (void) Tj /F3 8.5 Tf 0 0 0 rg (\)) Tj .733333 .733333 .733333 rg  T* 0 0 0 rg ({) Tj .733333 .733333 .733333 rg  T* (  ) Tj /F6 8.5 Tf .533333 .533333 .533333 rg (uint8_t) Tj /F3 8.5 Tf .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (adv_handle) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (BLE_GAP_ADV_SET_HANDLE_NOT_SET) Tj (;) Tj .733333 .733333 .733333 rg  T* (  ) Tj 0 0 0 rg (ble_gap_adv_params_t) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (adv_params) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg ({) Tj .733333 .733333 .733333 rg  T* (       ) Tj 0 0 0 rg (.) Tj (properties) Tj (=) Tj ({.) Tj (type) Tj (=) Tj (BLE_GAP_ADV_TYPE_CONNECTABLE_SCANNABLE_UNDIRECTED) Tj (},) Tj .733333 .733333 .733333 rg  T* (       ) Tj 0 0 0 rg (.) Tj (interval) Tj .733333 .733333 .733333 rg (              ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (BLE_GAP_ADV_INTERVAL_MAX) Tj (,) Tj .733333 .733333 .733333 rg  T* (       ) Tj 0 0 0 rg (.) Tj (duration) Tj .733333 .733333 .733333 rg (              ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (BLE_GAP_ADV_TIMEOUT_LIMITED_MAX) Tj (,) Tj .733333 .733333 .733333 rg  T* (       ) Tj 0 0 0 rg (.) Tj (channel_mask) Tj .733333 .733333 .733333 rg (          ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg ({) Tj /F6 8.5 Tf 0 0 .866667 rg (0) Tj /F3 8.5 Tf 0 0 0 rg (},) Tj .733333 .733333 .733333 rg ( ) Tj /F7 8.5 Tf .533333 .533333 .533333 rg (/* Advertising on all the primary channels */) Tj /F3 8.5 Tf .733333 .733333 .733333 rg  T* (       ) Tj 0 0 0 rg (.) Tj (max_adv_evts) Tj .733333 .733333 .733333 rg (          ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj /F6 8.5 Tf 0 0 .866667 rg (0) Tj /F3 8.5 Tf 0 0 0 rg (,) Tj .733333 .733333 .733333 rg  T* (       ) Tj 0 0 0 rg (.) Tj (filter_policy) Tj .733333 .733333 .733333 rg (         ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (BLE_GAP_ADV_FP_ANY) Tj (,) Tj .733333 .733333 .733333 rg  T* (       ) Tj 0 0 0 rg (.) Tj (primary_phy) Tj .733333 .733333 .733333 rg (           ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (BLE_GAP_PHY_AUTO) Tj (,) Tj .733333 .733333 .733333 rg  T* (       ) Tj 0 0 0 rg (.) Tj (scan_req_notification) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj /F6 8.5 Tf 0 0 .866667 rg (1) Tj /F3 8.5 Tf .733333 .733333 .733333 rg  T* (       ) Tj 0 0 0 rg (};) Tj .733333 .733333 .733333 rg  T*  T* (  ) Tj /F7 8.5 Tf .533333 .533333 .533333 rg (/* Enable the BLE Stack */) Tj /F3 8.5 Tf .733333 .733333 .733333 rg  T* (  ) Tj 0 0 0 rg (sd_ble_enable) Tj (\(...\);) Tj .733333 .733333 .733333 rg  T*  T* (  ) Tj 0 0 0 rg ([...]) Tj .733333 .733333 .733333 rg  T* (  ) Tj 0 0 0 rg (sd_ble_gap_adv_set_configure) Tj (\() Tj (&) Tj (adv_handle) Tj (,) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (&) Tj (adv_data1) Tj (,) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (&) Tj (adv_params) Tj (\);) Tj .733333 .733333 .733333 rg  T* (  ) Tj /F7 8.5 Tf .533333 .533333 .533333 rg (/* Start advertising */) Tj /F3 8.5 Tf .733333 .733333 .733333 rg  T* (  ) Tj 0 0 0 rg (sd_ble_gap_adv_start) Tj (\() Tj (adv_handle) Tj (,) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (BLE_CONN_CFG_TAG_DEFAULT) Tj (\);) Tj .733333 .733333 .733333 rg  T*  T* (  ) Tj 0 0 0 rg ([...]) Tj .733333 .733333 .733333 rg  T* (  ) Tj /F7 8.5 Tf .533333 .533333 .533333 rg (/* Update advertising data while advertising */) Tj /F3 8.5 Tf .733333 .733333 .733333 rg  T* (  ) Tj 0 0 0 rg (sd_ble_gap_adv_set_configure) Tj (\() Tj (&) Tj (adv_handle) Tj (,) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (&) Tj (adv_data2) Tj (,) Tj .733333 .733333 .733333 rg ( ) Tj 0 .2 .533333 rg (NULL) Tj 0 0 0 rg (\);) Tj .733333 .733333 .733333 rg  T*  T* (  ) Tj 0 0 0 rg ([...]) Tj .733333 .733333 .733333 rg  T* (  ) Tj /F7 8.5 Tf .533333 .533333 .533333 rg (/* Stop advertising */) Tj /F3 8.5 Tf .733333 .733333 .733333 rg  T* (  ) Tj 0 0 0 rg (sd_ble_gap_adv_stop) Tj (\() Tj (adv_handle) Tj (\);) Tj .733333 .733333 .733333 rg  T*  T* (  ) Tj 0 0 0 rg ([...]) Tj .733333 .733333 .733333 rg  T* 0 0 0 rg (}) Tj .733333 .733333 .733333 rg  T* ET
+Q
+Q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 194.8236 cm
+q
+BT 1 0 0 1 0 2.5 Tm 15 TL /F4 12.5 Tf .133333 .133333 .133333 rg (Updated RSSI API) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 164.8236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (The RSSI API has been changed so that the SoftDevice can provide the application with the channel index) Tj T* (on which the reported RSSI measurements are made.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 158.8236 cm
+Q
+q
+1 0 0 1 57.02362 158.8236 cm
+Q
+q
+1 0 0 1 57.02362 134.8236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F3 10 Tf 0 0 0 rg (sd_ble_gap_rssi_get\(\)) Tj /F1 10 Tf ( takes an additional parameter ) Tj /F3 10 Tf 0 .501961 0 rg (p_ch_index) Tj /F1 10 Tf 0 0 0 rg (. For this parameter, provide a) Tj T* (pointer to a location where the channel index for the RSSI measurement should be stored.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 128.8236 cm
+Q
+q
+1 0 0 1 57.02362 92.82362 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F1 10 Tf 0 0 0 rg (The event structure for the ) Tj /F3 10 Tf (BLE_GAP_EVT_RSSI_CHANGED) Tj /F1 10 Tf ( event has a new parameter) Tj T* /F3 10 Tf 0 .501961 0 rg (ble_gap_evt_rssi_changed_t::ch_index) Tj /F1 10 Tf 0 0 0 rg (. This is the Data Channel Index \(0-36\) on which the) Tj T* (RSSI is measured.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 86.82362 cm
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 227.9892 0 Td 12 TL /F5 10 Tf 0 0 0 rg (Page 12) Tj T* -227.9892 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+101 0 obj
+<<
+/Length 2674
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 717.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 33 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 38 Tm 12 TL /F1 10 Tf 0 0 0 rg (The event structure for the ) Tj /F3 10 Tf (BLE_GAP_EVT_ADV_REPORT) Tj /F1 10 Tf ( event has a new parameter) Tj T* /F3 10 Tf 0 .501961 0 rg (ble_gap_evt_adv_report_t::ch_index) Tj /F1 10 Tf 0 0 0 rg (. This is the Channel Index \(0-39\) on which the last) Tj T* (advertising packet is received. The corresponding measured RSSI for this packet can be read from) Tj T* /F3 10 Tf (ble_gap_evt_adv_report_t::rssi) Tj /F1 10 Tf (.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 713.0236 cm
+Q
+q
+1 0 0 1 57.02362 686.0236 cm
+q
+BT 1 0 0 1 0 2.5 Tm 15 TL /F4 12.5 Tf .133333 .133333 .133333 rg (TX power API) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 668.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The TX power API now supports setting individual transmit power for each link or role.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 662.0236 cm
+Q
+q
+1 0 0 1 57.02362 662.0236 cm
+Q
+q
+1 0 0 1 57.02362 638.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F3 10 Tf 0 0 0 rg (sd_ble_gap_tx_power_set\(\)) Tj /F1 10 Tf ( takes two new parameters, ) Tj /F3 10 Tf 0 .501961 0 rg (role) Tj /F1 10 Tf 0 0 0 rg ( and ) Tj /F3 10 Tf 0 .501961 0 rg (handle) Tj /F1 10 Tf 0 0 0 rg (, in addition to) Tj T* /F3 10 Tf (tx_power) Tj /F1 10 Tf (. For available roles and TX power values, see ble_gap.h.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 634.0236 cm
+Q
+q
+1 0 0 1 57.02362 607.0236 cm
+q
+BT 1 0 0 1 0 2.5 Tm 15 TL /F4 12.5 Tf .133333 .133333 .133333 rg (Updated Flash API) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 577.0236 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F3 10 Tf 0 0 0 rg (sd_flash_write\(\)) Tj /F1 10 Tf ( now triggers a HardFault if the application tries to write to a protected page.) Tj T* /F3 10 Tf (NRF_ERROR_FORBIDDEN) Tj /F1 10 Tf ( is returned if the application tries to write to a page outside application flash area.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 547.0236 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F3 10 Tf 0 0 0 rg (sd_flash_page_erase\(\)) Tj /F1 10 Tf ( now triggers a HardFault if the application tries to erase a protected page.) Tj T* /F3 10 Tf (NRF_ERROR_FORBIDDEN) Tj /F1 10 Tf ( is returned if the application tries to erase a page outside application flash area.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 227.9892 0 Td 12 TL /F5 10 Tf 0 0 0 rg (Page 13) Tj T* -227.9892 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+102 0 obj
+<<
+/Nums [ 0 103 0 R 1 104 0 R 2 105 0 R 3 106 0 R 4 107 0 R 
+  5 108 0 R 6 109 0 R 7 110 0 R 8 111 0 R 9 112 0 R 
+  10 113 0 R 11 114 0 R 12 115 0 R ]
+>>
+endobj
+103 0 obj
+<<
+/S /D /St 1
+>>
+endobj
+104 0 obj
+<<
+/S /D /St 2
+>>
+endobj
+105 0 obj
+<<
+/S /D /St 3
+>>
+endobj
+106 0 obj
+<<
+/S /D /St 4
+>>
+endobj
+107 0 obj
+<<
+/S /D /St 5
+>>
+endobj
+108 0 obj
+<<
+/S /D /St 6
+>>
+endobj
+109 0 obj
+<<
+/S /D /St 7
+>>
+endobj
+110 0 obj
+<<
+/S /D /St 8
+>>
+endobj
+111 0 obj
+<<
+/S /D /St 9
+>>
+endobj
+112 0 obj
+<<
+/S /D /St 10
+>>
+endobj
+113 0 obj
+<<
+/S /D /St 11
+>>
+endobj
+114 0 obj
+<<
+/S /D /St 12
+>>
+endobj
+115 0 obj
+<<
+/S /D /St 13
+>>
+endobj
+xref
+0 116
+0000000000 65535 f 
+0000000073 00000 n 
+0000000169 00000 n 
+0000000276 00000 n 
+0000000385 00000 n 
+0000000490 00000 n 
+0000000602 00000 n 
+0000000717 00000 n 
+0000000922 00000 n 
+0000001089 00000 n 
+0000001254 00000 n 
+0000001422 00000 n 
+0000001588 00000 n 
+0000001757 00000 n 
+0000001924 00000 n 
+0000002093 00000 n 
+0000002260 00000 n 
+0000002429 00000 n 
+0000002596 00000 n 
+0000002765 00000 n 
+0000002932 00000 n 
+0000003101 00000 n 
+0000003268 00000 n 
+0000003437 00000 n 
+0000003604 00000 n 
+0000003773 00000 n 
+0000003940 00000 n 
+0000004109 00000 n 
+0000004276 00000 n 
+0000004445 00000 n 
+0000004612 00000 n 
+0000004781 00000 n 
+0000004948 00000 n 
+0000005117 00000 n 
+0000005284 00000 n 
+0000005453 00000 n 
+0000005620 00000 n 
+0000005789 00000 n 
+0000005956 00000 n 
+0000006388 00000 n 
+0000006594 00000 n 
+0000006705 00000 n 
+0000006911 00000 n 
+0000007025 00000 n 
+0000007231 00000 n 
+0000007437 00000 n 
+0000007643 00000 n 
+0000007849 00000 n 
+0000008055 00000 n 
+0000008261 00000 n 
+0000008467 00000 n 
+0000008674 00000 n 
+0000008881 00000 n 
+0000008988 00000 n 
+0000009269 00000 n 
+0000009344 00000 n 
+0000009527 00000 n 
+0000009633 00000 n 
+0000009809 00000 n 
+0000009927 00000 n 
+0000010046 00000 n 
+0000010216 00000 n 
+0000010359 00000 n 
+0000010484 00000 n 
+0000010654 00000 n 
+0000010772 00000 n 
+0000010931 00000 n 
+0000011164 00000 n 
+0000011292 00000 n 
+0000011462 00000 n 
+0000011605 00000 n 
+0000011751 00000 n 
+0000011914 00000 n 
+0000012079 00000 n 
+0000012221 00000 n 
+0000012349 00000 n 
+0000012506 00000 n 
+0000012665 00000 n 
+0000012806 00000 n 
+0000012913 00000 n 
+0000013071 00000 n 
+0000013195 00000 n 
+0000013353 00000 n 
+0000013525 00000 n 
+0000013709 00000 n 
+0000013803 00000 n 
+0000013934 00000 n 
+0000014061 00000 n 
+0000014180 00000 n 
+0000014328 00000 n 
+0000017353 00000 n 
+0000021229 00000 n 
+0000022080 00000 n 
+0000024245 00000 n 
+0000031808 00000 n 
+0000032698 00000 n 
+0000040025 00000 n 
+0000042544 00000 n 
+0000050522 00000 n 
+0000061151 00000 n 
+0000068785 00000 n 
+0000079384 00000 n 
+0000082111 00000 n 
+0000082283 00000 n 
+0000082318 00000 n 
+0000082353 00000 n 
+0000082388 00000 n 
+0000082423 00000 n 
+0000082458 00000 n 
+0000082493 00000 n 
+0000082528 00000 n 
+0000082563 00000 n 
+0000082598 00000 n 
+0000082634 00000 n 
+0000082670 00000 n 
+0000082706 00000 n 
+trailer
+<<
+/ID 
+[<5005694ab6518b3b9730db5fa10bff88><5005694ab6518b3b9730db5fa10bff88>]
+% ReportLab generated PDF document -- digest (http://www.reportlab.com)
+
+/Info 53 0 R
+/Root 52 0 R
+/Size 116
+>>
+startxref
+82742
+%%EOF
