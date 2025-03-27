@@ -52,7 +52,7 @@ Programming the S115 SoftDevice
 Testing
 =======
 
-You can test this sample with `nRF Connect for Desktop`_ by performing the following steps:
+You can test this sample using `nRF Connect for Desktop`_ with the `Bluetooth Low Energy app`_:
 
 1. Compile and program the application.
 #. Observe that the ``BLE LBS sample started`` message is printed.

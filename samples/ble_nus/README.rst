@@ -59,6 +59,7 @@ Testing
 #. Reset the kit.
 #. Observe that LED 0 is blinking and the device is advertising under the default name ``NCS-Lite NUS``.
    You can configure this name using the ``CONFIG_BLE_ADV_NAME`` Kconfig option.
+   For information on how to do this, see `Configuring Kconfig`_.
 #. Observe that the text "BLE NUS sample started" is printed on the COM listener running on the computer.
 #. Connect to your device using the `nRF Toolbox`_ mobile application with the ``Universal Asynchronous Receiver/Transmitter (UART)`` service.
    You must choose ``All`` devices in the scanner to see the device.
