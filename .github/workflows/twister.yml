@@ -1,0 +1,74 @@
+# Copyright (c) 2025, Nordic Semiconductor ASA
+# SPDX-License-Identifier: Apache-2.0
+
+name: Twister Unity Tests
+
+on:
+  pull_request:
+    types: [push, opened, reopened, synchronize]
+
+  workflow_dispatch:
+
+jobs:
+  twister_job:
+    name: Run Twister patch series (PR)
+    runs-on:
+      - runs-on=${{ github.run_id }}
+      - runner=4cpu-linux-x64
+    # Keep aligned with target NCS version
+    container: ghcr.io/nrfconnect/sdk-nrf-toolchain:v2.9.1
+    defaults:
+      run:
+        # Bash shell is needed to set toolchain related environment variables in docker container
+        # It is a workaround for GitHub Actions limitation https://github.com/actions/runner/issues/1964
+        shell: bash
+
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@v4
+      with:
+        path: nrf-lite
+        fetch-depth: 0
+
+    - name: restore-cache-sdk
+      id: cache-sdk
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          nrf
+          zephyr
+          modules
+        key: ${{ runner.os }}-nrf-sdk
+
+    - name: Prepare west project
+      run: |
+        west init -l nrf-lite
+        west update -o=--depth=1 -n
+
+    - name: Install requirements
+      run: |
+        apt-get update
+        apt-get install -y build-essential ninja-build gcc-multilib g++-multilib ruby
+
+    - name: Run Twister
+      working-directory: nrf-lite
+      run: |
+        west twister -vc -p native_sim -T tests --enable-asan --enable-lsan --enable-ubsan
+
+    - name: upload-logs
+      uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: twister-logs
+        path: nrf-lite/twister-out/**/*.log
+        retention-days: 5
+
+    - name: save-cache-sdk
+      if: always() && steps.cache-sdk.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: |
+          nrf
+          zephyr
+          modules
+        key: ${{ steps.cache-sdk.outputs.cache-primary-key }}

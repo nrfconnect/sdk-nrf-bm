@@ -27,6 +27,7 @@ manifest:
           - segger
           - tinycrypt
           - zephyr
+          - cmock
 
   self:
     path: nrf-lite
