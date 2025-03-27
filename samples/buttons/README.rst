@@ -27,7 +27,7 @@ The sample supports the following development kits:
 Overview
 ********
 
-1. The sample function starts by logging the start of the application and instructs the user to press Button 4 (connected to ``PIN_BTN_3``) to terminate the program.
+1. The sample function starts by logging the start of the application and instructs the user to press Button 3 (connected to ``PIN_BTN_3``) to terminate the program.
 #. It initializes the running variable to ``true``.
 #. An array of ``struct lite_buttons_config`` is defined for configuring each button.
    Each configuration specifies:
