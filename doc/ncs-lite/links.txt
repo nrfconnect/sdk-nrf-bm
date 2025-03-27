@@ -37,3 +37,5 @@
 .. _`How to connect to the terminal`: https://docs.nordicsemi.com/bundle/nrf-connect-vscode/page/get_started/quick_debug.html#how-to-connect-to-the-terminal
 .. _`nRF Connect for Desktop`: https://www.nordicsemi.com/Software-and-Tools/Development-Tools/nRF-Connect-for-desktop
 .. _`nRF Toolbox`: https://www.nordicsemi.com/Software-and-Tools/Development-Tools/nRF-Toolbox
+.. _`Bluetooth Low Energy app`: https://docs.nordicsemi.com/bundle/nrf-connect-ble/page/index.html
+.. _`Configuring Kconfig`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/app_dev/config_and_build/kconfig/index.html

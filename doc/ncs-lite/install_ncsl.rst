@@ -22,6 +22,19 @@ Install the following software tools:
      After downloading the nRF Util executable, move it to a directory that is in the system :envvar:`PATH`.
      On macOS and Linux, the downloaded file also needs to be given execute permission by typing `chmod +x nrfutil` or by checking the checkbox in the file properties.
 
+* Install the nRF Util ``device`` command.
+  This command allows you to perform various operations on Nordic devices.
+
+   .. code-block:: console
+
+      nrfutil install device
+
+  For the complete list of functionalities offered by this command, type:
+
+   .. code-block:: console
+
+      nrfutil device --help
+
 *   The |jlink_ver| of SEGGER J-Link.
     Download it from the `J-Link Software and Documentation Pack`_ page.
 
@@ -74,7 +87,7 @@ Complete the following steps to clone the |NCSL| repositories.
 
    The SDK installation starts and it can take several minutes.
 #. Open command line and navigate to the SDK installation folder.
-   The default location to install the SDK is :file:`C:/ncs` on Windows, :file:`~/ncs/` on Linux, and :file:`/opt/nordic/ncs/` on macOS.
+   The default location to install the SDK is :file:`C:/ncs/2.9.1` on Windows, :file:`~/ncs/2.9.1` on Linux, and :file:`/opt/nordic/ncs/2.9.1` on macOS.
 #. Clone the `sdk-nrf-lite`_ repository:
 
    .. code-block:: console
