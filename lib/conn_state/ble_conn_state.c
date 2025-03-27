@@ -22,6 +22,35 @@ LOG_MODULE_REGISTER(ble_bms, CONFIG_CONN_STATE_LOG_LEVEL);
 #define TOTAL_FLAG_COLLECTION_COUNT (CONN_STATE_DEFAULT_FLAG_COLLECTION_COUNT + \
 				     CONFIG_BLE_CONN_STATE_USER_FLAG_COUNT)
 
+/** Connection handles in the same order as they are indexed in the atomics */
+struct ble_conn_state_conn_handle_list connections;
+
+int conn_id_get(uint8_t conn_idx)
+{
+	return connections.conn_handles[conn_idx];
+}
+
+int conn_idx_get(uint32_t conn_id)
+{
+	for (int i = 0; i < connections.len; i++) {
+		if (connections.conn_handles[i] == conn_id) {
+			return i;
+		}
+	}
+
+	/* conn_id not found in list */
+
+	for (int i = 0; i < BLE_CONN_STATE_MAX_CONNECTIONS; i++) {
+		if (atomic_test_bit(&bcs.flags.connected_flags, conn_handle) == false) {
+			record_invalidate(i);
+			connections.conn_handles[i] = conn_id;
+			return i;
+		}
+	}
+
+	return -1;
+}
+
 /**
  * @brief Structure containing all the flag collections maintained by the Connection State module.
  */
