@@ -1,0 +1,49 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menuconfig LOG_BACKEND_LITE_UARTE
+	bool "Lite UARTE console"
+	select LOG_BACKEND_SUPPORTS_FORMAT_TIMESTAMP
+	help
+	  When enabled backend is using nrfx UARTE driver to output logs and printk.
+
+if LOG_BACKEND_LITE_UARTE
+
+# When this is available we disable the zephyr UART backend by default
+config LOG_BACKEND_UART
+	default n
+
+config DEPRECATED_UART_NRFX_UARTE_LEGACY_SHIM
+	bool
+	default n
+
+config LOG_BACKEND_LITE_UARTE_BUFFER_SIZE
+	int "Maximum number of bytes to buffer in RAM before flushing"
+	default 1
+	help
+	  In deferred logging mode, sets the maximum number of bytes which can be buffered in
+	  RAM before log_output_flush is automatically called on the UART backend.  The buffer
+	  will also be flushed after each log message.
+
+	  In immediate logging mode, processed log messages are not buffered and are always
+	  output one byte at a time.
+
+config LOG_BACKEND_LITE_UARTE_IRQ_PRIO
+	int "IRQ priority"
+	range 3 7
+	default 3
+
+config LOG_BACKEND_LITE_UARTE_USE_HWFC
+	bool "Use hardware flow control"
+
+config LOG_BACKEND_LITE_UARTE_PARITY_INCLUDED
+	bool "Use parity"
+
+backend = LITE_UARTE
+backend-str = lite uarte
+source "subsys/logging/Kconfig.template.log_format_config"
+
+endif # LITE_UARTE_CONSOLE
