@@ -7,6 +7,7 @@
 #include <zephyr/sys/printk.h>
 #include <zephyr/kernel.h> /* k_busy_wait() */
 #include <zephyr/sys_clock.h> /* USEC_PER_MSEC */
+#include <zephyr/logging/log_ctrl.h>
 
 #if CONFIG_SOFTDEVICE
 #include <nrf_sdh.h>
@@ -58,6 +59,10 @@ int main(void)
 	led_init();
 
 	while (true) {
+		while (LOG_PROCESS()) {
+			/* Empty. */
+		}
+
 		/* Turn the LED on */
 		led_on();
 

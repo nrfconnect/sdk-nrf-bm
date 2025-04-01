@@ -11,6 +11,7 @@
 #include <nrf_soc.h>
 #include <bluetooth/services/ble_lbs.h>
 #include <bluetooth/services/ble_dis.h>
+#include <zephyr/logging/log_ctrl.h>
 #include <zephyr/sys/printk.h>
 
 #include <board-config.h>
@@ -214,6 +215,10 @@ int main(void)
 	printk("Advertising as %s\n", CONFIG_BLE_ADV_NAME);
 
 	while (true) {
+		while (LOG_PROCESS()) {
+			/* Empty. */
+		}
+
 		sd_app_evt_wait();
 	}
 

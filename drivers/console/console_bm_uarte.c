@@ -68,7 +68,9 @@ static int console_out(int c)
 
 static int uart_log_backend_sys_init(void)
 {
-	uarte_init();
+	if (!IS_ENABLED(CONFIG_LOG_BACKEND_BM_UARTE)) {
+		uarte_init();
+	}
 
 #if defined(CONFIG_STDOUT_CONSOLE)
 	__stdout_hook_install(console_out);
