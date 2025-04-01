@@ -9,6 +9,7 @@
 #include <nrf_sdh_soc.h>
 #include <zephyr/kernel.h> /* k_busy_wait() */
 #include <zephyr/sys_clock.h> /* USEC_PER_SEC */
+#include <zephyr/logging/log_ctrl.h>
 #include <zephyr/sys/printk.h>
 
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)
@@ -51,6 +52,10 @@ int main(void)
 
 	printk("Bluetooth enabled\n");
 
+	while (LOG_PROCESS()) {
+		/* Empty. */
+	}
+
 	k_busy_wait(2 * USEC_PER_SEC);
 
 	err = nrf_sdh_disable_request();
@@ -61,6 +66,10 @@ int main(void)
 
 	printk("SoftDevice disabled\n");
 	printk("Bye\n");
+
+	while (LOG_PROCESS()) {
+		/* Empty. */
+	}
 
 	return 0;
 }

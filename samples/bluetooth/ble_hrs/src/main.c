@@ -15,6 +15,7 @@
 #include <bluetooth/services/ble_hrs.h>
 #include <bm_timer.h>
 #include <sensorsim.h>
+#include <zephyr/logging/log_ctrl.h>
 #include <zephyr/sys/printk.h>
 
 #define CONN_TAG 1
@@ -401,6 +402,10 @@ int main(void)
 	printk("Advertising as %s\n", CONFIG_BLE_ADV_NAME);
 
 	while (true) {
+		while (LOG_PROCESS()) {
+			/* Empty. */
+		}
+
 		sd_app_evt_wait();
 	}
 }

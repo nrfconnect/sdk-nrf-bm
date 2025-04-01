@@ -5,6 +5,7 @@
  */
 
 #include <bm_timer.h>
+#include <zephyr/logging/log_ctrl.h>
 #include <zephyr/sys/printk.h>
 
 #if CONFIG_SOFTDEVICE
@@ -121,6 +122,10 @@ int main(void)
 	printk("Timers initialized\n");
 
 	while (!done) {
+		while (LOG_PROCESS()) {
+			/* Empty. */
+		}
+
 		/* Sleep */
 		__WFE();
 	}
@@ -129,11 +134,15 @@ int main(void)
 	err = nrf_sdh_disable_request();
 	if (err) {
 		printk("Failed to disable SoftDevice, err %d\n", err);
-		return -1;
+	} else {
+		printk("SoftDevice disabled\n");
 	}
 
-	printk("SoftDevice disabled\n");
 #endif /* CONFIG_SOFTDEVICE */
+
+		while (LOG_PROCESS()) {
+			/* Empty. */
+		}
 
 	return 0;
 }

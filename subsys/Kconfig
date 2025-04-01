@@ -8,5 +8,6 @@ menu "Subsystems"
 rsource "bluetooth/Kconfig"
 rsource "softdevice/Kconfig"
 rsource "softdevice_handler/Kconfig"
+rsource "logging/Kconfig"
 
 endmenu

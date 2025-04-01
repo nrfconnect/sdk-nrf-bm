@@ -13,6 +13,7 @@
 #endif /* CONFIG_SOFTDEVICE */
 
 #include <board-config.h>
+#include <zephyr/logging/log_ctrl.h>
 
 #define PIN_BTN_0 BOARD_PIN_BTN_0
 #define PIN_BTN_1 BOARD_PIN_BTN_1
@@ -96,6 +97,11 @@ int main(void)
 	printk("Buttons initialized, press button 3 to terminate\n");
 
 	while (running) {
+		while (LOG_PROCESS()) {
+			/* Empty. */
+		}
+
+
 		/* Sleep */
 		__WFE();
 	}
@@ -107,6 +113,10 @@ int main(void)
 	}
 
 	printk("Bye\n");
+
+	while (LOG_PROCESS()) {
+		/* Empty. */
+	}
 
 	return 0;
 }
