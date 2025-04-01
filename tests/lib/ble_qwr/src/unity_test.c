@@ -19,7 +19,7 @@ static uint16_t ble_qwr_evt_handler(struct nrf_ble_qwr *qwr, struct nrf_ble_qwr_
 	return 0;
 }
 
-static void ble_qwr_err_handler(uint32_t nrf_error)
+static void ble_qwr_err_handler(int nrf_error)
 {
 
 }
