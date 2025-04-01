@@ -8,7 +8,7 @@
 
 # All these samples shall run without multithreading
 config MULTITHREADING
-	default n
+	default n if !UNITY
 
 # Prevent moving SoftDevice RAM region
 # Need this when building without sysbuild
