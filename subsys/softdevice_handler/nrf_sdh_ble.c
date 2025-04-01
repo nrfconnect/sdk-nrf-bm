@@ -151,6 +151,56 @@ int nrf_sdh_ble_enable(uint8_t conn_cfg_tag)
 	return 0;
 }
 
+static uint16_t conn_handles[CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT] = {
+	[0 ... CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT - 1] = BLE_CONN_HANDLE_INVALID,
+};
+
+int nrf_sdh_ble_idx_get(uint16_t conn_handle)
+{
+	for (int idx = 0; idx < ARRAY_SIZE(conn_handles); idx++) {
+		if (conn_handles[idx] == conn_handle) {
+			return idx;
+		}
+	}
+
+	return -1;
+}
+
+static void idx_assign(uint16_t conn_handle)
+{
+	__ASSERT(conn_handle != BLE_CONN_HANDLE_INVALID, "Got invalid conn_handle from SoftDevice");
+
+	for (int idx = 0; idx < ARRAY_SIZE(conn_handles); idx++) {
+		__ASSERT(conn_handles[idx] != conn_handle,
+			 "conn_handle %#x is already assigned to idx %d", conn_handle, idx);
+	}
+
+	for (int idx = 0; idx < ARRAY_SIZE(conn_handles); idx++) {
+		if (conn_handles[idx] == BLE_CONN_HANDLE_INVALID) {
+			conn_handles[idx] = conn_handle;
+			LOG_DBG("Assigned idx %d to conn_handle %#x", idx, conn_handle);
+			return;
+		}
+	}
+
+	__ASSERT(false, "Failed to assign idx to conn_handle %#x, all are in use");
+
+	LOG_ERR("Failed to assign idx to conn_handle %#x", conn_handle);
+}
+
+static void idx_unassign(uint16_t conn_handle)
+{
+	for (int idx = 0; idx < ARRAY_SIZE(conn_handles); idx++) {
+		if (conn_handles[idx] == conn_handle) {
+			conn_handles[idx] = BLE_CONN_HANDLE_INVALID;
+			LOG_DBG("Unassigned idx %d from conn_handle %#x", idx, conn_handle);
+			return;
+		}
+	}
+
+	__ASSERT(false, "Could not find any idx assigned to conn_handle %#x");
+}
+
 static void ble_evt_poll(void *context)
 {
 	int err;
@@ -172,10 +222,18 @@ static void ble_evt_poll(void *context)
 			LOG_DBG("BLE event: %#x", ble_evt->header.evt_id);
 		}
 
+		if (ble_evt->header.evt_id == BLE_GAP_EVT_CONNECTED) {
+			idx_assign(ble_evt->evt.gap_evt.conn_handle);
+		}
+
 		/* Forward the event to BLE observers. */
 		TYPE_SECTION_FOREACH(
 			struct nrf_sdh_ble_evt_observer, nrf_sdh_ble_evt_observers, obs) {
 			obs->handler(ble_evt, obs->context);
+		}
+
+		if (ble_evt->header.evt_id == BLE_GAP_EVT_DISCONNECTED) {
+			idx_unassign(ble_evt->evt.gap_evt.conn_handle);
 		}
 	}
 
