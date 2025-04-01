@@ -1,4 +1,4 @@
 tests:
-  interfaces.ble_qwr:
+  lib.ble_qwr:
     platform_allow: native_sim
     tags: unittest
