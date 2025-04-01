@@ -35,9 +35,9 @@ jobs:
       uses: actions/cache/restore@v4
       with:
         path: |
-          nrf-lite/nrf
-          nrf-lite/zephyr
-          nrf-lite/modules
+          nrf
+          zephyr
+          modules
         key: ${{ runner.os }}-nrf-sdk
 
     - name: Prepare west project
@@ -72,7 +72,7 @@ jobs:
       uses: actions/cache/save@v4
       with:
         path: |
-          nrf-lite/nrf
-          nrf-lite/zephyr
-          nrf-lite/modules
+          nrf
+          zephyr
+          modules
         key: ${{ steps.cache-sdk.outputs.cache-primary-key }}
