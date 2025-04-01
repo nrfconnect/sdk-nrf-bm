@@ -82,6 +82,7 @@ config NRF_SDH_BLE_CENTRAL_LINK_COUNT
 
 config NRF_SDH_BLE_TOTAL_LINK_COUNT
 	int "Maximum number of total concurrent connections"
+	range 1 1 if SOFTDEVICE_S115
 	range 1 64
 	default 1
 
