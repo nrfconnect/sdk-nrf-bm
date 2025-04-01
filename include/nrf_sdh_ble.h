@@ -82,6 +82,19 @@ int nrf_sdh_ble_app_ram_start_get(uint32_t *app_ram_start);
  */
 int nrf_sdh_ble_enable(uint8_t conn_cfg_tag);
 
+/**
+ * @brief Get the assigned index for a connection handle.
+ *
+ * The returned value can be used for indexing into arrays where each element is associated
+ * with a specific connection. Connection handles should never directly be used for indexing arrays.
+ *
+ * @param[in] conn_handle Connection handle.
+ *
+ * @returns An integer in the range from 0 to (CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT - 1) if the
+ *          connection handle has been assigned to an index, otherwise -1.
+ */
+int nrf_sdh_ble_idx_get(uint16_t conn_handle);
+
 #ifdef __cplusplus
 }
 #endif
