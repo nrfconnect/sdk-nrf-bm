@@ -9,11 +9,6 @@ menuconfig BLE_NUS
 
 if BLE_NUS
 
-config  BLE_NUS_MAX_CLIENTS
-	int "Max NUS clients"
-	range 0 NRF_SDH_BLE_PERIPHERAL_LINK_COUNT
-	default 1
-
 module=BLE_NUS
 module-dep=LOG
 module-str=BLE Nordic UART Service
