@@ -107,9 +107,9 @@ struct lite_buttons_config {
  *                            @ref LITE_BUTTONS_DETECTION_DELAY_MIN_US.
  *
  * @retval 0 on success.
- * @retval -NRF_EPERM If the lite_buttons library is already initialized.
- * @retval -NRF_EINVAL If input data is invalid.
- * @retval -NRF_EIO If an error occurred.
+ * @retval -EPERM If the lite_buttons library is already initialized.
+ * @retval -EINVAL If input data is invalid.
+ * @retval -EIO If an error occurred.
  */
 int lite_buttons_init(const struct lite_buttons_config *configs, uint8_t num_configs,
 		      uint32_t detection_delay);
@@ -120,8 +120,8 @@ int lite_buttons_init(const struct lite_buttons_config *configs, uint8_t num_con
  * @details This function will deinitialize the buttons library.
  *
  * @retval 0 on success.
- * @retval -NRF_EPERM If the lite_buttons library is already initialized.
- * @retval -NRF_EIO If an error occurred.
+ * @retval -EPERM If the lite_buttons library is already initialized.
+ * @retval -EIO If an error occurred.
  */
 int lite_buttons_deinit(void);
 
@@ -129,7 +129,7 @@ int lite_buttons_deinit(void);
  * @brief Enable button detection.
  *
  * @retval 0 on success.
- * @retval -NRF_EPERM If the lite_buttons library is not initialized.
+ * @retval -EPERM If the lite_buttons library is not initialized.
  */
 int lite_buttons_enable(void);
 
@@ -137,8 +137,8 @@ int lite_buttons_enable(void);
  * @brief Disable button detection.
  *
  * @retval 0 on success.
- * @retval -NRF_EPERM If the lite_buttons library is not initialized.
- * @retval -NRF_EIO If an error occurred.
+ * @retval -EPERM If the lite_buttons library is not initialized.
+ * @retval -EIO If an error occurred.
  */
 int lite_buttons_disable(void);
 
