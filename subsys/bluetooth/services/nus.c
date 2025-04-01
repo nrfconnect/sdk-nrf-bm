@@ -111,11 +111,11 @@ static uint32_t nus_tx_char_add(struct ble_nus *nus, struct ble_nus_config const
 static void on_connect(struct ble_nus *nus, ble_evt_t const *ble_evt)
 {
 	int err;
-	struct ble_nus_client_context *ctx;
+	const uint16_t conn_handle = ble_evt->evt.gap_evt.conn_handle;
 	struct ble_nus_evt evt = {
 		.type = BLE_NUS_EVT_COMM_STARTED,
 		.nus = nus,
-		.conn_handle = ble_evt->evt.gap_evt.conn_handle,
+		.conn_handle = conn_handle,
 	};
 	uint8_t cccd_value[2];
 	ble_gatts_value_t gatts_val = {
@@ -123,19 +123,17 @@ static void on_connect(struct ble_nus *nus, ble_evt_t const *ble_evt)
 		.len = sizeof(cccd_value),
 		.offset = 0,
 	};
+	struct ble_nus_client_context *ctx;
 
-	ctx = ble_nus_client_context_get(ble_evt->evt.gap_evt.conn_handle);
-	if (!ctx) {
-		LOG_ERR("Link context for 0x%02X connection handle could not be fetched.",
-			ble_evt->evt.gap_evt.conn_handle);
+	ctx = ble_nus_client_context_get(conn_handle);
+	if (ctx == NULL) {
+		LOG_ERR("Could not fetch nus context for connection handle %#x", conn_handle);
 	}
 
 	/* Check the hosts CCCD value to inform of readiness to send data using the
 	 * RX characteristic
 	 */
-	err = sd_ble_gatts_value_get(ble_evt->evt.gap_evt.conn_handle,
-				     nus->tx_handles.cccd_handle,
-				     &gatts_val);
+	err = sd_ble_gatts_value_get(conn_handle, nus->tx_handles.cccd_handle, &gatts_val);
 	if ((err == 0) && (nus->data_handler != NULL) &&
 	    is_notification_enabled(gatts_val.p_value)) {
 		if (ctx != NULL) {
@@ -155,17 +153,17 @@ static void on_connect(struct ble_nus *nus, ble_evt_t const *ble_evt)
  */
 static void on_write(struct ble_nus *nus, ble_evt_t const *ble_evt)
 {
+	const uint16_t conn_handle = ble_evt->evt.gatts_evt.conn_handle;
+	const ble_gatts_evt_write_t *evt_write = &ble_evt->evt.gatts_evt.params.write;
 	struct ble_nus_evt evt = {
 		.nus = nus,
-		.conn_handle = ble_evt->evt.gatts_evt.conn_handle,
+		.conn_handle = conn_handle,
 	};
-	ble_gatts_evt_write_t const *evt_write = &ble_evt->evt.gatts_evt.params.write;
 	struct ble_nus_client_context *ctx;
 
-	ctx = ble_nus_client_context_get(ble_evt->evt.gatts_evt.conn_handle);
-	if (!ctx) {
-		LOG_ERR("Link context for 0x%02X connection handle could not be fetched.",
-			ble_evt->evt.gatts_evt.conn_handle);
+	ctx = ble_nus_client_context_get(conn_handle);
+	if (ctx == NULL) {
+		LOG_ERR("Could not fetch nus context for connection handle %#x", conn_handle);
 	}
 
 	LOG_DBG("Link ctx %p", ctx);
@@ -205,17 +203,17 @@ static void on_write(struct ble_nus *nus, ble_evt_t const *ble_evt)
  */
 static void on_hvx_tx_complete(struct ble_nus *nus, ble_evt_t const *ble_evt)
 {
+	const uint16_t conn_handle = ble_evt->evt.gatts_evt.conn_handle;
 	struct ble_nus_evt evt = {
 		.type = BLE_NUS_EVT_TX_RDY,
 		.nus = nus,
-		.conn_handle = ble_evt->evt.gatts_evt.conn_handle,
+		.conn_handle = conn_handle,
 	};
 	struct ble_nus_client_context *ctx;
 
-	ctx = ble_nus_client_context_get(ble_evt->evt.gatts_evt.conn_handle);
-	if (!ctx) {
-		LOG_ERR("Link context for 0x%02X connection handle could not be fetched.",
-			ble_evt->evt.gatts_evt.conn_handle);
+	ctx = ble_nus_client_context_get(conn_handle);
+	if (ctx == NULL) {
+		LOG_ERR("Could not fetch nus context for connection handle %#x", conn_handle);
 		return;
 	}
 
@@ -330,7 +328,7 @@ int ble_nus_data_send(struct ble_nus *nus, uint8_t *data,
 	}
 
 	ctx = ble_nus_client_context_get(conn_handle);
-	if (!ctx) {
+	if (ctx == NULL) {
 		return -ENOENT;
 	}
 
