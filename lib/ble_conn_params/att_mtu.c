@@ -16,10 +16,12 @@ extern void ble_conn_params_event_send(const struct ble_conn_params_evt *evt);
 
 static struct {
 	uint16_t att_mtu;
+	uint16_t att_mtu_desired;
 	uint8_t att_mtu_exchange_pending : 1;
 } links[CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT] = {
 	[0 ... CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT - 1] = {
-		.att_mtu = CONFIG_BLE_CONN_PARAMS_ATT_MTU,
+		.att_mtu = BLE_GATT_ATT_MTU_DEFAULT,
+		.att_mtu_desired = CONFIG_BLE_CONN_PARAMS_ATT_MTU,
 	}
 };
 
@@ -27,7 +29,7 @@ static void mtu_exchange_request(uint16_t conn_handle, int idx)
 {
 	int err;
 
-	err = sd_ble_gattc_exchange_mtu_request(conn_handle, links[idx].att_mtu);
+	err = sd_ble_gattc_exchange_mtu_request(conn_handle, links[idx].att_mtu_desired);
 	if (!err) {
 		return;
 	}
@@ -47,7 +49,7 @@ static void on_exchange_mtu_req_evt(uint16_t conn_handle, int idx,
 	int err;
 
 	/* Determine the lowest ATT MTU between our own desired ATT MTU and the peer's. */
-	links[idx].att_mtu = MIN(evt->client_rx_mtu, links[idx].att_mtu);
+	links[idx].att_mtu = MIN(evt->client_rx_mtu, links[idx].att_mtu_desired);
 	links[idx].att_mtu_exchange_pending = false;
 
 	LOG_INF("Peer %#x requested ATT MTU of %u bytes", conn_handle, evt->client_rx_mtu);
@@ -77,7 +79,7 @@ static void on_exchange_mtu_rsp_evt(uint16_t conn_handle, int idx,
 				    const ble_gattc_evt_exchange_mtu_rsp_t *evt)
 {
 	/* Determine the lowest ATT MTU between our own desired ATT MTU and the peer's. */
-	links[idx].att_mtu = MIN(evt->server_rx_mtu, links[idx].att_mtu);
+	links[idx].att_mtu = MIN(evt->server_rx_mtu, links[idx].att_mtu_desired);
 	links[idx].att_mtu_exchange_pending = false;
 
 	LOG_INF("ATT MTU set to %u bytes for peer %#x", links[idx].att_mtu, conn_handle);
@@ -98,7 +100,7 @@ static void on_connected(uint16_t conn_handle, int idx, const ble_gap_evt_connec
 
 	if (IS_ENABLED(CONFIG_BLE_CONN_PARAMS_INITIATE_ATT_MTU_EXCHANGE)) {
 		LOG_INF("Initiating ATT MTU exchange procedure (%u -> %u bytes) for peer %#x",
-			BLE_GATT_ATT_MTU_DEFAULT, links[idx].att_mtu, conn_handle);
+			links[idx].att_mtu, links[idx].att_mtu_desired, conn_handle);
 
 		mtu_exchange_request(conn_handle, idx);
 	}
@@ -108,7 +110,8 @@ static void on_disconnected(uint16_t conn_handle, int idx)
 {
 	ARG_UNUSED(conn_handle);
 
-	links[idx].att_mtu = CONFIG_BLE_CONN_PARAMS_ATT_MTU;
+	links[idx].att_mtu = BLE_GATT_ATT_MTU_DEFAULT;
+	links[idx].att_mtu_desired = CONFIG_BLE_CONN_PARAMS_ATT_MTU;
 	links[idx].att_mtu_exchange_pending = false;
 }
 
@@ -163,12 +166,11 @@ int ble_conn_params_att_mtu_set(uint16_t conn_handle, uint16_t att_mtu)
 		return -EINVAL;
 	}
 
-	if (att_mtu < BLE_GATT_ATT_MTU_DEFAULT ||
-	    att_mtu > CONFIG_NRF_SDH_BLE_GATT_MAX_MTU_SIZE) {
+	if (att_mtu < BLE_GATT_ATT_MTU_DEFAULT || CONFIG_BLE_CONN_PARAMS_ATT_MTU < att_mtu) {
 		return -EINVAL;
 	}
 
-	links[idx].att_mtu = att_mtu;
+	links[idx].att_mtu_desired = att_mtu;
 	mtu_exchange_request(conn_handle, idx);
 
 	return 0;
