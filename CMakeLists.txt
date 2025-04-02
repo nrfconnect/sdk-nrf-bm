@@ -6,6 +6,8 @@
 
 zephyr_include_directories(include)
 
+include(cmake/version.cmake)
+
 add_subdirectory(drivers)
 add_subdirectory(lib)
 add_subdirectory(subsys)
