@@ -119,7 +119,6 @@ int ble_conn_params_override(uint16_t conn_handle, const ble_gap_conn_params_t *
  *
  * @return 0 On success.
  * @return -EINVAL Invalid ATT MTU or connection handle.
- * @return -ENOTCONN Peer is not connected.
  */
 int ble_conn_params_att_mtu_set(uint16_t conn_handle, uint16_t att_mtu);
 
@@ -132,7 +131,6 @@ int ble_conn_params_att_mtu_set(uint16_t conn_handle, uint16_t att_mtu);
  * @return 0 On success.
  * @return -EINVAL Invalid connection handle.
  * @return -EFAULT @p att_mtu is @c NULL.
- * @return -ENOTCONN Peer is not connected.
  */
 int ble_conn_params_att_mtu_get(uint16_t conn_handle, uint16_t *att_mtu);
 
@@ -147,7 +145,6 @@ int ble_conn_params_att_mtu_get(uint16_t conn_handle, uint16_t *att_mtu);
  *
  * @return 0 On success.
  * @return -EINVAL Invalid data length or connection handle.
- * @return -ENOTCONN Peer is not connected.
  */
 int ble_conn_params_data_length_set(uint16_t conn_handle, uint8_t data_length);
 
@@ -160,7 +157,6 @@ int ble_conn_params_data_length_set(uint16_t conn_handle, uint8_t data_length);
  * @return 0 On success.
  * @return -EINVAL Invalid connection handle.
  * @return -EFAULT @p data_length is @c NULL.
- * @return -ENOTCONN Peer is not connected.
  */
 int ble_conn_params_data_length_get(uint16_t conn_handle, uint8_t *data_length);
 
@@ -175,7 +171,6 @@ int ble_conn_params_data_length_get(uint16_t conn_handle, uint8_t *data_length);
  *
  * @return 0 On success.
  * @return -EINVAL Invalid data length or connection handle.
- * @return -ENOTCONN Peer is not connected.
  */
 int ble_conn_params_phy_radio_mode_set(uint16_t conn_handle, ble_gap_phys_t phy_pref);
 
@@ -188,6 +183,5 @@ int ble_conn_params_phy_radio_mode_set(uint16_t conn_handle, ble_gap_phys_t phy_
  * @return 0 On success.
  * @return -EINVAL Invalid connection handle.
  * @return -EFAULT @p phy_pref is @c NULL.
- * @return -ENOTCONN Peer is not connected.
  */
 int ble_conn_params_phy_radio_mode_get(uint16_t conn_handle, ble_gap_phys_t *phy_pref);
