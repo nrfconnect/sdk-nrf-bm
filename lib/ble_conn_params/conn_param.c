@@ -30,13 +30,13 @@ static struct {
 	}
 };
 
-static void conn_params_negotiate(uint16_t conn_handle)
+static void conn_params_negotiate(uint16_t conn_handle, int idx)
 {
 	int err;
 
 	LOG_DBG("Negotiating desired parameters with peer %#x", conn_handle);
 
-	err = sd_ble_gap_conn_param_update(conn_handle, &links[conn_handle].ppcp);
+	err = sd_ble_gap_conn_param_update(conn_handle, &links[idx].ppcp);
 	if (err) {
 		LOG_ERR("Failed to request GAP connection parameters update, nrf_error %#x", err);
 	}
@@ -87,23 +87,22 @@ static bool conn_params_can_agree(const ble_gap_conn_params_t *conn_params)
 	return true;
 }
 
-static void on_connected(uint16_t conn_handle, const ble_gap_evt_connected_t *evt)
+static void on_connected(uint16_t conn_handle, int idx, const ble_gap_evt_connected_t *evt)
 {
-	const uint8_t role = evt->role;
-
-	links[conn_handle].retries = CONFIG_BLE_CONN_PARAMS_NEGOTIATION_RETRIES;
+	links[idx].retries = CONFIG_BLE_CONN_PARAMS_NEGOTIATION_RETRIES;
 
 	/* Copy default ppcp */
-	memcpy(&links[conn_handle].ppcp, &ppcp, sizeof(ble_gap_conn_params_t));
+	memcpy(&links[idx].ppcp, &ppcp, sizeof(ble_gap_conn_params_t));
 
-	if (role == BLE_GAP_ROLE_PERIPH) {
+	if (evt->role == BLE_GAP_ROLE_PERIPH) {
 		if (!conn_params_can_agree(&evt->conn_params)) {
-			conn_params_negotiate(conn_handle);
+			conn_params_negotiate(conn_handle, idx);
 		}
 	}
 }
 
-static void on_conn_params_update(uint16_t conn_handle, const ble_gap_evt_conn_param_update_t *evt)
+static void on_conn_params_update(uint16_t conn_handle, int idx,
+				  const ble_gap_evt_conn_param_update_t *evt)
 {
 	LOG_DBG("GAP connection params updated, conn. interval min %u max %u,"
 		" slave latency %u, sup. timeout %u",
@@ -125,9 +124,9 @@ static void on_conn_params_update(uint16_t conn_handle, const ble_gap_evt_conn_p
 	/** TODO: should use a timer here
 	 *  what is this really used for
 	 */
-	if (links[conn_handle].retries) {
-		links[conn_handle].retries--;
-		conn_params_negotiate(conn_handle);
+	if (links[idx].retries) {
+		links[idx].retries--;
+		conn_params_negotiate(conn_handle, idx);
 		return;
 	}
 
@@ -145,26 +144,24 @@ static void on_conn_params_update(uint16_t conn_handle, const ble_gap_evt_conn_p
 	}
 }
 
-static void on_disconnected(uint16_t conn_handle, const ble_gap_evt_disconnected_t *evt)
-{
-}
-
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {
 	const uint16_t conn_handle = evt->evt.common_evt.conn_handle;
+	const int idx = nrf_sdh_ble_idx_get(conn_handle);
+
+	__ASSERT(idx >= 0, "Invalid idx %d for conn_handle %#x, evt_id %#x",
+		 idx, conn_handle, evt->header.evt_id);
 
 	switch (evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:
-		on_connected(conn_handle, &evt->evt.gap_evt.params.connected);
+		on_connected(conn_handle, idx, &evt->evt.gap_evt.params.connected);
 		break;
 
 	case BLE_GAP_EVT_DISCONNECTED:
-		on_disconnected(conn_handle, &evt->evt.gap_evt.params.disconnected);
 		break;
 
 	case BLE_GAP_EVT_CONN_PARAM_UPDATE:
-		on_conn_params_update(
-			conn_handle, &evt->evt.gap_evt.params.conn_param_update);
+		on_conn_params_update(conn_handle, idx, &evt->evt.gap_evt.params.conn_param_update);
 		break;
 
 	default:
@@ -198,15 +195,16 @@ NRF_SDH_STATE_EVT_OBSERVER(ble_conn_params_sdh_state_observer, on_state_evt, NUL
 int ble_conn_params_override(uint16_t conn_handle, const ble_gap_conn_params_t *conn_params)
 {
 	int err;
+	const int idx = nrf_sdh_ble_idx_get(conn_handle);
 
-	if (conn_handle > ARRAY_SIZE(links)) {
+	if (idx < 0) {
 		return -EINVAL;
 	}
 	if (!conn_params) {
 		return -EFAULT;
 	}
 
-	links[conn_handle].ppcp = *conn_params;
+	links[idx].ppcp = *conn_params;
 	err = sd_ble_gap_conn_param_update(conn_handle, conn_params);
 	if (err) {
 		return -EINVAL;
