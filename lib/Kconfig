@@ -13,5 +13,6 @@ rsource "lite_buttons/Kconfig"
 rsource "lite_timer/Kconfig"
 rsource "ble_qwr/Kconfig"
 rsource "sensorsim/Kconfig"
+rsource "boot_banner/Kconfig"
 
 endmenu
