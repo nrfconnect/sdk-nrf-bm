@@ -93,7 +93,18 @@ int nrf_sdh_ble_enable(uint8_t conn_cfg_tag);
  * @returns An integer in the range from 0 to (CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT - 1) if the
  *          connection handle has been assigned to an index, otherwise -1.
  */
-int nrf_sdh_ble_idx_get(uint16_t conn_handle);
+static inline int nrf_sdh_ble_idx_get(uint16_t conn_handle)
+{
+	/* Code size optimization when supporting only one connection. */
+	if (CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT == 1) {
+		ARG_UNUSED(conn_handle);
+		return 0;
+	}
+
+	/* This is used when supporting multiple connections. */
+	int _nrf_sdh_ble_idx_get(uint16_t conn_handle);
+	return _nrf_sdh_ble_idx_get(conn_handle);
+}
 
 #ifdef __cplusplus
 }
