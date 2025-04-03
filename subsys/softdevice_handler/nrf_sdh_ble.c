@@ -155,7 +155,7 @@ static uint16_t conn_handles[CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT] = {
 	[0 ... CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT - 1] = BLE_CONN_HANDLE_INVALID,
 };
 
-int nrf_sdh_ble_idx_get(uint16_t conn_handle)
+int _nrf_sdh_ble_idx_get(uint16_t conn_handle)
 {
 	for (int idx = 0; idx < ARRAY_SIZE(conn_handles); idx++) {
 		if (conn_handles[idx] == conn_handle) {
@@ -222,7 +222,8 @@ static void ble_evt_poll(void *context)
 			LOG_DBG("BLE event: %#x", ble_evt->header.evt_id);
 		}
 
-		if (ble_evt->header.evt_id == BLE_GAP_EVT_CONNECTED) {
+		if ((CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT > 1) &&
+		    (ble_evt->header.evt_id == BLE_GAP_EVT_CONNECTED)) {
 			idx_assign(ble_evt->evt.gap_evt.conn_handle);
 		}
 
@@ -232,7 +233,8 @@ static void ble_evt_poll(void *context)
 			obs->handler(ble_evt, obs->context);
 		}
 
-		if (ble_evt->header.evt_id == BLE_GAP_EVT_DISCONNECTED) {
+		if ((CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT > 1) &&
+		    (ble_evt->header.evt_id == BLE_GAP_EVT_DISCONNECTED)) {
 			idx_unassign(ble_evt->evt.gap_evt.conn_handle);
 		}
 	}
