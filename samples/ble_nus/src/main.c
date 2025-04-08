@@ -329,7 +329,7 @@ int main(void)
 	};
 	struct nrf_ble_qwr_init qwr_init_params = {0};
 
-	LOG_INF("BLE NUS sample started\n");
+	LOG_INF("BLE NUS sample started");
 
 	err = uarte_init();
 	if (err) {
@@ -339,11 +339,11 @@ int main(void)
 
 	err = nrf_sdh_enable_request();
 	if (err) {
-		LOG_ERR("Failed to enable SoftDevice, err %d\n", err);
+		LOG_ERR("Failed to enable SoftDevice, err %d", err);
 		return -1;
 	}
 
-	LOG_INF("SoftDevice enabled\n");
+	LOG_INF("SoftDevice enabled");
 
 	err = nrf_sdh_ble_enable(CONFIG_NRF_SDH_BLE_CONN_TAG);
 	if (err) {
@@ -365,7 +365,7 @@ int main(void)
 		return -1;
 	}
 
-	LOG_INF("Services initialized\n");
+	LOG_INF("Services initialized");
 
 	err = ble_conn_params_event_handler_set(on_conn_params_evt);
 	if (err) {
@@ -398,7 +398,7 @@ int main(void)
 		return -1;
 	}
 
-	LOG_INF("Advertising as %s\n", CONFIG_BLE_ADV_NAME);
+	LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
 #if defined(CONFIG_SOC_SERIES_NRF54LX)
 	LOG_INF("The NUS service is handled at a separate uart instance");
 #endif
