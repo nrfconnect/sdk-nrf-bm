@@ -69,7 +69,7 @@ static uint8_t hrm_encode(struct ble_hrs *hrs, uint16_t heart_rate, uint8_t *enc
 			/* Not all stored rr_interval values can fit into the encoded hrm,
 			 * move the remaining values to the start of the buffer.
 			 */
-			memmove(&hrs->rr_interval[0], &hrs->rr_interval[1],
+			memmove(&hrs->rr_interval[0], &hrs->rr_interval[i],
 				(hrs->rr_interval_count - i) * sizeof(uint16_t));
 			break;
 		}
