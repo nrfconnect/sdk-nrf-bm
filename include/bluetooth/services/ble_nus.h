@@ -46,10 +46,16 @@ void ble_nus_on_ble_evt(ble_evt_t const *ble_evt, void *context);
 #define HANDLE_LENGTH 2
 
 /**
+ * @brief Macro for calculating maximum length of data (in bytes) that can be transmitted to
+ *        the peer by the Nordic UART service module, given the ATT MTU size.
+ */
+#define BLE_NUS_MAX_DATA_LEN_CALC(mtu_size) ((mtu_size) - OPCODE_LENGTH - HANDLE_LENGTH)
+
+/**
  * @brief Maximum length of data (in bytes) that can be transmitted to the peer by the Nordic UART
  *        service module.
  */
-#define BLE_NUS_MAX_DATA_LEN (CONFIG_NRF_SDH_BLE_GATT_MAX_MTU_SIZE - OPCODE_LENGTH - HANDLE_LENGTH)
+#define BLE_NUS_MAX_DATA_LEN  BLE_NUS_MAX_DATA_LEN_CALC(CONFIG_NRF_SDH_BLE_GATT_MAX_MTU_SIZE)
 
 /** @brief Nordic UART Service event types. */
 enum ble_nus_evt_type {

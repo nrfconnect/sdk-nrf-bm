@@ -37,7 +37,7 @@ static const nrfx_uarte_t uarte_inst = NRFX_UARTE_INSTANCE(30);
 /* Maximum length of data (in bytes) that can be transmitted to the peer by the
  * Nordic UART service module.
  */
-static volatile uint16_t ble_nus_max_data_len = BLE_NUS_MAX_DATA_LEN;
+static volatile uint16_t ble_nus_max_data_len = BLE_NUS_MAX_DATA_LEN_CALC(BLE_GATT_ATT_MTU_DEFAULT);
 
 static char uarte_rx_buf[10];
 
@@ -138,6 +138,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 	switch (evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:
 		LOG_INF("Peer connected");
+		ble_nus_max_data_len = BLE_NUS_MAX_DATA_LEN_CALC(BLE_GATT_ATT_MTU_DEFAULT);
 		conn_handle = evt->evt.gap_evt.conn_handle;
 		err = sd_ble_gatts_sys_attr_set(conn_handle, NULL, 0, 0);
 		if (err) {
@@ -210,8 +211,8 @@ void on_conn_params_evt(const struct ble_conn_params_evt *evt)
 				conn_handle, evt->conn_handle);
 			break;
 		}
-		ble_nus_max_data_len = evt->att_mtu - OPCODE_LENGTH - HANDLE_LENGTH;
-		LOG_INF("Attribute MTU updated to %d", ble_nus_max_data_len);
+		ble_nus_max_data_len = BLE_NUS_MAX_DATA_LEN_CALC(evt->att_mtu);
+		LOG_INF("NUS max data length updated to %d", ble_nus_max_data_len);
 		break;
 
 	default:
