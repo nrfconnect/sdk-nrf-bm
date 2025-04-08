@@ -151,6 +151,7 @@ static uint32_t body_sensor_location_char_add(struct ble_hrs *hrs, const struct 
 
 static void on_connect(struct ble_hrs *hrs, const ble_gap_evt_t *gap_evt)
 {
+	hrs->max_hrm_len = MAX_HRM_LEN_CALC(BLE_GATT_ATT_MTU_DEFAULT);
 	hrs->conn_handle = gap_evt->conn_handle;
 }
 
