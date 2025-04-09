@@ -21,13 +21,13 @@ static int uarte_init(void)
 		LITE_UARTE_CONSOLE_PIN_TX, NRF_UARTE_PSEL_DISCONNECTED);
 
 #if CONFIG_LITE_UARTE_CONSOLE_UARTE_USE_HWFC
-	uarte_config.config.hwfc = CONFIG_LITE_UARTE_CONSOLE_HWFC_ENABLED;
+	uarte_config.config.hwfc = NRF_UARTE_HWFC_ENABLED;
 	uarte_config.cts_pin = LITE_UARTE_CONSOLE_PIN_CTS;
-	uarte_config.rts_pin = LITE_UARTE_CONSOLE_PIN_RTS;
+	uarte_config.rts_pin = NRF_UARTE_PSEL_DISCONNECTED;
 #endif
 
 #if CONFIG_LITE_UARTE_CONSOLE_UARTE_PARITY_INCLUDED
-	uarte_config.parity = NRF_UARTE_PARITY_INCLUDED;
+	uarte_config.config.parity = NRF_UARTE_PARITY_INCLUDED;
 #endif
 
 	uarte_config.interrupt_priority = CONFIG_LITE_UARTE_CONSOLE_UARTE_IRQ_PRIO;
