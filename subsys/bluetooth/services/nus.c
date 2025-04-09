@@ -134,14 +134,14 @@ static void on_connect(struct ble_nus *nus, ble_evt_t const *ble_evt)
 	 * RX characteristic
 	 */
 	err = sd_ble_gatts_value_get(conn_handle, nus->tx_handles.cccd_handle, &gatts_val);
-	if ((err == 0) && (nus->data_handler != NULL) &&
+	if ((err == 0) && (nus->evt_handler != NULL) &&
 	    is_notification_enabled(gatts_val.p_value)) {
 		if (ctx != NULL) {
 			ctx->is_notification_enabled = true;
 		}
 
 		evt.link_ctx = ctx;
-		nus->data_handler(&evt);
+		nus->evt_handler(&evt);
 	}
 }
 
@@ -179,17 +179,17 @@ static void on_write(struct ble_nus *nus, ble_evt_t const *ble_evt)
 				evt.type = BLE_NUS_EVT_COMM_STOPPED;
 			}
 
-			if (nus->data_handler != NULL) {
-				nus->data_handler(&evt);
+			if (nus->evt_handler != NULL) {
+				nus->evt_handler(&evt);
 			}
 		}
 	} else if ((evt_write->handle == nus->rx_handles.value_handle) &&
-		   (nus->data_handler != NULL)) {
+		   (nus->evt_handler != NULL)) {
 		evt.type = BLE_NUS_EVT_RX_DATA;
 		evt.params.rx_data.data = evt_write->data;
 		evt.params.rx_data.length = evt_write->len;
 
-		nus->data_handler(&evt);
+		nus->evt_handler(&evt);
 	} else {
 		/* Do nothing. This event is not relevant for this service. */
 	}
@@ -217,9 +217,9 @@ static void on_hvx_tx_complete(struct ble_nus *nus, ble_evt_t const *ble_evt)
 		return;
 	}
 
-	if ((ctx->is_notification_enabled) && (nus->data_handler != NULL)) {
+	if ((ctx->is_notification_enabled) && (nus->evt_handler != NULL)) {
 		evt.link_ctx = ctx;
-		nus->data_handler(&evt);
+		nus->evt_handler(&evt);
 	}
 }
 
@@ -264,7 +264,7 @@ int ble_nus_init(struct ble_nus *nus, struct ble_nus_config const *cfg)
 	}
 
 	/* Initialize the service structure. */
-	nus->data_handler = cfg->data_handler;
+	nus->evt_handler = cfg->evt_handler;
 	nus->service_handle = BLE_CONN_HANDLE_INVALID;
 
 	/* Add a custom base UUID. */

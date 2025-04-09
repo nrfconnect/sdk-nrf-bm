@@ -11,7 +11,7 @@ rsource "ble_racp/Kconfig"
 rsource "event_scheduler/Kconfig"
 rsource "lite_buttons/Kconfig"
 rsource "lite_timer/Kconfig"
-rsource "nrf_ble_qwr/Kconfig"
+rsource "ble_qwr/Kconfig"
 rsource "sensorsim/Kconfig"
 
 endmenu

@@ -272,7 +272,7 @@ static void state_set(uint8_t pin_index, uint8_t state)
 	global.pin_states[pin_index >> 1] |= state_mask;
 }
 
-static void user_event(uint8_t pin, enum lite_buttons_event_type type)
+static void user_event(uint8_t pin, enum lite_buttons_evt_type type)
 {
 	struct lite_buttons_config const *config = button_get(pin);
 
@@ -388,7 +388,7 @@ static void detection_delay_timeout_handler(void *ctx)
 	}
 }
 
-static void gpiote_event_handler(nrfx_gpiote_pin_t pin, nrfx_gpiote_trigger_t action, void *ctx)
+static void gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrfx_gpiote_trigger_t action, void *ctx)
 {
 	struct lite_buttons_config const *config = button_get(pin);
 	bool is_set = nrfx_gpiote_in_is_set(config->pin_number);
@@ -439,7 +439,7 @@ int lite_buttons_init(struct lite_buttons_config const *configs, uint8_t num_con
 	};
 
 	const nrfx_gpiote_handler_config_t handler_config = {
-		.handler = gpiote_event_handler,
+		.handler = gpiote_evt_handler,
 	};
 
 	for (int i = 0; i < num_configs; i++) {

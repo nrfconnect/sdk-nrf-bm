@@ -83,7 +83,7 @@ typedef void (*ble_conn_params_evt_handler_t)(const struct ble_conn_params_evt *
  * @returns 0 On success.
  * @returns -EFAULT If @p handler is @c NULL.
  */
-int ble_conn_params_event_handler_set(ble_conn_params_evt_handler_t handler);
+int ble_conn_params_evt_handler_set(ble_conn_params_evt_handler_t handler);
 
 /**
  * @brief Override GAP connection parameters for given peer.

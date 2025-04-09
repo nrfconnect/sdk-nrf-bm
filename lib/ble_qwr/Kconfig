@@ -3,24 +3,24 @@
 #
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
-menuconfig NRF_BLE_QWR
+menuconfig BLE_QWR
 	bool "Queued writes"
 
-if NRF_BLE_QWR
+if BLE_QWR
 
-config NRF_BLE_QWR_MAX_ATTR
+config BLE_QWR_MAX_ATTR
 	int "Maximum queued writes attributes"
 	default 0
 	help
 	   Maximum queued writes attributes
 
-config NRF_BLE_QWR_BLE_OBSERVER_PRIO
+config BLE_QWR_BLE_OBSERVER_PRIO
 	int "BLE observer priority"
 	default 2
 
-module=NRF_BLE_QWR
+module=BLE_QWR
 module-dep=LOG
-module-str=nRF Lite BLE QWR
+module-str=BLE QWR
 source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
 
 endif

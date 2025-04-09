@@ -5,7 +5,7 @@
 #
 menuconfig BLE_NUS
 	bool "Nordic UART service"
-	depends on NRF_BLE_QWR
+	depends on BLE_QWR
 
 if BLE_NUS
 
