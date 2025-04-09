@@ -26,4 +26,26 @@ config LITE_UARTE_CONSOLE_UARTE_USE_HWFC
 config LITE_UARTE_CONSOLE_UARTE_PARITY_INCLUDED
 	bool "Use parity"
 
+
+config LITE_UARTE_CONSOLE_ADD_CR_BEFORE_LF
+	bool "Add carriage return before linefeed"
+	default y
+
+#
+# Console termination
+#
+choice
+	prompt "Termination mode"
+	default LITE_UARTE_CONSOLE_CR_LF_TERMINATION
+	help
+		Sets the command terminator used by the serial terminal.
+		Available options are:
+		-  LF termination
+		-  CR+LF termination
+	config LITE_UARTE_CONSOLE_LF_TERMINATION
+		bool "LF termination"
+	config LITE_UARTE_CONSOLE_CR_LF_TERMINATION
+		bool "CR+LF termination"
+endchoice
+
 endif # LITE_UARTE_CONSOLE
