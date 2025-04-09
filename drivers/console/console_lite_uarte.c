@@ -52,6 +52,14 @@ static int console_out(int c)
 {
 	const char c2 = c;
 
+#if defined(CONFIG_LITE_UARTE_CONSOLE_CR_LF_TERMINATION)
+	const char r = '\r';
+
+	if ('\n' == c) {
+		nrfx_uarte_tx(&uarte_inst, &r, 1, NRFX_UARTE_TX_BLOCKING);
+	}
+#endif
+
 	nrfx_uarte_tx(&uarte_inst, &c2, 1, NRFX_UARTE_TX_BLOCKING);
 
 	/* Return the character passed as input. */
