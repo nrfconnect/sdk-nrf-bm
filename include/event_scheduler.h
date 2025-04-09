@@ -9,7 +9,7 @@
 /**
  * @brief Event handler prototype.
  */
-typedef void (*event_handler_t)(void *evt, size_t len);
+typedef void (*evt_handler_t)(void *evt, size_t len);
 
 /**
  * @brief An event to be scheduled for execution in the main thread.
@@ -24,7 +24,7 @@ struct event_scheduler_event {
 	/**
 	 * @brief Event handler.
 	 */
-	event_handler_t handler;
+	evt_handler_t handler;
 	/**
 	 * @brief Event length.
 	 */
@@ -49,7 +49,7 @@ struct event_scheduler_event {
  * @return -EINVAL Invalid @p data and @p len combination.
  * @return -ENOMEM No memory to schedule this event.
  */
-int event_scheduler_defer(event_handler_t handler, void *data, size_t len);
+int event_scheduler_defer(evt_handler_t handler, void *data, size_t len);
 
 /**
  * @brief Process deferred events.

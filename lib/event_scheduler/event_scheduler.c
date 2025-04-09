@@ -20,7 +20,7 @@ static sys_slist_t event_list;
 static struct sys_heap heap;
 static uint8_t buf[CONFIG_EVENT_SCHEDULER_BUF_SIZE];
 
-int event_scheduler_defer(event_handler_t handler, void *data, size_t len)
+int event_scheduler_defer(evt_handler_t handler, void *data, size_t len)
 {
 	uint8_t nested;
 	struct event_scheduler_event *evt;

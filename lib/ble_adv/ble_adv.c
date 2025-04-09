@@ -73,6 +73,7 @@ static void on_connected(struct ble_adv *ble_adv, ble_evt_t const *ble_evt)
 static void on_disconnected(struct ble_adv *ble_adv, ble_evt_t const *ble_evt)
 {
 	int err;
+	struct ble_adv_evt adv_evt;
 
 	ble_adv->whitelist_temporarily_disabled = false;
 
@@ -80,7 +81,9 @@ static void on_disconnected(struct ble_adv *ble_adv, ble_evt_t const *ble_evt)
 		if (ble_evt->evt.gap_evt.conn_handle == ble_adv->conn_handle) {
 			err = ble_adv_start(ble_adv, BLE_ADV_MODE_DIRECTED_HIGH_DUTY);
 			if (err) {
-				ble_adv->error_handler(err);
+				adv_evt.evt_type = BLE_ADV_EVT_ERROR;
+				adv_evt.error.reason = err;
+				ble_adv->evt_handler(ble_adv, &adv_evt);
 			}
 		}
 	}
@@ -90,6 +93,7 @@ static void on_terminated(struct ble_adv *ble_adv, ble_evt_t const *ble_evt)
 {
 	int err;
 	const uint8_t reason = ble_evt->evt.gap_evt.params.adv_set_terminated.reason;
+	struct ble_adv_evt adv_evt;
 
 	/* Start advertising in the next mode */
 	if (reason == BLE_GAP_EVT_ADV_SET_TERMINATED_REASON_TIMEOUT ||
@@ -97,7 +101,9 @@ static void on_terminated(struct ble_adv *ble_adv, ble_evt_t const *ble_evt)
 		LOG_DBG("Advertising timeout");
 		err = ble_adv_start(ble_adv, adv_mode_next(ble_adv->mode_current));
 		if (err) {
-			ble_adv->error_handler(err);
+			adv_evt.error.reason = err;
+			adv_evt.evt_type = BLE_ADV_EVT_ERROR;
+			ble_adv->evt_handler(ble_adv, &adv_evt);
 		}
 	}
 }
@@ -252,7 +258,7 @@ int ble_adv_init(struct ble_adv *ble_adv, struct ble_adv_config *ble_adv_config)
 	if (!ble_adv || !ble_adv_config) {
 		return -EFAULT;
 	}
-	if (!ble_adv_config->evt_handler || !ble_adv_config->error_handler) {
+	if (!ble_adv_config->evt_handler) {
 		return -EFAULT;
 	}
 
@@ -261,7 +267,6 @@ int ble_adv_init(struct ble_adv *ble_adv, struct ble_adv_config *ble_adv_config)
 	ble_adv->conn_handle = BLE_CONN_HANDLE_INVALID;
 	ble_adv->adv_handle = BLE_GAP_ADV_SET_HANDLE_NOT_SET;
 	ble_adv->evt_handler = ble_adv_config->evt_handler;
-	ble_adv->error_handler = ble_adv_config->error_handler;
 
 	memset(&ble_adv->peer_address, 0x00, sizeof(ble_adv->peer_address));
 
@@ -315,7 +320,7 @@ int ble_adv_init(struct ble_adv *ble_adv, struct ble_adv_config *ble_adv_config)
 int ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 {
 	int err;
-	enum ble_adv_evt evt;
+	struct ble_adv_evt adv_evt;
 
 	if (!ble_adv->is_initialized) {
 		return -EPERM;
@@ -337,7 +342,8 @@ int ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 	if (IS_ENABLED(CONFIG_BLE_ADV_DIRECTED_ADVERTISING)) {
 		if (adv_mode_is_directed(mode)) {
 			ble_adv->peer_addr_reply_expected = true;
-			ble_adv->evt_handler(BLE_ADV_EVT_PEER_ADDR_REQUEST);
+			adv_evt.evt_type = BLE_ADV_EVT_PEER_ADDR_REQUEST;
+			ble_adv->evt_handler(ble_adv, &adv_evt);
 		}
 	}
 
@@ -345,7 +351,8 @@ int ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 	if (IS_ENABLED(CONFIG_BLE_ADV_USE_WHITELIST)) {
 		if (adv_mode_has_whitelist(mode) && !ble_adv->whitelist_temporarily_disabled) {
 			ble_adv->whitelist_reply_expected = true;
-			ble_adv->evt_handler(BLE_ADV_EVT_WHITELIST_REQUEST);
+			adv_evt.evt_type = BLE_ADV_EVT_WHITELIST_REQUEST;
+			ble_adv->evt_handler(ble_adv, &adv_evt);
 		}
 	}
 
@@ -360,7 +367,7 @@ int ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 		if (IS_ENABLED(CONFIG_BLE_ADV_DIRECTED_ADVERTISING_HIGH_DUTY)) {
 			LOG_INF("Directed advertising (high duty)");
 			mode = BLE_ADV_MODE_DIRECTED_HIGH_DUTY;
-			evt = BLE_ADV_EVT_DIRECTED_HIGH_DUTY;
+			adv_evt.evt_type = BLE_ADV_EVT_DIRECTED_HIGH_DUTY;
 			err = set_adv_mode_directed_high_duty(ble_adv, &ble_adv->adv_params);
 			break;
 		} __fallthrough;
@@ -369,7 +376,7 @@ int ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 		if (IS_ENABLED(CONFIG_BLE_ADV_DIRECTED_ADVERTISING)) {
 			LOG_INF("Directed advertising");
 			mode = BLE_ADV_MODE_DIRECTED;
-			evt = BLE_ADV_EVT_DIRECTED;
+			adv_evt.evt_type = BLE_ADV_EVT_DIRECTED;
 			err = set_adv_mode_directed(ble_adv, &ble_adv->adv_params);
 			break;
 		} __fallthrough;
@@ -378,7 +385,7 @@ int ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 		if (IS_ENABLED(CONFIG_BLE_ADV_FAST_ADVERTISING)) {
 			LOG_INF("Fast advertising");
 			mode = BLE_ADV_MODE_FAST;
-			evt = BLE_ADV_EVT_FAST;
+			adv_evt.evt_type = BLE_ADV_EVT_FAST;
 			err = set_adv_mode_fast(ble_adv, &ble_adv->adv_params);
 			break;
 		} __fallthrough;
@@ -387,7 +394,7 @@ int ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 		if (IS_ENABLED(CONFIG_BLE_ADV_SLOW_ADVERTISING)) {
 			LOG_INF("Slow advertising");
 			mode = BLE_ADV_MODE_SLOW;
-			evt = BLE_ADV_EVT_SLOW;
+			adv_evt.evt_type = BLE_ADV_EVT_SLOW;
 			err = set_adv_mode_slow(ble_adv, &ble_adv->adv_params);
 			break;
 		} __fallthrough;
@@ -396,7 +403,7 @@ int ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 	default:
 		LOG_INF("Idle");
 		mode = BLE_ADV_MODE_IDLE;
-		evt = BLE_ADV_EVT_IDLE;
+		adv_evt.evt_type = BLE_ADV_EVT_IDLE;
 		break;
 	}
 
@@ -416,7 +423,7 @@ int ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 	}
 
 	ble_adv->mode_current = mode;
-	ble_adv->evt_handler(evt);
+	ble_adv->evt_handler(ble_adv, &adv_evt);
 
 	return 0;
 }

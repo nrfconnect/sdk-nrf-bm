@@ -10,9 +10,11 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 
 project(unit_test_ble_qwr)
 
-add_compile_definitions(SVCALL_AS_NORMAL_FUNCTION=1)
-add_compile_definitions(NRF54L15_XXAA)
-add_compile_definitions(CONFIG_NRF_BLE_QWR_MAX_ATTR=2)
+add_compile_definitions(
+        SVCALL_AS_NORMAL_FUNCTION=1
+        NRF54L15_XXAA
+        CONFIG_BLE_QWR_MAX_ATTR=2
+)
 
 cmock_handle(${ZEPHYR_NRF_LITE_MODULE_DIR}/include/s115/ble.h)
 cmock_handle(${ZEPHYR_NRF_LITE_MODULE_DIR}/include/s115/ble_gatts.h
@@ -32,4 +34,4 @@ test_runner_generate(src/unity_test.c)
 target_sources(app PRIVATE src/unity_test.c)
 
 # Unit under test
-target_sources(app PRIVATE ${ZEPHYR_NRF_LITE_MODULE_DIR}/lib/nrf_ble_qwr/nrf_ble_qwr.c)
+target_sources(app PRIVATE ${ZEPHYR_NRF_LITE_MODULE_DIR}/lib/ble_qwr/ble_qwr.c)

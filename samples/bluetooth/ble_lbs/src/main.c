@@ -80,17 +80,18 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 }
 NRF_SDH_BLE_OBSERVER(sdh_ble, on_ble_evt, NULL, 0);
 
-static void ble_adv_evt_handler(enum ble_adv_evt evt)
+static void ble_adv_evt_handler(struct ble_adv *adv, const struct ble_adv_evt *adv_evt)
 {
-	/* ignore */
+	switch (adv_evt->evt_type) {
+	case BLE_ADV_EVT_ERROR:
+		printk("Advertising error %d\n", adv_evt->error.reason);
+		break;
+	default:
+		break;
+	}
 }
 
-static void ble_adv_error_handler(int error)
-{
-	printk("Advertising error %d\n", error);
-}
-
-static void button_handler(uint8_t pin, enum lite_buttons_event_type action)
+static void button_handler(uint8_t pin, enum lite_buttons_evt_type action)
 {
 	printk("Button event callback: %d, %d\n", pin, action);
 	ble_lbs_on_button_change(&ble_lbs, conn_handle, action);
@@ -112,14 +113,20 @@ static void led_init(void)
 	led_off();
 }
 
-static void led_write_handler(uint16_t conn_handle, struct ble_lbs *lbs, uint8_t value)
+static void lbs_evt_handler(struct ble_lbs *lbs, const struct ble_lbs_evt *lbs_evt)
 {
-	if (value) {
-		led_on();
-		printk("Received LED ON!\n");
-	} else {
-		led_off();
-		printk("Received LED OFF!\n");
+	switch (lbs_evt->evt_type) {
+	case BLE_LBS_EVT_LED_WRITE:
+		if (lbs_evt->led_write.value) {
+			led_on();
+			printk("Received LED ON!\n");
+		} else {
+			led_off();
+			printk("Received LED OFF!\n");
+		}
+		break;
+	default:
+		break;
 	}
 }
 
@@ -129,14 +136,13 @@ int main(void)
 	struct ble_adv_config ble_adv_config = {
 		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
 		.evt_handler = ble_adv_evt_handler,
-		.error_handler = ble_adv_error_handler,
 		.adv_data = {
 			.name_type = BLE_ADV_DATA_FULL_NAME,
 			.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE,
 		},
 	};
 	struct ble_lbs_config lbs_cfg = {
-		.led_write_handler = led_write_handler,
+		.evt_handler = lbs_evt_handler,
 	};
 
 	printk("BLE LBS sample started\n");

@@ -4,4 +4,4 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 zephyr_library()
-zephyr_library_sources(nrf_ble_qwr.c)
+zephyr_library_sources(ble_qwr.c)
