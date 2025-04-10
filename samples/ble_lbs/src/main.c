@@ -113,14 +113,20 @@ static void led_init(void)
 	led_off();
 }
 
-static void led_write_handler(uint16_t conn_handle, struct ble_lbs *lbs, uint8_t value)
+static void lbs_event_handler(struct ble_lbs *lbs, struct ble_lbs_evt lbs_evt)
 {
-	if (value) {
-		led_on();
-		printk("Received LED ON!\n");
-	} else {
-		led_off();
-		printk("Received LED OFF!\n");
+	switch (lbs_evt.event_type) {
+	case BLE_LBS_EVT_LED_WRITE:
+		if (lbs_evt.led_write.value) {
+			led_on();
+			printk("Received LED ON!\n");
+		} else {
+			led_off();
+			printk("Received LED OFF!\n");
+		}
+		break;
+	default:
+		break;
 	}
 }
 
@@ -136,7 +142,7 @@ int main(void)
 		},
 	};
 	struct ble_lbs_config lbs_cfg = {
-		.led_write_handler = led_write_handler,
+		.event_handler = lbs_event_handler,
 	};
 
 	printk("BLE LBS sample started\n");

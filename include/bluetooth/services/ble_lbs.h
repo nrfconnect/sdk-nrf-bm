@@ -41,8 +41,24 @@ struct ble_lbs;
 	extern void ble_lbs_on_ble_evt(const ble_evt_t *ble_evt, void *lbs_instance);              \
 	NRF_SDH_BLE_OBSERVER(_name ## _obs, ble_lbs_on_ble_evt, &_name, BLE_LBS_BLE_OBSERVER_PRIO)
 
-typedef void (*ble_lbs_led_write_handler_t)(uint16_t conn_handle, struct ble_lbs *lbs,
-					    uint8_t value);
+enum ble_lbs_event_type {
+	BLE_LBS_EVT_LED_WRITE,
+};
+
+struct ble_lbs_evt {
+	enum ble_lbs_event_type event_type;
+	union {
+		struct {
+			/** Connection handle */
+			uint16_t conn_handle;
+			/** Value to write */
+			uint8_t value;
+		} led_write;
+	};
+};
+
+/** @brief LED button Service event handler */
+typedef void (*lbs_event_handler_t)(struct ble_lbs *lbs, struct ble_lbs_evt *lbs_evt);
 
 /**
  * @brief LED Button Service init structure. This structure contains all options and data needed
@@ -50,7 +66,7 @@ typedef void (*ble_lbs_led_write_handler_t)(uint16_t conn_handle, struct ble_lbs
  */
 struct ble_lbs_config {
 	/** @brief Event handler to be called when the LED Characteristic is written. */
-	ble_lbs_led_write_handler_t led_write_handler;
+	lbs_event_handler_t event_handler;
 };
 
 /**
@@ -66,7 +82,7 @@ struct ble_lbs {
 	/** @brief UUID type for the LED Button Service. */
 	uint8_t uuid_type;
 	/** @brief Event handler to be called when the LED Characteristic is written. */
-	ble_lbs_led_write_handler_t led_write_handler;
+	lbs_event_handler_t event_handler;
 };
 
 /**
