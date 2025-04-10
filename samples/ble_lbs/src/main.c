@@ -91,7 +91,7 @@ static void ble_adv_evt_handler(struct ble_adv *adv, struct ble_adv_evt *adv_evt
 	}
 }
 
-static void button_handler(uint8_t pin, enum lite_buttons_event_type action)
+static void button_handler(uint8_t pin, enum lite_buttons_evt_type action)
 {
 	printk("Button event callback: %d, %d\n", pin, action);
 	ble_lbs_on_button_change(&ble_lbs, conn_handle, action);
@@ -115,7 +115,7 @@ static void led_init(void)
 
 static void lbs_event_handler(struct ble_lbs *lbs, struct ble_lbs_evt lbs_evt)
 {
-	switch (lbs_evt.event_type) {
+	switch (lbs_evt.evt_type) {
 	case BLE_LBS_EVT_LED_WRITE:
 		if (lbs_evt.led_write.value) {
 			led_on();

@@ -20,7 +20,7 @@ static void on_write(struct ble_lbs *lbs, const ble_evt_t *ble_evt)
 	ble_gatts_evt_t const *gatts_evt = &ble_evt->evt.gatts_evt;
 	ble_gap_evt_t const *gap_evt = &ble_evt->evt.gap_evt;
 	struct ble_lbs_evt lbs_evt = {
-		.event_type = BLE_LBS_EVT_LED_WRITE,
+		.evt_type = BLE_LBS_EVT_LED_WRITE,
 		.led_write.conn_handle = gap_evt->conn_handle,
 	};
 

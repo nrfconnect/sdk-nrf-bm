@@ -39,7 +39,7 @@ extern "C" {
 #define LITE_BUTTONS_DETECTION_DELAY_MIN_US                                                        \
 	(2 * k_ticks_to_us_ceil32(MAX(1, LITE_TIMER_MIN_TIMEOUT_TICKS)))
 
-enum lite_buttons_event_type {
+enum lite_buttons_evt_type {
 	/* Indicates that a button is released. */
 	LITE_BUTTONS_RELEASE = 0,
 	/* Indicates that a button is pressed. */
@@ -69,7 +69,7 @@ enum lite_buttons_pin_pull {
 /**
  * @brief Button event handler type.
  */
-typedef void (*lite_buttons_handler_t)(uint8_t pin_number, enum lite_buttons_event_type action);
+typedef void (*lite_buttons_handler_t)(uint8_t pin_number, enum lite_buttons_evt_type action);
 
 /**
  * @brief Button configuration.

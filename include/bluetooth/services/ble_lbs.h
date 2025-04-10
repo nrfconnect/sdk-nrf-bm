@@ -41,12 +41,12 @@ struct ble_lbs;
 	extern void ble_lbs_on_ble_evt(const ble_evt_t *ble_evt, void *lbs_instance);              \
 	NRF_SDH_BLE_OBSERVER(_name ## _obs, ble_lbs_on_ble_evt, &_name, BLE_LBS_BLE_OBSERVER_PRIO)
 
-enum ble_lbs_event_type {
+enum ble_lbs_evt_type {
 	BLE_LBS_EVT_LED_WRITE,
 };
 
 struct ble_lbs_evt {
-	enum ble_lbs_event_type event_type;
+	enum ble_lbs_evt_type evt_type;
 	union {
 		struct {
 			/** Connection handle */
