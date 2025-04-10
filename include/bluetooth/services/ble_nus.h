@@ -106,7 +106,7 @@ struct ble_nus_evt {
 };
 
 /** @brief Nordic UART Service event handler type. */
-typedef void (*ble_nus_data_handler_t) (struct ble_nus_evt *evt);
+typedef void (*ble_nus_event_handler_t) (struct ble_nus_evt *evt);
 
 /*
  * @brief Nordic UART Service initialization structure.
@@ -117,7 +117,7 @@ typedef void (*ble_nus_data_handler_t) (struct ble_nus_evt *evt);
  */
 struct ble_nus_config {
 	/** Event handler to be called for handling received data. */
-	ble_nus_data_handler_t data_handler;
+	ble_nus_event_handler_t event_handler;
 };
 
 /**
@@ -137,7 +137,7 @@ struct ble_nus {
 	/** Link context with handles of all current connections and its context. */
 	struct ble_nus_ctx *const ctx;
 	/** Event handler to be called for handling received data. */
-	ble_nus_data_handler_t data_handler;
+	ble_nus_event_handler_t event_handler;
 };
 
 /**

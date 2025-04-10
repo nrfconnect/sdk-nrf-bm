@@ -240,7 +240,7 @@ static void ble_adv_evt_handler(struct ble_adv *adv, struct ble_adv_evt *adv_evt
  *
  * @param[in] evt NUS event parameters.
  */
-static void ble_nus_data_handler(struct ble_nus_evt *evt)
+static void ble_nus_event_handler(struct ble_nus_evt *evt)
 {
 	const char newline = '\n';
 
@@ -325,7 +325,7 @@ int main(void)
 	};
 
 	struct ble_nus_config nus_cfg = {
-		.data_handler = ble_nus_data_handler,
+		.event_handler = ble_nus_event_handler,
 	};
 	struct ble_qwr_init qwr_init_params = {};
 
