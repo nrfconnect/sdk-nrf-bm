@@ -28,7 +28,6 @@
 
 .. _`nRF Connect for Visual Studio Code`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/installation/recommended_versions.html#requirements-nrfvsc
 .. _`Visual Studio Code download page`: https://code.visualstudio.com/download
-.. _`start VS Code walkthrough`: vscode://nordic-semiconductor.nrf-connect-extension-pack/quickstart
 
 .. ### Samples
 
