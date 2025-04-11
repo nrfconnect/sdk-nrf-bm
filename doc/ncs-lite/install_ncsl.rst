@@ -87,7 +87,7 @@ Complete the following steps to clone the |NCSL| repositories.
 
    The SDK installation starts and it can take several minutes.
 #. Open command line and navigate to the SDK installation folder.
-   The default location to install the SDK is :file:`C:/ncs/2.9.1` on Windows, :file:`~/ncs/2.9.1` on Linux, and :file:`/opt/nordic/ncs/2.9.1` on macOS.
+   The default location to install the SDK is :file:`C:/ncs/v2.9.1` on Windows, :file:`~/ncs/v2.9.1` on Linux, and :file:`/opt/nordic/ncs/v2.9.1` on macOS.
 #. Clone the `sdk-nrf-lite`_ repository:
 
    .. code-block:: console
