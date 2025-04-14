@@ -34,6 +34,13 @@ When connected, the sample forwards any data received on the RX pin of the UART 
 
 Any data sent from the Bluetooth LE unit is sent out of the UART 0 peripheral’s TX pin.
 
+Programming the S115 SoftDevice
+*******************************
+
+.. include:: /includes/softdevice_flash.txt
+
+.. _ble_nus_sample_testing:
+
 Building and running
 ********************
 
@@ -42,13 +49,6 @@ This sample can be found under :file:`samples/ble_nus/` in the |NCSL| folder str
 .. include:: /includes/build_sample.txt
 
 .. include:: /includes/program_sample.txt
-
-Programming the S115 SoftDevice
-*******************************
-
-.. include:: /includes/softdevice_flash.txt
-
-.. _ble_nus_sample_testing:
 
 Testing
 =======

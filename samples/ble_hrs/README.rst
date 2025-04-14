@@ -48,6 +48,13 @@ The sensor measurements are simulated the following way:
 When notification of Heart Rate Measurement characteristic is enabled, the Heart Rate Measurement, containing the current value for all the components of the Heart Rate Measurement characteristic, is notified each time the Heart Rate measurement timer expires.
 When notification of Battery Level characteristic is enabled, the Battery Level is notified each time the Battery Level measurement timer expires.
 
+Programming the S115 SoftDevice
+*******************************
+
+.. include:: /includes/softdevice_flash.txt
+
+.. _ble_hrs_sample_testing:
+
 Building and running
 ********************
 
@@ -56,13 +63,6 @@ This sample can be found under :file:`samples/ble_hrs/` in the |NCSL| folder str
 .. include:: /includes/build_sample.txt
 
 .. include:: /includes/program_sample.txt
-
-Programming the S115 SoftDevice
-*******************************
-
-.. include:: /includes/softdevice_flash.txt
-
-.. _ble_hrs_sample_testing:
 
 Testing
 =======

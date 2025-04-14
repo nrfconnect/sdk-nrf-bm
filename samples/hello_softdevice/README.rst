@@ -41,6 +41,11 @@ It shows how to enable and disable the SoftDevice, handle various types of event
 #. The SoftDevice is then disabled using ``nrf_sdh_disable_request()``.
 #. Finally, it prints that the SoftDevice is disabled and ends the program with a goodbye message.
 
+Programming the S115 SoftDevice
+*******************************
+
+.. include:: /includes/softdevice_flash.txt
+
 Building and running
 ********************
 
@@ -49,11 +54,6 @@ This sample can be found under :file:`samples/hello_softdevice/` in the |NCSL| f
 .. include:: /includes/build_sample.txt
 
 .. include:: /includes/program_sample.txt
-
-Programming the S115 SoftDevice
-*******************************
-
-.. include:: /includes/softdevice_flash.txt
 
 Testing
 =======

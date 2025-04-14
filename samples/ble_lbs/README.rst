@@ -33,6 +33,14 @@ The LED Button Service (LBS) is a custom service that receives information about
 
 You can use the sample to transmit the button state from your development kit to another device.
 
+Programming the S115 SoftDevice
+*******************************
+
+.. include:: /includes/softdevice_flash.txt
+
+.. _ble_lbs_sample_testing:
+
+
 Building and running
 ********************
 
@@ -41,13 +49,6 @@ This sample can be found under :file:`samples/ble_lbs/` in the |NCSL| folder str
 .. include:: /includes/build_sample.txt
 
 .. include:: /includes/program_sample.txt
-
-Programming the S115 SoftDevice
-*******************************
-
-.. include:: /includes/softdevice_flash.txt
-
-.. _ble_lbs_sample_testing:
 
 Testing
 =======
