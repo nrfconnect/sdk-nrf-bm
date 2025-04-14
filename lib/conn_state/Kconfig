@@ -1,0 +1,23 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+menuconfig CONN_STATE
+	bool "Event scheduler"
+	help
+	  A library to defer event processing to main().
+
+if CONN_STATE
+
+config CONN_STATE_USER_FLAG_COUNT
+	int "User flag count"
+	range 0 24
+	default 24
+
+module=CONN_STATE
+module-dep=LOG
+module-str=Connection state
+source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+
+endif
