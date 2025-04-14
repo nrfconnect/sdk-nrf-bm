@@ -1,0 +1,20 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+menuconfig BLE_BMS
+	bool "Bond management service"
+
+if BLE_BMS
+
+config NRF_BLE_BMS_BLE_OBSERVER_PRIO
+	int "Softdevice event observer priority"
+	default 0
+
+module=BLE_BMS
+module-dep=LOG
+module-str=BLE_BMS
+source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+
+endif
