@@ -4,23 +4,77 @@
 # precedence.
 
 # Root folder
-/CODEOWNERS                               @lemrey
-/CMakeLists.txt                           @lemrey
-/west.yml                                 @lemrey
-/.clang-format                            @lemrey
-/.checkpatch.conf                         @lemrey
-Jenkinsfile                               @lemrey
+/.*                                       @nrfconnect/ncs-code-owners @nrfconnect/ncs-bm
+/CMakeLists.txt                           @nrfconnect/ncs-co-build-system
+/CODEOWNERS                               @nrfconnect/ncs-code-owners @nrfconnect/ncs-bm
+/Jenkinsfile                              @nrfconnect/ncs-ci @nrfconnect/ncs-bm-test
+/LICENSE                                  @carlescufi
+/README.md                                @nrfconnect/ncs-bm @nrfconnect/ncs-bm-doc
+/VERSION                                  @nrfconnect/ncs-bm
+/west.yml                                 @nrfconnect/ncs-bm
 
-/README.md                                @lemrey
+# Dot folders
+/.github/                                 @nrfconnect/ncs-ci @nrfconnect/ncs-bm
+/.clang-format                            @nrfconnect/ncs-bm
+/.checkpatch.conf                         @nrfconnect/ncs-bm
 
-# All Kconfig related files
-Kconfig*                                  @lemrey
+# Boards
+/boards/                                  @nrfconnect/ncs-co-boards @nrfconnect/ncs-bm
 
+# All cmake related files
+/cmake/                                   @nrfconnect/ncs-co-build-system
 
-/include/                                 @lemrey
-/lib/                                     @lemrey
-/tests/                                   @lemrey
-/zephyr/                                  @lemrey
-/scripts/                                 @lemrey
-/scripts/ci/                              @lemrey
-/.github/                                 @lemrey
+# All doc related files
+/doc/                                     @nrfconnect/ncs-bm @nrfconnect/ncs-bm-doc
+
+# Drivers
+/drivers/clock_control/                   @nrfconnect/ncs-bm
+/drivers/console/                         @nrfconnect/ncs-bm
+
+# Include
+/include/*.h                              @nrfconnect/ncs-bm
+/include/bluetooth/                       @nrfconnect/ncs-bm
+/include/s115/                            @nrfconnect/ncs-bm @nrfconnect/ncs-dragoon
+
+# Libraries
+/lib/ble_adv/                             @nrfconnect/ncs-bm
+/lib/ble_conn_params/                     @nrfconnect/ncs-bm
+/lib/ble_gq/                              @nrfconnect/ncs-bm
+/lib/ble_qwr/                             @nrfconnect/ncs-bm
+/lib/ble_racp/                            @nrfconnect/ncs-bm
+/lib/bm_buttons/                          @nrfconnect/ncs-bm
+/lib/bm_timer/                            @nrfconnect/ncs-bm
+/lib/boot_banner/                         @nrfconnect/ncs-bm
+/lib/event_scheduler/                     @nrfconnect/ncs-bm
+/lib/sensorsim/                           @nrfconnect/ncs-bm
+
+# Samples
+/samples/bluetooth/                       @nrfconnect/ncs-bm
+/samples/peripherals/                     @nrfconnect/ncs-bm
+
+# Samples documentation
+/samples/**/*.rst                         @nrfconnect/ncs-bm-doc
+/samples/bluetooth/**/*.rst               @nrfconnect/ncs-bm-doc
+/samples/peripherals/**/*.rst             @nrfconnect/ncs-bm-doc
+
+# Scripts
+/scripts/                                 @nrfconnect/ncs-bm @nrfconnect/ncs-ci
+/scripts/requirements-*.txt               @nrfconnect/ncs-co-build-system @nrfconnect/ncs-ci
+
+# Subsystems
+/subsys/bluetooth/                        @nrfconnect/ncs-bm
+/subsys/logging/                          @nrfconnect/ncs-bm
+/subsys/softdevice/                       @nrfconnect/ncs-bm @nrfconnect/ncs-dragoon
+/subsys/softdevice_handler/               @nrfconnect/ncs-bm
+
+# Tests
+/tests/lib/ble_qwr/                       @nrfconnect/ncs-bm
+/tests/lib/ble_racp/                      @nrfconnect/ncs-bm
+
+# Zephyr module
+/zephyr/                                  @nrfconnect/ncs-co-build-system
+
+# Global override file patterns
+Kconfig*                                  @nrfconnect/ncs-co-build-system @nrfconnect/ncs-bm
+CMakeLists*                               @nrfconnect/ncs-co-build-system
+*.cmake	                                  @nrfconnect/ncs-co-build-system
