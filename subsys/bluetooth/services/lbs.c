@@ -13,11 +13,16 @@ LOG_MODULE_REGISTER(ble_lbs, CONFIG_BLE_LBS_LOG_LEVEL);
 
 static void on_write(struct ble_lbs *lbs, const ble_evt_t *ble_evt)
 {
-	if (!lbs->led_write_handler) {
+	if (!lbs->event_handler) {
 		return;
 	}
 
 	ble_gatts_evt_t const *gatts_evt = &ble_evt->evt.gatts_evt;
+	ble_gap_evt_t const *gap_evt = &ble_evt->evt.gap_evt;
+	struct ble_lbs_evt lbs_evt = {
+		.evt_type = BLE_LBS_EVT_LED_WRITE,
+		.led_write.conn_handle = gap_evt->conn_handle,
+	};
 
 	if ((gatts_evt->params.write.handle != lbs->led_char_handles.value_handle) ||
 	    (gatts_evt->params.write.len != 1)) {
@@ -25,9 +30,9 @@ static void on_write(struct ble_lbs *lbs, const ble_evt_t *ble_evt)
 		return;
 	}
 
-	ble_gap_evt_t const *gap_evt = &ble_evt->evt.gap_evt;
+	lbs_evt.led_write.value = gatts_evt->params.write.data[0];
 
-	lbs->led_write_handler(gap_evt->conn_handle, lbs, gatts_evt->params.write.data[0]);
+	lbs->event_handler(lbs, &lbs_evt);
 }
 
 void ble_lbs_on_ble_evt(const ble_evt_t *ble_evt, void *lbs_instance)
@@ -57,7 +62,7 @@ int ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg)
 	}
 
 	/* Initialize service structure. */
-	lbs->led_write_handler = cfg->led_write_handler;
+	lbs->event_handler = cfg->event_handler;
 
 	ble_uuid128_t base_uuid = { .uuid128 = BLE_UUID_LBS_BASE };
 

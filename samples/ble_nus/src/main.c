@@ -11,7 +11,7 @@
 #include <ble_adv.h>
 #include <ble_conn_params.h>
 #include <ble_gap.h>
-#include <nrf_ble_qwr.h>
+#include <ble_qwr.h>
 #include <bluetooth/services/ble_nus.h>
 #include <nrf_soc.h>
 
@@ -22,7 +22,7 @@ LOG_MODULE_REGISTER(app, CONFIG_BLE_NUS_SAMPLE_LOG_LEVEL);
 
 BLE_ADV_DEF(ble_adv); /* BLE advertising instance */
 BLE_NUS_DEF(ble_nus); /* BLE NUS service instance */
-NRF_BLE_QWR_DEF(ble_qwr); /* BLE QWR instance */
+BLE_QWR_DEF(ble_qwr); /* BLE QWR instance */
 
 /** Handle of the current connection. */
 static uint16_t conn_handle = BLE_CONN_HANDLE_INVALID;
@@ -145,7 +145,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 			LOG_ERR("Failed to set system attributes, nrf_error %#x", err);
 		}
 
-		err = nrf_ble_qwr_conn_handle_assign(&ble_qwr, conn_handle);
+		err = ble_qwr_conn_handle_assign(&ble_qwr, conn_handle);
 		if (err) {
 			LOG_ERR("Failed to assign qwr handle, err %d", err);
 			return;
@@ -225,14 +225,15 @@ void on_conn_params_evt(const struct ble_conn_params_evt *evt)
  *
  * @param[in] evt BLE advertising event type.
  */
-static void ble_adv_evt_handler(enum ble_adv_evt evt)
+static void ble_adv_evt_handler(struct ble_adv *adv, struct ble_adv_evt *adv_evt)
 {
-	/* ignore */
-}
-
-static void ble_adv_error_handler(int error)
-{
-	LOG_ERR("Advertising error %d", error);
+	switch (adv_evt->evt_type) {
+	case BLE_ADV_EVT_ERROR:
+		LOG_ERR("Advertising error %d", adv_evt->error.reason);
+		break;
+	default:
+		break;
+	}
 }
 
 /**
@@ -240,7 +241,7 @@ static void ble_adv_error_handler(int error)
  *
  * @param[in] evt NUS event parameters.
  */
-static void ble_nus_data_handler(struct ble_nus_evt *evt)
+static void ble_nus_event_handler(struct ble_nus_evt *evt)
 {
 	const char newline = '\n';
 
@@ -318,7 +319,6 @@ int main(void)
 	struct ble_adv_config ble_adv_cfg = {
 		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
 		.evt_handler = ble_adv_evt_handler,
-		.error_handler = ble_adv_error_handler,
 		.adv_data = {
 			.name_type = BLE_ADV_DATA_FULL_NAME,
 			.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE,
@@ -326,9 +326,9 @@ int main(void)
 	};
 
 	struct ble_nus_config nus_cfg = {
-		.data_handler = ble_nus_data_handler,
+		.event_handler = ble_nus_event_handler,
 	};
-	struct nrf_ble_qwr_init qwr_init_params = {0};
+	struct ble_qwr_init qwr_init_params = {};
 
 	LOG_INF("BLE NUS sample started");
 
@@ -354,9 +354,9 @@ int main(void)
 
 	LOG_INF("Bluetooth enabled");
 
-	err = nrf_ble_qwr_init(&ble_qwr, &qwr_init_params);
+	err = ble_qwr_init(&ble_qwr, &qwr_init_params);
 	if (err) {
-		LOG_ERR("nrf_ble_qwr_init failed, err %d", err);
+		LOG_ERR("ble_qwr_init failed, err %d", err);
 		return -1;
 	}
 

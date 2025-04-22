@@ -272,7 +272,7 @@ static void state_set(uint8_t pin_index, uint8_t state)
 	global.pin_states[pin_index >> 1] |= state_mask;
 }
 
-static void user_event(uint8_t pin, enum lite_buttons_event_type type)
+static void user_event(uint8_t pin, enum lite_buttons_evt_type type)
 {
 	struct lite_buttons_config const *config = button_get(pin);
 

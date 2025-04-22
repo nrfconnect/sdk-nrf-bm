@@ -266,14 +266,15 @@ void on_conn_params_evt(const struct ble_conn_params_evt *evt)
 	}
 }
 
-static void ble_adv_evt_handler(enum ble_adv_evt evt)
+static void ble_adv_evt_handler(struct ble_adv *adv, struct ble_adv_evt *adv_evt)
 {
-	/* ignore */
-}
-
-static void ble_adv_error_handler(int error)
-{
-	printk("Advertising error %d\n", error);
+	switch (adv_evt->evt_type) {
+	case BLE_ADV_EVT_ERROR:
+		printk("Advertising error %d\n", adv_evt->error.reason);
+		break;
+	default:
+		break;
+	}
 }
 
 static void ble_bas_evt_handler(struct ble_bas *bas, const struct ble_bas_evt *evt)
@@ -315,7 +316,6 @@ int main(void)
 	struct ble_adv_config ble_adv_cfg = {
 		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
 		.evt_handler = ble_adv_evt_handler,
-		.error_handler = ble_adv_error_handler,
 		.adv_data = {
 			.name_type = BLE_ADV_DATA_FULL_NAME,
 			.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE,

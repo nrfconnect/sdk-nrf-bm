@@ -84,7 +84,11 @@ enum ble_adv_mode {
 /**
  * @brief Advertising events.
  */
-enum ble_adv_evt {
+enum ble_adv_evt_type {
+	/**
+	 * @brief Error.
+	 */
+	BLE_ADV_EVT_ERROR,
 	/**
 	 * @brief Idle; no connectable advertising is ongoing.
 	 */
@@ -131,15 +135,22 @@ enum ble_adv_evt {
 	BLE_ADV_EVT_PEER_ADDR_REQUEST
 };
 
+struct ble_adv_evt {
+	enum ble_adv_evt_type evt_type;
+	union {
+		struct {
+			int reason;
+		} error;
+	};
+};
+
+/** Forward definition of ble_adv struct */
+struct ble_adv;
+
 /**
  * @brief BLE advertising event handler.
  */
-typedef void (*ble_adv_evt_handler_t)(enum ble_adv_evt adv_evt);
-
-/**
- * @brief BLE advertising error handler type.
- */
-typedef void (*ble_adv_error_handler_t)(int error);
+typedef void (*ble_adv_evt_handler_t)(struct ble_adv *adv, struct ble_adv_evt *adv_evt);
 
 /**
  * @brief BLE advertising instance.
@@ -169,10 +180,6 @@ struct ble_adv {
 	 * @brief Instance event handler.
 	 */
 	ble_adv_evt_handler_t evt_handler;
-	/**
-	 * @brief Instance error handler.
-	 */
-	ble_adv_error_handler_t error_handler;
 	/**
 	 * @brief GAP advertising parameters.
 	 */
@@ -233,10 +240,6 @@ struct ble_adv_config {
 	  * @brief  Event handler.
 	  */
 	ble_adv_evt_handler_t evt_handler;
-	/**
-	 * @brief Error handler.
-	 */
-	ble_adv_error_handler_t error_handler;
 	/**
 	 * @brief Connection configuration tag.
 	 */
