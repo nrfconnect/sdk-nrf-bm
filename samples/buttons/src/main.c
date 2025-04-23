@@ -7,6 +7,7 @@
 #include <zephyr/kernel.h>    /* k_busy_wait() */
 #include <zephyr/sys_clock.h> /* K_MSEC() */
 #include <zephyr/logging/log.h>
+#include <zephyr/logging/log_ctrl.h>
 
 #include <lite_timer.h>
 #include <lite_buttons.h>
@@ -102,6 +103,9 @@ int main(void)
 	LOG_INF("Buttons initialized, press button 3 to terminate");
 
 	while (running) {
+		while (log_process()) {
+			/* Empty */
+		}
 		/* Sleep */
 		__WFE();
 	}
@@ -113,6 +117,10 @@ int main(void)
 	}
 
 	LOG_INF("Bye");
+
+	while (log_process()) {
+		/* Empty */
+	}
 
 	return 0;
 }

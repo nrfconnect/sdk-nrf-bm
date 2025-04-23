@@ -4,16 +4,9 @@ tests:
   sample.ble_nus:
     build_only: true
     integration_platforms:
+      - lite_nrf52840/nrf52840
       - lite_nrf54l15/nrf54l15/cpuapp
     platform_allow:
+      - lite_nrf52840/nrf52840
       - lite_nrf54l15/nrf54l15/cpuapp
-    tags: ci_build
-  sample.ble_nus.no_logging:
-    build_only: true
-    integration_platforms:
-      - lite_nrf52840/nrf52840
-    platform_allow:
-      - lite_nrf52840/nrf52840
-    extra_args:
-      - CONFIG_LITE_UARTE_CONSOLE=n
     tags: ci_build

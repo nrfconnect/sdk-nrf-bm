@@ -13,6 +13,9 @@
 
 static const nrfx_uarte_t uarte_inst = NRFX_UARTE_INSTANCE(LITE_UARTE_CONSOLE_UARTE_INST);
 
+/**
+ * @brief Initialize UARTE driver.
+ */
 static int uarte_init(void)
 {
 	int err;
@@ -48,6 +51,7 @@ static int uarte_init(void)
 	return 0;
 }
 
+
 static int console_out(int c)
 {
 	const char c2 = c;
@@ -68,7 +72,9 @@ static int console_out(int c)
 
 static int uart_log_backend_sys_init(void)
 {
-	uarte_init();
+	if (!IS_ENABLED(CONFIG_LOG_BACKEND_LITE_UARTE)) {
+		uarte_init();
+	}
 
 #if defined(CONFIG_STDOUT_CONSOLE)
 	__stdout_hook_install(console_out);
