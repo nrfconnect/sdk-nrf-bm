@@ -20,7 +20,6 @@
 	};
 };
 
-
 &flash0 {
 	partitions {
 		compatible = "fixed-partitions";
@@ -28,7 +27,7 @@
 		#size-cells = <1>;
 		app_rom: partition@0 {
 			label = "app";
-			reg = <0x00027000 0x00100000>;
+			reg = <0x00000000 DT_SIZE_K(1024)>;
 		};
 	};
 };
