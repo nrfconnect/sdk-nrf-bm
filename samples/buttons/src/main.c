@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <zephyr/kernel.h>    /* k_busy_wait() */
-#include <zephyr/sys_clock.h> /* K_MSEC() */
+#include <zephyr/sys/printk.h>
 
 #include <lite_timer.h>
 #include <lite_buttons.h>
