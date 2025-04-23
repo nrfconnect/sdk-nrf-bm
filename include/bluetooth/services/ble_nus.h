@@ -37,7 +37,7 @@ void ble_nus_on_ble_evt(ble_evt_t const *ble_evt, void *context);
 	NRF_SDH_BLE_OBSERVER(_name ## _obs,                                                        \
 			     ble_nus_on_ble_evt,                                                   \
 			     &_name,                                                               \
-			     NRF_SDH_BLE_TOTAL_LINK_COUNT)
+			     0)
 
 /** The UUID of the Nordic UART Service. */
 #define BLE_UUID_NUS_SERVICE 0x0001
