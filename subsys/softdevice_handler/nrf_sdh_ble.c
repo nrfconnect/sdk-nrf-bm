@@ -183,7 +183,7 @@ static void idx_assign(uint16_t conn_handle)
 		}
 	}
 
-	__ASSERT(false, "Failed to assign idx to conn_handle %#x, all are in use");
+	__ASSERT(false, "Failed to assign idx to conn_handle %#x", conn_handle);
 
 	LOG_ERR("Failed to assign idx to conn_handle %#x", conn_handle);
 }
@@ -198,7 +198,7 @@ static void idx_unassign(uint16_t conn_handle)
 		}
 	}
 
-	__ASSERT(false, "Could not find any idx assigned to conn_handle %#x");
+	__ASSERT(false, "Could not find any idx assigned to conn_handle %#x", conn_handle);
 }
 
 static void ble_evt_poll(void *context)
