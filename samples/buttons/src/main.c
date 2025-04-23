@@ -6,7 +6,6 @@
 
 #include <zephyr/kernel.h>    /* k_busy_wait() */
 #include <zephyr/sys_clock.h> /* K_MSEC() */
-#include <zephyr/logging/log.h>
 
 #include <lite_timer.h>
 #include <lite_buttons.h>
@@ -18,8 +17,6 @@
 
 #include <board-config.h>
 
-LOG_MODULE_REGISTER(buttons_sample, LOG_LEVEL_INF);
-
 #define PIN_BTN_0 BOARD_PIN_BTN_0
 #define PIN_BTN_1 BOARD_PIN_BTN_1
 #define PIN_BTN_2 BOARD_PIN_BTN_2
@@ -29,7 +26,7 @@ static volatile bool running;
 
 static void button_handler(uint8_t pin, uint8_t action)
 {
-	LOG_INF("Button event callback: %d, %d", pin, action);
+	printk("Button event callback: %d, %d\n", pin, action);
 
 	if (pin == PIN_BTN_3) {
 		running = false;
@@ -40,7 +37,7 @@ int main(void)
 {
 	int err;
 
-	LOG_INF("Buttons sample started\n");
+	printk("Buttons sample started\n");
 
 #if CONFIG_SOFTDEVICE
 	err = nrf_sdh_enable_request();
@@ -89,17 +86,17 @@ int main(void)
 
 	err = lite_buttons_init(configs, ARRAY_SIZE(configs), LITE_BUTTONS_DETECTION_DELAY_MIN_US);
 	if (err) {
-		LOG_ERR("Failed to initialize buttons, err: %d", err);
+		printk("Failed to initialize buttons, err: %d\n", err);
 		return err;
 	}
 
 	err = lite_buttons_enable();
 	if (err) {
-		LOG_ERR("Failed to enable buttons, err: %d", err);
+		printk("Failed to enable buttons, err: %d\n", err);
 		return err;
 	}
 
-	LOG_INF("Buttons initialized, press button 3 to terminate");
+	printk("Buttons initialized, press button 3 to terminate\n");
 
 	while (running) {
 		/* Sleep */
@@ -108,11 +105,11 @@ int main(void)
 
 	err = lite_buttons_deinit();
 	if (err) {
-		LOG_ERR("Failed to deinitialize buttons, err: %d", err);
+		printk("Failed to deinitialize buttons, err: %d\n", err);
 		return err;
 	}
 
-	LOG_INF("Bye");
+	printk("Bye\n");
 
 	return 0;
 }
