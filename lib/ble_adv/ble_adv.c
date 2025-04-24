@@ -161,7 +161,7 @@ static int set_adv_mode_fast(struct ble_adv *ble_adv, ble_gap_adv_params_t *adv_
 #if CONFIG_BLE_ADV_FAST_ADVERTISING
 	int err;
 
-#if CONFIG_SOFTDEVICE_S140
+#if defined(BLE_GAP_ADV_TYPE_EXTENDED_CONNECTABLE_NONSCANNABLE_UNDIRECTED)
 	if (IS_ENABLED(CONFIG_BLE_ADV_EXTENDED_ADVERTISING)) {
 		ble_adv->adv_params.properties.type =
 			BLE_GAP_ADV_TYPE_EXTENDED_CONNECTABLE_NONSCANNABLE_UNDIRECTED;
@@ -169,7 +169,7 @@ static int set_adv_mode_fast(struct ble_adv *ble_adv, ble_gap_adv_params_t *adv_
 		ble_adv->adv_params.properties.type =
 			BLE_GAP_ADV_TYPE_CONNECTABLE_SCANNABLE_UNDIRECTED;
 	}
-#elif CONFIG_SOFTDEVICE_S115
+#else
 	ble_adv->adv_params.properties.type = BLE_GAP_ADV_TYPE_CONNECTABLE_SCANNABLE_UNDIRECTED;
 #endif
 
@@ -193,7 +193,7 @@ static int set_adv_mode_slow(struct ble_adv *ble_adv, ble_gap_adv_params_t *adv_
 #if CONFIG_BLE_ADV_SLOW_ADVERTISING
 	int err;
 
-#if CONFIG_SOFTDEVICE_S140
+#if defined(BLE_GAP_ADV_TYPE_EXTENDED_CONNECTABLE_NONSCANNABLE_UNDIRECTED)
 	if (IS_ENABLED(CONFIG_BLE_ADV_EXTENDED_ADVERTISING)) {
 		ble_adv->adv_params.properties.type =
 			BLE_GAP_ADV_TYPE_EXTENDED_CONNECTABLE_NONSCANNABLE_UNDIRECTED;
@@ -201,7 +201,7 @@ static int set_adv_mode_slow(struct ble_adv *ble_adv, ble_gap_adv_params_t *adv_
 		ble_adv->adv_params.properties.type =
 			BLE_GAP_ADV_TYPE_CONNECTABLE_SCANNABLE_UNDIRECTED;
 	}
-#elif CONFIG_SOFTDEVICE_S115
+#else
 	ble_adv->adv_params.properties.type = BLE_GAP_ADV_TYPE_CONNECTABLE_SCANNABLE_UNDIRECTED;
 #endif
 

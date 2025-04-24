@@ -7,6 +7,11 @@ manifest:
   remotes:
     - name: ncs
       url-base: https://github.com/nrfconnect
+    - name: eivindj-nordic
+      url-base: https://github.com/eivindj-nordic
+
+  group-filter:
+    - -nrf-lite-internal
 
   projects:
     - name: sdk-nrf
@@ -28,6 +33,11 @@ manifest:
           - tinycrypt
           - zephyr
           - cmock
+    - name: nrf-lite-internal
+      remote: eivindj-nordic
+      revision: main
+      groups:
+        - nrf-lite-internal
 
   self:
     path: nrf-lite

@@ -4,19 +4,15 @@ tests:
   sample.ble_hrs:
     build_only: true
     integration_platforms:
-      - lite_nrf52840/nrf52840
       - lite_nrf54l15/nrf54l15/cpuapp
     platform_allow:
-      - lite_nrf52840/nrf52840
       - lite_nrf54l15/nrf54l15/cpuapp
     tags: ci_build
   sample.ble_hrs.logging_w_hwfc_parity:
     build_only: true
     integration_platforms:
-      - lite_nrf52840/nrf52840
       - lite_nrf54l15/nrf54l15/cpuapp
     platform_allow:
-      - lite_nrf52840/nrf52840
       - lite_nrf54l15/nrf54l15/cpuapp
     extra_configs:
       - CONFIG_LITE_UARTE_CONSOLE_UARTE_USE_HWFC=y
