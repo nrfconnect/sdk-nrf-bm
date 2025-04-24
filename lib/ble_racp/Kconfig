@@ -1,0 +1,11 @@
+menuconfig BLE_RACP
+	bool "BLE Record Access Control Point"
+
+if BLE_RACP
+
+module=BLE_RACP
+module-dep=LOG
+module-str=BLE RACP
+source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+
+endif # BLE_RACP
