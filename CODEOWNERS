@@ -4,23 +4,27 @@
 # precedence.
 
 # Root folder
-/CODEOWNERS                               @lemrey
-/CMakeLists.txt                           @lemrey
-/west.yml                                 @lemrey
-/.clang-format                            @lemrey
-/.checkpatch.conf                         @lemrey
-Jenkinsfile                               @lemrey
+/CODEOWNERS                               @lemrey @eivindj-nordic @MirkoCovizzi @anhmolt
+/CMakeLists.txt                           @lemrey @eivindj-nordic
+/west.yml                                 @lemrey @eivindj-nordic @MirkoCovizzi @anhmolt
+/.clang-format                            @lemrey @eivindj-nordic
+/.checkpatch.conf                         @lemrey @eivindj-nordic
+Jenkinsfile                               @lemrey @eivindj-nordic @MechanicV1
 
-/README.md                                @lemrey
+/README.md                                @lemrey @MirkoCovizzi
 
 # All Kconfig related files
-Kconfig*                                  @lemrey
+Kconfig*                                  @lemrey @eivindj-nordic @MirkoCovizzi @anhmolt
 
-
-/include/                                 @lemrey
-/lib/                                     @lemrey
-/tests/                                   @lemrey
-/zephyr/                                  @lemrey
-/scripts/                                 @lemrey
-/scripts/ci/                              @lemrey
-/.github/                                 @lemrey
+/.github/                                 @lemrey @MirkoCovizzi
+/boards/                                  @lemrey @eivindj-nordic
+/doc/                                     @b-gent @lemrey @MirkoCovizzi
+/drivers/                                 @lemrey @eivindj-nordic @MirkoCovizzi @anhmolt
+/include/                                 @lemrey @eivindj-nordic @MirkoCovizzi @anhmolt
+/lib/                                     @lemrey @eivindj-nordic @MirkoCovizzi @anhmolt
+/samples/                                 @lemrey @eivindj-nordic @MirkoCovizzi @anhmolt
+/scripts/                                 @lemrey @eivindj-nordic @MirkoCovizzi @anhmolt
+/scripts/ci/                              @lemrey @eivindj-nordic @MirkoCovizzi @anhmolt @MechanicV1
+/subsys/                                  @lemrey @eivindj-nordic @MirkoCovizzi @anhmolt
+/tests/                                   @lemrey @eivindj-nordic @MirkoCovizzi @anhmolt
+/zephyr/                                  @lemrey @eivindj-nordic
