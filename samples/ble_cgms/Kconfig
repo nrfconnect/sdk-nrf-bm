@@ -1,0 +1,76 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "BLE CGMS sample"
+
+config APP_BLE_OBSERVER_PRIO
+	int "Application's BLE observer priority"
+	default 3
+	help
+	   You shouldn't need to modify this value.
+
+config QWR_MEM_BUFF_SIZE
+	int "QWR memory buffer size"
+	default 512
+
+menu "Battery measurement simulation"
+
+config BATTERY_LEVEL_MEAS_INTERVAL_MS
+	int "Battery level measurement interval in ms"
+	default 10000
+
+config BATTERY_LEVEL_MIN
+	int "Minimum battery level as returned by the simulated measurement function"
+	default 81
+
+config BATTERY_LEVEL_MAX
+	int "Maximum battery level as returned by the simulated measurement function"
+	default 100
+
+config BATTERY_LEVEL_INCREMENT
+	int "Battery level increment value"
+	default 1
+	help
+	   Value by which the battery level is incremented/decremented for each call to
+	   the simulated measurement function.
+endmenu # Battery measurement simulation
+
+menu "Glucose measurement simulation"
+
+endmenu # Glucose measurement simulation
+
+config GLUCOSE_MEAS_INTERVAL
+	int "Fastest possible communication interval"
+	default 1
+
+config GLUCOSE_CONCENTRATION_INC
+	int "Glucose concentration increment on button press"
+	default 10
+	help
+	   How much the simulated glucose concentration will increase upon a button press.
+
+config GLUCOSE_CONCENTRATION_DEC
+	int "Glucose concentration increment on button press"
+	default 5
+	help
+	   How much the simulated glucose concentration will decrease upon a button press.
+
+config GLUCOSE_CONCENTRATION_MAX
+	int "Maximum glucose concentration (mg/dL)"
+	default 800
+
+config GLUCOSE_CONCENTRATION_MIN
+	int "Minimum glucose concentration (mg/dL)"
+	default 5
+
+endmenu # "BLE CGMS sample"
+
+module=BLE_CGMS_SAMPLE
+module-dep=LOG
+module-str=BLE CGMS Sample
+source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+
+source "Kconfig.zephyr"
