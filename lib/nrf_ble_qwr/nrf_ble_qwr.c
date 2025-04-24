@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <nrf_ble_qwr.h>
-#include <s140/ble.h>
+#include <ble.h>
 #include <zephyr/sys/byteorder.h>
 
 /* Non-zero value used to make sure the given structure has been initialized by the module. */

@@ -1,3 +1,0 @@
-menuconfig PARTITION_MANAGER
-	bool "Partition Manager"
-	default n

@@ -11,7 +11,6 @@
 .. ### Source: docs.nordicsemi
 
 .. _`nRF54L15 DK`: https://docs.nordicsemi.com/bundle/ncs-latest/page/zephyr/boards/nordic/nrf54l15dk/doc/index.html#nrf54l15dk-nrf54l15
-.. _`nRF52840 DK`: https://docs.nordicsemi.com/bundle/ncs-latest/page/zephyr/boards/nordic/nrf52840dk/doc/index.html#nrf52840dk-nrf52840
 
 .. ### Installation
 
