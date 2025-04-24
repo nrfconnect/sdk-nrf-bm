@@ -8,6 +8,9 @@ manifest:
     - name: ncs
       url-base: https://github.com/nrfconnect
 
+  group-filter:
+    - -ncs-lite-internal
+
   projects:
     - name: sdk-nrf
       path: nrf
@@ -28,6 +31,11 @@ manifest:
           - tinycrypt
           - zephyr
           - cmock
+    - name: sdk-ncs-lite-internal
+      path: ncs-lite-internal
+      revision: 2086b4bb5ee2cc68b824fe5ecd4e2461987e4c5c
+      groups:
+        - ncs-lite-internal
 
   self:
     path: nrf-lite

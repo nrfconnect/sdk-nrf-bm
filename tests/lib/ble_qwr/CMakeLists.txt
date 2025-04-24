@@ -11,16 +11,19 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(unit_test_ble_qwr)
 
 add_compile_definitions(SVCALL_AS_NORMAL_FUNCTION=1)
-add_compile_definitions(NRF52840_XXAA)
+add_compile_definitions(NRF54L15_XXAA)
 add_compile_definitions(CONFIG_NRF_BLE_QWR_MAX_ATTR=2)
 
-cmock_handle(${ZEPHYR_NRF_LITE_MODULE_DIR}/include/s140/ble.h)
-cmock_handle(${ZEPHYR_NRF_LITE_MODULE_DIR}/include/s140/ble_gatts.h
+cmock_handle(${ZEPHYR_NRF_LITE_MODULE_DIR}/include/s115/ble.h)
+cmock_handle(${ZEPHYR_NRF_LITE_MODULE_DIR}/include/s115/ble_gatts.h
+        WORD_EXCLUDE
+        "__STATIC_INLINE")
+cmock_handle(${ZEPHYR_NRF_LITE_MODULE_DIR}/include/s115/ble_gattc.h
         WORD_EXCLUDE
         "__STATIC_INLINE")
 
 target_include_directories(app PRIVATE ${ZEPHYR_NRF_LITE_MODULE_DIR}/include)
-target_include_directories(app PRIVATE ${ZEPHYR_NRF_LITE_MODULE_DIR}/include/s140)
+target_include_directories(app PRIVATE ${ZEPHYR_NRF_LITE_MODULE_DIR}/include/s115)
 target_include_directories(app PRIVATE ${ZEPHYR_HAL_NORDIC_MODULE_DIR}/nrfx/mdk)
 target_include_directories(app PRIVATE ${ZEPHYR_CMSIS_MODULE_DIR}/CMSIS/Core/Include)
 

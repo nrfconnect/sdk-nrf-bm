@@ -8,15 +8,11 @@ common:
 tests:
   sample.timer:
     integration_platforms:
-      - lite_nrf52840/nrf52840/no_softdevice
       - lite_nrf54l15/nrf54l15/cpuapp/no_softdevice
     platform_allow:
-      - lite_nrf52840/nrf52840/no_softdevice
       - lite_nrf54l15/nrf54l15/cpuapp/no_softdevice
   sample.timer.softdevice:
     integration_platforms:
-      - lite_nrf52840/nrf52840
       - lite_nrf54l15/nrf54l15/cpuapp
     platform_allow:
-      - lite_nrf52840/nrf52840
       - lite_nrf54l15/nrf54l15/cpuapp
