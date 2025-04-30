@@ -27,7 +27,7 @@
 		#size-cells = <1>;
 		app_rom: partition@0 {
 			label = "app_rom";
-			reg = <0x0 DT_SIZE_K(1428)>;
+			reg = <0x0 DT_SIZE_K(1524)>;
 		};
 	};
 };
