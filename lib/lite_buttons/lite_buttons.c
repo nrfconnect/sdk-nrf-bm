@@ -18,74 +18,19 @@ LOG_MODULE_REGISTER(lite_buttons, CONFIG_LITE_BUTTONS_LOG_LEVEL);
 #include <stdint.h>
 #include <nrf.h>
 
-#if defined(CONFIG_SOFTDEVICE)
-#include <nrf_nvic.h>
-#else
-static uint32_t inside_critical_section;
-
-static void lite_irq_disable(void)
+static uint32_t lite_irq_disable(void)
 {
+	uint32_t pm = __get_PRIMASK();
 	__disable_irq();
-	inside_critical_section++;
+	return pm;
 }
 
-static void lite_irq_enable(void)
+static void lite_irq_enable(uint32_t pm)
 {
-	inside_critical_section--;
-	if (inside_critical_section == 0) {
+	if (!pm) {
 		__enable_irq();
 	}
 }
-#endif
-
-static void lite_critical_section_enter(uint8_t *nested)
-{
-#if defined(CONFIG_SOFTDEVICE)
-	/* return value can be safely ignored */
-	(void) sd_nvic_critical_region_enter(nested);
-#else
-	lite_irq_disable();
-#endif
-}
-
-static void lite_critical_section_exit(uint8_t nested)
-{
-#if defined(CONFIG_SOFTDEVICE)
-	/* return value can be safely ignored */
-	(void) sd_nvic_critical_region_exit(nested);
-#else
-	lite_irq_enable();
-#endif
-}
-
-/**@brief Macro for entering a critical section.
- *
- * @note Due to implementation details, there must exist one and only one call to
- *       CRITICAL_SECTION_EXIT() for each call to CRITICAL_SECTION_ENTER(), and they must be located
- *       in the same scope.
- */
-#if defined(CONFIG_SOFTDEVICE)
-#define LITE_CRITICAL_SECTION_ENTER()                                                              \
-	{                                                                                          \
-		uint8_t __CS_NESTED = 0;                                                           \
-		lite_critical_section_enter(&__CS_NESTED);
-#else
-#define LITE_CRITICAL_SECTION_ENTER() lite_critical_section_enter(NULL)
-#endif
-
-/**@brief Macro for leaving a critical section.
- *
- * @note Due to implementation details, there must exist one and only one call to
- *       CRITICAL_SECTION_EXIT() for each call to CRITICAL_SECTION_ENTER(), and they must be located
- *       in the same scope.
- */
-#if defined(CONFIG_SOFTDEVICE)
-#define LITE_CRITICAL_SECTION_EXIT()                                                               \
-		lite_critical_section_exit(__CS_NESTED);                                           \
-	}
-#else
-#define LITE_CRITICAL_SECTION_EXIT() lite_critical_section_exit(0)
-#endif
 
 /* End of local implementation of critical section enter/exit support. */
 
@@ -290,9 +235,9 @@ static void evt_handle(uint8_t pin, uint8_t index, bool is_active)
 			state_set(index, BUTTON_PRESS_ARMED);
 			LOG_DBG("Pin %d %s -> %s", pin, STRINGIFY(BUTTON_IDLE),
 				STRINGIFY(BUTTON_PRESS_ARMED));
-			LITE_CRITICAL_SECTION_ENTER();
+			uint32_t pm = lite_irq_disable();
 			global.pin_active |= 1ULL << index;
-			LITE_CRITICAL_SECTION_EXIT();
+			lite_irq_enable(pm);
 		} else {
 			/* Stay in BUTTON_IDLE. */
 		}
@@ -305,9 +250,9 @@ static void evt_handle(uint8_t pin, uint8_t index, bool is_active)
 			user_event(pin, LITE_BUTTONS_PRESS);
 		} else {
 			state_set(index, BUTTON_IDLE);
-			LITE_CRITICAL_SECTION_ENTER();
+			uint32_t pm = lite_irq_disable();
 			global.pin_active &= ~(1ULL << index);
-			LITE_CRITICAL_SECTION_EXIT();
+			lite_irq_enable(pm);
 		}
 		break;
 	case BUTTON_PRESSED:
@@ -327,9 +272,9 @@ static void evt_handle(uint8_t pin, uint8_t index, bool is_active)
 		} else {
 			state_set(index, BUTTON_IDLE);
 			user_event(pin, LITE_BUTTONS_RELEASE);
-			LITE_CRITICAL_SECTION_ENTER();
+			uint32_t pm = lite_irq_disable();
 			global.pin_active &= ~(1ULL << index);
-			LITE_CRITICAL_SECTION_EXIT();
+			lite_irq_enable(pm);
 		}
 		break;
 	}
@@ -360,9 +305,9 @@ static int buttons_disable(void)
 		gpiote_trigger_enable(global.configs[i].pin_number, false);
 	}
 
-	LITE_CRITICAL_SECTION_ENTER();
+	uint32_t pm = lite_irq_disable();
 	global.pin_active = 0;
-	LITE_CRITICAL_SECTION_EXIT();
+	lite_irq_enable(pm);
 
 	return 0;
 }

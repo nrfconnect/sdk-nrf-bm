@@ -11,10 +11,6 @@
 
 LOG_MODULE_REGISTER(lite_timer, CONFIG_LITE_TIMER_LOG_LEVEL);
 
-#if CONFIG_SOFTDEVICE
-#include <nrf_nvic.h>
-#endif /* CONFIG_SOFTDEVICE */
-
 #if CONFIG_SOC_SERIES_NRF52X
 #define LITE_TIMER_IRQn RTC1_IRQn
 #elif CONFIG_SOC_SERIES_NRF54LX
@@ -27,17 +23,7 @@ LOG_MODULE_REGISTER(lite_timer, CONFIG_LITE_TIMER_LOG_LEVEL);
 
 static void irq_prio_lvl_configure(void)
 {
-#if CONFIG_SOFTDEVICE
-	int ret = sd_nvic_SetPriority(LITE_TIMER_IRQn, CONFIG_LITE_TIMER_IRQ_PRIO);
-
-	if (ret != NRF_SUCCESS) {
-		LOG_WRN("Failed to set IRQ priority, nrf_error %#x", ret);
-		__ASSERT(false, "Failed to set IRQ priority, nrf_error %#x", ret);
-		return;
-	}
-#else
 	NVIC_SetPriority(LITE_TIMER_IRQn, (uint32_t)CONFIG_LITE_TIMER_IRQ_PRIO);
-#endif
 
 	LOG_DBG("Timer IRQ priority level set to %d", CONFIG_LITE_TIMER_IRQ_PRIO);
 }

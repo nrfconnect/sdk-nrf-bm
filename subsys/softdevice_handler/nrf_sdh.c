@@ -6,7 +6,6 @@
 #include <stdint.h>
 #include <nrf_sdh.h>
 #include <nrf_sdm.h>
-#include <nrf_nvic.h>
 #include <event_scheduler.h>
 #include <zephyr/toolchain.h>
 #include <zephyr/logging/log.h>
@@ -85,30 +84,6 @@ static void sdh_state_evt_observer_notify(enum nrf_sdh_state_evt state)
 	}
 }
 
-static int softdevices_evt_irq_enable(void)
-{
-	int err;
-
-	err = sd_nvic_EnableIRQ((IRQn_Type)SD_EVT_IRQn);
-	if (err) {
-		LOG_ERR("Unable to enable SoftDevice IRQ, nrf_error %#x", err);
-	}
-
-	return err;
-}
-
-static int softdevice_evt_irq_disable(void)
-{
-	int err;
-
-	err = sd_nvic_DisableIRQ((IRQn_Type)SD_EVT_IRQn);
-	if (err) {
-		LOG_ERR("Unable to disable SoftDevice IRQ, nrf_error %#x", err);
-	}
-
-	return err;
-}
-
 __weak void softdevice_fault_handler(uint32_t id, uint32_t pc, uint32_t info)
 {
 	LOG_ERR("SoftDevice fault! ID %#x, PC %#x, Info %#x\n", id, pc, info);
@@ -171,10 +146,7 @@ int nrf_sdh_enable_request(void)
 	atomic_set(&sdh_suspended, false);
 
 	/* Enable event interrupt, the priority has already been set by the stack. */
-	err = softdevices_evt_irq_enable();
-	if (err) {
-		return -EINVAL;
-	}
+	NVIC_EnableIRQ((IRQn_Type)SD_EVT_IRQn);
 
 	/* Notify observers about a finished SoftDevice enable process. */
 	sdh_state_evt_observer_notify(NRF_SDH_STATE_EVT_ENABLED);
@@ -214,10 +186,7 @@ int nrf_sdh_disable_request(void)
 
 	atomic_set(&sdh_enabled, false);
 
-	err = softdevice_evt_irq_disable();
-	if (err) {
-		return -EINVAL;
-	}
+	NVIC_DisableIRQ((IRQn_Type)SD_EVT_IRQn);
 
 	/* Notify observers about a finished SoftDevice enable process. */
 	sdh_state_evt_observer_notify(NRF_SDH_STATE_EVT_DISABLED);
@@ -245,39 +214,24 @@ bool nrf_sdh_is_enabled(void)
 
 void nrf_sdh_suspend(void)
 {
-	int err;
-
 	if (!sdh_enabled || sdh_suspended) {
 		return;
 	}
 
-	err = softdevice_evt_irq_disable();
-	if (err) {
-		return;
-	}
+	NVIC_DisableIRQ((IRQn_Type)SD_EVT_IRQn);
 
 	atomic_set(&sdh_suspended, true);
 }
 
 void nrf_sdh_resume(void)
 {
-	int err;
-
 	if ((!sdh_suspended) || (!sdh_enabled)) {
 		return;
 	}
 
 	/* Force calling ISR again to make sure we dispatch pending events */
-	err = sd_nvic_SetPendingIRQ((IRQn_Type)SD_EVT_IRQn);
-	if (err) {
-		LOG_ERR("Unable to set SoftDevice IRQ, nrf_error %#x", err);
-		return;
-	}
-
-	err = softdevices_evt_irq_enable();
-	if (err) {
-		return;
-	}
+	NVIC_SetPendingIRQ((IRQn_Type)SD_EVT_IRQn);
+	NVIC_EnableIRQ((IRQn_Type)SD_EVT_IRQn);
 
 	atomic_set(&sdh_suspended, false);
 }

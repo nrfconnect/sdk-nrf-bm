@@ -6,7 +6,6 @@
 
 #include <string.h>
 #include <errno.h>
-#include <nrf_nvic.h>
 #include <event_scheduler.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/init.h>
@@ -22,7 +21,7 @@ static uint8_t buf[CONFIG_EVENT_SCHEDULER_BUF_SIZE];
 
 int event_scheduler_defer(event_handler_t handler, void *data, size_t len)
 {
-	uint8_t nested;
+	uint32_t pm;
 	struct event_scheduler_event *evt;
 
 	if (!handler) {
@@ -32,9 +31,12 @@ int event_scheduler_defer(event_handler_t handler, void *data, size_t len)
 		return -EINVAL;
 	}
 
-	(void) sd_nvic_critical_region_enter(&nested);
+	pm = __get_PRIMASK();
+	__disable_irq();
 	evt = sys_heap_alloc(&heap, sizeof(struct event_scheduler_event) + len);
-	(void) sd_nvic_critical_region_exit(nested);
+	if (!pm) {
+		__enable_irq();
+	}
 
 	if (!evt) {
 		return -ENOMEM;
@@ -45,9 +47,12 @@ int event_scheduler_defer(event_handler_t handler, void *data, size_t len)
 
 	memcpy(evt->data, data, len);
 
-	(void) sd_nvic_critical_region_enter(&nested);
+	pm = __get_PRIMASK();
+	__disable_irq();
 	sys_slist_append(&event_list, &evt->node);
-	(void) sd_nvic_critical_region_exit(nested);
+	if (!pm) {
+		__enable_irq();
+	}
 
 	LOG_DBG("Event %p scheduled for %p", evt, handler);
 
@@ -56,23 +61,29 @@ int event_scheduler_defer(event_handler_t handler, void *data, size_t len)
 
 int event_scheduler_process(void)
 {
-	uint8_t nested;
+	uint32_t pm;
 	sys_snode_t *node;
 	struct event_scheduler_event *evt;
 
 	while (!sys_slist_is_empty(&event_list)) {
 
-		(void) sd_nvic_critical_region_enter(&nested);
+		pm = __get_PRIMASK();
+		__disable_irq();
 		node = sys_slist_get_not_empty(&event_list);
-		(void) sd_nvic_critical_region_exit(nested);
+		if (!pm) {
+			__enable_irq();
+		}
 
 		evt = CONTAINER_OF(node, struct event_scheduler_event, node);
 		LOG_DBG("Dispatching event %p to handler %p", evt, evt->handler);
 		evt->handler(evt->data, evt->len);
 
-		(void) sd_nvic_critical_region_enter(&nested);
+		pm = __get_PRIMASK();
+		__disable_irq();
 		sys_heap_free(&heap, evt);
-		(void) sd_nvic_critical_region_exit(nested);
+		if (!pm) {
+			__enable_irq();
+		}
 	}
 
 	return 0;

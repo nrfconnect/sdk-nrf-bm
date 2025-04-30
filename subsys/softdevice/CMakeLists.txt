@@ -7,5 +7,4 @@ if (CONFIG_SOFTDEVICE_S115)
   zephyr_include_directories(${ZEPHYR_NRF_LITE_MODULE_DIR}/include/s115/)
 endif()
 
-zephyr_sources(nvic.c)
 zephyr_sources(tables.c)
