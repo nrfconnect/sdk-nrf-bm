@@ -94,6 +94,9 @@ enum BLE_GAP_SVCS
   SD_BLE_GAP_CONN_SEC_GET               = BLE_GAP_SVC_BASE + 28,  /**< Obtain connection security level. */
   SD_BLE_GAP_PHY_UPDATE                 = BLE_GAP_SVC_BASE + 33,  /**< Initiate or respond to a PHY Update Procedure. */
   SD_BLE_GAP_NEXT_CONN_EVT_COUNTER_GET  = BLE_GAP_SVC_BASE + 36,  /**< Get the next connection event counter. */
+  SD_BLE_GAP_RSSI_GET                   = BLE_GAP_SVC_BASE + 38,  /**< Get the last RSSI sample. */
+  SD_BLE_GAP_RSSI_START                 = BLE_GAP_SVC_BASE + 39,  /**< Start reporting of changes in RSSI. */
+  SD_BLE_GAP_RSSI_STOP                  = BLE_GAP_SVC_BASE + 40,  /**< Stop reporting of changes in RSSI. */
 };
 
 /**@brief GAP Event IDs.
@@ -113,6 +116,7 @@ enum BLE_GAP_EVTS
   BLE_GAP_EVT_AUTH_STATUS                 = BLE_GAP_EVT_BASE + 9,   /**< Authentication procedure completed with status. \n See @ref ble_gap_evt_auth_status_t.          */
   BLE_GAP_EVT_CONN_SEC_UPDATE             = BLE_GAP_EVT_BASE + 10,  /**< Connection security updated.                    \n See @ref ble_gap_evt_conn_sec_update_t.      */
   BLE_GAP_EVT_TIMEOUT                     = BLE_GAP_EVT_BASE + 11,  /**< Timeout expired.                                \n See @ref ble_gap_evt_timeout_t.              */
+  BLE_GAP_EVT_RSSI_CHANGED                = BLE_GAP_EVT_BASE + 12,  /**< RSSI report.                                    \n See @ref ble_gap_evt_rssi_changed_t.         */
   BLE_GAP_EVT_SCAN_REQ_REPORT             = BLE_GAP_EVT_BASE + 16,  /**< Scan request report.                            \n See @ref ble_gap_evt_scan_req_report_t. */
   BLE_GAP_EVT_PHY_UPDATE_REQUEST          = BLE_GAP_EVT_BASE + 17,  /**< PHY Update Request.                             \n Reply with @ref sd_ble_gap_phy_update. \n See @ref ble_gap_evt_phy_update_request_t. */
   BLE_GAP_EVT_PHY_UPDATE                  = BLE_GAP_EVT_BASE + 18,  /**< PHY Update Procedure is complete.               \n See @ref ble_gap_evt_phy_update_t.           */
@@ -409,7 +413,6 @@ enum BLE_GAP_TX_POWER_ROLES
 
 /**@} */
 
-
 /**@defgroup BLE_GAP_CP_LIMITS GAP Connection Parameters Limits
  * @{
  */
@@ -433,6 +436,9 @@ enum BLE_GAP_TX_POWER_ROLES
 #define BLE_GAP_DEVNAME_MAX_LEN                  248     /**< Maximum number of octets in device name. */
 /**@} */
 
+
+/**@brief Disable RSSI events for connections */
+#define BLE_GAP_RSSI_THRESHOLD_INVALID 0xFF
 
 /**@defgroup BLE_GAP_PHYS GAP PHYs
  * @{ */
@@ -1008,6 +1014,14 @@ typedef struct
 } ble_gap_evt_timeout_t;
 
 
+/**@brief Event structure for @ref BLE_GAP_EVT_RSSI_CHANGED. */
+typedef struct
+{
+  int8_t  rssi;                                 /**< Received Signal Strength Indication in dBm.
+                                                     @note ERRATA-153 and ERRATA-225 require the rssi sample to be compensated based on a temperature measurement. */
+  uint8_t ch_index;                             /**< Data Channel Index on which the Signal Strength is measured (0-36). */
+} ble_gap_evt_rssi_changed_t;
+
 /**@brief Event structure for @ref BLE_GAP_EVT_ADV_SET_TERMINATED */
 typedef struct
 {
@@ -1045,6 +1059,7 @@ typedef struct
     ble_gap_evt_auth_status_t                 auth_status;                  /**< Authentication Status Event Parameters. */
     ble_gap_evt_conn_sec_update_t             conn_sec_update;              /**< Connection Security Update Event Parameters. */
     ble_gap_evt_timeout_t                     timeout;                      /**< Timeout Event Parameters. */
+    ble_gap_evt_rssi_changed_t                rssi_changed;                 /**< RSSI Event Parameters. */
     ble_gap_evt_adv_set_terminated_t          adv_set_terminated;           /**< Advertising Set Terminated Event Parameters. */
     ble_gap_evt_scan_req_report_t             scan_req_report;              /**< Scan Request Report Parameters. */
     ble_gap_evt_phy_update_request_t          phy_update_request;           /**< PHY Update Request Event Parameters. */
@@ -1554,7 +1569,6 @@ SVCALL(SD_BLE_GAP_ADV_STOP, uint32_t, sd_ble_gap_adv_stop(uint8_t adv_handle));
  */
 SVCALL(SD_BLE_GAP_CONN_PARAM_UPDATE, uint32_t, sd_ble_gap_conn_param_update(uint16_t conn_handle, ble_gap_conn_params_t const *p_conn_params));
 
-
 /**@brief Disconnect (GAP Link Termination).
  *
  * @details This call initiates the disconnection procedure, and its completion will be communicated to the application
@@ -1941,6 +1955,73 @@ SVCALL(SD_BLE_GAP_SEC_INFO_REPLY, uint32_t, sd_ble_gap_sec_info_reply(uint16_t c
  * @retval ::BLE_ERROR_INVALID_CONN_HANDLE Invalid connection handle supplied.
  */
 SVCALL(SD_BLE_GAP_CONN_SEC_GET, uint32_t, sd_ble_gap_conn_sec_get(uint16_t conn_handle, ble_gap_conn_sec_t *p_conn_sec));
+
+
+/**@brief Start reporting the received signal strength to the application.
+ *
+ *        A new event is reported whenever the RSSI value changes, until @ref sd_ble_gap_rssi_stop is called.
+ *
+ * @events
+ * @event{@ref BLE_GAP_EVT_RSSI_CHANGED, New RSSI data available. How often the event is generated is
+ *                                       dependent on the settings of the <code>threshold_dbm</code>
+ *                                       and <code>skip_count</code> input parameters.}
+ * @endevents
+ *
+ * @mscs
+ * @mmsc{@ref BLE_GAP_CENTRAL_RSSI_READ_MSC}
+ * @mmsc{@ref BLE_GAP_RSSI_FILT_MSC}
+ * @endmscs
+ *
+ * @param[in] conn_handle        Connection handle.
+ * @param[in] threshold_dbm      Minimum change in dBm before triggering the @ref BLE_GAP_EVT_RSSI_CHANGED event. Events are disabled if threshold_dbm equals @ref BLE_GAP_RSSI_THRESHOLD_INVALID.
+ * @param[in] skip_count         Number of RSSI samples with a change of threshold_dbm or more before sending a new @ref BLE_GAP_EVT_RSSI_CHANGED event.
+ *
+ * @retval ::NRF_SUCCESS                   Successfully activated RSSI reporting.
+ * @retval ::NRF_ERROR_INVALID_STATE       RSSI reporting is already ongoing.
+ * @retval ::BLE_ERROR_INVALID_CONN_HANDLE Invalid connection handle supplied.
+ */
+SVCALL(SD_BLE_GAP_RSSI_START, uint32_t, sd_ble_gap_rssi_start(uint16_t conn_handle, uint8_t threshold_dbm, uint8_t skip_count));
+
+
+/**@brief Stop reporting the received signal strength.
+ *
+ * @note  An RSSI change detected before the call but not yet received by the application
+ *        may be reported after @ref sd_ble_gap_rssi_stop has been called.
+ *
+ * @mscs
+ * @mmsc{@ref BLE_GAP_CENTRAL_RSSI_READ_MSC}
+ * @mmsc{@ref BLE_GAP_RSSI_FILT_MSC}
+ * @endmscs
+ *
+ * @param[in] conn_handle Connection handle.
+ *
+ * @retval ::NRF_SUCCESS                   Successfully deactivated RSSI reporting.
+ * @retval ::NRF_ERROR_INVALID_STATE       RSSI reporting is not ongoing.
+ * @retval ::BLE_ERROR_INVALID_CONN_HANDLE Invalid connection handle supplied.
+ */
+SVCALL(SD_BLE_GAP_RSSI_STOP, uint32_t, sd_ble_gap_rssi_stop(uint16_t conn_handle));
+
+
+/**@brief Get the received signal strength for the last connection event.
+ *
+ *        @ref sd_ble_gap_rssi_start must be called to start reporting RSSI before using this function. @ref NRF_ERROR_NOT_FOUND
+ *        will be returned until RSSI was sampled for the first time after calling @ref sd_ble_gap_rssi_start.
+ * @note ERRATA-153 and ERRATA-225 require the rssi sample to be compensated based on a temperature measurement.
+ * @mscs
+ * @mmsc{@ref BLE_GAP_CENTRAL_RSSI_READ_MSC}
+ * @endmscs
+ *
+ * @param[in]  conn_handle Connection handle.
+ * @param[out] p_rssi      Pointer to the location where the RSSI measurement shall be stored.
+ * @param[out] p_ch_index  Pointer to the location where Channel Index for the RSSI measurement shall be stored.
+ *
+ * @retval ::NRF_SUCCESS                   Successfully read the RSSI.
+ * @retval ::NRF_ERROR_NOT_FOUND           No sample is available.
+ * @retval ::NRF_ERROR_INVALID_ADDR        Invalid pointer supplied.
+ * @retval ::BLE_ERROR_INVALID_CONN_HANDLE Invalid connection handle supplied.
+ * @retval ::NRF_ERROR_INVALID_STATE       RSSI reporting is not ongoing.
+ */
+SVCALL(SD_BLE_GAP_RSSI_GET, uint32_t, sd_ble_gap_rssi_get(uint16_t conn_handle, int8_t *p_rssi, uint8_t *p_ch_index));
 
 
 /**@brief Initiate or respond to a PHY Update Procedure
