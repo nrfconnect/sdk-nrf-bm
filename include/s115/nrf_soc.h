@@ -80,13 +80,13 @@ extern "C" {
 #define SOC_ECB_KEY_LENGTH                (16)                       /**< ECB key length. */
 #define SOC_ECB_CLEARTEXT_LENGTH          (16)                       /**< ECB cleartext length. */
 #define SOC_ECB_CIPHERTEXT_LENGTH         (SOC_ECB_CLEARTEXT_LENGTH) /**< ECB ciphertext length. */
-
 #define SD_EVT_IRQn                       (SWI01_IRQn)        /**< SoftDevice Event IRQ number. Used for both protocol events and SoC events. */
-#define SD_EVT_IRQHandler                 (SWI01_IRQHandler)  /**< SoftDevice Event IRQ handler. Used for both protocol events and SoC events.
-                                                                       The default interrupt priority for this handler is set to 6 */
+#define SD_EVT_IRQHandler                 (SWI01_IRQHandler)  /**< SoftDevice Event IRQ handler. Used for both protocol events and SoC events.*/
 #define RADIO_NOTIFICATION_IRQn           (SWI02_IRQn)        /**< The radio notification IRQ number. */
 #define RADIO_NOTIFICATION_IRQHandler     (SWI02_IRQHandler)  /**< The radio notification IRQ handler.
                                                                        The default interrupt priority for this handler is set to 6 */
+#define SD_EVT_IRQ_PRI                    (6)                 /**< SoftDevice Event IRQ priority, set to Application priority level LOW */
+#define RADIO_NOTIFICATION_IRQ_PRI        (6)                 /**< Radio notification IRQ priority, set to Application priority level LOW */
 #define NRF_RADIO_LENGTH_MIN_US           (100)               /**< The shortest allowed radio timeslot, in microseconds. */
 #define NRF_RADIO_LENGTH_MAX_US           (100000)            /**< The longest allowed radio timeslot, in microseconds. */
 
@@ -532,7 +532,7 @@ SVCALL(SD_CLOCK_HFCLK_IS_RUNNING, uint32_t, sd_clock_hfclk_is_running(uint32_t *
  * MCU's System Control Register (SCR), CMSIS_SCB. In that case, when a disabled interrupt gets
  * pended, this function will return.
  *
- * @note The application must ensure that the pended flag is cleared using ::sd_nvic_ClearPendingIRQ
+ * @note The application must ensure that the pended flag is cleared using NVIC_ClearPendingIRQ
  *       in order to sleep using this function. This is only necessary for disabled interrupts, as
  *       the interrupt handler will clear the pending flag automatically for enabled interrupts.
  *

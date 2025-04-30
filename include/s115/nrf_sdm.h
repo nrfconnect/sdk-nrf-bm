@@ -91,7 +91,7 @@ extern "C" {
 
 /** @brief Defines the SoftDevice Information Structure location (address) as an offset from
 the start of the SoftDevice */
-#define SOFTDEVICE_INFO_STRUCT_OFFSET (0x47c)
+#define SOFTDEVICE_INFO_STRUCT_OFFSET (0x2c)
 
 /** @brief Defines the offset for the SoftDevice Information Structure size value relative to the
  *         SoftDevice base address. The size value is of type uint8_t. */
@@ -127,8 +127,8 @@ the start of the SoftDevice */
 #define SD_SIZE_GET(baseaddr) (*((uint32_t *) ((baseaddr) + SD_SIZE_OFFSET)))
 
 /** @brief Defines the amount of flash that is used by the SoftDevice. */
-#define SD_FLASH_SIZE 0x19000
-
+#define SD_FLASH_SIZE 0x20000
+ 
 /** @brief Defines a macro for retrieving the actual FWID value from a given base address. */
 #define SD_FWID_GET(baseaddr) (*((uint16_t *) ((baseaddr) + SD_FWID_OFFSET)))
 
@@ -285,13 +285,12 @@ typedef void (*nrf_fault_handler_t)(uint32_t id, uint32_t pc, uint32_t info);
  *       - A portion of RAM will be unavailable (see relevant SDS documentation).
  *       - Some peripherals will be unavailable or available only through the SoC API (see relevant SDS documentation).
  *       - Interrupts will not arrive from protected peripherals or interrupts.
- *       - nrf_nvic_ functions must be used instead of CMSIS NVIC_ functions for reliable usage of the SoftDevice.
  *       - Interrupt latency may be affected by the SoftDevice  (see relevant SDS documentation).
  *       - Chosen low frequency clock source will be running.
  *
  * @param p_clock_lf_cfg Low frequency clock source and accuracy.
-                         If NULL the clock will be configured as an RC source with rc_ctiv = 16 and .rc_temp_ctiv = 2
-                         In the case of XTAL source, the PPM accuracy of the chosen clock source must be greater than or equal to the actual characteristics of your XTAL clock.
+ *                       If NULL the clock will be configured as an RC source with rc_ctiv = 16 and .rc_temp_ctiv = 2
+ *                       In the case of XTAL source, the PPM accuracy of the chosen clock source must be greater than or equal to the actual characteristics of your XTAL clock.
  * @param fault_handler Callback to be invoked in case of fault, cannot be NULL.
  *
  * @retval ::NRF_SUCCESS
