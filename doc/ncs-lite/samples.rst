@@ -10,9 +10,9 @@ The |NCSL| provides samples that specifically target Nordic Semiconductor device
    :glob:
    :caption: Subpages:
 
-   samples/ble_lbs/README.rst
-   samples/ble_hrs/README.rst
-   samples/ble_nus/README.rst
-   samples/buttons/README.rst
-   samples/hello_softdevice/README.rst
-   samples/timer/README.rst
+   samples/bluetooth/ble_lbs/README.rst
+   samples/bluetooth/ble_hrs/README.rst
+   samples/bluetooth/ble_nus/README.rst
+   samples/bluetooth/hello_softdevice/README.rst
+   samples/peripherals/buttons/README.rst
+   samples/peripherals/timer/README.rst
