@@ -1,0 +1,19 @@
+sample:
+  name: LEDs sample
+tests:
+  sample.leds:
+    sysbuild: true
+    build_only: true
+    integration_platforms:
+      - lite_nrf54l15/nrf54l15/cpuapp/no_softdevice
+    platform_allow:
+      - lite_nrf54l15/nrf54l15/cpuapp/no_softdevice
+    tags: ci_build
+  sample.leds_softdevice:
+    sysbuild: true
+    build_only: true
+    integration_platforms:
+      - lite_nrf54l15/nrf54l15/cpuapp
+    platform_allow:
+      - lite_nrf54l15/nrf54l15/cpuapp
+    tags: ci_build
