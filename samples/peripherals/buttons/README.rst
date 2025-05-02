@@ -45,7 +45,7 @@ Overview
 Building and running
 ********************
 
-This sample can be found under :file:`samples/buttons/` in the |NCSL| folder structure.
+This sample can be found under :file:`samples/peripherals/buttons/` in the |NCSL| folder structure.
 
 .. include:: /includes/build_sample.txt
 

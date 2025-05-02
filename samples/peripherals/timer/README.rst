@@ -32,7 +32,7 @@ The single-shot timer is used to sequence a series of actions (printing "Hello",
 Building and running
 ********************
 
-This sample can be found under :file:`samples/timer/` in the |NCSL| folder structure.
+This sample can be found under :file:`samples/peripherals/timer/` in the |NCSL| folder structure.
 
 .. include:: /includes/build_sample.txt
 

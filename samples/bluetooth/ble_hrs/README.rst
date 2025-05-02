@@ -58,7 +58,7 @@ Programming the S115 SoftDevice
 Building and running
 ********************
 
-This sample can be found under :file:`samples/ble_hrs/` in the |NCSL| folder structure.
+This sample can be found under :file:`samples/bluetooth/ble_hrs/` in the |NCSL| folder structure.
 
 .. include:: /includes/build_sample.txt
 
