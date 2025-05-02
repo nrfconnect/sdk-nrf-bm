@@ -63,6 +63,24 @@ extern "C" {
 #define BOARD_UARTE_CONSOLE_PIN_CTS NRF_PIN_PORT_TO_PIN_NUMBER(7, 1)
 #endif
 
+/* Application UART configuration */
+#ifndef BOARD_APP_UARTE_INST
+#define BOARD_APP_UARTE_INST 30
+#endif
+
+#ifndef BOARD_APP_UARTE_PIN_TX
+#define BOARD_APP_UARTE_PIN_TX NRF_PIN_PORT_TO_PIN_NUMBER(0, 0)
+#endif
+#ifndef BOARD_APP_UARTE_PIN_RX
+#define BOARD_APP_UARTE_PIN_RX NRF_PIN_PORT_TO_PIN_NUMBER(1, 0)
+#endif
+#ifndef BOARD_APP_UARTE_PIN_RTS
+#define BOARD_APP_UARTE_PIN_RTS NRF_PIN_PORT_TO_PIN_NUMBER(2, 0)
+#endif
+#ifndef BOARD_APP_UARTE_PIN_CTS
+#define BOARD_APP_UARTE_PIN_CTS NRF_PIN_PORT_TO_PIN_NUMBER(3, 0)
+#endif
+
 #ifdef __cplusplus
 }
 #endif
