@@ -19,6 +19,8 @@
 extern "C" {
 #endif
 
+#define GPIO_ACTIVE_HIGH 1
+
 #ifndef BOARD_PIN_BTN_0
 #define BOARD_PIN_BTN_0 NRF_PIN_PORT_TO_PIN_NUMBER(13, 1)
 #endif
@@ -43,6 +45,10 @@ extern "C" {
 #endif
 #ifndef BOARD_PIN_LED_3
 #define BOARD_PIN_LED_3 NRF_PIN_PORT_TO_PIN_NUMBER(14, 1)
+#endif
+
+#ifndef BOARD_LED_ACTIVE_STATE
+#define BOARD_LED_ACTIVE_STATE GPIO_ACTIVE_HIGH
 #endif
 
 /* UART Logger configuration */
