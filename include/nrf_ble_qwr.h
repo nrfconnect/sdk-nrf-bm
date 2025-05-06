@@ -43,21 +43,6 @@ extern "C" {
 			     &_name,                                                               \
 			     CONFIG_NRF_BLE_QWR_BLE_OBSERVER_PRIO)
 
-/**
- * @brief Macro for defining an array of nrf_ble_qwr instance.
- *
- * @param _name Name of the array.
- * @param _cnt Size of the array.
- * @hideinitializer
- */
-#define NRF_BLE_QWRS_DEF(_name, _cnt)                                                              \
-	static struct nrf_ble_qwr _name[_cnt];                                                     \
-	NRF_SDH_BLE_OBSERVERS(_name ## _obs,                                                       \
-			      nrf_ble_qwr_on_ble_evt,                                              \
-			      &_name,                                                              \
-			      _cnt,                                                                \
-			      CONFIG_NRF_BLE_QWR_BLE_OBSERVER_PRIO)
-
 /* Error code used by the module to reject prepare write requests on non-registered attributes. */
 #define NRF_BLE_QWR_REJ_REQUEST_ERR_CODE BLE_GATT_STATUS_ATTERR_APP_BEGIN + 0
 
