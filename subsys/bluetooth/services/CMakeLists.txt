@@ -3,8 +3,8 @@
 #
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
-zephyr_sources_ifdef(CONFIG_BLE_BAS bas.c)
-zephyr_sources_ifdef(CONFIG_BLE_NUS nus.c)
-zephyr_sources_ifdef(CONFIG_BLE_DIS dis.c)
-zephyr_sources_ifdef(CONFIG_BLE_HRS hrs.c)
-zephyr_sources_ifdef(CONFIG_BLE_LBS lbs.c)
+add_subdirectory_ifdef(CONFIG_BLE_BAS ble_bas)
+add_subdirectory_ifdef(CONFIG_BLE_DIS ble_dis)
+add_subdirectory_ifdef(CONFIG_BLE_HRS ble_hrs)
+add_subdirectory_ifdef(CONFIG_BLE_LBS ble_lbs)
+add_subdirectory_ifdef(CONFIG_BLE_NUS ble_nus)
