@@ -3,8 +3,8 @@
 #
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
-rsource "Kconfig.bas"
-rsource "Kconfig.dis"
-rsource "Kconfig.hrs"
-rsource "Kconfig.lbs"
-rsource "Kconfig.nus"
+rsource "ble_bas/Kconfig"
+rsource "ble_dis/Kconfig"
+rsource "ble_hrs/Kconfig"
+rsource "ble_lbs/Kconfig"
+rsource "ble_nus/Kconfig"

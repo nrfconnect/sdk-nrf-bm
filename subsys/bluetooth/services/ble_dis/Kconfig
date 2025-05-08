@@ -97,7 +97,7 @@ endif
 
 characteristic=BLE_DIS_CHAR
 characteristic-str=Device Information Service characterstics
-rsource "Kconfig.template.sec_mode"
+source "${ZEPHYR_NRF_LITE_MODULE_DIR}/subsys/bluetooth/services/Kconfig.template.sec_mode"
 
 module=BLE_DIS
 module-dep=LOG
