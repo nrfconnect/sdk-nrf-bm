@@ -79,4 +79,10 @@ static int uart_log_backend_sys_init(void)
 	return 0;
 }
 
-SYS_INIT(uart_log_backend_sys_init, APPLICATION, 0);
+SYS_INIT(uart_log_backend_sys_init,
+#if defined(CONFIG_EARLY_CONSOLE)
+	 PRE_KERNEL_1,
+#else
+	 POST_KERNEL,
+#endif
+	 0);
