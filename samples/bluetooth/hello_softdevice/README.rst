@@ -31,15 +31,8 @@ The sample supports the following development kits:
 Overview
 ********
 
-The sample demonstrates the basic management of the SoftDevice in NCS Lite.
+The sample demonstrates the basic management of the SoftDevice in |NCSL|.
 It shows how to enable and disable the SoftDevice, handle various types of events related to the SoftDevice, and manage Bluetooth LE functionality.
-
-1. The sample starts by printing "Hello SoftDevice sample started".
-#. It then proceeds to enable the SoftDevice using ``nrf_sdh_enable_request()``.
-#. The Bluetooth LE functionality of the SoftDevice is enabled with ``nrf_sdh_ble_enable()``, passing the default connection configuration tag.
-#. After enabling Bluetooth LE, the function waits for 2 seconds using ``k_busy_wait()``.
-#. The SoftDevice is then disabled using ``nrf_sdh_disable_request()``.
-#. Finally, it prints that the SoftDevice is disabled and ends the program with a goodbye message.
 
 Programming the S115 SoftDevice
 *******************************
