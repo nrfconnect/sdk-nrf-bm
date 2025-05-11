@@ -22,7 +22,7 @@ Install the following software tools:
      After downloading the nRF Util executable, move it to a directory that is in the system :envvar:`PATH`.
      On macOS and Linux, the downloaded file also needs to be given execute permission by typing `chmod +x nrfutil` or by checking the checkbox in the file properties.
 
-* Install the nRF Util ``device`` command.
+* The nRF Util ``device`` command.
   This command allows you to perform various operations on Nordic devices.
 
    .. code-block:: console
@@ -38,7 +38,7 @@ Install the following software tools:
 *   The |jlink_ver| of SEGGER J-Link.
     Download it from the `J-Link Software and Documentation Pack`_ page.
 
-* Install |VSC|:
+* |VSC|:
 
   * The latest version of |VSC| for your operating system from the `Visual Studio Code download page`_.
   * In |VSC|, the latest version of the `nRF Connect for VS Code Extension Pack`_.
@@ -66,6 +66,7 @@ Use nRF Connect for VS Code to install the toolchain:
    For this release of |NCSL|, use version |ncs_release| of the toolchain.
 
 The toolchain installation starts in the background, as can be seen in the notification that appears.
+If this is your first installation of the toolchain, wait for it to finish before moving to the next step of this procedure (getting the code).
 
 When you install the toolchain for the first time, the installed version is automatically selected for your project.
 
@@ -75,6 +76,8 @@ Getting the |NCSL| code
 ***********************
 
 Every nRF Connect SDK release consists of a combination of Git repositories at different versions and revisions, managed together by West.
+Make sure that Git is installed on your system before starting this procedure.
+
 Complete the following steps to clone the |NCSL| repositories.
 
 1. Open the nRF Connect extension in |VSC| by clicking its icon in the :guilabel:`Activity Bar`.
@@ -88,11 +91,31 @@ Complete the following steps to clone the |NCSL| repositories.
    The SDK installation starts and it can take several minutes.
 #. Open command line and navigate to the SDK installation folder.
    The default location to install the SDK is :file:`C:/ncs/v2.9.1` on Windows, :file:`~/ncs/v2.9.1` on Linux, and :file:`/opt/nordic/ncs/v2.9.1` on macOS.
-#. Clone the `sdk-nrf-lite`_ repository:
+#. Clone the `sdk-nrf-lite`_ repository.
 
-   .. code-block:: console
+   .. tabs::
 
-      git clone https://github.com/nrfconnect/sdk-nrf-lite.git nrf-lite
+      .. group-tab:: Windows
+
+	     .. code-block:: console
+
+            cd C:/ncs/v2.9.1
+            git clone https://github.com/nrfconnect/sdk-nrf-lite.git nrf-lite
+
+      .. group-tab:: Linux
+
+         .. code-block:: console
+
+            cd ~/ncs/v2.9.1
+            git clone https://github.com/nrfconnect/sdk-nrf-lite.git nrf-lite
+
+      .. group-tab:: macOS
+
+	     .. code-block:: console
+
+            cd /opt/nordic/ncs/v2.9.1
+            git clone https://github.com/nrfconnect/sdk-nrf-lite.git nrf-lite
+
 
 #. In |VSC|, click :guilabel:`Manage SDKs` -> :guilabel:`Manage West Workspace...` -> :guilabel:`Set West Manifest Repository`.
    From the list that appears, select the ``nrf-lite`` west manifest file.
@@ -115,3 +138,9 @@ Your directory structure now looks similar to this:
       ├─── test
       ├─── tools
       ├─── zephyr
+
+Next steps
+**********
+
+You can now proceed to test the :ref:`samples` included in this version of the |NCSL|.
+Each sample documentation contains full information on how to build, flash, and test the respective sample.

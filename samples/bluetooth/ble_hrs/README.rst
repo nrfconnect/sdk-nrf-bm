@@ -67,10 +67,11 @@ This sample can be found under :file:`samples/bluetooth/ble_hrs/` in the |NCSL| 
 Testing
 =======
 
-You can test this sample using `nRF Connect for Desktop`_ with the `Bluetooth Low Energy app`_:
+You can test this sample using `nRF Connect for Desktop`_ with the `Bluetooth Low Energy app`_ and the `Serial Terminal app`.
+Make sure that these are installed before starting the testing procedure.
 
 1. Compile and program the application.
-#. Observe that the ``BLE HRS sample started`` message is printed.
+#. In the Serial Terminal, observe that the ``BLE HRS sample started`` message is printed.
 #. Observe that the ``Advertising as NCS-Lite HRS`` message is printed.
 #. In nRF Connect for Desktop, scan for advertising devices.
    Your device should be advertising as ``NCS-Lite HRS``.
