@@ -1,4 +1,4 @@
-# The west manifest file for NCS Lite
+# The west manifest file for NCS Bare Metal
 
 manifest:
   defaults:
@@ -9,7 +9,7 @@ manifest:
       url-base: https://github.com/nrfconnect
 
   group-filter:
-    - -ncs-lite-internal
+    - -ncs-bare_metal-internal
 
   projects:
     - name: sdk-nrf
@@ -31,11 +31,11 @@ manifest:
           - tinycrypt
           - zephyr
           - cmock
-    - name: sdk-ncs-lite-internal
-      path: ncs-lite-internal
+    - name: sdk-ncs-bare_metal-internal
+      path: ncs-bare_metal-internal
       revision: 2086b4bb5ee2cc68b824fe5ecd4e2461987e4c5c
       groups:
-        - ncs-lite-internal
+        - ncs-bare_metal-internal
 
   self:
-    path: nrf-lite
+    path: nrf-bare_metal

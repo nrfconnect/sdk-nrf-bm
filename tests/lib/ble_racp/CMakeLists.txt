@@ -14,7 +14,7 @@ target_sources(app PRIVATE src/unity_test.c)
 
 target_sources(app
   PRIVATE
-  ${ZEPHYR_NRF_LITE_MODULE_DIR}/lib/ble_racp/ble_racp.c
+  ${ZEPHYR_NRF_BARE_METAL_MODULE_DIR}/lib/ble_racp/ble_racp.c
 )
 
-zephyr_include_directories(${ZEPHYR_NRF_LITE_MODULE_DIR}/include)
+zephyr_include_directories(${ZEPHYR_NRF_BARE_METAL_MODULE_DIR}/include)

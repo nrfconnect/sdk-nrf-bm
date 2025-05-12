@@ -16,16 +16,16 @@ add_compile_definitions(
         CONFIG_BLE_QWR_MAX_ATTR=2
 )
 
-cmock_handle(${ZEPHYR_NRF_LITE_MODULE_DIR}/include/s115/ble.h)
-cmock_handle(${ZEPHYR_NRF_LITE_MODULE_DIR}/include/s115/ble_gatts.h
+cmock_handle(${ZEPHYR_NRF_BARE_METAL_MODULE_DIR}/include/s115/ble.h)
+cmock_handle(${ZEPHYR_NRF_BARE_METAL_MODULE_DIR}/include/s115/ble_gatts.h
         WORD_EXCLUDE
         "__STATIC_INLINE")
-cmock_handle(${ZEPHYR_NRF_LITE_MODULE_DIR}/include/s115/ble_gattc.h
+cmock_handle(${ZEPHYR_NRF_BARE_METAL_MODULE_DIR}/include/s115/ble_gattc.h
         WORD_EXCLUDE
         "__STATIC_INLINE")
 
-target_include_directories(app PRIVATE ${ZEPHYR_NRF_LITE_MODULE_DIR}/include)
-target_include_directories(app PRIVATE ${ZEPHYR_NRF_LITE_MODULE_DIR}/include/s115)
+target_include_directories(app PRIVATE ${ZEPHYR_NRF_BARE_METAL_MODULE_DIR}/include)
+target_include_directories(app PRIVATE ${ZEPHYR_NRF_BARE_METAL_MODULE_DIR}/include/s115)
 target_include_directories(app PRIVATE ${ZEPHYR_HAL_NORDIC_MODULE_DIR}/nrfx/mdk)
 target_include_directories(app PRIVATE ${ZEPHYR_CMSIS_MODULE_DIR}/CMSIS/Core/Include)
 
@@ -34,4 +34,4 @@ test_runner_generate(src/unity_test.c)
 target_sources(app PRIVATE src/unity_test.c)
 
 # Unit under test
-target_sources(app PRIVATE ${ZEPHYR_NRF_LITE_MODULE_DIR}/lib/ble_qwr/ble_qwr.c)
+target_sources(app PRIVATE ${ZEPHYR_NRF_BARE_METAL_MODULE_DIR}/lib/ble_qwr/ble_qwr.c)
