@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-config NRF_LITE
+config NRF_BM
 	bool
 	default y
 
