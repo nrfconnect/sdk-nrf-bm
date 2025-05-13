@@ -15,7 +15,7 @@
 
 #include <board-config.h>
 
-#include <lite_buttons.h>
+#include <bm_buttons.h>
 
 #if defined(CONFIG_SOC_SERIES_NRF52X)
 #define LED_ACTIVE_STATE 0 /* GPIO_ACTIVE_LOW */
@@ -91,7 +91,7 @@ static void ble_adv_evt_handler(struct ble_adv *adv, const struct ble_adv_evt *a
 	}
 }
 
-static void button_handler(uint8_t pin, enum lite_buttons_evt_type action)
+static void button_handler(uint8_t pin, enum bm_buttons_evt_type action)
 {
 	printk("Button event callback: %d, %d\n", pin, action);
 	ble_lbs_on_button_change(&ble_lbs, conn_handle, action);
@@ -165,21 +165,21 @@ int main(void)
 
 	led_init();
 
-	err = lite_buttons_init(
-		&(struct lite_buttons_config){
+	err = bm_buttons_init(
+		&(struct bm_buttons_config){
 			.pin_number = PIN_BTN_0,
-			.active_state = LITE_BUTTONS_ACTIVE_LOW,
-			.pull_config = LITE_BUTTONS_PIN_PULLUP,
+			.active_state = BM_BUTTONS_ACTIVE_LOW,
+			.pull_config = BM_BUTTONS_PIN_PULLUP,
 			.handler = button_handler,
 		},
 		1,
-		LITE_BUTTONS_DETECTION_DELAY_MIN_US);
+		BM_BUTTONS_DETECTION_DELAY_MIN_US);
 	if (err) {
 		printk("Failed to initialize buttons, err: %d\n", err);
 		return -1;
 	}
 
-	err = lite_buttons_enable();
+	err = bm_buttons_enable();
 	if (err) {
 		printk("Failed to enable button detection, err: %d\n", err);
 		return -1;

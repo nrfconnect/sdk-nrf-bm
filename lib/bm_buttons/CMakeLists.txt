@@ -5,4 +5,4 @@
 #
 
 zephyr_library()
-zephyr_library_sources(lite_buttons.c)
+zephyr_library_sources(bm_buttons.c)

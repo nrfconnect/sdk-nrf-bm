@@ -7,7 +7,7 @@
 #include <zephyr/sys/printk.h>
 
 #include <lite_timer.h>
-#include <lite_buttons.h>
+#include <bm_buttons.h>
 
 #if CONFIG_SOFTDEVICE
 #include <nrf_sdh.h>
@@ -56,40 +56,40 @@ int main(void)
 
 	running = true;
 
-	struct lite_buttons_config configs[4] = {
+	struct bm_buttons_config configs[4] = {
 		{
 			.pin_number = PIN_BTN_0,
-			.active_state = LITE_BUTTONS_ACTIVE_LOW,
-			.pull_config = LITE_BUTTONS_PIN_PULLUP,
+			.active_state = BM_BUTTONS_ACTIVE_LOW,
+			.pull_config = BM_BUTTONS_PIN_PULLUP,
 			.handler = button_handler,
 		},
 		{
 			.pin_number = PIN_BTN_1,
-			.active_state = LITE_BUTTONS_ACTIVE_LOW,
-			.pull_config = LITE_BUTTONS_PIN_PULLUP,
+			.active_state = BM_BUTTONS_ACTIVE_LOW,
+			.pull_config = BM_BUTTONS_PIN_PULLUP,
 			.handler = button_handler,
 		},
 		{
 			.pin_number = PIN_BTN_2,
-			.active_state = LITE_BUTTONS_ACTIVE_LOW,
-			.pull_config = LITE_BUTTONS_PIN_PULLUP,
+			.active_state = BM_BUTTONS_ACTIVE_LOW,
+			.pull_config = BM_BUTTONS_PIN_PULLUP,
 			.handler = button_handler,
 		},
 		{
 			.pin_number = PIN_BTN_3,
-			.active_state = LITE_BUTTONS_ACTIVE_LOW,
-			.pull_config = LITE_BUTTONS_PIN_PULLUP,
+			.active_state = BM_BUTTONS_ACTIVE_LOW,
+			.pull_config = BM_BUTTONS_PIN_PULLUP,
 			.handler = button_handler,
 		},
 	};
 
-	err = lite_buttons_init(configs, ARRAY_SIZE(configs), LITE_BUTTONS_DETECTION_DELAY_MIN_US);
+	err = bm_buttons_init(configs, ARRAY_SIZE(configs), BM_BUTTONS_DETECTION_DELAY_MIN_US);
 	if (err) {
 		printk("Failed to initialize buttons, err: %d\n", err);
 		return err;
 	}
 
-	err = lite_buttons_enable();
+	err = bm_buttons_enable();
 	if (err) {
 		printk("Failed to enable buttons, err: %d\n", err);
 		return err;
@@ -102,7 +102,7 @@ int main(void)
 		__WFE();
 	}
 
-	err = lite_buttons_deinit();
+	err = bm_buttons_deinit();
 	if (err) {
 		printk("Failed to deinitialize buttons, err: %d\n", err);
 		return err;

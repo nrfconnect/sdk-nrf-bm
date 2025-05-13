@@ -9,23 +9,23 @@
 #include <nrfx_gpiote.h>
 
 #include <lite_timer.h>
-#include <lite_buttons.h>
+#include <bm_buttons.h>
 
-LOG_MODULE_REGISTER(lite_buttons, CONFIG_LITE_BUTTONS_LOG_LEVEL);
+LOG_MODULE_REGISTER(bm_buttons, CONFIG_BM_BUTTONS_LOG_LEVEL);
 
 /* Local implementation of critical section enter/exit support. */
 
 #include <stdint.h>
 #include <nrf.h>
 
-static uint32_t lite_irq_disable(void)
+static uint32_t bm_irq_disable(void)
 {
 	uint32_t pm = __get_PRIMASK();
 	__disable_irq();
 	return pm;
 }
 
-static void lite_irq_enable(uint32_t pm)
+static void bm_irq_enable(uint32_t pm)
 {
 	if (!pm) {
 		__enable_irq();
@@ -36,13 +36,13 @@ static void lite_irq_enable(uint32_t pm)
 
 #define IRQ_PRIO     3
 #define BITS_PER_PIN 4
-#define NUM_PINS     CONFIG_LITE_BUTTONS_NUM_PINS
+#define NUM_PINS     CONFIG_BM_BUTTONS_NUM_PINS
 
 /*
  * In this module, a state machine is used for each pin (button).
  * Since the GPIOTE PORT event is shared among all pins, individual pin events might be missed.
  * To ensure reliable detection, the module relies on the GPIOTE interrupt only to activate a
- * periodic `lite_timer` that samples the state of each pin.
+ * periodic `bm_timer` that samples the state of each pin.
  * When all buttons are in the idle state (i.e., there are no active buttons), the timer is stopped
  * to save power.
  *
@@ -175,17 +175,17 @@ static int gpiote_input_configure(nrfx_gpiote_pin_t pin,
 	return 0;
 }
 
-struct lite_buttons_state {
+struct bm_buttons_state {
 	uint32_t pin_active;
 	uint32_t detection_delay;
 	struct lite_timer timer;
-	struct lite_buttons_config const *configs;
+	struct bm_buttons_config const *configs;
 	uint8_t num_configs;
 	bool is_init;
 	uint8_t pin_states[((NUM_PINS + 1) * BITS_PER_PIN) / 8];
 };
 
-static struct lite_buttons_state global;
+static struct bm_buttons_state global;
 
 static enum button_state state_get(uint8_t pin_index)
 {
@@ -195,10 +195,10 @@ static enum button_state state_get(uint8_t pin_index)
 	return (enum button_state)state;
 }
 
-static struct lite_buttons_config const *button_get(uint8_t pin)
+static struct bm_buttons_config const *button_get(uint8_t pin)
 {
 	for (int i = 0; i < global.num_configs; i++) {
-		struct lite_buttons_config const *config = &global.configs[i];
+		struct bm_buttons_config const *config = &global.configs[i];
 
 		if (pin == config->pin_number) {
 			return config;
@@ -217,12 +217,12 @@ static void state_set(uint8_t pin_index, uint8_t state)
 	global.pin_states[pin_index >> 1] |= state_mask;
 }
 
-static void user_event(uint8_t pin, enum lite_buttons_evt_type type)
+static void user_event(uint8_t pin, enum bm_buttons_evt_type type)
 {
-	struct lite_buttons_config const *config = button_get(pin);
+	struct bm_buttons_config const *config = button_get(pin);
 
 	if (config && config->handler) {
-		LOG_DBG("Pin %d %s", pin, (type == LITE_BUTTONS_PRESS) ? "pressed" : "released");
+		LOG_DBG("Pin %d %s", pin, (type == BM_BUTTONS_PRESS) ? "pressed" : "released");
 		config->handler(pin, type);
 	}
 }
@@ -235,9 +235,9 @@ static void evt_handle(uint8_t pin, uint8_t index, bool is_active)
 			state_set(index, BUTTON_PRESS_ARMED);
 			LOG_DBG("Pin %d %s -> %s", pin, STRINGIFY(BUTTON_IDLE),
 				STRINGIFY(BUTTON_PRESS_ARMED));
-			uint32_t pm = lite_irq_disable();
+			uint32_t pm = bm_irq_disable();
 			global.pin_active |= 1ULL << index;
-			lite_irq_enable(pm);
+			bm_irq_enable(pm);
 		} else {
 			/* Stay in BUTTON_IDLE. */
 		}
@@ -247,12 +247,12 @@ static void evt_handle(uint8_t pin, uint8_t index, bool is_active)
 			is_active ? STRINGIFY(BUTTON_PRESSED) : STRINGIFY(BUTTON_IDLE));
 		if (is_active) {
 			state_set(index, BUTTON_PRESSED);
-			user_event(pin, LITE_BUTTONS_PRESS);
+			user_event(pin, BM_BUTTONS_PRESS);
 		} else {
 			state_set(index, BUTTON_IDLE);
-			uint32_t pm = lite_irq_disable();
+			uint32_t pm = bm_irq_disable();
 			global.pin_active &= ~(1ULL << index);
-			lite_irq_enable(pm);
+			bm_irq_enable(pm);
 		}
 		break;
 	case BUTTON_PRESSED:
@@ -271,10 +271,10 @@ static void evt_handle(uint8_t pin, uint8_t index, bool is_active)
 			state_set(index, BUTTON_PRESSED);
 		} else {
 			state_set(index, BUTTON_IDLE);
-			user_event(pin, LITE_BUTTONS_RELEASE);
-			uint32_t pm = lite_irq_disable();
+			user_event(pin, BM_BUTTONS_RELEASE);
+			uint32_t pm = bm_irq_disable();
 			global.pin_active &= ~(1ULL << index);
-			lite_irq_enable(pm);
+			bm_irq_enable(pm);
 		}
 		break;
 	}
@@ -305,9 +305,9 @@ static int buttons_disable(void)
 		gpiote_trigger_enable(global.configs[i].pin_number, false);
 	}
 
-	uint32_t pm = lite_irq_disable();
+	uint32_t pm = bm_irq_disable();
 	global.pin_active = 0;
-	lite_irq_enable(pm);
+	bm_irq_enable(pm);
 
 	return 0;
 }
@@ -316,12 +316,12 @@ static void detection_delay_timeout_handler(void *ctx)
 {
 	bool is_set;
 	bool is_active;
-	struct lite_buttons_config const *config;
+	struct bm_buttons_config const *config;
 
 	for (int i = 0; i < global.num_configs; i++) {
 		config = &global.configs[i];
 		is_set = nrfx_gpiote_in_is_set(config->pin_number);
-		is_active = !((config->active_state == LITE_BUTTONS_ACTIVE_HIGH) ^ is_set);
+		is_active = !((config->active_state == BM_BUTTONS_ACTIVE_HIGH) ^ is_set);
 
 		evt_handle(config->pin_number, i, is_active);
 	}
@@ -335,9 +335,9 @@ static void detection_delay_timeout_handler(void *ctx)
 
 static void gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrfx_gpiote_trigger_t action, void *ctx)
 {
-	struct lite_buttons_config const *config = button_get(pin);
+	struct bm_buttons_config const *config = button_get(pin);
 	bool is_set = nrfx_gpiote_in_is_set(config->pin_number);
-	bool is_active = !((config->active_state == LITE_BUTTONS_ACTIVE_HIGH) ^ is_set);
+	bool is_active = !((config->active_state == BM_BUTTONS_ACTIVE_HIGH) ^ is_set);
 
 	/* If event indicates that pin is active and no other pin is active start the timer. All
 	 * action happens in timeout event.
@@ -348,8 +348,8 @@ static void gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrfx_gpiote_trigger_t acti
 	}
 }
 
-int lite_buttons_init(struct lite_buttons_config const *configs, uint8_t num_configs,
-		      uint32_t detection_delay)
+int bm_buttons_init(struct bm_buttons_config const *configs, uint8_t num_configs,
+		    uint32_t detection_delay)
 {
 	int err;
 
@@ -361,7 +361,7 @@ int lite_buttons_init(struct lite_buttons_config const *configs, uint8_t num_con
 		return -EINVAL;
 	}
 
-	if (num_configs > CONFIG_LITE_BUTTONS_NUM_PINS) {
+	if (num_configs > CONFIG_BM_BUTTONS_NUM_PINS) {
 		return -EINVAL;
 	}
 
@@ -415,7 +415,7 @@ int lite_buttons_init(struct lite_buttons_config const *configs, uint8_t num_con
 	return 0;
 }
 
-int lite_buttons_deinit(void)
+int bm_buttons_deinit(void)
 {
 	int err;
 
@@ -437,7 +437,7 @@ int lite_buttons_deinit(void)
 	return 0;
 }
 
-int lite_buttons_enable(void)
+int bm_buttons_enable(void)
 {
 	if (!global.is_init) {
 		return -EPERM;
@@ -450,7 +450,7 @@ int lite_buttons_enable(void)
 	return 0;
 }
 
-int lite_buttons_disable(void)
+int bm_buttons_disable(void)
 {
 	int err;
 
@@ -466,18 +466,18 @@ int lite_buttons_disable(void)
 	return 0;
 }
 
-bool lite_buttons_is_pressed(uint8_t pin)
+bool bm_buttons_is_pressed(uint8_t pin)
 {
 	if (!global.is_init) {
 		return false;
 	}
 
-	struct lite_buttons_config const *config = button_get(pin);
+	struct bm_buttons_config const *config = button_get(pin);
 
 	if (config) {
 		bool is_set = nrfx_gpiote_in_is_set(config->pin_number);
 
-		return !(is_set ^ (config->active_state == LITE_BUTTONS_ACTIVE_HIGH));
+		return !(is_set ^ (config->active_state == BM_BUTTONS_ACTIVE_HIGH));
 	}
 
 	return false;
