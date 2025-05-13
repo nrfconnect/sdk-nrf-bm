@@ -1,8 +1,8 @@
 # Copyright (c) 2025 Nordic Semiconductor ASA
 # SPDX-License-Identifier: Apache-2.0
 
-identifier: lite_nrf54l15/nrf54l15/cpuapp/no_softdevice
-name: Lite-nRF54l15-nRF54l15-Application-No-Softdevice
+identifier: bm_nrf54l15_template/nrf54l15/cpuapp # Update
+name: Bare_Metal-nRF54L15-Template-nRF54L15-Application # Update
 type: mcu
 arch: arm
 toolchain:
@@ -10,5 +10,5 @@ toolchain:
   - xtools
   - zephyr
 sysbuild: true
-ram: 256
+ram: 238
 flash: 1524

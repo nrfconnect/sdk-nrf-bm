@@ -6,12 +6,12 @@
 
 /** @file
  *
- * @defgroup Lite nRF54L15 Board Configuration
+ * @defgroup nRF54L15 Template Board Configuration
  * @{
  */
 
-#ifndef __LITE_NRF54L15_BOARD_CONFIG
-#define __LITE_NRF54L15_BOARD_CONFIG
+#ifndef __BM_NRF54L15_TEMPLATE_BOARD_CONFIG
+#define __BM_NRF54L15_TEMPLATE_BOARD_CONFIG
 
 #include <hal/nrf_gpio.h>
 
@@ -20,6 +20,8 @@ extern "C" {
 #endif
 
 #define GPIO_ACTIVE_HIGH 1
+
+/* Change this file to match your own board. */
 
 #ifndef BOARD_PIN_BTN_0
 #define BOARD_PIN_BTN_0 NRF_PIN_PORT_TO_PIN_NUMBER(13, 1)
@@ -52,21 +54,21 @@ extern "C" {
 #endif
 
 /* UART Logger configuration */
-#ifndef LITE_UARTE_CONSOLE_UARTE_INST
-#define LITE_UARTE_CONSOLE_UARTE_INST 20
+#ifndef BOARD_UARTE_CONSOLE_UARTE_INST
+#define BOARD_UARTE_CONSOLE_UARTE_INST 20
 #endif
 
-#ifndef LITE_UARTE_CONSOLE_PIN_TX
-#define LITE_UARTE_CONSOLE_PIN_TX NRF_PIN_PORT_TO_PIN_NUMBER(4, 1)
+#ifndef BOARD_UARTE_CONSOLE_PIN_TX
+#define BOARD_UARTE_CONSOLE_PIN_TX NRF_PIN_PORT_TO_PIN_NUMBER(4, 1)
 #endif
-#ifndef LITE_UARTE_CONSOLE_PIN_CTS
-#define LITE_UARTE_CONSOLE_PIN_CTS NRF_PIN_PORT_TO_PIN_NUMBER(7, 1)
+#ifndef BOARD_UARTE_CONSOLE_PIN_CTS
+#define BOARD_UARTE_CONSOLE_PIN_CTS NRF_PIN_PORT_TO_PIN_NUMBER(7, 1)
 #endif
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __LITE_NRF54L15_BOARD_CONFIG */
+#endif /* __BM_NRF54L15_TEMPLATE_BOARD_CONFIG */
 
 /** @} */
