@@ -27,7 +27,7 @@ jobs:
     - name: Checkout the code
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       with:
-        path: nrf-lite
+        path: nrf-bm
         fetch-depth: 0
 
     - name: restore-cache-sdk
@@ -42,7 +42,7 @@ jobs:
 
     - name: Prepare west project
       run: |
-        west init -l nrf-lite
+        west init -l nrf-bm
         west update -o=--depth=1 -n
 
     - name: Install requirements
@@ -51,7 +51,7 @@ jobs:
         apt-get install -y build-essential ninja-build gcc-multilib g++-multilib ruby
 
     - name: Run Twister
-      working-directory: nrf-lite
+      working-directory: nrf-bm
       run: |
         west twister -vc -p native_sim -T tests --enable-asan --enable-lsan --enable-ubsan
 
@@ -60,7 +60,7 @@ jobs:
       if: ${{ !cancelled() }}
       with:
         name: twister-logs
-        path: nrf-lite/twister-out/**/*.log
+        path: nrf-bm/twister-out/**/*.log
         retention-days: 5
 
     - name: save-cache-sdk
