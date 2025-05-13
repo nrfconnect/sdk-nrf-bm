@@ -4,24 +4,24 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-menuconfig LITE_BUTTONS
+menuconfig BM_BUTTONS
 	bool "Buttons library"
 	depends on LITE_TIMER
 	help
 	  A library to manage buttons.
 
-if LITE_BUTTONS
+if BM_BUTTONS
 
-config LITE_BUTTONS_NUM_PINS
+config BM_BUTTONS_NUM_PINS
 	int "Number of available pins for buttons"
 	range 1 32 if SOC_SERIES_NRF52X
 	range 1 24 if SOC_SERIES_NRF54LX
 	default 32 if SOC_SERIES_NRF52X
 	default 24 if SOC_SERIES_NRF54LX
 
-module=LITE_BUTTONS
+module=BM_BUTTONS
 module-dep=LOG
-module-str=Lite Buttons
+module-str=Bare Metal Buttons
 source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
 
 endif
