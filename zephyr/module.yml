@@ -1,7 +1,7 @@
-name: nrf-lite
+name: nrf-bm
 build:
   cmake: .
-  kconfig: Kconfig.nrf-lite
+  kconfig: Kconfig.nrf_bm
   settings:
     soc_root: .
     board_root: .
