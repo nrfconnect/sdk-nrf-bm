@@ -22,7 +22,7 @@ jobs:
     - name: Checkout the code
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       with:
-        path: nrf-lite
+        path: nrf-bm
         ref: ${{ github.event.pull_request.head.sha }}
         fetch-depth: 0
 
@@ -33,7 +33,7 @@ jobs:
         key: ${{ runner.os }}-doc-pip
 
     - name: Install python dependencies
-      working-directory: nrf-lite
+      working-directory: nrf-bm
       run: |
         export PATH="$HOME/.local/bin:$PATH"
         pip3 install -U -r scripts/requirements.txt
@@ -42,7 +42,7 @@ jobs:
     - name: West init and update
       env:
         BASE_REF: ${{ github.base_ref }}
-      working-directory: nrf-lite
+      working-directory: nrf-bm
       run: |
         git config --global user.email "you@example.com"
         git config --global user.name "Your Name"
@@ -67,7 +67,7 @@ jobs:
       id: compliance
       env:
         BASE_REF: ${{ github.base_ref }}
-      working-directory: nrf-lite
+      working-directory: nrf-bm
       if: contains(github.event.pull_request.user.login, 'dependabot[bot]') != true
       run: |
         export PATH="$HOME/.local/bin:$PATH"
@@ -88,10 +88,10 @@ jobs:
       if: contains(github.event.pull_request.user.login, 'dependabot[bot]') != true
       with:
         name: compliance.xml
-        path: nrf-lite/compliance.xml
+        path: nrf-bm/compliance.xml
 
     - name: check-warns
-      working-directory: nrf-lite
+      working-directory: nrf-bm
       run: |
         if [[ -s 'compliance_errors.txt' ]]; then
          echo "ERRORS FOUND! Exiting"
@@ -100,7 +100,7 @@ jobs:
         fi
 
     - name: check-warns
-      working-directory: nrf-lite
+      working-directory: nrf-bm
       run: |
         for file in Codeowners.txt Devicetree.txt Gitlint.txt Identity.txt Nits.txt pylint.txt
         do

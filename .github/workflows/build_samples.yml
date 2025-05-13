@@ -27,7 +27,7 @@ jobs:
     - name: Checkout the code
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       with:
-        path: nrf-lite
+        path: nrf-bm
         fetch-depth: 0
 
     - name: restore-cache-sdk
@@ -42,11 +42,11 @@ jobs:
 
     - name: Prepare west project
       run: |
-        west init -l nrf-lite
+        west init -l nrf-bm
         west update -o=--depth=1 -n
 
     - name: Build samples
-      working-directory: nrf-lite
+      working-directory: nrf-bm
       run: |
         west twister -T samples --build-only -v --inline-logs --integration
 
@@ -55,7 +55,7 @@ jobs:
       if: contains(github.event.pull_request.user.login, 'dependabot[bot]') != true
       with:
         name: build-logs
-        path: nrf-lite/twister-out/**/*.log
+        path: nrf-bm/twister-out/**/*.log
         retention-days: 5
 
     - name: upload-artifacts-dispatch
@@ -64,7 +64,7 @@ jobs:
           github.event_name == 'workflow_dispatch'
       with:
         name: build-artifacts
-        path: nrf-lite/twister-out/**
+        path: nrf-bm/twister-out/**
         retention-days: 5
 
     - name: save-cache-sdk
