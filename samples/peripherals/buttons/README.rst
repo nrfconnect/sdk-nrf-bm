@@ -22,7 +22,7 @@ The sample supports the following development kits:
      - Board target
    * - `nRF54L15 DK`_
      - PCA10156
-     - lite_nrf54l15/nrf54l15/cpuapp
+     - bm_nrf54l15dk/nrf54l15/cpuapp
 
 Building and running
 ********************

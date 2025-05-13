@@ -5,8 +5,8 @@
  */
 
 / {
-	compatible = "nordic,lite_nrf54l15_template_nrf54l15-cpuapp";  /* Update */
-	model = "Nordic Lite nRF54L15 Template nRF54L15 Application MCU";  /* Update */
+	compatible = "nordic,bm_nrf54l15_template_nrf54l15-cpuapp";  /* Update */
+	model = "Nordic Bare Metal nRF54L15 Template nRF54L15 Application MCU";  /* Update */
 
 	chosen {
 		zephyr,flash-controller = &rram_controller;

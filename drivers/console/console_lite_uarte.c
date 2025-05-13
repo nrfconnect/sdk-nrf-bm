@@ -11,18 +11,18 @@
 
 #include <board-config.h>
 
-static const nrfx_uarte_t uarte_inst = NRFX_UARTE_INSTANCE(LITE_UARTE_CONSOLE_UARTE_INST);
+static const nrfx_uarte_t uarte_inst = NRFX_UARTE_INSTANCE(BOARD_UARTE_CONSOLE_UARTE_INST);
 
 static int uarte_init(void)
 {
 	int err;
 
 	nrfx_uarte_config_t uarte_config = NRFX_UARTE_DEFAULT_CONFIG(
-		LITE_UARTE_CONSOLE_PIN_TX, NRF_UARTE_PSEL_DISCONNECTED);
+		BOARD_UARTE_CONSOLE_PIN_TX, NRF_UARTE_PSEL_DISCONNECTED);
 
 #if CONFIG_LITE_UARTE_CONSOLE_UARTE_USE_HWFC
 	uarte_config.config.hwfc = NRF_UARTE_HWFC_ENABLED;
-	uarte_config.cts_pin = LITE_UARTE_CONSOLE_PIN_CTS;
+	uarte_config.cts_pin = BOARD_UARTE_CONSOLE_PIN_CTS;
 	uarte_config.rts_pin = NRF_UARTE_PSEL_DISCONNECTED;
 #endif
 
@@ -34,11 +34,11 @@ static int uarte_init(void)
 
 	/** We need to connect the IRQ ourselves. */
 	IRQ_CONNECT(NRFX_IRQ_NUMBER_GET(
-		NRF_UARTE_INST_GET(LITE_UARTE_CONSOLE_UARTE_INST)),
+		NRF_UARTE_INST_GET(BOARD_UARTE_CONSOLE_UARTE_INST)),
 		CONFIG_LITE_UARTE_CONSOLE_UARTE_IRQ_PRIO,
-		NRFX_UARTE_INST_HANDLER_GET(LITE_UARTE_CONSOLE_UARTE_INST), 0, 0);
+		NRFX_UARTE_INST_HANDLER_GET(BOARD_UARTE_CONSOLE_UARTE_INST), 0, 0);
 
-	irq_enable(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(LITE_UARTE_CONSOLE_UARTE_INST)));
+	irq_enable(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(BOARD_UARTE_CONSOLE_UARTE_INST)));
 
 	err = nrfx_uarte_init(&uarte_inst, &uarte_config, NULL);
 	if (err != NRFX_SUCCESS) {
