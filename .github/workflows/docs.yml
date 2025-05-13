@@ -15,7 +15,7 @@ jobs:
       - name: Build
         run: |
           cd doc/ncs-bm
-          python3 build_docs.py
+          python3 gen_docs.py
 
       - name: Upload artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
