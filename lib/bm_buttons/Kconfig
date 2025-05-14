@@ -6,7 +6,7 @@
 
 menuconfig BM_BUTTONS
 	bool "Buttons library"
-	depends on LITE_TIMER
+	depends on BM_TIMER
 	help
 	  A library to manage buttons.
 

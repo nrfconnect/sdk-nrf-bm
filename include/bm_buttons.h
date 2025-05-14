@@ -12,7 +12,7 @@
  * @brief Buttons management module.
  *
  * @details The bm_buttons library uses the nrfx_gpiote to detect that a button has been
- *          pressed. To handle debouncing, it will start a lite_timer.
+ *          pressed. To handle debouncing, it will start a bm_timer.
  *          The button will only be reported as pressed if the corresponding pin is still active
  *          when the timer expires.
  *          If there is a new GPIOTE event while the timer is running, the timer is restarted.
@@ -24,7 +24,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include <lite_timer.h>
+#include <bm_timer.h>
 #include <nrfx_gpiote.h>
 
 #ifdef __cplusplus
@@ -37,7 +37,7 @@ extern "C" {
  * Value will depend on the value of CONFIG_SYS_CLOCK_TICKS_PER_SEC.
  */
 #define BM_BUTTONS_DETECTION_DELAY_MIN_US                                                          \
-	(2 * k_ticks_to_us_ceil32(MAX(1, LITE_TIMER_MIN_TIMEOUT_TICKS)))
+	(2 * k_ticks_to_us_ceil32(MAX(1, BM_TIMER_MIN_TIMEOUT_TICKS)))
 
 enum bm_buttons_evt_type {
 	/* Indicates that a button is released. */
@@ -77,7 +77,7 @@ typedef void (*bm_buttons_handler_t)(uint8_t pin_number, enum bm_buttons_evt_typ
 struct bm_buttons_config {
 	/* Pin to be used as a button. */
 	uint8_t pin_number;
-	/* LITE_BUTTONS_ACTIVE_HIGH or LITE_BUTTONS_ACTIVE_LOW. */
+	/* BM_BUTTONS_ACTIVE_HIGH or BM_BUTTONS_ACTIVE_LOW. */
 	enum bm_buttons_active_state active_state;
 	/* Pull-up or pull-down configuration. */
 	enum bm_buttons_pin_pull pull_config;

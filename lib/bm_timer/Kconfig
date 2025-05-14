@@ -3,16 +3,16 @@
 #
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
-menuconfig LITE_TIMER
+menuconfig BM_TIMER
 	bool "Timer library"
 	depends on SOFTDEVICE || CLOCK_CONTROL
 	help
 	  A library to create and use multiple timer instances
 	  based on a single RTC peripheral.
 
-if LITE_TIMER
+if BM_TIMER
 
-config LITE_TIMER_IRQ_PRIO
+config BM_TIMER_IRQ_PRIO
 	int "Timer interrupt priority (NVIC level)"
 	range 0 8
 	default 5 if SOFTDEVICE
@@ -21,9 +21,9 @@ config LITE_TIMER_IRQ_PRIO
 	  Interrupt priority level must be greater than 4 (softdevice low priority)
 	  when softdevice is used.
 
-module=LITE_TIMER
+module=BM_TIMER
 module-dep=LOG
-module-str=Lite Timer
+module-str=Bare Metal Timer
 source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
 
-endif # LITE_TIMER
+endif # BM_TIMER
