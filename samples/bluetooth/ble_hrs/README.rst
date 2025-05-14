@@ -72,9 +72,9 @@ Make sure that these are installed before starting the testing procedure.
 
 1. Compile and program the application.
 #. In the Serial Terminal, observe that the ``BLE HRS sample started`` message is printed.
-#. Observe that the ``Advertising as NCS-Lite HRS`` message is printed.
+#. Observe that the ``Advertising as nRF_BM_HRS`` message is printed.
 #. In nRF Connect for Desktop, scan for advertising devices.
-   Your device should be advertising as ``NCS-Lite HRS``.
+   Your device should be advertising as ``nRF_BM_HRS``.
    If the device is not advertising, you might need to use the :guilabel:`Reset Board` option in |VSC|.
 #. :guilabel:`Connect` to your device.
    The terminal output in |VSC| indicates ``Peer connected``.

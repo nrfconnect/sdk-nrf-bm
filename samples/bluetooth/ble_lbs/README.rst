@@ -58,9 +58,9 @@ Make sure that these are installed before starting the testing procedure.
 
 1. Compile and program the application.
 #. In the Serial Terminal, observe that the ``BLE LBS sample started`` message is printed.
-#. Observe that the ``Advertising as NCS-Lite LBS`` message is printed.
+#. Observe that the ``Advertising as nRF_BM_LBS`` message is printed.
 #. In nRF Connect for Desktop, scan for advertising devices.
-   Your device should be advertising as ``NCS-Lite LBS``.
+   Your device should be advertising as ``nRF_BM_LBS``.
    If the device is not advertising, you might need to use the :guilabel:`Reset Board` option in |VSC|.
 #. :guilabel:`Connect` to your device.
    The terminal output in |VSC| indicates ``Peer connected``.

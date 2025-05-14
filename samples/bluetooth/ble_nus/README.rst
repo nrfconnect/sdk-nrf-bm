@@ -57,7 +57,7 @@ Testing
    If you use a development kit, UART 0 and 1 are forwarded as COM ports (Windows) or ttyACM devices (Linux) after you connect the development kit over USB.
 #. Connect to the kit with a terminal emulator to both UARTs.
 #. Reset the kit.
-#. Observe that the device is advertising under the default name ``NCS-Lite NUS``.
+#. Observe that the device is advertising under the default name ``nRF_BM_NUS``.
    You can configure this name using the ``CONFIG_BLE_ADV_NAME`` Kconfig option.
    For information on how to do this, see `Configuring Kconfig`_.
 #. Observe that the text "BLE NUS sample started" is printed on the COM listener running on the computer.
