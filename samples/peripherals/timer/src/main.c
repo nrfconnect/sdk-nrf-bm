@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <lite_timer.h>
+#include <bm_timer.h>
 #include <zephyr/sys/printk.h>
 
 #if CONFIG_SOFTDEVICE
@@ -12,13 +12,13 @@
 #include <nrf_sdh_ble.h>
 #endif /* CONFIG_SOFTDEVICE */
 
-#define PERIODIC_TIMER_TICKS LITE_TIMER_MS_TO_TICKS(CONFIG_PERIODIC_TIMER_INTERVAL_MS)
-#define HELLO_TIMER_TICKS    LITE_TIMER_MS_TO_TICKS(CONFIG_HELLO_TIMER_DURATION_MS)
-#define WORLD_TIMER_TICKS    LITE_TIMER_MS_TO_TICKS(CONFIG_WORLD_TIMER_DURATION_MS)
-#define BYE_TIMER_TICKS      LITE_TIMER_MS_TO_TICKS(CONFIG_BYE_TIMER_DURATION_MS)
+#define PERIODIC_TIMER_TICKS BM_TIMER_MS_TO_TICKS(CONFIG_PERIODIC_TIMER_INTERVAL_MS)
+#define HELLO_TIMER_TICKS    BM_TIMER_MS_TO_TICKS(CONFIG_HELLO_TIMER_DURATION_MS)
+#define WORLD_TIMER_TICKS    BM_TIMER_MS_TO_TICKS(CONFIG_WORLD_TIMER_DURATION_MS)
+#define BYE_TIMER_TICKS      BM_TIMER_MS_TO_TICKS(CONFIG_BYE_TIMER_DURATION_MS)
 
-static struct lite_timer oneshot_timer;
-static struct lite_timer periodic_timer;
+static struct bm_timer oneshot_timer;
+static struct bm_timer periodic_timer;
 static bool done;
 
 static const char *const hello_str = "Hello";
@@ -39,17 +39,17 @@ static void oneshot_timeout_handler(void *context)
 	printk("%s", str);
 
 	if (cnt == 0) {
-		err = lite_timer_start(&oneshot_timer, WORLD_TIMER_TICKS, (void *)world_str);
+		err = bm_timer_start(&oneshot_timer, WORLD_TIMER_TICKS, (void *)world_str);
 		if (err) {
 			printk("Failed to start oneshot timer, err %d\n", err);
 		}
 	} else if (cnt == 1) {
-		err = lite_timer_start(&oneshot_timer, BYE_TIMER_TICKS, (void *)bye_str);
+		err = bm_timer_start(&oneshot_timer, BYE_TIMER_TICKS, (void *)bye_str);
 		if (err) {
 			printk("Failed to start oneshot timer, err %d\n", err);
 		}
 	} else {
-		err = lite_timer_stop(&periodic_timer);
+		err = bm_timer_stop(&periodic_timer);
 		if (err) {
 			printk("Failed to stop periodic timer, err %d\n", err);
 		}
@@ -94,25 +94,25 @@ int main(void)
 	}
 #endif /* CONFIG_SOFTDEVICE */
 
-	err = lite_timer_init(&periodic_timer, LITE_TIMER_MODE_REPEATED, periodic_timeout_handler);
+	err = bm_timer_init(&periodic_timer, BM_TIMER_MODE_REPEATED, periodic_timeout_handler);
 	if (err) {
 		printk("Failed to initialize periodic timer, err %d\n", err);
 		return -1;
 	}
 
-	err = lite_timer_init(&oneshot_timer, LITE_TIMER_MODE_SINGLE_SHOT, oneshot_timeout_handler);
+	err = bm_timer_init(&oneshot_timer, BM_TIMER_MODE_SINGLE_SHOT, oneshot_timeout_handler);
 	if (err) {
 		printk("Failed to initialize oneshot timer, err %d\n", err);
 		return -1;
 	}
 
-	err = lite_timer_start(&periodic_timer, PERIODIC_TIMER_TICKS, NULL);
+	err = bm_timer_start(&periodic_timer, PERIODIC_TIMER_TICKS, NULL);
 	if (err) {
 		printk("Failed to start periodic timer, err %d\n", err);
 		return -1;
 	}
 
-	err = lite_timer_start(&oneshot_timer, HELLO_TIMER_TICKS, (void *)hello_str);
+	err = bm_timer_start(&oneshot_timer, HELLO_TIMER_TICKS, (void *)hello_str);
 	if (err) {
 		printk("Failed to start oneshot timer, err %d\n", err);
 		return -1;

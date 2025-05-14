@@ -8,7 +8,7 @@
 #include <zephyr/irq.h>
 #include <nrfx_gpiote.h>
 
-#include <lite_timer.h>
+#include <bm_timer.h>
 #include <bm_buttons.h>
 
 LOG_MODULE_REGISTER(bm_buttons, CONFIG_BM_BUTTONS_LOG_LEVEL);
@@ -178,7 +178,7 @@ static int gpiote_input_configure(nrfx_gpiote_pin_t pin,
 struct bm_buttons_state {
 	uint32_t pin_active;
 	uint32_t detection_delay;
-	struct lite_timer timer;
+	struct bm_timer timer;
 	struct bm_buttons_config const *configs;
 	uint8_t num_configs;
 	bool is_init;
@@ -285,7 +285,7 @@ static void timer_start(void)
 	int err;
 
 	/* Timer needs to trigger two times before the button is detected as pressed/released. */
-	err = lite_timer_start(&global.timer, LITE_TIMER_US_TO_TICKS(global.detection_delay / 2),
+	err = bm_timer_start(&global.timer, BM_TIMER_US_TO_TICKS(global.detection_delay / 2),
 			       NULL);
 	if (err) {
 		LOG_WRN("Failed to start app_timer (err:%d)", err);
@@ -296,7 +296,7 @@ static int buttons_disable(void)
 {
 	int err;
 
-	err = lite_timer_stop(&global.timer);
+	err = bm_timer_stop(&global.timer);
 	if (err) {
 		return -EIO;
 	}
@@ -366,7 +366,7 @@ int bm_buttons_init(struct bm_buttons_config const *configs, uint8_t num_configs
 	}
 
 	/* Timer needs to trigger two times before the button is detected as pressed/released. */
-	if (LITE_TIMER_US_TO_TICKS(detection_delay) < 2 * LITE_TIMER_MIN_TIMEOUT_TICKS) {
+	if (BM_TIMER_US_TO_TICKS(detection_delay) < 2 * BM_TIMER_MIN_TIMEOUT_TICKS) {
 		return -EINVAL;
 	}
 
@@ -403,10 +403,10 @@ int bm_buttons_init(struct bm_buttons_config const *configs, uint8_t num_configs
 		}
 	}
 
-	err = lite_timer_init(&global.timer, LITE_TIMER_MODE_SINGLE_SHOT,
+	err = bm_timer_init(&global.timer, BM_TIMER_MODE_SINGLE_SHOT,
 			      detection_delay_timeout_handler);
 	if (err) {
-		LOG_ERR("lite_timer_init failed, err: %d", err);
+		LOG_ERR("bm_timer_init failed, err: %d", err);
 		return -EIO;
 	}
 

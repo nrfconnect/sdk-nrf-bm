@@ -13,7 +13,7 @@
 #include <bluetooth/services/ble_bas.h>
 #include <bluetooth/services/ble_dis.h>
 #include <bluetooth/services/ble_hrs.h>
-#include <lite_timer.h>
+#include <bm_timer.h>
 #include <sensorsim.h>
 #include <zephyr/sys/printk.h>
 
@@ -36,10 +36,10 @@ static struct sensorsim_state battery_sim_state;
 static struct sensorsim_state heart_rate_sim_state;
 static struct sensorsim_state rr_interval_sim_state;
 
-static struct lite_timer battery_timer;
-static struct lite_timer heart_rate_timer;
-static struct lite_timer rr_interval_timer;
-static struct lite_timer sensor_contact_timer;
+static struct bm_timer battery_timer;
+static struct bm_timer heart_rate_timer;
+static struct bm_timer rr_interval_timer;
+static struct bm_timer sensor_contact_timer;
 
 void battery_level_meas_timeout_handler(void *context)
 {
@@ -160,22 +160,22 @@ static void simulated_meas_init(void)
 		printk("Failed to initialize RR interval simulator, err %d\n", err);
 	}
 
-	err = lite_timer_init(&battery_timer, LITE_TIMER_MODE_REPEATED,
+	err = bm_timer_init(&battery_timer, BM_TIMER_MODE_REPEATED,
 			      battery_level_meas_timeout_handler);
 	if (err) {
 		printk("Failed to initialize battery measurement timer, err %d\n", err);
 	}
-	err = lite_timer_init(&heart_rate_timer, LITE_TIMER_MODE_REPEATED,
+	err = bm_timer_init(&heart_rate_timer, BM_TIMER_MODE_REPEATED,
 			      heart_rate_meas_timeout_handler);
 	if (err) {
 		printk("Failed to initialize heart rate measurement timer, err %d\n", err);
 	}
-	err = lite_timer_init(&rr_interval_timer, LITE_TIMER_MODE_REPEATED,
+	err = bm_timer_init(&rr_interval_timer, BM_TIMER_MODE_REPEATED,
 			      rr_interval_timeout_handler);
 	if (err) {
 		printk("Failed to initialize RR interval measurement timer, err %d\n", err);
 	}
-	err = lite_timer_init(&sensor_contact_timer, LITE_TIMER_MODE_REPEATED,
+	err = bm_timer_init(&sensor_contact_timer, BM_TIMER_MODE_REPEATED,
 			      sensor_contact_detected_timeout_handler);
 	if (err) {
 		printk("Failed to initialize sensor contact measurement timer, err %d\n", err);
@@ -184,14 +184,14 @@ static void simulated_meas_init(void)
 
 static void simulated_meas_start(void)
 {
-	(void)lite_timer_start(&battery_timer,
-			       LITE_TIMER_MS_TO_TICKS(CONFIG_BATTERY_LEVEL_MEAS_INTERVAL), NULL);
-	(void)lite_timer_start(&heart_rate_timer,
-			       LITE_TIMER_MS_TO_TICKS(CONFIG_HEART_RATE_MEAS_INTERVAL), NULL);
-	(void)lite_timer_start(&rr_interval_timer,
-			       LITE_TIMER_MS_TO_TICKS(CONFIG_RR_INTERVAL_MEAS_INTERVAL), NULL);
-	(void)lite_timer_start(&sensor_contact_timer,
-			       LITE_TIMER_MS_TO_TICKS(CONFIG_SENSOR_CONTACT_DETECTED_INTERVAL),
+	(void)bm_timer_start(&battery_timer,
+			       BM_TIMER_MS_TO_TICKS(CONFIG_BATTERY_LEVEL_MEAS_INTERVAL), NULL);
+	(void)bm_timer_start(&heart_rate_timer,
+			       BM_TIMER_MS_TO_TICKS(CONFIG_HEART_RATE_MEAS_INTERVAL), NULL);
+	(void)bm_timer_start(&rr_interval_timer,
+			       BM_TIMER_MS_TO_TICKS(CONFIG_RR_INTERVAL_MEAS_INTERVAL), NULL);
+	(void)bm_timer_start(&sensor_contact_timer,
+			       BM_TIMER_MS_TO_TICKS(CONFIG_SENSOR_CONTACT_DETECTED_INTERVAL),
 						      NULL);
 }
 
