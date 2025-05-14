@@ -5,7 +5,7 @@
 
 # Enable console
 CONFIG_CONSOLE=y
-CONFIG_LITE_UARTE_CONSOLE=y
+CONFIG_BM_UARTE_CONSOLE=y
 
 # Remove boot banner
 CONFIG_NCS_BOOT_BANNER=n

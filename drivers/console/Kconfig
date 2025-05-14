@@ -5,6 +5,6 @@
 #
 menu "Console Device Drivers"
 
-rsource "Kconfig.lite_uarte"
+rsource "Kconfig.bm_uarte"
 
 endmenu
