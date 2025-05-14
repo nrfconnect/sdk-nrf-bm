@@ -5,8 +5,6 @@
  */
 
 #include <zephyr/sys/printk.h>
-
-#include <bm_timer.h>
 #include <bm_buttons.h>
 
 #if CONFIG_SOFTDEVICE
