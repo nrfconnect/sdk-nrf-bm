@@ -5,6 +5,6 @@
 #
 
 zephyr_sources_ifdef(
-  CONFIG_LITE_UARTE_CONSOLE
-  console_lite_uarte.c
+  CONFIG_BM_UARTE_CONSOLE
+  console_bm_uarte.c
 )

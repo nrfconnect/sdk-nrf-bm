@@ -4,30 +4,30 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-menuconfig LITE_UARTE_CONSOLE
-	bool "Lite UARTE console"
+menuconfig BM_UARTE_CONSOLE
+	bool "UARTE console"
 	depends on CONSOLE
 	select CONSOLE_HAS_DRIVER
 
-if LITE_UARTE_CONSOLE
+if BM_UARTE_CONSOLE
 
 config DEPRECATED_UART_NRFX_UARTE_LEGACY_SHIM
 	bool
 	default n
 
-config LITE_UARTE_CONSOLE_UARTE_IRQ_PRIO
+config BM_UARTE_CONSOLE_UARTE_IRQ_PRIO
 	int "IRQ priority"
 	range 3 7
 	default 3
 
-config LITE_UARTE_CONSOLE_UARTE_USE_HWFC
+config BM_UARTE_CONSOLE_UARTE_USE_HWFC
 	bool "Use hardware flow control"
 
-config LITE_UARTE_CONSOLE_UARTE_PARITY_INCLUDED
+config BM_UARTE_CONSOLE_UARTE_PARITY_INCLUDED
 	bool "Use parity"
 
 
-config LITE_UARTE_CONSOLE_ADD_CR_BEFORE_LF
+config BM_UARTE_CONSOLE_ADD_CR_BEFORE_LF
 	bool "Add carriage return before linefeed"
 	default y
 
@@ -36,16 +36,16 @@ config LITE_UARTE_CONSOLE_ADD_CR_BEFORE_LF
 #
 choice
 	prompt "Termination mode"
-	default LITE_UARTE_CONSOLE_CR_LF_TERMINATION
+	default BM_UARTE_CONSOLE_CR_LF_TERMINATION
 	help
 		Sets the command terminator used by the serial terminal.
 		Available options are:
 		-  LF termination
 		-  CR+LF termination
-	config LITE_UARTE_CONSOLE_LF_TERMINATION
+	config BM_UARTE_CONSOLE_LF_TERMINATION
 		bool "LF termination"
-	config LITE_UARTE_CONSOLE_CR_LF_TERMINATION
+	config BM_UARTE_CONSOLE_CR_LF_TERMINATION
 		bool "CR+LF termination"
 endchoice
 
-endif # LITE_UARTE_CONSOLE
+endif # BM_UARTE_CONSOLE
