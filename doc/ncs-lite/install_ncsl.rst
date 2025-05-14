@@ -97,7 +97,7 @@ Complete the following steps to clone the |NCSL| repositories.
 
       .. group-tab:: Windows
 
-	     .. code-block:: console
+         .. code-block:: console
 
             cd C:/ncs/v2.9.1
             git clone https://github.com/nrfconnect/sdk-nrf-lite.git nrf-lite
@@ -111,7 +111,7 @@ Complete the following steps to clone the |NCSL| repositories.
 
       .. group-tab:: macOS
 
-	     .. code-block:: console
+         .. code-block:: console
 
             cd /opt/nordic/ncs/v2.9.1
             git clone https://github.com/nrfconnect/sdk-nrf-lite.git nrf-lite
