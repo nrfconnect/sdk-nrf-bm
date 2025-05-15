@@ -90,7 +90,7 @@ Complete the following steps to clone the |BMshort| repositories.
 
    The SDK installation starts and it can take several minutes.
 #. Open command line and navigate to the SDK installation folder.
-   The default location to install the SDK is :file:`C:/ncs/v2.9.1` on Windows, :file:`~/ncs/v2.9.1` on Linux, and :file:`/opt/nordic/ncs/v2.9.1` on macOS.
+   The default location to install the SDK is :file:`C:/ncs/v3.0.1` on Windows, :file:`~/ncs/v3.0.1` on Linux, and :file:`/opt/nordic/ncs/v3.0.1` on macOS.
 #. Clone the `sdk-nrf-bm`_ repository.
 
    .. tabs::
@@ -99,21 +99,21 @@ Complete the following steps to clone the |BMshort| repositories.
 
          .. code-block:: console
 
-            cd C:/ncs/v2.9.1
+            cd C:/ncs/v3.0.1
             git clone https://github.com/nrfconnect/sdk-nrf-bm.git nrf-bm
 
       .. group-tab:: Linux
 
          .. code-block:: console
 
-            cd ~/ncs/v2.9.1
+            cd ~/ncs/v3.0.1
             git clone https://github.com/nrfconnect/sdk-nrf-bm.git nrf-bm
 
       .. group-tab:: macOS
 
          .. code-block:: console
 
-            cd /opt/nordic/ncs/v2.9.1
+            cd /opt/nordic/ncs/v3.0.1
             git clone https://github.com/nrfconnect/sdk-nrf-bm.git nrf-bm
 
 
