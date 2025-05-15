@@ -1,0 +1,11 @@
+board:
+  name: bm_nrf54l05_template # Your board name
+  full_name: Bare Metal nRF54L05 Template Board # Your full board name
+  vendor: nordic
+  socs:
+  - name: nrf54l05
+    variants:
+    - name: no_softdevice
+      cpucluster: cpuapp
+    - name: s115
+      cpucluster: cpuapp

@@ -1,0 +1,5 @@
+# No changes needed to this file
+
+menuconfig PARTITION_MANAGER
+	bool "Partition Manager"
+	default n

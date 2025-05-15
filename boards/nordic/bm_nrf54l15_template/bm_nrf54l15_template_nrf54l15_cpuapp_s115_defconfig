@@ -28,17 +28,17 @@ CONFIG_EXTERNAL_CACHE=y
 # Start SYSCOUNTER on driver init
 CONFIG_NRF_GRTC_START_SYSCOUNTER=y
 
-#Disable partition manager
+# Disable partition manager
 CONFIG_PARTITION_MANAGER_ENABLED=n
 
-#Disable multithreading
+# Disable multithreading
 CONFIG_MULTITHREADING=n
 CONFIG_ZERO_LATENCY_IRQS=y
 
 # Allow FLASH writes
 CONFIG_MPU_ALLOW_FLASH_WRITE=y
 
-#Enable SoftDevice
+# Enable SoftDevice
 CONFIG_CLOCK_CONTROL=n
 CONFIG_SOFTDEVICE=y
 CONFIG_NRF_SDH=y

@@ -5,8 +5,8 @@
  */
 
 / {
-	compatible = "nordic,bm_nrf54l15_template_nrf54l15-cpuapp";  /* Update */
-	model = "Nordic Bare Metal nRF54L15 Template nRF54L15 Application MCU";  /* Update */
+	compatible = "nordic,bm_nrf54l05_template_nrf54l05-cpuapp";  /* Update */
+	model = "Nordic Bare Metal nRF54L05 Template nRF54L05 Application MCU";  /* Update */
 
 	chosen {
 		zephyr,flash-controller = &rram_controller;
@@ -15,13 +15,13 @@
 
 /* Override NCS default to use entire SRAM for application CPU. */
 &cpuapp_sram {
-	reg = <0x20000000 DT_SIZE_K(256)>;
-	ranges = <0x0 0x20000000 DT_SIZE_K(256)>;
+	reg = <0x20000000 DT_SIZE_K(96)>;
+	ranges = <0x0 0x20000000 DT_SIZE_K(96)>;
 };
 
 /* Override NCS default to use entire RRAM for application CPU. */
 &cpuapp_rram {
-	reg = <0x0 DT_SIZE_K(1524)>;
+	reg = <0x0 DT_SIZE_K(500)>;
 };
 
 &grtc {
