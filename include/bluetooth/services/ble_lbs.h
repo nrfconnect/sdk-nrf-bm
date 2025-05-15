@@ -14,7 +14,7 @@
 
 #include <stdint.h>
 #include <ble.h>
-#include <nrf_sdh_ble.h>
+#include <bm_sdh_ble.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,7 +39,7 @@ struct ble_lbs;
 #define BLE_LBS_DEF(_name)                                                                         \
 	static struct ble_lbs _name;                                                               \
 	extern void ble_lbs_on_ble_evt(const ble_evt_t *ble_evt, void *lbs_instance);              \
-	NRF_SDH_BLE_OBSERVER(_name ## _obs, ble_lbs_on_ble_evt, &_name, BLE_LBS_BLE_OBSERVER_PRIO)
+	BM_SDH_BLE_OBSERVER(_name ## _obs, ble_lbs_on_ble_evt, &_name, BLE_LBS_BLE_OBSERVER_PRIO)
 
 enum ble_lbs_evt_type {
 	BLE_LBS_EVT_LED_WRITE,

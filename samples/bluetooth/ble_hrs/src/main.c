@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <nrf_sdh.h>
-#include <nrf_sdh_ble.h>
+#include <bm_sdh.h>
+#include <bm_sdh_ble.h>
 #include <ble_adv.h>
 #include <ble_conn_params.h>
 #include <ble_gap.h>
@@ -240,7 +240,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		break;
 	}
 }
-NRF_SDH_BLE_OBSERVER(sdh_ble, on_ble_evt, NULL, 0);
+BM_SDH_BLE_OBSERVER(sdh_ble, on_ble_evt, NULL, 0);
 
 void on_conn_params_evt(const struct ble_conn_params_evt *evt)
 {
@@ -314,7 +314,7 @@ int main(void)
 	int err;
 	uint8_t body_sensor_location = BLE_HRS_BODY_SENSOR_LOCATION_FINGER;
 	struct ble_adv_config ble_adv_cfg = {
-		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
+		.conn_cfg_tag = CONFIG_BM_SDH_BLE_CONN_TAG,
 		.evt_handler = ble_adv_evt_handler,
 		.adv_data = {
 			.name_type = BLE_ADV_DATA_FULL_NAME,
@@ -342,7 +342,7 @@ int main(void)
 
 	simulated_meas_init();
 
-	err = nrf_sdh_enable_request();
+	err = bm_sdh_enable_request();
 	if (err) {
 		printk("Failed to enable SoftDevice, err %d\n", err);
 		return -1;
@@ -350,7 +350,7 @@ int main(void)
 
 	printk("SoftDevice enabled\n");
 
-	err = nrf_sdh_ble_enable(CONFIG_NRF_SDH_BLE_CONN_TAG);
+	err = bm_sdh_ble_enable(CONFIG_BM_SDH_BLE_CONN_TAG);
 	if (err) {
 		printk("Failed to enable BLE, err %d\n", err);
 		return -1;

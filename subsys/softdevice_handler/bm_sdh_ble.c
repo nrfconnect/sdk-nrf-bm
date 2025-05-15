@@ -6,18 +6,18 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <nrf_sdh.h>
-#include <nrf_sdh_ble.h>
+#include <bm_sdh.h>
+#include <bm_sdh_ble.h>
 #include <ble.h>
 #include <zephyr/logging/log.h>
 
 #define APP_RAM_START DT_REG_ADDR(DT_CHOSEN(zephyr_sram))
 
-LOG_MODULE_DECLARE(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
+LOG_MODULE_DECLARE(bm_sdh, CONFIG_BM_SDH_LOG_LEVEL);
 
 const char *sd_evt_tostr(int evt);
 
-int nrf_sdh_ble_app_ram_start_get(uint32_t *app_ram_start)
+int bm_sdh_ble_app_ram_start_get(uint32_t *app_ram_start)
 {
 	if (!app_ram_start) {
 		return -EFAULT;
@@ -34,19 +34,19 @@ static int default_cfg_set(void)
 	ble_cfg_t ble_cfg;
 
 	const uint32_t app_ram_start = APP_RAM_START;
-	const uint8_t  conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG;
+	const uint8_t  conn_cfg_tag = CONFIG_BM_SDH_BLE_CONN_TAG;
 
 	/* Save a configuration fo the BLE stack in a given connection tag.
 	 * If any of the calls to sd_ble_cfg_set() fail, log the error but carry on so that
-	 * wrong RAM settings can be caught by nrf_sdh_ble_enable() and a meaningful error
+	 * wrong RAM settings can be caught by bm_sdh_ble_enable() and a meaningful error
 	 * message will be printed to the user suggesting the correct value.
 	 */
 
 	/* Configure the connection count. */
 	memset(&ble_cfg, 0x00, sizeof(ble_cfg));
 	ble_cfg.conn_cfg.conn_cfg_tag = conn_cfg_tag;
-	ble_cfg.conn_cfg.params.gap_conn_cfg.conn_count = CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT;
-	ble_cfg.conn_cfg.params.gap_conn_cfg.event_length = CONFIG_NRF_SDH_BLE_GAP_EVENT_LENGTH;
+	ble_cfg.conn_cfg.params.gap_conn_cfg.conn_count = CONFIG_BM_SDH_BLE_TOTAL_LINK_COUNT;
+	ble_cfg.conn_cfg.params.gap_conn_cfg.event_length = CONFIG_BM_SDH_BLE_GAP_EVENT_LENGTH;
 
 	err = sd_ble_cfg_set(BLE_CONN_CFG_GAP, &ble_cfg, app_ram_start);
 	if (err) {
@@ -57,15 +57,15 @@ static int default_cfg_set(void)
 	memset(&ble_cfg, 0, sizeof(ble_cfg));
 #if CONFIG_SOFTDEVICE_PERIPHERAL
 		ble_cfg.gap_cfg.role_count_cfg.periph_role_count =
-			CONFIG_NRF_SDH_BLE_PERIPHERAL_LINK_COUNT;
+			CONFIG_BM_SDH_BLE_PERIPHERAL_LINK_COUNT;
 		ble_cfg.gap_cfg.role_count_cfg.adv_set_count = BLE_GAP_ADV_SET_COUNT_DEFAULT;
 #endif
 
 #if CONFIG_SOFTDEVICE_CENTRAL
 		ble_cfg.gap_cfg.role_count_cfg.central_role_count =
-			CONFIG_NRF_SDH_BLE_CENTRAL_LINK_COUNT;
+			CONFIG_BM_SDH_BLE_CENTRAL_LINK_COUNT;
 		ble_cfg.gap_cfg.role_count_cfg.central_sec_count =
-			MIN(CONFIG_NRF_SDH_BLE_CENTRAL_LINK_COUNT,
+			MIN(CONFIG_BM_SDH_BLE_CENTRAL_LINK_COUNT,
 			    BLE_GAP_ROLE_COUNT_CENTRAL_SEC_DEFAULT);
 #endif
 
@@ -75,20 +75,20 @@ static int default_cfg_set(void)
 	}
 
 	/* Configure the maximum ATT MTU. */
-#if (CONFIG_NRF_SDH_BLE_GATT_MAX_MTU_SIZE != 23)
+#if (CONFIG_BM_SDH_BLE_GATT_MAX_MTU_SIZE != 23)
 	memset(&ble_cfg, 0x00, sizeof(ble_cfg));
 	ble_cfg.conn_cfg.conn_cfg_tag = conn_cfg_tag;
-	ble_cfg.conn_cfg.params.gatt_conn_cfg.att_mtu = CONFIG_NRF_SDH_BLE_GATT_MAX_MTU_SIZE;
+	ble_cfg.conn_cfg.params.gatt_conn_cfg.att_mtu = CONFIG_BM_SDH_BLE_GATT_MAX_MTU_SIZE;
 
 	err = sd_ble_cfg_set(BLE_CONN_CFG_GATT, &ble_cfg, app_ram_start);
 	if (err) {
 		LOG_WRN("Failed to set BLE_CONN_CFG_GATT, nrf_error %#x", err);
 	}
-#endif /* NRF_SDH_BLE_GATT_MAX_MTU_SIZE != 23 */
+#endif /* BM_SDH_BLE_GATT_MAX_MTU_SIZE != 23 */
 
 	/* Configure number of custom UUIDS. */
 	memset(&ble_cfg, 0, sizeof(ble_cfg));
-	ble_cfg.common_cfg.vs_uuid_cfg.vs_uuid_count = CONFIG_NRF_SDH_BLE_VS_UUID_COUNT;
+	ble_cfg.common_cfg.vs_uuid_cfg.vs_uuid_count = CONFIG_BM_SDH_BLE_VS_UUID_COUNT;
 
 	err = sd_ble_cfg_set(BLE_COMMON_CFG_VS_UUID, &ble_cfg, app_ram_start);
 	if (err) {
@@ -97,7 +97,7 @@ static int default_cfg_set(void)
 
 	/* Configure the GATTS attribute table. */
 	memset(&ble_cfg, 0x00, sizeof(ble_cfg));
-	ble_cfg.gatts_cfg.attr_tab_size.attr_tab_size = CONFIG_NRF_SDH_BLE_GATTS_ATTR_TAB_SIZE;
+	ble_cfg.gatts_cfg.attr_tab_size.attr_tab_size = CONFIG_BM_SDH_BLE_GATTS_ATTR_TAB_SIZE;
 
 	err = sd_ble_cfg_set(BLE_GATTS_CFG_ATTR_TAB_SIZE, &ble_cfg, app_ram_start);
 	if (err) {
@@ -107,7 +107,7 @@ static int default_cfg_set(void)
 	/* Configure Service Changed characteristic. */
 	memset(&ble_cfg, 0x00, sizeof(ble_cfg));
 	ble_cfg.gatts_cfg.service_changed.service_changed =
-		IS_ENABLED(CONFIG_NRF_SDH_BLE_SERVICE_CHANGED);
+		IS_ENABLED(CONFIG_BM_SDH_BLE_SERVICE_CHANGED);
 
 	err = sd_ble_cfg_set(BLE_GATTS_CFG_SERVICE_CHANGED, &ble_cfg, app_ram_start);
 	if (err) {
@@ -119,7 +119,7 @@ static int default_cfg_set(void)
 	return 0;
 }
 
-int nrf_sdh_ble_enable(uint8_t conn_cfg_tag)
+int bm_sdh_ble_enable(uint8_t conn_cfg_tag)
 {
 	int err;
 	uint32_t app_ram_minimum = APP_RAM_START;
@@ -144,18 +144,18 @@ int nrf_sdh_ble_enable(uint8_t conn_cfg_tag)
 
 	LOG_DBG("SoftDevice BLE enabled");
 
-	TYPE_SECTION_FOREACH(struct nrf_sdh_state_evt_observer, nrf_sdh_state_evt_observers, obs) {
-		obs->handler(NRF_SDH_STATE_EVT_BLE_ENABLED, obs->context);
+	TYPE_SECTION_FOREACH(struct bm_sdh_state_evt_observer, bm_sdh_state_evt_observers, obs) {
+		obs->handler(BM_SDH_STATE_EVT_BLE_ENABLED, obs->context);
 	}
 
 	return 0;
 }
 
-static uint16_t conn_handles[CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT] = {
-	[0 ... CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT - 1] = BLE_CONN_HANDLE_INVALID,
+static uint16_t conn_handles[CONFIG_BM_SDH_BLE_TOTAL_LINK_COUNT] = {
+	[0 ... CONFIG_BM_SDH_BLE_TOTAL_LINK_COUNT - 1] = BLE_CONN_HANDLE_INVALID,
 };
 
-int _nrf_sdh_ble_idx_get(uint16_t conn_handle)
+int _bm_sdh_ble_idx_get(uint16_t conn_handle)
 {
 	for (int idx = 0; idx < ARRAY_SIZE(conn_handles); idx++) {
 		if (conn_handles[idx] == conn_handle) {
@@ -205,7 +205,7 @@ static void ble_evt_poll(void *context)
 {
 	int err;
 
-	__aligned(4) static uint8_t evt_buffer[NRF_SDH_BLE_EVT_BUF_SIZE];
+	__aligned(4) static uint8_t evt_buffer[BM_SDH_BLE_EVT_BUF_SIZE];
 	ble_evt_t * const ble_evt = (ble_evt_t *)evt_buffer;
 
 	while (true) {
@@ -222,18 +222,18 @@ static void ble_evt_poll(void *context)
 			LOG_DBG("BLE event: %#x", ble_evt->header.evt_id);
 		}
 
-		if ((CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT > 1) &&
+		if ((CONFIG_BM_SDH_BLE_TOTAL_LINK_COUNT > 1) &&
 		    (ble_evt->header.evt_id == BLE_GAP_EVT_CONNECTED)) {
 			idx_assign(ble_evt->evt.gap_evt.conn_handle);
 		}
 
 		/* Forward the event to BLE observers. */
 		TYPE_SECTION_FOREACH(
-			struct nrf_sdh_ble_evt_observer, nrf_sdh_ble_evt_observers, obs) {
+			struct bm_sdh_ble_evt_observer, bm_sdh_ble_evt_observers, obs) {
 			obs->handler(ble_evt, obs->context);
 		}
 
-		if ((CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT > 1) &&
+		if ((CONFIG_BM_SDH_BLE_TOTAL_LINK_COUNT > 1) &&
 		    (ble_evt->header.evt_id == BLE_GAP_EVT_DISCONNECTED)) {
 			idx_unassign(ble_evt->evt.gap_evt.conn_handle);
 		}
@@ -244,4 +244,4 @@ static void ble_evt_poll(void *context)
 }
 
 /* Listen to SoftDevice events */
-NRF_SDH_STACK_EVT_OBSERVER(ble_evt_obs, ble_evt_poll, NULL, 0);
+BM_SDH_STACK_EVT_OBSERVER(ble_evt_obs, ble_evt_poll, NULL, 0);

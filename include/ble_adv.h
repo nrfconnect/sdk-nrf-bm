@@ -43,7 +43,7 @@ extern "C" {
  */
 #define BLE_ADV_DEF(instance)                                                                      \
 	static struct ble_adv instance;                                                            \
-	NRF_SDH_BLE_OBSERVER(ble_adv_##instance, ble_adv_on_ble_evt, &instance,                    \
+	BM_SDH_BLE_OBSERVER(ble_adv_##instance, ble_adv_on_ble_evt, &instance,                    \
 			     BLE_ADV_BLE_OBSERVER_PRIO)
 
 /**

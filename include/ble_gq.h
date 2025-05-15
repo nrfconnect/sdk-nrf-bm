@@ -22,7 +22,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <nrf_sdh_ble.h>
+#include <bm_sdh_ble.h>
 
 #include <zephyr/kernel.h>
 #include <zephyr/sys/slist.h>
@@ -74,7 +74,7 @@ extern "C" {
 		.req_blocks = &CONCAT(_name, _req_blocks),                                         \
 		.data_pool = &CONCAT(_name, _heap),                                                \
 	};                                                                                         \
-	NRF_SDH_BLE_OBSERVER(CONCAT(_name, _obs), ble_gq_on_ble_evt, (void *)&_name,               \
+	BM_SDH_BLE_OBSERVER(CONCAT(_name, _obs), ble_gq_on_ble_evt, (void *)&_name,               \
 			     CONFIG_BLE_GQ_OBSERVER_PRIO)
 
 /**

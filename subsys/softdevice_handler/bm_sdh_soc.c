@@ -6,12 +6,12 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <nrf_sdh.h>
-#include <nrf_sdh_soc.h>
+#include <bm_sdh.h>
+#include <bm_sdh_soc.h>
 #include <nrf_soc.h>
 #include <zephyr/logging/log.h>
 
-LOG_MODULE_DECLARE(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
+LOG_MODULE_DECLARE(bm_sdh, CONFIG_BM_SDH_LOG_LEVEL);
 
 static const char *tostr(uint32_t evt)
 {
@@ -62,7 +62,7 @@ static void soc_evt_poll(void *context)
 			break;
 		}
 
-		if (IS_ENABLED(CONFIG_NRF_SDH_STR_TABLES)) {
+		if (IS_ENABLED(CONFIG_BM_SDH_STR_TABLES)) {
 			LOG_DBG("SoC event: %s", tostr(evt_id));
 		} else {
 			LOG_DBG("SoC event: 0x%x", evt_id);
@@ -70,7 +70,7 @@ static void soc_evt_poll(void *context)
 
 		/* Forward the event to SoC observers. */
 		TYPE_SECTION_FOREACH(
-			struct nrf_sdh_soc_evt_observer, nrf_sdh_soc_evt_observers, obs) {
+			struct bm_sdh_soc_evt_observer, bm_sdh_soc_evt_observers, obs) {
 			obs->handler(evt_id, obs->context);
 		}
 	}
@@ -80,4 +80,4 @@ static void soc_evt_poll(void *context)
 }
 
 /* Listen to SoftDevice events */
-NRF_SDH_STACK_EVT_OBSERVER(soc_evt_obs, soc_evt_poll, NULL, 0);
+BM_SDH_STACK_EVT_OBSERVER(soc_evt_obs, soc_evt_poll, NULL, 0);

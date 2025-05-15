@@ -6,7 +6,7 @@
 #include <ble_gap.h>
 #include <ble_conn_params.h>
 #include <errno.h>
-#include <nrf_sdh_ble.h>
+#include <bm_sdh_ble.h>
 #include <zephyr/logging/log.h>
 
 LOG_MODULE_DECLARE(ble_conn_params, CONFIG_BLE_CONN_PARAMS_LOG_LEVEL);
@@ -16,8 +16,8 @@ extern void ble_conn_params_event_send(const struct ble_conn_params_evt *evt);
 static struct {
 	ble_gap_phys_t phy_mode;
 	uint8_t phy_mode_update_pending : 1;
-} links[CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT] = {
-	[0 ... CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT - 1] = {
+} links[CONFIG_BM_SDH_BLE_TOTAL_LINK_COUNT] = {
+	[0 ... CONFIG_BM_SDH_BLE_TOTAL_LINK_COUNT - 1] = {
 		.phy_mode.tx_phys = CONFIG_BLE_CONN_PARAMS_PHY,
 		.phy_mode.rx_phys = CONFIG_BLE_CONN_PARAMS_PHY,
 	},
@@ -43,7 +43,7 @@ static void radio_phy_mode_update(uint16_t conn_handle, int idx)
 		/* PHY update failed. Use current PHY. */
 		LOG_WRN("Failed PHY update procedure. Continue using current PHY mode");
 		LOG_DBG("GAP event length (%d) may be too small",
-			CONFIG_NRF_SDH_BLE_GAP_EVENT_LENGTH);
+			CONFIG_BM_SDH_BLE_GAP_EVENT_LENGTH);
 		links[idx].phy_mode.tx_phys = CONFIG_BLE_CONN_PARAMS_PHY;
 		links[idx].phy_mode.rx_phys = CONFIG_BLE_CONN_PARAMS_PHY;
 		radio_phy_mode_update(conn_handle, idx);
@@ -111,7 +111,7 @@ static void on_disconnected(uint16_t conn_handle, int idx)
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {
 	const uint16_t conn_handle = evt->evt.common_evt.conn_handle;
-	const int idx = nrf_sdh_ble_idx_get(conn_handle);
+	const int idx = bm_sdh_ble_idx_get(conn_handle);
 
 	__ASSERT(idx >= 0, "Invalid idx %d for conn_handle %#x, evt_id %#x",
 		 idx, conn_handle, evt->header.evt_id);
@@ -147,11 +147,11 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		radio_phy_mode_update(conn_handle, idx);
 	}
 }
-NRF_SDH_BLE_OBSERVER(ble_observer, on_ble_evt, NULL, 0);
+BM_SDH_BLE_OBSERVER(ble_observer, on_ble_evt, NULL, 0);
 
 int ble_conn_params_phy_radio_mode_set(uint16_t conn_handle, ble_gap_phys_t phy_pref)
 {
-	const int idx = nrf_sdh_ble_idx_get(conn_handle);
+	const int idx = bm_sdh_ble_idx_get(conn_handle);
 
 	if (idx < 0) {
 		return -EINVAL;
@@ -165,7 +165,7 @@ int ble_conn_params_phy_radio_mode_set(uint16_t conn_handle, ble_gap_phys_t phy_
 
 int ble_conn_params_phy_radio_mode_get(uint16_t conn_handle, ble_gap_phys_t *phy_pref)
 {
-	const int idx = nrf_sdh_ble_idx_get(conn_handle);
+	const int idx = bm_sdh_ble_idx_get(conn_handle);
 
 	if (idx < 0) {
 		return -EINVAL;

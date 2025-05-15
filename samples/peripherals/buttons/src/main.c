@@ -10,8 +10,8 @@
 #include <bm_buttons.h>
 
 #if CONFIG_SOFTDEVICE
-#include <nrf_sdh.h>
-#include <nrf_sdh_ble.h>
+#include <bm_sdh.h>
+#include <bm_sdh_ble.h>
 #endif /* CONFIG_SOFTDEVICE */
 
 #include <board-config.h>
@@ -39,7 +39,7 @@ int main(void)
 	printk("Buttons sample started\n");
 
 #if CONFIG_SOFTDEVICE
-	err = nrf_sdh_enable_request();
+	err = bm_sdh_enable_request();
 	if (err) {
 		printk("Failed to enable SoftDevice, err %d\n", err);
 		return -1;
@@ -47,7 +47,7 @@ int main(void)
 
 	printk("SoftDevice enabled\n");
 
-	err = nrf_sdh_ble_enable(CONFIG_NRF_SDH_BLE_CONN_TAG);
+	err = bm_sdh_ble_enable(CONFIG_BM_SDH_BLE_CONN_TAG);
 	if (err) {
 		printk("Failed to enable BLE, err %d\n", err);
 		return -1;

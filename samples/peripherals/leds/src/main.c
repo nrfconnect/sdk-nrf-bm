@@ -9,8 +9,8 @@
 #include <zephyr/sys_clock.h> /* USEC_PER_MSEC */
 
 #if CONFIG_SOFTDEVICE
-#include <nrf_sdh.h>
-#include <nrf_sdh_ble.h>
+#include <bm_sdh.h>
+#include <bm_sdh_ble.h>
 #endif /* CONFIG_SOFTDEVICE */
 
 #include <hal/nrf_gpio.h>
@@ -39,7 +39,7 @@ int main(void)
 #if CONFIG_SOFTDEVICE
 	int err;
 
-	err = nrf_sdh_enable_request();
+	err = bm_sdh_enable_request();
 	if (err) {
 		printk("Failed to enable SoftDevice, err %d\n", err);
 		return -1;
@@ -47,7 +47,7 @@ int main(void)
 
 	printk("SoftDevice enabled\n");
 
-	err = nrf_sdh_ble_enable(CONFIG_NRF_SDH_BLE_CONN_TAG);
+	err = bm_sdh_ble_enable(CONFIG_BM_SDH_BLE_CONN_TAG);
 	if (err) {
 		printk("Failed to enable BLE, err %d\n", err);
 		return -1;

@@ -38,7 +38,7 @@ extern "C" {
  */
 #define BLE_QWR_DEF(_name)                                                                         \
 	static struct ble_qwr _name;                                                               \
-	NRF_SDH_BLE_OBSERVER(_name ## _obs,                                                        \
+	BM_SDH_BLE_OBSERVER(_name ## _obs,                                                        \
 			     ble_qwr_on_ble_evt,                                                   \
 			     &_name,                                                               \
 			     CONFIG_BLE_QWR_BLE_OBSERVER_PRIO)

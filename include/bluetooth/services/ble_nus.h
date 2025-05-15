@@ -17,7 +17,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <ble.h>
-#include <nrf_sdh_ble.h>
+#include <bm_sdh_ble.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,7 +34,7 @@ void ble_nus_on_ble_evt(ble_evt_t const *ble_evt, void *context);
  */
 #define BLE_NUS_DEF(_name)                                                                         \
 	static struct ble_nus _name;                                                               \
-	NRF_SDH_BLE_OBSERVER(_name ## _obs,                                                        \
+	BM_SDH_BLE_OBSERVER(_name ## _obs,                                                        \
 			     ble_nus_on_ble_evt,                                                   \
 			     &_name,                                                               \
 			     0)
@@ -55,7 +55,7 @@ void ble_nus_on_ble_evt(ble_evt_t const *ble_evt, void *context);
  * @brief Maximum length of data (in bytes) that can be transmitted to the peer by the Nordic UART
  *        service module.
  */
-#define BLE_NUS_MAX_DATA_LEN  BLE_NUS_MAX_DATA_LEN_CALC(CONFIG_NRF_SDH_BLE_GATT_MAX_MTU_SIZE)
+#define BLE_NUS_MAX_DATA_LEN  BLE_NUS_MAX_DATA_LEN_CALC(CONFIG_BM_SDH_BLE_GATT_MAX_MTU_SIZE)
 
 /** @brief Nordic UART Service event types. */
 enum ble_nus_evt_type {

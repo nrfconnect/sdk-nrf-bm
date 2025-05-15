@@ -79,10 +79,10 @@ if BLE_CONN_PARAMS_AUTO_ATT_MTU
 # Define a hidden KConfig for this module
 config BLE_CONN_PARAMS_ATT_MTU
 	int
-	default NRF_SDH_BLE_GATT_MAX_MTU_SIZE
+	default BM_SDH_BLE_GATT_MAX_MTU_SIZE
 
 # Show the SDH Kconfig entry
-config NRF_SDH_BLE_GATT_MAX_MTU_SIZE
+config BM_SDH_BLE_GATT_MAX_MTU_SIZE
 	int "ATT MTU" if !SOFTDEVICE_S115
 
 config BLE_CONN_PARAMS_INITIATE_ATT_MTU_EXCHANGE

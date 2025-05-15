@@ -6,7 +6,7 @@
 #include "zephyr/toolchain.h"
 #include <ble_adv.h>
 #include <ble_adv_data.h>
-#include <nrf_sdh_ble.h>
+#include <bm_sdh_ble.h>
 #include <zephyr/logging/log.h>
 #include <errno.h>
 

@@ -8,8 +8,8 @@
 #include <zephyr/sys/printk.h>
 
 #if CONFIG_SOFTDEVICE
-#include <nrf_sdh.h>
-#include <nrf_sdh_ble.h>
+#include <bm_sdh.h>
+#include <bm_sdh_ble.h>
 #endif /* CONFIG_SOFTDEVICE */
 
 #define PERIODIC_TIMER_TICKS BM_TIMER_MS_TO_TICKS(CONFIG_PERIODIC_TIMER_INTERVAL_MS)
@@ -79,7 +79,7 @@ int main(void)
 	printk("Timer sample started\n");
 
 #if CONFIG_SOFTDEVICE
-	err = nrf_sdh_enable_request();
+	err = bm_sdh_enable_request();
 	if (err) {
 		printk("Failed to enable SoftDevice, err %d\n", err);
 		return -1;
@@ -87,7 +87,7 @@ int main(void)
 
 	printk("SoftDevice enabled\n");
 
-	err = nrf_sdh_ble_enable(CONFIG_NRF_SDH_BLE_CONN_TAG);
+	err = bm_sdh_ble_enable(CONFIG_BM_SDH_BLE_CONN_TAG);
 	if (err) {
 		printk("Failed to enable BLE, err %d\n", err);
 		return -1;
@@ -126,7 +126,7 @@ int main(void)
 	}
 
 #if CONFIG_SOFTDEVICE
-	err = nrf_sdh_disable_request();
+	err = bm_sdh_disable_request();
 	if (err) {
 		printk("Failed to disable SoftDevice, err %d\n", err);
 		return -1;

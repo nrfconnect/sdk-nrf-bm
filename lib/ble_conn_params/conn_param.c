@@ -5,8 +5,8 @@
  */
 #include <ble_gap.h>
 #include <ble_conn_params.h>
-#include <nrf_sdh.h>
-#include <nrf_sdh_ble.h>
+#include <bm_sdh.h>
+#include <bm_sdh_ble.h>
 #include <zephyr/logging/log.h>
 
 LOG_MODULE_DECLARE(ble_conn_params, CONFIG_BLE_CONN_PARAMS_LOG_LEVEL);
@@ -24,8 +24,8 @@ static const ble_gap_conn_params_t ppcp = {
 static struct {
 	ble_gap_conn_params_t ppcp;
 	uint8_t retries;
-} links[CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT] = {
-	[0 ... CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT - 1] = {
+} links[CONFIG_BM_SDH_BLE_TOTAL_LINK_COUNT] = {
+	[0 ... CONFIG_BM_SDH_BLE_TOTAL_LINK_COUNT - 1] = {
 		.retries = CONFIG_BLE_CONN_PARAMS_NEGOTIATION_RETRIES,
 	}
 };
@@ -147,7 +147,7 @@ static void on_conn_params_update(uint16_t conn_handle, int idx,
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {
 	const uint16_t conn_handle = evt->evt.common_evt.conn_handle;
-	const int idx = nrf_sdh_ble_idx_get(conn_handle);
+	const int idx = bm_sdh_ble_idx_get(conn_handle);
 
 	__ASSERT(idx >= 0, "Invalid idx %d for conn_handle %#x, evt_id %#x",
 		 idx, conn_handle, evt->header.evt_id);
@@ -169,13 +169,13 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		break;
 	}
 }
-NRF_SDH_BLE_OBSERVER(ble_observer, on_ble_evt, NULL, 0);
+BM_SDH_BLE_OBSERVER(ble_observer, on_ble_evt, NULL, 0);
 
-static void on_state_evt(enum nrf_sdh_state_evt evt, void *ctx)
+static void on_state_evt(enum bm_sdh_state_evt evt, void *ctx)
 {
 	int err;
 
-	if (evt != NRF_SDH_STATE_EVT_BLE_ENABLED) {
+	if (evt != BM_SDH_STATE_EVT_BLE_ENABLED) {
 		return;
 	}
 
@@ -190,12 +190,12 @@ static void on_state_evt(enum nrf_sdh_state_evt evt, void *ctx)
 		ppcp.slave_latency,
 		ppcp.conn_sup_timeout);
 }
-NRF_SDH_STATE_EVT_OBSERVER(ble_conn_params_sdh_state_observer, on_state_evt, NULL, 0);
+BM_SDH_STATE_EVT_OBSERVER(ble_conn_params_sdh_state_observer, on_state_evt, NULL, 0);
 
 int ble_conn_params_override(uint16_t conn_handle, const ble_gap_conn_params_t *conn_params)
 {
 	int err;
-	const int idx = nrf_sdh_ble_idx_get(conn_handle);
+	const int idx = bm_sdh_ble_idx_get(conn_handle);
 
 	if (idx < 0) {
 		return -EINVAL;

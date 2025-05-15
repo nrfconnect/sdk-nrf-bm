@@ -7,7 +7,7 @@
 #include <ble_gatts.h>
 #include <ble_gattc.h>
 #include <ble_conn_params.h>
-#include <nrf_sdh_ble.h>
+#include <bm_sdh_ble.h>
 #include <zephyr/logging/log.h>
 
 LOG_MODULE_DECLARE(ble_conn_params, CONFIG_BLE_CONN_PARAMS_LOG_LEVEL);
@@ -18,8 +18,8 @@ static struct {
 	uint16_t att_mtu;
 	uint16_t att_mtu_desired;
 	uint8_t att_mtu_exchange_pending : 1;
-} links[CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT] = {
-	[0 ... CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT - 1] = {
+} links[CONFIG_BM_SDH_BLE_TOTAL_LINK_COUNT] = {
+	[0 ... CONFIG_BM_SDH_BLE_TOTAL_LINK_COUNT - 1] = {
 		.att_mtu = BLE_GATT_ATT_MTU_DEFAULT,
 		.att_mtu_desired = CONFIG_BLE_CONN_PARAMS_ATT_MTU,
 	}
@@ -118,7 +118,7 @@ static void on_disconnected(uint16_t conn_handle, int idx)
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {
 	const uint16_t conn_handle = evt->evt.common_evt.conn_handle;
-	const int idx = nrf_sdh_ble_idx_get(conn_handle);
+	const int idx = bm_sdh_ble_idx_get(conn_handle);
 
 	__ASSERT(idx >= 0, "Invalid idx %d for conn_handle %#x, evt_id %#x",
 		 idx, conn_handle, evt->header.evt_id);
@@ -156,11 +156,11 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		mtu_exchange_request(conn_handle, idx);
 	}
 }
-NRF_SDH_BLE_OBSERVER(ble_observer, on_ble_evt, NULL, 0);
+BM_SDH_BLE_OBSERVER(ble_observer, on_ble_evt, NULL, 0);
 
 int ble_conn_params_att_mtu_set(uint16_t conn_handle, uint16_t att_mtu)
 {
-	const int idx = nrf_sdh_ble_idx_get(conn_handle);
+	const int idx = bm_sdh_ble_idx_get(conn_handle);
 
 	if (idx < 0) {
 		return -EINVAL;
@@ -178,7 +178,7 @@ int ble_conn_params_att_mtu_set(uint16_t conn_handle, uint16_t att_mtu)
 
 int ble_conn_params_att_mtu_get(uint16_t conn_handle, uint16_t *att_mtu)
 {
-	const int idx = nrf_sdh_ble_idx_get(conn_handle);
+	const int idx = bm_sdh_ble_idx_get(conn_handle);
 
 	if (idx < 0) {
 		return -EINVAL;

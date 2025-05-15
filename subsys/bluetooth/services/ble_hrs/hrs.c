@@ -87,7 +87,7 @@ static uint8_t hrm_encode(struct ble_hrs *hrs, uint16_t heart_rate, uint8_t *enc
 static uint32_t heart_rate_measurement_char_add(struct ble_hrs *hrs,
 						const struct ble_hrs_config *cfg)
 {
-	uint8_t encoded_initial_hrm[MAX_HRM_LEN_CALC(CONFIG_NRF_SDH_BLE_GATT_MAX_MTU_SIZE)];
+	uint8_t encoded_initial_hrm[MAX_HRM_LEN_CALC(CONFIG_BM_SDH_BLE_GATT_MAX_MTU_SIZE)];
 	ble_uuid_t char_uuid = {
 		.type = BLE_UUID_TYPE_BLE,
 		.uuid = BLE_UUID_HEART_RATE_MEASUREMENT_CHAR,
@@ -258,7 +258,7 @@ int ble_hrs_init(struct ble_hrs *hrs, const struct ble_hrs_config *cfg)
 int ble_hrs_heart_rate_measurement_send(struct ble_hrs *hrs, uint16_t heart_rate)
 {
 	int err;
-	uint8_t encoded_hrm[MAX_HRM_LEN_CALC(CONFIG_NRF_SDH_BLE_GATT_MAX_MTU_SIZE)];
+	uint8_t encoded_hrm[MAX_HRM_LEN_CALC(CONFIG_BM_SDH_BLE_GATT_MAX_MTU_SIZE)];
 	uint16_t len;
 	uint16_t hvx_len;
 

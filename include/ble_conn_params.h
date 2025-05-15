@@ -108,7 +108,7 @@ int ble_conn_params_override(uint16_t conn_handle, const ble_gap_conn_params_t *
  * The maximum supported ATT MTU value is 247.
  *
  * The SoftDevice needs to be configured to support non-default ATT MTU values
- * by setting @c CONFIG_NRF_SDH_BLE_GATT_MAX_MTU_SIZE to the maximum ATT MTU value
+ * by setting @c CONFIG_BM_SDH_BLE_GATT_MAX_MTU_SIZE to the maximum ATT MTU value
  * the device shall support.
  *
  * The ATT MTU exchange procedure is executed asynchronously, and its completion

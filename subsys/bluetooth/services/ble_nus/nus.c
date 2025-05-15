@@ -23,11 +23,11 @@ LOG_MODULE_REGISTER(ble_nus, CONFIG_BLE_NUS_LOG_LEVEL);
 /** The UUID of the RX Characteristic. */
 #define BLE_UUID_NUS_RX_CHARACTERISTIC 0x0002
 
-static struct ble_nus_client_context contexts[CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT];
+static struct ble_nus_client_context contexts[CONFIG_BM_SDH_BLE_TOTAL_LINK_COUNT];
 
 static struct ble_nus_client_context *ble_nus_client_context_get(uint16_t conn_handle)
 {
-	const int idx = nrf_sdh_ble_idx_get(conn_handle);
+	const int idx = bm_sdh_ble_idx_get(conn_handle);
 
 	return ((idx >= 0) ? &contexts[idx] : NULL);
 }

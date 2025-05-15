@@ -6,8 +6,8 @@
 
 #include <errno.h>
 #include <string.h>
-#include <nrf_sdh.h>
-#include <nrf_sdh_ble.h>
+#include <bm_sdh.h>
+#include <bm_sdh_ble.h>
 #include <ble_adv.h>
 #include <ble_conn_params.h>
 #include <ble_gap.h>
@@ -183,7 +183,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		break;
 	}
 }
-NRF_SDH_BLE_OBSERVER(sdh_ble, on_ble_evt, NULL, 0);
+BM_SDH_BLE_OBSERVER(sdh_ble, on_ble_evt, NULL, 0);
 
 /**
  * @brief Connection parameters event handler
@@ -334,7 +334,7 @@ int main(void)
 {
 	int err;
 	struct ble_adv_config ble_adv_cfg = {
-		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
+		.conn_cfg_tag = CONFIG_BM_SDH_BLE_CONN_TAG,
 		.evt_handler = ble_adv_evt_handler,
 		.adv_data = {
 			.name_type = BLE_ADV_DATA_FULL_NAME,
@@ -357,7 +357,7 @@ int main(void)
 		return -1;
 	}
 
-	err = nrf_sdh_enable_request();
+	err = bm_sdh_enable_request();
 	if (err) {
 		LOG_ERR("Failed to enable SoftDevice, err %d", err);
 		return -1;
@@ -365,7 +365,7 @@ int main(void)
 
 	LOG_INF("SoftDevice enabled");
 
-	err = nrf_sdh_ble_enable(CONFIG_NRF_SDH_BLE_CONN_TAG);
+	err = bm_sdh_ble_enable(CONFIG_BM_SDH_BLE_CONN_TAG);
 	if (err) {
 		LOG_ERR("Failed to enable BLE, err %d", err);
 		return -1;

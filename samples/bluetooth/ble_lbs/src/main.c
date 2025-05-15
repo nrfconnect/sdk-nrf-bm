@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <nrf_sdh.h>
-#include <nrf_sdh_ble.h>
+#include <bm_sdh.h>
+#include <bm_sdh_ble.h>
 #include <ble_adv.h>
 #include <ble_gap.h>
 #include <nrf_soc.h>
@@ -78,7 +78,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		break;
 	}
 }
-NRF_SDH_BLE_OBSERVER(sdh_ble, on_ble_evt, NULL, 0);
+BM_SDH_BLE_OBSERVER(sdh_ble, on_ble_evt, NULL, 0);
 
 static void ble_adv_evt_handler(struct ble_adv *adv, const struct ble_adv_evt *adv_evt)
 {
@@ -134,7 +134,7 @@ int main(void)
 {
 	int err;
 	struct ble_adv_config ble_adv_config = {
-		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
+		.conn_cfg_tag = CONFIG_BM_SDH_BLE_CONN_TAG,
 		.evt_handler = ble_adv_evt_handler,
 		.adv_data = {
 			.name_type = BLE_ADV_DATA_FULL_NAME,
@@ -147,7 +147,7 @@ int main(void)
 
 	printk("BLE LBS sample started\n");
 
-	err = nrf_sdh_enable_request();
+	err = bm_sdh_enable_request();
 	if (err) {
 		printk("Failed to enable SoftDevice, err %d\n", err);
 		return -1;
@@ -155,7 +155,7 @@ int main(void)
 
 	printk("SoftDevice enabled\n");
 
-	err = nrf_sdh_ble_enable(CONFIG_NRF_SDH_BLE_CONN_TAG);
+	err = bm_sdh_ble_enable(CONFIG_BM_SDH_BLE_CONN_TAG);
 	if (err) {
 		printk("Failed to enable BLE, err %d\n", err);
 		return -1;
