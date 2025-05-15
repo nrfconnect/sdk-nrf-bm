@@ -1,4 +1,4 @@
-# sdk-nrf-lite doc build
+# sdk-nrf-bm doc build
 This is a temporary doc build script that will be replaced in the future.
 It installs dependencies, copies the RST sources to _build/source, and runs Sphinx from there.
 

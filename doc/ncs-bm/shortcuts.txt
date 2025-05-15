@@ -1,4 +1,5 @@
-.. |NCSL| replace:: nRF Connect SDK Lite
+.. |BMlong| replace:: nRF Connect SDK Bare Metal option
+.. |BMshort| replace:: Bare Metal
 .. |NCS| replace:: nRF Connect SDK
 
 .. |VSC| replace:: Visual Studio Code

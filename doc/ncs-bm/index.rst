@@ -4,8 +4,9 @@
 Introduction
 ############
 
-The |NCSL| is an add-on for the regular |NCS| that adds bare metal support for the nRF54L family of Nordic Semiconductor SoCs.
-You can use this add-on for the following:
+|BMlong| is an enhancement to the |NCS|, offering an optional configuration for developing Bluetooth LE applications that do not benefit from utilizing an RTOS nor require advanced features.
+
+You can use this development option for the following:
 
 * Development of threadless applications without the use of Zephyr RTOS.
 * Migration of applications originally created for the nRF52 devices using the nRF5 SDK.
@@ -14,6 +15,6 @@ You can use this add-on for the following:
    :maxdepth: 2
    :caption: Contents
 
-   install_ncsl.rst
+   install_ncs_bm.rst
    samples.rst
    release_notes_0.1.0.rst

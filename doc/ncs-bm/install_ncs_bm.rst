@@ -1,13 +1,13 @@
-.. _install_ncsl:
+.. _install_ncs_bm:
 
-Installing the |NCSL|
-#####################
+Installing the |BMlong|
+#######################
 
 .. contents::
    :local:
    :depth: 2
 
-You can use Visual Studio Code and the `nRF Connect for Visual Studio Code`_ extension to install |NCSL|.
+You can use Visual Studio Code and the `nRF Connect for Visual Studio Code`_ extension to install |BMshort|.
 
 Install prerequisites
 *********************
@@ -44,12 +44,12 @@ Install the following software tools:
   * In |VSC|, the latest version of the `nRF Connect for VS Code Extension Pack`_.
     The |nRFVSC| comes with its own bundled version of some of the nRF Util commands.
 
-.. _ncsl_installing_toolchain:
+.. _ncs_bm_installing_toolchain:
 
-Install the |NCSL| toolchain
-****************************
+Install the toolchain
+*********************
 
-The |NCSL| toolchain includes tools and modules required to build the samples and applications on top of it.
+The |BMshort| toolchain includes tools and modules required to build the samples and applications on top of it.
 
 Use nRF Connect for VS Code to install the toolchain:
 
@@ -63,22 +63,22 @@ Use nRF Connect for VS Code to install the toolchain:
 #. Click :guilabel:`Install Toolchain`.
    The list of available stable toolchain versions appears in the |VSC|'s quick pick.
 #. Select the toolchain version to install.
-   For this release of |NCSL|, use version |ncs_release| of the toolchain.
+   For this release of |BMshort|, use version |ncs_release| of the toolchain.
 
 The toolchain installation starts in the background, as can be seen in the notification that appears.
 If this is your first installation of the toolchain, wait for it to finish before moving to the next step of this procedure (getting the code).
 
 When you install the toolchain for the first time, the installed version is automatically selected for your project.
 
-.. _cloning_the_repositories_ncsl:
+.. _cloning_the_repositories_ncs_bm:
 
-Getting the |NCSL| code
-***********************
+Getting the code
+****************
 
 Every nRF Connect SDK release consists of a combination of Git repositories at different versions and revisions, managed together by West.
 Make sure that Git is installed on your system before starting this procedure.
 
-Complete the following steps to clone the |NCSL| repositories.
+Complete the following steps to clone the |BMshort| repositories.
 
 1. Open the nRF Connect extension in |VSC| by clicking its icon in the :guilabel:`Activity Bar`.
 #. In the extension's :guilabel:`Welcome View`, click on :guilabel:`Manage SDKs`.
@@ -86,12 +86,12 @@ Complete the following steps to clone the |NCSL| repositories.
 #. Click :guilabel:`Install SDK`.
    The list of available stable SDK versions appears in the |VSC|'s quick pick.
 #. Select the SDK version to install.
-   For this release of |NCSL|, use version |ncs_release| of the SDK.
+   For this release of |BMshort|, use version |ncs_release| of the SDK.
 
    The SDK installation starts and it can take several minutes.
 #. Open command line and navigate to the SDK installation folder.
    The default location to install the SDK is :file:`C:/ncs/v2.9.1` on Windows, :file:`~/ncs/v2.9.1` on Linux, and :file:`/opt/nordic/ncs/v2.9.1` on macOS.
-#. Clone the `sdk-nrf-lite`_ repository.
+#. Clone the `sdk-nrf-bm`_ repository.
 
    .. tabs::
 
@@ -100,25 +100,25 @@ Complete the following steps to clone the |NCSL| repositories.
          .. code-block:: console
 
             cd C:/ncs/v2.9.1
-            git clone https://github.com/nrfconnect/sdk-nrf-lite.git nrf-lite
+            git clone https://github.com/nrfconnect/sdk-nrf-bm.git nrf-bm
 
       .. group-tab:: Linux
 
          .. code-block:: console
 
             cd ~/ncs/v2.9.1
-            git clone https://github.com/nrfconnect/sdk-nrf-lite.git nrf-lite
+            git clone https://github.com/nrfconnect/sdk-nrf-bm.git nrf-bm
 
       .. group-tab:: macOS
 
          .. code-block:: console
 
             cd /opt/nordic/ncs/v2.9.1
-            git clone https://github.com/nrfconnect/sdk-nrf-lite.git nrf-lite
+            git clone https://github.com/nrfconnect/sdk-nrf-bm.git nrf-bm
 
 
 #. In |VSC|, click :guilabel:`Manage SDKs` -> :guilabel:`Manage West Workspace...` -> :guilabel:`Set West Manifest Repository`.
-   From the list that appears, select the ``nrf-lite`` west manifest file.
+   From the list that appears, select the ``nrf-bm`` west manifest file.
 #. Then, click :guilabel:`Manage SDKs` -> :guilabel:`Manage West Workspace...` -> :guilabel:`West Update`.
    Your local repositories will be updated.
 
@@ -133,7 +133,7 @@ Your directory structure now looks similar to this:
       ├─── bootloader
       ├─── modules
       ├─── nrf
-      ├─── nrf-lite
+      ├─── nrf-bm
       ├─── nrfxlib
       ├─── test
       ├─── tools
@@ -142,5 +142,5 @@ Your directory structure now looks similar to this:
 Next steps
 **********
 
-You can now proceed to test the :ref:`samples` included in this version of the |NCSL|.
+You can now proceed to test the :ref:`samples` included in this version of the |BMshort|.
 Each sample documentation contains full information on how to build, flash, and test the respective sample.

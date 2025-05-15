@@ -7,7 +7,7 @@ LED
    :local:
    :depth: 2
 
-The LED sample demonstrates how to configure and use LEDs with NCS Lite.
+The LED sample demonstrates how to configure and use LEDs with |BMlong|.
 
 Requirements
 ************
@@ -21,7 +21,8 @@ The sample supports the following development kits:
      - PCA
      - Board target
    * - `nRF54L15 DK`_
-     - lite_nrf54l15/nrf54l15/cpuapp
+     - PCA10156
+     - bm_nrf54l15/nrf54l15/cpuapp
 
 Overview
 ********
@@ -31,7 +32,7 @@ The sample initializes and blinks LED0 on the device.
 Building and running
 ********************
 
-This sample can be found under :file:`samples/peripherals/buttons/` in the |NCSL| folder structure.
+This sample can be found under :file:`samples/peripherals/buttons/` in the |BMshort| folder structure.
 
 .. include:: /includes/build_sample.txt
 

@@ -1,4 +1,4 @@
-.. ### This page lists links used in NCS Lite docs.
+.. ### This page lists links used in Bare Metal docs.
        Links are grouped by source URL if three or more have the same source URL.
        Otherwise, they are placed in "Source: other".
        Links not separated by blank line are related to one another.
@@ -6,7 +6,7 @@
 .. ### Source: github.com
 
 .. _`GitHub`: https://github.com/
-.. _`sdk-nrf-lite`: https://github.com/nrfconnect/sdk-nrf-lite
+.. _`sdk-nrf-bm`: https://github.com/nrfconnect/sdk-nrf-bm
 
 .. ### Source: docs.nordicsemi
 
