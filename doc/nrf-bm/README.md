@@ -6,7 +6,7 @@ It installs dependencies, copies the RST sources to _build/source, and runs Sphi
 
 Run the script in this folder:
    ```
-   python build_docs.py
+   python gen_docs.py
    ```
 
 Open _build/html/index.html to view the output.
