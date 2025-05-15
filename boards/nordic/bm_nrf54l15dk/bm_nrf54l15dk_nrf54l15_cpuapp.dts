@@ -7,7 +7,7 @@
 /dts-v1/;
 
 #include <nordic/nrf54l15_cpuapp.dtsi>
-#include "bm_nrf54l15dk_cpuapp_common.dtsi"
+#include "bm_nrf54l15dk_nrf54l15_cpuapp_common.dtsi"
 
 / {
 	chosen {

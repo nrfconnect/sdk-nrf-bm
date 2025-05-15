@@ -8,11 +8,19 @@ common:
 tests:
   sample.timer:
     integration_platforms:
+      - bm_nrf54l15dk/nrf54l05/cpuapp/no_softdevice
+      - bm_nrf54l15dk/nrf54l10/cpuapp/no_softdevice
       - bm_nrf54l15dk/nrf54l15/cpuapp/no_softdevice
     platform_allow:
+      - bm_nrf54l15dk/nrf54l05/cpuapp/no_softdevice
+      - bm_nrf54l15dk/nrf54l10/cpuapp/no_softdevice
       - bm_nrf54l15dk/nrf54l15/cpuapp/no_softdevice
   sample.timer.softdevice:
     integration_platforms:
+      - bm_nrf54l15dk/nrf54l05/cpuapp
+      - bm_nrf54l15dk/nrf54l10/cpuapp
       - bm_nrf54l15dk/nrf54l15/cpuapp
     platform_allow:
+      - bm_nrf54l15dk/nrf54l05/cpuapp
+      - bm_nrf54l15dk/nrf54l10/cpuapp
       - bm_nrf54l15dk/nrf54l15/cpuapp

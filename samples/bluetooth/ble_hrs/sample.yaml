@@ -4,8 +4,12 @@ tests:
   sample.ble_hrs:
     build_only: true
     integration_platforms:
+      - bm_nrf54l15dk/nrf54l05/cpuapp
+      - bm_nrf54l15dk/nrf54l10/cpuapp
       - bm_nrf54l15dk/nrf54l15/cpuapp
     platform_allow:
+      - bm_nrf54l15dk/nrf54l05/cpuapp
+      - bm_nrf54l15dk/nrf54l10/cpuapp
       - bm_nrf54l15dk/nrf54l15/cpuapp
     tags: ci_build
   sample.ble_hrs.logging_w_hwfc_parity:
