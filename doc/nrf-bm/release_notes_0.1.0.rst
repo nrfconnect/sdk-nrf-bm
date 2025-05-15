@@ -1,4 +1,4 @@
-.. _ncs_bm_release_notes_010:
+.. _nrf_bm_release_notes_010:
 
 Release Notes for |BMlong| v0.1.0
 #################################
@@ -15,7 +15,7 @@ IDE and tool support
 ********************
 
 `nRF Connect extension for Visual Studio Code <nRF Connect for Visual Studio Code_>`_ is the recommended IDE for |BMshort| v0.1.0.
-See the :ref:`install_ncs_bm` section for more information about supported operating systems and toolchain.
+See the :ref:`install_nrf_bm` section for more information about supported operating systems and toolchain.
 
 Supported board
 ***************
@@ -47,4 +47,4 @@ S115 SoftDevice
 Documentation
 =============
 
-* Created first draft including documentation for :ref:`install_ncs_bm`.
+* Created first draft including documentation for :ref:`install_nrf_bm`.

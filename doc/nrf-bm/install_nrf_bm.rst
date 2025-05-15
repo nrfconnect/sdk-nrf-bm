@@ -1,4 +1,4 @@
-.. _install_ncs_bm:
+.. _install_nrf_bm:
 
 Installing the |BMlong|
 #######################
@@ -44,7 +44,7 @@ Install the following software tools:
   * In |VSC|, the latest version of the `nRF Connect for VS Code Extension Pack`_.
     The |nRFVSC| comes with its own bundled version of some of the nRF Util commands.
 
-.. _ncs_bm_installing_toolchain:
+.. _nrf_bm_installing_toolchain:
 
 Install the toolchain
 *********************
@@ -70,7 +70,7 @@ If this is your first installation of the toolchain, wait for it to finish befor
 
 When you install the toolchain for the first time, the installed version is automatically selected for your project.
 
-.. _cloning_the_repositories_ncs_bm:
+.. _cloning_the_repositories_nrf_bm:
 
 Getting the code
 ****************

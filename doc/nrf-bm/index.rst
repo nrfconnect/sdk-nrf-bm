@@ -1,5 +1,5 @@
 .. _index:
-.. _ncsl_introduction:
+.. _nrf_bm_introduction:
 
 Introduction
 ############
@@ -15,6 +15,6 @@ You can use this development option for the following:
    :maxdepth: 2
    :caption: Contents
 
-   install_ncs_bm.rst
+   install_nrf_bm.rst
    samples.rst
    release_notes_0.1.0.rst
