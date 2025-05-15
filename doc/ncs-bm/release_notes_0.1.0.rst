@@ -1,21 +1,21 @@
-.. _ncsl_release_notes_010:
+.. _ncs_bm_release_notes_010:
 
-|NCSL| v0.1.0 Release Notes
-###########################
+Release Notes for |BMlong| v0.1.0
+#################################
 
 .. contents::
    :local:
    :depth: 2
 
-|NCSL| v0.1.0 is an early release demonstrating a first set of samples on the nRF54L15 DK.
+Version 0.1.0 is an early release demonstrating a first set of samples on the nRF54L15 DK.
 
 It also includes a prototype version of the S115 SoftDevice - a proprietary Bluetooth LE stack to be used on the nRF54L15 DK.
 
 IDE and tool support
 ********************
 
-`nRF Connect extension for Visual Studio Code <nRF Connect for Visual Studio Code_>`_ is the recommended IDE for |NCSL| v0.1.0.
-See the :ref:`install_ncsl` section for more information about supported operating systems and toolchain.
+`nRF Connect extension for Visual Studio Code <nRF Connect for Visual Studio Code_>`_ is the recommended IDE for |BMshort| v0.1.0.
+See the :ref:`install_ncs_bm` section for more information about supported operating systems and toolchain.
 
 Supported board
 ***************
@@ -47,4 +47,4 @@ S115 SoftDevice
 Documentation
 =============
 
-* Created first draft including documentation for :ref:`install_ncsl`.
+* Created first draft including documentation for :ref:`install_ncs_bm`.

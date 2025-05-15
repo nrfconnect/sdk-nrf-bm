@@ -3,7 +3,7 @@
 Samples
 #######
 
-The |NCSL| provides samples that specifically target Nordic Semiconductor devices and show how to implement typical use cases with Nordic Semiconductor libraries and drivers.
+|BMlong| provides samples that specifically target Nordic Semiconductor devices and show how to implement typical use cases with Nordic Semiconductor libraries and drivers.
 
 .. toctree::
    :maxdepth: 1
@@ -15,4 +15,5 @@ The |NCSL| provides samples that specifically target Nordic Semiconductor device
    samples/bluetooth/ble_nus/README.rst
    samples/bluetooth/hello_softdevice/README.rst
    samples/peripherals/buttons/README.rst
+   samples/peripherals/leds/README.rst
    samples/peripherals/timer/README.rst

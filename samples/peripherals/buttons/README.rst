@@ -27,7 +27,7 @@ The sample supports the following development kits:
 Building and running
 ********************
 
-This sample can be found under :file:`samples/peripherals/buttons/` in the |NCSL| folder structure.
+This sample can be found under :file:`samples/peripherals/buttons/` in the |BMshort| folder structure.
 
 .. include:: /includes/build_sample.txt
 

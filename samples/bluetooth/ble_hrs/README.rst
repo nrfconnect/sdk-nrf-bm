@@ -7,7 +7,7 @@ Bluetooth: Heart Rate Service
    :local:
    :depth: 2
 
-This Heart Rate Service sample demonstrates how you can implement the Heart Rate profile using |NCSL|.
+This Heart Rate Service sample demonstrates how you can implement the Heart Rate profile using |BMlong|.
 
 Requirements
 ************
@@ -58,7 +58,7 @@ Programming the S115 SoftDevice
 Building and running
 ********************
 
-This sample can be found under :file:`samples/bluetooth/ble_hrs/` in the |NCSL| folder structure.
+This sample can be found under :file:`samples/bluetooth/ble_hrs/` in the |BMshort| folder structure.
 
 .. include:: /includes/build_sample.txt
 
