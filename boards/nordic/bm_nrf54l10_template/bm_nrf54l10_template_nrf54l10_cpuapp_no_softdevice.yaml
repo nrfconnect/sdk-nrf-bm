@@ -1,0 +1,14 @@
+# Copyright (c) 2025 Nordic Semiconductor ASA
+# SPDX-License-Identifier: Apache-2.0
+
+identifier: bm_nrf54l10_template/nrf54l10/cpuapp/no_softdevice # Update
+name: Bare_Metal-nRF54L10-Template-nRF54L10-Application-No-SoftDevice # Update
+type: mcu
+arch: arm
+toolchain:
+  - gnuarmemb
+  - xtools
+  - zephyr
+sysbuild: true
+ram: 192
+flash: 1022
