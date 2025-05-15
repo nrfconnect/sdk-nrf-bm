@@ -6,8 +6,8 @@
 
 /dts-v1/;
 
-#include <nordic/nrf54l15_cpuapp.dtsi>
-#include "bm_nrf54l15dk_nrf54l15_cpuapp_common.dtsi"
+#include <nordic/nrf54l05_cpuapp.dtsi>
+#include "bm_nrf54l15dk_nrf54l05_cpuapp_common.dtsi"
 
 / {
 	chosen {
@@ -25,7 +25,7 @@
 		#size-cells = <1>;
 		app_rom: partition@0 {
 			label = "app_rom";
-			reg = <0x0 DT_SIZE_K(1524)>;
+			reg = <0x0 DT_SIZE_K(500)>;
 		};
 	};
 };

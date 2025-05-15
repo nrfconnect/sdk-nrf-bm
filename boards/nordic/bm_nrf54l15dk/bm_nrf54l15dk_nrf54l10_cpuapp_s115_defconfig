@@ -36,12 +36,14 @@ CONFIG_ZERO_LATENCY_IRQS=y
 # Allow FLASH writes
 CONFIG_MPU_ALLOW_FLASH_WRITE=y
 
+# Enable SoftDevice
+CONFIG_CLOCK_CONTROL=n
+CONFIG_SOFTDEVICE=y
+CONFIG_NRF_SDH=y
+
 # Shrink
 CONFIG_GPIO=n
 CONFIG_NRF_SECURITY=n
-
-# Required when the SoftDevice is not present
-CONFIG_CLOCK_CONTROL=y
 
 # Enable all NRFX drivers
 CONFIG_NRFX_CLOCK=y
