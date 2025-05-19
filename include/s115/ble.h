@@ -365,6 +365,8 @@ typedef union
  * @retval ::NRF_SUCCESS              The BLE stack has been initialized successfully.
  * @retval ::NRF_ERROR_INVALID_STATE  The BLE stack had already been initialized and cannot be reinitialized.
  * @retval ::NRF_ERROR_INVALID_ADDR   Invalid or not sufficiently aligned pointer supplied.
+ * @retval ::NRF_ERROR_NOT_SUPPORTED  The number of concurrent connections configured (@ref ble_gap_conn_cfg_t::conn_count) is less than
+ *                                    the configured connection count (@ref ble_gap_cfg_role_count_t).
  * @retval ::NRF_ERROR_NO_MEM         One or more of the following is true:
  *                                    - The amount of memory assigned to the SoftDevice by *p_app_ram_base is not
  *                                      large enough to fit this configuration's memory requirement. Check *p_app_ram_base
@@ -406,6 +408,8 @@ SVCALL(SD_BLE_ENABLE, uint32_t, sd_ble_enable(uint32_t * p_app_ram_base));
  * @retval ::NRF_ERROR_INVALID_STATE  The BLE stack had already been initialized.
  * @retval ::NRF_ERROR_INVALID_ADDR   Invalid or not sufficiently aligned pointer supplied.
  * @retval ::NRF_ERROR_INVALID_PARAM  Invalid cfg_id supplied.
+ * @retval ::NRF_ERROR_NOT_SUPPORTED  A second connection configuration (@ref ble_conn_cfg_t::conn_cfg_tag) is attempted
+ *                                    to be created.
  * @retval ::NRF_ERROR_NO_MEM         The amount of memory assigned to the SoftDevice by app_ram_base is not
  *                                    large enough to fit this configuration's memory requirement.
  */
