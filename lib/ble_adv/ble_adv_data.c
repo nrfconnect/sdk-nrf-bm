@@ -291,8 +291,8 @@ static int uuid_list_sized_encode(const struct ble_adv_data_uuid_list *list, uin
 	}
 
 	if (is_heading_written) {
-		/* There is only 1 byte intended to encode len */
-		length = *offset - start_pos + AD_LENGTH_FIELD_SIZE;
+		/* The length field does not count itself. */
+		length = *offset - (start_pos + AD_LENGTH_FIELD_SIZE);
 		if (length > 0x00FF) {
 			return -E2BIG;
 		}
