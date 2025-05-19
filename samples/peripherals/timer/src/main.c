@@ -8,11 +8,6 @@
 #include <zephyr/logging/log_ctrl.h>
 #include <zephyr/sys/printk.h>
 
-#if CONFIG_SOFTDEVICE
-#include <nrf_sdh.h>
-#include <nrf_sdh_ble.h>
-#endif /* CONFIG_SOFTDEVICE */
-
 #define PERIODIC_TIMER_TICKS BM_TIMER_MS_TO_TICKS(CONFIG_PERIODIC_TIMER_INTERVAL_MS)
 #define HELLO_TIMER_TICKS    BM_TIMER_MS_TO_TICKS(CONFIG_HELLO_TIMER_DURATION_MS)
 #define WORLD_TIMER_TICKS    BM_TIMER_MS_TO_TICKS(CONFIG_WORLD_TIMER_DURATION_MS)
@@ -79,22 +74,6 @@ int main(void)
 
 	printk("Timer sample started\n");
 
-#if CONFIG_SOFTDEVICE
-	err = nrf_sdh_enable_request();
-	if (err) {
-		printk("Failed to enable SoftDevice, err %d\n", err);
-		return -1;
-	}
-
-	printk("SoftDevice enabled\n");
-
-	err = nrf_sdh_ble_enable(CONFIG_NRF_SDH_BLE_CONN_TAG);
-	if (err) {
-		printk("Failed to enable BLE, err %d\n", err);
-		return -1;
-	}
-#endif /* CONFIG_SOFTDEVICE */
-
 	err = bm_timer_init(&periodic_timer, BM_TIMER_MODE_REPEATED, periodic_timeout_handler);
 	if (err) {
 		printk("Failed to initialize periodic timer, err %d\n", err);
@@ -129,20 +108,6 @@ int main(void)
 		/* Sleep */
 		__WFE();
 	}
-
-#if CONFIG_SOFTDEVICE
-	err = nrf_sdh_disable_request();
-	if (err) {
-		printk("Failed to disable SoftDevice, err %d\n", err);
-	} else {
-		printk("SoftDevice disabled\n");
-	}
-
-#endif /* CONFIG_SOFTDEVICE */
-
-		while (LOG_PROCESS()) {
-			/* Empty. */
-		}
 
 	return 0;
 }

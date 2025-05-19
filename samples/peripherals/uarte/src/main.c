@@ -6,11 +6,6 @@
 
 #include <zephyr/sys/printk.h>
 
-#if CONFIG_SOFTDEVICE
-#include <nrf_sdh.h>
-#include <nrf_sdh_ble.h>
-#endif /* CONFIG_SOFTDEVICE */
-
 #include <board-config.h>
 #include <nrfx_uarte.h>
 
@@ -124,22 +119,6 @@ int main(void)
 	int err;
 
 	printk("UART sample started\n");
-
-#if CONFIG_SOFTDEVICE
-	err = nrf_sdh_enable_request();
-	if (err) {
-		printk("Failed to enable SoftDevice, err %d\n", err);
-		return -1;
-	}
-
-	printk("SoftDevice enabled\n");
-
-	err = nrf_sdh_ble_enable(CONFIG_NRF_SDH_BLE_CONN_TAG);
-	if (err) {
-		printk("Failed to enable BLE, err %d\n", err);
-		return -1;
-	}
-#endif /* CONFIG_SOFTDEVICE */
 
 	err = uarte_init();
 	if (err) {
