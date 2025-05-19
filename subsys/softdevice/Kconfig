@@ -8,7 +8,6 @@ menu "SoftDevice"
 config SOFTDEVICE
 	bool "SoftDevice is present"
 	depends on ZERO_LATENCY_IRQS
-	depends on !CLOCK_CONTROL
 
 config SOFTDEVICE_PERIPHERAL
 	bool
@@ -31,3 +30,6 @@ config SOFTDEVICE_STRING_TABLES
 endif
 
 endmenu
+
+config CLOCK_CONTROL
+	default n if SOFTDEVICE
