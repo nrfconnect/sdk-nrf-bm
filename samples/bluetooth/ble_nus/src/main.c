@@ -14,10 +14,10 @@
 #include <ble_qwr.h>
 #include <bluetooth/services/ble_nus.h>
 #include <nrf_soc.h>
-
 #include <nrfx_uarte.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
+#include <zephyr/sys/util.h>
 
 LOG_MODULE_REGISTER(app, CONFIG_BLE_NUS_SAMPLE_LOG_LEVEL);
 
@@ -385,6 +385,14 @@ int main(void)
 		LOG_ERR("Failed to initialize Nordic uart service, err %d", err);
 		return -1;
 	}
+
+	/* Adding the Nordic UART Service UUID to the scan response data. */
+	ble_uuid_t adv_uuid_list[] = {
+		/* Using a vendor specific UUID type that was added during NUS initialization. */
+		{ .uuid = BLE_UUID_NUS_SERVICE, .type = ble_nus.uuid_type },
+	};
+	ble_adv_cfg.sr_data.uuid_lists.complete.uuid = &adv_uuid_list[0];
+	ble_adv_cfg.sr_data.uuid_lists.complete.len = ARRAY_SIZE(adv_uuid_list);
 
 	LOG_INF("Services initialized");
 
