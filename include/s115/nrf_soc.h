@@ -52,7 +52,6 @@
 #include "nrf_svc.h"
 #include "nrf_error.h"
 #include "nrf_error_soc.h"
-#include "nrfx.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -83,8 +82,7 @@ extern "C" {
 #define SD_EVT_IRQn                       (SWI01_IRQn)        /**< SoftDevice Event IRQ number. Used for both protocol events and SoC events. */
 #define SD_EVT_IRQHandler                 (SWI01_IRQHandler)  /**< SoftDevice Event IRQ handler. Used for both protocol events and SoC events.*/
 #define RADIO_NOTIFICATION_IRQn           (SWI02_IRQn)        /**< The radio notification IRQ number. */
-#define RADIO_NOTIFICATION_IRQHandler     (SWI02_IRQHandler)  /**< The radio notification IRQ handler.
-                                                                       The default interrupt priority for this handler is set to 6 */
+#define RADIO_NOTIFICATION_IRQHandler     (SWI02_IRQHandler)  /**< The radio notification IRQ handler. */
 #define SD_EVT_IRQ_PRI                    (6)                 /**< SoftDevice Event IRQ priority, set to Application priority level LOW */
 #define RADIO_NOTIFICATION_IRQ_PRI        (6)                 /**< Radio notification IRQ priority, set to Application priority level LOW */
 #define NRF_RADIO_LENGTH_MIN_US           (100)               /**< The shortest allowed radio timeslot, in microseconds. */

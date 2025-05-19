@@ -62,7 +62,7 @@ extern "C" {
  * @{ */
 
 /** @brief The major version for the SoftDevice binary distributed with this header file. */
-#define SD_MAJOR_VERSION  (0)
+#define SD_MAJOR_VERSION  (9)
 
 /** @brief The minor version for the SoftDevice binary distributed with this header file. */
 #define SD_MINOR_VERSION  (0)
@@ -91,7 +91,7 @@ extern "C" {
 
 /** @brief Defines the SoftDevice Information Structure location (address) as an offset from
 the start of the SoftDevice */
-#define SOFTDEVICE_INFO_STRUCT_OFFSET (0x2c)
+#define SOFTDEVICE_INFO_STRUCT_OFFSET (0x2000)
 
 /** @brief Defines the offset for the SoftDevice Information Structure size value relative to the
  *         SoftDevice base address. The size value is of type uint8_t. */

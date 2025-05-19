@@ -156,6 +156,7 @@ enum BLE_GAP_TX_POWER_ROLES
   BLE_GAP_TX_POWER_ROLE_CONN      = 3,           /**< Connection role. */
 };
 
+
 /** @} */
 
 /**@addtogroup BLE_GAP_DEFINES Defines
