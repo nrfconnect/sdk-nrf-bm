@@ -14,15 +14,6 @@
 
 LOG_MODULE_REGISTER(ble_nus, CONFIG_BLE_NUS_LOG_LEVEL);
 
-/** Used vendor specific UUID. */
-#define BLE_NUS_UUID_BASE { 0x9E, 0xCA, 0xDC, 0x24, 0x0E, 0xE5, 0xA9, 0xE0,                        \
-			    0x93, 0xF3, 0xA3, 0xB5, 0x00, 0x00, 0x40, 0x6E }
-
-/** The UUID of the TX Characteristic. */
-#define BLE_UUID_NUS_TX_CHARACTERISTIC 0x0003
-/** The UUID of the RX Characteristic. */
-#define BLE_UUID_NUS_RX_CHARACTERISTIC 0x0002
-
 static struct ble_nus_client_context contexts[CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT];
 
 static struct ble_nus_client_context *ble_nus_client_context_get(uint16_t conn_handle)
