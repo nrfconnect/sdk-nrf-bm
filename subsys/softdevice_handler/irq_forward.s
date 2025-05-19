@@ -18,7 +18,7 @@
     .arch armv8-m.main
 
 #include "irq_connect.h"
-#include "nrf_sd_isr_vectors.h"
+#include "nrf_sd_isr.h"
 
     .section .text.STACK_INTERRUPTS, "x"
 
@@ -49,7 +49,7 @@ ConsumeOrForwardIRQ:
     .globl  SVC_Handler
     .type   SVC_Handler, %function
 SVC_Handler:
-    LDR   R0, =SOFTDEVICE_SVC_HANDLER_OFFSET
+    LDR   R0, =NRF_SD_ISR_OFFSET_SVC
 ForwardIRQ_ForwardToSoftDevice:
     /* SoftDevice interrupt vector is located in softdevice_vector_forward_address */
     LDR   R1, =softdevice_vector_forward_address
@@ -68,7 +68,7 @@ ForwardIRQ_ForwardToSoftDevice:
     .globl  CallSoftDeviceResetHandler
     .type   CallSoftDeviceResetHandler, %function
 CallSoftDeviceResetHandler:
-    LDR   R0, =SOFTDEVICE_RESET_HANDLER_OFFSET
+    LDR   R0, =NRF_SD_ISR_OFFSET_RESET
     /* SoftDevice interrupt vector is located in softdevice_vector_forward_address */
     LDR   R1, =softdevice_vector_forward_address
     LDR   R1, [R1]
@@ -87,7 +87,7 @@ CallSoftDeviceResetHandler:
     .type HardFault_Handler, "function"
 HardFault_Handler:
     LDR   R3, =C_HardFault_Handler
-    LDR   R0, =SOFTDEVICE_HARDFAULT_HANDLER_OFFSET
+    LDR   R0, =NRF_SD_ISR_OFFSET_HARDFAULT
     LDR   R1, =ConsumeOrForwardIRQ
     BX    R1
 
@@ -98,7 +98,7 @@ HardFault_Handler:
     .type CLOCK_POWER_IRQHandler, "function"
 CLOCK_POWER_IRQHandler:
     LDR   R3, =C_POWER_CLOCK_Handler
-    LDR   R0, =SOFTDEVICE_CLOCK_POWER_IRQHANDLER_OFFSET
+    LDR   R0, =NRF_SD_ISR_OFFSET_CLOCK_POWER
     LDR   R1, =ConsumeOrForwardIRQ
     BX    R1
 
@@ -109,7 +109,7 @@ CLOCK_POWER_IRQHandler:
     .type RADIO_0_IRQHandler, "function"
 RADIO_0_IRQHandler:
     LDR   R3, =C_RADIO_Handler
-    LDR   R0, =SOFTDEVICE_RADIO_0_IRQHANDLER_OFFSET
+    LDR   R0, =NRF_SD_ISR_OFFSET_RADIO_0
     LDR   R1, =ConsumeOrForwardIRQ
     BX    R1
 
@@ -120,7 +120,7 @@ RADIO_0_IRQHandler:
     .type TIMER10_IRQHandler, "function"
 TIMER10_IRQHandler:
     LDR   R3, =C_TIMER0_Handler
-    LDR   R0, =SOFTDEVICE_TIMER10_IRQHANDLER_OFFSET
+    LDR   R0, =NRF_SD_ISR_OFFSET_TIMER10
     LDR   R1, =ConsumeOrForwardIRQ
     BX    R1
 
@@ -131,7 +131,7 @@ TIMER10_IRQHandler:
     .type GRTC_3_IRQHandler, "function"
 GRTC_3_IRQHandler:
     LDR   R3, =C_RTC0_Handler
-    LDR   R0, =SOFTDEVICE_GRTC_3_IRQHANDLER_OFFSET
+    LDR   R0, =NRF_SD_ISR_OFFSET_GRTC_3
     LDR   R1, =ConsumeOrForwardIRQ
     BX    R1
 
@@ -142,7 +142,7 @@ GRTC_3_IRQHandler:
     .type CRACEN_IRQHandler, "function"
 CRACEN_IRQHandler:
     LDR   R3, =C_RNG_Handler
-    LDR   R0, =SOFTDEVICE_CRACEN_IRQHANDLER_OFFSET
+    LDR   R0, =NRF_SD_ISR_OFFSET_CRACEN
     LDR   R1, =ConsumeOrForwardIRQ
     BX    R1
 
@@ -153,7 +153,7 @@ CRACEN_IRQHandler:
     .type ECB00_IRQHandler, "function"
 ECB00_IRQHandler:
     LDR   R3, =C_ECB_Handler
-    LDR   R0, =SOFTDEVICE_ECB00_IRQHANDLER_OFFSET
+    LDR   R0, =NRF_SD_ISR_OFFSET_ECB00
     LDR   R1, =ConsumeOrForwardIRQ
     BX    R1
 
@@ -164,7 +164,7 @@ ECB00_IRQHandler:
     .type AAR00_CCM00_IRQHandler, "function"
 AAR00_CCM00_IRQHandler:
     LDR   R3, =C_CCM_Handler
-    LDR   R0, =SOFTDEVICE_AAR00_CCM00_IRQHANDLER_OFFSET
+    LDR   R0, =NRF_SD_ISR_OFFSET_AAR00_CCM00
     LDR   R1, =ConsumeOrForwardIRQ
     BX    R1
 
@@ -175,7 +175,7 @@ AAR00_CCM00_IRQHandler:
     .type SWI00_IRQHandler, "function"
 SWI00_IRQHandler:
     LDR   R3, =C_SIGNALLING_Handler
-    LDR   R0, =SOFTDEVICE_SWI00_IRQHANDLER_OFFSET
+    LDR   R0, =NRF_SD_ISR_OFFSET_SWI00
     LDR   R1, =ConsumeOrForwardIRQ
     BX    R1
 
