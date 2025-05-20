@@ -229,5 +229,11 @@ Your directory structure should now look similar to this:
 Next steps
 **********
 
-You can now proceed to test the :ref:`samples` included in this version of the |BMshort|.
+You can now proceed to test the :ref:`samples` included in this version of |BMshort|.
+
+The samples can be found in the :file:`nrf-bm/samples` folder, and are divided into two subfolders:
+
+* :file:`bluetooth` for the samples showcasing BLE functionalities using the SoftDevice.
+* :file:`peripherals` for the samples showcasing various peripheral functionalities that do not require the SoftDevice.
+
 Each sample documentation contains full information on how to build, flash, and test the respective sample.
