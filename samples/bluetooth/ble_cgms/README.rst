@@ -1,4 +1,4 @@
-.. _ble_cgm_sample:
+.. _ble_cgms_sample:
 
 Bluetooth: Continuous Glucose Monitoring Sertvice
 #################################################
@@ -36,7 +36,7 @@ Programming the S115 SoftDevice
 
 .. include:: /includes/softdevice_flash.txt
 
-.. _ble_hrs_sample_testing:
+.. _ble_cgms_sample_testing:
 
 Building and running
 ********************
