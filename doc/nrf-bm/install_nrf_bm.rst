@@ -85,7 +85,8 @@ Every nRF Connect SDK release consists of:
 
    .. group-tab:: Git
 
-      Make sure that Git is installed on your system before starting this procedure.
+      .. important::
+         Make sure that ``git`` is installed on your system before starting this procedure.
 
       Complete the following steps to clone the |BMshort| repositories.
 
