@@ -22,6 +22,9 @@ Install the following software tools:
      After downloading the nRF Util executable, move it to a directory that is in the system :envvar:`PATH`.
      On macOS and Linux, the downloaded file also needs to be given execute permission by typing `chmod +x nrfutil` or by checking the checkbox in the file properties.
 
+  .. important::
+     On Windows, nRF Util requires the installation of the `latest Microsoft Visual C++ Redistributable version`_.
+
 * The nRF Util ``device`` command.
   This command allows you to perform various operations on Nordic devices.
 
