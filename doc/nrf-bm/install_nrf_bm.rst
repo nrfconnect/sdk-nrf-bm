@@ -76,7 +76,7 @@ When you install the toolchain for the first time, the installed version is auto
 Getting the code
 ****************
 
-Every nRF Connect SDK release consists of:
+Every |BMlong| release consists of:
 
 * A combination of Git repositories at different versions and revisions, managed together by West.
 * An archive containing a source mirror of the Git repositories required to get started with |BMshort|.
