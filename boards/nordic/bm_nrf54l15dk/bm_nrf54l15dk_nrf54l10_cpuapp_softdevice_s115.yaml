@@ -1,8 +1,8 @@
 # Copyright (c) 2025 Nordic Semiconductor ASA
 # SPDX-License-Identifier: Apache-2.0
 
-identifier: bm_nrf54l15dk/nrf54l10/cpuapp/s115
-name: Bare_Metal-nRF54L15-DK-nRF54L10-Application-S115
+identifier: bm_nrf54l15dk/nrf54l10/cpuapp/softdevice_s115
+name: Bare_Metal-nRF54L15-DK-nRF54L10-Application-SoftDevice-S115
 type: mcu
 arch: arm
 toolchain:

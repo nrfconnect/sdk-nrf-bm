@@ -6,16 +6,16 @@ tests:
     build_only: true
     integration_platforms:
       - bm_nrf54l15dk/nrf54l05/cpuapp
-      - bm_nrf54l15dk/nrf54l05/cpuapp/s115
+      - bm_nrf54l15dk/nrf54l05/cpuapp/softdevice_s115
       - bm_nrf54l15dk/nrf54l10/cpuapp
-      - bm_nrf54l15dk/nrf54l10/cpuapp/s115
+      - bm_nrf54l15dk/nrf54l10/cpuapp/softdevice_s115
       - bm_nrf54l15dk/nrf54l15/cpuapp
-      - bm_nrf54l15dk/nrf54l15/cpuapp/s115
+      - bm_nrf54l15dk/nrf54l15/cpuapp/softdevice_s115
     platform_allow:
       - bm_nrf54l15dk/nrf54l05/cpuapp
-      - bm_nrf54l15dk/nrf54l05/cpuapp/s115
+      - bm_nrf54l15dk/nrf54l05/cpuapp/softdevice_s115
       - bm_nrf54l15dk/nrf54l10/cpuapp
-      - bm_nrf54l15dk/nrf54l10/cpuapp/s115
+      - bm_nrf54l15dk/nrf54l10/cpuapp/softdevice_s115
       - bm_nrf54l15dk/nrf54l15/cpuapp
-      - bm_nrf54l15dk/nrf54l15/cpuapp/s115
+      - bm_nrf54l15dk/nrf54l15/cpuapp/softdevice_s115
     tags: ci_build
