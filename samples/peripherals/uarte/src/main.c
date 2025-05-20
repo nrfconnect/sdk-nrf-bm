@@ -18,7 +18,8 @@
 static const nrfx_uarte_t uarte_inst = NRFX_UARTE_INSTANCE(BOARD_APP_UARTE_INST);
 
 /* Receive buffer used in UART ISR callback */
-static char uarte_rx_buf[1];
+static uint8_t uarte_rx_buf[4];
+static int buf_idx;
 
 /* Handle data received from UART. */
 static void uarte_rx_handler(char *data, size_t data_len)
@@ -44,7 +45,7 @@ static void uarte_rx_handler(char *data, size_t data_len)
 			printk("Echo data, len %d\n", rx_buf_idx);
 
 			/* Add newline if not already output at the end */
-			if (rx_buf[rx_buf_idx - 1] != '\n') {
+			if ((rx_buf[rx_buf_idx - 1] != '\n') && (rx_buf_idx < sizeof(rx_buf))) {
 				rx_buf[rx_buf_idx++] = '\n';
 			}
 
@@ -70,10 +71,13 @@ static void uarte_event_handler(nrfx_uarte_event_t const *event, void *ctx)
 		}
 
 		/* Provide new UART RX buffer. */
-		nrfx_uarte_rx(&uarte_inst, uarte_rx_buf, sizeof(uarte_rx_buf));
+		nrfx_uarte_rx_enable(&uarte_inst, 0);
 		break;
 	case NRFX_UARTE_EVT_RX_BUF_REQUEST:
-		nrfx_uarte_rx_buffer_set(&uarte_inst, uarte_rx_buf, sizeof(uarte_rx_buf));
+		nrfx_uarte_rx_buffer_set(&uarte_inst, &uarte_rx_buf[buf_idx], 1);
+
+		buf_idx++;
+		buf_idx = (buf_idx < sizeof(uarte_rx_buf)) ? buf_idx : 0;
 		break;
 	case NRFX_UARTE_EVT_ERROR:
 		printk("uarte error %#x\n", event->data.error.error_mask);
@@ -156,7 +160,7 @@ int main(void)
 	}
 
 	/* Start reception */
-	err = nrfx_uarte_rx(&uarte_inst, uarte_rx_buf, sizeof(uarte_rx_buf));
+	err = nrfx_uarte_rx_enable(&uarte_inst, 0);
 	if (err != NRFX_SUCCESS) {
 		printk("UART RX failed, nrfx err %d\n", err);
 	}
