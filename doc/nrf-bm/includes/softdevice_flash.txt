@@ -1,12 +1,34 @@
-To flash the S115 SoftDevice binary to your device, open the terminal and run the following commands from the :file:`nrf-bm` folder:
+To flash the S115 SoftDevice binary to your device, open the terminal and run the following commands:
 
-1. First, make sure that your device is erased:
+1. First, move into the :file:`nrf-bm` working directory:
+
+   .. tabs::
+
+      .. group-tab:: Windows
+
+         .. code-block:: console
+
+            cd C:/ncs/v3.0.1/nrf-bm
+
+      .. group-tab:: Linux
+
+         .. code-block:: console
+
+            cd ~/ncs/v3.0.1/nrf-bm
+
+      .. group-tab:: macOS
+
+         .. code-block:: console
+
+            cd /opt/nordic/ncs/v3.0.1/nrf-bm
+
+#. Then, make sure that your device is erased:
 
    .. code-block:: console
 
       nrfutil device erase
 
-#. Then, flash the SoftDevice binary:
+#. Finally, flash the SoftDevice binary:
 
    .. code-block:: console
 
