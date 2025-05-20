@@ -14,13 +14,11 @@ Install prerequisites
 
 Install the following software tools:
 
-
 * The latest version of nRF Util, a unified command-line utility for Nordic Semiconductor products.
   Check `operating system versions that support this tool`_ and download the installer - `nRF Util Downloads`_.
 
-  .. note::
-     After downloading the nRF Util executable, move it to a directory that is in the system :envvar:`PATH`.
-     On macOS and Linux, the downloaded file also needs to be given execute permission by typing `chmod +x nrfutil` or by checking the checkbox in the file properties.
+  * After downloading the nRF Util executable, move it to a directory that is in the system :envvar:`PATH`.
+  * On macOS and Linux, the downloaded file also needs to be given execute permission by typing `chmod +x nrfutil` or by checking the checkbox in the file properties.
 
   .. important::
      On Windows, nRF Util requires the installation of the `latest Microsoft Visual C++ Redistributable version`_.
