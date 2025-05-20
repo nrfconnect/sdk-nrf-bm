@@ -15,6 +15,7 @@
 .. ### Installation
 
 .. _`nRF Util`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/installation/recommended_versions.html#nrf_util
+.. _`latest Microsoft Visual C++ Redistributable version`: https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-microsoft-visual-c-redistributable-version
 .. _`nRF Command Line Tools`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/installation/recommended_versions.html#nrf_command_line_tools
 .. _`operating system versions that support this tool`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/installation/recommended_versions.html#additional-nordic-sw-tools
 .. _`nRF Util Downloads`: https://www.nordicsemi.com/Products/Development-tools/nRF-Util/Download#infotabs
