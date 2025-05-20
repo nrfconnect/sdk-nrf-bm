@@ -1,7 +1,7 @@
 .. _ble_cgms_sample:
 
-Bluetooth: Continuous Glucose Monitoring Sertvice
-#################################################
+Bluetooth: Continuous Glucose Monitoring Service
+################################################
 
 .. contents::
    :local:
