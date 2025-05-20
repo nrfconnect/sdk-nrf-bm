@@ -10,4 +10,4 @@ To flash the S115 SoftDevice binary to your device, open the terminal and run th
 
    .. code-block:: console
 
-      nrfutil device program --firmware subsys/softdevice/hex/s115/s115_9.0.0-2.prototype_softdevice.hex
+      nrfutil device program --firmware subsys/softdevice/hex/s115/s115_9.0.0-2.prototype+offset-0x15D000_softdevice.hex
