@@ -76,54 +76,139 @@ When you install the toolchain for the first time, the installed version is auto
 Getting the code
 ****************
 
-Every nRF Connect SDK release consists of a combination of Git repositories at different versions and revisions, managed together by West.
-Make sure that Git is installed on your system before starting this procedure.
+Every nRF Connect SDK release consists of:
 
-Complete the following steps to clone the |BMshort| repositories.
+* A combination of Git repositories at different versions and revisions, managed together by West.
+* An archive containing a source mirror of the Git repositories required to get started with |BMshort|.
 
-1. Open the nRF Connect extension in |VSC| by clicking its icon in the :guilabel:`Activity Bar`.
-#. In the extension's :guilabel:`Welcome View`, click on :guilabel:`Manage SDKs`.
-   The list of actions appears in the |VSC|'s quick pick.
-#. Click :guilabel:`Install SDK`.
-   The list of available stable SDK versions appears in the |VSC|'s quick pick.
-#. Select the SDK version to install.
-   For this release of |BMshort|, use version |ncs_release| of the SDK.
+.. tabs::
 
-   The SDK installation starts and it can take several minutes.
-#. Open command line and navigate to the SDK installation folder.
-   The default location to install the SDK is :file:`C:/ncs/v3.0.1` on Windows, :file:`~/ncs/v3.0.1` on Linux, and :file:`/opt/nordic/ncs/v3.0.1` on macOS.
-#. Clone the `sdk-nrf-bm`_ repository.
+   .. group-tab:: Git
 
-   .. tabs::
+      Make sure that Git is installed on your system before starting this procedure.
 
-      .. group-tab:: Windows
+      Complete the following steps to clone the |BMshort| repositories.
+
+      1. Open the nRF Connect extension in |VSC| by clicking its icon in the :guilabel:`Activity Bar`.
+      #. In the extension's :guilabel:`Welcome View`, click on :guilabel:`Manage SDKs`.
+         The list of actions appears in the |VSC|'s quick pick.
+      #. Click :guilabel:`Install SDK`.
+         The list of available stable SDK versions appears in the |VSC|'s quick pick.
+      #. Select the SDK version to install.
+         For this release of |BMshort|, use version |ncs_release| of the SDK.
+
+         The SDK installation starts and it can take several minutes.
+      #. Open command line and navigate to the SDK installation folder.
+         The default location to install the SDK is :file:`C:/ncs/v3.0.1` on Windows, :file:`~/ncs/v3.0.1` on Linux, and :file:`/opt/nordic/ncs/v3.0.1` on macOS.
+      #. Clone the `sdk-nrf-bm`_ repository.
+
+         .. tabs::
+
+            .. group-tab:: Windows
+
+               .. code-block:: console
+
+                  cd C:/ncs/v3.0.1
+                  git clone https://github.com/nrfconnect/sdk-nrf-bm.git nrf-bm
+
+            .. group-tab:: Linux
+
+               .. code-block:: console
+
+                  cd ~/ncs/v3.0.1
+                  git clone https://github.com/nrfconnect/sdk-nrf-bm.git nrf-bm
+
+            .. group-tab:: macOS
+
+               .. code-block:: console
+
+                  cd /opt/nordic/ncs/v3.0.1
+                  git clone https://github.com/nrfconnect/sdk-nrf-bm.git nrf-bm
+
+
+      #. In |VSC|, click :guilabel:`Manage SDKs` -> :guilabel:`Manage West Workspace...` -> :guilabel:`Set West Manifest Repository`.
+         From the list that appears, select the ``nrf-bm`` west manifest file.
+      #. Then, click :guilabel:`Manage SDKs` -> :guilabel:`Manage West Workspace...` -> :guilabel:`West Update`.
+         Your local repositories will be updated.
+
+   .. group-tab:: SDK Archive
+
+      Complete the following steps to get the |BMshort| code using the SDK archive.
+
+      1. Download the archive from the following link:
+
+         https://files.nordicsemi.com/artifactory/ncs-src-mirror/external/sdk-nrf-bm/v0.7.0/src.tar.gz
+
+      #. Extract the archive to the recommended location.
+
+         .. tabs::
+
+            .. group-tab:: Windows
+
+               * Ensure the folder :file:`C:/ncs/v3.0.1` exists.
+                 If it does not exist, create it in File Explorer or by running the following command in Command Prompt:
+
+                  .. code-block:: console
+
+                     mkdir C:\ncs\v3.0.1
+
+               * Right-click the downloaded :file:`src.tar.gz` file.
+               * Select :guilabel:`Extract All...` and choose :file:`C:/ncs/v3.0.1` as destination.
+
+            .. group-tab:: Linux
+
+               .. code-block:: console
+
+                  mkdir -p ~/ncs/v3.0.1
+                  tar -xzf src.tar.gz -C ~/ncs/v3.0.1
+
+            .. group-tab:: macOS
+
+               .. code-block:: console
+
+                  sudo mkdir -p /opt/nordic/ncs/v3.0.1
+                  sudo tar -xzf src.tar.gz -C /opt/nordic/ncs/v3.0.1
+
+         .. note::
+            The extraction can take several minutes.
+
+      #. Open the nRF Connect extension in |VSC|.
+
+      #. In the extension's :guilabel:`Welcome View`, click on :guilabel:`Manage toolchains` and select :guilabel:`Open terminal profile`.
+         The nRF Connect terminal opens with the correct environment.
+
+      #. Navigate to the extracted SDK folder.
+
+         .. tabs::
+
+            .. group-tab:: Windows
+
+               .. code-block:: console
+
+                  cd C:/ncs/v3.0.1
+
+            .. group-tab:: Linux
+
+               .. code-block:: console
+
+                  cd ~/ncs/v3.0.1
+
+            .. group-tab:: macOS
+
+               .. code-block:: console
+
+                  cd /opt/nordic/ncs/v3.0.1
+
+      #. Run the following command to export the Zephyr CMake package:
 
          .. code-block:: console
 
-            cd C:/ncs/v3.0.1
-            git clone https://github.com/nrfconnect/sdk-nrf-bm.git nrf-bm
+            west zephyr-export
 
-      .. group-tab:: Linux
+      #. In the extension's :guilabel:`Welcome View`, click the refresh icon next to :guilabel:`Manage SDKs`.
+         The SDK list will be updated.
 
-         .. code-block:: console
-
-            cd ~/ncs/v3.0.1
-            git clone https://github.com/nrfconnect/sdk-nrf-bm.git nrf-bm
-
-      .. group-tab:: macOS
-
-         .. code-block:: console
-
-            cd /opt/nordic/ncs/v3.0.1
-            git clone https://github.com/nrfconnect/sdk-nrf-bm.git nrf-bm
-
-
-#. In |VSC|, click :guilabel:`Manage SDKs` -> :guilabel:`Manage West Workspace...` -> :guilabel:`Set West Manifest Repository`.
-   From the list that appears, select the ``nrf-bm`` west manifest file.
-#. Then, click :guilabel:`Manage SDKs` -> :guilabel:`Manage West Workspace...` -> :guilabel:`West Update`.
-   Your local repositories will be updated.
-
-Your directory structure now looks similar to this:
+Your directory structure should now look similar to this:
 
 .. code-block:: none
 
