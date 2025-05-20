@@ -7,5 +7,5 @@ board:
     variants:
     - name: no_softdevice
       cpucluster: cpuapp
-    - name: s115
+    - name: softdevice_s115
       cpucluster: cpuapp
