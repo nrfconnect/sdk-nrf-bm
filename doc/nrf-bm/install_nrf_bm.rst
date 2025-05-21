@@ -98,7 +98,9 @@ Every |BMlong| release consists of:
       #. Select the SDK version to install.
          For this release of |BMshort|, use version |ncs_release| of the SDK.
 
-         The SDK installation starts and it can take several minutes.
+         .. note::
+            The SDK installation starts and it can take several minutes.
+
       #. Open command line and navigate to the SDK installation folder.
          The default location to install the SDK is :file:`C:/ncs/v3.0.1` on Windows, :file:`~/ncs/v3.0.1` on Linux, and :file:`/opt/nordic/ncs/v3.0.1` on macOS.
       #. Clone the `sdk-nrf-bm`_ repository.
