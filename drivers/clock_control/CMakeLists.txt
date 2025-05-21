@@ -6,7 +6,4 @@
 
 zephyr_library_amend()
 
-zephyr_library_sources_ifdef(
-  CONFIG_BM_UARTE_CONSOLE
-  console_bm_uarte.c
-)
+zephyr_library_property(ALLOW_EMPTY TRUE)
