@@ -116,6 +116,8 @@ Every |BMlong| release consists of:
 
                   cd C:/ncs/v3.0.1
                   git clone https://github.com/nrfconnect/sdk-nrf-bm.git nrf-bm
+                  cd nrf-bm
+                  git checkout v0.7.0
 
             .. group-tab:: Linux
 
@@ -123,6 +125,8 @@ Every |BMlong| release consists of:
 
                   cd ~/ncs/v3.0.1
                   git clone https://github.com/nrfconnect/sdk-nrf-bm.git nrf-bm
+                  cd nrf-bm
+                  git checkout v0.7.0
 
             .. group-tab:: macOS
 
@@ -130,7 +134,8 @@ Every |BMlong| release consists of:
 
                   cd /opt/nordic/ncs/v3.0.1
                   git clone https://github.com/nrfconnect/sdk-nrf-bm.git nrf-bm
-
+                  cd nrf-bm
+                  git checkout v0.7.0
 
       #. In |VSC|, click :guilabel:`Manage SDKs` -> :guilabel:`Manage West Workspace...` -> :guilabel:`Set West Manifest Repository`.
          From the list that appears, select the ``nrf-bm`` west manifest file.
