@@ -36,8 +36,11 @@ Install the following software tools:
 
       nrfutil device --help
 
-*   The |jlink_ver| of SEGGER J-Link.
-    Download it from the `J-Link Software and Documentation Pack`_ page.
+* The |jlink_ver| of SEGGER J-Link.
+  Download it from the `J-Link Software and Documentation Pack`_ page.
+
+   * If you are using Windows, make sure to select :guilabel:`Install legacy USB Driver for J-Link` during the installation.
+     The driver is required for the support of Nordic Semiconductor devices.
 
 * |VSC|:
 
