@@ -36,6 +36,7 @@
 #include <bluetooth/services/ble_dis.h>
 
 #include <zephyr/logging/log.h>
+#include <zephyr/logging/log_ctrl.h>
 
 LOG_MODULE_REGISTER(app, CONFIG_BLE_CGMS_SAMPLE_LOG_LEVEL);
 
@@ -830,6 +831,9 @@ int main(void)
 
 	/* Enter main loop. */
 	while (true) {
+		while (LOG_PROCESS()) {
+			/* Empty. */
+		}
 		sd_app_evt_wait();
 	}
 }
