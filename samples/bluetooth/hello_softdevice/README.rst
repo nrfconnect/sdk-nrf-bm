@@ -27,6 +27,14 @@ The sample supports the following development kits:
      - PCA10156
      - S115
      - bm_nrf54l15dk/nrf54l15/cpuapp/softdevice_s115
+   * - `nRF54L15 DK`_ (emulating nRF54L10)
+     - PCA10156
+     - S115
+     - bm_nrf54l15dk/nrf54l10/cpuapp/softdevice_s115
+   * - `nRF54L15 DK`_ (emulating nRF54L05)
+     - PCA10156
+     - S115
+     - bm_nrf54l15dk/nrf54l05/cpuapp/softdevice_s115
 
 Overview
 ********
