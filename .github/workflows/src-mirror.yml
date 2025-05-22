@@ -1,25 +1,57 @@
 name: src-mirror
 
 on:
+  workflow_dispatch:
+    inputs:
+      git-ref:
+        description: 'Branch, tag or SHA to checkout'
+        required: true
+        default: 'main'
   push:
     tags:
       - '*'
+  pull_request:
+    types:
+      - opened
+      - synchronize
+    paths:
+      - .github/workflows/src-mirror.yml
+
+concurrency:
+  group: src-mirror-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  zip-and-upload:
-    runs-on: ubuntu-24.04-16cores
 
+  # Tar entire project west workspace, prune, and upload to artifact service.
+  standard:
+    runs-on: ubuntu-24.04-16cores
     steps:
-      - name: Upload source to Artifactory
-        uses: nrfconnect/action-src-mirror@main
+      - name: Upload src.tar.gz
+        uses: nrfconnect/action-src-mirror@development
         with:
-          git-ref: ${{ github.ref_name }}
-          git-fetch-depth: '0'
-          path: 'workspace/sdk-nrf-bm'
+          path: 'ncs-bm'
           west-update-args: ''
-          artifactory-url: 'https://eu.files.nordicsemi.com/artifactory'
-          artifactory-repository: 'ncs-src-mirror'
-          artifactory-target-prefix: 'external/sdk-nrf-bm'
-          artifactory-target-file-name: 'src.tar.gz'
+          artifactory-path: >-
+            ${{ (github.ref_type != 'tag') &&
+              format('ncs-src-mirror/internal/{0}/{1}/src.tar.gz', github.event.repository.name, github.ref_name) ||
+              format('ncs-src-mirror/external/{0}/{1}/src.tar.gz', github.event.repository.name, github.ref_name) }}
           artifactory-user: ${{ secrets.COM_NORDICSEMI_FILES_USERNAME }}
           artifactory-pass: ${{ secrets.COM_NORDICSEMI_FILES_PASSWORD }}
+
+  # west update with --narrow & --shallow gives smaller size but no git history.
+  # narrow:
+  #   runs-on: ubuntu-24.04-16cores
+  #   steps:
+  #     - name: Upload src.tar.gz
+  #       uses: nrfconnect/action-src-mirror@development
+  #       with:
+  #         path: 'ncs-bm'
+  #         west-update-args: '--narrow'
+  #         git-fetch-depth: 1
+  #         artifactory-path: >-
+  #           ${{ (github.ref_type != 'tag') &&
+  #             format('ncs-src-mirror/internal/{0}/{1}/src-narrow.tar.gz', github.event.repository.name, github.ref_name) ||
+  #             format('ncs-src-mirror/external/{0}/{1}/src-narrow.tar.gz', github.event.repository.name, github.ref_name) }}
+  #         artifactory-user: ${{ secrets.COM_NORDICSEMI_FILES_USERNAME }}
+  #         artifactory-pass: ${{ secrets.COM_NORDICSEMI_FILES_PASSWORD }}
