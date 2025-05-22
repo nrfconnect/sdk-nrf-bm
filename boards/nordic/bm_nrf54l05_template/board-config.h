@@ -10,6 +10,8 @@
  * @{
  */
 
+/* Change this file to match your own board. */
+
 #ifndef __BM_NRF54L05_TEMPLATE_BOARD_CONFIG
 #define __BM_NRF54L05_TEMPLATE_BOARD_CONFIG
 
