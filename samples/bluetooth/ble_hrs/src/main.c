@@ -10,6 +10,7 @@
 #include <ble_conn_params.h>
 #include <ble_gap.h>
 #include <nrf_soc.h>
+#include <bluetooth/services/uuid.h>
 #include <bluetooth/services/ble_bas.h>
 #include <bluetooth/services/ble_dis.h>
 #include <bluetooth/services/ble_hrs.h>
@@ -314,12 +315,19 @@ int main(void)
 {
 	int err;
 	uint8_t body_sensor_location = BLE_HRS_BODY_SENSOR_LOCATION_FINGER;
+	ble_uuid_t adv_uuid_list[] = {
+		{ .uuid = BLE_UUID_HEART_RATE_SERVICE, .type = BLE_UUID_TYPE_BLE },
+	};
 	struct ble_adv_config ble_adv_cfg = {
 		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
 		.evt_handler = ble_adv_evt_handler,
 		.adv_data = {
 			.name_type = BLE_ADV_DATA_FULL_NAME,
 			.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE,
+		},
+		.sr_data.uuid_lists.complete = {
+			.len = ARRAY_SIZE(adv_uuid_list),
+			.uuid = &adv_uuid_list[0],
 		},
 	};
 	struct ble_bas_config bas_cfg = {
