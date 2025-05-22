@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - '*'
+  pull_request:
+    types:
+      - opened
+      - synchronize
+    paths:
+      - .github/workflows/src-mirror.yml
 
 jobs:
   zip-and-upload:
@@ -15,7 +21,7 @@ jobs:
         with:
           git-ref: ${{ github.ref_name }}
           git-fetch-depth: '0'
-          path: 'workspace/sdk-nrf-bm'
+          path: 'ncs-bm'
           west-update-args: ''
           artifactory-url: 'https://eu.files.nordicsemi.com/artifactory'
           artifactory-repository: 'ncs-src-mirror'
