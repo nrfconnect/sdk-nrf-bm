@@ -63,7 +63,7 @@ This sample can be found under :file:`samples/bluetooth/ble_lbs/` in the |BMshor
 Testing
 =======
 
-You can test this sample using `nRF Connect for Desktop`_ with the `Bluetooth Low Energy app`_ and the `Serial Terminal app`.
+You can test this sample using `nRF Connect for Desktop`_ with the `Bluetooth Low Energy app`_ and the `Serial Terminal app`_.
 Make sure that these are installed before starting the testing procedure.
 
 1. Compile and program the application.
@@ -74,7 +74,7 @@ Make sure that these are installed before starting the testing procedure.
    If the device is not advertising, you might need to use the :guilabel:`Reset Board` option in |VSC|.
 #. :guilabel:`Connect` to your device.
    The terminal output in |VSC| indicates ``Peer connected``.
-#. In nRF Connect for Desktop, go to **Nordic LED and Button Service** and change **Blinky LED state** to ``01``.
+#. In nRF Connect for Desktop, go to :guilabel:`Nordic LED and Button Service` and change :guilabel:`Blinky LED state` to :guilabel:`01`.
    The terminal output in |VSC| indicates ``Received LED ON!``.
-#. Change the **Blinky LED state** value back to ``00``.
+#. Change the :guilabel:`Blinky LED state` value back to :guilabel:`00`.
    The terminal output in |VSC| indicates ``Received LED OFF!``.

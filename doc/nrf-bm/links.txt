@@ -26,12 +26,15 @@
 .. _`nrf-udev`: https://github.com/NordicSemiconductor/nrf-udev
 .. _`nRF Connect for VS Code Extension Pack`: https://marketplace.visualstudio.com/items?itemName=nordic-semiconductor.nrf-connect-extension-pack
 
+.. ### VSC
+
 .. _`nRF Connect for Visual Studio Code`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/installation/recommended_versions.html#requirements-nrfvsc
 .. _`Visual Studio Code download page`: https://code.visualstudio.com/download
 .. _`freestanding application`: https://docs.nordicsemi.com/bundle/nrf-connect-vscode/page/guides/applications.html
 .. _`Applications View`: https://docs.nordicsemi.com/bundle/nrf-connect-vscode/page/reference/ui_sidebar_applications.html
 .. _`Actions View`: https://docs.nordicsemi.com/bundle/nrf-connect-vscode/page/reference/ui_sidebar_actions.html
 .. _`Details View`: https://docs.nordicsemi.com/bundle/nrf-connect-vscode/page/reference/ui_sidebar_details.html
+.. _`Connected Devices View`: https://docs.nordicsemi.com/bundle/nrf-connect-vscode/page/reference/ui_sidebar_connected_devices.html
 
 .. ### Samples
 
@@ -43,3 +46,13 @@
 .. _`Bluetooth Low Energy app`: https://docs.nordicsemi.com/bundle/nrf-connect-ble/page/index.html
 .. _`Serial Terminal app`: https://docs.nordicsemi.com/bundle/nrf-connect-serial-terminal/page/index.html
 .. _`Configuring Kconfig`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/app_dev/config_and_build/kconfig/index.html
+
+.. ### Release notes
+
+.. _`s115_9.0.0-2.prototype release notes`: _static/s115_9.0.0-2.prototype_release-notes.pdf
+
+.. ### docs.nordicsemi
+
+.. _`nRF54L15`: https://docs.nordicsemi.com/category/nRF54L15-category
+.. _`nRF54L10`: https://docs.nordicsemi.com/category/nRF54L10-category
+.. _`nRF54L05`: https://docs.nordicsemi.com/category/nRF54L05-category
