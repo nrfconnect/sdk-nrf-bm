@@ -5,6 +5,7 @@
  */
 
 #include <zephyr/sys/printk.h>
+#include <zephyr/logging/log_ctrl.h>
 
 #include <board-config.h>
 #include <nrfx_uarte.h>
@@ -145,6 +146,10 @@ int main(void)
 	}
 
 	while (true) {
+		while (LOG_PROCESS()) {
+			/* Empty. */
+		}
+
 		/* Sleep */
 		__WFE();
 	}
