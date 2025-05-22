@@ -689,6 +689,9 @@ static int advertising_init(void)
 {
 	int err;
 	uint8_t adv_flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
+	ble_uuid_t adv_uuid_list[] = {
+		{ .uuid = BLE_UUID_CGM_SERVICE, .type = BLE_UUID_TYPE_BLE },
+	};
 	struct ble_adv_config config = {
 		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
 		.adv_data = {
@@ -696,7 +699,10 @@ static int advertising_init(void)
 			.include_appearance = true,
 			.flags = adv_flags,
 		},
-
+		.sr_data.uuid_lists.complete = {
+			.len = ARRAY_SIZE(adv_uuid_list),
+			.uuid = &adv_uuid_list[0],
+		},
 
 		.evt_handler = ble_adv_evt_handler,
 	};
