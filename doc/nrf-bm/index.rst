@@ -4,12 +4,39 @@
 Introduction
 ############
 
-|BMlong| is an enhancement to the |NCS|, offering an optional configuration for developing Bluetooth LE applications that do not benefit from utilizing an RTOS nor require advanced features.
+The |BMlong| is a streamlined enhancement of the |NCS|, tailored for developers who are working on Bluetooth® LE applications that do not require the complexities of an RTOS or the full suite of advanced features.
+This option is particularly beneficial for applications that required a lightweight, responsive solution.
 
-You can use this development option for the following:
+A major component of the |BMshort| configuration is the SoftDevice.
+To facilitate Bluetooth LE operations without an RTOS, a new SoftDevice variant supporting the latest nRF54L devices has been released.
+This new variant maintains a similar functionality and API to those found in the existing nRF52 SoftDevices, ensuring a smooth transition and familiarity for developers.
 
-* Development of threadless applications without the use of Zephyr RTOS.
-* Migration of applications originally created for the nRF52 devices using the nRF5 SDK.
+The |BMshort| codebase is structured to include libraries and modules that are specifically designed to operate without an RTOS.
+This ensures that all included components are optimized for threadless, bare metal environments.
+
+The |BMshort| option is ideal for:
+
+* Developing simple, threadless applications without the need for Zephyr RTOS.
+* Migrating applications initially developed for nRF52 devices using the nRF5 SDK.
+
+Integration and structure
+*************************
+
+The |BMlong| is a distinct repository that incorporates elements from the existing |NCS|:
+
+* **Repository-Level Filtering:** |BMshort| utilizes a repository-level filtering mechanism designed to include components beneficial for bare metal development.
+  However, this approach is based on the best possible method available, which means that some components that are not ideally suited for bare metal applications will also be included.
+  Developers should be aware of these limitations and exercise discretion when utilizing the repository.
+* **Reused Tools:** Tools such as the compiler and linker from the original |NCS| are reused in the Bare Metal option.
+  The existing nRF Connect extension in |VSC| is the recommended IDE for working with Bare Metal.
+
+Samples
+*******
+
+|BMlong| provides samples that specifically target Nordic Semiconductor devices and show how to implement typical use cases with Nordic Semiconductor libraries and drivers.
+
+**Only the samples located under :file:`ncs-bm/samples` are in the scope of the |BMshort| option.**
+All other samples and applications that are included in the distribution must be discarded when working with this option.
 
 .. toctree::
    :maxdepth: 2
@@ -17,4 +44,4 @@ You can use this development option for the following:
 
    install_nrf_bm.rst
    samples.rst
-   release_notes_0.1.0.rst
+   release_notes.rst
