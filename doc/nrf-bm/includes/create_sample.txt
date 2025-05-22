@@ -8,7 +8,7 @@ Follow these steps to create a new application based on this sample:
 
    A quick pick menu appears.
 
-#. Choose the option :guilabel:`Copy a sample` - This will create a `freestanding application`_ from a sample in |BMlong|.
+#. Select :guilabel:`Copy a sample` - this will create a `freestanding application`_ from a sample in |BMlong|.
 
    A quick pick menu appears showing a list of available samples to choose from.
 
@@ -39,6 +39,7 @@ Follow these steps to create a new application based on this sample:
 
    A prompt appears asking to enter the location for the application.
    You can also use the folder button at the top of the quick pick to open a folder picker.
+
    The application creation process starts after you enter the name.
    When the application is created, a prompt appears.
-   Click on :guilabel:`Open` or :guilabel:`Open in New Window` to open the new application.
+   Click :guilabel:`Open` or :guilabel:`Open in New Window` to open the new application.

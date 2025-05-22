@@ -7,7 +7,7 @@ Bluetooth: Heart Rate Service
    :local:
    :depth: 2
 
-This Heart Rate Service sample demonstrates how you can implement the Heart Rate profile using |BMlong|.
+The Heart Rate Service sample demonstrates how you can implement the Heart Rate profile using |BMlong|.
 
 Requirements
 ************
@@ -77,7 +77,7 @@ This sample can be found under :file:`samples/bluetooth/ble_hrs/` in the |BMshor
 Testing
 =======
 
-You can test this sample using `nRF Connect for Desktop`_ with the `Bluetooth Low Energy app`_ and the `Serial Terminal app`.
+You can test this sample using `nRF Connect for Desktop`_ with the `Bluetooth Low Energy app`_ and the `Serial Terminal app`_.
 Make sure that these are installed before starting the testing procedure.
 
 1. Compile and program the application.
@@ -88,5 +88,5 @@ Make sure that these are installed before starting the testing procedure.
    If the device is not advertising, you might need to use the :guilabel:`Reset Board` option in |VSC|.
 #. :guilabel:`Connect` to your device.
    The terminal output in |VSC| indicates ``Peer connected``.
-#. Observe that the services are shown in the connected device and that you can start receiving values for the Heart Rate and the Battery Service by clicking the 'Play' button.
+#. Observe that the services are shown in the connected device and that you can start receiving values for the Heart Rate and the Battery Service by clicking the Play button.
    Heart Rate notifications are received every second, and Battery Level notifications are received every two seconds.

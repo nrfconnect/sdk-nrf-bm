@@ -5,17 +5,13 @@ Samples
 
 |BMlong| provides samples that specifically target Nordic Semiconductor devices and show how to implement typical use cases with Nordic Semiconductor libraries and drivers.
 
+Only the samples located under :file:`nrf-bm/samples` are in the scope of the |BMshort| option.
+All other samples and applications that are included in the distribution must be ignored when working with the |BMshort| option.
+
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :glob:
    :caption: Subpages:
 
-   samples/bluetooth/ble_cgms/README.rst
-   samples/bluetooth/ble_hrs/README.rst
-   samples/bluetooth/ble_lbs/README.rst
-   samples/bluetooth/ble_nus/README.rst
-   samples/bluetooth/hello_softdevice/README.rst
-   samples/peripherals/buttons/README.rst
-   samples/peripherals/leds/README.rst
-   samples/peripherals/timer/README.rst
-   samples/peripherals/uarte/README.rst
+   sample/ble
+   sample/peripheral

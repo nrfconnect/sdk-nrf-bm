@@ -9,7 +9,7 @@ Bluetooth: Hello SoftDevice
 
 The Hello SoftDevice sample demonstrates how to enable and disable the SoftDevice on a Nordic DK.
 
-The SoftDevice is a precompiled and linked binary software implementing the Bluetooth Low Energy wireless protocol stack.
+The SoftDevice is a precompiled and linked binary software implementing the Bluetooth® Low Energy wireless protocol stack.
 
 Requirements
 ************
@@ -40,7 +40,7 @@ Overview
 ********
 
 The sample demonstrates the basic management of the SoftDevice in |BMlong|.
-It shows how to enable and disable the SoftDevice, handle various types of events related to the SoftDevice, and manage Bluetooth LE functionality.
+It shows how to enable and disable the SoftDevice, handle various types of events related to the SoftDevice, and manage the Bluetooth LE functionality.
 
 Programming the S115 SoftDevice
 *******************************

@@ -9,7 +9,7 @@ Release Notes for |BMlong| v0.1.0
 
 Version 0.1.0 is an early release demonstrating a first set of samples on the nRF54L15 DK.
 
-It also includes a prototype version of the S115 SoftDevice - a proprietary Bluetooth LE stack to be used on the nRF54L15 DK.
+It also includes a prototype version of the S115 SoftDevice - a proprietary Bluetooth® LE stack to be used on the nRF54L15 DK.
 
 IDE and tool support
 ********************

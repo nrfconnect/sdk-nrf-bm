@@ -33,7 +33,7 @@ The sample supports the following development kits:
 Overview
 ********
 
-The single-shot timer is used to sequence a series of actions (printing "Hello", "world!", and "bye!"), while the periodic timer provides a visual indication of ongoing activity.
+The single-shot timer is used to sequence a series of actions (printing ``Hello``, ``world!``, and ``bye!``), while the periodic timer provides a visual indication of ongoing activity.
 
 Building and running
 ********************

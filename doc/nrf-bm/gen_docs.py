@@ -9,6 +9,9 @@ samples_dir = os.path.abspath("../../samples")
 static_dir = os.path.abspath("../_static")  # Path to the _static directory
 requirements_path = os.path.join(script_dir, "requirements.txt")  # Path to the requirements.txt file
 includes_dir = os.path.join(script_dir, "includes")  # Path to the includes directory
+sample_dir = os.path.join(script_dir, "sample")  # Path to the sample directory
+pdf_source_dir = os.path.abspath('../../subsys/softdevice/hex/s115')  # Path to the PDF source directory
+pdf_destination_dir = os.path.join(source_dir, 'pdfs')  # Destination directory within _static
 images_dir = os.path.join(script_dir, "images")  # Path to the images directory
 
 # Install packages from requirements.txt
@@ -21,16 +24,30 @@ else:
 
 # Create the source directory if it doesn't exist
 os.makedirs(source_dir, exist_ok=True)
+os.makedirs(pdf_destination_dir, exist_ok=True)
 
-# Copy RST files
+# Copy RST files and maintain directory structure
 for root, dirs, files in os.walk(".", topdown=True):
     # Exclude the source directory from the search
     dirs[:] = [d for d in dirs if os.path.abspath(os.path.join(root, d)) != source_dir]
     for file in files:
         if file.endswith(".rst"):
             src_file_path = os.path.join(root, file)
-            if os.path.abspath(src_file_path) != os.path.join(source_dir, file):
-                shutil.copy2(src_file_path, source_dir)
+            relative_path = os.path.relpath(root, ".")
+            dest_dir = os.path.join(source_dir, relative_path)
+            os.makedirs(dest_dir, exist_ok=True)
+            shutil.copy2(src_file_path, dest_dir)
+
+# Copy PDFs
+if os.path.exists(pdf_source_dir):
+    for file in os.listdir(pdf_source_dir):
+        if file.endswith(".pdf"):
+            src_file_path = os.path.join(pdf_source_dir, file)
+            shutil.copy2(src_file_path, pdf_destination_dir)
+            print(f"Copied PDFs to {pdf_destination_dir}")
+else:
+    print("PDF source directory not found.")
+    exit()
 
 # Copy sample READMEs
 if os.path.exists(samples_dir):

@@ -8,6 +8,6 @@
 .. ### Versions
 
 .. |ncs_release| replace:: v3.0.1
-.. |release| replace:: v0.1.0
+.. |release| replace:: v0.7.0
 
 .. |jlink_ver| replace:: v8.18
