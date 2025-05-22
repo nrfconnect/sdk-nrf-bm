@@ -10,6 +10,8 @@
  * @{
  */
 
+ /* Change this file to match your own board. */
+
 #ifndef __BM_NRF54L15_TEMPLATE_BOARD_CONFIG
 #define __BM_NRF54L15_TEMPLATE_BOARD_CONFIG
 
@@ -20,8 +22,6 @@ extern "C" {
 #endif
 
 #define GPIO_ACTIVE_HIGH 1
-
-/* Change this file to match your own board. */
 
 #ifndef BOARD_PIN_BTN_0
 #define BOARD_PIN_BTN_0 NRF_PIN_PORT_TO_PIN_NUMBER(13, 1)
@@ -71,16 +71,16 @@ extern "C" {
 #endif
 
 #ifndef BOARD_APP_UARTE_PIN_TX
-#define BOARD_APP_UARTE_PIN_TX NRF_PIN_PORT_TO_PIN_NUMBER(6, 0)
+#define BOARD_APP_UARTE_PIN_TX NRF_PIN_PORT_TO_PIN_NUMBER(0, 0)
 #endif
 #ifndef BOARD_APP_UARTE_PIN_RX
-#define BOARD_APP_UARTE_PIN_RX NRF_PIN_PORT_TO_PIN_NUMBER(8, 0)
+#define BOARD_APP_UARTE_PIN_RX NRF_PIN_PORT_TO_PIN_NUMBER(1, 0)
 #endif
 #ifndef BOARD_APP_UARTE_PIN_RTS
-#define BOARD_APP_UARTE_PIN_RTS NRF_PIN_PORT_TO_PIN_NUMBER(5, 0)
+#define BOARD_APP_UARTE_PIN_RTS NRF_PIN_PORT_TO_PIN_NUMBER(2, 0)
 #endif
 #ifndef BOARD_APP_UARTE_PIN_CTS
-#define BOARD_APP_UARTE_PIN_CTS NRF_PIN_PORT_TO_PIN_NUMBER(7, 0)
+#define BOARD_APP_UARTE_PIN_CTS NRF_PIN_PORT_TO_PIN_NUMBER(3, 0)
 #endif
 
 #ifdef __cplusplus
