@@ -15,22 +15,6 @@ manifest:
     - name: sdk-nrf
       path: nrf
       revision: v3.0.1
-      import:
-        name-allowlist:
-          - cmsis
-          - dragoon
-          - hal_nordic
-          - lz4
-          - mbedtls
-          - mcuboot
-          - nrfxlib
-          - picolibc
-          - oberon-psa-crypto
-          - qcbor
-          - segger
-          - tinycrypt
-          - zephyr
-          - cmock
     - name: sdk-nrf-bm-internal
       path: nrf-bm-internal
       revision: 2086b4bb5ee2cc68b824fe5ecd4e2461987e4c5c
