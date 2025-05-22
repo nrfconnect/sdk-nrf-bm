@@ -189,6 +189,13 @@ int main(void)
 		return -1;
 	}
 
+	/* Adding the LBS UUID to the scan response data. */
+	ble_uuid_t adv_uuid_list[] = {
+		{ .uuid = BLE_UUID_LBS_SERVICE, .type = ble_lbs.uuid_type },
+	};
+	ble_adv_config.sr_data.uuid_lists.complete.uuid = &adv_uuid_list[0];
+	ble_adv_config.sr_data.uuid_lists.complete.len = ARRAY_SIZE(adv_uuid_list);
+
 	printk("Services initialized\n");
 
 	err = ble_adv_init(&ble_adv, &ble_adv_config);
