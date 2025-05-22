@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Upload source to Artifactory
-        uses: nrfconnect/action-src-mirror@main
+        uses: nrfconnect/action-src-mirror@development
         with:
           git-ref: ${{ github.ref }}
           git-fetch-depth: '0'
