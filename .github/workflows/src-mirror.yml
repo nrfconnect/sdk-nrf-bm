@@ -19,7 +19,7 @@ jobs:
       - name: Upload source to Artifactory
         uses: nrfconnect/action-src-mirror@main
         with:
-          git-ref: ${{ github.ref_name }}
+          git-ref: ${{ github.ref }}
           git-fetch-depth: '0'
           path: 'ncs-bm'
           west-update-args: ''
