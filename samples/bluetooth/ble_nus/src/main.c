@@ -40,7 +40,9 @@ static const nrfx_uarte_t uarte_inst = NRFX_UARTE_INSTANCE(30);
  */
 static volatile uint16_t ble_nus_max_data_len = BLE_NUS_MAX_DATA_LEN_CALC(BLE_GATT_ATT_MTU_DEFAULT);
 
-static char uarte_rx_buf[10];
+/* Receive buffer used in UART ISR callback */
+static uint8_t uarte_rx_buf[4];
+static int buf_idx;
 
 /**
  * @brief Handle data received from UART.
@@ -112,11 +114,13 @@ static void uarte_evt_handler(nrfx_uarte_event_t const *event, void *ctx)
 			uarte_rx_handler(event->data.rx.p_buffer, event->data.rx.length);
 		}
 
-		/* Provide new UART RX buffer. */
-		nrfx_uarte_rx(&uarte_inst, uarte_rx_buf, 1);
+		nrfx_uarte_rx_enable(&uarte_inst, 0);
 		break;
 	case NRFX_UARTE_EVT_RX_BUF_REQUEST:
-		nrfx_uarte_rx_buffer_set(&uarte_inst, uarte_rx_buf, 1);
+		nrfx_uarte_rx_buffer_set(&uarte_inst, &uarte_rx_buf[buf_idx], 1);
+
+		buf_idx++;
+		buf_idx = (buf_idx < sizeof(uarte_rx_buf)) ? buf_idx : 0;
 		break;
 	case NRFX_UARTE_EVT_ERROR:
 		LOG_ERR("uarte error %#x", event->data.error.error_mask);
@@ -416,7 +420,7 @@ int main(void)
 		return -1;
 	}
 
-	err = nrfx_uarte_rx(&uarte_inst, uarte_rx_buf, 1);
+	err = nrfx_uarte_rx_enable(&uarte_inst, 0);
 	if (err != NRFX_SUCCESS) {
 		LOG_ERR("UART RX failed, nrfx err %d", err);
 	}
