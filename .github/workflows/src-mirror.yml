@@ -24,8 +24,6 @@ jobs:
           path: 'ncs-bm'
           west-update-args: ''
           artifactory-url: 'https://eu.files.nordicsemi.com/artifactory'
-          artifactory-repository: 'ncs-src-mirror'
-          artifactory-target-prefix: 'external/sdk-nrf-bm'
-          artifactory-target-file-name: 'src.tar.gz'
+          artifactory-path: ${{ github.event_name == 'pull_request' && 'ncs-src-mirror/internal/sdk-nrf-bm/${{ github.ref_name }}/src.tar.gz' || 'ncs-src-mirror/external/sdk-nrf-bm/${{ github.ref_name }}/src.tar.gz' }}
           artifactory-user: ${{ secrets.COM_NORDICSEMI_FILES_USERNAME }}
           artifactory-pass: ${{ secrets.COM_NORDICSEMI_FILES_PASSWORD }}
