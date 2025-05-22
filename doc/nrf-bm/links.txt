@@ -40,3 +40,13 @@
 .. _`Bluetooth Low Energy app`: https://docs.nordicsemi.com/bundle/nrf-connect-ble/page/index.html
 .. _`Serial Terminal app`: https://docs.nordicsemi.com/bundle/nrf-connect-serial-terminal/page/index.html
 .. _`Configuring Kconfig`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/app_dev/config_and_build/kconfig/index.html
+
+.. ### Release notes
+
+.. _`s115_9.0.0-2.prototype release notes`: _static/s115_9.0.0-2.prototype_release-notes.pdf
+
+.. ### docs.nordicsemi
+
+.. _`nRF54L15`: https://docs.nordicsemi.com/category/nRF54L15-category
+.. _`nRF54L10`: https://docs.nordicsemi.com/category/nRF54L10-category
+.. _`nRF54L05`: https://docs.nordicsemi.com/category/nRF54L05-category

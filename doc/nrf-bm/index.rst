@@ -17,4 +17,4 @@ You can use this development option for the following:
 
    install_nrf_bm.rst
    samples.rst
-   release_notes_0.1.0.rst
+   release_notes.rst

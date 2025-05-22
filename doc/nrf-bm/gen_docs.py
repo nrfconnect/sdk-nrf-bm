@@ -10,6 +10,9 @@ static_dir = os.path.abspath("../_static")  # Path to the _static directory
 requirements_path = os.path.join(script_dir, "requirements.txt")  # Path to the requirements.txt file
 includes_dir = os.path.join(script_dir, "includes")  # Path to the includes directory
 images_dir = os.path.join(script_dir, "images")  # Path to the images directory
+sample_dir = os.path.join(script_dir, "sample")  # Path to the sample directory
+pdf_source_dir = os.path.abspath('../../subsys/softdevice/hex/s115')  # Path to the PDF source directory
+pdf_destination_dir = os.path.join(source_dir, 'pdfs')  # Destination directory within _static
 
 # Install packages from requirements.txt
 if os.path.exists(requirements_path):
@@ -21,6 +24,7 @@ else:
 
 # Create the source directory if it doesn't exist
 os.makedirs(source_dir, exist_ok=True)
+os.makedirs(pdf_destination_dir, exist_ok=True)
 
 # Copy RST files
 for root, dirs, files in os.walk(".", topdown=True):
@@ -31,6 +35,17 @@ for root, dirs, files in os.walk(".", topdown=True):
             src_file_path = os.path.join(root, file)
             if os.path.abspath(src_file_path) != os.path.join(source_dir, file):
                 shutil.copy2(src_file_path, source_dir)
+
+# Copy PDFs
+if os.path.exists(pdf_source_dir):
+    for file in os.listdir(pdf_source_dir):
+        if file.endswith(".pdf"):
+            src_file_path = os.path.join(pdf_source_dir, file)
+            shutil.copy2(src_file_path, pdf_destination_dir)
+            print(f"Copied PDFs to {pdf_destination_dir}")
+else:
+    print("PDF source directory not found.")
+    exit()
 
 # Copy sample READMEs
 if os.path.exists(samples_dir):
@@ -47,6 +62,12 @@ dest_static_dir = os.path.join(source_dir, "_static")
 if os.path.exists(dest_static_dir):
     shutil.rmtree(dest_static_dir)  # Remove the existing directory if it exists
 shutil.copytree(static_dir, dest_static_dir)
+
+# Copy the sample directory
+dest_sample_dir = os.path.join(source_dir, "sample")
+if os.path.exists(dest_sample_dir):
+    shutil.rmtree(dest_sample_dir)  # Remove the existing directory if it exists
+shutil.copytree(sample_dir, dest_sample_dir)
 
 # Copy the includes directory
 if os.path.exists(includes_dir):

@@ -69,6 +69,9 @@ Use nRF Connect for VS Code to install the toolchain:
 #. Select the toolchain version to install.
    For this release of |BMshort|, use version |ncs_release| of the toolchain.
 
+  .. note::
+     Every |BMshort| release uses the toolchain of the |NCS| version that it is based on.
+
 The toolchain installation starts in the background, as can be seen in the notification that appears.
 If this is your first installation of the toolchain, wait for it to finish before moving to the next step of this procedure (getting the code).
 
@@ -86,7 +89,88 @@ Every |BMlong| release consists of:
 
 .. tabs::
 
-   .. group-tab:: Git
+   .. group-tab:: SDK Archive
+
+      Complete the following steps to get the |BMshort| code using the SDK archive.
+
+      1. Download the archive from the following link:
+
+         https://files.nordicsemi.com/artifactory/ncs-src-mirror/external/sdk-nrf-bm/v0.7.0/src.tar.gz
+
+      #. Extract the archive to the recommended location.
+
+         .. tabs::
+
+            .. group-tab:: Windows
+
+               * Ensure the folder :file:`C:/ncs/v0.7.0` exists.
+                 If it does not exist, create it in File Explorer or by running the following command in Command Prompt:
+
+                  .. code-block:: console
+
+                     mkdir C:\ncs\v0.7.0
+
+               * Right-click the downloaded :file:`src.tar.gz` file.
+               * Select :guilabel:`Extract All...` and choose :file:`C:/ncs/v0.7.0` as destination.
+
+            .. group-tab:: Linux
+
+               .. code-block:: console
+
+                  mkdir -p ~/ncs/v0.7.0
+                  tar -xzf src.tar.gz -C ~/ncs/v0.7.0
+
+            .. group-tab:: macOS
+
+               .. code-block:: console
+
+                  sudo mkdir -p /opt/nordic/ncs/v0.7.0
+                  sudo tar -xzf src.tar.gz -C /opt/nordic/ncs/v0.7.0
+
+         .. note::
+            The extraction can take several minutes.
+
+      #. Open the nRF Connect extension in |VSC|.
+
+      #. In the extension's :guilabel:`Welcome View`, click on :guilabel:`Manage toolchains` and select :guilabel:`Open terminal profile`.
+         The nRF Connect terminal opens with the correct environment.
+
+      #. Navigate to the extracted SDK folder.
+
+         .. tabs::
+
+            .. group-tab:: Windows
+
+               .. code-block:: console
+
+                  cd C:/ncs/v0.7.0
+
+            .. group-tab:: Linux
+
+               .. code-block:: console
+
+                  cd ~/ncs/v0.7.0
+
+            .. group-tab:: macOS
+
+               .. code-block:: console
+
+                  cd /opt/nordic/ncs/v0.7.0
+
+      #. Run the following command to export the Zephyr CMake package:
+
+         .. code-block:: console
+
+            west zephyr-export
+
+      #. In the extension's :guilabel:`Welcome View`, click the refresh icon next to :guilabel:`Manage SDKs`.
+         The SDK list will be updated.
+
+   .. group-tab:: VS Code with Git
+
+      .. important::
+         This method is NOT supported as of version |release|.
+         It will be supported at official launch of |BMshort|.
 
       .. important::
          Make sure that ``git`` is installed on your system before starting this procedure.
@@ -142,82 +226,6 @@ Every |BMlong| release consists of:
       #. Then, click :guilabel:`Manage SDKs` -> :guilabel:`Manage West Workspace...` -> :guilabel:`West Update`.
          Your local repositories will be updated.
 
-   .. group-tab:: SDK Archive
-
-      Complete the following steps to get the |BMshort| code using the SDK archive.
-
-      1. Download the archive from the following link:
-
-         https://files.nordicsemi.com/artifactory/ncs-src-mirror/external/sdk-nrf-bm/v0.7.0/src.tar.gz
-
-      #. Extract the archive to the recommended location.
-
-         .. tabs::
-
-            .. group-tab:: Windows
-
-               * Ensure the folder :file:`C:/ncs/v3.0.1` exists.
-                 If it does not exist, create it in File Explorer or by running the following command in Command Prompt:
-
-                  .. code-block:: console
-
-                     mkdir C:\ncs\v3.0.1
-
-               * Right-click the downloaded :file:`src.tar.gz` file.
-               * Select :guilabel:`Extract All...` and choose :file:`C:/ncs/v3.0.1` as destination.
-
-            .. group-tab:: Linux
-
-               .. code-block:: console
-
-                  mkdir -p ~/ncs/v3.0.1
-                  tar -xzf src.tar.gz -C ~/ncs/v3.0.1
-
-            .. group-tab:: macOS
-
-               .. code-block:: console
-
-                  sudo mkdir -p /opt/nordic/ncs/v3.0.1
-                  sudo tar -xzf src.tar.gz -C /opt/nordic/ncs/v3.0.1
-
-         .. note::
-            The extraction can take several minutes.
-
-      #. Open the nRF Connect extension in |VSC|.
-
-      #. In the extension's :guilabel:`Welcome View`, click on :guilabel:`Manage toolchains` and select :guilabel:`Open terminal profile`.
-         The nRF Connect terminal opens with the correct environment.
-
-      #. Navigate to the extracted SDK folder.
-
-         .. tabs::
-
-            .. group-tab:: Windows
-
-               .. code-block:: console
-
-                  cd C:/ncs/v3.0.1
-
-            .. group-tab:: Linux
-
-               .. code-block:: console
-
-                  cd ~/ncs/v3.0.1
-
-            .. group-tab:: macOS
-
-               .. code-block:: console
-
-                  cd /opt/nordic/ncs/v3.0.1
-
-      #. Run the following command to export the Zephyr CMake package:
-
-         .. code-block:: console
-
-            west zephyr-export
-
-      #. In the extension's :guilabel:`Welcome View`, click the refresh icon next to :guilabel:`Manage SDKs`.
-         The SDK list will be updated.
 
 Your directory structure should now look similar to this:
 
@@ -243,7 +251,9 @@ You can now proceed to test the :ref:`samples` included in this version of |BMsh
 
 The samples can be found in the :file:`nrf-bm/samples` folder, and are divided into two subfolders:
 
-* :file:`bluetooth` for the samples showcasing BLE functionalities using the SoftDevice.
+* :file:`bluetooth` for the samples showcasing Bluetooth LE functionalities using the SoftDevice.
+  See :ref:`ble_samples`.
 * :file:`peripherals` for the samples showcasing various peripheral functionalities that do not require the SoftDevice.
+  See :ref:`peripheral_samples`.
 
 Each sample documentation contains full information on how to build, flash, and test the respective sample.

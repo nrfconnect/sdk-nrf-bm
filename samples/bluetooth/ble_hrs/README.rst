@@ -7,7 +7,7 @@ Bluetooth: Heart Rate Service
    :local:
    :depth: 2
 
-This Heart Rate Service sample demonstrates how you can implement the Heart Rate profile using |BMlong|.
+The Heart Rate Service sample demonstrates how you can implement the Heart Rate profile using |BMlong|.
 
 Requirements
 ************
