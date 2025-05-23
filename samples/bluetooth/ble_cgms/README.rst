@@ -51,7 +51,7 @@ Building and running
 
 This sample can be found under :file:`samples/bluetooth/ble_cgms/` in the |BMshort| folder structure.
 
-.. include:: /includes/build_sample.txt
+.. include:: /includes/create_build_sample.txt
 
 .. include:: /includes/program_sample.txt
 

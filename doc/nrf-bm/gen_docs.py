@@ -9,6 +9,7 @@ samples_dir = os.path.abspath("../../samples")
 static_dir = os.path.abspath("../_static")  # Path to the _static directory
 requirements_path = os.path.join(script_dir, "requirements.txt")  # Path to the requirements.txt file
 includes_dir = os.path.join(script_dir, "includes")  # Path to the includes directory
+images_dir = os.path.join(script_dir, "images")  # Path to the images directory
 
 # Install packages from requirements.txt
 if os.path.exists(requirements_path):
@@ -55,6 +56,16 @@ if os.path.exists(includes_dir):
     shutil.copytree(includes_dir, dest_includes_dir)
 else:
     print("includes directory not found.")
+    exit()
+
+# Copy the images directory
+if os.path.exists(images_dir):
+    dest_images_dir = os.path.join(source_dir, "images")
+    if os.path.exists(dest_images_dir):
+        shutil.rmtree(dest_images_dir)  # Remove the existing directory if it exists
+    shutil.copytree(images_dir, dest_images_dir)
+else:
+    print("images directory not found.")
     exit()
 
 # Copy Sphinx configuration file and other text files
