@@ -10,18 +10,13 @@
 #include <board-config.h>
 #include <zephyr/logging/log_ctrl.h>
 
-#define PIN_BTN_0 BOARD_PIN_BTN_0
-#define PIN_BTN_1 BOARD_PIN_BTN_1
-#define PIN_BTN_2 BOARD_PIN_BTN_2
-#define PIN_BTN_3 BOARD_PIN_BTN_3
-
 static volatile bool running;
 
 static void button_handler(uint8_t pin, uint8_t action)
 {
 	printk("Button event callback: %d, %d\n", pin, action);
 
-	if (pin == PIN_BTN_3) {
+	if (pin == BOARD_PIN_BTN_3) {
 		running = false;
 	}
 }
@@ -36,25 +31,25 @@ int main(void)
 
 	struct bm_buttons_config configs[4] = {
 		{
-			.pin_number = PIN_BTN_0,
+			.pin_number = BOARD_PIN_BTN_0,
 			.active_state = BM_BUTTONS_ACTIVE_LOW,
 			.pull_config = BM_BUTTONS_PIN_PULLUP,
 			.handler = button_handler,
 		},
 		{
-			.pin_number = PIN_BTN_1,
+			.pin_number = BOARD_PIN_BTN_1,
 			.active_state = BM_BUTTONS_ACTIVE_LOW,
 			.pull_config = BM_BUTTONS_PIN_PULLUP,
 			.handler = button_handler,
 		},
 		{
-			.pin_number = PIN_BTN_2,
+			.pin_number = BOARD_PIN_BTN_2,
 			.active_state = BM_BUTTONS_ACTIVE_LOW,
 			.pull_config = BM_BUTTONS_PIN_PULLUP,
 			.handler = button_handler,
 		},
 		{
-			.pin_number = PIN_BTN_3,
+			.pin_number = BOARD_PIN_BTN_3,
 			.active_state = BM_BUTTONS_ACTIVE_LOW,
 			.pull_config = BM_BUTTONS_PIN_PULLUP,
 			.handler = button_handler,

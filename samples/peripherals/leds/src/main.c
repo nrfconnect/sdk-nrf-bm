@@ -20,12 +20,12 @@ static void led_init(void)
 
 static void led_on(void)
 {
-	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE ? 1 : 0);
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
 }
 
 static void led_off(void)
 {
-	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE ? 0 : 1);
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, !BOARD_LED_ACTIVE_STATE);
 }
 
 int main(void)
