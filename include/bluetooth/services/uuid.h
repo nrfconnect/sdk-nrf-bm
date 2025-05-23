@@ -4,6 +4,9 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
+#ifndef BLE_SERVICES_UUID_H__
+#define BLE_SERVICES_UUID_H__
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -146,3 +149,9 @@ extern "C" {
 
 #define BLE_SRV_ENCODED_REPORT_REF_LEN                           2          /**< The length of an encoded Report Reference Descriptor. */
 #define BLE_CCCD_VALUE_LEN                                       2          /**< The length of a CCCD value. */
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* BLE_SERVICES_UUID_H__ */

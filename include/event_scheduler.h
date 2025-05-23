@@ -3,8 +3,15 @@
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
+#ifndef EVENT_SCHEDULER_H__
+#define EVENT_SCHEDULER_H__
+
 #include <stdint.h>
 #include <zephyr/sys/slist.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief Event handler prototype.
@@ -59,3 +66,9 @@ int event_scheduler_defer(evt_handler_t handler, void *data, size_t len);
  * @return 0 On success.
  */
 int event_scheduler_process(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* EVENT_SCHEDULER_H__ */
