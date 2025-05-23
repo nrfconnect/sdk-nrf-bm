@@ -18,15 +18,6 @@
 
 #include <bm_buttons.h>
 
-#if defined(CONFIG_SOC_SERIES_NRF52X)
-#define LED_ACTIVE_STATE 0 /* GPIO_ACTIVE_LOW */
-#elif defined(CONFIG_SOC_SERIES_NRF54LX)
-#define LED_ACTIVE_STATE 1 /* GPIO_ACTIVE_HIGH */
-#endif
-
-#define PIN_BTN_0 BOARD_PIN_BTN_0
-#define PIN_LED_0 BOARD_PIN_LED_0
-
 BLE_ADV_DEF(ble_adv); /* BLE advertising instance */
 BLE_LBS_DEF(ble_lbs); /* BLE LED Button Service instance */
 
@@ -100,17 +91,17 @@ static void button_handler(uint8_t pin, enum bm_buttons_evt_type action)
 
 static void led_on(void)
 {
-	nrf_gpio_pin_write(PIN_LED_0, LED_ACTIVE_STATE ? 1 : 0);
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
 }
 
 static void led_off(void)
 {
-	nrf_gpio_pin_write(PIN_LED_0, LED_ACTIVE_STATE ? 0 : 1);
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, !BOARD_LED_ACTIVE_STATE);
 }
 
 static void led_init(void)
 {
-	nrf_gpio_cfg_output(PIN_LED_0);
+	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
 	led_off();
 }
 
@@ -168,7 +159,7 @@ int main(void)
 
 	err = bm_buttons_init(
 		&(struct bm_buttons_config){
-			.pin_number = PIN_BTN_0,
+			.pin_number = BOARD_PIN_BTN_0,
 			.active_state = BM_BUTTONS_ACTIVE_LOW,
 			.pull_config = BM_BUTTONS_PIN_PULLUP,
 			.handler = button_handler,

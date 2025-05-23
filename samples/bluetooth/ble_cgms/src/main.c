@@ -38,29 +38,12 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 
+#include <board-config.h>
+
 LOG_MODULE_REGISTER(app, CONFIG_BLE_CGMS_SAMPLE_LOG_LEVEL);
 
-/* GPIO configuration, to be moved to separate file. */
-#if defined(CONFIG_SOC_SERIES_NRF52X)
-#define PIN_BTN_0 NRF_PIN_PORT_TO_PIN_NUMBER(11, 0)
-#define PIN_BTN_1 NRF_PIN_PORT_TO_PIN_NUMBER(12, 0)
-#define PIN_BTN_2 NRF_PIN_PORT_TO_PIN_NUMBER(24, 0)
-#define PIN_BTN_3 NRF_PIN_PORT_TO_PIN_NUMBER(25, 0)
-#define PIN_LED_0 NRF_PIN_PORT_TO_PIN_NUMBER(13, 0)
-#define PIN_LED_1 NRF_PIN_PORT_TO_PIN_NUMBER(14, 0)
-#define PIN_LED_2 NRF_PIN_PORT_TO_PIN_NUMBER(15, 0)
-#define PIN_LED_3 NRF_PIN_PORT_TO_PIN_NUMBER(16, 0)
-#define LED_ACTIVE_STATE 0 /* GPIO_ACTIVE_LOW */
-#elif defined(CONFIG_SOC_SERIES_NRF54LX)
-#define PIN_BTN_0 NRF_PIN_PORT_TO_PIN_NUMBER(13, 1)
-#define PIN_BTN_1 NRF_PIN_PORT_TO_PIN_NUMBER(9, 1)
-#define PIN_BTN_2 NRF_PIN_PORT_TO_PIN_NUMBER(8, 1)
-#define PIN_BTN_3 NRF_PIN_PORT_TO_PIN_NUMBER(4, 0)
-#define PIN_LED_0 NRF_PIN_PORT_TO_PIN_NUMBER(9, 2)
-#define PIN_LED_1 NRF_PIN_PORT_TO_PIN_NUMBER(10, 1)
-#define PIN_LED_2 NRF_PIN_PORT_TO_PIN_NUMBER(7, 2)
-#define PIN_LED_3 NRF_PIN_PORT_TO_PIN_NUMBER(14, 1)
-#define LED_ACTIVE_STATE 1 /* GPIO_ACTIVE_HIGH */
+#ifndef IS_BIT_SET
+#define IS_BIT_SET(value, bit) ((((value) >> (bit)) & (0x1)) != 0)
 #endif
 
 enum led_indicate {
@@ -468,10 +451,10 @@ void on_conn_params_evt(const struct ble_conn_params_evt *evt)
 
 static void led_indication_set(enum led_indicate led_indicate)
 {
-	nrf_gpio_pin_write(PIN_LED_0, led_indicate & (1<<0));
-	nrf_gpio_pin_write(PIN_LED_1, led_indicate & (1<<1));
-	nrf_gpio_pin_write(PIN_LED_2, led_indicate & (1<<2));
-	nrf_gpio_pin_write(PIN_LED_3, led_indicate & (1<<3));
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, IS_BIT_SET(led_indicate, 0) == BOARD_LED_ACTIVE_STATE);
+	nrf_gpio_pin_write(BOARD_PIN_LED_1, IS_BIT_SET(led_indicate, 1) == BOARD_LED_ACTIVE_STATE);
+	nrf_gpio_pin_write(BOARD_PIN_LED_2, IS_BIT_SET(led_indicate, 2) == BOARD_LED_ACTIVE_STATE);
+	nrf_gpio_pin_write(BOARD_PIN_LED_3, IS_BIT_SET(led_indicate, 3) == BOARD_LED_ACTIVE_STATE);
 }
 
 /**
@@ -658,12 +641,12 @@ static void button_handler(uint8_t pin, uint8_t action)
 	}
 
 	switch (pin) {
-	case PIN_BTN_0:
+	case BOARD_PIN_BTN_0:
 		LOG_INF("Enter sleep mode\n");
 		(void)sleep_mode_enter();
 		break;
 
-	case PIN_BTN_1:
+	case BOARD_PIN_BTN_1:
 		LOG_INF("Increase GL Concentration");
 		glucose_concentration += CONFIG_GLUCOSE_CONCENTRATION_INC;
 		if (glucose_concentration > CONFIG_GLUCOSE_CONCENTRATION_MAX) {
@@ -671,7 +654,7 @@ static void button_handler(uint8_t pin, uint8_t action)
 		}
 		break;
 
-	case PIN_BTN_3:
+	case BOARD_PIN_BTN_3:
 		LOG_INF("Decrease GL Concentration");
 		glucose_concentration -= CONFIG_GLUCOSE_CONCENTRATION_DEC;
 		if (glucose_concentration < CONFIG_GLUCOSE_CONCENTRATION_MIN) {
@@ -715,25 +698,25 @@ static int advertising_init(void)
 
 struct bm_buttons_config btn_configs[4] = {
 	{
-		.pin_number = PIN_BTN_0,
+		.pin_number = BOARD_PIN_BTN_0,
 		.active_state = BM_BUTTONS_ACTIVE_LOW,
 		.pull_config = BM_BUTTONS_PIN_PULLUP,
 		.handler = button_handler,
 	},
 	{
-		.pin_number = PIN_BTN_1,
+		.pin_number = BOARD_PIN_BTN_1,
 		.active_state = BM_BUTTONS_ACTIVE_LOW,
 		.pull_config = BM_BUTTONS_PIN_PULLUP,
 		.handler = button_handler,
 	},
 	{
-		.pin_number = PIN_BTN_2,
+		.pin_number = BOARD_PIN_BTN_2,
 		.active_state = BM_BUTTONS_ACTIVE_LOW,
 		.pull_config = BM_BUTTONS_PIN_PULLUP,
 		.handler = button_handler,
 	},
 	{
-		.pin_number = PIN_BTN_3,
+		.pin_number = BOARD_PIN_BTN_3,
 		.active_state = BM_BUTTONS_ACTIVE_LOW,
 		.pull_config = BM_BUTTONS_PIN_PULLUP,
 		.handler = button_handler,
@@ -762,15 +745,15 @@ static int buttons_leds_init(bool *erase_bonds)
 		return err;
 	}
 
-	nrf_gpio_cfg_output(PIN_LED_0);
-	nrf_gpio_cfg_output(PIN_LED_1);
-	nrf_gpio_cfg_output(PIN_LED_2);
-	nrf_gpio_cfg_output(PIN_LED_3);
+	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
+	nrf_gpio_cfg_output(BOARD_PIN_LED_1);
+	nrf_gpio_cfg_output(BOARD_PIN_LED_2);
+	nrf_gpio_cfg_output(BOARD_PIN_LED_3);
 
-	nrf_gpio_pin_write(PIN_LED_0, 1);
-	nrf_gpio_pin_write(PIN_LED_1, 1);
-	nrf_gpio_pin_write(PIN_LED_2, 1);
-	nrf_gpio_pin_write(PIN_LED_3, 1);
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, !BOARD_LED_ACTIVE_STATE);
+	nrf_gpio_pin_write(BOARD_PIN_LED_1, !BOARD_LED_ACTIVE_STATE);
+	nrf_gpio_pin_write(BOARD_PIN_LED_2, !BOARD_LED_ACTIVE_STATE);
+	nrf_gpio_pin_write(BOARD_PIN_LED_3, !BOARD_LED_ACTIVE_STATE);
 
 	return 0;
 }
