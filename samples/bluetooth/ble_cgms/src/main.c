@@ -442,31 +442,6 @@ static void led_indication_set(enum led_indicate led_indicate)
 	nrf_gpio_pin_write(BOARD_PIN_LED_3, IS_BIT_SET(led_indicate, 3) == BOARD_LED_ACTIVE_STATE);
 }
 
-/**
- * @brief Function for putting the chip into sleep mode.
- *
- * @note This function will not return.
- */
-static int sleep_mode_enter(void)
-{
-#if CONFIG_SOFTDEVICE_S140
-	uint32_t nrf_err;
-
-	led_indication_set(LED_INDICATE_IDLE);
-	/* Go to system-off mode (this function will not return; reset to wake up). */
-	nrf_err = sd_power_system_off();
-	if (nrf_err != NRF_SUCCESS) {
-		LOG_ERR("Failed to go to system-off mode, nrf_error %d", nrf_err);
-		return err;
-	}
-#else
-	LOG_ERR("SoftDevice power features are currently not supported on the S115 SoftDevice");
-	return NRF_ERROR_NOT_SUPPORTED;
-#endif
-
-	return 0;
-}
-
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {
 	int err;
@@ -580,7 +555,7 @@ static void ble_adv_evt_handler(struct ble_adv *adv, const struct ble_adv_evt *a
 		led_indication_set(LED_INDICATE_ADVERTISING_WHITELIST);
 		break;
 	case BLE_ADV_EVT_IDLE:
-		(void)sleep_mode_enter();
+		led_indication_set(LED_INDICATE_IDLE);
 		break;
 	default:
 		break;
@@ -625,8 +600,7 @@ static void button_handler(uint8_t pin, uint8_t action)
 
 	switch (pin) {
 	case BOARD_PIN_BTN_0:
-		LOG_INF("Enter sleep mode\n");
-		(void)sleep_mode_enter();
+		LOG_INF("Sleep mode not supported\n");
 		break;
 
 	case BOARD_PIN_BTN_1:
