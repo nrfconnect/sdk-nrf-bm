@@ -185,14 +185,14 @@ static int timers_init(void)
 	err = bm_timer_init(&battery_timer, BM_TIMER_MODE_REPEATED,
 			      battery_level_meas_timeout_handler);
 	if (err) {
-		LOG_ERR("Failed to initialize battery timer, err %d\n", err);
+		LOG_ERR("Failed to initialize battery timer, err %d", err);
 		return -1;
 	}
 
 	err = bm_timer_init(&glucose_meas_timer, BM_TIMER_MODE_REPEATED,
 			      glucose_meas_timeout_handler);
 	if (err) {
-		LOG_ERR("Failed to initialize glucose meas timer, err %d\n", err);
+		LOG_ERR("Failed to initialize glucose meas timer, err %d", err);
 		return -1;
 	}
 
@@ -361,7 +361,7 @@ static int services_init(void)
 	/* Initialize Device Information Service. */
 	err = ble_dis_init();
 	if (err) {
-		LOG_ERR("Failed to initialize device information service, err %d\n", err);
+		LOG_ERR("Failed to initialize device information service, err %d", err);
 		return -1;
 	}
 
@@ -475,7 +475,6 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 			conn_handle = BLE_CONN_HANDLE_INVALID;
 		}
 
-		conn_handle = BLE_CONN_HANDLE_INVALID;
 		break;
 	case BLE_GAP_EVT_PHY_UPDATE_REQUEST:
 		LOG_DBG("PHY update request.");
@@ -600,7 +599,7 @@ static void button_handler(uint8_t pin, uint8_t action)
 
 	switch (pin) {
 	case BOARD_PIN_BTN_0:
-		LOG_INF("Sleep mode not supported\n");
+		LOG_INF("Sleep mode not supported");
 		break;
 
 	case BOARD_PIN_BTN_1:
@@ -734,11 +733,6 @@ int main(void)
 	if (err) {
 		return -1;
 	}
-/*	err = power_management_init();
- *	if (err) {
- *		return -1;
- *	}
- */
 	err = ble_stack_init();
 	if (err) {
 		return -1;
@@ -759,7 +753,7 @@ int main(void)
 
 	err = ble_conn_params_evt_handler_set(on_conn_params_evt);
 	if (err) {
-		LOG_ERR("Failed to setup conn param event handler, err %d\n", err);
+		LOG_ERR("Failed to setup conn param event handler, err %d", err);
 		return -1;
 	}
 
@@ -775,7 +769,7 @@ int main(void)
 		return -1;
 	}
 
-	LOG_INF("Advertising as %s\n", CONFIG_BLE_ADV_NAME);
+	LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
 
 	/* Enter main loop. */
 	while (true) {
