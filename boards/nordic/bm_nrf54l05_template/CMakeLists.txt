@@ -1,5 +1,8 @@
-# Copyright (c) 2025 Nordic Semiconductor ASA.
-# SPDX-License-Identifier: Apache-2.0
+#
+# Copyright (c) 2025 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
 
 # No changes needed to this file
 
