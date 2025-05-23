@@ -106,20 +106,6 @@ static void battery_level_update(void)
 	}
 }
 
-/** @brief Function for starting advertising. */
-static int advertising_start(bool erase_bonds)
-{
-	int err;
-
-	err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
-	if (err) {
-		LOG_ERR("Failed to start advertising, err %d", err);
-		return -1;
-	}
-
-	return 0;
-}
-
 /**
  * @brief Function for handling the Battery measurement timer timeout.
  *
@@ -514,7 +500,6 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 			conn_handle = BLE_CONN_HANDLE_INVALID;
 		}
 
-		(void)advertising_start(false);
 		conn_handle = BLE_CONN_HANDLE_INVALID;
 		break;
 	case BLE_GAP_EVT_PHY_UPDATE_REQUEST:
@@ -810,10 +795,13 @@ int main(void)
 		return -1;
 	}
 
-	err = advertising_start(erase_bonds);
+	err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
 	if (err) {
+		LOG_ERR("Failed to start advertising, err %d", err);
 		return -1;
 	}
+
+	LOG_INF("Advertising as %s\n", CONFIG_BLE_ADV_NAME);
 
 	/* Enter main loop. */
 	while (true) {
