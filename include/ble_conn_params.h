@@ -4,8 +4,15 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
+#ifndef BLE_CONN_PARAMS_H__
+#define BLE_CONN_PARAMS_H__
+
 #include <stdint.h>
 #include <ble_gap.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief BLE connection parameter event.
@@ -185,3 +192,9 @@ int ble_conn_params_phy_radio_mode_set(uint16_t conn_handle, ble_gap_phys_t phy_
  * @return -EFAULT @p phy_pref is @c NULL.
  */
 int ble_conn_params_phy_radio_mode_get(uint16_t conn_handle, ble_gap_phys_t *phy_pref);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* BLE_CONN_PARAMS_H__ */

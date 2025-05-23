@@ -4,8 +4,15 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
+#ifndef BLE_SERVICES_COMMON_H__
+#define BLE_SERVICES_COMMON_H__
+
 #include <ble.h>
 #include <zephyr/sys/byteorder.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** TODO: rename this.. */
 static inline uint16_t is_notification_enabled(const uint8_t *gatts_write_data)
@@ -26,3 +33,9 @@ static inline uint16_t is_indication_enabled(const uint8_t *gatts_write_data)
 	{                                                                                          \
 		.sm = ((x) >> 4) & 0xf, .lv = (x) & 0xf,                                           \
 	}
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* BLE_SERVICES_COMMON_H__ */
