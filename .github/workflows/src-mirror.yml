@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-24.04-16cores
     steps:
       - name: Upload src.tar.gz
-        uses: nrfconnect/action-src-mirror@development
+        uses: nrfconnect/action-src-mirror@main
         with:
           path: 'ncs-bm'
           west-update-args: ''
