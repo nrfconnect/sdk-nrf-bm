@@ -483,7 +483,6 @@ static void on_socp_value_write(struct ble_cgms *cgms, const ble_gatts_evt_write
 	socp_send(cgms);
 }
 
-
 void cgms_socp_on_rw_auth_req(struct ble_cgms *cgms,
 			      const ble_gatts_evt_rw_authorize_request_t *auth_req)
 {
@@ -529,5 +528,4 @@ void cgms_socp_on_rw_auth_req(struct ble_cgms *cgms,
 	}
 
 	on_socp_value_write(cgms, &auth_req->request.write);
-
 }
