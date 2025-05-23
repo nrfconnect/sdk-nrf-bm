@@ -89,7 +89,6 @@ static void racp_send(struct ble_cgms *cgms, struct ble_racp_value *racp_val)
 		.gatts_hvx.p_len = &len,
 	};
 
-
 	err = ble_gq_item_add(cgms->gatt_queue, &cgms_req, cgms->conn_handle);
 
 	/* Report error to application */
@@ -242,7 +241,6 @@ static uint32_t racp_report_records_greater_equal(struct ble_cgms *cgms)
 	uint16_t recs_to_send_remaining;
 	uint16_t recs_to_send;
 	uint16_t i;
-
 
 	recs_total = cgms_db_num_records_get();
 	if (cgms->racp_data.racp_proc_record_idx >= recs_total) {

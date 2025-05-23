@@ -305,7 +305,6 @@ uint16_t qwr_evt_handler(struct ble_qwr *qwr, const struct ble_qwr_evt *evt)
 	}
 
 	return 0;
-
 }
 
 /**
@@ -603,7 +602,6 @@ static void ble_adv_evt_handler(struct ble_adv *adv, const struct ble_adv_evt *a
 	}
 }
 
-
 /**
  * @brief Function for initializing the BLE stack.
  *
@@ -700,7 +698,6 @@ static int advertising_init(void)
 
 	return 0;
 }
-
 
 struct bm_buttons_config btn_configs[4] = {
 	{

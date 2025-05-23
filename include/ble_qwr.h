@@ -165,7 +165,6 @@ struct ble_qwr_config {
  */
 int ble_qwr_init(struct ble_qwr *qwr, struct ble_qwr_config const *qwr_config);
 
-
 /**
  * @brief Function for assigning a connection handle to an instance of the Queued Writes module.
  *
@@ -208,7 +207,6 @@ void ble_qwr_on_ble_evt(ble_evt_t const *ble_evt, void *context);
  * @retval -EPERM If the given @p qwr instance has not been initialized.
  */
 int ble_qwr_attr_register(struct ble_qwr *qwr, uint16_t attr_handle);
-
 
 /**
  * @brief Function for retrieving the received data for a given attribute.

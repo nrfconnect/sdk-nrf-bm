@@ -75,7 +75,6 @@ int main(void)
 			/* Empty. */
 		}
 
-
 		/* Sleep */
 		__WFE();
 	}

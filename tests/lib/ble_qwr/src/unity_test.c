@@ -19,7 +19,6 @@ static uint16_t ble_qwr_evt_handler(struct ble_qwr *qwr, const struct ble_qwr_ev
 	return 0;
 }
 
-
 void test_ble_qwr_init_efault(void)
 {
 	int err;
@@ -145,7 +144,6 @@ void test_ble_qwr_attr_register_enomem(void)
 	err = ble_qwr_attr_register(&qwr, 1);
 	TEST_ASSERT_EQUAL(-ENOMEM, err);
 
-
 	/* Reset qwr so it can be initialized again */
 	qwr.initialized = 0;
 
@@ -164,7 +162,6 @@ void test_ble_qwr_attr_register_enomem(void)
 	err = ble_qwr_attr_register(&qwr, 3);
 	TEST_ASSERT_EQUAL(-ENOMEM, err);
 }
-
 
 void test_ble_qwr_attr_register(void)
 {
@@ -257,7 +254,6 @@ void test_ble_qwr_value_get(void)
 		0x11, 0x12, 0x13, 0x14,
 		0x15, 0x16,
 	};
-
 
 	err = ble_qwr_init(&qwr, &qwr_config);
 	TEST_ASSERT_EQUAL(0, err);

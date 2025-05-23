@@ -26,7 +26,6 @@ config BM_UARTE_CONSOLE_UARTE_USE_HWFC
 config BM_UARTE_CONSOLE_UARTE_PARITY_INCLUDED
 	bool "Use parity"
 
-
 config BM_UARTE_CONSOLE_ADD_CR_BEFORE_LF
 	bool "Add carriage return before linefeed"
 	default y

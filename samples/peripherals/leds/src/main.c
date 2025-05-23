@@ -49,8 +49,6 @@ int main(void)
 		led_off();
 
 		k_busy_wait(500 * USEC_PER_MSEC);
-
-
 	}
 
 	return 0;

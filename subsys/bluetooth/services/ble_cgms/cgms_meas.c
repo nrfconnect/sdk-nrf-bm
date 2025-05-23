@@ -118,7 +118,6 @@ uint32_t cgms_meas_char_add(struct ble_cgms *cgms)
 
 uint32_t cgms_meas_send(struct ble_cgms *cgms, struct ble_cgms_rec *rec, uint16_t *count)
 {
-
 	uint32_t err;
 	uint8_t encoded_meas[BLE_CGMS_MEAS_LEN_MAX + BLE_CGMS_MEAS_REC_LEN_MAX];
 	uint16_t len = 0;
@@ -177,8 +176,8 @@ static void on_meas_cccd_write(struct ble_cgms *cgms, const ble_gatts_evt_write_
 	} else {
 		evt.evt_type = BLE_CGMS_EVT_NOTIFICATION_DISABLED;
 	}
-	cgms->evt_handler(cgms, &evt);
 
+	cgms->evt_handler(cgms, &evt);
 }
 
 /* Write event handler */

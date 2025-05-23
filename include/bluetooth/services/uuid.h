@@ -140,8 +140,6 @@ extern "C" {
 
 /** @} */
 
-
-
 #define BLE_CHAR_ALERT_LEVEL_NO_ALERT                            0x00       /**< No Alert. */
 #define BLE_CHAR_ALERT_LEVEL_MILD_ALERT                          0x01       /**< Mild Alert. */
 #define BLE_CHAR_ALERT_LEVEL_HIGH_ALERT                          0x02       /**< High Alert. */

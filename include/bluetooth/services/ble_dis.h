@@ -124,7 +124,6 @@ typedef struct
  */
 int ble_dis_init(void);
 
-
 #ifdef __cplusplus
 }
 #endif

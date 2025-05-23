@@ -74,7 +74,6 @@ uint32_t cgms_db_record_add(struct ble_cgms_rec *rec)
 	return NRF_ERROR_NO_MEM;
 }
 
-
 uint32_t cgms_db_record_delete(uint16_t record_num)
 {
 	uint32_t i;

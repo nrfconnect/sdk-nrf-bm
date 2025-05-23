@@ -26,7 +26,6 @@
 extern "C" {
 #endif
 
-
 /**
  * @brief Add Record Access Control Point characteristic.
  *
