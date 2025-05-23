@@ -1,0 +1,41 @@
+Follow these steps to create a new application based on this sample:
+
+1. Open the nRF Connect for VS Code extension by clicking its icon.
+#. From the :guilabel:`Welcome View`, click :guilabel:`Create a new appilication`.
+
+   A quick pick menu appears.
+
+#. Choose the option :guilabel:`Copy a sample` - This will create a `freestanding application`_ from a sample in |BMlong|.
+
+   A quick pick menu appears showing a list of available samples to choose from.
+
+   .. figure:: /images/create_new_application_from_sample_quick_pick_menu.png
+      :alt: Create New Application from Sample - Quick Pick Menu
+
+      Create New Application from Sample - Quick Pick Menu
+
+#. Click on the :guilabel:`Filter By Module` icon on the top right of the quick pick menu.
+
+   A quick pick menu appears showing a list of available modules to filter by.
+
+   .. figure:: /images/nrf_bm_filter_by_module.png
+      :alt: Filter By Module Menu
+
+      Filter By Module Menu
+
+#. Select ``nrf-bm``, then press :guilabel:`OK`.
+
+   A quick pick menu appears showing a list of available samples from |BMshort|.
+
+   .. figure:: /images/nrf_bm_sample_list.png
+      :alt: Create New Application from Sample - Bare Metal Sample List
+
+      Create New Application from Sample - Bare Metal Sample List
+
+#. Click on the name of this sample.
+
+   A prompt appears asking to enter the location for the application.
+   You can also use the folder button at the top of the quick pick to open a folder picker.
+   The application creation process starts after you enter the name.
+   When the application is created, a prompt appears.
+   Click on :guilabel:`Open` or :guilabel:`Open in New Window` to open the new application.
