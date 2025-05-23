@@ -1,3 +1,9 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
 file(STRINGS ${ZEPHYR_NRF_BM_MODULE_DIR}/VERSION NCS_BARE_METAL_VERSION LIMIT_COUNT 1 LENGTH_MINIMUM 5)
 string(REGEX MATCH "([^\.]*)\.([^\.]*)\.([^-]*)[-]?(.*)" OUT_VAR ${NCS_BARE_METAL_VERSION})
 

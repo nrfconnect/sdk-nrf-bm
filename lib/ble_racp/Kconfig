@@ -1,3 +1,9 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
 menuconfig BLE_RACP
 	bool "BLE Record Access Control Point"
 
