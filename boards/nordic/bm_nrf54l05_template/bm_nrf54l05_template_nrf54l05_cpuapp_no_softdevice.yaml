@@ -1,5 +1,8 @@
-# Copyright (c) 2025 Nordic Semiconductor ASA
-# SPDX-License-Identifier: Apache-2.0
+#
+# Copyright (c) 2025 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
 
 identifier: bm_nrf54l05_template/nrf54l05/cpuapp/no_softdevice # Update
 name: Bare_Metal-nRF54L05-Template-nRF54L05-Application-No-SoftDevice # Update
