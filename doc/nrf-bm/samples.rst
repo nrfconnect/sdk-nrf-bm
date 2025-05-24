@@ -18,3 +18,4 @@ Samples
    samples/peripherals/buttons/README.rst
    samples/peripherals/leds/README.rst
    samples/peripherals/timer/README.rst
+   samples/peripherals/uarte/README.rst
