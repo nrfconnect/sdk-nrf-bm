@@ -1,5 +1,5 @@
 sample:
-  name: BLE Nordic UART service
+  name: BLE Nordic UART Service Sample
 tests:
   sample.ble_nus:
     build_only: true

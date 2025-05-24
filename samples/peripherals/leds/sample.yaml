@@ -1,5 +1,5 @@
 sample:
-  name: LEDs sample
+  name: LEDs Sample
 tests:
   sample.leds:
     sysbuild: true

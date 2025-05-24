@@ -1,5 +1,5 @@
 sample:
-  name: BLE heart rate service
+  name: BLE Heart Rate Service Sample
 tests:
   sample.ble_hrs:
     build_only: true

@@ -1,13 +1,13 @@
-.. _led_sample:
+.. _leds_sample:
 
-LED
-###
+LEDs
+####
 
 .. contents::
    :local:
    :depth: 2
 
-The LED sample demonstrates how to configure and use LEDs with |BMlong|.
+The LEDs sample demonstrates how to configure and use LEDs with |BMlong|.
 
 Requirements
 ************
