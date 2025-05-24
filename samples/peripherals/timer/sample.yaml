@@ -1,5 +1,5 @@
 sample:
-  name: Timer sample
+  name: Timer Sample
 common:
   sysbuild: true
   build_only: true

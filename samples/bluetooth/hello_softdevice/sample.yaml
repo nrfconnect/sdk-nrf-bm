@@ -1,5 +1,5 @@
 sample:
-  name: SoftDevice handler sample
+  name: BLE Hello SoftDevice Sample
 tests:
   sample.sd_handler:
     sysbuild: true

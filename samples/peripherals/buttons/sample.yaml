@@ -1,5 +1,5 @@
 sample:
-  name: Buttons sample
+  name: Buttons Sample
 tests:
   sample.buttons:
     sysbuild: true
