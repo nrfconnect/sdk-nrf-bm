@@ -1,7 +1,7 @@
 .. _hello_softdevice_sample:
 
-Hello SoftDevice
-################
+Bluetooth: Hello SoftDevice
+###########################
 
 .. contents::
    :local:
