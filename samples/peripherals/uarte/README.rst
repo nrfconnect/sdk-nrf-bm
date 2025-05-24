@@ -39,7 +39,7 @@ It then outputs a message on the uart before echoing what is entered by the user
 Building and running
 ********************
 
-This sample can be found under :file:`samples/bperipherals/uart/` in the |NCSL| folder structure.
+This sample can be found under :file:`samples/bperipherals/uart/` in the |BMshort| folder structure.
 
 .. include:: /includes/build_sample.txt
 
