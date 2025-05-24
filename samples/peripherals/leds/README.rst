@@ -38,7 +38,7 @@ The sample initializes and blinks LED0 on the device.
 Building and running
 ********************
 
-This sample can be found under :file:`samples/peripherals/buttons/` in the |BMshort| folder structure.
+This sample can be found under :file:`samples/peripherals/leds/` in the |BMshort| folder structure.
 
 .. include:: /includes/create_build_sample.txt
 
