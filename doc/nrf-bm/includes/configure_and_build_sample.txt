@@ -1,3 +1,6 @@
+Configuring and building the sample
+===================================
+
 Follow these steps to create your first build configuration for this sample:
 
 1. Verify the configuration of this sample.
