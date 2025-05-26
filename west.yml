@@ -12,8 +12,8 @@ manifest:
     - -nrf-bm-internal
 
   projects:
-    - name: sdk-nrf
-      path: nrf
+    - name: nrf
+      repo-path: sdk-nrf
       revision: v3.0.1
       import:
         name-allowlist:
