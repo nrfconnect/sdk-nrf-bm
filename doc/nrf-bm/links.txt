@@ -29,6 +29,9 @@
 .. _`nRF Connect for Visual Studio Code`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/installation/recommended_versions.html#requirements-nrfvsc
 .. _`Visual Studio Code download page`: https://code.visualstudio.com/download
 .. _`freestanding application`: https://docs.nordicsemi.com/bundle/nrf-connect-vscode/page/guides/applications.html
+.. _`Applications View`: https://docs.nordicsemi.com/bundle/nrf-connect-vscode/page/reference/ui_sidebar_applications.html
+.. _`Actions View`: https://docs.nordicsemi.com/bundle/nrf-connect-vscode/page/reference/ui_sidebar_actions.html
+.. _`Details View`: https://docs.nordicsemi.com/bundle/nrf-connect-vscode/page/reference/ui_sidebar_details.html
 
 .. ### Samples
 

@@ -43,6 +43,8 @@ This sample can be found under :file:`samples/bperipherals/uart/` in the |BMshor
 
 .. include:: /includes/create_sample.txt
 
+.. include:: /includes/configure_and_build_sample.txt
+
 .. include:: /includes/program_sample.txt
 
 Testing
