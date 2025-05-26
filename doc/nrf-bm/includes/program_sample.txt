@@ -1,3 +1,6 @@
+Programming the sample
+======================
+
 Follow these steps to program this sample:
 
 1. Plug in your device to the serial terminal using a USB cable.
