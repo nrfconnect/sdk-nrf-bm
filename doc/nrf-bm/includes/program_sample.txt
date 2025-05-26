@@ -2,6 +2,6 @@ Follow these steps to program this sample:
 
 1. Plug in your device to the serial terminal using a USB cable.
    Your device appears on the Connected Devices View list in |VSC|.
-#. To flash the application you have built, click :guilabel:`Flash` in the Actions View after connecting the device to the terminal.
+#. To flash the application you have built, click :guilabel:`Flash` in the `Actions View`_ after connecting the device to the terminal.
 
 For more details, see `How to flash an application`_ in |VSC| extension documentation.
