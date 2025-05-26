@@ -8,19 +8,19 @@ To flash the S115 SoftDevice binary to your device, open the terminal and run th
 
          .. code-block:: console
 
-            cd C:/ncs/v3.0.1/nrf-bm
+            cd C:/ncs/v0.7.0/nrf-bm
 
       .. group-tab:: Linux
 
          .. code-block:: console
 
-            cd ~/ncs/v3.0.1/nrf-bm
+            cd ~/ncs/v0.7.0/nrf-bm
 
       .. group-tab:: macOS
 
          .. code-block:: console
 
-            cd /opt/nordic/ncs/v3.0.1/nrf-bm
+            cd /opt/nordic/ncs/v0.7.0/nrf-bm
 
 #. Then, make sure that your device is erased:
 
