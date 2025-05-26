@@ -56,6 +56,8 @@ This sample can be found under :file:`samples/bluetooth/ble_lbs/` in the |BMshor
 
 .. include:: /includes/create_sample.txt
 
+.. include:: /includes/configure_and_build_sample.txt
+
 .. include:: /includes/program_sample.txt
 
 Testing
