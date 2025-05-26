@@ -572,16 +572,20 @@ static int ble_stack_init(void)
 
 	err = nrf_sdh_enable_request();
 	if (err) {
-		LOG_ERR("Failed to enable SofdDevice helper requests, err %d", err);
+		LOG_ERR("Failed to enable SoftDevice, err %d", err);
 		return err;
 	}
+
+	LOG_INF("SoftDevice enabled");
 
 	/* Enable BLE stack. */
 	err = nrf_sdh_ble_enable(CONFIG_NRF_SDH_BLE_CONN_TAG);
 	if (err) {
-		LOG_ERR("Failed to enable SoftDevice helpers, err %d", err);
+		LOG_ERR("Failed to enable BLE, err %d", err);
 		return err;
 	}
+
+	LOG_INF("Bluetooth enabled");
 
 	return 0;
 }
