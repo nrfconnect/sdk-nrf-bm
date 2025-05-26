@@ -28,9 +28,9 @@ jobs:
     runs-on: ubuntu-24.04-16cores
     steps:
       - name: Upload src.tar.gz
-        uses: nrfconnect/action-src-mirror@development
+        uses: nrfconnect/action-src-mirror@main
         with:
-          path: 'ncs-bm'
+          path: 'nrf-bm'
           west-update-args: ''
           artifactory-path: >-
             ${{ (github.ref_type != 'tag') &&
@@ -44,9 +44,9 @@ jobs:
   #   runs-on: ubuntu-24.04-16cores
   #   steps:
   #     - name: Upload src.tar.gz
-  #       uses: nrfconnect/action-src-mirror@development
+  #       uses: nrfconnect/action-src-mirror@main
   #       with:
-  #         path: 'ncs-bm'
+  #         path: 'nrf-bm'
   #         west-update-args: '--narrow'
   #         git-fetch-depth: 1
   #         artifactory-path: >-
