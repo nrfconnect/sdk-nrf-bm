@@ -13,11 +13,11 @@
 /** Application UARTE instance */
 static const nrfx_uarte_t uarte_inst = NRFX_UARTE_INSTANCE(BOARD_APP_UARTE_INST);
 
-/* Receive buffer used in UART ISR callback */
+/* Receive buffer used in UARTE ISR callback */
 static uint8_t uarte_rx_buf[4];
 static int buf_idx;
 
-/* Handle data received from UART. */
+/* Handle data received from UARTE. */
 static void uarte_rx_handler(char *data, size_t data_len)
 {
 	nrfx_err_t err;
@@ -61,12 +61,12 @@ static void uarte_event_handler(nrfx_uarte_event_t const *event, void *ctx)
 {
 	switch (event->type) {
 	case NRFX_UARTE_EVT_RX_DONE:
-		printk("Received data from UART: %c\n", event->data.rx.p_buffer[0]);
+		printk("Received data from UARTE: %c\n", event->data.rx.p_buffer[0]);
 		if (event->data.rx.length > 0) {
 			uarte_rx_handler(event->data.rx.p_buffer, event->data.rx.length);
 		}
 
-		/* Provide new UART RX buffer. */
+		/* Provide new UARTE RX buffer. */
 		nrfx_uarte_rx_enable(&uarte_inst, 0);
 		break;
 	case NRFX_UARTE_EVT_RX_BUF_REQUEST:
@@ -76,7 +76,7 @@ static void uarte_event_handler(nrfx_uarte_event_t const *event, void *ctx)
 		buf_idx = (buf_idx < sizeof(uarte_rx_buf)) ? buf_idx : 0;
 		break;
 	case NRFX_UARTE_EVT_ERROR:
-		printk("uarte error %#x\n", event->data.error.error_mask);
+		printk("UARTE error %#x\n", event->data.error.error_mask);
 		break;
 	default:
 		break;
@@ -112,7 +112,7 @@ static int uarte_init(void)
 
 	err = nrfx_uarte_init(&uarte_inst, &uarte_config, uarte_event_handler);
 	if (err != NRFX_SUCCESS) {
-		printk("Failed to initialize UART, nrfx err %d\n", err);
+		printk("Failed to initialize UARTE, nrfx err %d\n", err);
 		return err;
 	}
 
@@ -123,7 +123,7 @@ int main(void)
 {
 	int err;
 
-	printk("UART sample started\n");
+	printk("UARTE sample started\n");
 
 	err = uarte_init();
 	if (err) {
@@ -142,7 +142,7 @@ int main(void)
 	/* Start reception */
 	err = nrfx_uarte_rx_enable(&uarte_inst, 0);
 	if (err != NRFX_SUCCESS) {
-		printk("UART RX failed, nrfx err %d\n", err);
+		printk("UARTE RX failed, nrfx err %d\n", err);
 	}
 
 	while (true) {
