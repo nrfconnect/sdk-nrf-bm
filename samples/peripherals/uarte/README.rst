@@ -41,7 +41,7 @@ Building and running
 
 This sample can be found under :file:`samples/bperipherals/uart/` in the |BMshort| folder structure.
 
-.. include:: /includes/create_build_sample.txt
+.. include:: /includes/create_sample.txt
 
 .. include:: /includes/program_sample.txt
 
