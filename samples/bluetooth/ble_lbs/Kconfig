@@ -1,0 +1,12 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+module=BLE_LBS_SAMPLE
+module-dep=LOG
+module-str=BLE LBS Sample
+source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+
+source "Kconfig.zephyr"
