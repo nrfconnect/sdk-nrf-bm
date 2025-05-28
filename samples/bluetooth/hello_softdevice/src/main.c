@@ -9,24 +9,27 @@
 #include <nrf_sdh_soc.h>
 #include <zephyr/kernel.h> /* k_busy_wait() */
 #include <zephyr/sys_clock.h> /* USEC_PER_SEC */
+#include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 #include <zephyr/sys/printk.h>
 
+LOG_MODULE_REGISTER(ble_hello_softdevice_sample, CONFIG_BLE_HELLO_SOFTDEVICE_SAMPLE_LOG_LEVEL);
+
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {
-	printk("BLE event %d\n", evt->header.evt_id);
+	LOG_INF("BLE event %d", evt->header.evt_id);
 }
 NRF_SDH_BLE_OBSERVER(sdh_ble, on_ble_evt, NULL, 0);
 
 static void on_soc_evt(uint32_t evt, void *ctx)
 {
-	printk("SoC event\n");
+	LOG_INF("SoC event");
 }
 NRF_SDH_SOC_OBSERVER(sdh_soc, on_soc_evt, NULL, 0);
 
 static void on_state_change(enum nrf_sdh_state_evt state, void *ctx)
 {
-	printk("SoftDevice state has changed to %d\n", state);
+	LOG_INF("SoftDevice state has changed to %d", state);
 }
 NRF_SDH_STATE_EVT_OBSERVER(sdh_state, on_state_change, NULL, 0);
 
