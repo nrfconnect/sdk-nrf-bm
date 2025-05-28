@@ -10,8 +10,8 @@
  * @ingroup ble_cgms
  * @brief Continuous Glucose Monitoring Profile Sample
  *
- * This file contains the source code for a sample using the Continuous Glucose Monitoring service.
- * Bond Management Service, Battery service and Device Information service is also present.
+ * This file contains the source code for a sample using the Continuous Glucose Monitoring Service.
+ * Bond Management Service, Battery Service, and Device Information Service are also present.
  *
  */
 
@@ -60,7 +60,7 @@ static struct bm_timer battery_timer;
 /** Glucose measurement timer. */
 static struct bm_timer glucose_meas_timer;
 
-/** Battery service instance. */
+/** Battery Service instance. */
 BLE_BAS_DEF(ble_bas);
 /** CGMS instance. */
 BLE_CGMS_DEF(ble_cgms);
@@ -296,7 +296,7 @@ uint16_t qwr_evt_handler(struct ble_qwr *qwr, const struct ble_qwr_evt *evt)
 /**
  * @brief Function for initializing the services that will be used by the application.
  *
- * @details Initialize the Glucose, Battery and Device Information services.
+ * @details Initialize the Glucose, Battery, and Device Information services.
  */
 static int services_init(void)
 {
@@ -361,7 +361,7 @@ static int services_init(void)
 	/* Initialize Device Information Service. */
 	err = ble_dis_init();
 	if (err) {
-		LOG_ERR("Failed to initialize device information service, err %d", err);
+		LOG_ERR("Failed to initialize DIS service, err %d", err);
 		return -1;
 	}
 
@@ -698,7 +698,7 @@ static int buttons_leds_init(bool *erase_bonds)
 	int err;
 
 	err = bm_buttons_init(btn_configs, ARRAY_SIZE(btn_configs),
-				BM_BUTTONS_DETECTION_DELAY_MIN_US);
+			      BM_BUTTONS_DETECTION_DELAY_MIN_US);
 	if (err) {
 		LOG_ERR("bm_buttons_init error: %d", err);
 		return err;
