@@ -14,10 +14,13 @@
 #include <bluetooth/services/ble_bas.h>
 #include <bluetooth/services/ble_dis.h>
 #include <bluetooth/services/ble_hrs.h>
-#include <bm_timer.h>
-#include <sensorsim.h>
+#include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 #include <zephyr/sys/printk.h>
+#include <bm_timer.h>
+#include <sensorsim.h>
+
+LOG_MODULE_REGISTER(ble_hrs_sample, CONFIG_BLE_HRS_SAMPLE_LOG_LEVEL);
 
 #define CONN_TAG 1
 
@@ -52,7 +55,7 @@ void battery_level_meas_timeout_handler(void *context)
 
 	err = sensorsim_measure(&battery_sim_state, &battery_level);
 	if (err) {
-		printk("Failed to get battery measurement, err %d\n", err);
+		LOG_ERR("Failed to get battery measurement, err %d", err);
 		return;
 	}
 
@@ -60,7 +63,7 @@ void battery_level_meas_timeout_handler(void *context)
 	if (err) {
 		/* Ignore if not in a connection or notifications disabled in CCCD. */
 		if (err != -ENOTCONN && err != -EPIPE) {
-			printk("Failed to update battery level, err %d\n", err);
+			LOG_ERR("Failed to update battery level, err %d", err);
 		}
 	}
 }
@@ -75,7 +78,7 @@ static void heart_rate_meas_timeout_handler(void *context)
 
 	err = sensorsim_measure(&heart_rate_sim_state, &heart_rate);
 	if (err) {
-		printk("Failed to get heart rate measurement, err %d\n", err);
+		LOG_ERR("Failed to get heart rate measurement, err %d", err);
 		return;
 	}
 
@@ -83,7 +86,7 @@ static void heart_rate_meas_timeout_handler(void *context)
 	if (err) {
 		/* Ignore if not in a connection or notifications disabled in CCCD. */
 		if (err != -ENOTCONN && err != -EPIPE) {
-			printk("Failed to update heart rate measurement, err %d\n", err);
+			LOG_ERR("Failed to update heart rate measurement, err %d", err);
 		}
 	}
 
@@ -108,13 +111,13 @@ static void rr_interval_timeout_handler(void *context)
 	for (int i = 0; i < 3; i++) {
 		err = sensorsim_measure(&rr_interval_sim_state, &rr_interval);
 		if (err) {
-			printk("Failed to get RR interval measurement, err %d\n", err);
+			LOG_ERR("Failed to get RR interval measurement, err %d", err);
 			break;
 		}
 
 		err = ble_hrs_rr_interval_add(&ble_hrs, (uint16_t)rr_interval);
 		if (err) {
-			printk("Failed to add RR interval, err %d\n", err);
+			LOG_ERR("Failed to add RR interval, err %d", err);
 		}
 	}
 }
@@ -129,7 +132,7 @@ static void sensor_contact_detected_timeout_handler(void *context)
 	sim_sensor_contact_detected = !sim_sensor_contact_detected;
 	err = ble_hrs_sensor_contact_detected_update(&ble_hrs, sim_sensor_contact_detected);
 	if (err) {
-		printk("Failed to update sensor contact detected state, err %d\n", err);
+		LOG_ERR("Failed to update sensor contact detected state, err %d", err);
 	}
 }
 
@@ -203,23 +206,23 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 
 	switch (evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:
-		printk("Peer connected\n");
+		LOG_INF("Peer connected");
 		conn_handle = evt->evt.gap_evt.conn_handle;
 		err = sd_ble_gatts_sys_attr_set(conn_handle, NULL, 0, 0);
 		if (err) {
-			printk("Failed to set system attributes, nrf_error %#x\n", err);
+			LOG_ERR("Failed to set system attributes, nrf_error %#x", err);
 		}
 		break;
 
 	case BLE_GAP_EVT_DISCONNECTED:
-		printk("Peer disconnected\n");
+		LOG_INF("Peer disconnected");
 		if (conn_handle == evt->evt.gap_evt.conn_handle) {
 			conn_handle = BLE_CONN_HANDLE_INVALID;
 		}
 		break;
 
 	case BLE_GAP_EVT_AUTH_STATUS:
-		printk("Authentication status: %#x\n",
+		LOG_INF("Authentication status: %#x",
 		       evt->evt.gap_evt.params.auth_status.auth_status);
 		break;
 
@@ -228,16 +231,16 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		err = sd_ble_gap_sec_params_reply(evt->evt.gap_evt.conn_handle,
 						  BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP, NULL, NULL);
 		if (err) {
-			printk("Failed to reply with Security params, nrf_error %#x\n", err);
+			LOG_ERR("Failed to reply with Security params, nrf_error %#x", err);
 		}
 		break;
 
 	case BLE_GATTS_EVT_SYS_ATTR_MISSING:
-		printk("BLE_GATTS_EVT_SYS_ATTR_MISSING\n");
+		LOG_INF("BLE_GATTS_EVT_SYS_ATTR_MISSING");
 		/* No system attributes have been stored */
 		err = sd_ble_gatts_sys_attr_set(conn_handle, NULL, 0, 0);
 		if (err) {
-			printk("Failed to set system attributes, nrf_error %#x\n", err);
+			LOG_ERR("Failed to set system attributes, nrf_error %#x", err);
 		}
 		break;
 	}
@@ -252,10 +255,10 @@ void on_conn_params_evt(const struct ble_conn_params_evt *evt)
 	case BLE_CONN_PARAMS_EVT_REJECTED:
 		err = sd_ble_gap_disconnect(evt->conn_handle, BLE_HCI_CONN_INTERVAL_UNACCEPTABLE);
 		if (err) {
-			printk("Disconnect failed on conn params update rejection, nrf_error %#x\n",
-			       err);
+			LOG_ERR("Disconnect failed on conn params update rejection, nrf_error %#x",
+				err);
 		} else {
-			printk("Disconnected from peer, unacceptable conn params\n");
+			LOG_INF("Disconnected from peer, unacceptable conn params");
 		}
 		break;
 
@@ -272,7 +275,7 @@ static void ble_adv_evt_handler(struct ble_adv *adv, const struct ble_adv_evt *a
 {
 	switch (adv_evt->evt_type) {
 	case BLE_ADV_EVT_ERROR:
-		printk("Advertising error %d\n", adv_evt->error.reason);
+		LOG_ERR("Advertising error %d\n", adv_evt->error.reason);
 		break;
 	default:
 		break;

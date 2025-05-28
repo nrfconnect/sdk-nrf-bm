@@ -108,4 +108,9 @@ endmenu # "Sensor contact simulation"
 
 endmenu # "BLE HRS sample"
 
+module=BLE_HRS_SAMPLE
+module-dep=LOG
+module-str=BLE HRS Sample
+source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+
 source "Kconfig.zephyr"
