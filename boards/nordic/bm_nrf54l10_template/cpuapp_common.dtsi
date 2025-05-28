@@ -10,6 +10,7 @@
 
 	chosen {
 		zephyr,flash-controller = &rram_controller;
+		zephyr,boot-mode = &boot_mode0;
 	};
 };
 
@@ -22,6 +23,16 @@
 /* Override NCS default to use entire RRAM for application CPU. */
 &cpuapp_rram {
 	reg = <0x0 DT_SIZE_K(1022)>;
+};
+
+&gpregret1 {
+	status = "okay";
+
+	boot_mode0: boot_mode@0 {
+		compatible = "zephyr,retention";
+		status = "okay";
+		reg = <0x0 0x1>;
+	};
 };
 
 &grtc {
