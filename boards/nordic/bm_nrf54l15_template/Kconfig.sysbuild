@@ -6,6 +6,5 @@
 
 # No changes needed to this file
 
-menuconfig PARTITION_MANAGER
-	bool "Partition Manager"
+config PARTITION_MANAGER
 	default n

@@ -4,6 +4,5 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-menuconfig PARTITION_MANAGER
-	bool "Partition Manager"
+config PARTITION_MANAGER
 	default n
