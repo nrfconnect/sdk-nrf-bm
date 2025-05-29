@@ -5,6 +5,8 @@
 #
 menu "Device Drivers"
 
+# zephyr-keep-sorted-start
 rsource "console/Kconfig"
+# zephyr-keep-sorted-stop
 
 endmenu

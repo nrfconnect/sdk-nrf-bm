@@ -8,7 +8,13 @@ config NRF_BM
 	bool
 	default y
 
+if NRF_BM
+
+# zephyr-keep-sorted-start
 rsource "drivers/Kconfig"
 rsource "lib/Kconfig"
 rsource "samples/Kconfig"
 rsource "subsys/Kconfig"
+# zephyr-keep-sorted-stop
+
+endif # NRF_BM
