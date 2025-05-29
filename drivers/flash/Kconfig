@@ -3,11 +3,11 @@
 #
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
-menu "Device Drivers"
+
+if FLASH
 
 # zephyr-keep-sorted-start
-rsource "console/Kconfig"
-rsource "flash/Kconfig"
+rsource "Kconfig.nrf_rram"
 # zephyr-keep-sorted-stop
 
-endmenu
+endif # FLASH

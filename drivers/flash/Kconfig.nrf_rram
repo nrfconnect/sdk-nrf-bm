@@ -1,0 +1,36 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+menuconfig SOC_FLASH_NRF_RRAM_BM
+	bool "Nordic Semiconductor nRF SoftDevice-based RRAM flash driver"
+	depends on DT_HAS_NORDIC_RRAM_CONTROLLER_ENABLED
+	depends on FLASH
+	select NRFX_RRAMC if !BUILD_WITH_TFM
+	select FLASH_HAS_DRIVER_ENABLED
+	select FLASH_HAS_PAGE_LAYOUT
+	select FLASH_HAS_NO_EXPLICIT_ERASE
+	select FLASH_NRF_FORCE_ALT
+	select MPU_ALLOW_FLASH_WRITE if ARM_MPU
+	default y if SOFTDEVICE
+	help
+	  Enables Nordic Semiconductor nRF RRAM flash driver using the SoftDevice.
+
+if SOC_FLASH_NRF_RRAM_BM
+
+config NRF_RRAM_REGION_ADDRESS_RESOLUTION
+	hex
+	default 0x1000
+	help
+	  RRAMC's region protection address resolution.
+	  Applies to region with configurable start address.
+
+config NRF_RRAM_REGION_SIZE_UNIT
+	hex
+	default 0x1000
+	help
+	  Base unit for the size of RRAMC's region protection.
+
+endif # SOC_FLASH_NRF_RRAM_BM
