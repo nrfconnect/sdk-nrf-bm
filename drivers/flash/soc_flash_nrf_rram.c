@@ -12,6 +12,7 @@
 #include <zephyr/drivers/flash.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/irq.h>
+#include <zephyr/sys/__assert.h>
 #include <zephyr/sys/barrier.h>
 #include <hal/nrf_rramc.h>
 #include "nrf_soc.h"
@@ -88,6 +89,28 @@ static int nrf_rram_read(const struct device *dev, off_t addr, void *data, size_
 	return 0;
 }
 
+#if defined(CONFIG_NRF_SDH_SOC)
+static enum flash_status {
+	FLASH_STATUS_READY,
+	FLASH_STATUS_PENDING,
+	FLASH_STATUS_DONE,
+	FLASH_STATUS_ERROR,
+} flash_status = FLASH_STATUS_READY;
+
+static void soc_evt_flash_handler(uint32_t evt_id, void *context)
+{
+	__ASSERT_NO_MSG(flash_op_status == FLASH_OP_STATUS_PENDING);
+
+	if (evt_id == NRF_EVT_FLASH_OPERATION_SUCCESS) {
+		flash_status = FLASH_STATUS_DONE;
+	} else if (evt_id == NRF_EVT_FLASH_OPERATION_ERROR) {
+		flash_status = FLASH_STATUS_ERROR;
+	}
+}
+
+NRF_SDH_SOC_OBSERVER(soc_evt_flash_obs, soc_evt_flash_handler, NULL, 0);
+#endif
+
 static int nrf_rram_write(const struct device *dev, off_t addr, const void *data, size_t len)
 {
 	int ret = 0;
@@ -115,16 +138,32 @@ static int nrf_rram_write(const struct device *dev, off_t addr, const void *data
 
 	LOG_DBG("Write: %p: %zu", (void *)addr, len);
 
+#if defined(CONFIG_NRF_SDH_SOC)
+	__ASSERT_NO_MSG(flash_op_status == FLASH_OP_STATUS_READY);
+	flash_status = FLASH_STATUS_PENDING;
+#endif
+
 	ret = sd_flash_write((uint32_t *)addr, data, len / sizeof(uint32_t));
 
 	if (ret) {
+#if defined(CONFIG_NRF_SDH_SOC)
+		flash_status = FLASH_STATUS_READY;
+#endif
 		return -EIO;
 	}
 
 	while (1) {
+		sd_app_evt_wait();
+
+#if defined(CONFIG_NRF_SDH_SOC)
+		if (flash_status != FLASH_STATUS_PENDING) {
+			ret = (flash_status == FLASH_STATUS_DONE) ? 0 : -EIO;
+			flash_status = FLASH_STATUS_READY;
+			break;
+		}
+#else
 		int taskid;
 
-		sd_app_evt_wait();
 		ret = sd_evt_get(&taskid);
 
 		if (!ret && (taskid == NRF_EVT_FLASH_OPERATION_SUCCESS ||
@@ -135,6 +174,7 @@ static int nrf_rram_write(const struct device *dev, off_t addr, const void *data
 
 			break;
 		}
+#endif
 	}
 
 	barrier_dmem_fence_full(); /* Barrier following our last write. */
