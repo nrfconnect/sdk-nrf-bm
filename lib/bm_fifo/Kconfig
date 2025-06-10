@@ -1,0 +1,18 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+menuconfig BM_FIFO
+	bool "FIFO queue library"
+	help
+	  A simple FIFO queue using a circular buffer.
+
+if BM_FIFO
+
+module=BM_FIFO
+module-dep=LOG
+module-str=FIFO library
+source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+
+endif
