@@ -1,0 +1,22 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+if FLASH_MAP_CUSTOM
+
+menu "Flash map"
+
+config FLASH_MAP_CUSTOM_NCS_BM_MCUMGR
+	bool "Bare metal MCUmgr flash map"
+	depends on NCS_BM_MCUMGR
+	help
+	  This option enables the custom MCUmgr flash map for NCS bare metal which specifies the
+	  update app/installer partition.
+
+	  This option is used by the firmware loader application only.
+
+endmenu
+
+endif # FLASH_MAP_CUSTOM
