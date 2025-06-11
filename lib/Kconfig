@@ -15,5 +15,6 @@ rsource "bm_timer/Kconfig"
 rsource "ble_qwr/Kconfig"
 rsource "sensorsim/Kconfig"
 rsource "boot_banner/Kconfig"
+rsource "zephyr_queue/Kconfig"
 
 endmenu
