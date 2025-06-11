@@ -62,6 +62,15 @@ jobs:
       continue-on-error: false
       run: pip3 install -U -r scripts/requirements-compliance.txt
 
+    - name: Run CODEOWNERS test
+      id: codeowners
+      env:
+        BASE_REF: ${{ github.base_ref }}
+      working-directory: nrf-bm
+      if: contains(github.event.pull_request.user.login, 'dependabot[bot]') != true
+      run: |
+        ../nrf/scripts/ci/codeowners.py -c origin/${BASE_REF}..
+
     - name: Run Compliance Tests
       continue-on-error: true
       id: compliance
