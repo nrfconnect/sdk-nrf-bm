@@ -62,7 +62,7 @@ static void uarte_rx_handler(char *data, size_t data_len)
 	for (int i = 0; i < data_len; i++) {
 		c = data[i];
 
-		if ((rx_buf_idx < sizeof(rx_buf)) && (c != '\n') && (c != '\r')) {
+		if (rx_buf_idx < sizeof(rx_buf)) {
 			rx_buf[rx_buf_idx++] = c;
 		}
 
