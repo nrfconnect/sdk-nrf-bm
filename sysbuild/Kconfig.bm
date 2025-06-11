@@ -1,0 +1,146 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+choice BM_BOOTLOADER
+	prompt "Bootloader selection"
+
+config BM_BOOTLOADER_NONE
+	bool "None"
+	help
+	  Do not include a bootloader image in the build.
+
+config BM_BOOTLOADER_MCUBOOT
+	bool "MCUboot"
+	help
+	  Include MCUboot image as the bootloader image to use.
+
+endchoice
+
+if BM_BOOTLOADER_MCUBOOT
+
+menu "MCUboot configuration"
+
+choice BM_BOOTLOADER_MCUBOOT_SIGNATURE_TYPE
+	prompt "Signature type"
+	default BM_BOOTLOADER_MCUBOOT_SIGNATURE_TYPE_RSA
+
+config BM_BOOTLOADER_MCUBOOT_SIGNATURE_TYPE_NONE
+	bool "No signature; use only hash check"
+
+config BM_BOOTLOADER_MCUBOOT_SIGNATURE_TYPE_RSA
+	bool "RSA signatures"
+
+config BM_BOOTLOADER_MCUBOOT_SIGNATURE_TYPE_ECDSA_P256
+	bool "Elliptic curve digital signatures with curve P-256"
+
+config BM_BOOTLOADER_MCUBOOT_SIGNATURE_TYPE_ED25519
+	bool "Edwards curve digital signatures using ed25519"
+
+endchoice
+
+config BM_BOOTLOADER_MCUBOOT_SIGNATURE_KEY_FILE
+	string "Signing PEM key file" if !BM_BOOTLOADER_MCUBOOT_SIGNATURE_TYPE_NONE
+	default "$(ZEPHYR_MCUBOOT_MODULE_DIR)/root-ec-p256.pem" if BM_BOOTLOADER_MCUBOOT_SIGNATURE_TYPE_ECDSA_P256
+	default "$(ZEPHYR_MCUBOOT_MODULE_DIR)/root-ed25519.pem" if BM_BOOTLOADER_MCUBOOT_SIGNATURE_TYPE_ED25519
+	default "$(ZEPHYR_MCUBOOT_MODULE_DIR)/root-rsa-2048.pem" if BM_BOOTLOADER_MCUBOOT_SIGNATURE_TYPE_RSA
+	default ""
+	help
+	  Absolute path to signing key file to use with MCUBoot.
+
+endmenu
+
+endif # BM_BOOTLOADER_MCUBOOT
+
+if !BM_BOOTLOADER_NONE
+
+config BM_BOOTLOADER_IMAGE_NAME
+	string
+	default "mcuboot" if BM_BOOTLOADER_MCUBOOT
+	help
+	  Name of bootloader image.
+
+config BM_BOOTLOADER_IMAGE_PATH
+	string
+	default "${ZEPHYR_MCUBOOT_MODULE_DIR}/boot/zephyr" if BM_BOOTLOADER_MCUBOOT
+	help
+	  Source directory of bootloader image.
+
+choice BM_FIRMWARE_LOADER
+	prompt "Firmware loader selection"
+
+config BM_FIRMWARE_LOADER_NONE
+	bool "None"
+	help
+	  Do not include a firmware loader image in the build.
+
+config BM_FIRMWARE_LOADER_BT_MCUMGR
+	bool "Bluetooth MCUmgr"
+	help
+	  Include Bluetooth MCUmgr image as the firmware loader image to use (uses Softdevice).
+
+config BM_FIRMWARE_LOADER_UART_MCUMGR
+	bool "UART MCUmgr"
+	help
+	  Include UART MCUmgr image as the firmware loader image to use.
+
+endchoice
+
+if !BM_FIRMWARE_LOADER_NONE
+
+config BM_FIRMWARE_LOADER_IMAGE_NAME
+	string
+	default "firmware_loader"
+	help
+	  Name of firmware loader image.
+
+config BM_FIRMWARE_LOADER_IMAGE_PATH
+	string
+	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/samples/ble_mcumgr" if BM_FIRMWARE_LOADER_BT_MCUMGR
+	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/samples/uart_mcumgr" if BM_FIRMWARE_LOADER_UART_MCUMGR
+	help
+	  Source directory of firmware loader image.
+
+endif
+
+endif
+
+choice SOFTDEVICE_SELECTION
+	prompt "Softdevice selection"
+
+config SOFTDEVICE_NONE
+	bool "None"
+
+config SOFTDEVICE_S115
+	bool "S115"
+	depends on SOC_SERIES_NRF54LX
+
+endchoice
+
+config SOFTDEVICE_FILE
+	string
+	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/subsys/softdevice/hex/s115/s115_9.0.0-3.prototype_nrf54l05_softdevice.hex" if SOFTDEVICE_S115 && SOC_NRF54L05
+	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/subsys/softdevice/hex/s115/s115_9.0.0-3.prototype_nrf54l10_softdevice.hex" if SOFTDEVICE_S115 && SOC_NRF54L10
+	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/subsys/softdevice/hex/s115/s115_9.0.0-3.prototype_nrf54l15_softdevice.hex" if SOFTDEVICE_S115 && SOC_NRF54L15
+	help
+	  Specifies the path to the softdevice hex file.
+
+config METADATA_SIZE
+	hex
+	default 0x1000 if SOC_NRF52840
+	default 0x200 if SOC_SERIES_NRF54LX
+	help
+	  Specifies the size of the metadata partition.
+
+config METADATA_ENTRY_SIZE
+	int
+	default 32
+	help
+	  Specifies the size of each metadata entry.
+
+config INSTALLER_HEX_OUTPUT
+	bool "Installer hex output [DEBUG]"
+	help
+	  Will output a hex file of the installer image, this is for debug usage only.

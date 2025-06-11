@@ -2,8 +2,12 @@ name: nrf-bm
 build:
   cmake: .
   kconfig: Kconfig.nrf_bm
+  sysbuild-cmake: sysbuild
+  sysbuild-kconfig: sysbuild/Kconfig.sysbuild
   settings:
     soc_root: .
     board_root: .
     dts_root: .
     snippet_root: .
+  depends:
+    - nrf
