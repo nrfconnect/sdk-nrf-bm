@@ -3,21 +3,21 @@ board:
   full_name: Bare Metal nRF54L15 DK
   vendor: nordic
   socs:
-  - name: nrf54l05
-    variants:
-    - name: no_softdevice
-      cpucluster: cpuapp
-    - name: softdevice_s115
-      cpucluster: cpuapp
-  - name: nrf54l10
-    variants:
-    - name: no_softdevice
-      cpucluster: cpuapp
-    - name: softdevice_s115
-      cpucluster: cpuapp
-  - name: nrf54l15
-    variants:
-    - name: no_softdevice
-      cpucluster: cpuapp
-    - name: softdevice_s115
-      cpucluster: cpuapp
+    - name: nrf54l05
+      variants:
+        - name: s115_softdevice
+          cpucluster: cpuapp
+          variants:
+            - name: mcuboot
+    - name: nrf54l10
+      variants:
+        - name: s115_softdevice
+          cpucluster: cpuapp
+          variants:
+            - name: mcuboot
+    - name: nrf54l15
+      variants:
+        - name: s115_softdevice
+          cpucluster: cpuapp
+          variants:
+            - name: mcuboot

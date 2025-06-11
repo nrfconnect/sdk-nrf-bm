@@ -4,4 +4,4 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-zephyr_include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+zephyr_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
