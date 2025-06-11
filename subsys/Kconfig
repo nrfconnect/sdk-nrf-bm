@@ -3,11 +3,15 @@
 #
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
+
 menu "Subsystems"
 
+# zephyr-keep-sorted-start
 rsource "bluetooth/Kconfig"
+rsource "logging/Kconfig"
 rsource "softdevice/Kconfig"
 rsource "softdevice_handler/Kconfig"
-rsource "logging/Kconfig"
+rsource "storage/flash_map/Kconfig"
+# zephyr-keep-sorted-stop
 
 endmenu
