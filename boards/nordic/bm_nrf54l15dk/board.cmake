@@ -4,6 +4,8 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
+include(${CMAKE_CURRENT_LIST_DIR}/sysbuild.cmake)
+
 if(CONFIG_SOC_NRF54L05_CPUAPP OR CONFIG_SOC_NRF54L10_CPUAPP OR CONFIG_SOC_NRF54L15_CPUAPP)
   board_runner_args(jlink "--device=cortex-m33" "--speed=4000")
 endif()

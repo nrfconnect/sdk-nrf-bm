@@ -11,8 +11,8 @@
 
 / {
 	chosen {
-		/delete-property/ zephyr,code-partition;
-		zephyr,flash = &app_rom;
+		zephyr,flash = &cpuapp_rram;
+		zephyr,code-partition = &slot0_partition;
 		zephyr,sram = &app_ram;
 	};
 };
@@ -25,13 +25,13 @@
 		#address-cells = <1>;
 		#size-cells = <1>;
 
-		app_rom: partition@0 {
-			label = "app_rom";
-			reg = <0x0 DT_SIZE_K(372)>;
+		slot0_partition: partition@0 {
+			label = "slot0";
+			reg = <0x00000000 DT_SIZE_K(372)>;
 		};
 
-		softdevice_rom: partition@5d000 {
-			label = "softdevice_rom";
+		softdevice_partition: partition@5d000 {
+			label = "softdevice";
 			reg = <0x0005d000 DT_SIZE_K(127)>;
 		};
 	};

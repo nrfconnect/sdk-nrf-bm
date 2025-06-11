@@ -4,8 +4,8 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-identifier: bm_nrf54l15dk/nrf54l05/cpuapp/no_softdevice
-name: Bare_Metal-nRF54L15-DK-nRF54L05-Application-No-SoftDevice
+identifier: bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+name: Bare_Metal-nRF54L15-DK-nRF54L05-Application-S115-SoftDevice-MCUboot
 type: mcu
 arch: arm
 toolchain:
@@ -13,5 +13,5 @@ toolchain:
   - xtools
   - zephyr
 sysbuild: true
-ram: 96
-flash: 500
+ram: 78
+flash: 274

@@ -6,13 +6,13 @@
 
 /dts-v1/;
 
-#include <nordic/nrf54l10_cpuapp.dtsi>
-#include "bm_nrf54l15dk_nrf54l10_cpuapp_common.dtsi"
+#include <nordic/nrf54l15_cpuapp.dtsi>
+#include "bm_nrf54l15dk_nrf54l15_cpuapp_common.dtsi"
 
 / {
 	chosen {
-		/delete-property/ zephyr,code-partition;
-		zephyr,flash = &app_rom;
+		zephyr,flash = &cpuapp_rram;
+		zephyr,code-partition = &slot0_partition;
 		zephyr,sram = &app_ram;
 	};
 };
@@ -25,14 +25,14 @@
 		#address-cells = <1>;
 		#size-cells = <1>;
 
-		app_rom: partition@0 {
-			label = "app_rom";
-			reg = <0x0 DT_SIZE_K(884)>;
+		slot0_partition: partition@0 {
+			label = "slot0";
+			reg = <0x00000000 DT_SIZE_K(1396)>;
 		};
 
-		softdevice_rom: partition@dd000 {
-			label = "softdevice_rom";
-			reg = <0x000dd000 DT_SIZE_K(127)>;
+		softdevice_partition: partition@15d000 {
+			label = "softdevice";
+			reg = <0x0015d000 DT_SIZE_K(127)>;
 		};
 	};
 };
@@ -56,7 +56,7 @@
 
 		app_ram: partition@20004678 {
 			label = "app_ram";
-			reg = <0x20004678 DT_SIZE_K(174)>;
+			reg = <0x20004678 DT_SIZE_K(238)>;
 		};
 	};
 };
