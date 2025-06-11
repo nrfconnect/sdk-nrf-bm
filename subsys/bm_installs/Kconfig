@@ -1,0 +1,43 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "BM install"
+
+config BM_INSTALL_IMAGES
+	int "Install images (DO NOT ALTER)"
+	default -1
+	help
+	  Special field, set by sysbuild automatically, do not alter.
+
+config BM_INSTALL_ENTRY_SIZE
+	int "Entry size (DO NOT ALTER)"
+	default -1
+	help
+	  Special field, set by sysbuild automatically, do not alter.
+
+config BM_INSTALL_ENTRIES
+	int "Entries (DO NOT ALTER)"
+	default -1
+	help
+	  Special field, set by sysbuild automatically, do not alter.
+
+config BM_METADATA_WRITE
+	bool "Enable metadata write functions (DO NOT ALTER)"
+	select FLASH
+	select FLASH_MAP
+	help
+	  Special field, set by sysbuild automatically, do not alter.
+
+module = BM_INSTALL
+module-str = BM_install
+source "subsys/logging/Kconfig.template.log_config"
+
+config BM_REQUIREMENTS
+	bool
+	default y if BM_INSTALL_IMAGES != -1
+	select CRC
+
+endmenu
