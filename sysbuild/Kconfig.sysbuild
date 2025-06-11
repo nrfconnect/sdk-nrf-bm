@@ -1,0 +1,9 @@
+config NCS_BM
+	bool "NCS Bare Metal"
+	default y
+
+if NCS_BM
+
+rsource "Kconfig.bm"
+
+endif # NCS_BM

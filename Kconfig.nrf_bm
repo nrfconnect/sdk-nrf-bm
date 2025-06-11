@@ -4,11 +4,11 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-config NRF_BM
-	bool
+config NCS_BM
+	bool "NCS Bare Metal"
 	default y
 
-if NRF_BM
+if NCS_BM
 
 # zephyr-keep-sorted-start
 rsource "drivers/Kconfig"
@@ -17,4 +17,4 @@ rsource "samples/Kconfig"
 rsource "subsys/Kconfig"
 # zephyr-keep-sorted-stop
 
-endif # NRF_BM
+endif # NCS_BM

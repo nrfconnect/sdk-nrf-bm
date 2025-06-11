@@ -4,10 +4,12 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-zephyr_include_directories(include)
+if(CONFIG_NCS_BM)
+  zephyr_include_directories(include)
 
-include(cmake/version.cmake)
+  include(cmake/version.cmake)
 
-add_subdirectory(drivers)
-add_subdirectory(lib)
-add_subdirectory(subsys)
+  add_subdirectory(drivers)
+  add_subdirectory(lib)
+  add_subdirectory(subsys)
+endif()

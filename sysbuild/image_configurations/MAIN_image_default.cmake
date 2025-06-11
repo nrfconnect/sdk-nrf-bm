@@ -1,0 +1,26 @@
+# Copyright (c) 2025 Nordic Semiconductor
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# This sysbuild CMake file sets the sysbuild controlled settings as properties
+# on the main Zephyr image.
+
+set_config_bool(${ZCMAKE_APPLICATION} CONFIG_BOOTLOADER_MCUBOOT "${SB_CONFIG_BM_BOOTLOADER_MCUBOOT}")
+
+if(SB_CONFIG_BM_BOOTLOADER_MCUBOOT)
+  set_config_string(${ZCMAKE_APPLICATION} CONFIG_MCUBOOT_SIGNATURE_KEY_FILE
+                    "${SB_CONFIG_BM_BOOTLOADER_MCUBOOT_SIGNATURE_KEY_FILE}"
+  )
+
+  if(${SB_CONFIG_BM_BOOTLOADER_MCUBOOT_SIGNATURE_TYPE_NONE})
+    set_config_bool(${ZCMAKE_APPLICATION} CONFIG_MCUBOOT_GENERATE_UNSIGNED_IMAGE y)
+  else()
+    set_config_bool(${ZCMAKE_APPLICATION} CONFIG_MCUBOOT_GENERATE_UNSIGNED_IMAGE n)
+  endif()
+
+  if(NOT DEFINED SB_CONFIG_BM_FIRMWARE_LOADER_NONE)
+    set_config_bool(${ZCMAKE_APPLICATION} CONFIG_MCUBOOT_BOOTLOADER_MODE_FIRMWARE_UPDATER y)
+  else()
+    set_config_bool(${ZCMAKE_APPLICATION} CONFIG_MCUBOOT_BOOTLOADER_MODE_SINGLE_APP y)
+  endif()
+endif()
