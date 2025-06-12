@@ -1,0 +1,26 @@
+#
+# Copyright (c) 2024 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+rsource "$(ZEPHYR_NRF_MODULE_DIR)/modules/mcuboot/Kconfig"
+
+if MCUBOOT
+
+config SOFTDEVICE_FILE
+	string "SoftDevice file (DO NOT ALTER)"
+
+config SOFTDEVICE_PAD_HEADER
+	bool "Pad SoftDevice header (DO NOT ALTER)"
+
+config SOFTDEVICE_VERSION
+	string "SoftDevice signing version (DO NOT ALTER)"
+	default "0.0.0+0"
+
+config SOFTDEVICE_START_OFFSET
+	hex
+	default 0x800 if SOC_SERIES_NRF54LX
+	default 0x200
+
+endif # MCUBOOT

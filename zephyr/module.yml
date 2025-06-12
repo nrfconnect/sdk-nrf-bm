@@ -9,5 +9,6 @@ build:
     board_root: .
     dts_root: .
     snippet_root: .
+    module_ext_root: .
   depends:
     - nrf
