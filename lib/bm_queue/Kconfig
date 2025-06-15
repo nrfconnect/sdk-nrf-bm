@@ -1,0 +1,24 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+menuconfig BM_QUEUE
+	bool "Queue library"
+	help
+	  A simple, dynamic queue using singly linked lists.
+
+if BM_QUEUE
+
+config BM_QUEUE_K_QUEUE_COMPAT
+	bool "Export k_queue compatible API"
+	depends on !MULTITHREADING
+	help
+	  Export a k_queue compatible API for compatibility with Zephyr subsystems.
+
+module=BM_QUEUE
+module-dep=LOG
+module-str=Queue library
+source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+
+endif

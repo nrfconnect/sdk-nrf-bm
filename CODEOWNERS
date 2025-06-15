@@ -43,6 +43,7 @@
 /lib/ble_qwr/                             @nrfconnect/ncs-bm
 /lib/ble_racp/                            @nrfconnect/ncs-bm
 /lib/bm_buttons/                          @nrfconnect/ncs-bm
+/lib/bm_queue/                            @nrfconnect/ncs-bm
 /lib/bm_timer/                            @nrfconnect/ncs-bm
 /lib/boot_banner/                         @nrfconnect/ncs-bm
 /lib/event_scheduler/                     @nrfconnect/ncs-bm
