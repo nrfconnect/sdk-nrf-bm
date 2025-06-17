@@ -70,6 +70,9 @@
 /subsys/softdevice_handler/               @nrfconnect/ncs-bm
 /subsys/storage/flash_map/                @nrfconnect/ncs-pluto
 
+# Sysbuild
+/sysbuild/                                @nrfconnect/ncs-co-build-system
+
 # Tests
 /tests/lib/ble_qwr/                       @nrfconnect/ncs-bm
 /tests/lib/ble_racp/                      @nrfconnect/ncs-bm
