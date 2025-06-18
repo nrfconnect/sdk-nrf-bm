@@ -26,6 +26,7 @@
 
 # All doc related files
 /doc/                                     @nrfconnect/ncs-bm @nrfconnect/ncs-bm-doc
+/doc/s115/                                @nrfconnect/ncs-bm @nrfconnect/ncs-bm-doc @nrfconnect/ncs-dragoon
 
 # Drivers
 /drivers/clock_control/                   @nrfconnect/ncs-bm
