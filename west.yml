@@ -14,10 +14,11 @@ manifest:
   projects:
     - name: nrf
       repo-path: sdk-nrf
-      revision: v3.0.1
+      revision: e39855b1d4494e4cd9b16a2b39110f4c701d10b4
       import:
         name-allowlist:
           - cmsis
+          - cmsis_6
           - dragoon
           - hal_nordic
           - lz4
