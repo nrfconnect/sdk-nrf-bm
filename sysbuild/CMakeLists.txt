@@ -22,6 +22,11 @@ function(bm_install_setup)
       )
 
       add_overlay_dts(${SB_CONFIG_BM_FIRMWARE_LOADER_IMAGE_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/image_configurations/FIRMWARE_LOADER_image_default.overlay)
+
+      ExternalZephyrProject_Add(
+        APPLICATION installer
+        SOURCE_DIR ${ZEPHYR_NRF_BM_MODULE_DIR}/applications/installer
+      )
     endif()
   endif()
 endfunction()
