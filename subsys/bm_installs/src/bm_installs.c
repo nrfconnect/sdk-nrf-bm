@@ -123,7 +123,7 @@ void bm_installs_init(void)
 #endif
 }
 
-bool bm_installs_isvalid(void)
+bool bm_installs_is_valid(void)
 {
 	return bm_installs_valid;
 }
