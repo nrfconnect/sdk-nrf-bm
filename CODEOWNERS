@@ -64,6 +64,7 @@
 
 # Subsystems
 /subsys/bluetooth/                        @nrfconnect/ncs-bm
+/subsys/bm_installs/                      @nrfconnect/ncs-pluto
 /subsys/logging/                          @nrfconnect/ncs-bm
 /subsys/softdevice/                       @nrfconnect/ncs-bm @nrfconnect/ncs-dragoon
 /subsys/softdevice_handler/               @nrfconnect/ncs-bm
