@@ -70,8 +70,7 @@
 /subsys/storage/flash_map/                @nrfconnect/ncs-pluto
 
 # Tests
-/tests/lib/ble_qwr/                       @nrfconnect/ncs-bm
-/tests/lib/ble_racp/                      @nrfconnect/ncs-bm
+/tests/                                   @nrfconnect/ncs-bm
 
 # Zephyr module
 /zephyr/                                  @nrfconnect/ncs-co-build-system
