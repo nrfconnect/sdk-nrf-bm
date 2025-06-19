@@ -32,7 +32,7 @@
 
 		softdevice_rom: partition@15d000 {
 			label = "softdevice_rom";
-			reg = <0x0015d000 DT_SIZE_K(128)>;
+			reg = <0x0015d000 DT_SIZE_K(127)>;
 		};
 	};
 };

@@ -27,12 +27,12 @@
 
 		app_rom: partition@0 {
 			label = "app_rom";
-			reg = <0x0 DT_SIZE_K(894)>;
+			reg = <0x0 DT_SIZE_K(884)>;
 		};
 
-		softdevice_rom: partition@df800 {
+		softdevice_rom: partition@dd000 {
 			label = "softdevice_rom";
-			reg = <0x000df800 DT_SIZE_K(128)>;
+			reg = <0x000dd000 DT_SIZE_K(127)>;
 		};
 	};
 };
