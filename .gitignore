@@ -32,3 +32,31 @@ doc/*_warnings.txt
 doc/*_doc.log
 
 .west/
+
+# from check_compliance.py
+compliance.xml
+BinaryFiles.txt
+BoardYml.txt
+Checkpatch.txt
+ClangFormat.txt
+DevicetreeBindings.txt
+GitDiffCheck.txt
+Gitlint.txt
+Identity.txt
+ImageSize.txt
+Kconfig.txt
+KconfigBasic.txt
+KconfigBasicNoModules.txt
+KconfigHWMv2.txt
+KeepSorted.txt
+MaintainersFormat.txt
+ModulesMaintainers.txt
+Nits.txt
+Pylint.txt
+Ruff.txt
+SphinxLint.txt
+SysbuildKconfig.txt
+SysbuildKconfigBasic.txt
+SysbuildKconfigBasicNoModules.txt
+TextEncoding.txt
+YAMLLint.txt
