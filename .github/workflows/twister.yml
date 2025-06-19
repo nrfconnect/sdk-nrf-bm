@@ -55,7 +55,7 @@ jobs:
         else
           COVERAGE_OPTION=""
         fi
-        west twister -vc $COVERAGE_OPTION -p native_sim -T tests --enable-asan --enable-lsan --enable-ubsan
+        west twister -vc $COVERAGE_OPTION -T tests --enable-asan --enable-lsan --enable-ubsan
 
     - name: upload-logs
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
