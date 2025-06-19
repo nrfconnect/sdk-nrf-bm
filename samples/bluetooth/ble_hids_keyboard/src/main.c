@@ -5,40 +5,56 @@
  */
 
 #include <stdint.h>
+#include <nrf_error.h>
 #include <nrf_sdh.h>
 #include <nrf_sdh_ble.h>
 #include <nrf_soc.h>
-#include <event_scheduler.h>
 #include <ble_adv.h>
 #include <ble_gap.h>
 #include <ble_types.h>
-#include <nrf_error.h>
 #include <bluetooth/services/common.h>
 #include <bluetooth/services/ble_dis.h>
 #include <bluetooth/services/ble_hids.h>
+#include <event_scheduler.h>
 #include <zephyr/toolchain.h>
 #include <zephyr/sys/printk.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 #include <bm_buttons.h>
-
+#include <hal/nrf_gpio.h>
 #include <board-config.h>
 
 LOG_MODULE_REGISTER(app, CONFIG_BLE_HIDS_KEYBOARD_SAMPLE_LOG_LEVEL);
 
 #define BASE_USB_HID_SPEC_VERSION 0x0101
 
-#define INPUT_REPORT_KEYS_INDEX	  0 /**< Index of Input Report. */
-#define INPUT_REPORT_KEYS_MAX_LEN 8 /**< Maximum length of the Input Report characteristic. */
-#define INPUT_REP_REF_ID	  0 /**< Id of reference to Keyboard Input Report. */
+/* Control key codes - required 8 of them */
+#define INPUT_REPORT_KEYS_CTRL_CODE_MIN 224
+/* Control key codes - required 8 of them */
+#define INPUT_REPORT_KEYS_CTRL_CODE_MAX 231
+/* Index of Input Report. */
+#define INPUT_REPORT_KEYS_INDEX	  0
+/* Maximum length of the Input Report characteristic. */
+#define INPUT_REPORT_KEYS_MAX_LEN 8
+/* Id of reference to Keyboard Input Report. */
+#define INPUT_REP_REF_ID	  0
 
-#define OUTPUT_REPORT_INDEX   0 /**< Index of Output Report. */
-#define OUTPUT_REPORT_MAX_LEN 1 /**< Maximum length of the Output Report characteristic. */
-#define OUTPUT_REP_REF_ID     0 /**< Id of reference to Keyboard Output Report. */
-
-#define FEATURE_REPORT_INDEX   0 /**< Index of Feature Report. */
-#define FEATURE_REPORT_MAX_LEN 2 /**< Maximum length of the Feature Report characteristic. */
-#define FEATURE_REP_REF_ID     0 /**< Id of reference to Keyboard Feature Report. */
+/* Index of Output Report. */
+#define OUTPUT_REPORT_INDEX   0
+/* Maximum length of the Output Report characteristic. */
+#define OUTPUT_REPORT_MAX_LEN 1
+/* Id of reference to Keyboard Output Report. */
+#define OUTPUT_REP_REF_ID     0
+/* Index of Feature Report. */
+#define FEATURE_REPORT_INDEX   0
+/* Maximum length of the Feature Report characteristic. */
+#define FEATURE_REPORT_MAX_LEN 2
+/* Id of reference to Keyboard Feature Report. */
+#define FEATURE_REP_REF_ID     0
+/* CAPS LOCK bit in Output Report (based on 'LED Page (0x08)' of the
+ * Universal Serial Bus HID Usage Tables).
+ */
+#define OUTPUT_REPORT_BIT_MASK_CAPS_LOCK    0x02
 
 #define BTN_PRESSED 1
 
@@ -49,6 +65,8 @@ BLE_ADV_DEF(ble_adv);
 
 /* BLE Connection handle */
 static uint16_t conn_handle = BLE_CONN_HANDLE_INVALID;
+
+static uint8_t keys_report[INPUT_REPORT_KEYS_MAX_LEN];
 
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {
@@ -260,21 +278,67 @@ static uint32_t hids_init(void)
 	return ble_hids_init(&ble_hids, &hids_config);
 }
 
-static int register_key(struct ble_hids *hids, const char key, bool pressed)
+static uint8_t button_ctrl_code_get(uint8_t key)
 {
-	uint32_t nrf_err;
-	uint8_t report[INPUT_REPORT_KEYS_MAX_LEN] = {};
+	if (INPUT_REPORT_KEYS_CTRL_CODE_MIN <= key && key <= INPUT_REPORT_KEYS_CTRL_CODE_MAX) {
+		return (uint8_t)(1U << (key - INPUT_REPORT_KEYS_CTRL_CODE_MIN));
+	}
+	return 0;
+}
 
-#define DATA_OFFSET 2
 
-	if (pressed) {
-		memcpy(report + DATA_OFFSET, &key, sizeof(key));
+static int key_set(struct ble_hids *hids, uint8_t *report, size_t report_size, uint8_t key)
+{
+	uint8_t ctrl_mask = button_ctrl_code_get(key);
+
+	if (ctrl_mask) {
+		report[0] |= ctrl_mask;
+		return 0;
+	}
+	for (size_t i = 0; i < (report_size - 2); ++i) {
+		if (report[i + 2] == 0) {
+			report[i + 2] = key;
+			return 0;
+		}
+	}
+	/* All slots busy */
+	return -EBUSY;
+}
+
+
+static int key_clear(struct ble_hids *hids, uint8_t *report, size_t report_size, uint8_t key)
+{
+	uint8_t ctrl_mask = button_ctrl_code_get(key);
+
+	if (ctrl_mask) {
+		report[0] &= ~ctrl_mask;
+		return 0;
+	}
+	for (size_t i = 0; i < (report_size - 2); ++i) {
+		if (report[i + 2] == key) {
+			report[i + 2] = 0;
+			return 0;
+		}
 	}
 
-	nrf_err = ble_hids_inp_rep_send(hids, conn_handle, INPUT_REPORT_KEYS_INDEX, &report,
-				    sizeof(report));
-	if (nrf_err) {
-		printk("Failed to send input report, nrf_error %#x", nrf_err);
+	/* Key not found */
+	return -EINVAL;
+}
+
+static int on_key_press(struct ble_hids *hids, const char key, bool pressed)
+{
+	uint32_t nrf_err;
+
+	if (pressed) {
+		key_set(hids, keys_report, sizeof(keys_report), key);
+	} else {
+		key_clear(hids, keys_report, sizeof(keys_report), key);
+	}
+
+	nrf_err = ble_hids_inp_rep_send(hids, conn_handle, INPUT_REPORT_KEYS_INDEX, keys_report,
+					sizeof(keys_report));
+	if (nrf_err != NRF_SUCCESS) {
+		LOG_ERR("Failed to send input report, nrf_error %#x", nrf_err);
 	}
 
 	return 0;
@@ -282,22 +346,37 @@ static int register_key(struct ble_hids *hids, const char key, bool pressed)
 
 static void button_handler(uint8_t pin, uint8_t action)
 {
+	static const char hello_world_str[] = {
+		0x0b,	/* Key h */
+		0x08,	/* Key e */
+		0x0f,	/* Key l */
+		0x0f,	/* Key l */
+		0x12,	/* Key o */
+		0x28,	/* Key Return */
+	};
+	static const char *chr = hello_world_str;
+
 	if (conn_handle == BLE_CONN_HANDLE_INVALID) {
 		return;
 	}
 
 	switch (pin) {
 	case BOARD_PIN_BTN_0:
-		register_key(&ble_hids, 0x04, action == BTN_PRESSED); /* Key a */
+		if (action == BTN_PRESSED) {
+			on_key_press(&ble_hids, *chr, true);
+		} else {
+			on_key_press(&ble_hids, *chr, false);
+			if (++chr == (hello_world_str + sizeof(hello_world_str))) {
+				chr = hello_world_str;
+			}
+		}
 		break;
 	case BOARD_PIN_BTN_1:
-		register_key(&ble_hids, 0x05, action == BTN_PRESSED);  /* Key b */
+		on_key_press(&ble_hids, 0xE1, action == BTN_PRESSED); /* Shift */
 		break;
 	case BOARD_PIN_BTN_2:
-		register_key(&ble_hids, 0x06, action == BTN_PRESSED);  /* Key c */
-		break;
 	case BOARD_PIN_BTN_3:
-		register_key(&ble_hids, 0x07, action == BTN_PRESSED);  /* Key d */
+		/* Reserved for pairing */
 		break;
 	}
 }
@@ -342,6 +421,8 @@ int main(void)
 			.handler = button_handler,
 		},
 	};
+
+	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
 
 	err = bm_buttons_init(configs, ARRAY_SIZE(configs), BM_BUTTONS_DETECTION_DELAY_MIN_US);
 	if (err) {

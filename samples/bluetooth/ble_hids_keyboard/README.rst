@@ -40,9 +40,10 @@ Overview
 The sample uses the buttons on a development kit to simulate keys on a keyboard.
 One button simulates the letter keys by generating letter keystrokes for a predefined string.
 A second button simulates the Shift button and shows how to modify the letter keystrokes.
-An LED displays the Caps Lock state, which can be modified by another connected keyboard. (TODO Match this behaviour from NCS sample)
+An LED displays the Caps Lock state, which can be modified by another connected keyboard.
 
-This sample exposes the HID GATT Service. It uses a report map for a generic keyboard.
+This sample exposes the HID GATT Service.
+It uses a report map for a generic keyboard.
 
 User interface
 **************
