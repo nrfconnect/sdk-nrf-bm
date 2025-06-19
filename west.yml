@@ -24,6 +24,7 @@ manifest:
           - lz4
           - mbedtls
           - mcuboot
+          - nrf_hw_models
           - nrfxlib
           - picolibc
           - oberon-psa-crypto

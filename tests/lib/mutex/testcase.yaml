@@ -1,0 +1,3 @@
+tests:
+  lib.mutex:
+    platform_allow: nrf54l15bsim/nrf54l15/cpuapp
