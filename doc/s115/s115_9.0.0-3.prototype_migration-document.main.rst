@@ -42,4 +42,3 @@ Copyright © Nordic Semiconductor ASA. All rights reserved.
    PageBreak
 
 .. include:: s115_9.0.0-3.prototype_migration-document.rst
-
