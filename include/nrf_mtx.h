@@ -1,4 +1,10 @@
-/*$$$LICENCE_NORDIC_STANDARD<2015>$$$*/
+/*
+ * Copyright (c) 2015 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+ */
+
+
 /** @file
  * @defgroup nrf_mtx nRF Mutex
  * @{
@@ -13,12 +19,10 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "nrf.h"
-#include "nrf_atomic.h"
-#include "nrf_assert.h"
+#include "nrfx.h"
 
-#define NRF_MTX_LOCKED      1
-#define NRF_MTX_UNLOCKED    0
+#define NRF_MTX_LOCKED	 1
+#define NRF_MTX_UNLOCKED 0
 
 /**
  * @brief Mutex data type.
@@ -26,7 +30,7 @@
  * All fields in this struct are internal, and should never be modified outside of the nrf_mtx_*
  * functions.
  */
-typedef nrf_atomic_u32_t nrf_mtx_t;
+typedef nrfx_atomic_t nrf_mtx_t;
 
 /**
  * @brief Initialize mutex.
@@ -35,8 +39,7 @@ typedef nrf_atomic_u32_t nrf_mtx_t;
  *
  * @param[in, out] p_mtx The mutex to be initialized.
  */
-__STATIC_INLINE void nrf_mtx_init(nrf_mtx_t * p_mtx);
-
+__STATIC_INLINE void nrf_mtx_init(nrf_mtx_t *p_mtx);
 
 /**
  * @brief Destroy mutex.
@@ -45,7 +48,7 @@ __STATIC_INLINE void nrf_mtx_init(nrf_mtx_t * p_mtx);
  *
  * @param[in] p_mtx The mutex to be destroy.
  */
-__STATIC_INLINE void nrf_mtx_destroy(nrf_mtx_t * p_mtx);
+__STATIC_INLINE void nrf_mtx_destroy(nrf_mtx_t *p_mtx);
 
 /**
  * @brief Try to lock a mutex.
@@ -55,7 +58,7 @@ __STATIC_INLINE void nrf_mtx_destroy(nrf_mtx_t * p_mtx);
  * @param[in, out] p_mtx The mutex to be locked.
  * @return true if lock was acquired, false if not
  */
-__STATIC_INLINE bool nrf_mtx_trylock(nrf_mtx_t * p_mtx);
+__STATIC_INLINE bool nrf_mtx_trylock(nrf_mtx_t *p_mtx);
 
 /**
  * @brief Unlock a mutex.
@@ -67,55 +70,58 @@ __STATIC_INLINE bool nrf_mtx_trylock(nrf_mtx_t * p_mtx);
  *
  * @param[in, out] p_mtx The mutex to be unlocked.
  */
-__STATIC_INLINE void nrf_mtx_unlock(nrf_mtx_t * p_mtx);
+__STATIC_INLINE void nrf_mtx_unlock(nrf_mtx_t *p_mtx);
 
 #ifndef SUPPRESS_INLINE_IMPLEMENTATION
 
-__STATIC_INLINE void nrf_mtx_init(nrf_mtx_t * p_mtx)
+__STATIC_INLINE void nrf_mtx_init(nrf_mtx_t *p_mtx)
 {
-    ASSERT(p_mtx  != NULL);
+	NRFX_ASSERT(p_mtx != NULL);
 
-    *p_mtx = NRF_MTX_UNLOCKED;
-    __DMB();
+	*p_mtx = NRF_MTX_UNLOCKED;
+	__DMB();
 }
 
-__STATIC_INLINE void nrf_mtx_destroy(nrf_mtx_t * p_mtx)
+__STATIC_INLINE void nrf_mtx_destroy(nrf_mtx_t *p_mtx)
 {
-    ASSERT(p_mtx  != NULL);
+	NRFX_ASSERT(p_mtx != NULL);
 
-    // Add memory barrier to ensure that any memory operations protected by the mutex complete
-    // before the mutex is destroyed.
-    __DMB();
+	/* Add memory barrier to ensure that any memory operations protected by the mutex complete
+	 * before the mutex is destroyed.
+	 */
+	__DMB();
 
-    *p_mtx = NRF_MTX_UNLOCKED;
+	*p_mtx = NRF_MTX_UNLOCKED;
 }
 
-__STATIC_INLINE bool nrf_mtx_trylock(nrf_mtx_t * p_mtx)
+__STATIC_INLINE bool nrf_mtx_trylock(nrf_mtx_t *p_mtx)
 {
-    ASSERT(p_mtx  != NULL);
+	NRFX_ASSERT(p_mtx != NULL);
 
-    uint32_t old_val = nrf_atomic_u32_fetch_store(p_mtx, NRF_MTX_LOCKED);
+	uint32_t old_val = NRFX_ATOMIC_FETCH_STORE((void *)p_mtx, NRF_MTX_LOCKED);
 
-    // Add memory barrier to ensure that the mutex is locked before any memory operations protected
-    // by the mutex are started.
-    __DMB();
+	/* Add memory barrier to ensure that the mutex is locked before any memory operations
+	 * protected by the mutex are started.
+	 */
+	__DMB();
 
-    return (old_val == NRF_MTX_UNLOCKED);
+	return (old_val == NRF_MTX_UNLOCKED);
 }
 
-__STATIC_INLINE void nrf_mtx_unlock(nrf_mtx_t * p_mtx)
+__STATIC_INLINE void nrf_mtx_unlock(nrf_mtx_t *p_mtx)
 {
-    ASSERT(p_mtx  != NULL);
-    ASSERT(*p_mtx == NRF_MTX_LOCKED);
+	NRFX_ASSERT(p_mtx != NULL);
+	NRFX_ASSERT(*p_mtx == NRF_MTX_LOCKED);
 
-    // Add memory barrier to ensure that any memory operations protected by the mutex complete
-    // before the mutex is unlocked.
-    __DMB();
+	/* Add memory barrier to ensure that any memory operations protected by the mutex complete
+	 * before the mutex is unlocked.
+	 */
+	__DMB();
 
-    *p_mtx = NRF_MTX_UNLOCKED;
+	*p_mtx = NRF_MTX_UNLOCKED;
 }
 
-#endif //SUPPRESS_INLINE_IMPLEMENTATION
+#endif /* SUPPRESS_INLINE_IMPLEMENTATION */
 
-#endif // NRF_MTX_H__
+#endif /* NRF_MTX_H__ */
 /** @} */
