@@ -18,6 +18,9 @@
 /.clang-format                            @nrfconnect/ncs-bm
 /.checkpatch.conf                         @nrfconnect/ncs-bm
 
+# Applications
+/applications/installer/                  @nrfconnect/ncs-pluto
+
 # Boards
 /boards/                                  @nrfconnect/ncs-co-boards @nrfconnect/ncs-bm
 
