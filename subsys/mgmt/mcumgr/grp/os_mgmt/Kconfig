@@ -1,0 +1,100 @@
+# Copyright Runtime.io 2018. All rights reserved.
+# Copyright Nordic Semiconductor ASA 2020-2022. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+# The Kconfig file is dedicated to OS management group of
+# of MCUmgr subsystem and provides Kconfig options to configure
+# group commands behaviour and other aspects.
+#
+# Options defined in this file should be prefixed:
+#  MCUMGR_GRP_OS_ -- general group options;
+#
+# When adding Kconfig options, that control the same feature,
+# try to group them together by the same stem after prefix.
+
+menuconfig MCUMGR_GRP_OS
+	bool "MCUmgr handlers for OS management"
+	imply REBOOT
+	help
+	  Enables MCUmgr handlers for OS management
+
+if MCUMGR_GRP_OS
+
+if REBOOT
+
+config MCUMGR_GRP_OS_RESET_HOOK
+	bool "Reset hook"
+	depends on REBOOT
+	depends on MCUMGR_MGMT_NOTIFICATION_HOOKS
+	help
+	  Allows applications to control and get notifications of when a reset
+	  command has been issued via an MCUmgr command. With this option
+	  disabled, modules will reboot when the command is received without
+	  notification, when this is enabled and a handler is registered, the
+	  application will be notified that a reset command has been received
+	  and will allow the application to perform any required operations
+	  before accepting or declining the reset request.
+
+endif
+
+config MCUMGR_GRP_OS_ECHO
+	bool "Support for echo command"
+	default y
+	select MCUMGR_SMP_CBOR_MIN_DECODING_LEVEL_2
+
+config MCUMGR_GRP_OS_MCUMGR_PARAMS
+	bool "MCUMGR Parameters retrieval command"
+
+config MCUMGR_GRP_OS_INFO
+	bool "Support for info command"
+	help
+	  Can be used similarly to the unix/linux uname command for retrieving system information
+	  including kernel version, processor architecture and board name.
+
+if MCUMGR_GRP_OS_INFO
+
+config MCUMGR_GRP_OS_INFO_MAX_RESPONSE_SIZE
+	int "Maximum response size for info command"
+	default 256
+	range 32 512
+	help
+	  The maximum size of the response to the info command, will use a stack buffer of this
+	  size to store the data in. If the output response is too big then the output will not be
+	  present in the response, which will just contain the result code (rc) of memory error.
+
+config MCUMGR_GRP_OS_INFO_CUSTOM_HOOKS
+	bool "Custom info hooks"
+	depends on MCUMGR_MGMT_NOTIFICATION_HOOKS
+	help
+	  Supports adding custom command/character processing to the info command by using
+	  registered callbacks. Data can be appended to the struct provided in the callback.
+
+config MCUMGR_GRP_OS_INFO_BUILD_DATE_TIME
+	bool "Show build date and time"
+	help
+	  Will allow returning the build date and time of the firmware by using the info with
+	  format option 'b' (will also be returned with all responses by using 'a').
+
+	  Note: This will invalidate reproducible builds of the firmware as it will embed the
+	  build date/time in the output firmware image.
+
+endif
+
+config MCUMGR_GRP_OS_BOOTLOADER_INFO
+	bool "Bootloader information"
+	help
+	  Allows to query MCUmgr about bootloader used by device and various bootloader
+	  parameters.
+
+config MCUMGR_GRP_OS_BOOTLOADER_INFO_HOOK
+	bool "Bootloader info hooks"
+	depends on MCUMGR_MGMT_NOTIFICATION_HOOKS
+	help
+	  Supports adding custom responses to the bootloader info command by using registered
+	  callbacks. Data can be appended to the struct provided in the callback.
+
+module = MCUMGR_GRP_OS
+module-str = mcumgr_grp_os
+source "subsys/logging/Kconfig.template.log_config"
+
+endif
