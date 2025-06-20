@@ -72,6 +72,7 @@
 /subsys/bluetooth/                        @nrfconnect/ncs-bm
 /subsys/bm_installs/                      @nrfconnect/ncs-pluto
 /subsys/logging/                          @nrfconnect/ncs-bm
+/subsys/mgmt/mcumgr/                      @nrfconnect/ncs-pluto
 /subsys/softdevice/                       @nrfconnect/ncs-bm @nrfconnect/ncs-dragoon
 /subsys/softdevice_handler/               @nrfconnect/ncs-bm
 /subsys/storage/flash_map/                @nrfconnect/ncs-pluto
