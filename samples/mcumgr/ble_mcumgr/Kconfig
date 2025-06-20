@@ -1,0 +1,16 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "BLE MCUmgr sample"
+
+module=BLE_MCUMGR
+module-dep=LOG
+module-str=BLE MCUmgr Sample
+source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+
+endmenu # "BLE MCUmgr sample"
+
+source "Kconfig.zephyr"
