@@ -1,3 +1,4 @@
 tests:
   lib.mutex:
-    platform_allow: nrf54l15bsim/nrf54l15/cpuapp
+    platform_allow: native_sim
+    tags: unittest

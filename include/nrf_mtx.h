@@ -19,7 +19,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "nrfx.h"
+#include <nrfx.h>
 
 #define NRF_MTX_LOCKED	 1
 #define NRF_MTX_UNLOCKED 0
