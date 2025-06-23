@@ -32,7 +32,7 @@ jobs:
         path: ~/.cache/pip
         key: ${{ runner.os }}-doc-pip
 
-    - name: Install python dependencies
+    - name: Install python prerequisites
       working-directory: nrf-bm
       run: |
         export PATH="$HOME/.local/bin:$PATH"
@@ -57,10 +57,15 @@ jobs:
         west config manifest.group-filter -- +ci,-optional
         west update -o=--depth=1 -n 2>&1 1> west.update.log || west update -o=--depth=1 -n 2>&1 1> west.update2.log
 
-    - name: Install zephyr compliance dependencies
-      working-directory: zephyr
-      continue-on-error: false
-      run: pip3 install -U -r scripts/requirements-compliance.txt
+    - name: Install python dependencies
+      working-directory: nrf
+      run: |
+        pip3 install -U pip
+        pip3 install -U wheel
+        grep -E "^setuptools" scripts/requirements-fixed.txt | cut -d ' ' -f '1' | xargs pip3 install -U
+        grep -E "^python-magic=|^junitparser|^lxml|^gitlint|^pylint|^pykwalify|^yamllint|^unidiff" scripts/requirements-fixed.txt | cut -d ' ' -f '1' | xargs pip3 install -U
+        grep -E "^west" scripts/requirements-fixed.txt | cut -d ' ' -f '1' | xargs pip3 install -U
+        pip3 show -f west
 
     - name: Run CODEOWNERS test
       id: codeowners
