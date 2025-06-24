@@ -10,7 +10,7 @@ zephyr_library_sources(
   irq_connect.c
 )
 
-if (CONFIG_SOFTDEVICE_S115)
+if (CONFIG_SOFTDEVICE_S115 OR CONFIG_SOFTDEVICE_S145)
   zephyr_library_sources(irq_forward.s)
   # Suppress the swap_helper.S file so that z_arm_svc can be defined manually
   set(cortex_m_dir ${ZEPHYR_BASE}/arch/arm/core/cortex_m)

@@ -21,3 +21,7 @@ board:
           cpucluster: cpuapp
           variants:
             - name: mcuboot
+        - name: softdevice_s145
+          cpucluster: cpuapp
+          variants:
+            - name: mcuboot

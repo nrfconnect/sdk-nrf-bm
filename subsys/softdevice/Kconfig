@@ -24,6 +24,13 @@ config SOFTDEVICE_S115
 	select SOFTDEVICE_PERIPHERAL
 	default y
 
+config SOFTDEVICE_S145
+	bool
+	depends on SOC_SERIES_NRF54LX
+	select SOFTDEVICE_PERIPHERAL
+	select SOFTDEVICE_CENTRAL
+	default y
+
 config SOFTDEVICE_STRING_TABLES
 	bool "Compile tables for stringified events and errors"
 
