@@ -7,32 +7,12 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/irq.h>
 #include <nrfx_gpiote.h>
+#include <nrfx_glue.h>
 
 #include <bm_timer.h>
 #include <bm_buttons.h>
 
 LOG_MODULE_REGISTER(bm_buttons, CONFIG_BM_BUTTONS_LOG_LEVEL);
-
-/* Local implementation of critical section enter/exit support. */
-
-#include <stdint.h>
-#include <nrf.h>
-
-static uint32_t bm_irq_disable(void)
-{
-	uint32_t pm = __get_PRIMASK();
-	__disable_irq();
-	return pm;
-}
-
-static void bm_irq_enable(uint32_t pm)
-{
-	if (!pm) {
-		__enable_irq();
-	}
-}
-
-/* End of local implementation of critical section enter/exit support. */
 
 #define IRQ_PRIO     3
 #define BITS_PER_PIN 4
@@ -235,9 +215,9 @@ static void evt_handle(uint8_t pin, uint8_t index, bool is_active)
 			state_set(index, BUTTON_PRESS_ARMED);
 			LOG_DBG("Pin %d %s -> %s", pin, STRINGIFY(BUTTON_IDLE),
 				STRINGIFY(BUTTON_PRESS_ARMED));
-			uint32_t pm = bm_irq_disable();
+			NRFX_CRITICAL_SECTION_ENTER();
 			global.pin_active |= 1ULL << index;
-			bm_irq_enable(pm);
+			NRFX_CRITICAL_SECTION_EXIT();
 		} else {
 			/* Stay in BUTTON_IDLE. */
 		}
@@ -250,9 +230,9 @@ static void evt_handle(uint8_t pin, uint8_t index, bool is_active)
 			user_event(pin, BM_BUTTONS_PRESS);
 		} else {
 			state_set(index, BUTTON_IDLE);
-			uint32_t pm = bm_irq_disable();
+			NRFX_CRITICAL_SECTION_ENTER();
 			global.pin_active &= ~(1ULL << index);
-			bm_irq_enable(pm);
+			NRFX_CRITICAL_SECTION_EXIT();
 		}
 		break;
 	case BUTTON_PRESSED:
@@ -272,9 +252,9 @@ static void evt_handle(uint8_t pin, uint8_t index, bool is_active)
 		} else {
 			state_set(index, BUTTON_IDLE);
 			user_event(pin, BM_BUTTONS_RELEASE);
-			uint32_t pm = bm_irq_disable();
+			NRFX_CRITICAL_SECTION_ENTER();
 			global.pin_active &= ~(1ULL << index);
-			bm_irq_enable(pm);
+			NRFX_CRITICAL_SECTION_EXIT();
 		}
 		break;
 	}
@@ -305,9 +285,9 @@ static int buttons_disable(void)
 		gpiote_trigger_enable(global.configs[i].pin_number, false);
 	}
 
-	uint32_t pm = bm_irq_disable();
+	NRFX_CRITICAL_SECTION_ENTER();
 	global.pin_active = 0;
-	bm_irq_enable(pm);
+	NRFX_CRITICAL_SECTION_EXIT();
 
 	return 0;
 }
