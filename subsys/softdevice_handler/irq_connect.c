@@ -70,6 +70,11 @@ static int irq_init(void)
 #define PRIO_HIGH 0	/* SoftDevice high priority interrupt */
 #define PRIO_LOW 4	/* SoftDevice low priority interrupt */
 
+	/* IRQ_ZERO_LATENCY with CONFIG_ZERO_LATENCY_LEVELS equal to 1 (default) forces the priority
+	 * level to 0, ignoring the specified priority.
+	 * On `sd_softdevice_enable()`, the SoftDevice will override the necessary interrupts it
+	 * uses internally with the priority levels it needs.
+	 */
 	IRQ_DIRECT_CONNECT(CLOCK_POWER_IRQn, PRIO_LOW, CLOCK_POWER_IRQHandler, IRQ_ZERO_LATENCY);
 	IRQ_DIRECT_CONNECT(RADIO_0_IRQn, PRIO_HIGH, RADIO_0_IRQHandler, IRQ_ZERO_LATENCY);
 	IRQ_DIRECT_CONNECT(TIMER10_IRQn, PRIO_HIGH, TIMER10_IRQHandler, IRQ_ZERO_LATENCY);
