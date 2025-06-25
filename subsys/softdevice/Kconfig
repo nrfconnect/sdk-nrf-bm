@@ -21,6 +21,7 @@ if SOFTDEVICE
 config SOFTDEVICE_S115
 	bool
 	depends on SOC_SERIES_NRF54LX
+	depends on HAS_SOFTDEVICE_S115
 	select SOFTDEVICE_PERIPHERAL
 	default y
 
