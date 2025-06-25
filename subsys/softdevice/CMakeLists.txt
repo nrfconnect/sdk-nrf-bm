@@ -3,7 +3,6 @@
 #
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
-
 if(CONFIG_SOFTDEVICE_S115)
   zephyr_include_directories("${ZEPHYR_NRF_BM_MODULE_DIR}/components/softdevice/${CONFIG_SOFTDEVICE_VARIANT_STR}/${CONFIG_SOFTDEVICE_VARIANT_STR}_API/include")
 endif()
