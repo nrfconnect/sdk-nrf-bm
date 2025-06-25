@@ -50,6 +50,22 @@ config BM_BOOTLOADER_MCUBOOT_SIGNATURE_KEY_FILE
 	help
 	  Absolute path to signing key file to use with MCUBoot.
 
+menu "Firmware loader entrance modes"
+	depends on !BM_FIRMWARE_LOADER_NONE
+
+config BM_BOOTLOADER_MCUBOOT_FIRMWARE_LOADER_ENTRANCE_GPIO
+	bool "GPIO"
+	default y
+
+config BM_BOOTLOADER_MCUBOOT_FIRMWARE_LOADER_ENTRANCE_PIN_RESET
+	bool "Check for device reset by pin"
+
+config BM_BOOTLOADER_MCUBOOT_FIRMWARE_LOADER_ENTRANCE_BOOT_MODE
+	bool "Check boot mode via retention subsystem"
+	default y
+
+endmenu
+
 endmenu
 
 endif # BM_BOOTLOADER_MCUBOOT

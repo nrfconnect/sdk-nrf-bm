@@ -53,6 +53,22 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
       )
 
       set(bm_install_images 2)
+
+      # MCUboot firmware loader entrance mode selection
+      if(SB_CONFIG_BM_BOOTLOADER_MCUBOOT_FIRMWARE_LOADER_ENTRANCE_BOOT_MODE)
+        set_config_bool(mcuboot CONFIG_BOOT_FIRMWARE_LOADER_BOOT_MODE y)
+      endif()
+
+      if(SB_CONFIG_BM_BOOTLOADER_MCUBOOT_FIRMWARE_LOADER_ENTRANCE_PIN_RESET)
+        set_config_bool(mcuboot CONFIG_BOOT_FIRMWARE_LOADER_PIN_RESET y)
+      endif()
+
+      if(SB_CONFIG_BM_BOOTLOADER_MCUBOOT_FIRMWARE_LOADER_ENTRANCE_GPIO)
+        set_config_bool(mcuboot CONFIG_GPIO y)
+        set_config_bool(mcuboot CONFIG_BM_TIMER y)
+        set_config_bool(mcuboot CONFIG_BM_BUTTONS y)
+        set_config_bool(mcuboot CONFIG_BOOT_FIRMWARE_LOADER_ENTRANCE_GPIO y)
+      endif()
     endif()
 
     # Use BM-supplied bootloader image configuration file
