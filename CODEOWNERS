@@ -59,8 +59,8 @@
 /samples/peripherals/**/*.rst             @nrfconnect/ncs-bm-doc
 
 # Scripts
-/scripts/                                 @nrfconnect/ncs-bm @nrfconnect/ncs-ci
-/scripts/requirements-*.txt               @nrfconnect/ncs-co-build-system @nrfconnect/ncs-ci
+/scripts/                                 @nrfconnect/ncs-bm
+/scripts/requirements-*.txt               @nrfconnect/ncs-co-build-system
 
 # Subsystems
 /subsys/bluetooth/                        @nrfconnect/ncs-bm
