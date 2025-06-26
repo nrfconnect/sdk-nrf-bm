@@ -102,7 +102,11 @@ idle:
 		while (LOG_PROCESS()) {
 		}
 
-		/* Sleep */
+		/* Wait for an event. */
+		__WFE();
+
+		/* Clear Event Register */
+		__SEV();
 		__WFE();
 	}
 
