@@ -56,6 +56,7 @@
 # Samples
 /samples/bluetooth/                       @nrfconnect/ncs-bm
 /samples/peripherals/                     @nrfconnect/ncs-bm
+/samples/mcumgr/                          @nrfconnect/ncs-pluto
 
 # Samples documentation
 /samples/**/*.rst                         @nrfconnect/ncs-bm-doc
