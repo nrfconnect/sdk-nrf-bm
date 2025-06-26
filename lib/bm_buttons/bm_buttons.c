@@ -8,6 +8,7 @@
 #include <zephyr/irq.h>
 #include <nrfx_gpiote.h>
 #include <nrfx_glue.h>
+#include <nrf_error.h>
 
 #include <bm_timer.h>
 #include <bm_buttons.h>
@@ -90,16 +91,16 @@ static void gpiote_uninit(void)
 #endif
 }
 
-static int gpiote_init(void)
+static uint32_t gpiote_init(void)
 {
-	int err;
+	uint32_t err;
 
 #if defined(CONFIG_SOC_SERIES_NRF52X)
 	if (!nrfx_gpiote_init_check(&gpiote0_instance)) {
 		err = nrfx_gpiote_init(&gpiote0_instance, 0);
 		if (err != NRFX_SUCCESS) {
 			LOG_ERR("Failed to initialize gpiote, err: 0x%08X", err);
-			return -EIO;
+			return NRF_ERROR_INTERNAL;
 		}
 
 		IRQ_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_GPIOTE_INST_GET(0)), IRQ_PRIO,
@@ -110,7 +111,7 @@ static int gpiote_init(void)
 		err = nrfx_gpiote_init(&gpiote20_instance, 0);
 		if (err != NRFX_SUCCESS) {
 			LOG_ERR("Failed to initialize gpiote20, err: 0x%08X", err);
-			return -EIO;
+			return NRF_ERROR_INTERNAL;
 		}
 
 		IRQ_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_GPIOTE_INST_GET(20)) + NRF_GPIOTE_IRQ_GROUP,
@@ -121,26 +122,26 @@ static int gpiote_init(void)
 		err = nrfx_gpiote_init(&gpiote30_instance, 0);
 		if (err != NRFX_SUCCESS) {
 			LOG_ERR("Failed to initialize gpiote30, err: 0x%08X", err);
-			return -EIO;
+			return NRF_ERROR_INTERNAL;
 		}
 
 		IRQ_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_GPIOTE_INST_GET(30)) + NRF_GPIOTE_IRQ_GROUP,
 			    IRQ_PRIO, NRFX_GPIOTE_INST_HANDLER_GET(30), 0, 0);
 	}
 #endif
-	return 0;
+	return NRF_SUCCESS;
 }
 
-static int gpiote_input_configure(nrfx_gpiote_pin_t pin,
-				  const nrfx_gpiote_input_pin_config_t *input_config)
+static uint32_t gpiote_input_configure(nrfx_gpiote_pin_t pin,
+				       const nrfx_gpiote_input_pin_config_t *input_config)
 {
-	int err;
+	uint32_t err;
 
 #if defined(CONFIG_SOC_SERIES_NRF52X)
 	err = nrfx_gpiote_input_configure(&gpiote0_instance, pin, input_config);
 	if (err != NRFX_SUCCESS) {
 		LOG_ERR("nrfx_gpiote_input_configure, err: 0x%08X", err);
-		return -EIO;
+		return NRF_ERROR_INTERNAL;
 	}
 #elif defined(CONFIG_SOC_SERIES_NRF54LX)
 	const nrfx_gpiote_t *gpiote_inst = gpiote_get(NRF_PIN_NUMBER_TO_PORT(pin));
@@ -148,11 +149,11 @@ static int gpiote_input_configure(nrfx_gpiote_pin_t pin,
 	err = nrfx_gpiote_input_configure(gpiote_inst, pin, input_config);
 	if (err != NRFX_SUCCESS) {
 		LOG_ERR("nrfx_gpiote_input_configure, err: 0x%08X", err);
-		return -EIO;
+		return NRF_ERROR_INTERNAL;
 	}
 #endif
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
 struct bm_buttons_state {
@@ -272,13 +273,13 @@ static void timer_start(void)
 	}
 }
 
-static int buttons_disable(void)
+static uint32_t buttons_disable(void)
 {
-	int err;
+	uint32_t err;
 
 	err = bm_timer_stop(&global.timer);
 	if (err) {
-		return -EIO;
+		return NRF_ERROR_INTERNAL;
 	}
 
 	for (int i = 0; i < global.num_configs; i++) {
@@ -289,7 +290,7 @@ static int buttons_disable(void)
 	global.pin_active = 0;
 	NRFX_CRITICAL_SECTION_EXIT();
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
 static void detection_delay_timeout_handler(void *ctx)
@@ -328,26 +329,26 @@ static void gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrfx_gpiote_trigger_t acti
 	}
 }
 
-int bm_buttons_init(struct bm_buttons_config const *configs, uint8_t num_configs,
-		    uint32_t detection_delay)
+uint32_t bm_buttons_init(struct bm_buttons_config const *configs, uint8_t num_configs,
+			 uint32_t detection_delay)
 {
-	int err;
+	uint32_t err;
 
 	if (global.is_init) {
-		return -EPERM;
+		return NRF_ERROR_FORBIDDEN;
 	}
 
 	if (!configs) {
-		return -EINVAL;
+		return NRF_ERROR_NULL;
 	}
 
 	if (num_configs > CONFIG_BM_BUTTONS_NUM_PINS) {
-		return -EINVAL;
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	/* Timer needs to trigger two times before the button is detected as pressed/released. */
 	if (BM_TIMER_US_TO_TICKS(detection_delay) < 2 * BM_TIMER_MIN_TIMEOUT_TICKS) {
-		return -EINVAL;
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	err = gpiote_init();
@@ -387,25 +388,25 @@ int bm_buttons_init(struct bm_buttons_config const *configs, uint8_t num_configs
 			      detection_delay_timeout_handler);
 	if (err) {
 		LOG_ERR("bm_timer_init failed, err: %d", err);
-		return -EIO;
+		return NRF_ERROR_INTERNAL;
 	}
 
 	global.is_init = true;
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
-int bm_buttons_deinit(void)
+uint32_t bm_buttons_deinit(void)
 {
-	int err;
+	uint32_t err;
 
 	if (!global.is_init) {
-		return -EPERM;
+		return NRF_ERROR_FORBIDDEN;
 	}
 
 	err = buttons_disable();
 	if (err) {
-		return -EIO;
+		return NRF_ERROR_INTERNAL;
 	}
 
 	gpiote_uninit();
@@ -414,28 +415,28 @@ int bm_buttons_deinit(void)
 
 	global.is_init = false;
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
-int bm_buttons_enable(void)
+uint32_t bm_buttons_enable(void)
 {
 	if (!global.is_init) {
-		return -EPERM;
+		return NRF_ERROR_FORBIDDEN;
 	}
 
 	for (int i = 0; i < global.num_configs; i++) {
 		gpiote_trigger_enable(global.configs[i].pin_number, true);
 	}
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
-int bm_buttons_disable(void)
+uint32_t bm_buttons_disable(void)
 {
-	int err;
+	uint32_t err;
 
 	if (!global.is_init) {
-		return -EPERM;
+		return NRF_ERROR_FORBIDDEN;
 	}
 
 	err = buttons_disable();
@@ -443,7 +444,7 @@ int bm_buttons_disable(void)
 		return err;
 	}
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
 bool bm_buttons_is_pressed(uint8_t pin)

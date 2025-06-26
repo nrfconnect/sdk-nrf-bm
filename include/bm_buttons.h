@@ -106,41 +106,42 @@ struct bm_buttons_config {
  *                            is reported as pressed. Must be higher than
  *                            @ref BM_BUTTONS_DETECTION_DELAY_MIN_US.
  *
- * @retval 0 on success.
- * @retval -EPERM If the bm_buttons library is already initialized.
- * @retval -EINVAL If input data is invalid.
- * @retval -EIO If an error occurred.
+ * @retval NRF_SUCCESS on success.
+ * @retval NRF_ERROR_FORBIDDEN If the bm_buttons library is already initialized.
+ * @retval NRF_ERROR_NULL If @p configs is NULL.
+ * @retval NRF_ERROR_INVALID_PARAM If input data is invalid.
+ * @retval NRF_ERROR_INTERNAL If an error occurred.
  */
-int bm_buttons_init(const struct bm_buttons_config *configs, uint8_t num_configs,
-		    uint32_t detection_delay);
+uint32_t bm_buttons_init(const struct bm_buttons_config *configs, uint8_t num_configs,
+			 uint32_t detection_delay);
 
 /**
  * @brief Deinitialize buttons.
  *
  * @details This function will deinitialize the buttons library.
  *
- * @retval 0 on success.
- * @retval -EPERM If the bm_buttons library is already initialized.
- * @retval -EIO If an error occurred.
+ * @retval NRF_SUCCESS on success.
+ * @retval NRF_ERROR_FORBIDDEN If the bm_buttons library is already initialized.
+ * @retval NRF_ERROR_INTERNAL If an error occurred.
  */
-int bm_buttons_deinit(void);
+uint32_t bm_buttons_deinit(void);
 
 /**
  * @brief Enable button detection.
  *
- * @retval 0 on success.
- * @retval -EPERM If the bm_buttons library is not initialized.
+ * @retval NRF_SUCCESS on success.
+ * @retval NRF_ERROR_FORBIDDEN If the bm_buttons library is not initialized.
  */
-int bm_buttons_enable(void);
+uint32_t bm_buttons_enable(void);
 
 /**
  * @brief Disable button detection.
  *
- * @retval 0 on success.
- * @retval -EPERM If the bm_buttons library is not initialized.
- * @retval -EIO If an error occurred.
+ * @retval NRF_SUCCESS on success.
+ * @retval NRF_ERROR_FORBIDDEN If the bm_buttons library is not initialized.
+ * @retval NRF_ERROR_INTERNAL If an error occurred.
  */
-int bm_buttons_disable(void);
+uint32_t bm_buttons_disable(void);
 
 /**
  * @brief Check if a button is being pressed.

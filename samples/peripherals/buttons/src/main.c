@@ -4,11 +4,13 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
+#include <stdint.h>
 #include <zephyr/sys/printk.h>
-#include <bm_buttons.h>
-
-#include <board-config.h>
 #include <zephyr/logging/log_ctrl.h>
+#include <s115/nrf_error.h>
+#include <board-config.h>
+
+#include <bm_buttons.h>
 
 static volatile bool running;
 
@@ -23,7 +25,7 @@ static void button_handler(uint8_t pin, uint8_t action)
 
 int main(void)
 {
-	int err;
+	uint32_t err;
 
 	printk("Buttons sample started\n");
 
@@ -58,14 +60,14 @@ int main(void)
 
 	err = bm_buttons_init(configs, ARRAY_SIZE(configs), BM_BUTTONS_DETECTION_DELAY_MIN_US);
 	if (err) {
-		printk("Failed to initialize buttons, err: %d\n", err);
-		return err;
+		printk("Failed to initialize buttons, err: 0x%x\n", err);
+		return -1;
 	}
 
 	err = bm_buttons_enable();
 	if (err) {
-		printk("Failed to enable buttons, err: %d\n", err);
-		return err;
+		printk("Failed to enable buttons, err: 0x%x\n", err);
+		return -1;
 	}
 
 	printk("Buttons initialized, press button 3 to terminate\n");
@@ -81,8 +83,8 @@ int main(void)
 
 	err = bm_buttons_deinit();
 	if (err) {
-		printk("Failed to deinitialize buttons, err: %d\n", err);
-		return err;
+		printk("Failed to deinitialize buttons, err: 0x%x\n", err);
+		return -1;
 	}
 
 	printk("Bye\n");
