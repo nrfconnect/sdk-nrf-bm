@@ -49,14 +49,14 @@
 			reg = <0x20000000 DT_SIZE_K(5)>;
 		};
 
-		softdevice_dynamic_ram: partition@20001678 {
+		softdevice_dynamic_ram: partition@20001400 {
 			label = "softdevice_dynamic_ram";
-			reg = <0x20001678 DT_SIZE_K(12)>;
+			reg = <0x20001400 DT_SIZE_K(12)>;
 		};
 
-		app_ram: partition@20004678 {
+		app_ram: partition@20004400 {
 			label = "app_ram";
-			reg = <0x20004678 DT_SIZE_K(238)>;
+			reg = <0x20004400 DT_SIZE_K(239)>;
 		};
 	};
 };
