@@ -192,7 +192,7 @@ int nrf_sdh_ble_enable(uint8_t conn_cfg_tag)
 		LOG_ERR("Insufficient RAM allocated for the SoftDevice (have %#x, need %#x)",
 			app_ram_start_link, app_ram_minimum);
 	} else if (app_ram_minimum != app_ram_start_link) {
-		LOG_DBG("RAM start location can be adjusted to %#x", app_ram_minimum);
+		LOG_DBG("Application RAM start location can be adjusted to %#x", app_ram_minimum);
 	}
 
 	if (err) {
