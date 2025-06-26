@@ -359,13 +359,13 @@ int main(void)
 	err = uarte_init();
 	if (err) {
 		LOG_ERR("Failed to enable UARTE, err %d", err);
-		return -1;
+		goto idle;
 	}
 
 	err = nrf_sdh_enable_request();
 	if (err) {
 		LOG_ERR("Failed to enable SoftDevice, err %d", err);
-		return -1;
+		goto idle;
 	}
 
 	LOG_INF("SoftDevice enabled");
@@ -373,7 +373,7 @@ int main(void)
 	err = nrf_sdh_ble_enable(CONFIG_NRF_SDH_BLE_CONN_TAG);
 	if (err) {
 		LOG_ERR("Failed to enable BLE, err %d", err);
-		return -1;
+		goto idle;
 	}
 
 	LOG_INF("Bluetooth enabled");
@@ -381,13 +381,13 @@ int main(void)
 	err = ble_qwr_init(&ble_qwr, &qwr_config);
 	if (err) {
 		LOG_ERR("ble_qwr_init failed, err %d", err);
-		return -1;
+		goto idle;
 	}
 
 	err = ble_nus_init(&ble_nus, &nus_cfg);
 	if (err) {
 		LOG_ERR("Failed to initialize Nordic uart service, err %d", err);
-		return -1;
+		goto idle;
 	}
 
 	/* Adding the Nordic UART Service UUID to the scan response data. */
@@ -403,13 +403,13 @@ int main(void)
 	err = ble_conn_params_evt_handler_set(on_conn_params_evt);
 	if (err) {
 		LOG_ERR("Failed to setup conn param event handler, err %d", err);
-		return -1;
+		goto idle;
 	}
 
 	err = ble_adv_init(&ble_adv, &ble_adv_cfg);
 	if (err) {
 		LOG_ERR("Failed to initialize advertising, err %d", err);
-		return -1;
+		goto idle;
 	}
 
 	const uint8_t out[] = "UART started.\r\n";
@@ -417,7 +417,7 @@ int main(void)
 	err = nrfx_uarte_tx(&uarte_inst, out, sizeof(out), NRFX_UARTE_TX_BLOCKING);
 	if (err != NRFX_SUCCESS) {
 		LOG_ERR("UARTE TX failed, nrfx err %d", err);
-		return -1;
+		goto idle;
 	}
 
 	err = nrfx_uarte_rx_enable(&uarte_inst, 0);
@@ -428,7 +428,7 @@ int main(void)
 	err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
 	if (err) {
 		LOG_ERR("Failed to start advertising, err %d", err);
-		return -1;
+		goto idle;
 	}
 
 	LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
@@ -436,11 +436,13 @@ int main(void)
 	LOG_INF("The NUS service is handled at a separate uart instance");
 #endif
 
+idle:
 	while (true) {
 		while (LOG_PROCESS()) {
-			/* Empty. */
 		}
 
 		sd_app_evt_wait();
 	}
+
+	return 0;
 }

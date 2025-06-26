@@ -59,20 +59,19 @@ int main(void)
 	err = bm_buttons_init(configs, ARRAY_SIZE(configs), BM_BUTTONS_DETECTION_DELAY_MIN_US);
 	if (err) {
 		printk("Failed to initialize buttons, err: %d\n", err);
-		return err;
+		goto idle;
 	}
 
 	err = bm_buttons_enable();
 	if (err) {
 		printk("Failed to enable buttons, err: %d\n", err);
-		return err;
+		goto idle;
 	}
 
 	printk("Buttons initialized, press button 3 to terminate\n");
 
 	while (running) {
 		while (LOG_PROCESS()) {
-			/* Empty. */
 		}
 
 		/* Sleep */
@@ -82,13 +81,18 @@ int main(void)
 	err = bm_buttons_deinit();
 	if (err) {
 		printk("Failed to deinitialize buttons, err: %d\n", err);
-		return err;
+		goto idle;
 	}
 
 	printk("Bye\n");
 
-	while (LOG_PROCESS()) {
-		/* Empty. */
+idle:
+	while (true) {
+		while (LOG_PROCESS()) {
+		}
+
+		/* Sleep */
+		__WFE();
 	}
 
 	return 0;

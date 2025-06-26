@@ -720,57 +720,60 @@ int main(void)
 
 	err = timers_init();
 	if (err) {
-		return -1;
+		goto idle;
 	}
 	err = buttons_leds_init(&erase_bonds);
 	if (err) {
-		return -1;
+		goto idle;
 	}
 	err = ble_stack_init();
 	if (err) {
-		return -1;
+		goto idle;
 	}
 	err = gap_params_init();
 	if (err) {
-		return -1;
+		goto idle;
 	}
 	err = advertising_init();
 	if (err) {
-		return -1;
+		goto idle;
 	}
 	err = services_init();
 	if (err) {
-		return -1;
+		goto idle;
 	}
 	(void)sensor_simulator_init();
 
 	err = ble_conn_params_evt_handler_set(on_conn_params_evt);
 	if (err) {
 		LOG_ERR("Failed to setup conn param event handler, err %d", err);
-		return -1;
+		goto idle;
 	}
 
 	LOG_INF("Continuous Glucose Monitoring sample started.");
 	err = application_timers_start();
 	if (err) {
-		return -1;
+		goto idle;
 	}
 
 	err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
 	if (err) {
 		LOG_ERR("Failed to start advertising, err %d", err);
-		return -1;
+		goto idle;
 	}
 
 	LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
 
+idle:
 	/* Enter main loop. */
 	while (true) {
 		while (LOG_PROCESS()) {
-			/* Empty. */
 		}
+
 		sd_app_evt_wait();
 	}
+
+	return 0;
 }
 
- /** @} */
+/** @} */

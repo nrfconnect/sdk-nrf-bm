@@ -39,7 +39,7 @@ int main(void)
 	err = nrf_sdh_enable_request();
 	if (err) {
 		printk("Failed to enable SoftDevice, err %d\n", err);
-		return -1;
+		goto idle;
 	}
 
 	printk("SoftDevice enabled\n");
@@ -47,13 +47,12 @@ int main(void)
 	err = nrf_sdh_ble_enable(CONFIG_NRF_SDH_BLE_CONN_TAG);
 	if (err) {
 		printk("Failed to enable BLE, err %d\n", err);
-		return -1;
+		goto idle;
 	}
 
 	printk("Bluetooth enabled\n");
 
 	while (LOG_PROCESS()) {
-		/* Empty. */
 	}
 
 	k_busy_wait(2 * USEC_PER_SEC);
@@ -61,14 +60,18 @@ int main(void)
 	err = nrf_sdh_disable_request();
 	if (err) {
 		printk("Failed to disable SoftDevice, err %d\n", err);
-		return -1;
+		goto idle;
 	}
 
 	printk("SoftDevice disabled\n");
 	printk("Bye\n");
 
-	while (LOG_PROCESS()) {
-		/* Empty. */
+idle:
+	while (true) {
+		while (LOG_PROCESS()) {
+		}
+
+		sd_app_evt_wait();
 	}
 
 	return 0;

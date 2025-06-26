@@ -128,7 +128,7 @@ int main(void)
 	err = uarte_init();
 	if (err) {
 		printk("Failed to enable UARTE, err %d\n", err);
-		return -1;
+		goto idle;
 	}
 
 	const uint8_t out[] = "Hello world! I will echo the lines you enter:\r\n";
@@ -136,7 +136,7 @@ int main(void)
 	err = nrfx_uarte_tx(&uarte_inst, out, sizeof(out), NRFX_UARTE_TX_BLOCKING);
 	if (err != NRFX_SUCCESS) {
 		printk("UARTE TX failed, nrfx err %d\n", err);
-		return -1;
+		goto idle;
 	}
 
 	/* Start reception */
@@ -145,15 +145,14 @@ int main(void)
 		printk("UARTE RX failed, nrfx err %d\n", err);
 	}
 
+idle:
 	while (true) {
 		while (LOG_PROCESS()) {
-			/* Empty. */
 		}
 
 		/* Sleep */
 		__WFE();
 	}
 
-	/* Unreachable */
 	return 0;
 }
