@@ -5,7 +5,7 @@
  */
 
 #include <zephyr/sys/printk.h>
-#include <bm_buttons.h>
+#include <bm/lib/bm_buttons.h>
 
 #include <board-config.h>
 #include <zephyr/logging/log_ctrl.h>

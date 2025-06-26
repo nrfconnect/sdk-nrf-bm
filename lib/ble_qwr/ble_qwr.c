@@ -8,8 +8,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include <ble_qwr.h>
-#include <ble.h>
+#include <softdevice/ble.h>
+#include <bm/lib/ble_qwr.h>
 #include <zephyr/sys/byteorder.h>
 
 /* Non-zero value used to make sure the given structure has been initialized by the module. */

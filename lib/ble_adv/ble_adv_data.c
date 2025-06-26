@@ -6,8 +6,8 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <ble_adv_data.h>
-#include <ble_gap.h>
+#include <bm/lib/ble_adv_data.h>
+#include <softdevice/ble_gap.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/byteorder.h>
 #include <errno.h>

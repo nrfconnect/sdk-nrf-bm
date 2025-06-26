@@ -8,8 +8,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include <ble_gq.h>
-#include <nrf_sdh_ble.h>
+#include <bm/lib/ble_gq.h>
+#include <bm/sdh/nrf_sdh_ble.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/__assert.h>

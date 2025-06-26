@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <bm_timer.h>
+#include <bm/lib/bm_timer.h>
 #include <zephyr/logging/log_ctrl.h>
 #include <zephyr/sys/printk.h>
 

@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 #include "zephyr/toolchain.h"
-#include <ble_adv.h>
-#include <ble_adv_data.h>
-#include <nrf_sdh_ble.h>
+#include <bm/lib/ble_adv.h>
+#include <bm/lib/ble_adv_data.h>
+#include <bm/sdh/nrf_sdh_ble.h>
 #include <zephyr/logging/log.h>
 #include <errno.h>
 

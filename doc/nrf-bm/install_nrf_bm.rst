@@ -253,7 +253,7 @@ You can now proceed to test the :ref:`samples` included in this version of |BMsh
 
 The samples can be found in the :file:`nrf-bm/samples` folder, and are divided into two subfolders:
 
-* :file:`bluetooth` for the samples showcasing Bluetooth® LE functionalities using the SoftDevice.
+* :file:`ble` for the samples showcasing Bluetooth® LE functionalities using the SoftDevice.
   See :ref:`ble_samples`.
 * :file:`peripherals` for the samples showcasing various peripheral functionalities that do not require the SoftDevice.
   See :ref:`peripheral_samples`.

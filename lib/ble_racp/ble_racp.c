@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
-#include <ble_racp.h>
+#include <bm/lib/ble_racp.h>
 #include <stdlib.h>
 #include <stddef.h>
 #include <errno.h>

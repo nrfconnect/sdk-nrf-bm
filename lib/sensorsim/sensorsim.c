@@ -7,7 +7,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include <sensorsim.h>
+#include <bm/lib/sensorsim.h>
 
 int sensorsim_init(struct sensorsim_state *state, const struct sensorsim_cfg *cfg)
 {

@@ -8,7 +8,7 @@
 #include <stddef.h>
 #include <errno.h>
 
-#include <ble_racp.h>
+#include <bm/lib/ble_racp.h>
 
 void test_ble_racp_encode_efault(void)
 {

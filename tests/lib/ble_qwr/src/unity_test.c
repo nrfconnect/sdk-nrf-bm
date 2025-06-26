@@ -10,9 +10,9 @@
 #include <strings.h>
 #include <errno.h>
 
-#include "cmock_ble.h"
-#include "cmock_ble_gatts.h"
-#include <ble_qwr.h>
+#include "softdevice/cmock_ble.h"
+#include "softdevice/cmock_ble_gatts.h"
+#include <bm/lib/ble_qwr.h>
 
 static uint16_t ble_qwr_evt_handler(struct ble_qwr *qwr, const struct ble_qwr_evt *evt)
 {

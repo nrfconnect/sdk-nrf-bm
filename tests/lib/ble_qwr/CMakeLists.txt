@@ -16,16 +16,20 @@ add_compile_definitions(
         CONFIG_BLE_QWR_MAX_ATTR=2
 )
 
-cmock_handle(${ZEPHYR_NRF_BM_MODULE_DIR}/include/s115/ble.h)
-cmock_handle(${ZEPHYR_NRF_BM_MODULE_DIR}/include/s115/ble_gatts.h
-        WORD_EXCLUDE
-        "__STATIC_INLINE")
-cmock_handle(${ZEPHYR_NRF_BM_MODULE_DIR}/include/s115/ble_gattc.h
-        WORD_EXCLUDE
-        "__STATIC_INLINE")
+cmock_handle(${ZEPHYR_NRF_BM_MODULE_DIR}/include/bm/softdevice/s115/softdevice/ble_gatts.h softdevice
+        WORD_EXCLUDE "__STATIC_INLINE"
+)
+cmock_handle(${ZEPHYR_NRF_BM_MODULE_DIR}/include/bm/softdevice/s115/softdevice/ble_gattc.h softdevice
+        WORD_EXCLUDE "__STATIC_INLINE"
+)
+cmock_handle(${ZEPHYR_NRF_BM_MODULE_DIR}/include/bm/softdevice/s115/softdevice/ble.h softdevice)
 
+target_include_directories(app PRIVATE ${ZEPHYR_NRF_BM_MODULE_DIR}/include/bm/softdevice/s115)
+target_include_directories(
+        app PRIVATE
+        ${ZEPHYR_NRF_BM_MODULE_DIR}/include/bm/softdevice/s115/softdevice
+)
 target_include_directories(app PRIVATE ${ZEPHYR_NRF_BM_MODULE_DIR}/include)
-target_include_directories(app PRIVATE ${ZEPHYR_NRF_BM_MODULE_DIR}/include/s115)
 target_include_directories(app PRIVATE ${ZEPHYR_HAL_NORDIC_MODULE_DIR}/nrfx/mdk)
 target_include_directories(app PRIVATE ${ZEPHYR_CMSIS_MODULE_DIR}/CMSIS/Core/Include)
 

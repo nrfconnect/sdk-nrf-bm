@@ -8,11 +8,11 @@
 #include <stdint.h>
 #include <errno.h>
 #include <string.h>
-#include <nrf_sdh.h>
-#include <nrf_sdh_ble.h>
-#include <ble_adv.h>
-#include <ble_conn_params.h>
-#include <ble_gap.h>
+#include <softdevice/nrf_sdh.h>
+#include <softdevice/nrf_sdh_ble.h>
+#include <softdevice/ble_adv.h>
+#include <softdevice/ble_conn_params.h>
+#include <softdevice/ble_gap.h>
 #include <zephyr/kernel.h>
 #include <zephyr/mgmt/mcumgr/mgmt/mgmt.h>
 #include <zephyr/mgmt/mcumgr/smp/smp.h>
@@ -21,11 +21,11 @@
 #include <mgmt/mcumgr/transport/smp_internal.h>
 #include <mgmt/mcumgr/transport/smp_reassembly.h>
 #include <zephyr/sys/reboot.h>
-#include <nrf_soc.h>
+#include <softdevice/nrf_soc.h>
 #include <zephyr/logging/log.h>
 #include <bluetooth/services/common.h>
 #include <bluetooth/services/uuid.h>
-#include <ble_conn_params.h>
+#include <softdevice/ble_conn_params.h>
 
 LOG_MODULE_REGISTER(app, CONFIG_BLE_MCUMGR_LOG_LEVEL);
 
