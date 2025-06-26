@@ -15,7 +15,6 @@
 
 static struct bm_timer oneshot_timer;
 static struct bm_timer periodic_timer;
-static bool done;
 
 static const char *const hello_str = "Hello";
 static const char *const world_str = "world!";
@@ -49,8 +48,6 @@ static void oneshot_timeout_handler(void *context)
 		if (err) {
 			printk("Failed to stop periodic timer, err %d\n", err);
 		}
-
-		done = true;
 	}
 
 	cnt++;
@@ -77,32 +74,32 @@ int main(void)
 	err = bm_timer_init(&periodic_timer, BM_TIMER_MODE_REPEATED, periodic_timeout_handler);
 	if (err) {
 		printk("Failed to initialize periodic timer, err %d\n", err);
-		return -1;
+		goto idle;
 	}
 
 	err = bm_timer_init(&oneshot_timer, BM_TIMER_MODE_SINGLE_SHOT, oneshot_timeout_handler);
 	if (err) {
 		printk("Failed to initialize oneshot timer, err %d\n", err);
-		return -1;
+		goto idle;
 	}
 
 	err = bm_timer_start(&periodic_timer, PERIODIC_TIMER_TICKS, NULL);
 	if (err) {
 		printk("Failed to start periodic timer, err %d\n", err);
-		return -1;
+		goto idle;
 	}
 
 	err = bm_timer_start(&oneshot_timer, HELLO_TIMER_TICKS, (void *)hello_str);
 	if (err) {
 		printk("Failed to start oneshot timer, err %d\n", err);
-		return -1;
+		goto idle;
 	}
 
 	printk("Timers initialized\n");
 
-	while (!done) {
+idle:
+	while (true) {
 		while (LOG_PROCESS()) {
-			/* Empty. */
 		}
 
 		/* Sleep */

@@ -142,7 +142,7 @@ int main(void)
 	err = nrf_sdh_enable_request();
 	if (err) {
 		printk("Failed to enable SoftDevice, err %d\n", err);
-		return -1;
+		goto idle;
 	}
 
 	printk("SoftDevice enabled\n");
@@ -150,7 +150,7 @@ int main(void)
 	err = nrf_sdh_ble_enable(CONFIG_NRF_SDH_BLE_CONN_TAG);
 	if (err) {
 		printk("Failed to enable BLE, err %d\n", err);
-		return -1;
+		goto idle;
 	}
 
 	printk("Bluetooth enabled\n");
@@ -168,25 +168,25 @@ int main(void)
 		BM_BUTTONS_DETECTION_DELAY_MIN_US);
 	if (err) {
 		printk("Failed to initialize buttons, err: %d\n", err);
-		return -1;
+		goto idle;
 	}
 
 	err = bm_buttons_enable();
 	if (err) {
 		printk("Failed to enable button detection, err: %d\n", err);
-		return -1;
+		goto idle;
 	}
 
 	err = ble_lbs_init(&ble_lbs, &lbs_cfg);
 	if (err) {
 		printk("Failed to setup LED Button Service, err %d\n", err);
-		return -1;
+		goto idle;
 	}
 
 	err = ble_dis_init();
 	if (err) {
 		printk("Failed to initialize device information service, err %d\n", err);
-		return -1;
+		goto idle;
 	}
 
 	/* Adding the LBS UUID to the scan response data. */
@@ -201,20 +201,20 @@ int main(void)
 	err = ble_adv_init(&ble_adv, &ble_adv_config);
 	if (err) {
 		printk("Failed to initialize BLE advertising, err %d\n", err);
-		return -1;
+		goto idle;
 	}
 
 	err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
 	if (err) {
 		printk("Failed to start advertising, err %d\n", err);
-		return -1;
+		goto idle;
 	}
 
 	printk("Advertising as %s\n", CONFIG_BLE_ADV_NAME);
 
+idle:
 	while (true) {
 		while (LOG_PROCESS()) {
-			/* Empty. */
 		}
 
 		sd_app_evt_wait();

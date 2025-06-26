@@ -37,7 +37,6 @@ int main(void)
 
 	while (true) {
 		while (LOG_PROCESS()) {
-			/* Empty. */
 		}
 
 		/* Turn the LED on */

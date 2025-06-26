@@ -354,7 +354,7 @@ int main(void)
 	err = nrf_sdh_enable_request();
 	if (err) {
 		printk("Failed to enable SoftDevice, err %d\n", err);
-		return -1;
+		goto idle;
 	}
 
 	printk("SoftDevice enabled\n");
@@ -362,7 +362,7 @@ int main(void)
 	err = nrf_sdh_ble_enable(CONFIG_NRF_SDH_BLE_CONN_TAG);
 	if (err) {
 		printk("Failed to enable BLE, err %d\n", err);
-		return -1;
+		goto idle;
 	}
 
 	printk("Bluetooth enabled\n");
@@ -370,19 +370,19 @@ int main(void)
 	err = ble_hrs_init(&ble_hrs, &hrs_cfg);
 	if (err) {
 		printk("Failed to initialize heart rate service, err %d\n", err);
-		return -1;
+		goto idle;
 	}
 
 	err = ble_bas_init(&ble_bas, &bas_cfg);
 	if (err) {
 		printk("Failed to initialize battery service, err %d\n", err);
-		return -1;
+		goto idle;
 	}
 
 	err = ble_dis_init();
 	if (err) {
 		printk("Failed to initialize device information service, err %d\n", err);
-		return -1;
+		goto idle;
 	}
 
 	printk("Services initialized\n");
@@ -390,13 +390,13 @@ int main(void)
 	err = ble_conn_params_evt_handler_set(on_conn_params_evt);
 	if (err) {
 		printk("Failed to setup conn param event handler, err %d\n", err);
-		return -1;
+		goto idle;
 	}
 
 	err = ble_adv_init(&ble_adv, &ble_adv_cfg);
 	if (err) {
 		printk("Failed to initialize advertising, err %d\n", err);
-		return -1;
+		goto idle;
 	}
 
 	simulated_meas_start();
@@ -404,16 +404,18 @@ int main(void)
 	err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
 	if (err) {
 		printk("Failed to start advertising, err %d\n", err);
-		return -1;
+		goto idle;
 	}
 
 	printk("Advertising as %s\n", CONFIG_BLE_ADV_NAME);
 
+idle:
 	while (true) {
 		while (LOG_PROCESS()) {
-			/* Empty. */
 		}
 
 		sd_app_evt_wait();
 	}
+
+	return 0;
 }
