@@ -98,8 +98,8 @@ config BM_FIRMWARE_LOADER_IMAGE_NAME
 
 config BM_FIRMWARE_LOADER_IMAGE_PATH
 	string
-	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/samples/ble_mcumgr" if BM_FIRMWARE_LOADER_BT_MCUMGR
-	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/samples/uart_mcumgr" if BM_FIRMWARE_LOADER_UART_MCUMGR
+	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/samples/mcumgr/ble_mcumgr" if BM_FIRMWARE_LOADER_BT_MCUMGR
+	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/samples/mcumgr/uart_mcumgr" if BM_FIRMWARE_LOADER_UART_MCUMGR
 	help
 	  Source directory of firmware loader image.
 
