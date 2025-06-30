@@ -6,7 +6,7 @@
 
 include(${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/CMakeLists.txt)
 
-if(CONFIG_MCUBOOT AND CONFIG_NRF_BM)
+if(CONFIG_MCUBOOT AND CONFIG_NCS_BM)
   include(${ZEPHYR_NRF_BM_MODULE_DIR}/cmake/image_signing_softdevice.cmake)
   include(${ZEPHYR_NRF_BM_MODULE_DIR}/cmake/flash_metadata.cmake)
 endif()
