@@ -15,7 +15,7 @@
 
 LOG_MODULE_DECLARE(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
 
-const char *sd_evt_tostr(int evt);
+const char *gap_evt_tostr(int evt);
 
 int nrf_sdh_ble_app_ram_start_get(uint32_t *app_ram_start)
 {
@@ -217,7 +217,7 @@ static void ble_evt_poll(void *context)
 		}
 
 		if (IS_ENABLED(CONFIG_SOFTDEVICE_STRING_TABLES)) {
-			LOG_DBG("BLE event: %s", sd_evt_tostr(ble_evt->header.evt_id));
+			LOG_DBG("BLE event: %s", gap_evt_tostr(ble_evt->header.evt_id));
 		} else {
 			LOG_DBG("BLE event: %#x", ble_evt->header.evt_id);
 		}

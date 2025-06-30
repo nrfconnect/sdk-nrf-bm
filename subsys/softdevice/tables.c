@@ -9,7 +9,7 @@
 #include <ble_gattc.h>
 #include <nrf_error.h>
 
-const char *sd_evt_tostr(int evt)
+const char *gap_evt_tostr(int evt)
 {
 	switch (evt) {
 	case BLE_GAP_EVT_CONNECTED:
