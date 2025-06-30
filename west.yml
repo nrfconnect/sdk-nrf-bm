@@ -32,6 +32,7 @@ manifest:
           - tinycrypt
           - zephyr
           - cmock
+          - zcbor
     - name: sdk-nrf-bm-internal
       path: nrf-bm-internal
       revision: 2086b4bb5ee2cc68b824fe5ecd4e2461987e4c5c
