@@ -29,9 +29,6 @@ config SOFTDEVICE_S115
 	select SOFTDEVICE_PERIPHERAL
 	default y
 
-config SOFTDEVICE_STRING_TABLES
-	bool "Compile tables for stringified events and errors"
-
 endif
 
 endmenu
