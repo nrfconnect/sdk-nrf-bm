@@ -34,6 +34,23 @@ any: |
 
 # Allow different licenses from external sources
 Apache-2.0: |
-  ^nrf-bm/drivers/flash/soc_flash_nrf_rram/
+  ^nrf-bm/drivers/flash/soc_flash_nrf_rram.c
   ^nrf-bm/subsys/storage/flash_map/
   ^nrf-bm/lib/zephyr_queue/src/queue.c
+  ^nrf-bm/subsys/mgmt/mcumgr/CMakeLists.txt
+  ^nrf-bm/subsys/mgmt/mcumgr/Kconfig
+  ^nrf-bm/subsys/mgmt/mcumgr/grp/CMakeLists.txt
+  ^nrf-bm/subsys/mgmt/mcumgr/grp/Kconfig
+  ^nrf-bm/subsys/mgmt/mcumgr/grp/img_mgmt/CMakeLists.txt
+  ^nrf-bm/subsys/mgmt/mcumgr/grp/img_mgmt/Kconfig
+  ^nrf-bm/subsys/mgmt/mcumgr/grp/os_mgmt/CMakeLists.txt
+  ^nrf-bm/subsys/mgmt/mcumgr/grp/os_mgmt/Kconfig
+  ^nrf-bm/subsys/mgmt/mcumgr/mgmt/CMakeLists.txt
+  ^nrf-bm/subsys/mgmt/mcumgr/mgmt/Kconfig
+  ^nrf-bm/subsys/mgmt/mcumgr/smp/CMakeLists.txt
+  ^nrf-bm/subsys/mgmt/mcumgr/smp/Kconfig
+  ^nrf-bm/subsys/mgmt/mcumgr/transport/CMakeLists.txt
+  ^nrf-bm/subsys/mgmt/mcumgr/transport/Kconfig
+  ^nrf-bm/subsys/mgmt/mcumgr/transport/src/smp.c
+  ^nrf-bm/subsys/mgmt/mcumgr/util/CMakeLists.txt
+  ^nrf-bm/sysbuild/Kconfig.bm
