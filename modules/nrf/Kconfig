@@ -1,0 +1,11 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+if !NCS_BM || MCUBOOT || ARCH_POSIX
+
+source "$ZEPHYR_NRF_MODULE_DIR/Kconfig.nrf"
+
+endif # !NCS_BM || MCUBOOT || ARCH_POSIX
