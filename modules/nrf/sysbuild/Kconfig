@@ -1,0 +1,11 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+if !NCS_BM
+
+source "$ZEPHYR_NRF_MODULE_DIR/sysbuild/Kconfig.sysbuild"
+
+endif # !NCS_BM
