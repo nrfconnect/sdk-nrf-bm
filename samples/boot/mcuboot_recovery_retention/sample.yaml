@@ -2,7 +2,7 @@ sample:
   description: MCUboot buttonless entry, for firmware loader mode
   name: MCUboot buttonless entry
 tests:
-  sample.boot.mcuboot_recovery_retention:
+  sample.boot.mcuboot_recovery_retention.bluetooth:
     sysbuild: true
     build_only: true
     integration_platforms:
@@ -11,3 +11,16 @@ tests:
       - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
     tags:
       - sysbuild
+      - bluetooth
+  sample.boot.mcuboot_recovery_retention.uart:
+    sysbuild: true
+    build_only: true
+    integration_platforms:
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+    platform_allow:
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+    extra_args:
+      - SB_CONFIG_BM_FIRMWARE_LOADER_UART_MCUMGR=y
+    tags:
+      - sysbuild
+      - uart
