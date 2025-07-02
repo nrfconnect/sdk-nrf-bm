@@ -4,6 +4,12 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
+config BUILD_OUTPUT_BIN
+	default y
+
+config BUILD_OUTPUT_HEX
+	default y
+
 choice BM_BOOTLOADER
 	prompt "Bootloader selection"
 
