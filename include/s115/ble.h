@@ -341,6 +341,7 @@ typedef union
  *          is referenced in the event documentation.
  *          If the application fails to do so, the BLE connection may timeout, or the SoftDevice may stop
  *          communicating with the peer device.
+ *          - @ref BLE_GAP_EVT_DATA_LENGTH_UPDATE_REQUEST
  *          - @ref BLE_GAP_EVT_PHY_UPDATE_REQUEST
  *          - @ref BLE_GAP_EVT_SEC_PARAMS_REQUEST
  *          - @ref BLE_GAP_EVT_SEC_INFO_REQUEST
@@ -364,6 +365,7 @@ typedef union
  *
  * @retval ::NRF_SUCCESS              The BLE stack has been initialized successfully.
  * @retval ::NRF_ERROR_INVALID_STATE  The BLE stack had already been initialized and cannot be reinitialized.
+ *                                    or the random number generator has not been seeded. See @ref sd_rand_seed_set.
  * @retval ::NRF_ERROR_INVALID_ADDR   Invalid or not sufficiently aligned pointer supplied.
  * @retval ::NRF_ERROR_NOT_SUPPORTED  The number of concurrent connections configured (@ref ble_gap_conn_cfg_t::conn_count) is less than
  *                                    the configured connection count (@ref ble_gap_cfg_role_count_t).

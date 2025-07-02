@@ -93,6 +93,7 @@ enum BLE_GAP_SVCS
   SD_BLE_GAP_SEC_INFO_REPLY             = BLE_GAP_SVC_BASE + 27,  /**< Reply with Security Information. */
   SD_BLE_GAP_CONN_SEC_GET               = BLE_GAP_SVC_BASE + 28,  /**< Obtain connection security level. */
   SD_BLE_GAP_PHY_UPDATE                 = BLE_GAP_SVC_BASE + 33,  /**< Initiate or respond to a PHY Update Procedure. */
+  SD_BLE_GAP_DATA_LENGTH_UPDATE         = BLE_GAP_SVC_BASE + 34,  /**< Initiate or respond to a Data Length Update Procedure. */
   SD_BLE_GAP_NEXT_CONN_EVT_COUNTER_GET  = BLE_GAP_SVC_BASE + 36,  /**< Get the next connection event counter. */
   SD_BLE_GAP_RSSI_GET                   = BLE_GAP_SVC_BASE + 38,  /**< Get the last RSSI sample. */
   SD_BLE_GAP_RSSI_START                 = BLE_GAP_SVC_BASE + 39,  /**< Start reporting of changes in RSSI. */
@@ -120,6 +121,8 @@ enum BLE_GAP_EVTS
   BLE_GAP_EVT_SCAN_REQ_REPORT             = BLE_GAP_EVT_BASE + 16,  /**< Scan request report.                            \n See @ref ble_gap_evt_scan_req_report_t. */
   BLE_GAP_EVT_PHY_UPDATE_REQUEST          = BLE_GAP_EVT_BASE + 17,  /**< PHY Update Request.                             \n Reply with @ref sd_ble_gap_phy_update. \n See @ref ble_gap_evt_phy_update_request_t. */
   BLE_GAP_EVT_PHY_UPDATE                  = BLE_GAP_EVT_BASE + 18,  /**< PHY Update Procedure is complete.               \n See @ref ble_gap_evt_phy_update_t.           */
+  BLE_GAP_EVT_DATA_LENGTH_UPDATE_REQUEST = BLE_GAP_EVT_BASE + 19,   /**< Data Length Update Request.                     \n Reply with @ref sd_ble_gap_data_length_update. \n See @ref ble_gap_evt_data_length_update_request_t. */
+  BLE_GAP_EVT_DATA_LENGTH_UPDATE         = BLE_GAP_EVT_BASE + 20,   /**< LL Data Channel PDU payload length updated.     \n See @ref ble_gap_evt_data_length_update_t. */
   BLE_GAP_EVT_ADV_SET_TERMINATED         = BLE_GAP_EVT_BASE + 22,   /**< Advertising set terminated.                     \n See @ref ble_gap_evt_adv_set_terminated_t. */
 };
 
@@ -527,6 +530,8 @@ enum BLE_GAP_TX_POWER_ROLES
 #define BLE_GAP_ROLE_COUNT_COMBINED_MAX        (20)  /**< Maximum supported number of concurrent connections for all connected roles combined. */
 /**@} */
 
+/**@brief Automatic data length parameter. */
+#define BLE_GAP_DATA_LENGTH_AUTO 0
 
 /**@defgroup BLE_GAP_AUTH_PAYLOAD_TIMEOUT Authenticated payload timeout defines.
  * @{ */
@@ -986,6 +991,25 @@ typedef struct
 } ble_gap_sec_keyset_t;
 
 
+/**@brief Data Length Update Procedure parameters. */
+typedef struct
+{
+  uint16_t max_tx_octets;   /**< Maximum number of payload octets that a Controller supports for transmission of a single Link Layer Data Channel PDU. */
+  uint16_t max_rx_octets;   /**< Maximum number of payload octets that a Controller supports for reception of a single Link Layer Data Channel PDU. */
+  uint16_t max_tx_time_us;  /**< Maximum time, in microseconds, that a Controller supports for transmission of a single Link Layer Data Channel PDU. */
+  uint16_t max_rx_time_us;  /**< Maximum time, in microseconds, that a Controller supports for reception of a single Link Layer Data Channel PDU. */
+} ble_gap_data_length_params_t;
+
+
+/**@brief Data Length Update Procedure local limitation. */
+typedef struct
+{
+  uint16_t tx_payload_limited_octets; /**< If > 0, the requested TX packet length is too long by this many octets. */
+  uint16_t rx_payload_limited_octets; /**< If > 0, the requested RX packet length is too long by this many octets. */
+  uint16_t tx_rx_time_limited_us;     /**< If > 0, the requested combination of TX and RX packet lengths is too long by this many microseconds. */
+} ble_gap_data_length_limitation_t;
+
+
 /**@brief Event structure for @ref BLE_GAP_EVT_AUTH_STATUS. */
 typedef struct
 {
@@ -1040,6 +1064,19 @@ typedef struct
                                                   and the address is the device's identity address. */
 } ble_gap_evt_scan_req_report_t;
 
+/**@brief Event structure for @ref BLE_GAP_EVT_DATA_LENGTH_UPDATE_REQUEST. */
+typedef struct
+{
+  ble_gap_data_length_params_t peer_params; /**< Peer data length parameters. */
+} ble_gap_evt_data_length_update_request_t;
+
+/**@brief Event structure for @ref BLE_GAP_EVT_DATA_LENGTH_UPDATE.
+ */
+typedef struct
+{
+  ble_gap_data_length_params_t effective_params;  /**< The effective data length parameters. */
+} ble_gap_evt_data_length_update_t;
+
 
 /**@brief GAP event structure. */
 typedef struct
@@ -1064,6 +1101,8 @@ typedef struct
     ble_gap_evt_scan_req_report_t             scan_req_report;              /**< Scan Request Report Parameters. */
     ble_gap_evt_phy_update_request_t          phy_update_request;           /**< PHY Update Request Event Parameters. */
     ble_gap_evt_phy_update_t                  phy_update;                   /**< PHY Update Parameters. */
+    ble_gap_evt_data_length_update_request_t  data_length_update_request;   /**< Data Length Update Request Event Parameters. */
+    ble_gap_evt_data_length_update_t          data_length_update;           /**< Data Length Update Event Parameters. */
   } params;                                                                 /**< Event Parameters. */
 } ble_gap_evt_t;
 
@@ -2075,6 +2114,43 @@ SVCALL(SD_BLE_GAP_RSSI_GET, uint32_t, sd_ble_gap_rssi_get(uint16_t conn_handle, 
  *
  */
 SVCALL(SD_BLE_GAP_PHY_UPDATE, uint32_t, sd_ble_gap_phy_update(uint16_t conn_handle, ble_gap_phys_t const *p_gap_phys));
+
+
+/**@brief Initiate or respond to a Data Length Update Procedure.
+ *
+ * @note If the application uses @ref BLE_GAP_DATA_LENGTH_AUTO for one or more members of
+ *       p_dl_params, the SoftDevice will choose the highest value supported in current
+ *       configuration and connection parameters.
+ *
+ * @param[in]   conn_handle       Connection handle.
+ * @param[in]   p_dl_params       Pointer to local parameters to be used in Data Length Update
+ *                                Procedure. Set any member to @ref BLE_GAP_DATA_LENGTH_AUTO to let
+ *                                the SoftDevice automatically decide the value for that member.
+ *                                Set to NULL to use automatic values for all members.
+ * @param[out]  p_dl_limitation   Pointer to limitation to be written when local device does not
+ *                                have enough resources or does not support the requested Data Length
+ *                                Update parameters. Ignored if NULL.
+ *
+ * @mscs
+ * @mmsc{@ref BLE_GAP_DATA_LENGTH_UPDATE_PROCEDURE_MSC}
+ * @endmscs
+ *
+ * @retval ::NRF_SUCCESS Successfully set Data Length Extension initiation/response parameters.
+ * @retval ::NRF_ERROR_INVALID_ADDR Invalid pointer supplied.
+ * @retval ::BLE_ERROR_INVALID_CONN_HANDLE Invalid connection handle parameter supplied.
+ * @retval ::NRF_ERROR_INVALID_STATE No link has been established.
+ * @retval ::NRF_ERROR_INVALID_PARAM Invalid parameters supplied.
+ * @retval ::NRF_ERROR_RESOURCES Either:
+ *                               - The requested parameters are not supported by the SoftDevice.
+ *                               - The connection event length configured for this link is not sufficient for the requested parameters.
+ *                                 Use @ref sd_ble_cfg_set with @ref BLE_CONN_CFG_GAP to increase the connection event length.
+ *                               Inspect p_dl_limitation to see where the limitation is.
+ * @retval ::NRF_ERROR_BUSY Peer has already initiated a Data Length Update Procedure. Process the
+ *                          pending @ref BLE_GAP_EVT_DATA_LENGTH_UPDATE_REQUEST event to respond.
+ * @retval ::BLE_ERROR_UNSUPPORTED_REMOTE_FEATURE Peer has indicated that it does not support Data Length Update procedure.
+ *                                                Note that this only applies if the Data Length Update procedure is self initiated.
+ */
+SVCALL(SD_BLE_GAP_DATA_LENGTH_UPDATE, uint32_t, sd_ble_gap_data_length_update(uint16_t conn_handle, ble_gap_data_length_params_t const *p_dl_params, ble_gap_data_length_limitation_t *p_dl_limitation));
 
 
 /**@brief   Obtain the next connection event counter value.

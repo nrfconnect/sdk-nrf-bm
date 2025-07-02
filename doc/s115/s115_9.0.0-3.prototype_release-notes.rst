@@ -17,7 +17,7 @@ SoftDevice properties
 
 * The SoftDevice memory requirements for this version are as follows:
 
-  * NVM: **128.0 kB** (0x20000 bytes).
+  * NVM: **127.0 kB** (0x1FC00 bytes).
 
   * RAM: **4.9 kB** (0x1380 bytes).
     This is the minimum required memory. The actual requirements depend on the
@@ -38,10 +38,21 @@ SoftDevice properties
 
   * nRF54L15: 0x15D000 (``s115_9.0.0-3.prototype_nrf54l15_softdevice.hex``).
 
-* The Firmware ID of this SoftDevice is 0x3032.
+* The Firmware ID of this SoftDevice is 0x3040.
+
+New Features
+-------------
+
+* GAP
+
+  * Added support for LE Data Packet Length Extension (DLE).
 
 Changes
 -------
+
+* SoftDevice
+
+  * A new API for seeding the random number generator ``sd_rand_seed_set`` has been added.
 
 * GAP
 
@@ -76,7 +87,7 @@ Limitations
     action from an application if they are received. For more information, see the
     ``sd_ble_enable()`` API in SoftDevice.
 
-  * Configuring multiple connection configurations (see `ble_conn_cfg_t::conn_cfg_tag`) is not supported (DRGN-23839).
+  * Configuring multiple connection configurations (see ``ble_conn_cfg_t::conn_cfg_tag``) is not supported (DRGN-23839).
 
 * GATT
 

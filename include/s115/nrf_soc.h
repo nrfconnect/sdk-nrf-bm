@@ -124,7 +124,8 @@ enum NRF_SOC_SVCS
   SD_RADIO_REQUEST                        = SOC_SVC_BASE_NOT_AVAILABLE + 27,
   SD_EVT_GET                              = SOC_SVC_BASE_NOT_AVAILABLE + 28,
   SD_TEMP_GET                             = SOC_SVC_BASE_NOT_AVAILABLE + 29,
-  SVC_SOC_LAST                            = SOC_SVC_BASE_NOT_AVAILABLE + 34
+  SD_RAND_SEED_SET                        = SOC_SVC_BASE_NOT_AVAILABLE + 34,
+  SVC_SOC_LAST                            = SOC_SVC_BASE_NOT_AVAILABLE + 35
 };
 
 /**@brief Possible values of a ::nrf_mutex_t. */
@@ -252,6 +253,7 @@ enum NRF_SOC_EVTS
   NRF_EVT_RADIO_SIGNAL_CALLBACK_INVALID_RETURN, /**< Event indicating that a radio timeslot signal callback handler return was invalid. */
   NRF_EVT_RADIO_SESSION_IDLE,                   /**< Event indicating that a radio timeslot session is idle. */
   NRF_EVT_RADIO_SESSION_CLOSED,                 /**< Event indicating that a radio timeslot session is closed. */
+  NRF_EVT_RAND_SEED_REQUEST,                    /**< Event indicating that the random number generator needs to be seeded. Reply with @ref sd_rand_seed_set */
   NRF_EVT_NUMBER_OF_EVTS
 };
 
@@ -417,18 +419,33 @@ __STATIC_INLINE uint32_t sd_rand_application_bytes_available_get(uint8_t * p_byt
 }
 #endif /* SUPPRESS_INLINE_IMPLEMENTATION */
 
-/**@brief Get secure random bytes
+/**@brief Generate NIST SP 800-90A compliant random numbers
  *
  * @param[out]  p_buff  Pointer to uint8_t buffer for storing the bytes.
  * @param[in]   length  Number of bytes to place in p_buff.
-
+ *
  * Generating secure randoms is expensive in terms of time and power, so if security is not required,
  * a pseudorandom number generator should be used instead.
  *
  * @retval ::NRF_SUCCESS The requested bytes were written to p_buff.
  * @retval ::NRF_ERROR_INVALID_ADDR p_buff invalid.
+ * @retval ::NRF_ERROR_INVALID_STATE The random number generator must be seeded using @ref sd_rand_seed_set.
 */
 SVCALL(SD_RAND_APPLICATION_VECTOR_GET, uint32_t, sd_rand_application_vector_get(uint8_t * p_buff, uint8_t length));
+
+/**@brief Seed the random number generator
+ *
+ * @param[in] p_seed Pointer to array of 48 bytes of entropy.
+ *
+ * The entropy source must be NIST SP 800-90B compliant.
+ *
+ * Must be called in reply to @ref NRF_EVT_RAND_SEED_REQUEST. Can also be called without a request
+ * from the SoftDevice.
+ *
+ * @retval ::NRF_SUCCESS The random number generator was seeded.
+ * @retval ::NRF_ERROR_INVALID_ADDR p_seed invalid.
+*/
+SVCALL(SD_RAND_SEED_SET, uint32_t, sd_rand_seed_set(uint8_t * p_seed));
 
 /**@brief Sets the power mode when in CPU sleep.
  *

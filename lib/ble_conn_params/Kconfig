@@ -83,7 +83,7 @@ config BLE_CONN_PARAMS_ATT_MTU
 
 # Show the SDH Kconfig entry
 config NRF_SDH_BLE_GATT_MAX_MTU_SIZE
-	int "ATT MTU" if !SOFTDEVICE_S115
+	int "ATT MTU"
 
 config BLE_CONN_PARAMS_INITIATE_ATT_MTU_EXCHANGE
 	bool "Initiate ATT MTU exchange on connection" if BLE_CONN_PARAMS_ATT_MTU != 23
@@ -98,7 +98,7 @@ config BLE_CONN_PARAMS_AUTO_DATA_LENGTH
 if BLE_CONN_PARAMS_AUTO_DATA_LENGTH
 
 config BLE_CONN_PARAMS_DATA_LENGTH
-	int "Data length" if !SOFTDEVICE_S115
+	int "Data length"
 	range 27 251
 	default 27
 
