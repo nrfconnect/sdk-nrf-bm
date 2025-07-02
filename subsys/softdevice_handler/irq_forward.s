@@ -138,17 +138,6 @@ GRTC_3_IRQHandler:
     .thumb
     .thumb_func
     .align 1
-    .global CRACEN_IRQHandler
-    .type CRACEN_IRQHandler, "function"
-CRACEN_IRQHandler:
-    LDR   R3, =C_RNG_Handler
-    LDR   R0, =NRF_SD_ISR_OFFSET_CRACEN
-    LDR   R1, =ConsumeOrForwardIRQ
-    BX    R1
-
-    .thumb
-    .thumb_func
-    .align 1
     .global ECB00_IRQHandler
     .type ECB00_IRQHandler, "function"
 ECB00_IRQHandler:
