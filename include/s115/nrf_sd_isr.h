@@ -73,11 +73,10 @@ extern "C" {
 #define NRF_SD_ISR_OFFSET_SWI00          (0x000c) /**< SoftDevice SWI00 Handler address offset */
 #define NRF_SD_ISR_OFFSET_AAR00_CCM00    (0x0010) /**< SoftDevice AAR00_CCM00 Handler address offset */
 #define NRF_SD_ISR_OFFSET_ECB00          (0x0014) /**< SoftDevice ECB00 Handler address offset */
-#define NRF_SD_ISR_OFFSET_CRACEN         (0x0018) /**< SoftDevice CRACEN Handler address offset */
-#define NRF_SD_ISR_OFFSET_TIMER10        (0x001c) /**< SoftDevice TIMER10 Handler address offset */
-#define NRF_SD_ISR_OFFSET_RADIO_0        (0x0020) /**< SoftDevice RADIO_0 Handler address offset */
-#define NRF_SD_ISR_OFFSET_GRTC_3         (0x0024) /**< SoftDevice GRTC_3 Handler address offset */
-#define NRF_SD_ISR_OFFSET_CLOCK_POWER    (0x0028) /**< SoftDevice CLOCK_POWER Handler address offset */
+#define NRF_SD_ISR_OFFSET_TIMER10        (0x0018) /**< SoftDevice TIMER10 Handler address offset */
+#define NRF_SD_ISR_OFFSET_RADIO_0        (0x001c) /**< SoftDevice RADIO_0 Handler address offset */
+#define NRF_SD_ISR_OFFSET_GRTC_3         (0x0020) /**< SoftDevice GRTC_3 Handler address offset */
+#define NRF_SD_ISR_OFFSET_CLOCK_POWER    (0x0024) /**< SoftDevice CLOCK_POWER Handler address offset */
 /**
  * @}
  */

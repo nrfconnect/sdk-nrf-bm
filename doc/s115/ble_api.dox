@@ -13,6 +13,10 @@
  * APP=>SD [label = "sd_softdevice_enable(clock, assertion_handler);"];
  * APP<<SD [label = "NRF_SUCCESS"];
  * |||;
+ * APP<<=SD [label = "NRF_EVT_RAND_SEED_REQUEST"];
+ * APP=>SD [label = "sd_rand_seed_set(seed)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
  * APP rbox APP [label="Set app_ram_base to SoftDevice default from release notes"];
  * |||;
  * --- [label = "Configure the BLE stack"];
@@ -924,9 +928,9 @@
  * APP=>SD [label = "sd_ble_gap_privacy_set(params: {mode: DEVICE_PRIVACY, private_addr_type: RESOLVABLE } "];
  * APP<<SD [label = "NRF_SUCCESS"];
  * |||;
- 
+
  * APP=>SD [label = "sd_ble_gap_device_identities_set(pp_id_keys: {peer_addr1, peer_irk1}, pp_local_irks: {local_irk1}) "];
-  * APP<<SD [label = "NRF_SUCCESS"];
+ * APP<<SD [label = "NRF_SUCCESS"];
  * |||;
  * APP=>SD [label = "sd_ble_gap_adv_set_configure(&adv_handle, adv_data, params: {p_peer_addr = peer_addr1})"];
  * APP<<SD [label = "NRF_SUCCESS"];
@@ -969,9 +973,9 @@
  * |||;
  * --- [label = " Variant #1 Advertise directed to private peer"];
  * |||;
- 
+
  * APP=>SD [label = "sd_ble_gap_device_identities_set(pp_id_keys: {peer_addr1, peer_irk1}, pp_local_irks: NULL) "];
-  * APP<<SD [label = "NRF_SUCCESS"];
+ * APP<<SD [label = "NRF_SUCCESS"];
  * |||;
  * APP=>SD [label = "sd_ble_gap_adv_set_configure(&adv_handle, adv_data, params: {p_peer_addr = peer_addr1, properties.type = directed})"];
  * APP<<SD [label = "NRF_SUCCESS"];
@@ -985,9 +989,9 @@
  * |||;
  * --- [label = " Variant #2 Private directed advertising to private peer using local IRK in device identity list"];
  * |||;
- 
+
  * APP=>SD [label = "sd_ble_gap_device_identities_set(pp_id_keys: {peer_addr1, peer_irk1}, pp_local_irks: {local_irk1}) "];
-  * APP<<SD [label = "NRF_SUCCESS"];
+ * APP<<SD [label = "NRF_SUCCESS"];
  * |||;
  * APP=>SD [label = "sd_ble_gap_privacy_set(params: {mode: DEVICE_PRIVACY, private_addr_type: RESOLVABLE } "];
  * APP<<SD [label = "NRF_SUCCESS"];
@@ -1028,9 +1032,9 @@
  * hscale = "1.5";
  * APP,SD,CENTRAL;
  * |||;
- 
+
  * APP=>SD [label = "sd_ble_gap_device_identities_set(pp_id_keys: {peer_addr1, peer_irk1}, pp_local_irks: NULL) "];
-  * APP<<SD [label = "NRF_SUCCESS"];
+ * APP<<SD [label = "NRF_SUCCESS"];
  * |||;
  * --- [label = " Variant #1 Peer used resolvable addresses during connection setup "];
  * |||;
@@ -1133,7 +1137,126 @@
  * @endmsc
  *
  * @}
- 
+
+ * @defgroup BLE_GAP_DATA_LENGTH_UPDATE_PROCEDURE_MSC Data Length Update Procedure
+ * @msc
+ * hscale = "2";
+ * APP,SD,PEER;
+ * |||;
+ * APP rbox PEER [label="Connection Established"];
+ * |||;
+ * --- [label = " Self initiated, automatic parameters "];
+ * |||;
+ * SD rbox SD [label = "max_tx_octets=27, max_rx_octets=27"];
+ * |||;
+ * ...;
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_data_length_update(conn_handle, NULL, NULL)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD:>PEER [label = "LL Length Request (LL_LENGTH_REQ) {tx=251, rx=251}", textcolor="#000080", linecolor="#000080"];
+ * SD<:PEER [label = "LL Length Response (LL_LENGTH_RSP) {tx=251, rx=251}", textcolor="#000080", linecolor="#000080"];
+
+ * APP<<=SD   [label = "BLE_GAP_EVT_DATA_LENGTH_UPDATE {.effective_params={.max_tx_octets=251, .max_rx_octets=251, .max_tx_time_us=2120, .max_rx_time_us=2120}}"];
+ * |||;
+ * ...;
+ * |||;
+ * APP rbox PEER [label="Connection Established"];
+ * |||;
+ * --- [label = " Self initiated, application set parameters "];
+ * |||;
+ * SD rbox SD [label = "max_tx_octets=27, max_rx_octets=27"];
+ * |||;
+ * ...;
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_data_length_update(conn_handle, {.max_tx_octets=251, .max_rx_octets=251, .max_tx_time_us=BLE_GAP_DATA_LENGTH_AUTO, .max_rx_time_us=BLE_GAP_DATA_LENGTH_AUTO}, NULL)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD:>PEER [label = "LL Length Request (LL_LENGTH_REQ) {tx=251, rx=251}", textcolor="#000080", linecolor="#000080"];
+ * SD<:PEER [label = "LL Length Response (LL_LENGTH_RSP) {tx=251, rx=251}", textcolor="#000080", linecolor="#000080"];
+
+ * APP<<=SD   [label = "BLE_GAP_EVT_DATA_LENGTH_UPDATE {.effective_params={.max_tx_octets=251, .max_rx_octets=251, .max_tx_time_us=2120, .max_rx_time_us=2120}}"];
+
+ * |||;
+ * ...;
+ * |||;
+ * APP rbox PEER [label="Connection Established"];
+ * |||;
+ * --- [label = " Peer initiated, automatic parameters "];
+ * SD rbox SD [label = "max_tx_octets=27, max_rx_octets=27"];
+ * |||;
+ * ...;
+ * |||;
+
+ * SD<:PEER [label = "LL Length Request (LL_LENGTH_REQ) {tx=251, rx=251}", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_DATA_LENGTH_UPDATE_REQUEST {.peer_params={.max_tx_octets=251, .max_rx_octets=251, .max_tx_time_us=2120, .max_rx_time_us=2120}}"];
+
+ * APP=>SD [label = "sd_ble_gap_data_length_update(conn_handle, NULL, NULL)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD:>PEER [label = "LL Length Response (LL_LENGTH_RSP) {tx=251, rx=251}", textcolor="#000080", linecolor="#000080"];
+
+ * APP<<=SD   [label = "BLE_GAP_EVT_DATA_LENGTH_UPDATE {.effective_params={.max_tx_octets=251, .max_rx_octets=251, .max_tx_time_us=2120, .max_rx_time_us=2120}}"];
+ * |||;
+ * ...;
+ * |||;
+ * APP rbox PEER [label="Connection Established"];
+ * |||;
+ * --- [label = " Peer initiated, application set parameters"];
+ * SD rbox SD [label = "max_tx_octets=27, max_rx_octets=27"];
+ * |||;
+ * ...;
+ * |||;
+ * SD<:PEER [label = "LL Length Request (LL_LENGTH_REQ) {tx=251, rx=251}", textcolor="#000080", linecolor="#000080"];
+
+ * APP<<=SD [label = "BLE_GAP_EVT_DATA_LENGTH_UPDATE_REQUEST {.peer_params={.max_tx_octets=251, .max_rx_octets=251, .max_tx_time_us=2120, .max_rx_time_us=2120}}"];
+ * APP=>SD [label = "sd_ble_gap_data_length_update(conn_handle, {.max_tx_octets=251, .max_rx_octets=251, .max_tx_time_us=BLE_GAP_DATA_LENGTH_AUTO, .max_rx_time_us=BLE_GAP_DATA_LENGTH_AUTO}, NULL)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD:>PEER [label = "LL Length Response (LL_LENGTH_RSP) {tx=251, rx=251}", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD   [label = "BLE_GAP_EVT_DATA_LENGTH_UPDATE {.effective_params={.max_tx_octets=251, .max_rx_octets=251, .max_tx_time_us=2120, .max_rx_time_us=2120}}"];
+
+ * |||;
+ * ...;
+ * |||;
+ * APP rbox PEER [label="Connection Established"];
+ * |||;
+ * --- [label = " Using the limitation out parameter to adjust Link Layer Data Channel PDU size, memory limited "];
+ * |||;
+ * SD rbox SD [label = "max_tx_octets=27, max_rx_octets=27"];
+ * |||;
+ * ...;
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_data_length_update(conn_handle, {.max_tx_octets=251, .max_rx_octets=251, .max_tx_time_us=BLE_GAP_DATA_LENGTH_AUTO, .max_rx_time_us=BLE_GAP_DATA_LENGTH_AUTO}, &limitation)"];
+ * APP<<SD [label = "NRF_ERROR_RESOURCES"];
+ * APP note SD [label = "limitation = {.tx_payload_limited_octets=51, .rx_payload_limited_octets=51, .tx_rx_time_limited_us=0}"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_data_length_update(conn_handle, {.max_tx_octets=200, .max_rx_octets=200, .max_tx_time_us=BLE_GAP_DATA_LENGTH_AUTO, .max_rx_time_us=BLE_GAP_DATA_LENGTH_AUTO}, &limitation)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * APP note SD [label = "limitation = {.tx_payload_limited_octets=0, .rx_payload_limited_octets=0, .tx_rx_time_limited_us=0}"];
+ * SD:>PEER [label = "LL Length Request (LL_LENGTH_REQ) {tx=200, rx=200}", textcolor="#000080", linecolor="#000080"];
+ * SD<:PEER [label = "LL Length Response (LL_LENGTH_RSP) {tx=251, rx=251}", textcolor="#000080", linecolor="#000080"];
+
+ * APP<<=SD   [label = "BLE_GAP_EVT_DATA_LENGTH_UPDATE {.effective_params={.max_tx_octets=200, .max_rx_octets=200, .max_tx_time_us=1712, .max_rx_time_us=1712}}"];
+
+ * |||;
+ * ...;
+ * |||;
+ * APP rbox PEER [label="Connection Established"];
+ * |||;
+ * --- [label = " Using the limitation out parameter to adjust Link Layer Data Channel PDU size, time limited "];
+ * |||;
+ * SD rbox SD [label = "max_tx_octets=27, max_rx_octets=27"];
+ * |||;
+ * ...;
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_data_length_update(conn_handle, {.max_tx_octets=251, .max_rx_octets=251, .max_tx_time_us=BLE_GAP_DATA_LENGTH_AUTO, .max_rx_time_us=BLE_GAP_DATA_LENGTH_AUTO}, &limitation)"];
+ * APP<<SD [label = "NRF_ERROR_RESOURCES"];
+ * APP note SD [label = "limitation = {.tx_payload_limited_octets=178, .rx_payload_limited_octets=178, .tx_rx_time_limited_us=2836}"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_data_length_update(conn_handle, {.max_tx_octets=251-178=73, .max_rx_octets=251-178=73, .max_tx_time_us=BLE_GAP_DATA_LENGTH_AUTO, .max_rx_time_us=BLE_GAP_DATA_LENGTH_AUTO}, &limitation)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD:>PEER [label = "LL Length Request (LL_LENGTH_REQ) {tx=73, rx=73}", textcolor="#000080", linecolor="#000080"];
+ * SD<:PEER [label = "LL Length Response (LL_LENGTH_RSP) {tx=251, rx=251}", textcolor="#000080", linecolor="#000080"];
+
+ * APP<<=SD   [label = "BLE_GAP_EVT_DATA_LENGTH_UPDATE {.effective_params={.max_tx_octets=73, .max_rx_octets=73, .max_tx_time_us=696, .max_rx_time_us=696}}"];
+ * @endmsc
  *
  * @}
  * @}

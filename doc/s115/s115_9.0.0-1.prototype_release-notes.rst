@@ -85,7 +85,7 @@ Limitations
     action from an application if they are received. For more information, see the
     ``sd_ble_enable()`` API in SoftDevice.
 
-  * Configuring multiple connection configurations (see `ble_conn_cfg_t::conn_cfg_tag`) is not supported (DRGN-23839).
+  * Configuring multiple connection configurations (see ``ble_conn_cfg_t::conn_cfg_tag``) is not supported (DRGN-23839).
 
 * GATT
 
