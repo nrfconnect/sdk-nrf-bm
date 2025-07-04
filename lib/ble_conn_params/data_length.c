@@ -17,10 +17,12 @@ extern void ble_conn_params_event_send(const struct ble_conn_params_evt *evt);
 
 static struct {
 	uint8_t data_length;
+	uint8_t data_length_desired;
 	uint8_t data_length_update_pending : 1;
 } links[CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT] = {
 	[0 ... CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT - 1] = {
-		.data_length = CONFIG_BLE_CONN_PARAMS_DATA_LENGTH,
+		.data_length = BLE_GAP_DATA_LENGTH_DEFAULT,
+		.data_length_desired = CONFIG_BLE_CONN_PARAMS_DATA_LENGTH,
 	}
 };
 
@@ -28,8 +30,8 @@ static void data_length_update(uint16_t conn_handle, int idx)
 {
 	int err;
 	const ble_gap_data_length_params_t dlp = {
-		.max_rx_octets = links[idx].data_length,
-		.max_tx_octets = links[idx].data_length,
+		.max_rx_octets = links[idx].data_length_desired,
+		.max_tx_octets = links[idx].data_length_desired,
 		.max_rx_time_us = BLE_GAP_DATA_LENGTH_AUTO,
 		.max_tx_time_us = BLE_GAP_DATA_LENGTH_AUTO,
 	};
@@ -52,8 +54,7 @@ static void data_length_update(uint16_t conn_handle, int idx)
 		}
 		if (dll.tx_rx_time_limited_us != 0) {
 			LOG_ERR("The requested combination of TX and RX packet lengths "
-				"is too long by %u microseconds.",
-				dll.tx_rx_time_limited_us);
+				"is too long by %u microseconds.", dll.tx_rx_time_limited_us);
 		}
 	}
 }
@@ -67,7 +68,8 @@ static void on_data_length_update_request_evt(uint16_t conn_handle, int idx,
 	LOG_INF("Peer %#x requested a data length of %u bytes", conn_handle,
 		data_length_requested);
 
-	links[idx].data_length = MIN(data_length_requested, CONFIG_BLE_CONN_PARAMS_DATA_LENGTH);
+	links[idx].data_length_desired =
+		MIN(data_length_requested, CONFIG_BLE_CONN_PARAMS_DATA_LENGTH);
 
 	data_length_update(conn_handle, idx);
 }
@@ -99,7 +101,7 @@ static void on_connected(uint16_t conn_handle, int idx, const ble_gap_evt_connec
 
 	if (IS_ENABLED(CONFIG_BLE_CONN_PARAMS_INITIATE_DATA_LENGTH_UPDATE)) {
 		LOG_INF("Initiating Data Length Update procedure (%u -> %u bytes) for peer %#x",
-			BLE_GAP_DATA_LENGTH_DEFAULT, links[idx].data_length, conn_handle);
+			BLE_GAP_DATA_LENGTH_DEFAULT, links[idx].data_length_desired, conn_handle);
 
 		data_length_update(conn_handle, idx);
 	}
@@ -109,6 +111,8 @@ static void on_disconnected(uint16_t conn_handle, int idx)
 {
 	ARG_UNUSED(conn_handle);
 
+	links[idx].data_length = BLE_GAP_DATA_LENGTH_DEFAULT;
+	links[idx].data_length_desired = CONFIG_BLE_CONN_PARAMS_DATA_LENGTH;
 	links[idx].data_length_update_pending = false;
 }
 
@@ -165,11 +169,11 @@ int ble_conn_params_data_length_set(uint16_t conn_handle, uint8_t data_length)
 	}
 
 	if (data_length < BLE_GAP_DATA_LENGTH_DEFAULT ||
-	    data_length > BLE_GAP_DATA_LENGTH_MAX) {
+	    data_length > CONFIG_BLE_CONN_PARAMS_DATA_LENGTH) {
 		return -EINVAL;
 	}
 
-	links[idx].data_length = data_length;
+	links[idx].data_length_desired = data_length;
 	data_length_update(conn_handle, idx);
 
 	return 0;
