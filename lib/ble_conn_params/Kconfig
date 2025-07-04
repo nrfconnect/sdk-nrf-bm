@@ -101,6 +101,11 @@ config BLE_CONN_PARAMS_DATA_LENGTH
 	int "Data length"
 	range 27 251
 	default 27
+	help
+	  This option sets an application defined upper limit on the negotiated data length.
+	  Note that the SoftDevice ATT MTU configuration places limitations on the maximum
+	  negotiable data length. This is due to memory efficiency. For instance, to use the
+	  definitive max data length of 251, the ATT MTU needs to be configured to at least 247.
 
 config BLE_CONN_PARAMS_INITIATE_DATA_LENGTH_UPDATE
 	bool "Initiate data length update on connection" if BLE_CONN_PARAMS_DATA_LENGTH != 27

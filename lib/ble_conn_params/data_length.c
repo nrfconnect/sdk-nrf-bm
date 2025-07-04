@@ -29,7 +29,8 @@ static struct {
 static void data_length_update(uint16_t conn_handle, int idx)
 {
 	int err;
-	const ble_gap_data_length_params_t dlp = {
+	bool retry;
+	ble_gap_data_length_params_t dlp = {
 		.max_rx_octets = links[idx].data_length_desired,
 		.max_tx_octets = links[idx].data_length_desired,
 		.max_rx_time_us = BLE_GAP_DATA_LENGTH_AUTO,
@@ -37,26 +38,42 @@ static void data_length_update(uint16_t conn_handle, int idx)
 	};
 	ble_gap_data_length_limitation_t dll = {0};
 
-	err = sd_ble_gap_data_length_update(conn_handle, &dlp, &dll);
-	if (!err) {
-		return;
-	}
+	do {
+		retry = false;
 
-	if (err == NRF_ERROR_BUSY) {
-		/* Retry */
-		LOG_DBG("Another procedure is ongoing, will retry");
-		links[idx].data_length_update_pending = true;
-	} else if (err) {
-		LOG_ERR("Failed to initiate Data Length Update procedure, nrf_error %#x", err);
-		if ((dll.tx_payload_limited_octets != 0) || (dll.rx_payload_limited_octets != 0)) {
-			LOG_ERR("The requested TX/RX packet length is too long by %u/%u octets.",
-				dll.tx_payload_limited_octets, dll.rx_payload_limited_octets);
+		err = sd_ble_gap_data_length_update(conn_handle, &dlp, &dll);
+		if (err == NRF_ERROR_BUSY) {
+			/* Retry later. */
+			LOG_DBG("Another procedure is ongoing, will retry");
+			links[idx].data_length_update_pending = true;
+			return;
+		} else if (err == NRF_ERROR_RESOURCES) {
+			if ((dll.tx_payload_limited_octets != 0) ||
+			    (dll.rx_payload_limited_octets != 0)) {
+				LOG_WRN("The requested packet length is too long by %u octets.",
+					dll.tx_payload_limited_octets);
+
+				/* Lower the desired max data length to the highest value
+				 * the SoftDevice can support with current configuration,
+				 * then retry.
+				 */
+				links[idx].data_length_desired -= MAX(dll.tx_payload_limited_octets,
+							      dll.rx_payload_limited_octets);
+				dlp.max_rx_octets = links[idx].data_length_desired,
+				dlp.max_tx_octets = links[idx].data_length_desired,
+
+				retry = true;
+			}
+			if (dll.tx_rx_time_limited_us != 0) {
+				LOG_ERR("The requested combination of TX and RX packet lengths "
+					"is too long by %u microseconds.",
+					dll.tx_rx_time_limited_us);
+			}
+		} else if (err) {
+			LOG_ERR("Failed to initiate or respond to Data Length Update procedure, "
+				"nrf_error %#x", err);
 		}
-		if (dll.tx_rx_time_limited_us != 0) {
-			LOG_ERR("The requested combination of TX and RX packet lengths "
-				"is too long by %u microseconds.", dll.tx_rx_time_limited_us);
-		}
-	}
+	} while (retry);
 }
 
 static void on_data_length_update_request_evt(uint16_t conn_handle, int idx,
