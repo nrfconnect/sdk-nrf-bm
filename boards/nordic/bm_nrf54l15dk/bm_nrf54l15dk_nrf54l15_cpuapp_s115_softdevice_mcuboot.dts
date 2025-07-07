@@ -48,12 +48,12 @@
 
 		boot_partition: partition@0 {
 			label = "boot";
-			reg = <0x00000000 DT_SIZE_K(32)>;
+			reg = <0x00000000 DT_SIZE_K(40)>;
 		};
 
 		slot0_partition: partition@8000 {
 			label = "slot0";
-			reg = <0x00008000 DT_SIZE_K(1298)>;
+			reg = <0x0000a000 DT_SIZE_K(1290)>;
 		};
 
 		slot1_partition: partition@14c800 {
