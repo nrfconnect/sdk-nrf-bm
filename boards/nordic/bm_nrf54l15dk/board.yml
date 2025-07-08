@@ -21,3 +21,61 @@ board:
           cpucluster: cpuapp
           variants:
             - name: mcuboot
+runners:
+  run_once:
+    '--recover':
+      - runners:
+          - nrfjprog
+          - nrfutil
+        run: first
+        groups:
+          - boards:
+              - bm_nrf54l15dk/nrf54l05/cpuapp
+              - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice
+              - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+          - boards:
+              - bm_nrf54l15dk/nrf54l10/cpuapp
+              - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice
+              - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
+          - boards:
+              - bm_nrf54l15dk/nrf54l15/cpuapp
+              - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice
+              - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+    '--erase':
+      - runners:
+          - nrfjprog
+          - jlink
+          - nrfutil
+        run: first
+        groups:
+          - boards:
+              - bm_nrf54l15dk/nrf54l05/cpuapp
+              - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice
+              - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+          - boards:
+              - bm_nrf54l15dk/nrf54l10/cpuapp
+              - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice
+              - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
+          - boards:
+              - bm_nrf54l15dk/nrf54l15/cpuapp
+              - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice
+              - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+    '--reset':
+      - runners:
+          - nrfjprog
+          - jlink
+          - nrfutil
+        run: last
+        groups:
+          - boards:
+              - bm_nrf54l15dk/nrf54l05/cpuapp
+              - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice
+              - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+          - boards:
+              - bm_nrf54l15dk/nrf54l10/cpuapp
+              - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice
+              - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
+          - boards:
+              - bm_nrf54l15dk/nrf54l15/cpuapp
+              - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice
+              - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
