@@ -4,13 +4,14 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-menu "BLE MCUmgr sample"
+menuconfig BLE_MCUMGR
+	bool "MCUmgr service"
 
-module=APP
+if BLE_MCUMGR
+
+module=BLE_MCUMGR
 module-dep=LOG
-module-str=BLE MCUmgr Sample
+module-str=BLE MCUmgr Service
 source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
 
-endmenu # "BLE MCUmgr sample"
-
-source "Kconfig.zephyr"
+endif
