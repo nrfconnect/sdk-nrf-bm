@@ -11,7 +11,7 @@
 #include <ble.h>
 #include <zephyr/logging/log.h>
 
-#define APP_RAM_START DT_REG_ADDR(DT_CHOSEN(zephyr_sram))
+#define APP_RAM_START DT_REG_ADDR(DT_NODELABEL(softdevice_static_ram))
 
 LOG_MODULE_DECLARE(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
 
