@@ -19,6 +19,8 @@
 #include <zephyr/logging/log_ctrl.h>
 #include <zephyr/sys/util.h>
 
+#include <board-config.h>
+
 LOG_MODULE_REGISTER(app, CONFIG_BLE_NUS_SAMPLE_LOG_LEVEL);
 
 BLE_ADV_DEF(ble_adv); /* BLE advertising instance */
@@ -29,11 +31,7 @@ BLE_QWR_DEF(ble_qwr); /* BLE QWR instance */
 static uint16_t conn_handle = BLE_CONN_HANDLE_INVALID;
 
 /** NUS UARTE instance */
-#if defined(CONFIG_SOC_SERIES_NRF52X)
-static const nrfx_uarte_t uarte_inst = NRFX_UARTE_INSTANCE(0);
-#elif defined(CONFIG_SOC_SERIES_NRF54LX)
-static const nrfx_uarte_t uarte_inst = NRFX_UARTE_INSTANCE(30);
-#endif
+static const nrfx_uarte_t uarte_inst = NRF_UARTE_INST_GET(BOARD_APP_UARTE_INST);
 
 /* Maximum length of data (in bytes) that can be transmitted to the peer by the
  * Nordic UART service module.
@@ -290,13 +288,13 @@ static int uarte_init(void)
 {
 	int err;
 
-	nrfx_uarte_config_t uarte_config = NRFX_UARTE_DEFAULT_CONFIG(CONFIG_BLE_UART_PIN_TX,
-								     CONFIG_BLE_UART_PIN_RX);
+	nrfx_uarte_config_t uarte_config = NRFX_UARTE_DEFAULT_CONFIG(BOARD_APP_UARTE_PIN_TX,
+								     BOARD_APP_UARTE_PIN_RX);
 
 #if defined(CONFIG_BLE_UART_HWFC)
 	uarte_config.config.hwfc = NRF_UARTE_HWFC_ENABLED;
-	uarte_config.cts_pin = CONFIG_BLE_UART_PIN_CTS;
-	uarte_config.rts_pin = CONFIG_BLE_UART_PIN_RTS;
+	uarte_config.cts_pin = BOARD_APP_UARTE_PIN_CTS;
+	uarte_config.rts_pin = BOARD_APP_UARTE_PIN_RTS;
 #endif
 
 #if defined(CONFIG_BLE_UART_PARITY)
@@ -306,31 +304,16 @@ static int uarte_init(void)
 	uarte_config.interrupt_priority = CONFIG_BLE_UART_IRQ_PRIO;
 
 	/** We need to connect the IRQ ourselves. */
-#if defined(CONFIG_SOC_SERIES_NRF52X)
-	IRQ_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(0)), CONFIG_BLE_UART_IRQ_PRIO,
-		    NRFX_UARTE_INST_HANDLER_GET(0), 0, 0);
+	IRQ_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(BOARD_APP_UARTE_INST)), CONFIG_BLE_UART_IRQ_PRIO,
+		    NRFX_UARTE_INST_HANDLER_GET(BOARD_APP_UARTE_INST), 0, 0);
 
-		irq_enable(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(0)));
-#elif defined(CONFIG_SOC_SERIES_NRF54LX)
-	IRQ_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(30)), CONFIG_BLE_UART_IRQ_PRIO,
-		    NRFX_UARTE_INST_HANDLER_GET(30), 0, 0);
-
-	irq_enable(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(30)));
-#endif
+	irq_enable(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(BOARD_APP_UARTE_INST)));
 
 	err = nrfx_uarte_init(&uarte_inst, &uarte_config, uarte_evt_handler);
 	if (err != NRFX_SUCCESS) {
 		LOG_ERR("Failed to initialize UART, nrfx err %d", err);
 		return err;
 	}
-
-	/* optional: enable pull-up on RX pin in case pin may become floating.
-	 * Induced noise on a floating RX input may lead to an UARTE error condition
-	 */
-#if defined(CONFIG_SOC_SERIES_NRF52X)
-	NRF_GPIO->PIN_CNF[uarte_config.rxd_pin] |=
-		(GPIO_PIN_CNF_PULL_Pullup << GPIO_PIN_CNF_PULL_Pos);
-#endif
 
 	return 0;
 }
