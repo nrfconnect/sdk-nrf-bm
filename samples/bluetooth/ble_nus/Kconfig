@@ -10,35 +10,11 @@ config BLE_UART_IRQ_PRIO
 	int "BLE UART IRQ priority"
 	default 3
 
-config BLE_UART_PIN_TX
-	int "BLE UART TX pin"
-	default 6 if SOC_SERIES_NRF52X
-	default 0
-
-config BLE_UART_PIN_RX
-	int "BLE UART RX pin"
-	default 8 if SOC_SERIES_NRF52X
-	default 1
-
 config BLE_UART_PARITY
 	bool "BLE UART use parity"
 
 config BLE_UART_HWFC
 	bool "BLE UART use HWFC"
-
-if BLE_UART_HWFC
-
-config BLE_UART_PIN_CTS
-	int "BLE UART CTS pin"
-	default 7 if SOC_SERIES_NRF52X
-	default 3
-
-config BLE_UART_PIN_RTS
-	int "BLE UART RTS pin"
-	default 5 if SOC_SERIES_NRF52X
-	default 2
-
-endif #BLE_UART_HWFC
 
 module=BLE_NUS_SAMPLE
 module-dep=LOG
