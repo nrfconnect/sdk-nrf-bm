@@ -1,0 +1,35 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "LPUARTE sample"
+
+config LPUARTE_DATA_LEN_MAX
+	int "Maximum UARTE data length"
+	default 128
+	help
+	  Defines the maximum length the application can store in the receive buffer.
+
+config LPUARTE_PARITY
+	bool "UARTE parity"
+	help
+	  Enable parity on the UARTE peripheral used by the application.
+
+config LPUARTE_IRQ_PRIO
+	int "LPUARTE IRQ priority"
+	default 5
+
+config LPUARTE_GPIOTE_IRQ_PRIO
+	int "GPIOTE IRQ priority"
+	default 3
+
+module=LPUARTE_SAMPLE
+module-dep=LOG
+module-str=Low Power UARTE Sample
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endmenu # "LPUARTE sample"
+
+source "Kconfig.zephyr"

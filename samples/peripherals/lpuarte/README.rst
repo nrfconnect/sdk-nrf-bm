@@ -1,0 +1,75 @@
+.. _bm_lpuarte_sample:
+
+LPUARTE
+#######
+
+.. contents::
+   :local:
+   :depth: 2
+
+The LPUARTE sample demonstrates how to configure and use the LPUARTE driver as a low power alternative to regular UART.
+
+Requirements
+************
+
+The sample supports the following development kits:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Hardware platform
+     - PCA
+     - Board target
+   * - `nRF54L15 DK`_
+     - PCA10156
+     - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice
+   * - `nRF54L15 DK`_ (emulating nRF54L10)
+     - PCA10156
+     - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice
+   * - `nRF54L15 DK`_ (emulating nRF54L05)
+     - PCA10156
+     - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice
+
+The sample also requires the following pins to be shorted:
+
+   .. list-table:: Pin connections.
+      :widths: auto
+      :header-rows: 1
+
+      * - Development Kit
+        - nRF54L15 DK pins
+      * - Request-Response Pins
+        - P1.08-P1.09
+      * - UART RX-TX Pins
+        - P1.10-P1.11
+
+Additionally, it requires a logic analyzer.
+
+Overview
+********
+
+The sample initializes the application LPUARTE instance, specified in the :file:`board-config.h` file in the board.
+It then implements a simple loopback using a single LPUARTE instance.
+By default, the console and logging are disabled to demonstrate low power consumption when UART is active.
+
+Building and running
+********************
+
+This sample can be found under :file:`samples/peripherals/lpuarte/` in the |BMshort| folder structure.
+
+.. include:: /includes/create_sample.txt
+
+.. include:: /includes/configure_and_build_sample.txt
+
+.. include:: /includes/program_sample.txt
+
+Testing
+=======
+
+You can test this sample by performing the following steps:
+
+1. Compile and program the application.
+2. Connect the logic analyzer to the shorted pins, to confirm UARTE activity.
+3. Measure the current to confirm that the power consumption indicates that high-frequency clock is disabled during the idle stage.
+
+During the idle stage, the UARTE receiver is ready to start reception, as the request pin wakes it up.
