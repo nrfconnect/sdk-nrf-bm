@@ -1,0 +1,20 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+config BM_SW_LPUARTE
+	bool "Low Power UARTE using REQ/RDY lines"
+	depends on BM_TIMER
+	help
+	  Low Power UARTE implements UARTE API and extends standard UARTE
+	  communication with a 2-pin protocol for receiver wake-up and flow control.
+
+if BM_SW_LPUARTE
+
+module = BM_SW_LPUARTE
+module-str = Low Power UARTE
+source "subsys/logging/Kconfig.template.log_config"
+
+endif # BM_SW_LPUARTE

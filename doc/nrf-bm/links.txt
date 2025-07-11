@@ -67,3 +67,4 @@
 .. _`nRF54L15`: https://docs.nordicsemi.com/category/nRF54L15-category
 .. _`nRF54L10`: https://docs.nordicsemi.com/category/nRF54L10-category
 .. _`nRF54L05`: https://docs.nordicsemi.com/category/nRF54L05-category
+.. _`nrfx documentation`: https://docs.nordicsemi.com/bundle/nrfx-apis-latest/page/index.html

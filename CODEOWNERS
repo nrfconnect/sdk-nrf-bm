@@ -34,6 +34,7 @@
 # Drivers
 /drivers/clock_control/                   @nrfconnect/ncs-bm
 /drivers/console/                         @nrfconnect/ncs-bm
+/drivers/lpuarte/                         @nrfconnect/ncs-bm
 
 # Include
 /include/*.h                              @nrfconnect/ncs-bm
