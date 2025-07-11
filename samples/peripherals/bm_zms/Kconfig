@@ -1,0 +1,16 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "Bare Metal ZMS sample"
+
+module=BM_ZMS_SAMPLE
+module-dep=LOG
+module-str=Bare Metal ZMS Sample
+source "subsys/logging/Kconfig.template.log_config"
+
+endmenu # "Bare Metal ZMS sample"
+
+source "Kconfig.zephyr"
