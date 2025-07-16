@@ -13,5 +13,6 @@ add_subdirectory(nfc)
 add_subdirectory(storage)
 add_subdirectory_ifdef(CONFIG_NCS_BM_MCUMGR mgmt/mcumgr)
 add_subdirectory_ifdef(CONFIG_NRF_SDH softdevice_handler)
+add_subdirectory_ifdef(CONFIG_SETTINGS settings)
 add_subdirectory_ifdef(CONFIG_SOFTDEVICE softdevice)
 # zephyr-keep-sorted-stop
