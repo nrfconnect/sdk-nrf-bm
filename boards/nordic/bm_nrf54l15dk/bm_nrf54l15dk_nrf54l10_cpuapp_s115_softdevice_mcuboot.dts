@@ -10,10 +10,31 @@
 #include "bm_nrf54l15dk_nrf54l10_cpuapp_common.dtsi"
 
 / {
+	sram@2002FC00 {
+		compatible = "zephyr,memory-region", "mmio-sram";
+		reg = <0x2002FC00 DT_SIZE_K(1)>;
+		zephyr,memory-region = "RetainedMem";
+		status = "okay";
+
+		retainedmem {
+			compatible = "zephyr,retained-ram";
+			status = "okay";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			settings_partition0: settings_partition@0 {
+				compatible = "zephyr,retention";
+				status = "okay";
+				reg = <0x0 DT_SIZE_K(1)>;
+			};
+		};
+	};
+
 	chosen {
 		zephyr,flash = &cpuapp_rram;
 		zephyr,code-partition = &slot0_partition;
 		zephyr,sram = &app_ram;
+		zephyr,settings-partition = &settings_partition0;
 	};
 };
 
@@ -64,14 +85,14 @@
 			reg = <0x20000000 DT_SIZE_K(5)>;
 		};
 
-		softdevice_dynamic_ram: partition@20001678 {
+		softdevice_dynamic_ram: partition@20001400 {
 			label = "softdevice_dynamic_ram";
-			reg = <0x20001678 DT_SIZE_K(12)>;
+			reg = <0x20001400 DT_SIZE_K(12)>;
 		};
 
-		app_ram: partition@20004678 {
+		app_ram: partition@20004400 {
 			label = "app_ram";
-			reg = <0x20004678 DT_SIZE_K(174)>;
+			reg = <0x20004400 DT_SIZE_K(174)>;
 		};
 	};
 };
