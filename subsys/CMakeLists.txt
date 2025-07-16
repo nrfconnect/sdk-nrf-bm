@@ -10,6 +10,7 @@ add_subdirectory(bm_installs)
 add_subdirectory(logging)
 add_subdirectory_ifdef(CONFIG_NCS_BM_MCUMGR mgmt/mcumgr)
 add_subdirectory_ifdef(CONFIG_NRF_SDH softdevice_handler)
+add_subdirectory_ifdef(CONFIG_SETTINGS settings)
 add_subdirectory_ifdef(CONFIG_SOFTDEVICE softdevice)
 add_subdirectory_ifdef(CONFIG_FLASH_MAP storage/flash_map)
 # zephyr-keep-sorted-stop
