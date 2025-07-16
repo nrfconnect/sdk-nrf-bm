@@ -21,6 +21,8 @@
 #include <zephyr/logging/log_ctrl.h>
 #include <ble_conn_params.h>
 #include <bluetooth/services/ble_mcumgr.h>
+#include <zephyr/settings/settings.h>
+#include <settings/bluetooth_name.h>
 
 LOG_MODULE_REGISTER(app, CONFIG_APP_LOG_LEVEL);
 
@@ -175,6 +177,9 @@ static int ble_change_address(void)
 int main(void)
 {
 	int err;
+	const char *custom_advertising_name;
+	uint8_t custom_advertising_name_size;
+	ble_gap_conn_sec_mode_t sec_mode = {0};
 	struct ble_adv_config ble_adv_cfg = {
 		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
 		.evt_handler = ble_adv_evt_handler,
@@ -210,6 +215,13 @@ int main(void)
 
 	LOG_INF("Bluetooth enabled");
 
+	err = settings_subsys_init();
+
+	if (err) {
+		LOG_ERR("Failed to enable settings, err %d", err);
+	}
+
+	settings_load();
 	err = ble_mcumgr_init();
 
 	if (err) {
@@ -237,6 +249,29 @@ int main(void)
 		return 0;
 	}
 
+	custom_advertising_name = bluetooth_name_value_get();
+	custom_advertising_name_size = strlen(custom_advertising_name);
+
+	if (custom_advertising_name_size > 0) {
+		/* Change advertising name to one from application */
+		BLE_GAP_CONN_SEC_MODE_SET_OPEN(&sec_mode);
+		err = sd_ble_gap_device_name_set(&sec_mode, custom_advertising_name,
+						 custom_advertising_name_size);
+
+		if (err) {
+			LOG_ERR("Failed to change advertising name, err %d", err);
+			return 0;
+		} else {
+			err = ble_adv_data_encode(&ble_adv_cfg.adv_data, ble_adv.enc_adv_data[0],
+						  &ble_adv.adv_data.adv_data.len);
+
+			if (err) {
+				LOG_ERR("Failed to update advertising data, err %d", err);
+				return 0;
+			}
+		}
+	}
+
 	err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
 
 	if (err) {
@@ -244,7 +279,8 @@ int main(void)
 		return 0;
 	}
 
-	LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
+	LOG_INF("Advertising as %s", (custom_advertising_name_size > 0 ? custom_advertising_name :
+				      CONFIG_BLE_ADV_NAME));
 
 	while (notification_sent == false && device_disconnected == false) {
 		while (LOG_PROCESS()) {
