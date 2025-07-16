@@ -45,6 +45,8 @@ Apache-2.0: |
   ^nrf-bm/subsys/mgmt/mcumgr/grp/img_mgmt/Kconfig
   ^nrf-bm/subsys/mgmt/mcumgr/grp/os_mgmt/CMakeLists.txt
   ^nrf-bm/subsys/mgmt/mcumgr/grp/os_mgmt/Kconfig
+  ^nrf-bm/subsys/mgmt/mcumgr/grp/settings_mgmt/CMakeLists.txt
+  ^nrf-bm/subsys/mgmt/mcumgr/grp/settings_mgmt/Kconfig
   ^nrf-bm/subsys/mgmt/mcumgr/mgmt/CMakeLists.txt
   ^nrf-bm/subsys/mgmt/mcumgr/mgmt/Kconfig
   ^nrf-bm/subsys/mgmt/mcumgr/smp/CMakeLists.txt
