@@ -5,3 +5,5 @@
 rsource "img_mgmt/Kconfig"
 
 rsource "os_mgmt/Kconfig"
+
+rsource "settings_mgmt/Kconfig"
