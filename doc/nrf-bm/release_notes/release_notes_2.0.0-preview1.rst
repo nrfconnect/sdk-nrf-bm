@@ -215,7 +215,7 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Subsystem samples
 -----------------
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Added the :ref:`shell_bm_uarte_sample` sample.
 
 Known issues and limitations
 ============================
