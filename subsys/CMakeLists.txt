@@ -8,6 +8,7 @@
 add_subdirectory(bluetooth)
 add_subdirectory(bm_installs)
 add_subdirectory(logging)
+add_subdirectory(shell)
 add_subdirectory_ifdef(CONFIG_NCS_BM_MCUMGR mgmt/mcumgr)
 add_subdirectory_ifdef(CONFIG_NRF_SDH softdevice_handler)
 add_subdirectory_ifdef(CONFIG_SOFTDEVICE softdevice)

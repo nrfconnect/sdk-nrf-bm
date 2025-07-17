@@ -1,0 +1,43 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+config SHELL_BACKEND_BM_UARTE
+	bool "UARTE shell backend"
+	select RING_BUFFER
+	help
+	  When enabled, the backend uses the nrfx UARTE driver as the shell transport layer.
+
+if SHELL_BACKEND_BM_UARTE
+
+config SHELL_BACKEND_BM_UARTE_RX_RBUF_SIZE
+	int "Receive ring buffer size in bytes"
+	default 128
+	help
+	  The size of the receive ring buffer the receive double buffer
+	  is copied to.
+
+config SHELL_BACKEND_BM_UARTE_RX_DBUF_SIZE
+	int "Receive double buffer size in bytes"
+	default 64
+	help
+	  The total size of the receive double buffer.
+
+config SHELL_BACKEND_BM_UARTE_IRQ_PRIO
+	int "IRQ priority"
+	range 3 7
+	default 5
+
+config SHELL_BACKEND_BM_UARTE_USE_HWFC
+	bool "Use hardware flow control"
+
+config SHELL_BACKEND_BM_UARTE_PARITY_INCLUDED
+	bool "Use parity"
+
+# Disable zephyrs default serial (UART) backend
+config SHELL_BACKEND_SERIAL
+	default n
+
+endif
