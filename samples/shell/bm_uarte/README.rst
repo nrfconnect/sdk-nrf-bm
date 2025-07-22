@@ -7,8 +7,7 @@ UARTE shell sample
    :local:
    :depth: 2
 
-The Shell sample demonstrates how to initialize and use the shell
-subsystem with an NRFX UARTE based backend with |BMlong|.
+The Shell sample demonstrates how to initialize and use the shell subsystem with an nrfx UARTE based backend with |BMlong|.
 
 Requirements
 ************
@@ -34,8 +33,7 @@ The sample supports the following development kits:
 Overview
 ********
 
-The sample initializes and starts an interactive shell, which can be
-terminated by using the "terminate" shell command.
+The sample initializes and starts an interactive shell, which can be terminated by using the ``terminate`` shell command.
 
 Building and running
 ********************
@@ -55,7 +53,7 @@ You can test this sample by performing the following steps:
 
 1. Compile and program the application.
 #. Observe that the ``bm-uarte:~$`` prompt is printed.
-#. Write ``terminate`` and press enter
-#. Observe that ``goodbye`` message is printed.
-#. Observe that ``bm-uarte:~$`` prompt is printed.
+#. Type ``terminate`` and press Enter.
+#. Observe that the ``goodbye`` message is printed.
+#. Observe that the ``bm-uarte:~$`` prompt is printed.
 #. Observe that shell is now unresponsive.
