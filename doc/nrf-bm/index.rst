@@ -36,4 +36,5 @@ The |BMlong| is a distinct repository that incorporates elements from the existi
 
    install_nrf_bm.rst
    samples.rst
+   ug_dfu.rst
    release_notes.rst
