@@ -12,8 +12,4 @@ if(NOT (DEFINED SYSBUILD))
   message(FATAL_ERROR "This must be built with sysbuild.")
 endif()
 
-FILE(GLOB app_sources
-  src/*.c
-)
-
-target_sources(app PRIVATE ${app_sources})
+target_sources(app PRIVATE src/main.c)
