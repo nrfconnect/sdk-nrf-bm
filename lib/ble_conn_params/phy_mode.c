@@ -29,7 +29,16 @@ BUILD_ASSERT(CONFIG_BLE_CONN_PARAMS_PHY == BLE_GAP_PHY_AUTO ||
 static void radio_phy_mode_update(uint16_t conn_handle, int idx)
 {
 	int err;
-	const ble_gap_phys_t phys = links[idx].phy_mode;
+	ble_gap_phys_t phys = links[idx].phy_mode;
+
+
+	if (phys.tx_phys != BLE_GAP_PHY_NOT_SET) {
+		phys.tx_phys &= BLE_GAP_PHYS_SUPPORTED;
+	}
+
+	if (phys.rx_phys != BLE_GAP_PHY_NOT_SET) {
+		phys.rx_phys &= BLE_GAP_PHYS_SUPPORTED;
+	}
 
 	err = sd_ble_gap_phy_update(conn_handle, &phys);
 	if (!err) {
