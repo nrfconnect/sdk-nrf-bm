@@ -181,6 +181,11 @@ int main(void)
 			.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE,
 		},
 	};
+	ble_uuid_t adv_uuid_list[] = {
+		{
+			.uuid = BLE_MCUMGR_SERVICE_UUID_SUB,
+		},
+	};
 
 	LOG_INF("BLE MCUmgr sample started");
 	mgmt_callback_register(&os_mgmt_reboot_callback);
@@ -211,6 +216,11 @@ int main(void)
 	}
 
 	LOG_INF("Services initialized");
+
+	/* Add MCUmgr Bluetooth service UUID to scan response */
+	adv_uuid_list->type = ble_mcumgr_service_uuid_type();
+	ble_adv_cfg.sr_data.uuid_lists.complete.uuid = &adv_uuid_list[0];
+	ble_adv_cfg.sr_data.uuid_lists.complete.len = ARRAY_SIZE(adv_uuid_list);
 
 	err = ble_conn_params_evt_handler_set(on_conn_params_evt);
 
