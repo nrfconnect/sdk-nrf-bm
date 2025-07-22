@@ -6,15 +6,35 @@
 
 menu "BLE NUS sample"
 
-config BLE_UART_IRQ_PRIO
-	int "BLE UART IRQ priority"
+config NUS_UART_IRQ_PRIO
+	int "NUS UART IRQ priority"
 	default 3
 
-config BLE_UART_PARITY
+config NUS_UART_PARITY
 	bool "BLE UART use parity"
 
-config BLE_UART_HWFC
-	bool "BLE UART use HWFC"
+config NUS_LPUARTE
+	bool "NUS Low Power UARTE"
+
+if NUS_LPUARTE
+
+config GPIOTE_IRQ_PRIO
+	int "GPIOTE IRQ priority"
+	default 3
+
+endif # NUS_LPUARTE
+
+config NUS_UART_HWFC
+	bool "NUS UART use HWFC"
+	depends on !NUS_LPUARTE
+	default y
+
+config NUS_UART_RX_BUF_SIZE
+	int "NUS UART receive buffer size"
+	default 128 if NUS_LPUARTE
+	default 1
+	help
+	  UART RX is double buffered, so the actual buffer will be twice as large.
 
 module=BLE_NUS_SAMPLE
 module-dep=LOG

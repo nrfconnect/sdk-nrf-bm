@@ -60,12 +60,24 @@ This sample can be found under :file:`samples/bluetooth/ble_nus/` in the |BMshor
 
 .. include:: /includes/program_sample.txt
 
+Building and running with LPUARTE
+*********************************
+
+The :file:`lpuarte.conf` file configures the sample to use the :ref:`LPUARTE <driver_lpuarte>` driver for the NUS Service.
+This is useful for reducing the power consumption.
+The file must be added to the build configuration is VS Code or as an extra argument to west: ``-DEXTRA_CONF_FILE="lpuarte.conf"``.
+
+To test the NUS sample with the :ref:`LPUARTE <driver_lpuarte>` driver in loopback mode, connect pin ``P1.08`` (REQ) with ``P1.09`` (RDY) and ``P1.10`` (RX) with ``P1.11`` (TX) on the nRF54L15DK, as given in the :file:`board-config.h`.
+It is also possible to test between two devices running NUS with LPUART by connecting the above mentioned pins and ``GND`` between the devices.
+Make sure the ``REQ`` pin on one board is connected to the ``RDY`` on the other board, and vice versa.
+
 Testing
 =======
 
 1. Compile and program the application.
 #. Connect the device to the computer to access UART 0 and UART 1.
    If you use a development kit, UART 0 and 1 are forwarded as COM ports (Windows) or ttyACM devices (Linux) after you connect the development kit over USB.
+   One instance is used for logging (if enabled), the other for the NUS service.
 #. Connect to the kit with a terminal emulator (for example, the `Serial Terminal app`_) to both UARTs.
 #. Reset the kit.
 #. Observe that the device is advertising under the default name ``nRF_BM_NUS``.
