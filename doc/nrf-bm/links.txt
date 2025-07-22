@@ -48,6 +48,12 @@
 .. _`Serial Terminal app`: https://docs.nordicsemi.com/bundle/nrf-connect-serial-terminal/page/index.html
 .. _`Configuring Kconfig`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/app_dev/config_and_build/kconfig/index.html
 
+.. ### DFU
+
+.. _`MCUboot`: https://docs.nordicsemi.com/bundle/ncs-latest/page/mcuboot/wrapper.html
+.. _`MCUmgr`: https://docs.zephyrproject.org/latest/services/device_mgmt/mcumgr.html
+.. _`DTS`: https://docs.zephyrproject.org/latest/build/dts/index.html
+
 .. ### Release notes
 
 .. _`s115_9.0.0-2.prototype release notes`: _static/s115_9.0.0-2.prototype_release-notes.pdf
