@@ -23,19 +23,9 @@
 #include <bluetooth/services/common.h>
 #include <bluetooth/services/uuid.h>
 #include <ble_conn_params.h>
+#include <bluetooth/services/ble_mcumgr.h>
 
 LOG_MODULE_REGISTER(mcumgr, CONFIG_BLE_MCUMGR_LOG_LEVEL);
-
-/** Used vendor specific UUID */
-#define BLE_MCUMGR_SERVICE_UUID { 0x84, 0xAA, 0x60, 0x74, 0x52, 0x8A, 0x8B, 0x86, \
-				  0xD3, 0x4C, 0xB7, 0x1D, 0x1D, 0xDC, 0x53, 0x8D  }
-
-#define BLE_MCUMGR_CHARACTERISTIC_UUID { 0x48, 0x7C, 0x99, 0x74, 0x11, 0x26, 0x9E, 0xAE, \
-					 0x01, 0x4E, 0xCE, 0xFB, 0x28, 0x78, 0x2E, 0xDA  }
-
-/** The UUID of the TX Characteristic */
-#define BLE_MCUMGR_SERVICE_UUID_SUB 0xdc1d
-#define BLE_MCUMGR_CHARACTERISTIC_UUID_SUB 0x7828
 
 #define OPCODE_LENGTH 1
 #define HANDLE_LENGTH 2
@@ -450,6 +440,11 @@ static void smp_ncs_bm_bt_setup(void)
 	smp_ncs_bm_bt_transport.functions.get_mtu = smp_ncs_bm_bt_get_mtu;
 
 	rc = smp_transport_init(&smp_ncs_bm_bt_transport);
+}
+
+uint8_t ble_mcumgr_service_uuid_type(void)
+{
+	return ble_mcumgr.uuid_type_service;
 }
 
 MCUMGR_HANDLER_DEFINE(smp_ncs_bm_bt, smp_ncs_bm_bt_setup);
