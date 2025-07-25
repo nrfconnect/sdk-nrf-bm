@@ -5,6 +5,10 @@
 #
 menu "Logging"
 
+if !LOG_MODE_MINIMAL
+
 rsource "backends/Kconfig"
+
+endif
 
 endmenu
