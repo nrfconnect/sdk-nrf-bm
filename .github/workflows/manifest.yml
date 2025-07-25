@@ -27,11 +27,6 @@ jobs:
           git config --global user.email "you@example.com"
           git config --global user.name "Your Name"
           west init -l . || true
-          # We only import the NCS and zephyr manifests
-          west update nrf
-          west config manifest.path nrf
-          west update zephyr
-          west config manifest.path nrf-bm
 
       - name: Manifest
         uses: zephyrproject-rtos/action-manifest@ea38f222cddfbbb9debb5f0239f4139ae2677ebb # v1.8.0
