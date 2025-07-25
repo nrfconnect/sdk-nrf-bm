@@ -53,6 +53,7 @@
 .. _`MCUboot`: https://docs.nordicsemi.com/bundle/ncs-latest/page/mcuboot/wrapper.html
 .. _`MCUmgr`: https://docs.zephyrproject.org/latest/services/device_mgmt/mcumgr.html
 .. _`DTS`: https://docs.zephyrproject.org/latest/build/dts/index.html
+.. _`System reset`: https://docs.zephyrproject.org/latest/services/device_mgmt/smp_groups/smp_group_0.html#system-reset
 
 .. ### Release notes
 
