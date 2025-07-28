@@ -29,6 +29,7 @@ author = 'Nordic Semiconductor'
 extensions = ['sphinx.ext.intersphinx', 'sphinx_tabs.tabs']
 
 rst_epilog = """
+.. include:: /substitutions.txt
 .. include:: /links.txt
 .. include:: /shortcuts.txt
 """

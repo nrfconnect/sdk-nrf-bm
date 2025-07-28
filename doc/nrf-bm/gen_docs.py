@@ -88,9 +88,10 @@ else:
 # Copy Sphinx configuration file and other text files
 conf_path = os.path.join(script_dir, "conf.py")
 links_path = os.path.join(script_dir, "links.txt")
+substitutions_path = os.path.join(script_dir, "substitutions.txt")
 shortcuts_path = os.path.join(script_dir, "shortcuts.txt")
 
-for file_path in [conf_path, links_path, shortcuts_path]:
+for file_path in [conf_path, links_path, substitutions_path, shortcuts_path]:
     if os.path.exists(file_path):
         shutil.copy2(file_path, source_dir)
     else:
