@@ -7,7 +7,8 @@ MCUboot: Recovery retention
    :local:
    :depth: 2
 
-This sample demonstrates how to reboot into MCUboot's recovery (firmware loader) mode using the retention boot mode subsystem.
+This sample demonstrates how to reboot into `MCUboot`_'s recovery (firmware loader) mode using the retention boot mode subsystem.
+See :ref:`ug_dfu` for details on DFU support in |BMshort|.
 
 Requirements
 ************
