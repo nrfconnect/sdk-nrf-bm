@@ -1,0 +1,5 @@
+.. |br|     raw:: html        .. force a line break in HTML output (blank lines needed here)
+
+   <br />
+
+.. Dummy entry to prevent compliance failure with above substition which needs an empty newline
