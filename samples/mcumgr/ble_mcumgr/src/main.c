@@ -50,9 +50,8 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 	int err;
 
 	__ASSERT(ble_evt, "BLE event is NULL");
-	__ASSERT(ctx, "context is NULL");
 
-	if (ctx == NULL || evt == NULL) {
+	if (evt == NULL) {
 		return;
 	}
 
