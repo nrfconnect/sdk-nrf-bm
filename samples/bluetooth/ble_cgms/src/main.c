@@ -476,17 +476,6 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		}
 
 		break;
-	case BLE_GAP_EVT_PHY_UPDATE_REQUEST:
-		LOG_DBG("PHY update request.");
-		ble_gap_phys_t const phys = {
-			.rx_phys = BLE_GAP_PHY_AUTO,
-			.tx_phys = BLE_GAP_PHY_AUTO,
-		};
-		nrf_err = sd_ble_gap_phy_update(evt->evt.gap_evt.conn_handle, &phys);
-		if (nrf_err != NRF_SUCCESS) {
-			LOG_ERR("Failed to update BLE GAP PHY, nrf_error %d", nrf_err);
-		}
-		break;
 	case BLE_GATTC_EVT_TIMEOUT:
 		/* Disconnect on GATT Client timeout event. */
 		LOG_DBG("GATT Client Timeout.");
