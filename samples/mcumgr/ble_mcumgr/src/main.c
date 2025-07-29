@@ -170,6 +170,27 @@ static enum mgmt_cb_return os_mgmt_reboot_hook(uint32_t event, enum mgmt_cb_retu
 	return MGMT_CB_OK;
 }
 
+/**
+ * @brief Change Bluetooth address from the default random address
+ *
+ * @param[out] err Error code
+ */
+static int ble_change_address(void)
+{
+	int err;
+	ble_gap_addr_t device_address;
+
+	err = sd_ble_gap_addr_get(&device_address);
+
+	if (err != 0) {
+		return err;
+	}
+
+	device_address.addr[0] ^= 0x1;
+
+	return sd_ble_gap_addr_set(&device_address);
+}
+
 int main(void)
 {
 	int err;
@@ -216,6 +237,12 @@ int main(void)
 	}
 
 	LOG_INF("Services initialized");
+
+	err = ble_change_address();
+
+	if (err) {
+		LOG_ERR("Failed to change Bluetooth address, err %d", err);
+	}
 
 	/* Add MCUmgr Bluetooth service UUID to scan response */
 	adv_uuid_list->type = ble_mcumgr_service_uuid_type();
