@@ -59,3 +59,4 @@ Apache-2.0: |
   ^nrf-bm/tests/lib/bm_timer/include/zephyr/kernel.h
   ^nrf-bm/lib/bm_zms/
   ^nrf-bm/include/bm_zms.h
+  ^nrf-bm/tests/lib/bm_zms/
