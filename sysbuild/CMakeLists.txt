@@ -26,6 +26,7 @@ function(bm_install_setup)
       ExternalZephyrProject_Add(
         APPLICATION installer
         SOURCE_DIR ${ZEPHYR_NRF_BM_MODULE_DIR}/applications/installer
+        BUILD_ONLY y
       )
     endif()
   endif()
@@ -53,6 +54,8 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
       )
 
       set(bm_install_images 2)
+
+      set_config_bool(${SB_CONFIG_BM_FIRMWARE_LOADER_IMAGE_NAME} CONFIG_MCUBOOT_APPLICATION_FIRMWARE_UPDATER y)
 
       # MCUboot firmware loader entrance mode selection
       if(SB_CONFIG_BM_BOOTLOADER_MCUBOOT_FIRMWARE_LOADER_ENTRANCE_BOOT_MODE)
