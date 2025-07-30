@@ -115,6 +115,7 @@ static void on_conn_params_update(uint16_t conn_handle, int idx,
 		const struct ble_conn_params_evt app_evt = {
 			.id = BLE_CONN_PARAMS_EVT_UPDATED,
 			.conn_handle = conn_handle,
+			.conn_params = evt->conn_params,
 		};
 
 		ble_conn_params_event_send(&app_evt);

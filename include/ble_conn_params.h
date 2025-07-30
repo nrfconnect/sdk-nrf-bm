@@ -54,6 +54,12 @@ struct ble_conn_params_evt {
 	uint16_t conn_handle;
 	union {
 		/**
+		 * @brief Negotiated connection parameters.
+		 *
+		 * From @ref BLE_CONN_PARAMS_EVT_UPDATED.
+		 */
+		ble_gap_conn_params_t conn_params;
+		/**
 		 * @brief Negotiated GATT ATT MTU.
 		 *
 		 * From @ref BLE_CONN_PARAMS_EVT_ATT_MTU_UPDATED.
