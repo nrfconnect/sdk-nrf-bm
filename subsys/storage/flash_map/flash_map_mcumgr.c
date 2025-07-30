@@ -15,6 +15,12 @@ const struct flash_area default_flash_map[] = {
 		.fa_size = FIXED_PARTITION_SIZE(slot0_partition),
 		.fa_dev = DEVICE_DT_GET(DT_CHOSEN(zephyr_flash_controller)),
 	},
+	{
+		.fa_id = 2,
+		.fa_off = FIXED_PARTITION_OFFSET(slot1_partition),
+		.fa_size = FIXED_PARTITION_SIZE(slot1_partition),
+		.fa_dev = DEVICE_DT_GET(DT_CHOSEN(zephyr_flash_controller)),
+	},
 };
 
 const int flash_map_entries = ARRAY_SIZE(default_flash_map);
