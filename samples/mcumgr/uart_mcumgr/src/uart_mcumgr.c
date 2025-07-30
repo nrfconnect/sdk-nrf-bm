@@ -291,7 +291,10 @@ int main(void)
 	}
 
 	while (should_reboot == false) {
+		/* Wait for an event. */
 		__WFE();
+
+		/* Clear Event Register */
 		__SEV();
 		__WFE();
 
