@@ -17,5 +17,6 @@ rsource "ble_qwr/Kconfig"
 rsource "sensorsim/Kconfig"
 rsource "boot_banner/Kconfig"
 rsource "zephyr_queue/Kconfig"
+rsource "bm_zms/Kconfig"
 
 endmenu
