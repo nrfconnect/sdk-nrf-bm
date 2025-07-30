@@ -62,7 +62,7 @@ extern "C" {
 
 /**@brief The number of the lowest SVC number reserved for the SoC library. */
 #define SOC_SVC_BASE               (0x20)                   /**< Base value for SVCs that are available when the SoftDevice is disabled. */
-#define SOC_SVC_BASE_NOT_AVAILABLE (0x2C)                   /**< Base value for SVCs that are not available when the SoftDevice is disabled. */
+#define SOC_SVC_BASE_NOT_AVAILABLE (0x2D)                   /**< Base value for SVCs that are not available when the SoftDevice is disabled. */
 
 /**@brief Guaranteed time for application to process radio inactive notification. */
 #define NRF_RADIO_NOTIFICATION_INACTIVE_GUARANTEED_TIME_US  (62)
