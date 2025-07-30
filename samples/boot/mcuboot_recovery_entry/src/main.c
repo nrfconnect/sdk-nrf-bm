@@ -118,7 +118,12 @@ int main(void)
 		while (LOG_PROCESS()) {
 		}
 
-		sd_app_evt_wait();
+		/* Wait for an event. */
+		__WFE();
+
+		/* Clear Event Register */
+		__SEV();
+		__WFE();
 	}
 
 	sys_reboot(SYS_REBOOT_WARM);

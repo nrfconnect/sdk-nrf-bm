@@ -272,7 +272,12 @@ int main(void)
 	LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
 
 	while (should_reboot == false) {
-		sd_app_evt_wait();
+		/* Wait for an event. */
+		__WFE();
+
+		/* Clear Event Register */
+		__SEV();
+		__WFE();
 	}
 
 	err = sd_ble_gap_disconnect(conn_handle, BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
@@ -282,7 +287,12 @@ int main(void)
 	}
 
 	while (device_disconnected == false) {
-		sd_app_evt_wait();
+		/* Wait for an event. */
+		__WFE();
+
+		/* Clear Event Register */
+		__SEV();
+		__WFE();
 	}
 
 	sys_reboot(SYS_REBOOT_WARM);
