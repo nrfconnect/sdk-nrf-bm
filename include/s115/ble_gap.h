@@ -627,7 +627,6 @@ typedef struct
   uint16_t conn_sup_timeout;          /**< Connection Supervision Timeout, see @ref BLE_GAP_CP_LIMITS for range and unit size.*/
 } ble_gap_conn_params_t;
 
-
 /**@brief GAP connection security modes.
  *
  * Security Mode 0 Level 0: No access permissions at all (this level is not defined by the Bluetooth Core specification).\n
@@ -1608,6 +1607,7 @@ SVCALL(SD_BLE_GAP_ADV_STOP, uint32_t, sd_ble_gap_adv_stop(uint8_t adv_handle));
  */
 SVCALL(SD_BLE_GAP_CONN_PARAM_UPDATE, uint32_t, sd_ble_gap_conn_param_update(uint16_t conn_handle, ble_gap_conn_params_t const *p_conn_params));
 
+
 /**@brief Disconnect (GAP Link Termination).
  *
  * @details This call initiates the disconnection procedure, and its completion will be communicated to the application
@@ -1996,73 +1996,6 @@ SVCALL(SD_BLE_GAP_SEC_INFO_REPLY, uint32_t, sd_ble_gap_sec_info_reply(uint16_t c
 SVCALL(SD_BLE_GAP_CONN_SEC_GET, uint32_t, sd_ble_gap_conn_sec_get(uint16_t conn_handle, ble_gap_conn_sec_t *p_conn_sec));
 
 
-/**@brief Start reporting the received signal strength to the application.
- *
- *        A new event is reported whenever the RSSI value changes, until @ref sd_ble_gap_rssi_stop is called.
- *
- * @events
- * @event{@ref BLE_GAP_EVT_RSSI_CHANGED, New RSSI data available. How often the event is generated is
- *                                       dependent on the settings of the <code>threshold_dbm</code>
- *                                       and <code>skip_count</code> input parameters.}
- * @endevents
- *
- * @mscs
- * @mmsc{@ref BLE_GAP_CENTRAL_RSSI_READ_MSC}
- * @mmsc{@ref BLE_GAP_RSSI_FILT_MSC}
- * @endmscs
- *
- * @param[in] conn_handle        Connection handle.
- * @param[in] threshold_dbm      Minimum change in dBm before triggering the @ref BLE_GAP_EVT_RSSI_CHANGED event. Events are disabled if threshold_dbm equals @ref BLE_GAP_RSSI_THRESHOLD_INVALID.
- * @param[in] skip_count         Number of RSSI samples with a change of threshold_dbm or more before sending a new @ref BLE_GAP_EVT_RSSI_CHANGED event.
- *
- * @retval ::NRF_SUCCESS                   Successfully activated RSSI reporting.
- * @retval ::NRF_ERROR_INVALID_STATE       RSSI reporting is already ongoing.
- * @retval ::BLE_ERROR_INVALID_CONN_HANDLE Invalid connection handle supplied.
- */
-SVCALL(SD_BLE_GAP_RSSI_START, uint32_t, sd_ble_gap_rssi_start(uint16_t conn_handle, uint8_t threshold_dbm, uint8_t skip_count));
-
-
-/**@brief Stop reporting the received signal strength.
- *
- * @note  An RSSI change detected before the call but not yet received by the application
- *        may be reported after @ref sd_ble_gap_rssi_stop has been called.
- *
- * @mscs
- * @mmsc{@ref BLE_GAP_CENTRAL_RSSI_READ_MSC}
- * @mmsc{@ref BLE_GAP_RSSI_FILT_MSC}
- * @endmscs
- *
- * @param[in] conn_handle Connection handle.
- *
- * @retval ::NRF_SUCCESS                   Successfully deactivated RSSI reporting.
- * @retval ::NRF_ERROR_INVALID_STATE       RSSI reporting is not ongoing.
- * @retval ::BLE_ERROR_INVALID_CONN_HANDLE Invalid connection handle supplied.
- */
-SVCALL(SD_BLE_GAP_RSSI_STOP, uint32_t, sd_ble_gap_rssi_stop(uint16_t conn_handle));
-
-
-/**@brief Get the received signal strength for the last connection event.
- *
- *        @ref sd_ble_gap_rssi_start must be called to start reporting RSSI before using this function. @ref NRF_ERROR_NOT_FOUND
- *        will be returned until RSSI was sampled for the first time after calling @ref sd_ble_gap_rssi_start.
- * @note ERRATA-153 and ERRATA-225 require the rssi sample to be compensated based on a temperature measurement.
- * @mscs
- * @mmsc{@ref BLE_GAP_CENTRAL_RSSI_READ_MSC}
- * @endmscs
- *
- * @param[in]  conn_handle Connection handle.
- * @param[out] p_rssi      Pointer to the location where the RSSI measurement shall be stored.
- * @param[out] p_ch_index  Pointer to the location where Channel Index for the RSSI measurement shall be stored.
- *
- * @retval ::NRF_SUCCESS                   Successfully read the RSSI.
- * @retval ::NRF_ERROR_NOT_FOUND           No sample is available.
- * @retval ::NRF_ERROR_INVALID_ADDR        Invalid pointer supplied.
- * @retval ::BLE_ERROR_INVALID_CONN_HANDLE Invalid connection handle supplied.
- * @retval ::NRF_ERROR_INVALID_STATE       RSSI reporting is not ongoing.
- */
-SVCALL(SD_BLE_GAP_RSSI_GET, uint32_t, sd_ble_gap_rssi_get(uint16_t conn_handle, int8_t *p_rssi, uint8_t *p_ch_index));
-
-
 /**@brief Initiate or respond to a PHY Update Procedure
  *
  * @details   This function is used to initiate or respond to a PHY Update Procedure. It will always
@@ -2175,6 +2108,73 @@ SVCALL(SD_BLE_GAP_DATA_LENGTH_UPDATE, uint32_t, sd_ble_gap_data_length_update(ui
  * @retval ::NRF_ERROR_INVALID_ADDR        Invalid pointer supplied.
  */
 SVCALL(SD_BLE_GAP_NEXT_CONN_EVT_COUNTER_GET, uint32_t, sd_ble_gap_next_conn_evt_counter_get(uint16_t conn_handle, uint16_t * p_counter));
+
+
+/**@brief Start reporting the received signal strength to the application.
+ *
+ *        A new event is reported whenever the RSSI value changes, until @ref sd_ble_gap_rssi_stop is called.
+ *
+ * @events
+ * @event{@ref BLE_GAP_EVT_RSSI_CHANGED, New RSSI data available. How often the event is generated is
+ *                                       dependent on the settings of the <code>threshold_dbm</code>
+ *                                       and <code>skip_count</code> input parameters.}
+ * @endevents
+ *
+ * @mscs
+ * @mmsc{@ref BLE_GAP_CENTRAL_RSSI_READ_MSC}
+ * @mmsc{@ref BLE_GAP_RSSI_FILT_MSC}
+ * @endmscs
+ *
+ * @param[in] conn_handle        Connection handle.
+ * @param[in] threshold_dbm      Minimum change in dBm before triggering the @ref BLE_GAP_EVT_RSSI_CHANGED event. Events are disabled if threshold_dbm equals @ref BLE_GAP_RSSI_THRESHOLD_INVALID.
+ * @param[in] skip_count         Number of RSSI samples with a change of threshold_dbm or more before sending a new @ref BLE_GAP_EVT_RSSI_CHANGED event.
+ *
+ * @retval ::NRF_SUCCESS                   Successfully activated RSSI reporting.
+ * @retval ::NRF_ERROR_INVALID_STATE       RSSI reporting is already ongoing.
+ * @retval ::BLE_ERROR_INVALID_CONN_HANDLE Invalid connection handle supplied.
+ */
+SVCALL(SD_BLE_GAP_RSSI_START, uint32_t, sd_ble_gap_rssi_start(uint16_t conn_handle, uint8_t threshold_dbm, uint8_t skip_count));
+
+
+/**@brief Stop reporting the received signal strength.
+ *
+ * @note  An RSSI change detected before the call but not yet received by the application
+ *        may be reported after @ref sd_ble_gap_rssi_stop has been called.
+ *
+ * @mscs
+ * @mmsc{@ref BLE_GAP_CENTRAL_RSSI_READ_MSC}
+ * @mmsc{@ref BLE_GAP_RSSI_FILT_MSC}
+ * @endmscs
+ *
+ * @param[in] conn_handle Connection handle.
+ *
+ * @retval ::NRF_SUCCESS                   Successfully deactivated RSSI reporting.
+ * @retval ::NRF_ERROR_INVALID_STATE       RSSI reporting is not ongoing.
+ * @retval ::BLE_ERROR_INVALID_CONN_HANDLE Invalid connection handle supplied.
+ */
+SVCALL(SD_BLE_GAP_RSSI_STOP, uint32_t, sd_ble_gap_rssi_stop(uint16_t conn_handle));
+
+
+/**@brief Get the received signal strength for the last connection event.
+ *
+ *        @ref sd_ble_gap_rssi_start must be called to start reporting RSSI before using this function. @ref NRF_ERROR_NOT_FOUND
+ *        will be returned until RSSI was sampled for the first time after calling @ref sd_ble_gap_rssi_start.
+ * @note ERRATA-153 and ERRATA-225 require the rssi sample to be compensated based on a temperature measurement.
+ * @mscs
+ * @mmsc{@ref BLE_GAP_CENTRAL_RSSI_READ_MSC}
+ * @endmscs
+ *
+ * @param[in]  conn_handle Connection handle.
+ * @param[out] p_rssi      Pointer to the location where the RSSI measurement shall be stored.
+ * @param[out] p_ch_index  Pointer to the location where Channel Index for the RSSI measurement shall be stored.
+ *
+ * @retval ::NRF_SUCCESS                   Successfully read the RSSI.
+ * @retval ::NRF_ERROR_NOT_FOUND           No sample is available.
+ * @retval ::NRF_ERROR_INVALID_ADDR        Invalid pointer supplied.
+ * @retval ::BLE_ERROR_INVALID_CONN_HANDLE Invalid connection handle supplied.
+ * @retval ::NRF_ERROR_INVALID_STATE       RSSI reporting is not ongoing.
+ */
+SVCALL(SD_BLE_GAP_RSSI_GET, uint32_t, sd_ble_gap_rssi_get(uint16_t conn_handle, int8_t *p_rssi, uint8_t *p_ch_index));
 
 
 /** @} */
