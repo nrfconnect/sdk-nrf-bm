@@ -48,8 +48,11 @@ static void on_exchange_mtu_req_evt(uint16_t conn_handle, int idx,
 {
 	int err;
 
-	/* Determine the lowest ATT MTU between our own desired ATT MTU and the peer's. */
-	links[idx].att_mtu = MIN(evt->client_rx_mtu, links[idx].att_mtu_desired);
+	/* Determine the lowest ATT MTU between our own desired ATT MTU and the peer's,
+	 * and at the same time ensure that we don't go lower than the actual MTU size.
+	 */
+	links[idx].att_mtu =
+		MAX(links[idx].att_mtu, MIN(evt->client_rx_mtu, links[idx].att_mtu_desired));
 	links[idx].att_mtu_exchange_pending = false;
 
 	LOG_INF("Peer %#x requested ATT MTU of %u bytes", conn_handle, evt->client_rx_mtu);
