@@ -1,0 +1,4 @@
+tests:
+  lib.ble_gq:
+    platform_allow: native_sim
+    tags: unittest
