@@ -226,6 +226,26 @@ static int set_adv_mode_slow(struct ble_adv *ble_adv, ble_gap_adv_params_t *adv_
 	return 0;
 }
 
+static int set_adv_mode_non_connectable(struct ble_adv *ble_adv, ble_gap_adv_params_t *adv_params)
+{
+#if defined(BLE_GAP_ADV_TYPE_EXTENDED_NONCONNECTABLE_SCANNABLE_UNDIRECTED)
+	if (IS_ENABLED(CONFIG_BLE_ADV_EXTENDED_ADVERTISING)) {
+		ble_adv->adv_params.properties.type =
+			BLE_GAP_ADV_TYPE_EXTENDED_NONCONNECTABLE_SCANNABLE_UNDIRECTED;
+	} else {
+		ble_adv->adv_params.properties.type =
+			BLE_GAP_ADV_TYPE_NONCONNECTABLE_SCANNABLE_UNDIRECTED;
+	}
+#else
+	ble_adv->adv_params.properties.type = BLE_GAP_ADV_TYPE_NONCONNECTABLE_SCANNABLE_UNDIRECTED;
+#endif
+
+	adv_params->interval = CONFIG_BLE_ADV_NONCONN_ADVERTISING_INTERVAL;
+	adv_params->duration = CONFIG_BLE_ADV_NONCONN_ADVERTISING_TIMEOUT;
+
+	return 0;
+}
+
 static uint16_t adv_data_size_max_get(void)
 {
 	if (!IS_ENABLED(CONFIG_BLE_ADV_EXTENDED_ADVERTISING)) {
@@ -401,6 +421,20 @@ int ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 
 	case BLE_ADV_MODE_IDLE:
 	default:
+		LOG_INF("Idle");
+		mode = BLE_ADV_MODE_IDLE;
+		adv_evt.evt_type = BLE_ADV_EVT_IDLE;
+		break;
+
+	case BLE_ADV_MODE_NONCONN:
+		if (IS_ENABLED(CONFIG_BLE_ADV_NONCONN_ADVERTISING)) {
+			LOG_INF("Non-connectable advertising");
+			mode = BLE_ADV_MODE_NONCONN;
+			adv_evt.evt_type = BLE_ADV_MODE_NONCONN;
+			err = set_adv_mode_non_connectable(ble_adv, &ble_adv->adv_params);
+			break;
+		}
+
 		LOG_INF("Idle");
 		mode = BLE_ADV_MODE_IDLE;
 		adv_evt.evt_type = BLE_ADV_EVT_IDLE;

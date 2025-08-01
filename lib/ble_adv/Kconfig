@@ -77,6 +77,22 @@ config BLE_ADV_SLOW_ADVERTISING_INTERVAL
 	range 32 16384
 	default 64
 
+config BLE_ADV_NONCONN_ADVERTISING
+	bool "Non-connectable advertising"
+	default y
+
+config BLE_ADV_NONCONN_ADVERTISING_TIMEOUT
+	int "Idle advertising timeout (10 ms units)"
+	depends on BLE_ADV_NONCONN_ADVERTISING
+	range 0 18000
+	default 3000
+
+config BLE_ADV_NONCONN_ADVERTISING_INTERVAL
+	int "Directed advertising interval (0.625 ms units)"
+	depends on BLE_ADV_NONCONN_ADVERTISING
+	range 32 16384
+	default 100
+
 choice
 	prompt "Primary PHY"
 	default BLE_ADV_PRIMARY_PHY_AUTO

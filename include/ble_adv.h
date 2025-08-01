@@ -79,6 +79,12 @@ enum ble_adv_mode {
 	 * time-out than fast advertising. However, these options can be adjusted by the user.
 	 */
 	BLE_ADV_MODE_SLOW,
+	/**
+	 * @brief Non-connectable advertising.
+	 *
+	 * Do not attempt to connect to any peer device.
+	 */
+	BLE_ADV_MODE_NONCONN,
 };
 
 /**
