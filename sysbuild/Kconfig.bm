@@ -156,9 +156,9 @@ endchoice
 
 config SOFTDEVICE_FILE
 	string
-	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/subsys/softdevice/hex/s115/s115_9.0.0-3.prototype_nrf54l05_softdevice.hex" if SOFTDEVICE_S115 && SOC_NRF54L05
-	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/subsys/softdevice/hex/s115/s115_9.0.0-3.prototype_nrf54l10_softdevice.hex" if SOFTDEVICE_S115 && SOC_NRF54L10
-	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/subsys/softdevice/hex/s115/s115_9.0.0-3.prototype_nrf54l15_softdevice.hex" if SOFTDEVICE_S115 && SOC_NRF54L15
+	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/components/softdevice/s115/s115_9.0.0-3.prototype_nrf54l05_softdevice.hex" if SOFTDEVICE_S115 && SOC_NRF54L05
+	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/components/softdevice/s115/s115_9.0.0-3.prototype_nrf54l10_softdevice.hex" if SOFTDEVICE_S115 && SOC_NRF54L10
+	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/components/softdevice/s115/s115_9.0.0-3.prototype_nrf54l15_softdevice.hex" if SOFTDEVICE_S115 && SOC_NRF54L15
 	help
 	  Specifies the path to the softdevice hex file.
 

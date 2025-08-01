@@ -10,7 +10,7 @@ static_dir = os.path.abspath("../_static")  # Path to the _static directory
 requirements_path = os.path.join(script_dir, "requirements.txt")  # Path to the requirements.txt file
 includes_dir = os.path.join(script_dir, "includes")  # Path to the includes directory
 sample_dir = os.path.join(script_dir, "sample")  # Path to the sample directory
-pdf_source_dir = os.path.abspath('../../subsys/softdevice/hex/s115')  # Path to the PDF source directory
+pdf_source_dir = os.path.abspath('../../components/softdevice/s115/')  # Path to the PDF source directory
 pdf_destination_dir = os.path.join(source_dir, 'pdfs')  # Destination directory within _static
 images_dir = os.path.join(script_dir, "images")  # Path to the images directory
 
