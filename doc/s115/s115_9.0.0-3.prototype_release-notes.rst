@@ -38,7 +38,7 @@ SoftDevice properties
 
   * nRF54L15: 0x15D000 (``s115_9.0.0-3.prototype_nrf54l15_softdevice.hex``).
 
-* The Firmware ID of this SoftDevice is 0x305B.
+* The Firmware ID of this SoftDevice is 0x305E.
 
 New Features
 -------------
