@@ -30,6 +30,10 @@ config SOFTDEVICE_S115
 	select SOFTDEVICE_DATA_LENGTH_UPDATE
 	default y
 
+config SOFTDEVICE_VARIANT_STR
+	string
+	default "s115" if SOFTDEVICE_S115
+
 endif
 
 endmenu

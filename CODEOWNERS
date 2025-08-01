@@ -27,9 +27,11 @@
 # All cmake related files
 /cmake/                                   @nrfconnect/ncs-co-build-system
 
+# External components
+/components/softdevice/                   @nrfconnect/ncs-dragoon
+
 # All doc related files
 /doc/                                     @nrfconnect/ncs-bm @nrfconnect/ncs-bm-doc
-/doc/s115/                                @nrfconnect/ncs-bm @nrfconnect/ncs-bm-doc @nrfconnect/ncs-dragoon
 
 # Drivers
 /drivers/clock_control/                   @nrfconnect/ncs-bm
@@ -38,7 +40,6 @@
 # Include
 /include/*.h                              @nrfconnect/ncs-bm
 /include/bluetooth/                       @nrfconnect/ncs-bm
-/include/s115/                            @nrfconnect/ncs-bm @nrfconnect/ncs-dragoon
 
 # Libraries
 /lib/ble_adv/                             @nrfconnect/ncs-bm
@@ -73,7 +74,7 @@
 /subsys/bm_installs/                      @nrfconnect/ncs-pluto
 /subsys/logging/                          @nrfconnect/ncs-bm
 /subsys/mgmt/mcumgr/                      @nrfconnect/ncs-pluto
-/subsys/softdevice/                       @nrfconnect/ncs-bm @nrfconnect/ncs-dragoon
+/subsys/softdevice/                       @nrfconnect/ncs-bm
 /subsys/softdevice_handler/               @nrfconnect/ncs-bm
 /subsys/storage/flash_map/                @nrfconnect/ncs-pluto
 

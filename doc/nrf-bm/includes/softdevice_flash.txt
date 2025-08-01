@@ -36,19 +36,19 @@ To flash the S115 SoftDevice binary to your device, open the terminal and run th
 
          .. code-block:: console
 
-            nrfutil device program --firmware subsys/softdevice/hex/s115/s115_9.0.0-3.prototype_nrf54l15_softdevice.hex
+            nrfutil device program --firmware components/softdevice/s115/s115_9.0.0-3.prototype_nrf54l15_softdevice.hex
 
       .. group-tab:: nRF54L10
 
          .. code-block:: console
 
-            nrfutil device program --firmware subsys/softdevice/hex/s115/s115_9.0.0-3.prototype_nrf54l10_softdevice.hex
+            nrfutil device program --firmware components/softdevice/s115/s115_9.0.0-3.prototype_nrf54l10_softdevice.hex
 
       .. group-tab:: nRF54L05
 
          .. code-block:: console
 
-            nrfutil device program --firmware subsys/softdevice/hex/s115/s115_9.0.0-3.prototype_nrf54l05_softdevice.hex
+            nrfutil device program --firmware components/softdevice/s115/s115_9.0.0-3.prototype_nrf54l05_softdevice.hex
 
    .. note::
       Keep in mind that the flashed SoftDevice variant must be in sync with the board target that you are planning to use in the build configuration of the sample.
