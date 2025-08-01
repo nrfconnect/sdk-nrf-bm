@@ -428,6 +428,32 @@ int ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 	return 0;
 }
 
+int ble_adv_stop(struct ble_adv *ble_adv)
+{
+	int err;
+	struct ble_adv_evt adv_evt;
+
+	if (!ble_adv) {
+		return -EFAULT;
+	}
+
+	if (!ble_adv->is_initialized) {
+		return -EPERM;
+	}
+
+	err = sd_ble_gap_adv_stop(ble_adv->adv_handle);
+	if (err) {
+		LOG_ERR("Failed to stop advertising, nrf_error %#x", err);
+		return -EINVAL;
+	}
+
+	adv_evt.evt_type = BLE_ADV_EVT_IDLE;
+	ble_adv->mode_current = BLE_ADV_EVT_IDLE;
+	ble_adv->evt_handler(ble_adv, &adv_evt);
+
+	return 0;
+}
+
 void ble_adv_on_ble_evt(const ble_evt_t *ble_evt, void *instance)
 {
 	struct ble_adv *ble_adv = (struct ble_adv *)instance;

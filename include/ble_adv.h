@@ -294,6 +294,18 @@ int ble_adv_conn_cfg_tag_set(struct ble_adv *ble_adv, uint8_t ble_cfg_tag);
 int ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode);
 
 /**
+ * @brief Stop advertising.
+ *
+ * @param[in] ble_adv BLE advertising instance.
+ *
+ * @retval 0 On success.
+ * @retval -EPERM  Library is not initialized.
+ * @retval -EFAULT @p ble_adv is @c NULL.
+ * @retval -EINVAL Invalid parameters.
+ */
+int ble_adv_stop(struct ble_adv *ble_adv);
+
+/**
  * @brief Set the peer address for directed advertising.
  *
  * The peer address can be set by the application upon receiving a
