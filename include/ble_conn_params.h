@@ -118,7 +118,8 @@ int ble_conn_params_override(uint16_t conn_handle, const ble_gap_conn_params_t *
  * @brief Initiate an ATT MTU exchange procedure for a given connection.
  *
  * The minimum supported ATT MTU value is 23 (connection's default).
- * The maximum supported ATT MTU value is 247.
+ * The maximum supported ATT MTU value is the minimum of @c CONFIG_NRF_SDH_BLE_GATT_MAX_MTU_SIZE
+ * and 65535.
  *
  * The SoftDevice needs to be configured to support non-default ATT MTU values
  * by setting @c CONFIG_NRF_SDH_BLE_GATT_MAX_MTU_SIZE to the maximum ATT MTU value
