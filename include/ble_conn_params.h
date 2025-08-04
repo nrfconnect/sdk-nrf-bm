@@ -4,6 +4,13 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
+/**
+ * @file
+ * @defgroup ble_conn_params BLE Connection Parameter Library
+ * @{
+ * @brief API for the BLE Connection Parameter library in BareMetal option.
+ */
+
 #ifndef BLE_CONN_PARAMS_H__
 #define BLE_CONN_PARAMS_H__
 
@@ -205,3 +212,5 @@ int ble_conn_params_phy_radio_mode_get(uint16_t conn_handle, ble_gap_phys_t *phy
 #endif
 
 #endif /* BLE_CONN_PARAMS_H__ */
+
+/** @} */
