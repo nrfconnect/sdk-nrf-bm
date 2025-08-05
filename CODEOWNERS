@@ -86,6 +86,7 @@
 /tests/lib/ble_qwr/                       @nrfconnect/ncs-bm
 /tests/lib/ble_racp/                      @nrfconnect/ncs-bm
 /tests/lib/ble_adv/                       @nrfconnect/ncs-bm-test
+/tests/lib/bm_timer/                      @nrfconnect/ncs-bm @nrfconnect/ncs-bm-test
 
 # Zephyr module
 /zephyr/                                  @nrfconnect/ncs-co-build-system
