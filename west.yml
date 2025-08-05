@@ -17,7 +17,6 @@ manifest:
       revision: v3.1.0-rc1
       import:
         name-allowlist:
-          - cmsis
           - cmsis_6
           - dragoon
           - hal_nordic
