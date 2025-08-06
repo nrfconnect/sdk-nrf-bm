@@ -13,6 +13,7 @@ if NCS_BM
 # zephyr-keep-sorted-start
 rsource "drivers/Kconfig"
 rsource "lib/Kconfig"
+rsource "modules/Kconfig"
 rsource "samples/Kconfig"
 rsource "subsys/Kconfig"
 # zephyr-keep-sorted-stop
