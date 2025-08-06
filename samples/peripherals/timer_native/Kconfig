@@ -1,0 +1,27 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "Timer sample"
+
+config PERIODIC_TIMER_INTERVAL_MS
+	int "Timeout interval of periodic timer"
+	default 500
+
+config HELLO_TIMER_DURATION_MS
+	int "First timeout duration of oneshot timer"
+	default 1000
+
+config WORLD_TIMER_DURATION_MS
+	int "Second timeout duration of oneshot timer"
+	default 2000
+
+config BYE_TIMER_DURATION_MS
+	int "Third timeout duration of oneshot timer"
+	default 4000
+
+endmenu # "Timer sample"
+
+source "Kconfig.zephyr"
