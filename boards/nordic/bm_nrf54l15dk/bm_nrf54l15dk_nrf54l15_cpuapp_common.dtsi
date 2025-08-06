@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
+#include "bm_nrf54l15dk_nrf54l051015_peripherals.dtsi"
+
 / {
 	compatible = "nordic,bm_nrf54l15dk_nrf54l15-cpuapp";
 	model = "Nordic Bare Metal nRF54L15 DK nRF54L15 Application MCU";
