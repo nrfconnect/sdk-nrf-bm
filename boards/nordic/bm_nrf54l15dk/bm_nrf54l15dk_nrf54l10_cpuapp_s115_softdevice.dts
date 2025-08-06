@@ -44,19 +44,19 @@
 		#address-cells = <1>;
 		#size-cells = <1>;
 
-		softdevice_static_ram: partition@20000000 {
-			label = "softdevice_static_ram";
-			reg = <0x20000000 DT_SIZE_K(5)>;
-		};
-
-		softdevice_dynamic_ram: partition@20001678 {
-			label = "softdevice_dynamic_ram";
-			reg = <0x20001678 DT_SIZE_K(12)>;
-		};
-
-		app_ram: partition@20004678 {
+		app_ram: partition@20000000 {
 			label = "app_ram";
-			reg = <0x20004678 DT_SIZE_K(174)>;
+			reg = <0x20000000 DT_SIZE_K(174)>;
+		};
+
+		softdevice_static_ram: partition@2002B800 {
+			label = "softdevice_static_ram";
+			reg = <0x2002B800 DT_SIZE_K(5)>;
+		};
+
+		softdevice_dynamic_ram: partition@2002CC00 {
+			label = "softdevice_dynamic_ram";
+			reg = <0x2002CC00 DT_SIZE_K(12)>;
 		};
 	};
 };
