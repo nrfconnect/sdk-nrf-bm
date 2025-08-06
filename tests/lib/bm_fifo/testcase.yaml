@@ -1,0 +1,4 @@
+tests:
+  lib.bm_fifo:
+    platform_allow: native_sim
+    tags: unittest
