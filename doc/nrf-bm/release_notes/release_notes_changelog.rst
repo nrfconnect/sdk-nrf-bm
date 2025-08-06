@@ -32,7 +32,7 @@ SoftDevice Handler
 Boards
 ======
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Removed unused peripheral nodes from Device Tree.
 
 DFU
 ===
