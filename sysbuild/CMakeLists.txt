@@ -23,6 +23,29 @@ function(bm_install_setup)
 
       add_overlay_dts(${SB_CONFIG_BM_FIRMWARE_LOADER_IMAGE_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/image_configurations/FIRMWARE_LOADER_image_default.overlay)
 
+      # Enable LTO on MCUboot image
+      add_overlay_config(mcuboot ${CMAKE_CURRENT_SOURCE_DIR}/image_configurations/lto.conf)
+
+      if(SB_CONFIG_SOC_SERIES_NRF54LX)
+        if(SB_CONFIG_BM_BOOTLOADER_MCUBOOT_SIGNATURE_TYPE_NONE)
+          set_config_bool(mcuboot CONFIG_NRF_SECURITY y)
+        elseif(SB_CONFIG_BM_BOOTLOADER_MCUBOOT_SIGNATURE_TYPE_ED25519)
+          set_config_bool(mcuboot CONFIG_NRF_SECURITY y)
+
+          # We are sure that ED25519 signature on MCUboot does not need these
+          set_config_bool(mcuboot CONFIG_PSA_USE_CRACEN_AEAD_DRIVER n)
+          set_config_bool(mcuboot CONFIG_PSA_USE_CRACEN_PAKE_DRIVER n)
+          set_config_bool(mcuboot CONFIG_PSA_USE_CRACEN_CIPHER_DRIVER n)
+          set_config_bool(mcuboot CONFIG_PSA_USE_CRACEN_MAC_DRIVER n)
+          set_config_bool(mcuboot CONFIG_PSA_USE_CRACEN_KEY_AGREEMENT_DRIVER n)
+          set_config_bool(mcuboot CONFIG_PSA_USE_CRACEN_KEY_DERIVATION_DRIVER n)
+          set_config_bool(mcuboot CONFIG_BOOT_HMAC_SHA512 n)
+          set_config_bool(mcuboot CONFIG_BOOT_SIGNATURE_USING_KMU n)
+          set_config_bool(mcuboot CONFIG_BOOT_KEY_IMPORT_BYPASS_ASN y)
+          set_config_bool(mcuboot CONFIG_PSA_USE_CRACEN_HASH_DRIVER y)
+        endif()
+      endif()
+
       ExternalZephyrProject_Add(
         APPLICATION installer
         SOURCE_DIR ${ZEPHYR_NRF_BM_MODULE_DIR}/applications/installer
