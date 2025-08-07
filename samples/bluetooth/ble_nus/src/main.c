@@ -283,6 +283,20 @@ static void ble_nus_evt_handler(const struct ble_nus_evt *evt)
 	}
 }
 
+#if defined(CONFIG_SOC_SERIES_NRF52X)
+ISR_DIRECT_DECLARE(nus_uarte0_isr)
+{
+	NRFX_UARTE_INST_HANDLER_GET(0)();
+	return 0;
+}
+#elif defined(CONFIG_SOC_SERIES_NRF54LX)
+ISR_DIRECT_DECLARE(nus_uarte30_isr)
+{
+	NRFX_UARTE_INST_HANDLER_GET(30)();
+	return 0;
+}
+#endif
+
 /**
  * @brief Initalize UARTE driver.
  */
@@ -307,13 +321,13 @@ static int uarte_init(void)
 
 	/** We need to connect the IRQ ourselves. */
 #if defined(CONFIG_SOC_SERIES_NRF52X)
-	IRQ_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(0)), CONFIG_BLE_UART_IRQ_PRIO,
-		    NRFX_UARTE_INST_HANDLER_GET(0), 0, 0);
+	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(0)), CONFIG_BLE_UART_IRQ_PRIO,
+			   nus_uarte0_isr, 0);
 
-		irq_enable(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(0)));
+	irq_enable(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(0)));
 #elif defined(CONFIG_SOC_SERIES_NRF54LX)
-	IRQ_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(30)), CONFIG_BLE_UART_IRQ_PRIO,
-		    NRFX_UARTE_INST_HANDLER_GET(30), 0, 0);
+	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(30)), CONFIG_BLE_UART_IRQ_PRIO,
+			   nus_uarte30_isr, 0);
 
 	irq_enable(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(30)));
 #endif

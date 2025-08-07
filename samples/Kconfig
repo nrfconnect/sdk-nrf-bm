@@ -14,3 +14,7 @@ config MULTITHREADING
 # Need this when building without sysbuild
 config PARTITION_MANAGER_ENABLED
 	default n
+
+# All these samples use IRQ_DIRECT_CONNECT, so software ISR table is not needed
+config GEN_SW_ISR_TABLE
+	default n if !UNITY

@@ -207,6 +207,12 @@ void uart_mcumgr_register(uart_mcumgr_recv_fn *cb)
 	uart_mcumgr_recv_cb = cb;
 }
 
+ISR_DIRECT_DECLARE(mcumgr_uarte_isr)
+{
+	NRFX_UARTE_INST_HANDLER_GET(BOARD_APP_UARTE_INST)();
+	return 0;
+}
+
 /**
  * @brief Initialize UARTE driver.
  */
@@ -230,9 +236,10 @@ static int uarte_init(void)
 	uarte_config.interrupt_priority = CONFIG_UARTE_IRQ_PRIO;
 
 	/** We need to connect the IRQ ourselves. */
-	IRQ_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(BOARD_APP_UARTE_INST)),
-		    CONFIG_UARTE_IRQ_PRIO, NRFX_UARTE_INST_HANDLER_GET(BOARD_APP_UARTE_INST),
-		    0, 0);
+	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(BOARD_APP_UARTE_INST)),
+			   CONFIG_UARTE_IRQ_PRIO,
+			   mcumgr_uarte_isr,
+			   0);
 
 	irq_enable(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(BOARD_APP_UARTE_INST)));
 
