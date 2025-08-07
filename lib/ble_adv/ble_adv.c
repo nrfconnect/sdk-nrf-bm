@@ -149,12 +149,16 @@ static int set_adv_mode_directed_high_duty(struct ble_adv *ble_adv,
 static int set_adv_mode_directed(struct ble_adv *ble_adv, ble_gap_adv_params_t *adv_params)
 {
 #if CONFIG_BLE_ADV_DIRECTED_ADVERTISING
+#if defined(BLE_GAP_ADV_TYPE_EXTENDED_CONNECTABLE_NONSCANNABLE_DIRECTED)
 	if (IS_ENABLED(CONFIG_BLE_ADV_EXTENDED_ADVERTISING)) {
 		adv_params->properties.type =
 			BLE_GAP_ADV_TYPE_EXTENDED_CONNECTABLE_NONSCANNABLE_DIRECTED;
 	} else {
 		adv_params->properties.type = BLE_GAP_ADV_TYPE_CONNECTABLE_NONSCANNABLE_DIRECTED;
 	}
+#else
+	adv_params->properties.type = BLE_GAP_ADV_TYPE_CONNECTABLE_NONSCANNABLE_DIRECTED;
+#endif
 
 	adv_params->duration = CONFIG_BLE_ADV_DIRECTED_ADVERTISING_TIMEOUT;
 	adv_params->interval = CONFIG_BLE_ADV_DIRECTED_ADVERTISING_INTERVAL;
@@ -181,7 +185,6 @@ static int set_adv_mode_fast(struct ble_adv *ble_adv, ble_gap_adv_params_t *adv_
 
 	adv_params->interval = CONFIG_BLE_ADV_FAST_ADVERTISING_INTERVAL;
 	adv_params->duration = CONFIG_BLE_ADV_FAST_ADVERTISING_TIMEOUT;
-
 	if (use_whitelist(ble_adv)) {
 		/* Set filter policy and advertising flags */
 		adv_params->filter_policy = BLE_GAP_ADV_FP_FILTER_CONNREQ;
@@ -321,7 +324,9 @@ int ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 {
 	int err;
 	struct ble_adv_evt adv_evt;
-
+	if (!ble_adv) {
+		return -EFAULT;
+	}
 	if (!ble_adv->is_initialized) {
 		return -EPERM;
 	}
@@ -387,6 +392,10 @@ int ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 			mode = BLE_ADV_MODE_FAST;
 			adv_evt.evt_type = BLE_ADV_EVT_FAST;
 			err = set_adv_mode_fast(ble_adv, &ble_adv->adv_params);
+			if (err) {
+				LOG_ERR("Failed to set fast advertising params, error: %d", err);
+				return -EINVAL;
+			}
 			break;
 		} __fallthrough;
 
@@ -396,6 +405,10 @@ int ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 			mode = BLE_ADV_MODE_SLOW;
 			adv_evt.evt_type = BLE_ADV_EVT_SLOW;
 			err = set_adv_mode_slow(ble_adv, &ble_adv->adv_params);
+			if (err) {
+				LOG_ERR("Failed to set slow advertising params, error: %d", err);
+				return -EINVAL;
+			}
 			break;
 		} __fallthrough;
 
@@ -421,7 +434,6 @@ int ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 			return -EINVAL;
 		}
 	}
-
 	ble_adv->mode_current = mode;
 	ble_adv->evt_handler(ble_adv, &adv_evt);
 
@@ -472,6 +484,9 @@ int ble_adv_whitelist_reply(struct ble_adv *ble_adv,
 			    const ble_gap_addr_t *addrs, uint32_t addr_cnt,
 			    const ble_gap_irk_t *irks, uint32_t irk_cnt)
 {
+	if (!ble_adv) {
+		return -EFAULT;
+	}
 	if (!ble_adv->whitelist_reply_expected) {
 		return -EPERM;
 	}
