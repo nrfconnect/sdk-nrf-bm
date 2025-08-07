@@ -19,6 +19,14 @@ void relocate_vector_table(void)
 	/* Empty, but needed */
 }
 
+#ifdef CONFIG_NRF5_SDK_IRQ_CONNECT_GPIOTE
+ISR_DIRECT_DECLARE(gpiote0_isr)
+{
+	nrfx_gpiote_0_irq_handler();
+	return 0;
+}
+#endif
+
 static int irq_init(void)
 {
 	int err;
@@ -27,7 +35,7 @@ static int irq_init(void)
 
 	/** TODO: rework */
 #ifdef CONFIG_NRF5_SDK_IRQ_CONNECT_GPIOTE
-        IRQ_CONNECT(GPIOTE_IRQn, 5, nrfx_isr, nrfx_gpiote_0_irq_handler, 0);
+	IRQ_DIRECT_CONNECT(GPIOTE_IRQn, 5, gpiote0_isr, 0);
 #endif
 
 	err = sd_softdevice_vector_table_base_set(VECTOR_ADDRESS);
