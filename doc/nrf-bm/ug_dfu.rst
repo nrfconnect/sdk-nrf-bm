@@ -190,9 +190,28 @@ This board target will always enable DFU support when it is used to build the ap
                               reg = <0x00000000 DT_SIZE_K(32)>;
                       };
 
-                      slot0_partition: partition@8000 {
+                      storage_partition: partition@8000 {
+                              compatible = "fixed-subpartitions";
+                              label = "storage";
+                              reg = <0x00008000 DT_SIZE_K(8)>;
+                              ranges = <0x0 0x8000 DT_SIZE_K(8)>;
+                              #address-cells = <1>;
+                              #size-cells = <1>;
+
+                              storage0_partition: partition@0 {
+                                      label = "storage0";
+                                      reg = <0x00000000 DT_SIZE_K(4)>;
+                              };
+
+                              storage1_partition: partition@1000 {
+                                      label = "storage1";
+                                      reg = <0x00001000 DT_SIZE_K(4)>;
+                              };
+                      };
+
+                      slot0_partition: partition@a000 {
                               label = "slot0";
-                              reg = <0x00008000 DT_SIZE_K(1298)>;
+                              reg = <0x0000a000 DT_SIZE_K(1290)>;
                       };
 
                       slot1_partition: partition@14c800 {
