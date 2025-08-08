@@ -51,9 +51,28 @@
 			reg = <0x00000000 DT_SIZE_K(36)>;
 		};
 
-		slot0_partition: partition@9000 {
+		storage_partition: partition@9000 {
+			compatible = "fixed-subpartitions";
+			label = "storage";
+			reg = <0x00009000 DT_SIZE_K(8)>;
+			ranges = <0x0 0x9000 DT_SIZE_K(8)>;
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			storage0_partition: partition@0 {
+				label = "storage0";
+				reg = <0x00000000 DT_SIZE_K(4)>;
+			};
+
+			storage1_partition: partition@1000 {
+				label = "storage1";
+				reg = <0x00001000 DT_SIZE_K(4)>;
+			};
+		};
+
+		slot0_partition: partition@b000 {
 			label = "slot0";
-			reg = <0x00009000 DT_SIZE_K(1294)>;
+			reg = <0x0000b000 DT_SIZE_K(1286)>;
 		};
 
 		slot1_partition: partition@14c800 {
