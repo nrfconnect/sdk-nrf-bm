@@ -12,6 +12,21 @@
 		zephyr,flash-controller = &rram_controller;
 		zephyr,boot-mode = &boot_mode0;
 	};
+
+	soc {
+		reserved-memory {
+			#address-cells = <1>;
+			#size-cells = <1>;
+			ranges;
+
+			 nrf_kmu_reserved_push_area: memory@20000000 {
+				reg = <0x20000000 0x80>;
+				compatible = "zephyr,memory-region", "mmio-sram";
+				zephyr,memory-region = "nrf_kmu_reserved_push_area";
+				status = "okay";
+			 };
+		};
+	};
 };
 
 /* Override NCS default to use entire SRAM for application CPU. */
