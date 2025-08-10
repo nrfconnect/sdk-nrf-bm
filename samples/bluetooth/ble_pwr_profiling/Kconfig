@@ -1,0 +1,54 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "BLE Power Profiling sample"
+
+config BLE_PWR_PROFILING_ADV_NAME
+	string "Advertising name"
+	default "nRF_BM_PWR"
+
+config BLE_PWR_PROFILING_CONN_ADVERTISING_TIMEOUT
+	int "Connectable advertising timeout (10 ms units)"
+	range 0 18000
+	default 3000
+
+config BLE_PWR_PROFILING_CONN_ADVERTISING_INTERVAL
+	int "Connectable advertising interval (0.625 ms units)"
+	range 32 16384
+	default 160
+
+config BLE_PWR_PROFILING_NONCONN_ADVERTISING_TIMEOUT
+	int "Non-connectable advertising timeout (10 ms units)"
+	range 0 18000
+	default 6000
+
+config BLE_PWR_PROFILING_NONCONN_ADVERTISING_INTERVAL
+	int "Non-connectable advertising interval (0.625 ms units)"
+	range 32 16384
+	default 1600
+
+config BLE_PWR_PROFILING_NOTIF_CONNECTION_TIMEOUT
+	int "Notification connection timeout"
+	default 10000
+	help
+	  The time before the application disconnects after notifications are enabled.
+
+config BLE_PWR_PROFILING_CHAR_VALUE_LEN
+	int "Size of characteristic value"
+	default 20
+
+config BLE_PWR_PROFILING_LED
+	bool "Power profiling LED"
+	default y
+
+module=BLE_PWR_PROFILING_SAMPLE
+module-dep=LOG
+module-str=BLE Power Profiling Sample
+source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+
+endmenu # "BLE Power Profiling sample"
+
+source "Kconfig.zephyr"

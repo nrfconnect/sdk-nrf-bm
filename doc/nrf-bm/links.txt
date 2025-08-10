@@ -47,6 +47,9 @@
 .. _`Bluetooth Low Energy app`: https://docs.nordicsemi.com/bundle/nrf-connect-ble/page/index.html
 .. _`Serial Terminal app`: https://docs.nordicsemi.com/bundle/nrf-connect-serial-terminal/page/index.html
 .. _`Configuring Kconfig`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/app_dev/config_and_build/kconfig/index.html
+.. _`Power Profiler app`: https://docs.nordicsemi.com/bundle/nrf-connect-ppk/page/index.html
+.. _`Power Profiler Kit II (PPK2)`: https://docs.nordicsemi.com/bundle/ug_ppk2/page/UG/ppk/PPK_user_guide_Intro.html
+.. _`nRF Connect for Mobile`: https://www.nordicsemi.com/Software-and-Tools/Development-Tools/nRF-Connect-for-mobile
 
 .. ### DFU
 
