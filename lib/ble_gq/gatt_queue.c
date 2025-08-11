@@ -151,6 +151,11 @@ static bool request_process(const struct ble_gq_req *req, uint16_t conn_handle)
 		break;
 	case BLE_GQ_REQ_GATTS_HVX:
 		LOG_DBG("GATTS notification or indication");
+		if (!req->gatts_hvx.p_len) {
+			LOG_DBG("GATTS HVX request p_len is NULL");
+			err_code =  NRF_ERROR_INVALID_PARAM;
+			break;
+		}
 		len = *(req->gatts_hvx.p_len);
 		err_code = sd_ble_gatts_hvx(conn_handle, &req->gatts_hvx);
 		if (err_code == NRF_SUCCESS && len != *(req->gatts_hvx.p_len)) {
