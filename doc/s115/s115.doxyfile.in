@@ -48,7 +48,7 @@ PROJECT_NAME           = "S115 SoftDevice API documentation"
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER         = 0.1.0
+PROJECT_NUMBER         = @DOCSET_VERSION@
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewer a
@@ -61,7 +61,7 @@ PROJECT_BRIEF          =
 # pixels and the maximum width should not exceed 200 pixels. Doxygen will copy
 # the logo to the output directory.
 
-PROJECT_LOGO           = ../_doxygen/logo.png
+PROJECT_LOGO           = @NRF_BASE@/doc/_doxygen/logo.png
 
 # With the PROJECT_ICON tag one can specify an icon that is included in the tabs
 # when the HTML document is shown. Doxygen will copy the logo to the output
@@ -74,7 +74,7 @@ PROJECT_ICON           =
 # entered, it will be relative to the location where Doxygen was started. If
 # left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = html
+OUTPUT_DIRECTORY       = @DOCSET_BUILD_DIR@
 
 # If the CREATE_SUBDIRS tag is set to YES then Doxygen will create up to 4096
 # sub-directories (in 2 levels) under the output directory of each output format
@@ -180,7 +180,7 @@ FULL_PATH_NAMES        = YES
 # will be relative from the directory where Doxygen is started.
 # This tag requires that the tag FULL_PATH_NAMES is set to YES.
 
-STRIP_FROM_PATH        = ../../include/s115
+STRIP_FROM_PATH        = @DOCSET_SOURCE_BASE@
 
 # The STRIP_FROM_INC_PATH tag can be used to strip a user-defined part of the
 # path mentioned in the documentation of a class, which tells the reader which
@@ -279,7 +279,8 @@ TAB_SIZE               = 8
 # with the commands \{ and \} for these it is advised to use the version @{ and
 # @} or use a double escape (\\{ and \\})
 
-ALIASES                =
+ALIASES                = "kconfig{1}=\verbatim \1 \endverbatim" \
+                         "req=\xrefitem req \"Requirement\" \"Requirements\""
 
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C sources
 # only. Doxygen will then generate output that is more tailored for C. For
@@ -955,8 +956,8 @@ WARN_LOGFILE           =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = ../../include/s115 \
-                         s115_mainpage.dox
+INPUT                  = @DOCSET_SOURCE_BASE@/include/s115 \
+                         @DOCSET_SOURCE_BASE@/doc/s115
 
 # This tag can be used to specify the character encoding of the source files
 # that Doxygen parses. Internally Doxygen uses the UTF-8 encoding. Doxygen uses
@@ -1283,7 +1284,7 @@ HTML_FILE_EXTENSION    = .html
 # of the possible markers and block names see the documentation.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_HEADER            = ../_doxygen/header.html
+HTML_HEADER            = @NRF_BASE@/doc/_doxygen/header.html
 
 # The HTML_FOOTER tag can be used to specify a user-defined HTML footer for each
 # generated HTML page. If the tag is left blank Doxygen will generate a standard
@@ -1323,7 +1324,7 @@ HTML_STYLESHEET        =
 # documentation.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_EXTRA_STYLESHEET  = ../_doxygen/doxygen-awesome.css
+HTML_EXTRA_STYLESHEET  = @NRF_BASE@/doc/_doxygen/doxygen-awesome.css
 
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
 # other source files which should be copied to the HTML output directory. Note
@@ -1333,9 +1334,9 @@ HTML_EXTRA_STYLESHEET  = ../_doxygen/doxygen-awesome.css
 # files will be copied as-is; there are no commands or markers available.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_EXTRA_FILES       = ../_doxygen/doxygen-awesome-darkmode-toggle.js \
-                         ../_doxygen/doxygen-awesome-paragraph-link.js \
-                         ../_doxygen/doxygen-awesome-interactive-toc.js
+HTML_EXTRA_FILES       = @NRF_BASE@/doc/_doxygen/doxygen-awesome-darkmode-toggle.js \
+                         @NRF_BASE@/doc/_doxygen/doxygen-awesome-paragraph-link.js \
+                         @NRF_BASE@/doc/_doxygen/doxygen-awesome-interactive-toc.js
 
 # The HTML_COLORSTYLE tag can be used to specify if the generated HTML output
 # should be rendered with a dark or light theme.
