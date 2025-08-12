@@ -9,6 +9,7 @@
 #include <nrf_sdh.h>
 #include <nrf_sdh_soc.h>
 #include <nrf_soc.h>
+#include <psa/crypto.h>
 #include <zephyr/logging/log.h>
 
 LOG_MODULE_DECLARE(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
@@ -34,9 +35,36 @@ static const char *tostr(uint32_t evt)
 		return "A radio timeslot session is idle";
 	case NRF_EVT_RADIO_SESSION_CLOSED:
 		return "A radio timeslot session is closed";
+	case NRF_EVT_RAND_SEED_REQUEST:
+		return "SoftDevice RNG needs to be seeded";
 	default:
 		return "Unknown";
 	}
+}
+
+static void softdevice_rng_seed(void)
+{
+/* Temporary until SoftDevice exposes SD_RAND_SEED_SIZE. */
+#ifndef SD_RAND_SEED_SIZE
+#define SD_RAND_SEED_SIZE 48
+#endif
+	uint32_t err = NRF_ERROR_INVALID_DATA;
+	psa_status_t status;
+	uint8_t seed[SD_RAND_SEED_SIZE];
+
+	status = psa_generate_random(seed, sizeof(seed));
+	if (status == PSA_SUCCESS) {
+		err = sd_rand_seed_set(seed);
+		memset(seed, 0, sizeof(seed));
+		if (err == NRF_SUCCESS) {
+			LOG_DBG("SoftDevice RNG seeded");
+			return;
+		}
+	} else {
+		LOG_ERR("Generate random failed, psa status %d", status);
+	}
+
+	LOG_ERR("Failed to seed SoftDevice RNG, nrf_error %#x", err);
 }
 
 static void soc_evt_poll(void *context)
@@ -54,6 +82,10 @@ static void soc_evt_poll(void *context)
 			LOG_DBG("SoC event: %s", tostr(evt_id));
 		} else {
 			LOG_DBG("SoC event: 0x%x", evt_id);
+		}
+
+		if (evt_id == NRF_EVT_RAND_SEED_REQUEST) {
+			softdevice_rng_seed();
 		}
 
 		/* Forward the event to SoC observers. */
