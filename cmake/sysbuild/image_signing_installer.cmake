@@ -14,7 +14,7 @@ function(bm_install_tasks output_hex output_bin)
       # No signature key file, no signed binaries. No error, though:
       # this is the documented behavior.
       message(WARNING "Neither SB_CONFIG_BM_BOOTLOADER_MCUBOOT_SIGNATURE_TYPE_NONE or "
-                      "SB_CONFIG_BOOT_BM_BOOTLOADER_MCUBOOT_SIGNATURE_KEY_FILE are set, the generated build will not be "
+                      "SB_CONFIG_BM_BOOTLOADER_MCUBOOT_SIGNATURE_KEY_FILE are set, the generated build will not be "
                       "bootable by MCUboot unless it is signed manually/externally.")
       return()
     endif()
