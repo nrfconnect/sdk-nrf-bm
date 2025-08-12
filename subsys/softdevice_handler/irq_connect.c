@@ -25,11 +25,6 @@ static int irq_init(void)
 
 	#define VECTOR_ADDRESS ((uintptr_t)_vector_start)
 
-	/** TODO: rework */
-#ifdef CONFIG_NRF5_SDK_IRQ_CONNECT_GPIOTE
-        IRQ_CONNECT(GPIOTE_IRQn, 5, nrfx_isr, nrfx_gpiote_0_irq_handler, 0);
-#endif
-
 	err = sd_softdevice_vector_table_base_set(VECTOR_ADDRESS);
 	__ASSERT(err == NRF_SUCCESS, "Failed to set the vector table, nrf_error %#x", err);
 
