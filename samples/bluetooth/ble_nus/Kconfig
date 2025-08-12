@@ -20,7 +20,7 @@ config BLE_UART_PIN_RX
 	default 8 if SOC_SERIES_NRF52X
 	default 1
 
-config CONFIG_BLE_UART_PARITY
+config BLE_UART_PARITY
 	bool "BLE UART use parity"
 
 config BLE_UART_HWFC
