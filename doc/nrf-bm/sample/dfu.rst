@@ -10,5 +10,4 @@ This section lists the available samples demonstrating the Device Firmware Updat
    :caption: Subpages
    :glob:
 
-   ../samples/boot/mcuboot_recovery_entry/README.rst
-   ../samples/boot/mcuboot_recovery_retention/README.rst
+   ../samples/boot/*/README

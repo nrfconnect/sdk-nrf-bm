@@ -10,7 +10,4 @@ This section lists the available samples for various peripherals.
    :caption: Subpages
    :glob:
 
-   ../samples/peripherals/buttons/README.rst
-   ../samples/peripherals/leds/README.rst
-   ../samples/peripherals/timer/README.rst
-   ../samples/peripherals/uarte/README.rst
+   ../samples/peripherals/*/README
