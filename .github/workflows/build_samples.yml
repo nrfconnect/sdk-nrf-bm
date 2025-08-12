@@ -4,6 +4,10 @@ on:
   pull_request:
     types: [push, opened, reopened, synchronize]
 
+  schedule:
+    # Every evening at 11:00 PM
+    - cron: "0 23 * * *"
+
   workflow_dispatch:
 
 jobs:
@@ -42,7 +46,15 @@ jobs:
         west init -l nrf-bm
         west update -o=--depth=1 -n
 
-    - name: Build samples
+    - name: Build samples all
+      id: build-all
+      if: ${{ contains(github.event.*.labels.*.name, 'CI_BUILD_ALL') || github.event_name == 'schedule' }}
+      working-directory: nrf-bm
+      run: |
+        west twister -T samples --build-only -v --inline-logs --all
+
+    - name: Build samples integration
+      if: steps.build-all.outcome == 'skipped'
       working-directory: nrf-bm
       run: |
         west twister -T samples --build-only -v --inline-logs --integration
