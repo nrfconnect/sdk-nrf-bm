@@ -11,7 +11,7 @@ jobs:
     name: Build all samples within the project
     runs-on:
       - runs-on=${{ github.run_id }}
-      - runner=4cpu-linux-x64
+      - runner=64cpu-linux-x64
     # Keep aligned with target NCS version
     container: ghcr.io/nrfconnect/sdk-nrf-toolchain:v2.9.1
     defaults:
