@@ -14,7 +14,9 @@ jobs:
 
   # Tar entire project west workspace, prune, and upload to artifact service.
   generate-src-mirror-package:
-    runs-on: ubuntu-24.04-16cores
+    runs-on:
+      - runs-on=${{ github.run_id }}
+      - runner=64cpu-linux-x64
     steps:
 
       - name: Set STABLE variable
