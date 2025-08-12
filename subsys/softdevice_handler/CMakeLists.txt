@@ -7,6 +7,7 @@ zephyr_library()
 zephyr_linker_sources(SECTIONS sdh.ld)
 zephyr_library_sources(
   nrf_sdh.c
+  nrf_sdh_soc.c
   irq_connect.c
 )
 
@@ -22,9 +23,6 @@ if(CONFIG_SOFTDEVICE_S115)
   target_link_options(app PUBLIC "-Wl,--defsym=z_arm_svc=SVC_Handler")
 endif()
 
-if(CONFIG_NRF_SDH_SOC)
-  zephyr_library_sources(nrf_sdh_soc.c)
-endif()
 if(CONFIG_NRF_SDH_BLE)
   zephyr_library_sources(nrf_sdh_ble.c)
 endif()

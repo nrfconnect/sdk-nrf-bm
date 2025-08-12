@@ -6,12 +6,11 @@
 menuconfig NRF_SDH
 	bool "Softdevice handler"
 	depends on SOFTDEVICE
+	depends on NRF_SECURITY
+	depends on MBEDTLS_PSA_CRYPTO_C
+	depends on PSA_WANT_GENERATE_RANDOM
 
 if NRF_SDH
-
-config NRF_SDH_SOC
-	bool "SoC events"
-	default y
 
 config NRF_SDH_BLE
 	bool "BLE events"
