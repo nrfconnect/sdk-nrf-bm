@@ -34,18 +34,6 @@ static const char *tostr(uint32_t evt)
 		return "A radio timeslot session is idle";
 	case NRF_EVT_RADIO_SESSION_CLOSED:
 		return "A radio timeslot session is closed";
-#if defined(NRF_EVT_POWER_USB_POWER_READY)
-	case NRF_EVT_POWER_USB_POWER_READY:
-		return "A USB 3.3 V supply is ready";
-#endif
-#if defined(NRF_EVT_POWER_USB_DETECTED)
-	case NRF_EVT_POWER_USB_DETECTED:
-		return "Voltage supply is detected on VBUS";
-#endif
-#if defined(NRF_EVT_POWER_USB_REMOVED)
-	case NRF_EVT_POWER_USB_REMOVED:
-		return "Voltage supply is removed from VBUS";
-#endif
 	default:
 		return "Unknown";
 	}
