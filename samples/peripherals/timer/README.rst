@@ -33,7 +33,7 @@ The sample supports the following development kits:
 Overview
 ********
 
-The single-shot timer is used to sequence a series of actions (printing ``Hello``, ``world!``, and ``bye!``), while the periodic timer provides a visual indication of ongoing activity.
+The single-shot timer is used to sequence a series of actions (logging ``Hello``, ``world!``, and ``bye!``), while the periodic timer provides a visual indication of ongoing activity.
 
 Building and running
 ********************
@@ -52,8 +52,8 @@ Testing
 You can test this sample by performing the following steps:
 
 1. Compile and program the application.
-#. Observe that the ``Timer sample started`` message is printed.
-#. Observe that the ``Timers initialized`` message is printed.
-#. Observe that the three words ``Hello``, ``world!``, and ``Bye!`` are printed one after another interlaced with period signs that are printed every half second.
+#. Observe that the ``Timer sample started`` message is logged.
+#. Observe that the ``Timers initialized`` message is logged.
+#. Observe that the three words ``Hello``, ``world!``, and ``Bye!`` are logged one after another interlaced with period signs that are logged every half second.
 
-   With the default Kconfig options of the sample, the words ``Hello``, ``world!``, and ``Bye!`` are printed after one, three, and seven seconds, respectively.
+   With the default Kconfig options of the sample, the words ``Hello``, ``world!``, and ``Bye!`` are logged after one, three, and seven seconds, respectively.

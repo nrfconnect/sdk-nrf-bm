@@ -22,6 +22,11 @@ config BYE_TIMER_DURATION_MS
 	int "Third timeout duration of oneshot timer"
 	default 4000
 
+module=TIMER_SAMPLE
+module-dep=LOG
+module-str=Timer Sample
+source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+
 endmenu # "Timer sample"
 
 source "Kconfig.zephyr"
