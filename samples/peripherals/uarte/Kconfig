@@ -26,6 +26,11 @@ config UARTE_IRQ_PRIO
 	int "UARTE IRQ priority"
 	default 5
 
+module=UARTE_SAMPLE
+module-dep=LOG
+module-str=UARTE Sample
+source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+
 endmenu # "UARTE sample"
 
 source "Kconfig.zephyr"
