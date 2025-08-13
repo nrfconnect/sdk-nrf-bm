@@ -285,7 +285,7 @@ int ble_hrs_heart_rate_measurement_send(struct ble_hrs *hrs, uint16_t heart_rate
 	switch (err) {
 	case NRF_SUCCESS:
 		if (hvx_len != len) {
-			LOG_ERR("Notified %d of %d bytes\n", hvx_len, len);
+			LOG_ERR("Notified %d of %d bytes", hvx_len, len);
 			return -EINVAL;
 		}
 		return 0;
