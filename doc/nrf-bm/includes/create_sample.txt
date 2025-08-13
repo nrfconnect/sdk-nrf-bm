@@ -4,7 +4,7 @@ Creating a copy of the sample
 Follow these steps to create a new application based on this sample:
 
 1. Open the nRF Connect for VS Code extension by clicking its icon.
-#. From the :guilabel:`Welcome View`, click :guilabel:`Create a new appilication`.
+#. From the :guilabel:`Welcome View`, click :guilabel:`Create a new application`.
 
    A quick pick menu appears.
 
