@@ -40,11 +40,11 @@ config BLE_UART_PIN_RTS
 
 endif #BLE_UART_HWFC
 
-endmenu # "BLE NUS sample"
-
 module=BLE_NUS_SAMPLE
 module-dep=LOG
 module-str=BLE NUS Sample
 source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+
+endmenu # "BLE NUS sample"
 
 source "Kconfig.zephyr"
