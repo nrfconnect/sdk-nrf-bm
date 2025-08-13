@@ -86,7 +86,7 @@ static void sdh_state_evt_observer_notify(enum nrf_sdh_state_evt state)
 
 __weak void softdevice_fault_handler(uint32_t id, uint32_t pc, uint32_t info)
 {
-	LOG_ERR("SoftDevice fault! ID %#x, PC %#x, Info %#x\n", id, pc, info);
+	LOG_ERR("SoftDevice fault! ID %#x, PC %#x, Info %#x", id, pc, info);
 
 	switch (id) {
 	case NRF_FAULT_ID_SD_ASSERT:
