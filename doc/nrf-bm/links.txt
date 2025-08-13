@@ -57,6 +57,7 @@
 .. _`MCUmgr`: https://docs.zephyrproject.org/latest/services/device_mgmt/mcumgr.html
 .. _`DTS`: https://docs.zephyrproject.org/latest/build/dts/index.html
 .. _`System reset`: https://docs.zephyrproject.org/latest/services/device_mgmt/smp_groups/smp_group_0.html#system-reset
+.. _`Image tool`: https://docs.mcuboot.com/imgtool.html
 
 .. ### Release notes
 

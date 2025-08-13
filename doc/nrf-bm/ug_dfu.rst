@@ -314,6 +314,11 @@ Building and running
    If the installer image was loaded, then it will apply the updates and reboot into firmware loader mode automatically and allow for loading the application firmware update using the same process.
    If an application update was loaded, then the new application will begin executing.
 
+Signing keys
+************
+
+When building with an MCUboot board variant, it will use a default dummy MCUboot signing key which **should not be used in production**, see :ref:`ug_bootloader_keys` for details on how to generate and use a custom signing key when building an application.
+
 DFU samples
 ***********
 
