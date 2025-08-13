@@ -4,11 +4,13 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <zephyr/sys/printk.h>
+#include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 
 #include <board-config.h>
 #include <nrfx_uarte.h>
+
+LOG_MODULE_REGISTER(app, CONFIG_UARTE_SAMPLE_LOG_LEVEL);
 
 /** Application UARTE instance */
 static const nrfx_uarte_t uarte_inst = NRFX_UARTE_INSTANCE(BOARD_APP_UARTE_INST);
@@ -38,7 +40,7 @@ static void uarte_rx_handler(char *data, size_t data_len)
 				continue;
 			}
 
-			printk("Echo data, len %d\n", rx_buf_idx);
+			LOG_INF("Echo data, len %d", rx_buf_idx);
 
 			/* Add newline if not already output at the end */
 			if ((rx_buf[rx_buf_idx - 1] != '\n') && (rx_buf_idx < sizeof(rx_buf))) {
@@ -48,7 +50,7 @@ static void uarte_rx_handler(char *data, size_t data_len)
 			err = nrfx_uarte_tx(&uarte_inst, rx_buf, rx_buf_idx,
 					    NRFX_UARTE_TX_BLOCKING);
 			if (err != NRFX_SUCCESS) {
-				printk("nrfx_uarte_tx failed, nrfx_err %d\n", err);
+				LOG_ERR("nrfx_uarte_tx failed, nrfx_err %d", err);
 			}
 
 			rx_buf_idx = 0;
@@ -61,7 +63,7 @@ static void uarte_event_handler(nrfx_uarte_event_t const *event, void *ctx)
 {
 	switch (event->type) {
 	case NRFX_UARTE_EVT_RX_DONE:
-		printk("Received data from UARTE: %c\n", event->data.rx.p_buffer[0]);
+		LOG_INF("Received data from UARTE: %c", event->data.rx.p_buffer[0]);
 		if (event->data.rx.length > 0) {
 			uarte_rx_handler(event->data.rx.p_buffer, event->data.rx.length);
 		}
@@ -76,7 +78,7 @@ static void uarte_event_handler(nrfx_uarte_event_t const *event, void *ctx)
 		buf_idx = (buf_idx < sizeof(uarte_rx_buf)) ? buf_idx : 0;
 		break;
 	case NRFX_UARTE_EVT_ERROR:
-		printk("UARTE error %#x\n", event->data.error.error_mask);
+		LOG_ERR("UARTE error %#x", event->data.error.error_mask);
 		break;
 	default:
 		break;
@@ -112,7 +114,7 @@ static int uarte_init(void)
 
 	err = nrfx_uarte_init(&uarte_inst, &uarte_config, uarte_event_handler);
 	if (err != NRFX_SUCCESS) {
-		printk("Failed to initialize UARTE, nrfx err %d\n", err);
+		LOG_ERR("Failed to initialize UARTE, nrfx err %d", err);
 		return err;
 	}
 
@@ -123,11 +125,11 @@ int main(void)
 {
 	int err;
 
-	printk("UARTE sample started\n");
+	LOG_INF("UARTE sample started");
 
 	err = uarte_init();
 	if (err) {
-		printk("Failed to enable UARTE, err %d\n", err);
+		LOG_ERR("Failed to enable UARTE, err %d", err);
 		goto idle;
 	}
 
@@ -135,14 +137,14 @@ int main(void)
 
 	err = nrfx_uarte_tx(&uarte_inst, out, sizeof(out), NRFX_UARTE_TX_BLOCKING);
 	if (err != NRFX_SUCCESS) {
-		printk("UARTE TX failed, nrfx err %d\n", err);
+		LOG_ERR("UARTE TX failed, nrfx err %d", err);
 		goto idle;
 	}
 
 	/* Start reception */
 	err = nrfx_uarte_rx_enable(&uarte_inst, 0);
 	if (err != NRFX_SUCCESS) {
-		printk("UARTE RX failed, nrfx err %d\n", err);
+		LOG_ERR("UARTE RX failed, nrfx err %d", err);
 	}
 
 idle:
