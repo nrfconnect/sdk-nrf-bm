@@ -18,6 +18,7 @@
 #include <zephyr/sys/reboot.h>
 #include <nrf_soc.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/logging/log_ctrl.h>
 #include <ble_conn_params.h>
 #include <bluetooth/services/ble_mcumgr.h>
 
@@ -236,6 +237,9 @@ int main(void)
 	LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
 
 	while (should_reboot == false) {
+		while (LOG_PROCESS()) {
+		}
+
 		/* Wait for an event. */
 		__WFE();
 
@@ -251,6 +255,9 @@ int main(void)
 	}
 
 	while (device_disconnected == false) {
+		while (LOG_PROCESS()) {
+		}
+
 		/* Wait for an event. */
 		__WFE();
 
@@ -260,4 +267,6 @@ int main(void)
 	}
 
 	sys_reboot(SYS_REBOOT_WARM);
+
+	return 0;
 }
