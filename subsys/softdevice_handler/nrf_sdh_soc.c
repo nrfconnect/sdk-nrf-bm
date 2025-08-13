@@ -41,12 +41,12 @@ static const char *tostr(uint32_t evt)
 
 static void soc_evt_poll(void *context)
 {
-	int err;
+	uint32_t err;
 	uint32_t evt_id;
 
 	while (true) {
 		err = sd_evt_get(&evt_id);
-		if (err) {
+		if (err != NRF_SUCCESS) {
 			break;
 		}
 
@@ -64,7 +64,7 @@ static void soc_evt_poll(void *context)
 	}
 
 	__ASSERT(err == NRF_ERROR_NOT_FOUND,
-		"Failed to receive SoftDevice event, nrf_error %#x", err);
+		 "Failed to receive SoftDevice event, nrf_error %#x", err);
 }
 
 /* Listen to SoftDevice events */
