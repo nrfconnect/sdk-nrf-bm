@@ -1,4 +1,4 @@
-name: Documentation
+name: Documentation Build
 
 on: [push, pull_request, workflow_dispatch]
 
@@ -14,9 +14,61 @@ jobs:
           cd doc/nrf-bm
           python3 gen_docs.py
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - name: Check version
+        run: |
+          VERSION_REGEX="^v([0-9a-zA-Z\.\-]+)$"
+          if [[ ${GITHUB_REF#refs/tags/} =~ $VERSION_REGEX ]]; then
+            VERSION=${BASH_REMATCH[1]}
+          elif [[ ${GITHUB_REF#refs/heads/} == "main" ]]; then
+            VERSION="latest"
+          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            VERSION="pr-${{ github.event.number }}"
+          fi
+
+      - name: Prepare Azure upload
+        working-directory: doc/nrf-bm/_build/html
+        run: |
+          MONITOR="monitor_${{ github.run_id }}.txt"
+
+          # Create documentation upload files
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            ARCHIVE="legacy-ncs-pr-${{ github.event.number }}.zip"
+            echo "publish2 dev PR-${{ github.event.number }} ${ARCHIVE}" > "${MONITOR}"
+            echo "${{ github.event.number }}" > pr.txt
+          else
+            if [ -z "${VERSION}" ]; then
+              echo "Not a release or latest, skipping publish"
+              exit 0
+            fi
+
+            ARCHIVE="legacy-ncs-${VERSION}.zip"
+            echo "publish2 main ${VERSION} ${ARCHIVE}" > "${MONITOR}"
+          fi
+
+          zip -rq "${ARCHIVE}" .
+
+      - name: Find nRF Connect SDK Bare Metal Edited Documents
+        working-directory: doc
+        run: |
+          COMMENT="comment.txt"
+          PREFIX="https://ncsdoc.z6.web.core.windows.net/PR-${{ github.event.pull_request.number }}/"
+
+          echo "You can find the documentation preview for this PR [here](${PREFIX})." >> $COMMENT
+
+      - name: Stage files for publish
+        run: |
+          rm -rf publish
+          mkdir -p publish
+          cp doc/nrf-bm/_build/html/monitor_*.txt publish/
+          cp doc/nrf-bm/_build/html/*.zip publish/
+          if [[ -f doc/nrf-bm/_build/html/pr.txt ]]; then cp doc/nrf-bm/_build/html/pr.txt publish/; fi
+          cp doc/comment.txt publish/
+
+      - name: Store
+        if: ${{ !contains(github.event.pull_request.labels.*.name, 'external') || contains(github.event.pull_request.labels.*.name, 'CI-trusted-author') }}
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
         with:
           name: docs
-          path: doc/nrf-bm/_build/html
           retention-days: 5
+          path: |
+            publish/*
