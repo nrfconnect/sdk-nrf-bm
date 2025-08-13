@@ -1,0 +1,16 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "LEDs sample"
+
+module=LEDS_SAMPLE
+module-dep=LOG
+module-str=LEDs Sample
+source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+
+endmenu # "LEDs sample"
+
+source "Kconfig.zephyr"
