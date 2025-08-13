@@ -1,5 +1,5 @@
 sample:
-  name: BLE Continuous Glucose Monitoring Service Sample
+  name: Bluetooth LE Continuous Glucose Monitoring Service Sample
 tests:
   sample.ble_cgms:
     build_only: true

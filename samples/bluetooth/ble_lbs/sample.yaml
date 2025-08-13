@@ -1,5 +1,5 @@
 sample:
-  name: BLE LED Button Service Sample
+  name: Bluetooth LE LED Button Service Sample
 tests:
   sample.ble_lbs_service:
     sysbuild: true
