@@ -40,6 +40,10 @@ Follow these steps to create your first build configuration for this sample:
 
       Board target drop-down menu
 
+#. If the sample supports Kconfig fragments, you can configure a fragment by selecting :file:`prj.conf` from the :guilabel:`Base configuration files (Kconfig fragments)` drop-down menu.
+
+   Then, from the :guilabel:`Extra Kconfig fragments` drop-down menu, select the target fragment.
+
 #. Leave all the other options as default.
 
    For more details on how to configure builds, see `How to build an application`_ in |VSC| extension documentation.
