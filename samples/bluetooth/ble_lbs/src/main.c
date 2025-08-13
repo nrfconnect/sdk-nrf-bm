@@ -11,12 +11,14 @@
 #include <nrf_soc.h>
 #include <bluetooth/services/ble_lbs.h>
 #include <bluetooth/services/ble_dis.h>
+#include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
-#include <zephyr/sys/printk.h>
 
 #include <board-config.h>
 
 #include <bm_buttons.h>
+
+LOG_MODULE_REGISTER(app, CONFIG_BLE_LBS_SAMPLE_LOG_LEVEL);
 
 BLE_ADV_DEF(ble_adv); /* BLE advertising instance */
 BLE_LBS_DEF(ble_lbs); /* BLE LED Button Service instance */
@@ -31,23 +33,23 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 
 	switch (evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:
-		printk("Peer connected\n");
+		LOG_INF("Peer connected");
 		conn_handle = evt->evt.gap_evt.conn_handle;
 		err = sd_ble_gatts_sys_attr_set(conn_handle, NULL, 0, 0);
 		if (err) {
-			printk("Failed to set system attributes, nrf_error %#x\n", err);
+			LOG_ERR("Failed to set system attributes, nrf_error %#x", err);
 		}
 		break;
 
 	case BLE_GAP_EVT_DISCONNECTED:
-		printk("Peer disconnected\n");
+		LOG_INF("Peer disconnected");
 		if (conn_handle == evt->evt.gap_evt.conn_handle) {
 			conn_handle = BLE_CONN_HANDLE_INVALID;
 		}
 		break;
 
 	case BLE_GAP_EVT_AUTH_STATUS:
-		printk("Authentication status: %#x\n",
+		LOG_INF("Authentication status: %#x",
 		       evt->evt.gap_evt.params.auth_status.auth_status);
 		break;
 
@@ -56,16 +58,16 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		err = sd_ble_gap_sec_params_reply(evt->evt.gap_evt.conn_handle,
 						  BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP, NULL, NULL);
 		if (err) {
-			printk("Failed to reply with Security params, nrf_error %#x\n", err);
+			LOG_ERR("Failed to reply with Security params, nrf_error %#x", err);
 		}
 		break;
 
 	case BLE_GATTS_EVT_SYS_ATTR_MISSING:
-		printk("BLE_GATTS_EVT_SYS_ATTR_MISSING\n");
+		LOG_INF("BLE_GATTS_EVT_SYS_ATTR_MISSING");
 		/* No system attributes have been stored */
 		err = sd_ble_gatts_sys_attr_set(conn_handle, NULL, 0, 0);
 		if (err) {
-			printk("Failed to set system attributes, nrf_error %#x\n", err);
+			LOG_ERR("Failed to set system attributes, nrf_error %#x", err);
 		}
 		break;
 	}
@@ -76,7 +78,7 @@ static void ble_adv_evt_handler(struct ble_adv *adv, const struct ble_adv_evt *a
 {
 	switch (adv_evt->evt_type) {
 	case BLE_ADV_EVT_ERROR:
-		printk("Advertising error %d\n", adv_evt->error.reason);
+		LOG_ERR("Advertising error %d", adv_evt->error.reason);
 		break;
 	default:
 		break;
@@ -85,7 +87,7 @@ static void ble_adv_evt_handler(struct ble_adv *adv, const struct ble_adv_evt *a
 
 static void button_handler(uint8_t pin, enum bm_buttons_evt_type action)
 {
-	printk("Button event callback: %d, %d\n", pin, action);
+	LOG_INF("Button event callback: %d, %d", pin, action);
 	ble_lbs_on_button_change(&ble_lbs, conn_handle, action);
 }
 
@@ -111,10 +113,10 @@ static void lbs_evt_handler(struct ble_lbs *lbs, const struct ble_lbs_evt *lbs_e
 	case BLE_LBS_EVT_LED_WRITE:
 		if (lbs_evt->led_write.value) {
 			led_on();
-			printk("Received LED ON!\n");
+			LOG_INF("Received LED ON!");
 		} else {
 			led_off();
-			printk("Received LED OFF!\n");
+			LOG_INF("Received LED OFF!");
 		}
 		break;
 	default:
@@ -137,23 +139,23 @@ int main(void)
 		.evt_handler = lbs_evt_handler,
 	};
 
-	printk("BLE LBS sample started\n");
+	LOG_INF("BLE LBS sample started");
 
 	err = nrf_sdh_enable_request();
 	if (err) {
-		printk("Failed to enable SoftDevice, err %d\n", err);
+		LOG_ERR("Failed to enable SoftDevice, err %d", err);
 		goto idle;
 	}
 
-	printk("SoftDevice enabled\n");
+	LOG_INF("SoftDevice enabled");
 
 	err = nrf_sdh_ble_enable(CONFIG_NRF_SDH_BLE_CONN_TAG);
 	if (err) {
-		printk("Failed to enable BLE, err %d\n", err);
+		LOG_ERR("Failed to enable BLE, err %d", err);
 		goto idle;
 	}
 
-	printk("Bluetooth enabled\n");
+	LOG_INF("Bluetooth enabled");
 
 	led_init();
 
@@ -167,25 +169,25 @@ int main(void)
 		1,
 		BM_BUTTONS_DETECTION_DELAY_MIN_US);
 	if (err) {
-		printk("Failed to initialize buttons, err: %d\n", err);
+		LOG_ERR("Failed to initialize buttons, err: %d", err);
 		goto idle;
 	}
 
 	err = bm_buttons_enable();
 	if (err) {
-		printk("Failed to enable button detection, err: %d\n", err);
+		LOG_ERR("Failed to enable button detection, err: %d", err);
 		goto idle;
 	}
 
 	err = ble_lbs_init(&ble_lbs, &lbs_cfg);
 	if (err) {
-		printk("Failed to setup LED Button Service, err %d\n", err);
+		LOG_ERR("Failed to setup LED Button Service, err %d", err);
 		goto idle;
 	}
 
 	err = ble_dis_init();
 	if (err) {
-		printk("Failed to initialize device information service, err %d\n", err);
+		LOG_ERR("Failed to initialize device information service, err %d", err);
 		goto idle;
 	}
 
@@ -196,21 +198,21 @@ int main(void)
 	ble_adv_config.sr_data.uuid_lists.complete.uuid = &adv_uuid_list[0];
 	ble_adv_config.sr_data.uuid_lists.complete.len = ARRAY_SIZE(adv_uuid_list);
 
-	printk("Services initialized\n");
+	LOG_INF("Services initialized");
 
 	err = ble_adv_init(&ble_adv, &ble_adv_config);
 	if (err) {
-		printk("Failed to initialize BLE advertising, err %d\n", err);
+		LOG_ERR("Failed to initialize BLE advertising, err %d", err);
 		goto idle;
 	}
 
 	err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
 	if (err) {
-		printk("Failed to start advertising, err %d\n", err);
+		LOG_ERR("Failed to start advertising, err %d", err);
 		goto idle;
 	}
 
-	printk("Advertising as %s\n", CONFIG_BLE_ADV_NAME);
+	LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
 
 idle:
 	while (true) {
