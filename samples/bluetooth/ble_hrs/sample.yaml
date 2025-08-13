@@ -1,5 +1,5 @@
 sample:
-  name: BLE Heart Rate Service Sample
+  name: Bluetooth LE Heart Rate Service Sample
 tests:
   sample.ble_hrs:
     build_only: true

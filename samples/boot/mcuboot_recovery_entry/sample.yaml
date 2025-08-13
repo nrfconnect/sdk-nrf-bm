@@ -1,6 +1,6 @@
 sample:
-  description: MCUboot buttonless entry BT, for firmware loader mode
-  name: MCUboot buttonless entry BT
+  description: MCUboot buttonless entry Bluetooth LE, for firmware loader mode
+  name: MCUboot buttonless entry Bluetooth LE
 tests:
   sample.boot.mcuboot_recovery_entry:
     sysbuild: true
