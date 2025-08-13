@@ -1,0 +1,16 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "MCUboot recovery entry sample"
+
+module=APP
+module-dep=LOG
+module-str=MCUboot recovery entry
+source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+
+endmenu # "MCUboot recovery entry sample"
+
+source "Kconfig.zephyr"
