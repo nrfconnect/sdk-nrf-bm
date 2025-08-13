@@ -1,0 +1,40 @@
+sample:
+  name: Storage Sample
+tests:
+  sample.storage:
+    sysbuild: true
+    build_only: true
+    integration_platforms:
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+    platform_allow:
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+    tags: ci_build
+  sample.storage_rram:
+    sysbuild: true
+    build_only: true
+    integration_platforms:
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+    platform_allow:
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+    extra_args: EXTRA_CONF_FILE=storage-rram.conf
+    tags: ci_build
