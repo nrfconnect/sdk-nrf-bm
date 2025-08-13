@@ -22,7 +22,7 @@ The memory of your device must be partitioned appropriately to accommodate the b
 | Partition Name           | Description                                                   | Minimum size  |br| | Minimum size |br| |
 |                          |                                                               | (Development)      | (Release)         |
 +==========================+===============================================================+====================+===================+
-| ``boot_partition``       | Bootloader (MCUboot)                                          | 32 KB              | 22 KB             |
+| ``boot_partition``       | Bootloader (MCUboot)                                          | 36 KB              | 28 KB             |
 +--------------------------+---------------------------------------------------------------+--------------------+-------------------+
 | ``slot0_partition``      | Main application slot                                         |                    |                   |
 +--------------------------+---------------------------------------------------------------+--------------------+-------------------+
