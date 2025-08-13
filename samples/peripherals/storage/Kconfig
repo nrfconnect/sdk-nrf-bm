@@ -1,0 +1,16 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "Storage sample"
+
+module=STORAGE_SAMPLE
+module-dep=LOG
+module-str=Storage Sample
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endmenu # "Storage sample"
+
+source "Kconfig.zephyr"
