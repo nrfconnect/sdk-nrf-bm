@@ -35,7 +35,7 @@ static void gatt_error_handler(uint16_t conn_handle, uint32_t nrf_error, void *c
 	}
 }
 
-uint8_t encode_feature_location_type(uint8_t *buf_out, struct ble_cgms_feature *feature)
+static uint8_t encode_feature_location_type(uint8_t *buf_out, struct ble_cgms_feature *feature)
 {
 	uint8_t len = 0;
 
@@ -83,7 +83,7 @@ static uint32_t feature_char_add(struct ble_cgms *cgms)
 					       &cgms->char_handles.feature);
 }
 
-uint8_t encode_status(uint8_t *buf_out, struct ble_cgms *cgms)
+static uint8_t encode_status(uint8_t *buf_out, struct ble_cgms *cgms)
 {
 	uint8_t len = 0;
 
