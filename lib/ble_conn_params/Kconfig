@@ -97,12 +97,24 @@ config BLE_CONN_PARAMS_AUTO_DATA_LENGTH
 
 if BLE_CONN_PARAMS_AUTO_DATA_LENGTH
 
-config BLE_CONN_PARAMS_DATA_LENGTH
-	int "Data length"
+config BLE_CONN_PARAMS_DATA_LENGTH_TX
+	int "Data length TX"
 	range 27 251
 	default 27
 	help
-	  This option sets an application defined upper limit on the negotiated data length.
+	  This option sets an application defined upper limit on the negotiated TX data length,
+	  as seen from the device.
+	  Note that the SoftDevice ATT MTU configuration places limitations on the maximum
+	  negotiable data length. This is due to memory efficiency. For instance, to use the
+	  definitive max data length of 251, the ATT MTU needs to be configured to at least 247.
+
+config BLE_CONN_PARAMS_DATA_LENGTH_RX
+	int "Data length RX"
+	range 27 251
+	default 27
+	help
+	  This option sets an application defined upper limit on the negotiated RX data length,
+	  as seen from the device.
 	  Note that the SoftDevice ATT MTU configuration places limitations on the maximum
 	  negotiable data length. This is due to memory efficiency. For instance, to use the
 	  definitive max data length of 251, the ATT MTU needs to be configured to at least 247.
