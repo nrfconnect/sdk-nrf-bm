@@ -28,8 +28,9 @@ BLE_ADV_DEF(ble_adv); /* BLE advertising instance */
 
 /** Handle of the current connection */
 static uint16_t conn_handle = BLE_CONN_HANDLE_INVALID;
-static bool should_reboot;
-static bool device_disconnected;
+static volatile bool should_reboot;
+static volatile bool notification_sent;
+static volatile bool device_disconnected;
 
 static enum mgmt_cb_return os_mgmt_reboot_hook(uint32_t event, enum mgmt_cb_return prev_status,
 					       int32_t *rc, uint16_t *group, bool *abort_more,
@@ -74,7 +75,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		LOG_INF("Peer disconnected");
 		conn_handle = BLE_CONN_HANDLE_INVALID;
 
-		if (should_reboot) {
+		if (should_reboot == true) {
 			device_disconnected = true;
 		}
 		break;
@@ -108,6 +109,15 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 
 		if (err) {
 			LOG_ERR("Failed to set system attributes, nrf_error %#x", err);
+		}
+
+		break;
+	}
+
+	case BLE_GATTS_EVT_HVN_TX_COMPLETE:
+	{
+		if (should_reboot == true) {
+			notification_sent = true;
 		}
 
 		break;
@@ -272,7 +282,7 @@ int main(void)
 
 	LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
 
-	while (should_reboot == false) {
+	while (notification_sent == false && device_disconnected == false) {
 		while (LOG_PROCESS()) {
 		}
 
@@ -284,22 +294,25 @@ int main(void)
 		__WFE();
 	}
 
-	err = sd_ble_gap_disconnect(conn_handle, BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
+	if (device_disconnected == false) {
+		err = sd_ble_gap_disconnect(conn_handle,
+					    BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
 
-	if (err != NRF_SUCCESS) {
-		device_disconnected = true;
-	}
-
-	while (device_disconnected == false) {
-		while (LOG_PROCESS()) {
+		if (err != NRF_SUCCESS) {
+			device_disconnected = true;
 		}
 
-		/* Wait for an event. */
-		__WFE();
+		while (device_disconnected == false) {
+			while (LOG_PROCESS()) {
+			}
 
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
+			/* Wait for an event. */
+			__WFE();
+
+			/* Clear Event Register */
+			__SEV();
+			__WFE();
+		}
 	}
 
 	sys_reboot(SYS_REBOOT_WARM);
