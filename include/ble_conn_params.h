@@ -22,7 +22,7 @@ extern "C" {
 #endif
 
 /**
- * @brief BLE connection parameter event.
+ * @brief BLE connection parameter event IDs.
  */
 enum ble_conn_params_evt_id {
 	/**
@@ -45,6 +45,20 @@ enum ble_conn_params_evt_id {
 	 * @brief GAP radio phy mode update procedure completed.
 	 */
 	BLE_CONN_PARAMS_EVT_RADIO_PHY_MODE_UPDATED,
+};
+
+/**
+ * @brief Data length.
+ */
+struct ble_conn_params_data_length {
+	/**
+	 * @brief TX data length (seen from the device).
+	 */
+	uint8_t tx;
+	/**
+	 * @brief RX data length (seen from the device).
+	 */
+	uint8_t rx;
 };
 
 /**
@@ -77,7 +91,7 @@ struct ble_conn_params_evt {
 		 *
 		 * From @ref BLE_CONN_PARAMS_EVT_DATA_LENGTH_UPDATED.
 		 */
-		uint8_t data_length;
+		struct ble_conn_params_data_length data_length;
 		/**
 		 * @brief Negotiated radio PHY mode and procedure status.
 		 *
@@ -167,7 +181,7 @@ int ble_conn_params_att_mtu_get(uint16_t conn_handle, uint16_t *att_mtu);
  * @return 0 On success.
  * @return -EINVAL Invalid data length or connection handle.
  */
-int ble_conn_params_data_length_set(uint16_t conn_handle, uint8_t data_length);
+int ble_conn_params_data_length_set(uint16_t conn_handle, struct ble_conn_params_data_length dl);
 
 /**
  * @brief Retrieve the current GAP data length for a given connection.
@@ -179,7 +193,7 @@ int ble_conn_params_data_length_set(uint16_t conn_handle, uint8_t data_length);
  * @return -EINVAL Invalid connection handle.
  * @return -EFAULT @p data_length is @c NULL.
  */
-int ble_conn_params_data_length_get(uint16_t conn_handle, uint8_t *data_length);
+int ble_conn_params_data_length_get(uint16_t conn_handle, struct ble_conn_params_data_length *dl);
 
 /**
  * @brief Initiate a GAP radio PHY mode update procedure for a given connection.
