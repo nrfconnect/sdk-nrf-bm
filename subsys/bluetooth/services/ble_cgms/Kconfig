@@ -20,6 +20,6 @@ config BLE_CGMS_DB_RECORDS_MAX
 module=BLE_CGMS
 module-dep=LOG
 module-str=BLE CGMS
-source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
 endif

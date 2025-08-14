@@ -147,6 +147,6 @@ endif # BLE_CONN_PARAMS_AUTO_PHY_UPDATE
 module=BLE_CONN_PARAMS
 module-dep=LOG
 module-str=BLE Connection Parameters
-source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
 endif # BLE_CONN_PARAMS

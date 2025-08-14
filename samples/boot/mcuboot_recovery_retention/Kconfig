@@ -9,7 +9,7 @@ menu "MCUboot recovery retention sample"
 module=APP
 module-dep=LOG
 module-str=MCUboot recovery retention
-source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
 endmenu # "MCUboot recovery retention sample"
 

@@ -37,6 +37,6 @@ config BLE_GQ_OBSERVER_PRIO
 module=BLE_GQ
 module-dep=LOG
 module-str=BLE GATT Queue
-source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
 endif # BLE_GATT_QUEUE

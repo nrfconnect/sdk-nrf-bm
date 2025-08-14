@@ -22,6 +22,6 @@ config BM_BUTTONS_NUM_PINS
 module=BM_BUTTONS
 module-dep=LOG
 module-str=Bare Metal Buttons
-source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
 endif

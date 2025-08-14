@@ -24,6 +24,6 @@ config BM_TIMER_IRQ_PRIO
 module=BM_TIMER
 module-dep=LOG
 module-str=Bare Metal Timer
-source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
 endif # BM_TIMER

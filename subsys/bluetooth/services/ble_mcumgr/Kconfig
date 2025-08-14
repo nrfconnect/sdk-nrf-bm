@@ -12,6 +12,6 @@ if BLE_MCUMGR
 module=BLE_MCUMGR
 module-dep=LOG
 module-str=BLE MCUmgr Service
-source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
 endif

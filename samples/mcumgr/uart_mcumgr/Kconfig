@@ -41,7 +41,7 @@ config UARTE_IRQ_PRIO
 module=UART_MCUMGR_SAMPLE
 module-dep=LOG
 module-str=UART MCUmgr Sample
-source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
 endmenu # "UART MCUmgr sample"
 
