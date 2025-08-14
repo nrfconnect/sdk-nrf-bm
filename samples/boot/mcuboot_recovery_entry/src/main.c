@@ -123,7 +123,7 @@ static void ble_adv_evt_handler(struct ble_adv *adv, const struct ble_adv_evt *a
 {
 	switch (adv_evt->evt_type) {
 	case BLE_ADV_EVT_ERROR:
-		printk("Advertising error %d\n", adv_evt->error.reason);
+		LOG_ERR("Advertising error: %d", adv_evt->error.reason);
 		break;
 	default:
 		break;
@@ -168,24 +168,24 @@ int main(void)
 
 	err = nrf_sdh_enable_request();
 	if (err) {
-		printk("Failed to enable SoftDevice, err %d\n", err);
+		LOG_ERR("Failed to enable SoftDevice: %d", err);
 		return 0;
 	}
 
-	printk("SoftDevice enabled\n");
+	LOG_INF("SoftDevice enabled");
 
 	err = nrf_sdh_ble_enable(CONFIG_NRF_SDH_BLE_CONN_TAG);
 	if (err) {
-		printk("Failed to enable BLE, err %d\n", err);
+		LOG_ERR("Failed to enable BLE: %d", err);
 		return 0;
 	}
 
-	printk("Bluetooth enabled\n");
+	LOG_INF("Bluetooth enabled");
 
 	err = ble_mcumgr_init();
 
 	if (err) {
-		printk("Failed to initialize MCUmgr, err %d\n", err);
+		LOG_ERR("Failed to initialize MCUmgr: %d", err);
 		return 0;
 	}
 
@@ -197,18 +197,18 @@ int main(void)
 	err = ble_adv_init(&ble_adv, &ble_adv_cfg);
 
 	if (err) {
-		printk("Failed to initialize advertising, err %d\n", err);
+		LOG_ERR("Failed to initialize advertising: %d", err);
 		return 0;
 	}
 
 	err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
 
 	if (err) {
-		printk("Failed to start advertising, err %d\n", err);
+		LOG_ERR("Failed to start advertising: %d", err);
 		return 0;
 	}
 
-	printk("Advertising as %s\n", CONFIG_BLE_ADV_NAME);
+	LOG_INF("Advertising as: %s", CONFIG_BLE_ADV_NAME);
 
 	while (notification_sent == false && device_disconnected == false) {
 		while (LOG_PROCESS()) {
