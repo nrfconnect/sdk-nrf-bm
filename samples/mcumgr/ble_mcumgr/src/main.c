@@ -117,35 +117,6 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 NRF_SDH_BLE_OBSERVER(sdh_ble, on_ble_evt, NULL, 0);
 
 /**
- * @brief Connection parameters event handler
- *
- * @param[in] evt BLE connection parameters event.
- */
-void on_conn_params_evt(const struct ble_conn_params_evt *evt)
-{
-	int err;
-
-	switch (evt->id) {
-	case BLE_CONN_PARAMS_EVT_REJECTED:
-	{
-		err = sd_ble_gap_disconnect(evt->conn_handle, BLE_HCI_CONN_INTERVAL_UNACCEPTABLE);
-
-		if (err) {
-			LOG_ERR("Disconnect failed on conn params update rejection, nrf_error %#x",
-				err);
-		} else {
-			LOG_INF("Disconnected from peer, unacceptable conn params");
-		}
-
-		break;
-	}
-
-	default:
-		break;
-	}
-}
-
-/**
  * @brief BLE advertising event handler
  *
  * @param[in] evt BLE advertising event type.
@@ -247,13 +218,6 @@ int main(void)
 	adv_uuid_list->type = ble_mcumgr_service_uuid_type();
 	ble_adv_cfg.sr_data.uuid_lists.complete.uuid = &adv_uuid_list[0];
 	ble_adv_cfg.sr_data.uuid_lists.complete.len = ARRAY_SIZE(adv_uuid_list);
-
-	err = ble_conn_params_evt_handler_set(on_conn_params_evt);
-
-	if (err) {
-		LOG_ERR("Failed to setup conn param event handler, err %d", err);
-		return 0;
-	}
 
 	err = ble_adv_init(&ble_adv, &ble_adv_cfg);
 
