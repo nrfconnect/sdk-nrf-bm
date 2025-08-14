@@ -17,7 +17,7 @@ extern void ble_conn_params_event_send(const struct ble_conn_params_evt *evt);
 static const ble_gap_conn_params_t ppcp = {
 	.min_conn_interval = CONFIG_BLE_CONN_PARAMS_MIN_CONN_INTERVAL,
 	.max_conn_interval = CONFIG_BLE_CONN_PARAMS_MAX_CONN_INTERVAL,
-	.slave_latency = CONFIG_BLE_CONN_PARAMS_SLAVE_LATENCY,
+	.slave_latency = CONFIG_BLE_CONN_PARAMS_PERIPHERAL_LATENCY,
 	.conn_sup_timeout = CONFIG_BLE_CONN_PARAMS_SUP_TIMEOUT,
 };
 
@@ -44,8 +44,8 @@ static void conn_params_negotiate(uint16_t conn_handle, int idx)
 
 static bool conn_params_can_agree(const ble_gap_conn_params_t *conn_params)
 {
-	uint16_t slave_latency_min;
-	uint16_t slave_latency_max;
+	uint16_t peripheral_latency_min;
+	uint16_t peripheral_latency_max;
 	uint16_t conn_sup_timeout_min;
 	uint16_t conn_sup_timeout_max;
 
@@ -57,16 +57,16 @@ static bool conn_params_can_agree(const ble_gap_conn_params_t *conn_params)
 		return false;
 	}
 
-	slave_latency_min =
-		CLAMP(ppcp.slave_latency - CONFIG_BLE_CONN_PARAMS_MAX_SLAVE_LATENCY_DEVIATION, 0,
-		      UINT16_MAX);
-	slave_latency_max =
-		CLAMP(ppcp.slave_latency + CONFIG_BLE_CONN_PARAMS_MAX_SLAVE_LATENCY_DEVIATION, 0,
-		      UINT16_MAX);
+	peripheral_latency_min =
+		CLAMP(ppcp.slave_latency - CONFIG_BLE_CONN_PARAMS_MAX_PERIPHERAL_LATENCY_DEVIATION,
+		      0, UINT16_MAX);
+	peripheral_latency_max =
+		CLAMP(ppcp.slave_latency + CONFIG_BLE_CONN_PARAMS_MAX_PERIPHERAL_LATENCY_DEVIATION,
+		      0, UINT16_MAX);
 
-	if (conn_params->slave_latency < slave_latency_min ||
-	    conn_params->slave_latency > slave_latency_max) {
-		LOG_DBG("Could not agree on slave latency %#x", conn_params->slave_latency);
+	if (conn_params->slave_latency < peripheral_latency_min ||
+	    conn_params->slave_latency > peripheral_latency_max) {
+		LOG_DBG("Could not agree on peripheral latency %#x", conn_params->slave_latency);
 		return false;
 	}
 
@@ -105,7 +105,7 @@ static void on_conn_params_update(uint16_t conn_handle, int idx,
 				  const ble_gap_evt_conn_param_update_t *evt)
 {
 	LOG_DBG("GAP connection params updated, conn. interval min %u max %u,"
-		" slave latency %u, sup. timeout %u",
+		" peripheral latency %u, sup. timeout %u",
 		evt->conn_params.min_conn_interval,
 		evt->conn_params.max_conn_interval,
 		evt->conn_params.slave_latency,
@@ -186,7 +186,7 @@ static void on_state_evt(enum nrf_sdh_state_evt evt, void *ctx)
 		return;
 	}
 
-	LOG_DBG("conn. interval min %u max %u, slave latency %u, sup. timeout %u",
+	LOG_DBG("conn. interval min %u max %u, peripheral latency %u, sup. timeout %u",
 		ppcp.min_conn_interval, ppcp.max_conn_interval,
 		ppcp.slave_latency,
 		ppcp.conn_sup_timeout);
