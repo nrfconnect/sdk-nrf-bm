@@ -124,6 +124,6 @@ config NRF_SDH_STR_TABLES
 module=NRF_SDH
 module-dep=LOG
 module-str= SoftDevice handler log level
-source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
 endif # NRF_SDH

@@ -9,7 +9,7 @@ menu "MCUboot recovery entry sample"
 module=APP
 module-dep=LOG
 module-str=MCUboot recovery entry
-source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
 endmenu # "MCUboot recovery entry sample"
 

@@ -122,6 +122,6 @@ config BLE_ADV_SECONDARY_PHY
 module=BLE_ADV
 module-dep=LOG
 module-str=BLE Advertising
-source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
 endif # BLE_ADV

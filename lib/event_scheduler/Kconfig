@@ -21,6 +21,6 @@ config EVENT_SCHEDULER_BUF_SIZE
 module=EVENT_SCHEDULER
 module-dep=LOG
 module-str=Event scheduler
-source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
 endif

@@ -43,7 +43,7 @@ endif #BLE_UART_HWFC
 module=BLE_NUS_SAMPLE
 module-dep=LOG
 module-str=BLE NUS Sample
-source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
 endmenu # "BLE NUS sample"
 

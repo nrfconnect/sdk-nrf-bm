@@ -16,6 +16,6 @@ config BLE_HRS_MAX_BUFFERED_RR_INTERVALS
 module=BLE_HRS
 module-dep=LOG
 module-str=BLE Heart rate service
-source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
 endif
