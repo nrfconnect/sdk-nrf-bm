@@ -121,13 +121,13 @@ static uint32_t storage_uninits(void)
 	uint32_t err;
 
 	err = bm_storage_uninit(&storage_a);
-	if (err != NRF_SUCCESS) {
+	if (err != NRF_SUCCESS && err != NRF_ERROR_NOT_SUPPORTED) {
 		LOG_ERR("bm_storage_uninit() failed, err %#x", err);
 		return err;
 	}
 
 	err = bm_storage_uninit(&storage_b);
-	if (err != NRF_SUCCESS) {
+	if (err != NRF_SUCCESS && err != NRF_ERROR_NOT_SUPPORTED) {
 		LOG_ERR("bm_storage_uninit() failed, err %#x", err);
 		return err;
 	}
