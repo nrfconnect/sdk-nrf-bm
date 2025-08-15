@@ -24,6 +24,7 @@
 #include <zephyr/logging/log_ctrl.h>
 #include <zephyr/settings/settings.h>
 #include <bm/settings/bluetooth_name.h>
+#include <zephyr/retention/retention.h>
 
 LOG_MODULE_REGISTER(app, CONFIG_APP_LOG_LEVEL);
 
@@ -279,6 +280,14 @@ int main(void)
 
 		if (err) {
 			LOG_ERR("Failed to update advertising data, err %d", err);
+			return 0;
+		}
+
+		/* Clear settings after device name has been set so it does not persist */
+		err = retention_clear(DEVICE_DT_GET(DT_CHOSEN(zephyr_settings_partition)));
+
+		if (err) {
+			LOG_ERR("Failed to clear retention area, err %d", err);
 			return 0;
 		}
 	}
