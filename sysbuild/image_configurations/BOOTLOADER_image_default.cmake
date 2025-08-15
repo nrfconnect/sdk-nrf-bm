@@ -41,3 +41,5 @@ set_config_string(${ZCMAKE_APPLICATION} CONFIG_SOFTDEVICE_FILE "${SB_CONFIG_SOFT
 if(SB_CONFIG_SOFTDEVICE_S115)
   set_config_bool(${ZCMAKE_APPLICATION} CONFIG_SOFTDEVICE_PAD_HEADER y)
 endif()
+
+set_config_string(${ZCMAKE_APPLICATION} CONFIG_NCS_APPLICATION_BOOT_BANNER_STRING "") # Silences a warning during CMake image configuration
