@@ -68,13 +68,6 @@ function(bm_install_tasks output_hex output_bin)
 #    set(imgtool_args --security-counter ${CONFIG_MCUBOOT_HW_DOWNGRADE_PREVENTION_COUNTER_VALUE})
 #  endif()
 
-  # Set proper hash calculation algorithm for signing
-  if(SB_CONFIG_BM_BOOT_IMG_HASH_ALG_PURE)
-    set(imgtool_args --pure ${imgtool_args})
-  elseif(SB_CONFIG_BM_BOOT_IMG_HASH_ALG_SHA512)
-    set(imgtool_args --sha 512 ${imgtool_args})
-  endif()
-
   if(NOT "${keyfile}" STREQUAL "")
     set(imgtool_args -k "${keyfile}" ${imgtool_args})
   endif()
