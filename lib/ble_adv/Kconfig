@@ -11,7 +11,7 @@ if BLE_ADV
 
 config BLE_ADV_NAME
 	string "Advertising name"
-	default "nRF5 is life"
+	default "nRF_BM_device"
 
 config BLE_ADV_RESTART_ON_DISCONNECT
 	bool "Start advertising upon disconnection"
