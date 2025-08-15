@@ -17,7 +17,7 @@ SoftDevice properties
 
 * The SoftDevice memory requirements for this version are as follows:
 
-  * NVM: **127.0 kB** (0x1FC00 bytes).
+  * NVM: **107.0 kB** (0x1AC00 bytes).
 
   * RAM: **4.9 kB** (0x1380 bytes).
     This is the minimum required memory. The actual requirements depend on the
@@ -32,13 +32,13 @@ SoftDevice properties
 
 * SoftDevice base address:
 
-  * nRF54L05: 0x05D000 (``s115_9.0.0-3.prototype_nrf54l05_softdevice.hex``).
+  * nRF54L05: 0x062000 (``s115_9.0.0-3.prototype_nrf54l05_softdevice.hex``).
 
-  * nRF54L10: 0x0DD000 (``s115_9.0.0-3.prototype_nrf54l10_softdevice.hex``).
+  * nRF54L10: 0x0E2000 (``s115_9.0.0-3.prototype_nrf54l10_softdevice.hex``).
 
-  * nRF54L15: 0x15D000 (``s115_9.0.0-3.prototype_nrf54l15_softdevice.hex``).
+  * nRF54L15: 0x162000 (``s115_9.0.0-3.prototype_nrf54l15_softdevice.hex``).
 
-* The Firmware ID of this SoftDevice is 0x305E.
+* The Firmware ID of this SoftDevice is 0x306C.
 
 New Features
 -------------

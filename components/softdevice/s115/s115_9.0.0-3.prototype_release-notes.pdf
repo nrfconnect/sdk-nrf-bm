@@ -330,7 +330,7 @@ endobj
 endobj
 55 0 obj
 <<
-/Author () /CreationDate (D:20250801133538-01'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20250801133538-01'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
+/Author () /CreationDate (D:20250815115205-01'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20250815115205-01'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
   /Subject (\(unspecified\)) /Title (s115 release notes) /Trapped /False
 >>
 endobj
@@ -940,7 +940,7 @@ Q
 q
 1 0 0 1 23 -3 cm
 q
-BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (NVM: ) Tj /F4 10 Tf (127.0 kB) Tj /F1 10 Tf ( \(0x1FC00 bytes\).) Tj T* ET
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (NVM: ) Tj /F4 10 Tf (107.0 kB) Tj /F1 10 Tf ( \(0x1AC00 bytes\).) Tj T* ET
 Q
 Q
 q
@@ -1047,7 +1047,7 @@ Q
 q
 1 0 0 1 23 -3 cm
 q
-BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (nRF54L05: 0x05D000 \() Tj /F5 10 Tf (s115_9.0.0-3.prototype_nrf54l05_softdevice.hex) Tj /F1 10 Tf (\).) Tj T* ET
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (nRF54L05: 0x062000 \() Tj /F5 10 Tf (s115_9.0.0-3.prototype_nrf54l05_softdevice.hex) Tj /F1 10 Tf (\).) Tj T* ET
 Q
 Q
 q
@@ -1072,7 +1072,7 @@ Q
 q
 1 0 0 1 23 -3 cm
 q
-BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (nRF54L10: 0x0DD000 \() Tj /F5 10 Tf (s115_9.0.0-3.prototype_nrf54l10_softdevice.hex) Tj /F1 10 Tf (\).) Tj T* ET
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (nRF54L10: 0x0E2000 \() Tj /F5 10 Tf (s115_9.0.0-3.prototype_nrf54l10_softdevice.hex) Tj /F1 10 Tf (\).) Tj T* ET
 Q
 Q
 q
@@ -1097,7 +1097,7 @@ Q
 q
 1 0 0 1 23 -3 cm
 q
-BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (nRF54L15: 0x15D000 \() Tj /F5 10 Tf (s115_9.0.0-3.prototype_nrf54l15_softdevice.hex) Tj /F1 10 Tf (\).) Tj T* ET
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (nRF54L15: 0x162000 \() Tj /F5 10 Tf (s115_9.0.0-3.prototype_nrf54l15_softdevice.hex) Tj /F1 10 Tf (\).) Tj T* ET
 Q
 Q
 q
@@ -1130,7 +1130,7 @@ q
 1 0 0 1 23 -3 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The Firmware ID of this SoftDevice is 0x305E.) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The Firmware ID of this SoftDevice is 0x306C.) Tj T* ET
 Q
 Q
 q
@@ -4570,7 +4570,7 @@ xref
 trailer
 <<
 /ID 
-[<5552a080886838d0ea3dcaa7641f2280><5552a080886838d0ea3dcaa7641f2280>]
+[<7f5ebd2a16b6b8ec6611b02d636d5edb><7f5ebd2a16b6b8ec6611b02d636d5edb>]
 % ReportLab generated PDF document -- digest (http://www.reportlab.com)
 
 /Info 55 0 R

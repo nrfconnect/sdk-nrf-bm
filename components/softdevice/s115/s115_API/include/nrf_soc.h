@@ -94,6 +94,8 @@ extern "C" {
 
 #define NRF_RADIO_START_JITTER_US         (1)                 /**< The maximum jitter in @ref NRF_RADIO_CALLBACK_SIGNAL_TYPE_START relative to the requested start time. */
 
+#define SD_RAND_SEED_SIZE                 (32)                /**< Seed size for @ref sd_rand_seed_set. */
+
 /**@} */
 
 /**@addtogroup NRF_SOC_ENUMS Enumerations
@@ -435,7 +437,7 @@ SVCALL(SD_RAND_APPLICATION_VECTOR_GET, uint32_t, sd_rand_application_vector_get(
 
 /**@brief Seed the random number generator
  *
- * @param[in] p_seed Pointer to array of 48 bytes of entropy.
+ * @param[in] p_seed Pointer to array of @ref SD_RAND_SEED_SIZE bytes of entropy.
  *
  * The entropy source must be NIST SP 800-90B compliant.
  *
@@ -445,7 +447,7 @@ SVCALL(SD_RAND_APPLICATION_VECTOR_GET, uint32_t, sd_rand_application_vector_get(
  * @retval ::NRF_SUCCESS The random number generator was seeded.
  * @retval ::NRF_ERROR_INVALID_ADDR p_seed invalid.
 */
-SVCALL(SD_RAND_SEED_SET, uint32_t, sd_rand_seed_set(uint8_t * p_seed));
+SVCALL(SD_RAND_SEED_SET, uint32_t, sd_rand_seed_set(uint8_t p_seed[SD_RAND_SEED_SIZE]));
 
 /**@brief Sets the power mode when in CPU sleep.
  *
