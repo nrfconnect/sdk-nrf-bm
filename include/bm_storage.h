@@ -87,9 +87,6 @@ struct bm_storage_info {
 	bool no_explicit_erase;
 };
 
-/* Forward declaration. */
-struct bm_storage_api;
-
 /**
  * @brief Storage instance.
  *
@@ -99,11 +96,11 @@ struct bm_storage_api;
  */
 struct bm_storage {
 	/**
-	 * @brief The implementation-specific API used by this instance.
+	 * @brief Tells whether the instance is initialized.
 	 *
 	 * @note This field must not be set manually.
 	 */
-	const struct bm_storage_api *api;
+	bool initialized;
 	/**
 	 * @brief Information about the implementation-specific functionality and the non-volatile
 	 *        memory peripheral.
@@ -139,37 +136,6 @@ struct bm_storage {
 };
 
 /**
- * @brief Functions provided by the API implementation.
- */
-struct bm_storage_api {
-	/**
-	 * @brief Initialize the storage peripheral.
-	 */
-	uint32_t (*init)(struct bm_storage *storage);
-	/**
-	 * @brief Uninitialize the storage peripheral.
-	 */
-	uint32_t (*uninit)(struct bm_storage *storage);
-	/**
-	 * @brief Read data from non-volatile memory.
-	 */
-	uint32_t (*read)(const struct bm_storage *storage, uint32_t src, void *dest, uint32_t len);
-	/**
-	 * @brief Write bytes to non-volatile memory.
-	 */
-	uint32_t (*write)(const struct bm_storage *storage, uint32_t dest, const void *src,
-			  uint32_t len, void *ctx);
-	/**
-	 * @brief Erase the non-volatile memory.
-	 */
-	uint32_t (*erase)(const struct bm_storage *storage, uint32_t addr, uint32_t len, void *ctx);
-	/**
-	 * @brief Check if there are any pending operations.
-	 */
-	bool (*is_busy)(const struct bm_storage *storage);
-};
-
-/**
  * @brief Initialize a storage instance.
  *
  * @note This function can be called multiple times on different storage instances in order to
@@ -196,6 +162,7 @@ uint32_t bm_storage_init(struct bm_storage *storage);
  * @retval NRF_ERROR_NULL If @p storage is @c NULL.
  * @retval NRF_ERROR_INVALID_STATE If @p storage is in an invalid state.
  * @retval NRF_ERROR_BUSY If the implementation-specific backend is busy with an ongoing operation.
+ * @retval NRF_ERROR_NOT_SUPPORTED If the backend does not support uninitialization.
  */
 uint32_t bm_storage_uninit(struct bm_storage *storage);
 
@@ -260,6 +227,7 @@ uint32_t bm_storage_write(const struct bm_storage *storage, uint32_t dest, const
  * @retval NRF_ERROR_BUSY If the implementation-specific backend is busy with an ongoing operation.
  * @retval NRF_ERROR_NOT_SUPPORTED If the implementation-specific backend does not implement this
  *                                 function.
+ * @retval NRF_ERROR_NOT_SUPPORTED If the backend does not support uninitialization.
  */
 uint32_t bm_storage_erase(const struct bm_storage *storage, uint32_t addr, uint32_t len, void *ctx);
 
@@ -268,16 +236,11 @@ uint32_t bm_storage_erase(const struct bm_storage *storage, uint32_t addr, uint3
  *
  * @param[in] storage Storage instance to query the status of.
  *
- * @retval true If the storage instance is busy or if the implementation-specific backend is not
- *              initialized.
+ * @retval true If the storage instance is busy, not supported, or if the implementation-specific
+ *              backend is not initialized.
  * @retval false If the storage instance is not busy.
  */
 bool bm_storage_is_busy(const struct bm_storage *storage);
-
-/**
- * @brief Singleton instance of the implementation-specific API.
- */
-extern const struct bm_storage_api bm_storage_api;
 
 /**
  * @brief Singleton instance of the implementation-specific non-volatile memory information.

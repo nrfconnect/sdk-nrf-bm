@@ -9,6 +9,7 @@
 #include <nrfx_rramc.h>
 #include <nrf_error.h>
 #include <bm_storage.h>
+#include <bm_storage_backend.h>
 
 /* 128-bit word line. This is the optimal size to fully utilize RRAM 128-bit word line with ECC
  * (error correction code) and minimize ECC updates overhead, due to these updates happening
@@ -34,7 +35,7 @@ static void event_send(const struct bm_storage *storage, struct bm_storage_evt *
 	storage->evt_handler(evt);
 }
 
-static uint32_t bm_storage_rram_init(struct bm_storage *storage)
+uint32_t bm_storage_backend_init(struct bm_storage *storage)
 {
 	uint32_t err;
 	nrfx_err_t nrfx_err;
@@ -67,16 +68,7 @@ static uint32_t bm_storage_rram_init(struct bm_storage *storage)
 	return err;
 }
 
-static uint32_t bm_storage_rram_uninit(struct bm_storage *storage)
-{
-	if (!state.is_rramc_init) {
-		return NRF_ERROR_FORBIDDEN;
-	}
-
-	return NRF_SUCCESS;
-}
-
-static uint32_t bm_storage_rram_read(const struct bm_storage *storage, uint32_t src, void *dest,
+uint32_t bm_storage_backend_read(const struct bm_storage *storage, uint32_t src, void *dest,
 				     uint32_t len)
 {
 	if (!state.is_rramc_init) {
@@ -88,7 +80,7 @@ static uint32_t bm_storage_rram_read(const struct bm_storage *storage, uint32_t 
 	return NRF_SUCCESS;
 }
 
-static uint32_t bm_storage_rram_write(const struct bm_storage *storage, uint32_t dest,
+uint32_t bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest,
 				      const void *src, uint32_t len, void *ctx)
 {
 	if (!state.is_rramc_init) {
@@ -119,15 +111,7 @@ static uint32_t bm_storage_rram_write(const struct bm_storage *storage, uint32_t
 	return NRF_SUCCESS;
 }
 
-static uint32_t bm_storage_rram_erase(const struct bm_storage *storage, uint32_t addr, uint32_t len,
-				      void *ctx)
-{
-	/* Do nothing. RRAM does not require erase functionality. */
-
-	return NRF_ERROR_NOT_SUPPORTED;
-}
-
-static bool bm_storage_rram_is_busy(const struct bm_storage *storage)
+bool bm_storage_backend_is_busy(const struct bm_storage *storage)
 {
 	/* Always appear as busy if driver is not initialized. */
 	if (!state.is_rramc_init) {
@@ -136,15 +120,6 @@ static bool bm_storage_rram_is_busy(const struct bm_storage *storage)
 
 	return (atomic_get(&state.operation_ongoing) == 1);
 }
-
-const struct bm_storage_api bm_storage_api = {
-	.init = bm_storage_rram_init,
-	.uninit = bm_storage_rram_uninit,
-	.write = bm_storage_rram_write,
-	.read = bm_storage_rram_read,
-	.erase = bm_storage_rram_erase,
-	.is_busy = bm_storage_rram_is_busy
-};
 
 const struct bm_storage_info bm_storage_info = {
 	.program_unit = RRAMC_WRITE_BLOCK_SIZE,

@@ -8,6 +8,23 @@
 #include <sys/types.h>
 #include <nrf_error.h>
 #include <bm_storage.h>
+#include <bm_storage_backend.h>
+
+__weak uint32_t bm_storage_backend_uninit(struct bm_storage *storage)
+{
+	return NRF_ERROR_NOT_SUPPORTED;
+}
+
+__weak uint32_t bm_storage_backend_erase(const struct bm_storage *storage, uint32_t addr,
+					uint32_t len, void *ctx)
+{
+	return NRF_ERROR_NOT_SUPPORTED;
+}
+
+__weak bool bm_storage_backend_is_busy(const struct bm_storage *storage)
+{
+	return true;
+}
 
 static inline bool is_within_bounds(off_t addr, size_t len, off_t boundary_start,
 				    size_t boundary_size)
@@ -22,10 +39,10 @@ uint32_t bm_storage_init(struct bm_storage *storage)
 		return NRF_ERROR_NULL;
 	}
 
-	storage->api = &bm_storage_api;
 	storage->nvm_info = &bm_storage_info;
+	storage->initialized = true;
 
-	return (storage->api)->init(storage);
+	return bm_storage_backend_init(storage);
 }
 
 uint32_t bm_storage_uninit(struct bm_storage *storage)
@@ -36,14 +53,14 @@ uint32_t bm_storage_uninit(struct bm_storage *storage)
 		return NRF_ERROR_NULL;
 	}
 
-	if (!storage->api) {
+	if (!storage->initialized) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	err = (storage->api)->uninit(storage);
+	err = bm_storage_backend_uninit(storage);
 
 	if (err == NRF_SUCCESS) {
-		storage->api = NULL;
+		storage->initialized = false;
 		storage->nvm_info = NULL;
 	}
 
@@ -56,7 +73,7 @@ uint32_t bm_storage_read(const struct bm_storage *storage, uint32_t src, void *d
 		return NRF_ERROR_NULL;
 	}
 
-	if (!storage->api || !storage->nvm_info) {
+	if (!storage->initialized || !storage->nvm_info) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
@@ -69,7 +86,7 @@ uint32_t bm_storage_read(const struct bm_storage *storage, uint32_t src, void *d
 		return NRF_ERROR_INVALID_ADDR;
 	}
 
-	return (storage->api)->read(storage, src, dest, len);
+	return bm_storage_backend_read(storage, src, dest, len);
 }
 
 uint32_t bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void *src,
@@ -80,7 +97,7 @@ uint32_t bm_storage_write(const struct bm_storage *storage, uint32_t dest, const
 		return NRF_ERROR_NULL;
 	}
 
-	if (!storage->api || !storage->nvm_info) {
+	if (!storage->initialized || !storage->nvm_info) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
@@ -93,7 +110,8 @@ uint32_t bm_storage_write(const struct bm_storage *storage, uint32_t dest, const
 		return NRF_ERROR_INVALID_ADDR;
 	}
 
-	return (storage->api)->write(storage, dest, src, len, ctx);
+
+	return bm_storage_backend_write(storage, dest, src, len, ctx);
 }
 
 uint32_t bm_storage_erase(const struct bm_storage *storage, uint32_t addr, uint32_t len, void *ctx)
@@ -102,7 +120,7 @@ uint32_t bm_storage_erase(const struct bm_storage *storage, uint32_t addr, uint3
 		return NRF_ERROR_NULL;
 	}
 
-	if (!storage->api || !storage->nvm_info) {
+	if (!storage->initialized || !storage->nvm_info) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
@@ -115,7 +133,7 @@ uint32_t bm_storage_erase(const struct bm_storage *storage, uint32_t addr, uint3
 		return NRF_ERROR_INVALID_ADDR;
 	}
 
-	return (storage->api)->erase(storage, addr, len, ctx);
+	return bm_storage_backend_erase(storage, addr, len, ctx);
 }
 
 bool bm_storage_is_busy(const struct bm_storage *storage)
@@ -124,9 +142,5 @@ bool bm_storage_is_busy(const struct bm_storage *storage)
 		return true;
 	}
 
-	if (!storage->api) {
-		return true;
-	}
-
-	return (storage->api)->is_busy(storage);
+	return bm_storage_backend_is_busy(storage);
 }

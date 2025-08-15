@@ -15,48 +15,38 @@
 #define PARTITION_START 0x4200
 #define PARTITION_SIZE (BLOCK_SIZE * 2)
 
-static uint32_t bm_storage_unity_init(struct bm_storage *storage)
+uint32_t bm_storage_backend_init(struct bm_storage *storage)
 {
 	return NRF_SUCCESS;
 }
 
-static uint32_t bm_storage_unity_uninit(struct bm_storage *storage)
+uint32_t bm_storage_backend_uninit(struct bm_storage *storage)
 {
 	return NRF_SUCCESS;
 }
 
-static uint32_t bm_storage_unity_write(const struct bm_storage *storage, uint32_t dest,
+uint32_t bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest,
 				       const void *src, uint32_t len, void *ctx)
 {
 	return NRF_SUCCESS;
 }
 
-static uint32_t bm_storage_unity_erase(const struct bm_storage *storage, uint32_t addr,
+uint32_t bm_storage_backend_erase(const struct bm_storage *storage, uint32_t addr,
 				       uint32_t len, void *ctx)
 {
 	return NRF_SUCCESS;
 }
 
-static uint32_t bm_storage_unity_read(const struct bm_storage *storage, uint32_t src, void *dest,
+uint32_t bm_storage_backend_read(const struct bm_storage *storage, uint32_t src, void *dest,
 				      uint32_t len)
 {
 	return NRF_SUCCESS;
 }
 
-static bool bm_storage_unity_is_busy(const struct bm_storage *storage)
+bool bm_storage_backend_is_busy(const struct bm_storage *storage)
 {
 	return false;
 }
-
-/* Implements the exported extern. */
-const struct bm_storage_api bm_storage_api = {
-	.init = bm_storage_unity_init,
-	.uninit = bm_storage_unity_uninit,
-	.write = bm_storage_unity_write,
-	.read = bm_storage_unity_read,
-	.erase = bm_storage_unity_erase,
-	.is_busy = bm_storage_unity_is_busy
-};
 
 /* Implements the exported extern. */
 const struct bm_storage_info bm_storage_info = {
@@ -434,10 +424,6 @@ void test_bm_storage_is_busy(void)
 
 	/* Storage is NULL. */
 	is_busy = bm_storage_is_busy(NULL);
-	TEST_ASSERT_EQUAL(true, is_busy);
-
-	/* Storage is uninitialized. */
-	is_busy = bm_storage_is_busy(&storage);
 	TEST_ASSERT_EQUAL(true, is_busy);
 
 	err = bm_storage_init(&storage);
