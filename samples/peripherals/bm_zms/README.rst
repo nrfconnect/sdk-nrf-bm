@@ -7,8 +7,7 @@ BM_ZMS
    :local:
    :depth: 2
 
-The BM_ZMS sample demonstrates how to use the Bare Metal ZMS (Zephyr Memory Storage) library to
-manage key-value pairs, counters, and long arrays in a storage system.
+The BM_ZMS sample demonstrates how to use the Bare Metal ZMS (Zephyr Memory Storage) library to manage key-value pairs, counters, and long arrays in a storage system.
 It shows how to add, read, and delete items in the storage.
 
 Refer to the `Kconfig fragments`_ section for more information on configuration.
@@ -43,8 +42,7 @@ Kconfig fragments
 
 By default, the sample uses the SoftDevice storage backend.
 To build the sample for the RRAM backend, you can use the :file:`rram.conf` Kconfig fragment.
-To configure it for this sample, follow the steps outlined in the
-`Configuring and building the sample`_ section.
+To configure it for this sample, follow the steps outlined in the `Configuring and building the sample`_ section.
 
 Building and running
 ********************
