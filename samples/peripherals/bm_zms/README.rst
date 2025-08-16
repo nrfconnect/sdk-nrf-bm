@@ -24,6 +24,7 @@ The sample supports the following development kits:
    * - Hardware platform
      - PCA
      - Board target
+     - DFU-enabled board target
    * - `nRF54L15 DK`_
      - PCA10156
      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice
