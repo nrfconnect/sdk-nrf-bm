@@ -1,16 +1,16 @@
 .. _ug_dfu:
 
-Device Firmware Update (DFU)
-############################
+Running the DFU process
+#######################
 
-This guide provides an overview of the Device Firmware Update (DFU) capabilities in the |BMlong|.
+This user guide introduces basic information of the DFU and provides an example procedure for running it on your application.
 
 The DFU process in this SDK uses `MCUboot`_, a secure bootloader for 32-bit microcontrollers.
 MCUboot allows for safe firmware updates with minimal overhead.
 
-For more background information about the DFU process in |BMshort|, see <DFU design docs that will be added soon>.
-
 Firmware updates are transferred to a device using `MCUmgr`_, which has transports for Bluetooth Low Energy® and UART.
+
+More detailed information about specific concepts can be found in :ref:`dfu_memory_partitioning` and :ref:`ug_bootloader_keys`.
 
 Partition Configuration
 ***********************
@@ -37,6 +37,8 @@ The memory of your device must be partitioned appropriately to accommodate the b
    The sizes and configurations of slot0 and slot1 are asymmetrical.
 
 Refer to `Preparing the DFU-ready variant of your board`_ for an example of how to partition the memory using DTS.
+
+For more details on memory partitioning and releated concepts, see :ref:`dfu_memory_partitioning`.
 
 .. _ug_dfu_firmware_loader:
 
@@ -97,6 +99,8 @@ The following is the workflow for testing the DFU mechanism on an application de
       * ``bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot`` for nRF54L15 with S115 softdevice
 
    To test DFU with one of these default board targets, skip to the :ref:`ug_dfu_building_running` section.
+
+.. _ug_dfu_preparing_dfu_board:
 
 Preparing the DFU-ready variant of your board
 =============================================
