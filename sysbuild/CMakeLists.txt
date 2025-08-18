@@ -167,26 +167,42 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_post_cmake)
   cmake_parse_arguments(PRE_CMAKE "" "" "IMAGES" ${ARGN})
 
   if(NOT SB_CONFIG_SOFTDEVICE_NONE)
-    set(dependency_targets)
+    set(check_targets mcuboot;installer;${SB_CONFIG_BM_FIRMWARE_LOADER_IMAGE_NAME};${DEFAULT_IMAGE})
+    set(dependency_targets ${SB_CONFIG_SOFTDEVICE_FILE})
 
-    foreach(image ${PRE_CMAKE_IMAGES})
-      list(APPEND dependency_targets ${image}_extra_byproducts)
+    foreach(image ${check_targets})
+      sysbuild_get(${image}_kernel_bin_name IMAGE ${image} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
+      sysbuild_get(${image}_binary_dir IMAGE ${image} VAR APPLICATION_BINARY_DIR CACHE)
+
+      list(APPEND dependency_targets
+        ${image}_extra_byproducts
+        ${${image}_binary_dir}/zephyr/.config
+        ${${image}_binary_dir}/zephyr/${${image}_kernel_bin_name}.bin
+      )
+
+      if("${image}" STREQUAL "${SB_CONFIG_BM_FIRMWARE_LOADER_IMAGE_NAME}")
+        list(APPEND dependency_targets
+          ${${image}_binary_dir}/zephyr/${${image}_kernel_bin_name}.signed.bin
+        )
+      endif()
     endforeach()
 
     # Installer metadata
-    add_custom_target(metadata_generation
-      ALL
-      DEPENDS ${CMAKE_BINARY_DIR}/metadata.hex ${CMAKE_BINARY_DIR}/metadata.bin
-      ${CMAKE_BINARY_DIR}/combined_signed_update_images.hex
-    )
-
-    add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/metadata.hex ${CMAKE_BINARY_DIR}/metadata.bin
+    add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/metadata.hex
       ${CMAKE_BINARY_DIR}/combined_signed_update_images.hex
       COMMAND
       ${PYTHON_EXECUTABLE}
       ${ZEPHYR_NRF_BM_MODULE_DIR}/scripts/generate_metadata.py
       --build-dir ${CMAKE_BINARY_DIR}
-      DEPENDS ${dependency_targets} ../zephyr/.config
+      # This command depends on softdevice.signed.bin also but a dependency has been added to the
+      # MCUboot build target instead
+      DEPENDS ${dependency_targets} ${CMAKE_BINARY_DIR}/zephyr/.config
+    )
+
+    add_custom_target(metadata_generation
+      ALL
+      DEPENDS ${CMAKE_BINARY_DIR}/metadata.hex
+      ${CMAKE_BINARY_DIR}/combined_signed_update_images.hex
     )
 
     if(NOT SB_CONFIG_BM_FIRMWARE_LOADER_NONE)
