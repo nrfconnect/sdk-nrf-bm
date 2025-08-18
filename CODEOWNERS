@@ -44,6 +44,7 @@
 /include/*.h                              @nrfconnect/ncs-bm
 /include/bm/                              @nrfconnect/ncs-bm
 /include/bm/bluetooth/                    @nrfconnect/ncs-bm
+/include/bm/settings/                     @nrfconnect/ncs-eris
 
 # Libraries
 /lib/bluetooth/ble_adv/                   @nrfconnect/ncs-bm
@@ -83,6 +84,7 @@
 /subsys/fs/bm_zms/                        @nrfconnect/ncs-bm @rghaddab
 /subsys/logging/                          @nrfconnect/ncs-bm
 /subsys/mgmt/mcumgr/                      @nrfconnect/ncs-eris
+/subsys/settings/                         @nrfconnect/ncs-eris
 /subsys/softdevice/                       @nrfconnect/ncs-bm
 /subsys/softdevice_handler/               @nrfconnect/ncs-bm
 /subsys/storage/bm_storage/               @nrfconnect/ncs-bm
