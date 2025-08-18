@@ -1,5 +1,5 @@
 sample:
-  name: Bare-Metal ZMS Sample
+  name: Bare Metal ZMS Sample
 tests:
   sample.bm_zms:
     sysbuild: true
