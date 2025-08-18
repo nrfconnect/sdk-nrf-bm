@@ -36,11 +36,6 @@ jobs:
             echo "publish2 dev PR-${{ github.event.number }} ${ARCHIVE}" > "${MONITOR}"
             echo "${{ github.event.number }}" > pr.txt
           else
-            if [ -z "${VERSION}" ]; then
-              echo "Not a release or latest, skipping publish"
-              exit 0
-            fi
-
             ARCHIVE="legacy-ncs-${VERSION}.zip"
             echo "publish2 main ${VERSION} ${ARCHIVE}" > "${MONITOR}"
           fi
