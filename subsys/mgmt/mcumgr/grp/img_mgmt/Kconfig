@@ -20,6 +20,7 @@ menuconfig MCUMGR_GRP_IMG
 	select MPU_ALLOW_FLASH_WRITE if ARM_MPU
 	select MCUMGR_SMP_CBOR_MIN_DECODING_LEVEL_2
 	select MCUMGR_SMP_CBOR_MIN_ENCODING_LEVEL_3 if ZCBOR_CANONICAL
+	imply IMG_ERASE_PROGRESSIVELY
 	help
 	  Enables MCUmgr handlers for image management
 
