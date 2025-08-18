@@ -1,5 +1,5 @@
 sample:
-  name: BLE Power Profiling Sample
+  name: Bluetooth LE Power Profiling Sample
 tests:
   sample.ble_pwr_profiling:
     build_only: true
