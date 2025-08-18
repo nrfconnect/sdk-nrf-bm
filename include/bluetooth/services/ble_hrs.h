@@ -16,6 +16,7 @@
 #include <stdbool.h>
 #include <ble.h>
 #include <nrf_sdh_ble.h>
+#include <ble_conn_params.h>
 
 #ifdef __cplusplus
 extern "C" {
