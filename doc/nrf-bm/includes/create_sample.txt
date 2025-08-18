@@ -17,24 +17,6 @@ Follow these steps to create a new application based on this sample:
 
       Create New Application from Sample - Quick Pick Menu
 
-#. Click on the :guilabel:`Filter By Module` icon on the top right of the quick pick menu.
-
-   A quick pick menu appears showing a list of available modules to filter by.
-
-   .. figure:: /images/nrf_bm_filter_by_module.png
-      :alt: Filter By Module Menu
-
-      Filter By Module Menu
-
-#. Select ``nrf-bm``, then press :guilabel:`OK`.
-
-   A quick pick menu appears showing a list of available samples from |BMshort|.
-
-   .. figure:: /images/nrf_bm_sample_list.png
-      :alt: Create New Application from Sample - Bare Metal Sample List
-
-      Create New Application from Sample - Bare Metal Sample List
-
 #. Click on the name of this sample.
 
    A prompt appears asking to enter the location for the application.
