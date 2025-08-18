@@ -41,6 +41,7 @@
 # Include
 /include/*.h                              @nrfconnect/ncs-bm
 /include/bluetooth/                       @nrfconnect/ncs-bm
+/include/settings/                        @nrfconnect/ncs-pluto
 
 # Libraries
 /lib/ble_adv/                             @nrfconnect/ncs-bm
@@ -75,6 +76,7 @@
 /subsys/bm_installs/                      @nrfconnect/ncs-pluto
 /subsys/logging/                          @nrfconnect/ncs-bm
 /subsys/mgmt/mcumgr/                      @nrfconnect/ncs-pluto
+/subsys/settings/                         @nrfconnect/ncs-pluto
 /subsys/softdevice/                       @nrfconnect/ncs-bm
 /subsys/softdevice_handler/               @nrfconnect/ncs-bm
 /subsys/storage/flash_map/                @nrfconnect/ncs-pluto
