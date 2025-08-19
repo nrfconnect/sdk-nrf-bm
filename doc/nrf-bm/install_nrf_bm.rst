@@ -25,6 +25,11 @@ Install the following software tools:
       * On Windows, the driver comes bundled with nRF Connect for Desktop.
       * On macOS and Linux, you must install the driver manually.
 
+      .. note::
+
+         On Ubuntu you might be required to install ``libfuse2``.
+         To do so, open a terminal and execute: ``sudo apt install libfuse2``.
+
   * After installation, type **Quick Start** in the :guilabel:`Search...` box.
   * In the results, select the :guilabel:`Quick Start` app. Click :guilabel:`Install`, then click :guilabel:`Open`.
   * The Quick Start app opens.
