@@ -107,6 +107,14 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
       # MCUboot firmware loader entrance mode selection
       if(SB_CONFIG_BM_BOOTLOADER_MCUBOOT_FIRMWARE_LOADER_ENTRANCE_BOOT_MODE)
         set_config_bool(mcuboot CONFIG_BOOT_FIRMWARE_LOADER_BOOT_MODE y)
+        set_config_bool(mcuboot CONFIG_RETAINED_MEM y)
+        set_config_bool(mcuboot CONFIG_RETENTION y)
+        set_config_bool(mcuboot CONFIG_RETENTION_BOOT_MODE y)
+
+        # Also enable boot mode for main application
+        set_config_bool(${DEFAULT_IMAGE} CONFIG_RETAINED_MEM y)
+        set_config_bool(${DEFAULT_IMAGE} CONFIG_RETENTION y)
+        set_config_bool(${DEFAULT_IMAGE} CONFIG_RETENTION_BOOT_MODE y)
       endif()
 
       if(SB_CONFIG_BM_BOOTLOADER_MCUBOOT_FIRMWARE_LOADER_ENTRANCE_PIN_RESET)
