@@ -10,23 +10,54 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+from pathlib import Path
+import sys
+import re
 
+# Paths ------------------------------------------------------------------------
 
-# -- Project information -----------------------------------------------------
+NRF_BASE = Path(__file__).absolute().parents[2]
 
-project = 'nRF Connect SDK Bare Metal option - 0.7.99'
-copyright = '2025, Nordic Semiconductor'
-author = 'Nordic Semiconductor'
+sys.path.insert(0, str(NRF_BASE / "doc" / "_utils"))
+import utils
 
-# -- General configuration ---------------------------------------------------
+ZEPHYR_BASE = utils.get_projdir("zephyr")
 
-# Add any Sphinx extension module names here, as strings. They can be
-# extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
-# ones.
-extensions = ['sphinx.ext.intersphinx', 'sphinx_tabs.tabs']
+# General configuration --------------------------------------------------------
+
+project = "nRF Connect SDK Bare Metal option"
+copyright = "2019-2025, Nordic Semiconductor"
+author = "Nordic Semiconductor"
+version = release = os.environ.get("DOCSET_VERSION")
+
+sys.path.insert(0, str(ZEPHYR_BASE / "doc" / "_extensions"))
+sys.path.insert(0, str(NRF_BASE / "doc" / "_extensions"))
+
+extensions = [
+    "sphinx.ext.intersphinx",
+    "table_from_rows",
+    "options_from_kconfig",
+    "ncs_include",
+    "manifest_revisions_table",
+    "sphinxcontrib.mscgen",
+    "zephyr.html_redirects",
+    "zephyr.kconfig",
+    "zephyr.external_content",
+    "zephyr.doxyrunner",
+    "zephyr.doxybridge",
+    "zephyr.link-roles",
+    "zephyr.dtcompatible-role",
+    "zephyr.domain",
+    "zephyr.gh_utils",
+    "sphinx_tabs.tabs",
+    "software_maturity_table",
+    "sphinx_togglebutton",
+    "sphinx_copybutton",
+    "notfound.extension",
+    "page_filter",
+    "sphinxcontrib.plantuml",
+]
 
 rst_epilog = """
 .. include:: /substitutions.txt
@@ -34,26 +65,79 @@ rst_epilog = """
 .. include:: /shortcuts.txt
 """
 
-# Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+# Options for HTML output ------------------------------------------------------
 
-# The root document.
-root_doc = 'index'
+html_theme = "sphinx_ncs_theme"
+html_static_path = [str(NRF_BASE / "doc" / "_static")]
+html_last_updated_fmt = "%b %d, %Y"
+html_show_sourcelink = True
+html_show_sphinx = False
 
-# List of patterns, relative to source directory, that match files and
-# directories to ignore when looking for source files.
-# This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ["venv"]
+html_theme_options = {"docset": "nrf-bm", "docsets": utils.ALL_DOCSETS}
 
+# Options for intersphinx ------------------------------------------------------
 
-# -- Options for HTML output -------------------------------------------------
+intersphinx_mapping = dict()
 
-# The theme to use for HTML and HTML Help pages.  See the documentation for
-# a list of builtin themes.
-#
-html_theme = 'sphinx_rtd_theme'
+kconfig_mapping = utils.get_intersphinx_mapping("kconfig")
+if kconfig_mapping:
+    intersphinx_mapping["kconfig"] = kconfig_mapping
 
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static', 'pdfs']
+# -- Options for doxyrunner plugin ---------------------------------------------
+
+_doxyrunner_outdir = utils.get_builddir() / "html" / "nrf-bm" / "doxygen"
+
+doxyrunner_doxygen = os.environ.get("DOXYGEN_EXECUTABLE", "doxygen")
+doxyrunner_projects = {
+    "nrf": {
+        "doxyfile": NRF_BASE / "doc" / "nrf-bm" / "nrf-bm.doxyfile.in",
+        "outdir": _doxyrunner_outdir,
+        "fmt": True,
+        "fmt_vars": {
+            "NRF_BASE": str(NRF_BASE),
+            "DOCSET_SOURCE_BASE": str(NRF_BASE),
+            "DOCSET_BUILD_DIR": str(_doxyrunner_outdir),
+            "DOCSET_VERSION": version,
+        }
+    }
+}
+
+doxybridge_projects = {
+    "nrf-bm": _doxyrunner_outdir,
+    "s115": utils.get_builddir() / "html" / "s115",
+}
+
+# Options for ncs_include ------------------------------------------------------
+
+ncs_include_mapping = {
+    "nrf-bm": utils.get_srcdir("nrf-bm"),
+    "zephyr": utils.get_srcdir("zephyr"),
+}
+
+# Options for external_content -------------------------------------------------
+
+external_content_contents = [
+    (NRF_BASE / "doc" / "nrf-bm", "*"),
+    (NRF_BASE, "samples/**/*.rst"),
+]
+external_content_keep = ["versions.txt"]
+
+# Options for options_from_kconfig ---------------------------------------------
+
+options_from_kconfig_base_dir = NRF_BASE
+options_from_kconfig_zephyr_dir = ZEPHYR_BASE
+
+# Options for sphinx_notfound_page ---------------------------------------------
+
+notfound_urls_prefix = "/nRF_Connect_SDK/doc/{}/nrf/".format(
+    "latest" if version.endswith("99") else version
+)
+
+# -- Options for zephyr.gh_utils -----------------------------------------------
+
+gh_link_version = "main" if version.endswith("99") else f"v{version}"
+gh_link_base_url = f"https://github.com/nrfconnect/sdk-nrf-bm"
+gh_link_prefixes = {
+    "samples/.*": "",
+    ".*": "doc/nrf-bm",
+}
