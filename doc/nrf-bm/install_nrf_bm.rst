@@ -125,7 +125,7 @@ Your directory structure should now look similar to this:
    ncs
    ├─── toolchains
    │  └─── <toolchain_version>
-   └─── bm_<sdk_version>
+   └─── nrf-bm/<sdk_version>
       ├─── bootloader
       ├─── modules
       ├─── nrf
