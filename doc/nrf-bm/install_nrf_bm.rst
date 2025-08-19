@@ -61,9 +61,10 @@ Every |BMlong| release consists of:
 
       Complete the following steps to get the |BMshort| code using the |nRFVSC|.
 
-      1. In the extension's :guilabel:`Welcome View`, click :guilabel:`Manage SDKs`. A popup window will appear.
+      1. If this is your first time installing the SDK, click :guilabel:`Install SDK` in the extension's :guilabel:`Welcome View`.
 
-      #. Click :guilabel:`Install SDK`.
+         If you have installed an SDK or a Toolchain before, click on :guilabel:`Manage SDKs` in the extension's :guilabel:`Welcome View`.
+         Then, select :guilabel:`Install SDK` from the quick pick menu that appears.
 
       #. In the next page you will be prompted to **Select SDK type**, click :guilabel:`nRF Connect SDK Bare Metal`.
 
