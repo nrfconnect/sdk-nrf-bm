@@ -63,7 +63,6 @@ config BM_BOOTLOADER_MCUBOOT_FIRMWARE_LOADER_ENTRANCE_PIN_RESET
 
 config BM_BOOTLOADER_MCUBOOT_FIRMWARE_LOADER_ENTRANCE_BOOT_MODE
 	bool "Check boot mode via retention subsystem"
-	default y
 
 endmenu
 
