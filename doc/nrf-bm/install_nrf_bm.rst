@@ -45,38 +45,6 @@ Install the following software tools:
   * In |VSC|, the latest version of the `nRF Connect for VS Code Extension Pack`_.
     The |nRFVSC| comes with its own bundled version of some of the nRF Util commands.
 
-.. _nrf_bm_installing_toolchain:
-
-Install the toolchain
-*********************
-
-The |BMshort| toolchain includes tools and modules required to build the samples and applications on top of it.
-
-Use nRF Connect for VS Code to install the toolchain:
-
-.. note::
-   These instructions are tested using |nRFVSC| version 2025.5.92.
-   Newer versions of the extension might feature changes to the user interface.
-   It is recommended to use the latest version of the extension.
-
-1. Open the nRF Connect extension in |VSC| by clicking its icon in the :guilabel:`Activity Bar`.
-#. If this is your first time installing the toolchain, click :guilabel:`Install Toolchain` in the extension's :guilabel:`Welcome View`.
-
-   If you have installed a toolchain before, click on :guilabel:`Manage toolchains` in the extension's :guilabel:`Welcome View`.
-   Then, select :guilabel:`Install Toolchain` from the quick pick menu that appears.
-
-#. The list of available stable toolchain versions appears in the |VSC|'s quick pick.
-#. Select the toolchain version to install.
-   For this release of |BMshort|, use version |ncs_release| of the toolchain.
-
-  .. note::
-     Every |BMshort| release uses the toolchain of the |NCS| version that it is based on.
-
-The toolchain installation starts in the background, as can be seen in the notification that appears.
-If this is your first installation of the toolchain, wait for it to finish before moving to the next step of this procedure (getting the code).
-
-When you install the toolchain for the first time, the installed version is automatically selected for your project.
-
 .. _cloning_the_repositories_nrf_bm:
 
 Getting the code
@@ -85,147 +53,70 @@ Getting the code
 Every |BMlong| release consists of:
 
 * A combination of Git repositories at different versions and revisions, managed together by West.
-* An archive containing a source mirror of the Git repositories required to get started with |BMshort|.
+* A pre-packaged SDK containing a source mirror of the Git repositories required to get started with |BMshort|.
 
 .. tabs::
 
-   .. group-tab:: SDK Archive
+   .. group-tab:: Pre-packaged SDK & Toolchain
 
-      Complete the following steps to get the |BMshort| code using the SDK archive.
+      Complete the following steps to get the |BMshort| code using the |nRFVSC|.
 
-      1. Download the archive from the following link:
+      1. In the extension's :guilabel:`Welcome View`, click :guilabel:`Manage SDKs`. A popup window will appear.
 
-         https://files.nordicsemi.com/artifactory/ncs-src-mirror/external/sdk-nrf-bm/v0.7.0/src.tar.gz
+      #. Click :guilabel:`Install SDK`.
 
-      #. Extract the archive to the recommended location.
+      #. In the next page you will be prompted to **Select SDK type**, click :guilabel:`nRF Connect SDK Bare Metal`.
 
-         .. tabs::
+      #. In the next page you will be prompted to **Select an SDK version (or enter the branch, tag or commit SHA) to install...**, click :guilabel:`v0.8.0` marked on the right by the label :guilabel:`Pre-packaged SDKs & Toolchains`.
 
-            .. group-tab:: Windows
+      #. In the next page you will be prompted to select a destination for the SDK. The default suggestion is recommended. Then press **Enter**.
+         This will proceed by installing |BMshort| and the respective Toolchain it requires.
 
-               * Ensure the folder :file:`C:/ncs/bm_v0.7.0` exists.
-                 If it does not exist, create it in File Explorer or by running the following command in Command Prompt:
+   .. group-tab:: GitHub
 
-                  .. code-block:: console
+         1. Install the toolchain
 
-                     mkdir C:\ncs\bm_v0.7.0
+            The |BMshort| toolchain includes tools and modules required to build the samples and applications on top of it.
 
-               * Right-click the downloaded :file:`src.tar.gz` file.
-               * Select :guilabel:`Extract All...` and choose :file:`C:/ncs/bm_v0.7.0` as destination.
-
-            .. group-tab:: Linux
-
-               .. code-block:: console
-
-                  mkdir -p ~/ncs/bm_v0.7.0
-                  tar -xzf src.tar.gz -C ~/ncs/bm_v0.7.0
-
-            .. group-tab:: macOS
-
-               .. code-block:: console
-
-                  sudo mkdir -p /opt/nordic/ncs/bm_v0.7.0
-                  sudo tar -xzf src.tar.gz -C /opt/nordic/ncs/bm_v0.7.0
-
-         .. note::
-            The extraction can take several minutes.
-
-      #. Open the nRF Connect extension in |VSC|.
-
-      #. In the extension's :guilabel:`Welcome View`, click on :guilabel:`Manage toolchains` and select :guilabel:`Open terminal profile`.
-         The nRF Connect terminal opens with the correct environment.
-
-      #. Navigate to the extracted SDK folder.
-
-         .. tabs::
-
-            .. group-tab:: Windows
-
-               .. code-block:: console
-
-                  cd C:/ncs/bm_v0.7.0
-
-            .. group-tab:: Linux
-
-               .. code-block:: console
-
-                  cd ~/ncs/bm_v0.7.0
-
-            .. group-tab:: macOS
-
-               .. code-block:: console
-
-                  cd /opt/nordic/ncs/bm_v0.7.0
-
-      #. Run the following command to export the Zephyr CMake package:
-
-         .. code-block:: console
-
-            west zephyr-export
-
-      #. In the extension's :guilabel:`Welcome View`, click the refresh icon next to :guilabel:`Manage SDKs`.
-         The SDK list will be updated.
-
-   .. group-tab:: VS Code with Git
-
-      .. important::
-         This method is NOT supported as of version |release|.
-         It will be supported at official launch of |BMshort|.
-
-      .. .. important::
-            Make sure that ``git`` is installed on your system before starting this procedure.
-
-         Complete the following steps to clone the |BMshort| repositories.
-
-         1. Open the nRF Connect extension in |VSC| by clicking its icon in the :guilabel:`Activity Bar`.
-         #. In the extension's :guilabel:`Welcome View`, click on :guilabel:`Manage SDKs`.
-            The list of actions appears in the |VSC|'s quick pick.
-         #. Click :guilabel:`Install SDK`.
-            The list of available stable SDK versions appears in the |VSC|'s quick pick.
-         #. Select the SDK version to install.
-            For this release of |BMshort|, use version |ncs_release| of the SDK.
+            Use nRF Connect for VS Code to install the toolchain:
 
             .. note::
-               The SDK installation starts and it can take several minutes.
+               These instructions are tested using |nRFVSC| version 2025.5.92.
+               Newer versions of the extension might feature changes to the user interface.
+               It is recommended to use the latest version of the extension.
 
-         #. Open command line and navigate to the SDK installation folder.
-            The default location to install the SDK is :file:`C:/ncs/v3.0.1` on Windows, :file:`~/ncs/v3.0.1` on Linux, and :file:`/opt/nordic/ncs/v3.0.1` on macOS.
-         #. Clone the `sdk-nrf-bm`_ repository.
+            1. Open the nRF Connect extension in |VSC| by clicking its icon in the :guilabel:`Activity Bar`.
+            #. If this is your first time installing the toolchain, click :guilabel:`Install Toolchain` in the extension's :guilabel:`Welcome View`.
 
-            .. tabs::
+               If you have installed a toolchain before, click on :guilabel:`Manage toolchains` in the extension's :guilabel:`Welcome View`.
+               Then, select :guilabel:`Install Toolchain` from the quick pick menu that appears.
 
-               .. group-tab:: Windows
+            #. The list of available stable toolchain versions appears in the |VSC|'s quick pick.
+            #. Select the toolchain version to install.
+               For this release of |BMshort|, use version |ncs_release| of the toolchain.
 
-                  .. code-block:: console
+            .. note::
+               Every |BMshort| release uses the toolchain of the |NCS| version that it is based on.
 
-                     cd C:/ncs/v3.0.1
-                     git clone https://github.com/nrfconnect/sdk-nrf-bm.git nrf-bm
-                     cd nrf-bm
-                     git checkout v0.7.0
+            The toolchain installation starts in the background, as can be seen in the notification that appears.
+            If this is your first installation of the toolchain, wait for it to finish before moving to the next step of this procedure (getting the code).
 
-               .. group-tab:: Linux
+            When you install the toolchain for the first time, the installed version is automatically selected for your project.
 
-                  .. code-block:: console
+         #. Install the SDK
 
-                     cd ~/ncs/v3.0.1
-                     git clone https://github.com/nrfconnect/sdk-nrf-bm.git nrf-bm
-                     cd nrf-bm
-                     git checkout v0.7.0
+            Complete the following steps to get the |BMshort| code using the |nRFVSC|.
 
-               .. group-tab:: macOS
+            1. In the extension's :guilabel:`Welcome View`, click :guilabel:`Manage SDKs`. A popup window will appear.
 
-                  .. code-block:: console
+            #. Click :guilabel:`Install SDK`.
 
-                     cd /opt/nordic/ncs/v3.0.1
-                     git clone https://github.com/nrfconnect/sdk-nrf-bm.git nrf-bm
-                     cd nrf-bm
-                     git checkout v0.7.0
+            #. In the next page you will be prompted to **Select SDK type**, click :guilabel:`nRF Connect SDK Bare Metal`.
 
-         #. In |VSC|, click :guilabel:`Manage SDKs` -> :guilabel:`Manage West Workspace...` -> :guilabel:`Set West Manifest Repository`.
-            From the list that appears, select the ``nrf-bm`` west manifest file.
-         #. Then, click :guilabel:`Manage SDKs` -> :guilabel:`Manage West Workspace...` -> :guilabel:`West Update`.
-            Your local repositories will be updated.
+            #. In the next page you will be prompted to **Select an SDK version (or enter the branch, tag or commit SHA) to install...**, click :guilabel:`v0.8.0` marked on the right by the label :guilabel:`GitHub`.
 
+            #. In the next page you will be prompted to select a destination for the SDK. The default suggestion is recommended. Then press **Enter**.
+               This will proceed by installing |BMshort|.
 
 Your directory structure should now look similar to this:
 
