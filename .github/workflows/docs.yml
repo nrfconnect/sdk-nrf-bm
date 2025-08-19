@@ -46,7 +46,7 @@ jobs:
         working-directory: doc
         run: |
           COMMENT="comment.txt"
-          PREFIX="https://ncsdoc.z6.web.core.windows.net/PR-${{ github.event.pull_request.number }}/"
+          PREFIX="https://ncsbmdoc.z6.web.core.windows.net/PR-${{ github.event.pull_request.number }}/"
 
           echo "You can find the documentation preview for this PR [here](${PREFIX})." >> $COMMENT
 
