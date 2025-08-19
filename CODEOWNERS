@@ -92,6 +92,7 @@
 /tests/lib/ble_adv/                       @nrfconnect/ncs-bm-test
 /tests/lib/bm_storage/                    @nrfconnect/ncs-bm
 /tests/lib/bm_timer/                      @nrfconnect/ncs-bm @nrfconnect/ncs-bm-test
+/tests/subsys/bluetooth/services/ble_hrs/ @nrfconnect/ncs-bm-test
 
 # Zephyr module
 /zephyr/                                  @nrfconnect/ncs-co-build-system
