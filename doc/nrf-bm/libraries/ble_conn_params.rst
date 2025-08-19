@@ -95,9 +95,9 @@ When an ATT MTU exchange finishes, the Bluetooth LE connection parameter library
 Data length update
 ==================
 
-If a PDU data length larger than the default ``27`` is required, the :kconfig:option:`CONFIG_BLE_CONN_PARAMS_DATA_LENGTH` Kconfig option must be set to a higher value in the range of ``27`` to ``251``.
+If a PDU data length larger than the default ``27`` is required, the :kconfig:option:`CONFIG_BLE_CONN_PARAMS_DATA_LENGTH_TX` and :kconfig:option:`CONFIG_BLE_CONN_PARAMS_DATA_LENGTH_RX` Kconfig options must be set to a higher value in the range of ``27`` to ``251``.
 
-The :kconfig:option:`CONFIG_BLE_CONN_PARAMS_DATA_LENGTH` Kconfig option sets an application-defined upper limit on the negotiated data length.
+The :kconfig:option:`CONFIG_BLE_CONN_PARAMS_DATA_LENGTH_TX` and :kconfig:option:`CONFIG_BLE_CONN_PARAMS_DATA_LENGTH_RX` Kconfig options set application-defined upper limits on the negotiated data length.
 
 Note that the SoftDevice ATT MTU configuration (set by the :kconfig:option:`CONFIG_NRF_SDH_BLE_GATT_MAX_MTU_SIZE` Kconfig option) places limitations on the maximum negotiable data length.
 This is due to memory efficiency in the SoftDevice.
