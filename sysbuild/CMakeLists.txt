@@ -177,6 +177,8 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_post_cmake)
   if(NOT SB_CONFIG_SOFTDEVICE_NONE)
     set(check_targets mcuboot;installer;${SB_CONFIG_BM_FIRMWARE_LOADER_IMAGE_NAME};${DEFAULT_IMAGE})
     set(dependency_targets ${SB_CONFIG_SOFTDEVICE_FILE})
+    set(production_targets mcuboot;${SB_CONFIG_BM_FIRMWARE_LOADER_IMAGE_NAME};${DEFAULT_IMAGE})
+    set(production_files)
 
     foreach(image ${check_targets})
       sysbuild_get(${image}_kernel_bin_name IMAGE ${image} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
@@ -216,6 +218,35 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_post_cmake)
     if(NOT SB_CONFIG_BM_FIRMWARE_LOADER_NONE)
       include(${ZEPHYR_NRF_BM_MODULE_DIR}/cmake/sysbuild/image_signing_installer.cmake)
     endif()
+
+    foreach(image ${production_targets})
+      sysbuild_get(${image}_kernel_bin_name IMAGE ${image} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
+      sysbuild_get(${image}_binary_dir IMAGE ${image} VAR APPLICATION_BINARY_DIR CACHE)
+
+      if("${image}" STREQUAL "mcuboot")
+        list(APPEND production_files
+          ${${image}_binary_dir}/zephyr/${${image}_kernel_bin_name}_signed_softdevice_flash_metadata.hex)
+      else()
+        list(APPEND production_files
+          ${${image}_binary_dir}/zephyr/${${image}_kernel_bin_name}.signed.hex)
+      endif()
+    endforeach()
+
+    add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/production.hex
+      COMMAND
+      ${PYTHON_EXECUTABLE}
+      ${ZEPHYR_BASE}/scripts/build/mergehex.py
+      -o ${CMAKE_BINARY_DIR}/production.hex
+      ${production_files}
+      # This command depends on zephyr_signed_softdevice_flash_metadata.hex also but a dependency
+      # has been added to the MCUboot build target instead
+      DEPENDS ${dependency_targets} ${production_files} ${CMAKE_BINARY_DIR}/zephyr/.config
+    )
+
+    add_custom_target(production_generation
+      ALL
+      DEPENDS ${CMAKE_BINARY_DIR}/production.hex
+    )
   endif()
 endfunction()
 
