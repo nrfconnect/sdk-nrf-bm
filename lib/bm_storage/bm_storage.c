@@ -18,14 +18,20 @@ static inline bool is_within_bounds(off_t addr, size_t len, off_t boundary_start
 
 uint32_t bm_storage_init(struct bm_storage *storage)
 {
+	uint32_t err;
+
 	if (!storage) {
 		return NRF_ERROR_NULL;
 	}
 
-	storage->api = &bm_storage_api;
 	storage->nvm_info = &bm_storage_info;
 
-	return (storage->api)->init(storage);
+	err = bm_storage_api.init(storage);
+	if (err != NRF_SUCCESS) {
+		return err;
+	}
+
+	storage->api = &bm_storage_api;
 }
 
 uint32_t bm_storage_uninit(struct bm_storage *storage)
