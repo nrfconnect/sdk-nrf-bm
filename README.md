@@ -18,4 +18,4 @@ To initialize the workspace using the command line, do the following:
    west update
    ```
 
-For further details on getting started, check the installation guide in the documentation.
+For further details on getting started, check the installation guide in the [documentation](https://ncsbmdoc.z6.web.core.windows.net/latest/).
