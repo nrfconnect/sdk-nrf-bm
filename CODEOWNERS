@@ -55,6 +55,7 @@
 /lib/bm_timer/                            @nrfconnect/ncs-bm
 /lib/boot_banner/                         @nrfconnect/ncs-bm
 /lib/event_scheduler/                     @nrfconnect/ncs-bm
+/lib/peer_manager/                        @nrfconnect/ncs-bm
 /lib/sensorsim/                           @nrfconnect/ncs-bm
 /lib/zephyr_queue/                        @nrfconnect/ncs-pluto
 
