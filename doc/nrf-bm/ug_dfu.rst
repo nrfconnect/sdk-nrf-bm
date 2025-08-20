@@ -70,19 +70,24 @@ Output build files (image files)
 
 When DFU is enabled in the application, the build system outputs the following files.
 
-+--------------------------------------------------------------------------------+--------------------------------+--------------------------------+
-| File                                                                           | Description                    | Programming scenario           |
-+================================================================================+================================+================================+
-| :file:`<build_dir>/firmware_loader/zephyr/zephyr.signed.hex`                   | Firmware Loader Image          | Programming board targets.     |
-+--------------------------------------------------------------------------------+--------------------------------+                                |
-| :file:`<build_dir>/mcuboot/zephyr/zephyr_signed_softdevice_flash_metadata.hex` | MCUBoot Image with SoftDevice  |                                |
-+--------------------------------------------------------------------------------+--------------------------------+                                |
-| :file:`<build_dir>/<app_name>/zephyr/zephyr.signed.hex`                        | Application Image              |                                |
-+--------------------------------------------------------------------------------+--------------------------------+--------------------------------+
-| :file:`<build_dir>/installer_softdevice_firmware_loader.bin`                   | Installer Update Image (DFU)   | DFU process for board targets. |
-+--------------------------------------------------------------------------------+--------------------------------+                                |
-| :file:`<build_dir>/<app_name>/zephyr/zephyr.signed.bin`                        | Application Update Image (DFU) |                                |
-+--------------------------------------------------------------------------------+--------------------------------+--------------------------------+
++--------------------------------------------------------------------------------+----------------------------------------------+--------------------------------+
+| File                                                                           | Description                                  | Programming scenario           |
++================================================================================+==============================================+================================+
+| :file:`<build_dir>/firmware_loader/zephyr/zephyr.signed.hex`                   | Firmware Loader Image.                       | Programming board targets.     |
++--------------------------------------------------------------------------------+----------------------------------------------+                                |
+| :file:`<build_dir>/mcuboot/zephyr/zephyr_signed_softdevice_flash_metadata.hex` | MCUBoot Image with SoftDevice.               |                                |
++--------------------------------------------------------------------------------+----------------------------------------------+                                |
+| :file:`<build_dir>/<app_name>/zephyr/zephyr.signed.hex`                        | Application Image.                           |                                |
++--------------------------------------------------------------------------------+----------------------------------------------+--------------------------------+
+| :file:`<build_dir>/production.hex`                                             | Production hex file, containing: MCUboot,    | Production device programming. |
+|                                                                                | firmware loader, SoftDevice and main         |                                |
+|                                                                                | application images.                          |                                |
++--------------------------------------------------------------------------------+----------------------------------------------+--------------------------------+
+| :file:`<build_dir>/installer_softdevice_firmware_loader.bin`                   | Installer Update Image (DFU) with SoftDevice | DFU process for board targets. |
+|                                                                                | and firmware loader updates.                 |                                |
++--------------------------------------------------------------------------------+----------------------------------------------+                                |
+| :file:`<build_dir>/<app_name>/zephyr/zephyr.signed.bin`                        | Application Update Image (DFU).              |                                |
++--------------------------------------------------------------------------------+----------------------------------------------+--------------------------------+
 
 Running DFU in your application
 *******************************
