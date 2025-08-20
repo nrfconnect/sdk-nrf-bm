@@ -24,6 +24,8 @@ jobs:
           elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
             VERSION="pr-${{ github.event.number }}"
           fi
+          echo "VERSION=${VERSION}"
+          echo "VERSION=${VERSION}" >> "$GITHUB_ENV"
 
       - name: Prepare Azure upload
         working-directory: doc/nrf-bm/_build/html
