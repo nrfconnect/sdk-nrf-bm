@@ -19,9 +19,28 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 
+#include <bluetooth/peer_manager/peer_manager.h>
+
 LOG_MODULE_REGISTER(app, CONFIG_BLE_HRS_SAMPLE_LOG_LEVEL);
 
 #define CONN_TAG 1
+
+/* Perform bonding. */
+#define SEC_PARAM_BOND                      1
+/* Man In The Middle protection not required. */
+#define SEC_PARAM_MITM                      0
+/* LE Secure Connections enabled. */
+#define SEC_PARAM_LESC                      1
+/* Keypress notifications not enabled. */
+#define SEC_PARAM_KEYPRESS                  0
+/* No I/O capabilities. */
+#define SEC_PARAM_IO_CAPABILITIES           BLE_GAP_IO_CAPS_NONE
+/* Out Of Band data not available. */
+#define SEC_PARAM_OOB                       0
+/* Minimum encryption key size. */
+#define SEC_PARAM_MIN_KEY_SIZE              7
+/* Maximum encryption key size. */
+#define SEC_PARAM_MAX_KEY_SIZE              16
 
 BLE_ADV_DEF(ble_adv); /* BLE advertising instance */
 BLE_BAS_DEF(ble_bas); /* BLE battery service instance */
@@ -313,6 +332,88 @@ static void ble_hrs_evt_handler(struct ble_hrs *hrs, const struct ble_hrs_evt *e
 	}
 }
 
+static void delete_bonds(void)
+{
+	uint32_t err;
+
+	printk("Erase bonds!\n");
+
+	err = pm_peers_delete();
+	if (err) {
+		printk("Failed to delete peers, err %d\n", err);
+	}
+}
+
+static void advertising_start(bool erase_bonds)
+{
+	int err;
+
+	if (erase_bonds) {
+		delete_bonds();
+	} else {
+		err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
+		if (err) {
+			printk("Failed to start advertising, err %d\n", err);
+		}
+	}
+}
+
+static void pm_evt_handler(pm_evt_t const *p_evt)
+{
+	pm_handler_on_pm_evt(p_evt);
+	pm_handler_disconnect_on_sec_failure(p_evt);
+	pm_handler_flash_clean(p_evt);
+
+	switch (p_evt->evt_id) {
+	case PM_EVT_PEERS_DELETE_SUCCEEDED:
+		advertising_start(false);
+		break;
+	default:
+		break;
+	}
+}
+
+static void peer_manager_init(void)
+{
+	ble_gap_sec_params_t sec_param;
+	int err;
+
+	err = pm_init();
+	if (err) {
+		return;
+	}
+
+	memset(&sec_param, 0, sizeof(ble_gap_sec_params_t));
+
+	/* Security parameters to be used for all security procedures. */
+	sec_param = (ble_gap_sec_params_t) {
+		.bond = SEC_PARAM_BOND,
+		.mitm = SEC_PARAM_MITM,
+		.lesc = SEC_PARAM_LESC,
+		.keypress = SEC_PARAM_KEYPRESS,
+		.io_caps = SEC_PARAM_IO_CAPABILITIES,
+		.oob = SEC_PARAM_OOB,
+		.min_key_size = SEC_PARAM_MIN_KEY_SIZE,
+		.max_key_size = SEC_PARAM_MAX_KEY_SIZE,
+		.kdist_own.enc = 1,
+		.kdist_own.id = 1,
+		.kdist_peer.enc = 1,
+		.kdist_peer.id = 1,
+	};
+
+	err = pm_sec_params_set(&sec_param);
+	if (err) {
+		printk("pm_sec_params_set() failed, err: %d\n", err);
+		return;
+	}
+
+	err = pm_evt_handler_register(pm_evt_handler);
+	if (err) {
+		printk("pm_evt_handler_register() failed, err: %d\n", err);
+		return;
+	}
+}
+
 int main(void)
 {
 	int err;
@@ -368,6 +469,8 @@ int main(void)
 	}
 
 	LOG_INF("Bluetooth enabled");
+
+	peer_manager_init();
 
 	err = ble_hrs_init(&ble_hrs, &hrs_cfg);
 	if (err) {
