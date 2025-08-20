@@ -25,6 +25,7 @@ jobs:
           unzip legacy-ncs*.zip -d $OUTDIR
 
       - name: Obtain PR number
+        if: ${{ github.event.workflow_run.event == 'pull_request' }}
         working-directory: docs
         run: |
           echo "PR=$(cat pr.txt)" >> "$GITHUB_ENV"
@@ -37,6 +38,7 @@ jobs:
          azcopy cp $OUTDIR "${{ vars.NCS_DOC_STORAGE_URL }}?${{ secrets.NCS_DOC_SAS}}" --recursive=true
 
       - name: Find Comment
+        if: ${{ github.event.workflow_run.event == 'pull_request' }}
         uses: peter-evans/find-comment@3eae4d37986fb5a8592848f6a574fdf654e61f9e # v3
         id: fc
         with:
@@ -45,6 +47,7 @@ jobs:
           body-includes: documentation preview
 
       - name: Create or update comment
+        if: ${{ github.event.workflow_run.event == 'pull_request' }}
         uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
