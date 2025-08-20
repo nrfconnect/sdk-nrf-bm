@@ -80,9 +80,9 @@
 			reg = <0x0004c800 DT_SIZE_K(64)>;
 		};
 
-		softdevice_partition: partition@5c800 {
+		softdevice_partition: partition@61800 {
 			label = "softdevice";
-			reg = <0x0005c800 (DT_SIZE_K(129) + 0x200)>;
+			reg = <0x00061800 (DT_SIZE_K(109) + 0x200)>;
 		};
 
 		metadata_partition: partition@7ce00 {

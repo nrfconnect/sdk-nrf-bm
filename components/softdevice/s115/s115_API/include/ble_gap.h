@@ -121,9 +121,9 @@ enum BLE_GAP_EVTS
   BLE_GAP_EVT_SCAN_REQ_REPORT             = BLE_GAP_EVT_BASE + 16,  /**< Scan request report.                            \n See @ref ble_gap_evt_scan_req_report_t. */
   BLE_GAP_EVT_PHY_UPDATE_REQUEST          = BLE_GAP_EVT_BASE + 17,  /**< PHY Update Request.                             \n Reply with @ref sd_ble_gap_phy_update. \n See @ref ble_gap_evt_phy_update_request_t. */
   BLE_GAP_EVT_PHY_UPDATE                  = BLE_GAP_EVT_BASE + 18,  /**< PHY Update Procedure is complete.               \n See @ref ble_gap_evt_phy_update_t.           */
-  BLE_GAP_EVT_DATA_LENGTH_UPDATE_REQUEST = BLE_GAP_EVT_BASE + 19,   /**< Data Length Update Request.                     \n Reply with @ref sd_ble_gap_data_length_update. \n See @ref ble_gap_evt_data_length_update_request_t. */
-  BLE_GAP_EVT_DATA_LENGTH_UPDATE         = BLE_GAP_EVT_BASE + 20,   /**< LL Data Channel PDU payload length updated.     \n See @ref ble_gap_evt_data_length_update_t. */
-  BLE_GAP_EVT_ADV_SET_TERMINATED         = BLE_GAP_EVT_BASE + 22,   /**< Advertising set terminated.                     \n See @ref ble_gap_evt_adv_set_terminated_t. */
+  BLE_GAP_EVT_DATA_LENGTH_UPDATE_REQUEST  = BLE_GAP_EVT_BASE + 19,  /**< Data Length Update Request.                     \n Reply with @ref sd_ble_gap_data_length_update. \n See @ref ble_gap_evt_data_length_update_request_t. */
+  BLE_GAP_EVT_DATA_LENGTH_UPDATE          = BLE_GAP_EVT_BASE + 20,  /**< LL Data Channel PDU payload length updated.     \n See @ref ble_gap_evt_data_length_update_t. */
+  BLE_GAP_EVT_ADV_SET_TERMINATED          = BLE_GAP_EVT_BASE + 22,  /**< Advertising set terminated.                     \n See @ref ble_gap_evt_adv_set_terminated_t. */
 };
 
 /**@brief GAP Option IDs.
@@ -1116,14 +1116,14 @@ typedef struct
  */
 typedef struct
 {
-  uint8_t  conn_count;     /**< The number of concurrent connections the application can create with this configuration.
-                                The default and minimum value is @ref BLE_GAP_CONN_COUNT_DEFAULT. */
-  uint16_t event_length;   /**< The time set aside for this connection on every connection interval in 1.25 ms units.
-                                The default value is @ref BLE_GAP_EVENT_LENGTH_DEFAULT, the minimum value is @ref BLE_GAP_EVENT_LENGTH_MIN.
-                                The event length and the connection interval are the primary parameters
-                                for setting the throughput of a connection.
-                                See the SoftDevice Specification for details on throughput.
-                           */
+  uint8_t  conn_count;       /**< The number of concurrent connections the application can create with this configuration.
+                                  The default and minimum value is @ref BLE_GAP_CONN_COUNT_DEFAULT. */
+  uint16_t event_length;     /**< The time set aside for this connection on every connection interval in 1.25 ms units.
+                                  The default value is @ref BLE_GAP_EVENT_LENGTH_DEFAULT, the minimum value is @ref BLE_GAP_EVENT_LENGTH_MIN.
+                                  The event length and the connection interval are the primary parameters
+                                  for setting the throughput of a connection.
+                                  See the SoftDevice Specification for details on throughput.
+                             */
 } ble_gap_conn_cfg_t;
 
 
