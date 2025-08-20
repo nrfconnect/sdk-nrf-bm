@@ -49,9 +49,9 @@
 			};
 		};
 
-		softdevice_partition: partition@dd000 {
+		softdevice_partition: partition@e2000 {
 			label = "softdevice";
-			reg = <0x000dd000 DT_SIZE_K(127)>;
+			reg = <0x000e2000 DT_SIZE_K(107)>;
 		};
 	};
 };

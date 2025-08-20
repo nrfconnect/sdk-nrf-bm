@@ -83,22 +83,22 @@ endobj
 endobj
 16 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 24 0 R /XYZ 57.02362 725.0236 0 ] /Rect [ 77.02362 660.0236 169.1466 670.2236 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 24 0 R /XYZ 57.02362 529.8236 0 ] /Rect [ 77.02362 660.0236 169.1466 670.2236 ] /Subtype /Link /Type /Annot
 >>
 endobj
 17 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 24 0 R /XYZ 57.02362 725.0236 0 ] /Rect [ 533.526 660.6611 538.252 670.8611 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 24 0 R /XYZ 57.02362 529.8236 0 ] /Rect [ 533.526 660.6611 538.252 670.8611 ] /Subtype /Link /Type /Annot
 >>
 endobj
 18 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 24 0 R /XYZ 57.02362 530.6236 0 ] /Rect [ 77.02362 643.8236 141.2666 654.0236 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 24 0 R /XYZ 57.02362 335.4236 0 ] /Rect [ 77.02362 643.8236 141.2666 654.0236 ] /Subtype /Link /Type /Annot
 >>
 endobj
 19 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 24 0 R /XYZ 57.02362 530.6236 0 ] /Rect [ 533.526 644.4611 538.252 654.6611 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 24 0 R /XYZ 57.02362 335.4236 0 ] /Rect [ 533.526 644.4611 538.252 654.6611 ] /Subtype /Link /Type /Annot
 >>
 endobj
 20 0 obj
@@ -159,7 +159,7 @@ endobj
 endobj
 27 0 obj
 <<
-/Author () /CreationDate (D:20250801133539-01'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20250801133539-01'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
+/Author () /CreationDate (D:20250820112621-01'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20250820112621-01'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
   /Subject (\(unspecified\)) /Title (s115 migration document) /Trapped /False
 >>
 endobj
@@ -192,28 +192,28 @@ endobj
 endobj
 33 0 obj
 <<
-/Dest [ 24 0 R /XYZ 57.02362 725.0236 0 ] /Next 34 0 R /Parent 31 0 R /Prev 32 0 R /Title (Recommended changes)
+/Dest [ 24 0 R /XYZ 57.02362 529.8236 0 ] /Next 34 0 R /Parent 31 0 R /Prev 32 0 R /Title (Recommended changes)
 >>
 endobj
 34 0 obj
 <<
-/Count -1 /Dest [ 24 0 R /XYZ 57.02362 530.6236 0 ] /First 35 0 R /Last 35 0 R /Parent 31 0 R /Prev 33 0 R 
+/Count -1 /Dest [ 24 0 R /XYZ 57.02362 335.4236 0 ] /First 35 0 R /Last 35 0 R /Parent 31 0 R /Prev 33 0 R 
   /Title (New functionality)
 >>
 endobj
 35 0 obj
 <<
-/Count -2 /Dest [ 24 0 R /XYZ 57.02362 500.6236 0 ] /First 36 0 R /Last 37 0 R /Parent 34 0 R /Title (LE Data Packet Length Extension \(DLE\))
+/Count -2 /Dest [ 24 0 R /XYZ 57.02362 305.4236 0 ] /First 36 0 R /Last 37 0 R /Parent 34 0 R /Title (LE Data Packet Length Extension \(DLE\))
 >>
 endobj
 36 0 obj
 <<
-/Dest [ 24 0 R /XYZ 57.02362 431.6236 0 ] /Next 37 0 R /Parent 35 0 R /Title (API updates)
+/Dest [ 24 0 R /XYZ 57.02362 236.4236 0 ] /Next 37 0 R /Parent 35 0 R /Title (API updates)
 >>
 endobj
 37 0 obj
 <<
-/Dest [ 24 0 R /XYZ 57.02362 295.6236 0 ] /Parent 35 0 R /Prev 36 0 R /Title (Usage)
+/Dest [ 24 0 R /XYZ 57.02362 100.4236 0 ] /Parent 35 0 R /Prev 36 0 R /Title (Usage)
 >>
 endobj
 38 0 obj
@@ -906,7 +906,7 @@ endstream
 endobj
 42 0 obj
 <<
-/Length 8457
+/Length 7477
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
@@ -933,22 +933,73 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 737.0236 cm
+1 0 0 1 57.02362 735.0236 cm
 Q
 q
-1 0 0 1 57.02362 707.0236 cm
+1 0 0 1 57.02362 545.8236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 174.2 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 138.2 cm
+q
+BT 1 0 0 1 0 38 Tm 12 TL /F1 10 Tf 0 0 0 rg (It is required to seed the random number generator whenever the ) Tj /F3 10 Tf 0 .501961 0 rg (NRF_EVT_RAND_SEED_REQUEST) Tj /F1 10 Tf 0 0 0 rg  T* (event is raised. Seeding is done using the new ) Tj /F3 10 Tf 0 .501961 0 rg (sd_rand_seed_set) Tj /F1 10 Tf 0 0 0 rg ( API. Generating random numbers) Tj T* (\() Tj /F3 10 Tf (sd_rand_application_vector_get) Tj /F1 10 Tf (\) or enabling Bluetooth \() Tj /F3 10 Tf (sd_ble_enable) Tj /F1 10 Tf (\) will fail if the) Tj T* (random number generator has not been seeded.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 120.2 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The following pseudo code shows how seeding can be done:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+q
+1 0 0 1 0 0 cm
+q
+1 0 0 1 6.6 6.6 cm
+q
+.662745 .662745 .662745 RG
+.5 w
+n -6 -6 457.0283 114 re S
+Q
+q
+BT 1 0 0 1 0 93.5 Tm 10.2 TL /F7 8.5 Tf 0 .533333 0 rg (case) Tj /F3 8.5 Tf .733333 .733333 .733333 rg ( ) Tj /F7 8.5 Tf 0 .2 .4 rg (NRF_EVT_RAND_SEED_REQUEST) Tj /F3 8.5 Tf 0 0 0 rg (:) Tj .733333 .733333 .733333 rg  T* 0 0 0 rg ({) Tj .733333 .733333 .733333 rg  T* (  ) Tj /F7 8.5 Tf .533333 .533333 .533333 rg (uint8_t) Tj /F3 8.5 Tf .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (seed) Tj ([) Tj (SD_RAND_SEED_SIZE) Tj (]) Tj (:) Tj .733333 .733333 .733333 rg  T*  T* (  ) Tj /F6 8.5 Tf .533333 .533333 .533333 rg (/* Fetch NIST SP 800-90B compliant entropy */) Tj /F3 8.5 Tf .733333 .733333 .733333 rg  T* (  ) Tj 0 0 0 rg (trng_get) Tj (\() Tj (seed) Tj (,) Tj .733333 .733333 .733333 rg ( ) Tj /F7 8.5 Tf 0 .533333 0 rg (sizeof) Tj /F3 8.5 Tf 0 0 0 rg (\() Tj (seed) Tj (\)\);) Tj .733333 .733333 .733333 rg  T* (  ) Tj 0 0 0 rg (sd_rand_seed_set) Tj (\() Tj (seed) Tj (\);) Tj .733333 .733333 .733333 rg  T*  T* (  ) Tj /F7 8.5 Tf 0 .533333 0 rg (break) Tj /F3 8.5 Tf 0 0 0 rg (;) Tj .733333 .733333 .733333 rg  T* 0 0 0 rg (}) Tj .733333 .733333 .733333 rg  T* ET
+Q
+Q
+Q
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 541.8236 cm
+Q
+q
+1 0 0 1 57.02362 511.8236 cm
 q
 BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Recommended changes) Tj T* ET
 Q
 Q
 q
-1 0 0 1 57.02362 695.0236 cm
+1 0 0 1 57.02362 499.8236 cm
 Q
 q
-1 0 0 1 57.02362 695.0236 cm
+1 0 0 1 57.02362 499.8236 cm
 Q
 q
-1 0 0 1 57.02362 600.6236 cm
+1 0 0 1 57.02362 405.4236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -989,10 +1040,10 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 594.6236 cm
+1 0 0 1 57.02362 399.4236 cm
 Q
 q
-1 0 0 1 57.02362 546.6236 cm
+1 0 0 1 57.02362 351.4236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1014,41 +1065,41 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 542.6236 cm
+1 0 0 1 57.02362 347.4236 cm
 Q
 q
-1 0 0 1 57.02362 512.6236 cm
+1 0 0 1 57.02362 317.4236 cm
 q
 BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (New functionality) Tj T* ET
 Q
 Q
 q
-1 0 0 1 57.02362 485.6236 cm
+1 0 0 1 57.02362 290.4236 cm
 q
 BT 1 0 0 1 0 2.5 Tm 15 TL /F4 12.5 Tf .133333 .133333 .133333 rg (LE Data Packet Length Extension \(DLE\)) Tj T* ET
 Q
 Q
 q
-1 0 0 1 57.02362 443.6236 cm
+1 0 0 1 57.02362 248.4236 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 26 Tm /F1 10 Tf 12 TL -0.07245 Tw (The Data Length Update procedure enables the SoftDevice to use longer packets on the link layer level. Now) Tj T* 0 Tw (link layer packets with up to 251 byte payloads are supported. The application can initiate the procedure and) Tj T* (has to respond when it is initiated by the peer.) Tj T* ET
 Q
 Q
 q
-1 0 0 1 57.02362 419.6236 cm
+1 0 0 1 57.02362 224.4236 cm
 q
 BT 1 0 0 1 0 2 Tm 12 TL /F4 10 Tf .133333 .133333 .133333 rg (API updates) Tj T* ET
 Q
 Q
 q
-1 0 0 1 57.02362 407.6236 cm
+1 0 0 1 57.02362 212.4236 cm
 Q
 q
-1 0 0 1 57.02362 407.6236 cm
+1 0 0 1 57.02362 212.4236 cm
 Q
 q
-1 0 0 1 57.02362 383.6236 cm
+1 0 0 1 57.02362 188.4236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1070,10 +1121,10 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 377.6236 cm
+1 0 0 1 57.02362 182.4236 cm
 Q
 q
-1 0 0 1 57.02362 353.6236 cm
+1 0 0 1 57.02362 158.4236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1095,10 +1146,10 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 347.6236 cm
+1 0 0 1 57.02362 152.4236 cm
 Q
 q
-1 0 0 1 57.02362 311.6236 cm
+1 0 0 1 57.02362 116.4236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1120,22 +1171,37 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 307.6236 cm
+1 0 0 1 57.02362 112.4236 cm
 Q
 q
-1 0 0 1 57.02362 283.6236 cm
+1 0 0 1 57.02362 88.42362 cm
 q
 BT 1 0 0 1 0 2 Tm 12 TL /F4 10 Tf .133333 .133333 .133333 rg (Usage) Tj T* ET
 Q
 Q
 q
-1 0 0 1 57.02362 271.6236 cm
+1 0 0 1 57.02362 76.42362 cm
 Q
 q
-1 0 0 1 57.02362 271.6236 cm
+1 0 0 1 57.02362 76.42362 cm
 Q
 q
-1 0 0 1 57.02362 259.6236 cm
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F5 10 Tf 0 0 0 rg (Page 4) Tj T* -230.7692 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+43 0 obj
+<<
+/Length 6376
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 753.0236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1158,71 +1224,27 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 253.6236 cm
+1 0 0 1 57.02362 747.0236 cm
 Q
 q
-1 0 0 1 57.02362 74.69291 cm
+1 0 0 1 57.02362 293.8236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
 q
-1 0 0 1 6 163.9307 cm
+1 0 0 1 6 438.2 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
 Q
 Q
 q
-1 0 0 1 23 151.9307 cm
+1 0 0 1 23 426.2 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (The following pseudo code is for the case where the Data Length Update procedure is initiated by the) Tj T* (application:) Tj T* ET
 Q
 Q
-q
-1 0 0 1 23 -1.869291 cm
-q
-q
-1 0 0 1 0 0 cm
-q
-1 0 0 1 6.6 6.6 cm
-q
-.662745 .662745 .662745 RG
-.5 w
-n -6 -6 454.0283 144.6 re S
-Q
-q
-BT 1 0 0 1 0 124.1 Tm 10.2 TL /F7 8.5 Tf 0 .533333 0 rg (const) Tj /F3 8.5 Tf .733333 .733333 .733333 rg ( ) Tj /F7 8.5 Tf .533333 .533333 .533333 rg (uint16_t) Tj /F3 8.5 Tf .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (client_rx_mtu) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj /F7 8.5 Tf 0 0 .866667 rg (247) Tj /F3 8.5 Tf 0 0 0 rg (;) Tj .733333 .733333 .733333 rg  T* /F7 8.5 Tf 0 .533333 0 rg (const) Tj /F3 8.5 Tf .733333 .733333 .733333 rg ( ) Tj /F7 8.5 Tf .533333 .533333 .533333 rg (uint32_t) Tj /F3 8.5 Tf .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (long_att_conn_cfg_tag) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj /F7 8.5 Tf 0 0 .866667 rg (1) Tj /F3 8.5 Tf 0 0 0 rg (;) Tj .733333 .733333 .733333 rg  T*  T* /F6 8.5 Tf .533333 .533333 .533333 rg (/* ATT_MTU must be configured first */) Tj /F3 8.5 Tf .733333 .733333 .733333 rg  T* 0 0 0 rg (ble_cfg_t) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (cfg) Tj (;) Tj .733333 .733333 .733333 rg  T* 0 0 0 rg (memset) Tj (\() Tj (&) Tj (cfg) Tj (,) Tj .733333 .733333 .733333 rg ( ) Tj /F7 8.5 Tf 0 0 .866667 rg (0) Tj /F3 8.5 Tf 0 0 0 rg (,) Tj .733333 .733333 .733333 rg ( ) Tj /F7 8.5 Tf 0 .533333 0 rg (sizeof) Tj /F3 8.5 Tf 0 0 0 rg (\() Tj (ble_cfg_t) Tj (\)\);) Tj .733333 .733333 .733333 rg  T* 0 0 0 rg (cfg) Tj (.) Tj (conn_cfg) Tj (.) Tj (conn_cfg_tag) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (long_att_conn_cfg_tag) Tj (;) Tj .733333 .733333 .733333 rg  T* 0 0 0 rg (cfg) Tj (.) Tj (conn_cfg) Tj (.) Tj (params) Tj (.) Tj (gatt_conn_cfg) Tj (.) Tj (att_mtu) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (client_rx_mtu) Tj (;) Tj .733333 .733333 .733333 rg  T* 0 0 0 rg (sd_ble_cfg_set) Tj (\() Tj (BLE_CONN_CFG_GATT) Tj (,) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (&) Tj (cfg) Tj (,) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (...\);) Tj .733333 .733333 .733333 rg  T*  T* /F6 8.5 Tf .533333 .533333 .533333 rg (/* Enable the BLE Stack */) Tj /F3 8.5 Tf .733333 .733333 .733333 rg  T* 0 0 0 rg (sd_ble_enable) Tj (\(...\);) Tj .733333 .733333 .733333 rg  T*  T* ET
-Q
-Q
-Q
-Q
-Q
-q
-Q
-Q
-Q
-q
-1 0 0 1 51.02362 42.51969 cm
-q
-BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F5 10 Tf 0 0 0 rg (Page 4) Tj T* -230.7692 0 Td ET
-Q
-Q
- 
-endstream
-endobj
-43 0 obj
-<<
-/Length 3542
->>
-stream
-1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
-q
-1 0 0 1 57.02362 476.4236 cm
-q
-0 0 0 rg
-BT /F1 10 Tf 12 TL ET
-BT 1 0 0 1 6 275.6 Tm  T* ET
 q
 1 0 0 1 23 -3 cm
 q
@@ -1233,21 +1255,21 @@ q
 q
 .662745 .662745 .662745 RG
 .5 w
-n -6 -6 454.0283 287.4 re S
+n -6 -6 457.0283 420 re S
 Q
 q
-BT 1 0 0 1 0 266.9 Tm 10.2 TL /F3 8.5 Tf 0 0 0 rg ([...]) Tj .733333 .733333 .733333 rg  T*  T* /F7 8.5 Tf .533333 .533333 .533333 rg (uint16_t) Tj /F3 8.5 Tf .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (long_att_conn_handle) Tj (;) Tj .733333 .733333 .733333 rg  T* /F6 8.5 Tf .533333 .533333 .533333 rg (/* Establish connection */) Tj /F3 8.5 Tf .733333 .733333 .733333 rg  T* 0 0 0 rg (sd_ble_gap_adv_start) Tj (\(...,) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (long_att_conn_cfg_tag) Tj (\);) Tj .733333 .733333 .733333 rg  T*  T* 0 0 0 rg ([...]) Tj .733333 .733333 .733333 rg  T*  T* /F6 8.5 Tf .533333 .533333 .533333 rg (/* Start Data Length Update procedure, can be done without ATT_MTU exchange */) Tj /F3 8.5 Tf .733333 .733333 .733333 rg  T* 0 0 0 rg (ble_gap_data_length_params_t) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (params) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg ({) Tj .733333 .733333 .733333 rg  T* (  ) Tj 0 0 0 rg (.) Tj (max_tx_octets) Tj .733333 .733333 .733333 rg (  ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (client_rx_mtu) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (+) Tj .733333 .733333 .733333 rg ( ) Tj /F7 8.5 Tf 0 0 .866667 rg (4) Tj /F3 8.5 Tf 0 0 0 rg (,) Tj .733333 .733333 .733333 rg  T* (  ) Tj 0 0 0 rg (.) Tj (max_rx_octets) Tj .733333 .733333 .733333 rg (  ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (client_rx_mtu) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (+) Tj .733333 .733333 .733333 rg ( ) Tj /F7 8.5 Tf 0 0 .866667 rg (4) Tj /F3 8.5 Tf 0 0 0 rg (,) Tj .733333 .733333 .733333 rg  T* (  ) Tj 0 0 0 rg (.) Tj (max_tx_time_us) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (BLE_GAP_DATA_LENGTH_AUTO) Tj (,) Tj .733333 .733333 .733333 rg  T* (  ) Tj 0 0 0 rg (.) Tj (max_rx_time_us) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (BLE_GAP_DATA_LENGTH_AUTO) Tj .733333 .733333 .733333 rg  T* 0 0 0 rg (};) Tj .733333 .733333 .733333 rg  T* 0 0 0 rg (sd_ble_gap_data_length_update) Tj (\() Tj (long_att_conn_handle) Tj (,) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (&) Tj (params) Tj (,) Tj .733333 .733333 .733333 rg ( ) Tj 0 .2 .533333 rg (NULL) Tj 0 0 0 rg (\);) Tj .733333 .733333 .733333 rg  T*  T* 0 0 0 rg ([...]) Tj .733333 .733333 .733333 rg  T*  T* /F7 8.5 Tf 0 .533333 0 rg (case) Tj /F3 8.5 Tf .733333 .733333 .733333 rg ( ) Tj /F7 8.5 Tf 0 .2 .4 rg (BLE_GAP_EVT_DATA_LENGTH_UPDATE) Tj /F3 8.5 Tf 0 0 0 rg (:) Tj .733333 .733333 .733333 rg  T* 0 0 0 rg ({) Tj .733333 .733333 .733333 rg  T* (  ) Tj /F6 8.5 Tf .533333 .533333 .533333 rg (/* Data Length Update procedure completed,) Tj T* (   * see p_ble_evt-) Tj (>) Tj (evt.gap_evt.params.data_length_update.effective_params) Tj T* (   * for negotiated parameters.) Tj T* (   */) Tj /F3 8.5 Tf .733333 .733333 .733333 rg  T* (  ) Tj /F7 8.5 Tf 0 .533333 0 rg (break) Tj /F3 8.5 Tf 0 0 0 rg (;) Tj .733333 .733333 .733333 rg  T* 0 0 0 rg (}) Tj .733333 .733333 .733333 rg  T* ET
+BT 1 0 0 1 0 399.5 Tm 10.2 TL /F7 8.5 Tf 0 .533333 0 rg (const) Tj /F3 8.5 Tf .733333 .733333 .733333 rg ( ) Tj /F7 8.5 Tf .533333 .533333 .533333 rg (uint16_t) Tj /F3 8.5 Tf .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (client_rx_mtu) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj /F7 8.5 Tf 0 0 .866667 rg (247) Tj /F3 8.5 Tf 0 0 0 rg (;) Tj .733333 .733333 .733333 rg  T* /F7 8.5 Tf 0 .533333 0 rg (const) Tj /F3 8.5 Tf .733333 .733333 .733333 rg ( ) Tj /F7 8.5 Tf .533333 .533333 .533333 rg (uint32_t) Tj /F3 8.5 Tf .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (long_att_conn_cfg_tag) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj /F7 8.5 Tf 0 0 .866667 rg (1) Tj /F3 8.5 Tf 0 0 0 rg (;) Tj .733333 .733333 .733333 rg  T*  T* /F6 8.5 Tf .533333 .533333 .533333 rg (/* ATT_MTU must be configured first */) Tj /F3 8.5 Tf .733333 .733333 .733333 rg  T* 0 0 0 rg (ble_cfg_t) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (cfg) Tj (;) Tj .733333 .733333 .733333 rg  T* 0 0 0 rg (memset) Tj (\() Tj (&) Tj (cfg) Tj (,) Tj .733333 .733333 .733333 rg ( ) Tj /F7 8.5 Tf 0 0 .866667 rg (0) Tj /F3 8.5 Tf 0 0 0 rg (,) Tj .733333 .733333 .733333 rg ( ) Tj /F7 8.5 Tf 0 .533333 0 rg (sizeof) Tj /F3 8.5 Tf 0 0 0 rg (\() Tj (ble_cfg_t) Tj (\)\);) Tj .733333 .733333 .733333 rg  T* 0 0 0 rg (cfg) Tj (.) Tj (conn_cfg) Tj (.) Tj (conn_cfg_tag) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (long_att_conn_cfg_tag) Tj (;) Tj .733333 .733333 .733333 rg  T* 0 0 0 rg (cfg) Tj (.) Tj (conn_cfg) Tj (.) Tj (params) Tj (.) Tj (gatt_conn_cfg) Tj (.) Tj (att_mtu) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (client_rx_mtu) Tj (;) Tj .733333 .733333 .733333 rg  T* 0 0 0 rg (sd_ble_cfg_set) Tj (\() Tj (BLE_CONN_CFG_GATT) Tj (,) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (&) Tj (cfg) Tj (,) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (...\);) Tj .733333 .733333 .733333 rg  T*  T* /F6 8.5 Tf .533333 .533333 .533333 rg (/* Enable the BLE Stack */) Tj /F3 8.5 Tf .733333 .733333 .733333 rg  T* 0 0 0 rg (sd_ble_enable) Tj (\(...\);) Tj .733333 .733333 .733333 rg  T*  T* 0 0 0 rg ([...]) Tj .733333 .733333 .733333 rg  T*  T* /F7 8.5 Tf .533333 .533333 .533333 rg (uint16_t) Tj /F3 8.5 Tf .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (long_att_conn_handle) Tj (;) Tj .733333 .733333 .733333 rg  T* /F6 8.5 Tf .533333 .533333 .533333 rg (/* Establish connection */) Tj /F3 8.5 Tf .733333 .733333 .733333 rg  T* 0 0 0 rg (sd_ble_gap_adv_start) Tj (\(...,) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (long_att_conn_cfg_tag) Tj (\);) Tj .733333 .733333 .733333 rg  T*  T* 0 0 0 rg ([...]) Tj .733333 .733333 .733333 rg  T*  T* /F6 8.5 Tf .533333 .533333 .533333 rg (/* Start Data Length Update procedure, can be done without ATT_MTU exchange */) Tj /F3 8.5 Tf .733333 .733333 .733333 rg  T* 0 0 0 rg (ble_gap_data_length_params_t) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (params) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg ({) Tj .733333 .733333 .733333 rg  T* (  ) Tj 0 0 0 rg (.) Tj (max_tx_octets) Tj .733333 .733333 .733333 rg (  ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (client_rx_mtu) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (+) Tj .733333 .733333 .733333 rg ( ) Tj /F7 8.5 Tf 0 0 .866667 rg (4) Tj /F3 8.5 Tf 0 0 0 rg (,) Tj .733333 .733333 .733333 rg  T* (  ) Tj 0 0 0 rg (.) Tj (max_rx_octets) Tj .733333 .733333 .733333 rg (  ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (client_rx_mtu) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (+) Tj .733333 .733333 .733333 rg ( ) Tj /F7 8.5 Tf 0 0 .866667 rg (4) Tj /F3 8.5 Tf 0 0 0 rg (,) Tj .733333 .733333 .733333 rg  T* (  ) Tj 0 0 0 rg (.) Tj (max_tx_time_us) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (BLE_GAP_DATA_LENGTH_AUTO) Tj (,) Tj .733333 .733333 .733333 rg  T* (  ) Tj 0 0 0 rg (.) Tj (max_rx_time_us) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (=) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (BLE_GAP_DATA_LENGTH_AUTO) Tj .733333 .733333 .733333 rg  T* 0 0 0 rg (};) Tj .733333 .733333 .733333 rg  T* 0 0 0 rg (sd_ble_gap_data_length_update) Tj (\() Tj (long_att_conn_handle) Tj (,) Tj .733333 .733333 .733333 rg ( ) Tj 0 0 0 rg (&) Tj (params) Tj (,) Tj .733333 .733333 .733333 rg ( ) Tj 0 .2 .533333 rg (NULL) Tj 0 0 0 rg (\);) Tj .733333 .733333 .733333 rg  T*  T* 0 0 0 rg ([...]) Tj .733333 .733333 .733333 rg  T*  T* /F7 8.5 Tf 0 .533333 0 rg (case) Tj /F3 8.5 Tf .733333 .733333 .733333 rg ( ) Tj /F7 8.5 Tf 0 .2 .4 rg (BLE_GAP_EVT_DATA_LENGTH_UPDATE) Tj /F3 8.5 Tf 0 0 0 rg (:) Tj .733333 .733333 .733333 rg  T* 0 0 0 rg ({) Tj .733333 .733333 .733333 rg  T* (  ) Tj /F6 8.5 Tf .533333 .533333 .533333 rg (/* Data Length Update procedure completed,) Tj T* (   * see p_ble_evt-) Tj (>) Tj (evt.gap_evt.params.data_length_update.effective_params) Tj T* (   * for negotiated parameters.) Tj T* (   */) Tj /F3 8.5 Tf .733333 .733333 .733333 rg  T* (  ) Tj /F7 8.5 Tf 0 .533333 0 rg (break) Tj /F3 8.5 Tf 0 0 0 rg (;) Tj .733333 .733333 .733333 rg  T* 0 0 0 rg (}) Tj .733333 .733333 .733333 rg  T* ET
 Q
 Q
-Q
-Q
-Q
-q
 Q
 Q
 Q
 q
-1 0 0 1 57.02362 472.4236 cm
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 289.8236 cm
 Q
 q
 1 0 0 1 51.02362 42.51969 cm
@@ -1333,17 +1355,17 @@ xref
 0000008901 00000 n 
 0000010732 00000 n 
 0000020666 00000 n 
-0000029175 00000 n 
-0000032769 00000 n 
-0000032846 00000 n 
-0000032880 00000 n 
-0000032914 00000 n 
-0000032948 00000 n 
-0000032982 00000 n 
+0000028195 00000 n 
+0000034623 00000 n 
+0000034700 00000 n 
+0000034734 00000 n 
+0000034768 00000 n 
+0000034802 00000 n 
+0000034836 00000 n 
 trailer
 <<
 /ID 
-[<e9727af32dca5529d30f97734a744988><e9727af32dca5529d30f97734a744988>]
+[<7927a698fc830c86780ef710f5266444><7927a698fc830c86780ef710f5266444>]
 % ReportLab generated PDF document -- digest (http://www.reportlab.com)
 
 /Info 27 0 R
@@ -1351,5 +1373,5 @@ trailer
 /Size 50
 >>
 startxref
-33016
+34870
 %%EOF

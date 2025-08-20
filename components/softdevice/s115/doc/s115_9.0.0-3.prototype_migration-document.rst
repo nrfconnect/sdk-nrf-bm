@@ -60,6 +60,25 @@ Required changes
 - :old:`sd_power_ram_power_set`, :old:`sd_power_ram_power_get` and :old:`sd_power_ram_power_clr`
   have been removed and :new:`NRF_MEMCONF->CONTROL` should be used instead.
 
+- It is required to seed the random number generator whenever the :new:`NRF_EVT_RAND_SEED_REQUEST` event is raised.
+  Seeding is done using the new :new:`sd_rand_seed_set` API.
+  Generating random numbers (``sd_rand_application_vector_get``) or enabling Bluetooth (``sd_ble_enable``) will fail
+  if the random number generator has not been seeded.
+
+  The following pseudo code shows how seeding can be done:
+
+  .. code:: c
+
+      case NRF_EVT_RAND_SEED_REQUEST:
+      {
+        uint8_t seed[SD_RAND_SEED_SIZE]:
+
+        /* Fetch NIST SP 800-90B compliant entropy */
+        trng_get(seed, sizeof(seed));
+        sd_rand_seed_set(seed);
+
+        break;
+      }
 
 Recommended changes
 -------------------

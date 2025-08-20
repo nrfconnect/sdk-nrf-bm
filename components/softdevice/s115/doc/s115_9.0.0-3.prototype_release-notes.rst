@@ -17,7 +17,7 @@ SoftDevice properties
 
 * The SoftDevice memory requirements for this version are as follows:
 
-  * NVM: **127.0 kB** (0x1FC00 bytes).
+  * NVM: **107.0 kB** (0x1AC00 bytes).
 
   * RAM: **4.9 kB** (0x1380 bytes).
     This is the minimum required memory. The actual requirements depend on the
@@ -32,13 +32,13 @@ SoftDevice properties
 
 * SoftDevice base address:
 
-  * nRF54L05: 0x05D000 (``s115_9.0.0-3.prototype_nrf54l05_softdevice.hex``).
+  * nRF54L05: 0x062000 (``s115_9.0.0-3.prototype_nrf54l05_softdevice.hex``).
 
-  * nRF54L10: 0x0DD000 (``s115_9.0.0-3.prototype_nrf54l10_softdevice.hex``).
+  * nRF54L10: 0x0E2000 (``s115_9.0.0-3.prototype_nrf54l10_softdevice.hex``).
 
-  * nRF54L15: 0x15D000 (``s115_9.0.0-3.prototype_nrf54l15_softdevice.hex``).
+  * nRF54L15: 0x162000 (``s115_9.0.0-3.prototype_nrf54l15_softdevice.hex``).
 
-* The Firmware ID of this SoftDevice is 0x305E.
+* The Firmware ID of this SoftDevice is 0x3071.
 
 New Features
 -------------
@@ -52,7 +52,9 @@ Changes
 
 * SoftDevice
 
-  * A new API for seeding the random number generator ``sd_rand_seed_set`` has been added.
+  * Support for PA/LNA (``BLE_COMMON_OPT_PA_LNA``) has been removed (DRGN-23876).
+
+  * A new API for seeding the random number generator ``sd_rand_seed_set`` has been added (DRGN-25550).
 
 * GAP
 
@@ -114,11 +116,6 @@ Known Issues
   * The ``BLE_GAP_EVT_SEC_INFO_REQUEST`` event will not report the identity
     address of the peer to the application. A workaround is to do a mapping of the
     connection handle to the peer's identity address (DRGN-10340).
-
-* GATTS
-
-  * Queued Writes are not yet supported. Receiving the ``ATT_PREPARE_WRITE_REQ`` PDU
-    will lead to assert (DRGN-23848).
 
 * GATTC
 
