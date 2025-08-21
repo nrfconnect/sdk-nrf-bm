@@ -97,22 +97,22 @@ endobj
 endobj
 19 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 46 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 77.02362 627.6236 117.6451 637.8236 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 46 0 R /XYZ 57.02362 679.0236 0 ] /Rect [ 77.02362 627.6236 117.6451 637.8236 ] /Subtype /Link /Type /Annot
 >>
 endobj
 20 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 46 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 533.526 628.2611 538.252 638.4611 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 46 0 R /XYZ 57.02362 679.0236 0 ] /Rect [ 533.526 628.2611 538.252 638.4611 ] /Subtype /Link /Type /Annot
 >>
 endobj
 21 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 46 0 R /XYZ 57.02362 441.0236 0 ] /Rect [ 77.02362 611.4236 129.9361 621.6236 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 46 0 R /XYZ 57.02362 355.0236 0 ] /Rect [ 77.02362 611.4236 129.9361 621.6236 ] /Subtype /Link /Type /Annot
 >>
 endobj
 22 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 46 0 R /XYZ 57.02362 441.0236 0 ] /Rect [ 533.526 612.0611 538.252 622.2611 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 46 0 R /XYZ 57.02362 355.0236 0 ] /Rect [ 533.526 612.0611 538.252 622.2611 ] /Subtype /Link /Type /Annot
 >>
 endobj
 23 0 obj
@@ -330,7 +330,7 @@ endobj
 endobj
 55 0 obj
 <<
-/Author () /CreationDate (D:20250820112620-01'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20250820112620-01'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
+/Author () /CreationDate (D:20250821144740-01'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20250821144740-01'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
   /Subject (\(unspecified\)) /Title (s115 release notes) /Trapped /False
 >>
 endobj
@@ -373,12 +373,12 @@ endobj
 endobj
 63 0 obj
 <<
-/Dest [ 46 0 R /XYZ 57.02362 765.0236 0 ] /Next 64 0 R /Parent 59 0 R /Prev 62 0 R /Title (Limitations)
+/Dest [ 46 0 R /XYZ 57.02362 679.0236 0 ] /Next 64 0 R /Parent 59 0 R /Prev 62 0 R /Title (Limitations)
 >>
 endobj
 64 0 obj
 <<
-/Dest [ 46 0 R /XYZ 57.02362 441.0236 0 ] /Parent 59 0 R /Prev 63 0 R /Title (Known Issues)
+/Dest [ 46 0 R /XYZ 57.02362 355.0236 0 ] /Parent 59 0 R /Prev 63 0 R /Title (Known Issues)
 >>
 endobj
 65 0 obj
@@ -780,7 +780,7 @@ endstream
 endobj
 78 0 obj
 <<
-/Length 9125
+/Length 9007
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
@@ -1130,7 +1130,7 @@ q
 1 0 0 1 23 -3 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The Firmware ID of this SoftDevice is 0x3071.) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The Firmware ID of this SoftDevice is 0x3072.) Tj T* ET
 Q
 Q
 q
@@ -1223,32 +1223,32 @@ q
 1 0 0 1 57.02362 270.0236 cm
 Q
 q
-1 0 0 1 57.02362 206.0236 cm
+1 0 0 1 57.02362 152.0236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
 q
-1 0 0 1 6 49 cm
+1 0 0 1 6 103 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
 Q
 Q
 q
-1 0 0 1 23 49 cm
+1 0 0 1 23 103 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (SoftDevice) Tj T* ET
 Q
 Q
 q
-1 0 0 1 23 43 cm
+1 0 0 1 23 97 cm
 Q
 q
-1 0 0 1 23 43 cm
+1 0 0 1 23 97 cm
 Q
 q
-1 0 0 1 23 31 cm
+1 0 0 1 23 85 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1270,10 +1270,10 @@ Q
 Q
 Q
 q
-1 0 0 1 23 25 cm
+1 0 0 1 23 79 cm
 Q
 q
-1 0 0 1 23 1 cm
+1 0 0 1 23 55 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1295,42 +1295,10 @@ Q
 Q
 Q
 q
-1 0 0 1 23 -3 cm
+1 0 0 1 23 49 cm
 Q
 q
-Q
-Q
-Q
-q
-1 0 0 1 57.02362 200.0236 cm
-Q
-q
-1 0 0 1 57.02362 88.02362 cm
-q
-0 0 0 rg
-BT /F1 10 Tf 12 TL ET
-q
-1 0 0 1 6 97 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
-Q
-Q
-q
-1 0 0 1 23 97 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GAP) Tj T* ET
-Q
-Q
-q
-1 0 0 1 23 91 cm
-Q
-q
-1 0 0 1 23 91 cm
-Q
-q
-1 0 0 1 23 43 cm
+1 0 0 1 23 1 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1344,7 +1312,105 @@ Q
 q
 1 0 0 1 23 -3 cm
 q
-BT 1 0 0 1 0 38 Tm 12 TL /F1 10 Tf 0 0 0 rg (The Device IRK is no longer used as a fallback to generate Resolvable Private Addresses \(RPA\).) Tj T* (Applications that want to use RPA need to populate the device identity list) Tj T* (\() Tj /F5 10 Tf (sd_ble_gap_device_identities_set) Tj /F1 10 Tf (\). Otherwise the identity address will be used) Tj T* (\() Tj /F5 10 Tf (sd_ble_gap_addr_set) Tj /F1 10 Tf (\) \(DRGN-23358\).) Tj T* ET
+BT 1 0 0 1 0 38 Tm 12 TL /F1 10 Tf 0 0 0 rg (The ) Tj /F5 10 Tf (sd_radio_notification_cfg_set) Tj /F1 10 Tf ( now accepts an uint16_t distance_us parameter) Tj T* (instead of enum. The valid range is [50, 5500] \265s. The enums can still be used for backwards) Tj T* (compatibility. The active notification distance is now from when the SoftDevice prepares to use the) Tj T* (radio, and not the actual radio activity \(DRGN-25879\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 146.0236 cm
+Q
+q
+1 0 0 1 57.02362 74.69291 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 56.33071 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 56.33071 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GAP) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 50.33071 cm
+Q
+q
+1 0 0 1 23 50.33071 cm
+Q
+q
+1 0 0 1 23 3 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 32.33071 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 20.33071 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (The Device IRK is no longer used as a fallback to generate Resolvable Private Addresses \(RPA\).) Tj T* (Applications that want to use RPA need to populate the device identity list) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F3 10 Tf 0 0 0 rg (Page 3) Tj T* -230.7692 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+79 0 obj
+<<
+/Length 8366
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 695.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+BT 1 0 0 1 6 57 Tm  T* ET
+q
+1 0 0 1 23 43 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+BT 1 0 0 1 6 11 Tm  T* ET
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (\() Tj /F5 10 Tf (sd_ble_gap_device_identities_set) Tj /F1 10 Tf (\). Otherwise the identity address will be used) Tj T* (\() Tj /F5 10 Tf (sd_ble_gap_addr_set) Tj /F1 10 Tf (\) \(DRGN-23358\).) Tj T* ET
 Q
 Q
 q
@@ -1384,37 +1450,22 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 84.02362 cm
+1 0 0 1 57.02362 691.0236 cm
 Q
 q
-1 0 0 1 51.02362 42.51969 cm
-q
-BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F3 10 Tf 0 0 0 rg (Page 3) Tj T* -230.7692 0 Td ET
-Q
-Q
- 
-endstream
-endobj
-79 0 obj
-<<
-/Length 8233
->>
-stream
-1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
-q
-1 0 0 1 57.02362 747.0236 cm
+1 0 0 1 57.02362 661.0236 cm
 q
 BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Limitations) Tj T* ET
 Q
 Q
 q
-1 0 0 1 57.02362 735.0236 cm
+1 0 0 1 57.02362 649.0236 cm
 Q
 q
-1 0 0 1 57.02362 735.0236 cm
+1 0 0 1 57.02362 649.0236 cm
 Q
 q
-1 0 0 1 57.02362 509.0236 cm
+1 0 0 1 57.02362 423.0236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1571,10 +1622,10 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 503.0236 cm
+1 0 0 1 57.02362 417.0236 cm
 Q
 q
-1 0 0 1 57.02362 457.0236 cm
+1 0 0 1 57.02362 371.0236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1629,79 +1680,48 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 453.0236 cm
+1 0 0 1 57.02362 367.0236 cm
 Q
 q
-1 0 0 1 57.02362 423.0236 cm
+1 0 0 1 57.02362 337.0236 cm
 q
 BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Known Issues) Tj T* ET
 Q
 Q
 q
-1 0 0 1 57.02362 411.0236 cm
+1 0 0 1 57.02362 325.0236 cm
 Q
 q
-1 0 0 1 57.02362 411.0236 cm
+1 0 0 1 57.02362 325.0236 cm
 Q
 q
-1 0 0 1 57.02362 365.0236 cm
+1 0 0 1 57.02362 313.0236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
 q
-1 0 0 1 6 31 cm
+1 0 0 1 6 -3 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
 Q
 Q
 q
-1 0 0 1 23 31 cm
+1 0 0 1 23 -3 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (SoftDevice) Tj T* ET
 Q
 Q
 q
-1 0 0 1 23 25 cm
-Q
-q
-1 0 0 1 23 25 cm
-Q
-q
-1 0 0 1 23 1 cm
-q
-0 0 0 rg
-BT /F1 10 Tf 12 TL ET
-q
-1 0 0 1 6 9 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
-Q
-Q
-q
-1 0 0 1 23 -3 cm
-q
-BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (The Radio Notification signal is not yet supported. The function) Tj T* /F5 10 Tf (sd_radio_notification_cfg_set) Tj /F1 10 Tf ( must not be used \(DRGN-24324\).) Tj T* ET
-Q
-Q
-q
 Q
 Q
 Q
 q
-1 0 0 1 23 -3 cm
+1 0 0 1 57.02362 307.0236 cm
 Q
 q
-Q
-Q
-Q
-q
-1 0 0 1 57.02362 359.0236 cm
-Q
-q
-1 0 0 1 57.02362 235.0236 cm
+1 0 0 1 57.02362 183.0236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1780,89 +1800,54 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 229.0236 cm
+1 0 0 1 57.02362 177.0236 cm
 Q
 q
-1 0 0 1 57.02362 111.0236 cm
+1 0 0 1 57.02362 74.69291 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
 q
-1 0 0 1 6 103 cm
+1 0 0 1 6 87.33071 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
 Q
 Q
 q
-1 0 0 1 23 103 cm
+1 0 0 1 23 87.33071 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GATTC) Tj T* ET
 Q
 Q
 q
-1 0 0 1 23 97 cm
+1 0 0 1 23 81.33071 cm
 Q
 q
-1 0 0 1 23 97 cm
-Q
-q
-1 0 0 1 23 1 cm
-q
-0 0 0 rg
-BT /F1 10 Tf 12 TL ET
-q
-1 0 0 1 6 81 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
-Q
-Q
-q
-1 0 0 1 23 -3 cm
-q
-BT 1 0 0 1 0 86 Tm 12 TL /F1 10 Tf 0 0 0 rg (The ) Tj /F5 10 Tf (ble_gattc_service_t::uuid) Tj /F1 10 Tf ( field is incorrectly populated in the) Tj T* /F5 10 Tf (BLE_GATTC_EVT_PRIM_SRVC_DISC_RSP) Tj /F1 10 Tf ( event if) Tj T* /F5 10 Tf (sd_ble_gattc_primary_services_discover\(\)) Tj /F1 10 Tf ( or ) Tj /F5 10 Tf (sd_ble_gattc_read\(\)) Tj /F1 10 Tf ( is called when) Tj T* (a Primary Service Discovery by Service UUID is already ongoing. When the application has called) Tj T* /F5 10 Tf (sd_ble_gattc_primary_services_discover\(\)) Tj /F1 10 Tf (, it should wait for the) Tj T* /F5 10 Tf (BLE_GATTC_EVT_PRIM_SRVC_DISC_RSP) Tj /F1 10 Tf ( event before calling) Tj T* /F5 10 Tf (sd_ble_gattc_primary_services_discover\(\)) Tj /F1 10 Tf ( or ) Tj /F5 10 Tf (sd_ble_gattc_read\(\)) Tj /F1 10 Tf  T* (\(DRGN-11300\).) Tj T* ET
-Q
-Q
-q
-Q
-Q
-Q
-q
-1 0 0 1 23 -3 cm
-Q
-q
-Q
-Q
-Q
-q
-1 0 0 1 57.02362 105.0236 cm
-Q
-q
-1 0 0 1 57.02362 87.02362 cm
-q
-0 0 0 rg
-BT /F1 10 Tf 12 TL ET
-q
-1 0 0 1 6 3 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
-Q
+1 0 0 1 23 81.33071 cm
 Q
 q
 1 0 0 1 23 3 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (LL) Tj T* ET
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 63.33071 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
 Q
 Q
 q
-1 0 0 1 23 -3 cm
+1 0 0 1 23 3.330709 cm
+q
+BT 1 0 0 1 0 62 Tm 12 TL /F1 10 Tf 0 0 0 rg (The ) Tj /F5 10 Tf (ble_gattc_service_t::uuid) Tj /F1 10 Tf ( field is incorrectly populated in the) Tj T* /F5 10 Tf (BLE_GATTC_EVT_PRIM_SRVC_DISC_RSP) Tj /F1 10 Tf ( event if) Tj T* /F5 10 Tf (sd_ble_gattc_primary_services_discover\(\)) Tj /F1 10 Tf ( or ) Tj /F5 10 Tf (sd_ble_gattc_read\(\)) Tj /F1 10 Tf ( is called when) Tj T* (a Primary Service Discovery by Service UUID is already ongoing. When the application has called) Tj T* /F5 10 Tf (sd_ble_gattc_primary_services_discover\(\)) Tj /F1 10 Tf (, it should wait for the) Tj T* /F5 10 Tf (BLE_GATTC_EVT_PRIM_SRVC_DISC_RSP) Tj /F1 10 Tf ( event before calling) Tj T* ET
+Q
 Q
 q
-1 0 0 1 23 -3 cm
+Q
+Q
 Q
 q
 Q
@@ -1879,16 +1864,67 @@ endstream
 endobj
 80 0 obj
 <<
-/Length 859
+/Length 1507
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
 q
-1 0 0 1 57.02362 725.0236 cm
+1 0 0 1 57.02362 737.0236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
-BT 1 0 0 1 6 27 Tm  T* ET
+BT 1 0 0 1 6 15 Tm  T* ET
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+BT 1 0 0 1 6 11 Tm  T* ET
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F5 10 Tf 0 0 0 rg (sd_ble_gattc_primary_services_discover\(\)) Tj /F1 10 Tf ( or ) Tj /F5 10 Tf (sd_ble_gattc_read\(\)) Tj /F1 10 Tf  T* (\(DRGN-11300\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 731.0236 cm
+Q
+q
+1 0 0 1 57.02362 673.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 43 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 43 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (LL) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 37 cm
+Q
+q
+1 0 0 1 23 37 cm
+Q
 q
 1 0 0 1 23 1 cm
 q
@@ -1919,10 +1955,10 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 721.0236 cm
+1 0 0 1 57.02362 669.0236 cm
 Q
 q
-1 0 0 1 57.02362 721.0236 cm
+1 0 0 1 57.02362 669.0236 cm
 Q
 q
 1 0 0 1 51.02362 42.51969 cm
@@ -4499,30 +4535,30 @@ xref
 0000012240 00000 n 
 0000014100 00000 n 
 0000018618 00000 n 
-0000027795 00000 n 
-0000036080 00000 n 
-0000036990 00000 n 
-0000046041 00000 n 
-0000054538 00000 n 
-0000055448 00000 n 
-0000064392 00000 n 
-0000073562 00000 n 
-0000075998 00000 n 
-0000076136 00000 n 
-0000076170 00000 n 
-0000076204 00000 n 
-0000076238 00000 n 
-0000076272 00000 n 
-0000076306 00000 n 
-0000076340 00000 n 
-0000076374 00000 n 
-0000076408 00000 n 
-0000076442 00000 n 
-0000076477 00000 n 
+0000027677 00000 n 
+0000036095 00000 n 
+0000037654 00000 n 
+0000046705 00000 n 
+0000055202 00000 n 
+0000056112 00000 n 
+0000065056 00000 n 
+0000074226 00000 n 
+0000076662 00000 n 
+0000076800 00000 n 
+0000076834 00000 n 
+0000076868 00000 n 
+0000076902 00000 n 
+0000076936 00000 n 
+0000076970 00000 n 
+0000077004 00000 n 
+0000077038 00000 n 
+0000077072 00000 n 
+0000077106 00000 n 
+0000077141 00000 n 
 trailer
 <<
 /ID 
-[<707bed8fdf2ec523e1414c9b4ed5bc44><707bed8fdf2ec523e1414c9b4ed5bc44>]
+[<dfce402531b9da875f22fd685d477b28><dfce402531b9da875f22fd685d477b28>]
 % ReportLab generated PDF document -- digest (http://www.reportlab.com)
 
 /Info 55 0 R
@@ -4530,5 +4566,5 @@ trailer
 /Size 99
 >>
 startxref
-76512
+77176
 %%EOF

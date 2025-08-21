@@ -161,18 +161,23 @@ enum NRF_POWER_THRESHOLDS
   NRF_POWER_THRESHOLD_V28        /**< 2.8 Volts power failure threshold. */
 };
 
-/**@brief Radio notification distances. */
+
+/**@brief Radio notification distances.
+ *
+ * @note SoftDevice support is not limited to the distances enumerated here.
+ *       This enumeration is kept only for backwards compatibility with applications developed for previous versions of SoftDevice.
+ */
 enum NRF_RADIO_NOTIFICATION_DISTANCES
 {
-  NRF_RADIO_NOTIFICATION_DISTANCE_NONE = 0, /**< The event does not have a notification. */
-  NRF_RADIO_NOTIFICATION_DISTANCE_200US,    /**< The distance from the active notification to start of radio activity. */
-  NRF_RADIO_NOTIFICATION_DISTANCE_420US,    /**< The distance from the active notification to start of radio activity. */
-  NRF_RADIO_NOTIFICATION_DISTANCE_800US,    /**< The distance from the active notification to start of radio activity. */
-  NRF_RADIO_NOTIFICATION_DISTANCE_1740US,   /**< The distance from the active notification to start of radio activity. */
-  NRF_RADIO_NOTIFICATION_DISTANCE_2680US,   /**< The distance from the active notification to start of radio activity. */
-  NRF_RADIO_NOTIFICATION_DISTANCE_3620US,   /**< The distance from the active notification to start of radio activity. */
-  NRF_RADIO_NOTIFICATION_DISTANCE_4560US,   /**< The distance from the active notification to start of radio activity. */
-  NRF_RADIO_NOTIFICATION_DISTANCE_5500US    /**< The distance from the active notification to start of radio activity. */
+  NRF_RADIO_NOTIFICATION_DISTANCE_NONE = 0,        /**< The event does not have a notification. */
+  NRF_RADIO_NOTIFICATION_DISTANCE_200US = 200,     /**< The distance from the active notification to start of radio event preparation. */
+  NRF_RADIO_NOTIFICATION_DISTANCE_420US = 420,     /**< The distance from the active notification to start of radio event preparation. */
+  NRF_RADIO_NOTIFICATION_DISTANCE_800US = 800,     /**< The distance from the active notification to start of radio event preparation. */
+  NRF_RADIO_NOTIFICATION_DISTANCE_1740US = 1740,   /**< The distance from the active notification to start of radio event preparation. */
+  NRF_RADIO_NOTIFICATION_DISTANCE_2680US = 2680,   /**< The distance from the active notification to start of radio event preparation. */
+  NRF_RADIO_NOTIFICATION_DISTANCE_3620US = 3620,   /**< The distance from the active notification to start of radio event preparation. */
+  NRF_RADIO_NOTIFICATION_DISTANCE_4560US = 4560,   /**< The distance from the active notification to start of radio event preparation. */
+  NRF_RADIO_NOTIFICATION_DISTANCE_5500US = 5500    /**< The distance from the active notification to start of radio event preparation. */
 };
 
 /**@brief Radio notification types. */
@@ -589,27 +594,28 @@ __STATIC_INLINE uint32_t sd_app_evt_wait(void)
  *        notifications must be configured when there is no protocol stack or other SoftDevice
  *        activity in progress. It is recommended that the radio notification signal is
  *        configured directly after the SoftDevice has been enabled.
- *      - In the period between the ACTIVE signal and the start of the Radio Event, the SoftDevice
- *        will interrupt the application to do Radio Event preparation.
+ *      - The ACTIVE signal comes the configured distance before the SoftDevice does the
+ *        Radio Event preparation.
  *      - Using the Radio Notification feature may limit the bandwidth, as the SoftDevice may have
  *        to shorten the connection events to have time for the Radio Notification signals.
  *
- * @param[in]  type      Type of notification signal, see @ref NRF_RADIO_NOTIFICATION_TYPES.
- *                       @ref NRF_RADIO_NOTIFICATION_TYPE_NONE shall be used to turn off radio
- *                       notification. Using @ref NRF_RADIO_NOTIFICATION_DISTANCE_NONE is
- *                       recommended (but not required) to be used with
- *                       @ref NRF_RADIO_NOTIFICATION_TYPE_NONE.
+ * @param[in]  type         Type of notification signal, see @ref NRF_RADIO_NOTIFICATION_TYPES.
+ *                          @ref NRF_RADIO_NOTIFICATION_TYPE_NONE shall be used to turn off radio
+ *                          notification. Using distance 0 is recommended (but not required) to be used with
+ *                          @ref NRF_RADIO_NOTIFICATION_TYPE_NONE.
  *
- * @param[in]  distance  Distance between the notification signal and start of radio activity, see @ref NRF_RADIO_NOTIFICATION_DISTANCES.
- *                       This parameter is ignored when @ref NRF_RADIO_NOTIFICATION_TYPE_NONE or
- *                       @ref NRF_RADIO_NOTIFICATION_TYPE_INT_ON_INACTIVE is used.
+ * @param[in]  distance_us  Distance between the ACTIVE notification signal and start of radio event
+ *                          preparation by SoftDevice in microseconds.
+ *                          Valid range range is [50 to 5500] microseconds.
+ *                          This parameter is ignored when @ref NRF_RADIO_NOTIFICATION_TYPE_NONE or
+ *                          @ref NRF_RADIO_NOTIFICATION_TYPE_INT_ON_INACTIVE is used.
  *
- * @retval ::NRF_ERROR_INVALID_PARAM The group number is invalid.
+ * @retval ::NRF_ERROR_INVALID_PARAM The configuration is invalid.
  * @retval ::NRF_ERROR_INVALID_STATE A protocol stack or other SoftDevice is running. Stop all
  *                                   running activities and retry.
  * @retval ::NRF_SUCCESS
  */
-SVCALL(SD_RADIO_NOTIFICATION_CFG_SET, uint32_t, sd_radio_notification_cfg_set(uint8_t type, uint8_t distance));
+SVCALL(SD_RADIO_NOTIFICATION_CFG_SET, uint32_t, sd_radio_notification_cfg_set(uint8_t type, uint16_t distance_us));
 
 /**@brief Encrypts a block according to the specified parameters.
  *

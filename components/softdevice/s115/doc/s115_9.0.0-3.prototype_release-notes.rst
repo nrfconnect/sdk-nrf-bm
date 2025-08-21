@@ -38,7 +38,7 @@ SoftDevice properties
 
   * nRF54L15: 0x162000 (``s115_9.0.0-3.prototype_nrf54l15_softdevice.hex``).
 
-* The Firmware ID of this SoftDevice is 0x3071.
+* The Firmware ID of this SoftDevice is 0x3072.
 
 New Features
 -------------
@@ -55,6 +55,11 @@ Changes
   * Support for PA/LNA (``BLE_COMMON_OPT_PA_LNA``) has been removed (DRGN-23876).
 
   * A new API for seeding the random number generator ``sd_rand_seed_set`` has been added (DRGN-25550).
+
+  * The ``sd_radio_notification_cfg_set`` now accepts an uint16_t distance_us parameter instead of enum.
+    The valid range is [50, 5500] µs. The enums can still be used for backwards compatibility.
+    The active notification distance is now from when the SoftDevice prepares to use the radio, and not the
+    actual radio activity (DRGN-25879).
 
 * GAP
 
@@ -101,9 +106,6 @@ Known Issues
 ------------
 
 * SoftDevice
-
-  * The Radio Notification signal is not yet supported. The function ``sd_radio_notification_cfg_set``
-    must not be used (DRGN-24324).
 
 * GAP
 
