@@ -46,7 +46,7 @@ function(softdevice_tasks output_hex output_bin)
   dt_nodelabel(softdevice_partition_node_full_path NODELABEL "softdevice_partition")
   dt_reg_size(softdevice_partition_node_size PATH "${softdevice_partition_node_full_path}")
 
-  set(imgtool_sign ${PYTHON_EXECUTABLE} ${IMGTOOL} sign --version ${CONFIG_SOFTDEVICE_VERSION} --align ${write_block_size} --slot-size ${softdevice_partition_node_size} --header-size ${CONFIG_SOFTDEVICE_START_OFFSET} ${pad_header})
+  set(imgtool_sign ${PYTHON_EXECUTABLE} ${IMGTOOL} sign --version ${CONFIG_SOFTDEVICE_VERSION} --align ${write_block_size} --slot-size ${softdevice_partition_node_size} --header-size ${CONFIG_SOFTDEVICE_START_OFFSET} ${pad_header} --overwrite-only)
 
 #  if(CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
 #    set(imgtool_args --security-counter ${CONFIG_MCUBOOT_HW_DOWNGRADE_PREVENTION_COUNTER_VALUE})
