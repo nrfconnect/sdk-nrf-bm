@@ -8,6 +8,7 @@
 #include <zephyr/drivers/flash.h>
 #include <zephyr/storage/flash_map.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/logging/log_ctrl.h>
 #include <zephyr/sys/crc.h>
 #include <zephyr/sys/reboot.h>
 #include <bm_installs.h>
@@ -227,6 +228,9 @@ erase_header:
 		LOG_ERR("Clear installer header failed: %d", rc);
 	} else {
 		LOG_ERR("Clear installer header OK");
+	}
+
+	while (LOG_PROCESS()) {
 	}
 
 	sys_reboot(SYS_REBOOT_WARM);
