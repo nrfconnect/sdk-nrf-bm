@@ -27,14 +27,14 @@
 
 		slot0_partition: partition@0 {
 			label = "slot0";
-			reg = <0x00000000 DT_SIZE_K(1388)>;
+			reg = <0x00000000 DT_SIZE_K(1408)>;
 		};
 
-		storage_partition: partition@15b000 {
+		storage_partition: partition@160000 {
 			compatible = "fixed-subpartitions";
 			label = "storage";
-			reg = <0x0015b000 DT_SIZE_K(8)>;
-			ranges = <0x0 0x15b000 DT_SIZE_K(8)>;
+			reg = <0x00160000 DT_SIZE_K(8)>;
+			ranges = <0x0 0x160000 DT_SIZE_K(8)>;
 			#address-cells = <1>;
 			#size-cells = <1>;
 
