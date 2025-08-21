@@ -44,10 +44,6 @@ static const char *tostr(uint32_t evt)
 
 static void softdevice_rng_seed(void)
 {
-/* Temporary until SoftDevice exposes SD_RAND_SEED_SIZE. */
-#ifndef SD_RAND_SEED_SIZE
-#define SD_RAND_SEED_SIZE 48
-#endif
 	uint32_t err = NRF_ERROR_INVALID_DATA;
 	psa_status_t status;
 	uint8_t seed[SD_RAND_SEED_SIZE];
