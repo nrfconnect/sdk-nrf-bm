@@ -375,7 +375,6 @@ typedef union
  *                                      and set the start address of the application RAM region accordingly.
  *                                    - Dynamic part of the SoftDevice RAM region is larger then 64 kB which
  *                                      is currently not supported.
- * @retval ::NRF_ERROR_RESOURCES      The total number of L2CAP Channels configured using @ref sd_ble_cfg_set is too large.
  */
 SVCALL(SD_BLE_ENABLE, uint32_t, sd_ble_enable(uint32_t * p_app_ram_base));
 
