@@ -8,7 +8,7 @@ menu "BLE Power Profiling sample"
 
 config BLE_PWR_PROFILING_ADV_NAME
 	string "Advertising name"
-	default "nRF_BM_PWR"
+	default "Nordic_Power_Profiling"
 
 config BLE_PWR_PROFILING_CONN_ADVERTISING_TIMEOUT
 	int "Connectable advertising timeout (10 ms units)"
