@@ -13,6 +13,7 @@ sample_dir = os.path.join(script_dir, "sample")  # Path to the sample directory
 pdf_source_dir = os.path.abspath('../../components/softdevice/s115/')  # Path to the PDF source directory
 pdf_destination_dir = os.path.join(source_dir, 'pdfs')  # Destination directory within _static
 images_dir = os.path.join(script_dir, "images")  # Path to the images directory
+softdevice_rst_source = os.path.abspath('../../components/softdevice/s115/doc')
 
 # Install packages from requirements.txt
 if os.path.exists(requirements_path):
@@ -58,6 +59,13 @@ if os.path.exists(samples_dir):
                 dest_dir = os.path.join(source_dir, "samples", relative_dir)
                 os.makedirs(dest_dir, exist_ok=True)
                 shutil.copy2(os.path.join(root, file), dest_dir)
+
+# Copy SoftDevice RST files to the _build/source directory
+for file_name in os.listdir(softdevice_rst_source):
+    if file_name.endswith('.rst'):
+        src_file_path = os.path.join(softdevice_rst_source, file_name)
+        shutil.copy2(src_file_path, source_dir)
+        print(f"Copied {file_name} to {source_dir}")
 
 # Copy the _static directory
 dest_static_dir = os.path.join(source_dir, "_static")

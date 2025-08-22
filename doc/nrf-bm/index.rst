@@ -41,3 +41,4 @@ The |BMlong| is a distinct repository that incorporates elements from the existi
    ug_dfu.rst
    ug_bootloader_keys.rst
    release_notes.rst
+   s115_docs.rst
