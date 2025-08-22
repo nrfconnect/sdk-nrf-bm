@@ -64,8 +64,6 @@ static uint16_t conn_handle = BLE_CONN_HANDLE_INVALID;
 static uint16_t conn_interval_ms = (CONFIG_BLE_CONN_PARAMS_MIN_CONN_INTERVAL * 5) / 4;
 /** Attribute handles related to power profiling characteristic. */
 static ble_gatts_char_handles_t char_handles;
-/** UUID type. */
-static uint8_t uuid_type;
 
 /** Advertising modes. */
 enum adv_mode {
@@ -456,16 +454,9 @@ static uint32_t ble_service_init(uint16_t *service_handle, uint8_t *uuid_type,
 }
 
 /* Add optional advertising data and start advertising in the given mode */
-static void adv_data_update_and_start(enum adv_mode adv_mode, uint8_t uuid_type)
+static void adv_data_update_and_start(enum adv_mode adv_mode)
 {
 	uint32_t err;
-	/* Adding power profiling service UUID to the scan response data. */
-	ble_uuid_t adv_uuid_list[] = {
-		{
-			.uuid = BLE_UUID_PWR_SERVICE,
-			.type = uuid_type
-		},
-	};
 	ble_gap_adv_data_t new_adv_data = {0};
 
 	struct ble_adv_data adv_data = {
@@ -486,9 +477,6 @@ static void adv_data_update_and_start(enum adv_mode adv_mode, uint8_t uuid_type)
 
 	switch (adv_mode) {
 	case ADV_MODE_CONN:
-		sr_data.uuid_lists.complete.uuid = &adv_uuid_list[0];
-		sr_data.uuid_lists.complete.len = ARRAY_SIZE(adv_uuid_list);
-
 		memset(&adv_params, 0, sizeof(adv_params));
 		adv_params.properties.type = BLE_GAP_ADV_TYPE_CONNECTABLE_SCANNABLE_UNDIRECTED;
 		adv_params.interval = CONFIG_BLE_PWR_PROFILING_CONN_ADVERTISING_INTERVAL;
@@ -565,11 +553,11 @@ static void button_handler(uint8_t pin, uint8_t action)
 
 	switch (pin) {
 	case BOARD_PIN_BTN_0:
-		adv_data_update_and_start(ADV_MODE_CONN, uuid_type);
+		adv_data_update_and_start(ADV_MODE_CONN);
 		break;
 
 	case BOARD_PIN_BTN_1:
-		adv_data_update_and_start(ADV_MODE_NONCONN, uuid_type);
+		adv_data_update_and_start(ADV_MODE_NONCONN);
 		break;
 
 	default:
@@ -611,6 +599,7 @@ static uint32_t adv_init(void)
 int main(void)
 {
 	int err;
+	uint8_t uuid_type;
 	struct ble_qwr_config qwr_config = {
 		.evt_handler = on_ble_qwr_evt,
 	};
@@ -713,9 +702,9 @@ int main(void)
 	const bool nonconnectable_adv = bm_buttons_is_pressed(BOARD_PIN_BTN_1);
 
 	if (connectable_adv) {
-		adv_data_update_and_start(ADV_MODE_CONN, uuid_type);
+		adv_data_update_and_start(ADV_MODE_CONN);
 	} else if (nonconnectable_adv) {
-		adv_data_update_and_start(ADV_MODE_NONCONN, uuid_type);
+		adv_data_update_and_start(ADV_MODE_NONCONN);
 	} else {
 		/* No advertising mode is selected at startup, power off */
 		LOG_INF("No advertising selected, schedule power off in 5 seconds");
