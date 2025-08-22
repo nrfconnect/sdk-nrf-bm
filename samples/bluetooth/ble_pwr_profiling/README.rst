@@ -122,6 +122,11 @@ LED 0:
    This causes a delay between the SoC wake up and button press processing.
    If you want to start advertising on system start, you must keep pressing the button until you see a log message confirming the advertising start on the terminal.
 
+.. note::
+   The LED is disabled by default.
+   You can enable the LED by setting the :kconfig:option:`CONFIG_BLE_PWR_PROFILING_LED` Kconfig option.
+   Enabling the LED will increase the power consumption in active and low power mode by ~1.8 uA.
+
 Configuration
 *************
 
