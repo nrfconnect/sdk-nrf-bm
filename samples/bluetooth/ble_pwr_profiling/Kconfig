@@ -42,7 +42,6 @@ config BLE_PWR_PROFILING_CHAR_VALUE_LEN
 
 config BLE_PWR_PROFILING_LED
 	bool "Power profiling LED"
-	default y
 
 module=BLE_PWR_PROFILING_SAMPLE
 module-dep=LOG
