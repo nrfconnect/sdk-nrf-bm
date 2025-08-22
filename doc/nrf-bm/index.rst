@@ -40,3 +40,4 @@ The |BMlong| is a distinct repository that incorporates elements from the existi
    samples.rst
    app_dev/dfu/index.rst
    release_notes.rst
+   s115_docs.rst
