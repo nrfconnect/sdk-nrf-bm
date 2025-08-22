@@ -6,3 +6,8 @@
 
 config BOARD_BM_NRF54L15DK
 	select BOARD_LATE_INIT_HOOK
+
+# Temporary fix to remove a build warning in MCUboot.
+config NRF_RTC_TIMER_USER_CHAN_COUNT
+	int "Unused"
+	default 0
