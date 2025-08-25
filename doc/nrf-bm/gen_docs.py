@@ -106,6 +106,41 @@ for file_path in [conf_path, links_path, substitutions_path, shortcuts_path]:
         print(f"File not found: {file_path}")
         exit()
 
+# Prepare Doxygen XML output for Breathe
+
+# Save the current directory
+original_dir = os.getcwd()
+
+# Path to the Doxyfile
+doxyfile_dir = os.path.abspath('doxygen')
+doxyfile_path = os.path.join(doxyfile_dir, 'nrf-bm.doxyfile')
+
+# Change to the directory containing the Doxyfile
+os.chdir(doxyfile_dir)
+
+# Run Doxygen
+print("Running Doxygen...")
+call(['doxygen', 'nrf-bm.doxyfile'])
+
+# Change back to the original directory
+os.chdir(original_dir)
+
+# Path to the Doxygen output directory
+doxygen_output_dir = os.path.abspath('doxygen/doxygen/nrf-bm_api_xml')
+
+# Destination directory for Doxygen XML files within the Sphinx source
+doxygen_dest_dir = os.path.join(source_dir, 'doxygen/nrf-bm_api_xml')
+
+# Copy Doxygen XML output to the Sphinx source directory
+if os.path.exists(doxygen_output_dir):
+    if os.path.exists(doxygen_dest_dir):
+        shutil.rmtree(doxygen_dest_dir)  # Remove the existing directory if it exists
+    shutil.copytree(doxygen_output_dir, doxygen_dest_dir)
+    print(f"Copied Doxygen XML files to {doxygen_dest_dir}")
+else:
+    print("Doxygen output directory not found.")
+    exit()
+
 # Run Sphinx
 call(["sphinx-build", "-b", "html", source_dir, "_build/html"])
 
