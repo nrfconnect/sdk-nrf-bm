@@ -26,13 +26,21 @@ author = 'Nordic Semiconductor'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.intersphinx', 'sphinx_tabs.tabs']
+extensions = ['sphinx.ext.intersphinx', 'sphinx_tabs.tabs', 'breathe']
 
 rst_epilog = """
 .. include:: /substitutions.txt
 .. include:: /links.txt
 .. include:: /shortcuts.txt
 """
+
+# Options for breathe ---------------------------------------------------------
+breathe_projects = {
+    "nRF Connect SDK Bare Metal option API": "doxygen/nrf-bm_api_xml/",
+}
+breathe_default_project = "nRF Connect SDK Bare Metal option API"
+breathe_domain_by_extension = {"h": "c", "c": "c"}
+breathe_separate_member_pages = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
