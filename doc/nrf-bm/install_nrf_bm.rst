@@ -146,11 +146,13 @@ Next steps
 
 You can now proceed to test the :ref:`samples` included in this version of |BMshort|.
 
-The samples can be found in the :file:`nrf-bm/samples` folder, and are divided into two subfolders:
+The samples can be found in the :file:`nrf-bm/samples` folder, and are divided into subfolders:
 
 * :file:`bluetooth` for the samples showcasing Bluetooth® LE functionalities using the SoftDevice.
   See :ref:`ble_samples`.
 * :file:`peripherals` for the samples showcasing various peripheral functionalities that do not require the SoftDevice.
   See :ref:`peripheral_samples`.
+* :file:`boot` for the samples showcasing the functionalities related to Device Firmware Update.
+  See :ref:`dfu_samples`.
 
 Each sample documentation contains full information on how to build, flash, and test the respective sample.

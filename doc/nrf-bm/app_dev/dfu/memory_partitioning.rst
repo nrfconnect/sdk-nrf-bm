@@ -32,13 +32,13 @@ The memory in the device is divided into several partitions, each serving a spec
      - Begins immediately after the storage partition or the IRoT partition if the storage is not enabled.
        The size is maximized up to the start of the firmware loader.
    * - slot1_partition
-     - Serves as the location for the DFU mode and contains the Firmware Loader.
-     - This partition contains the Firmware Loader that is validated by the IRoT.
-       The Firmware Loader is started when entering the DFU mode.
+     - Serves as the location for the DFU mode and contains the firmware loader.
+     - This partition contains the firmware loader that is validated by the IRoT.
+       The firmware loader is started when entering the DFU mode.
    * - softdevice_partition
      - Used by the SoftDevice.
      - Includes an MCUboot header of size 0x800.
-       The SoftDevice is used by both the Firmware Loader and the Application that is running from ``slot0``
+       The SoftDevice is used by both the firmware loader and the application that is running from ``slot0``
    * - metadata_partition
      - Utilized by the firmware loader and IRoT for storing metadata.
      - Reserves 0.5 kB at the top of the memory.
@@ -65,7 +65,7 @@ Vector table alignment
 
 For images that are run as a `main application` that has its own interrupt vector table there is an `Vector table requirement`_ on how to place the interrupt vector table in memory.
 The table must be placed starting at the 2 kB boundary.
-An example of such images are Application and Firmware Loader.
+An example of such images are application and firmware loader.
 The SoftDevice is not affected by this requirement.
 
 SoftDevice placement

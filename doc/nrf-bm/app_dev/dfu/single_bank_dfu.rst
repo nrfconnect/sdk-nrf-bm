@@ -23,20 +23,20 @@ The following are key steps in the single-bank application update.
    If the firmware is not valid, the bootloader reverts the device to DFU mode, allowing for another update attempt.
 #. **Activation**: Upon successful validation, the new firmware is activated.
 
-SoftDevice and Firmware Loader update
+SoftDevice and firmware loader update
 =====================================
 
-The following are the DFU steps when the SoftDevice and/or Firmware Loader are also updated.
+The following are the DFU steps when the SoftDevice and/or firmware loader are also updated.
 
 .. figure:: ../../images/dfu_steps_sd_fwl.svg
    :alt: DFU operations for a single-bank SoftDevice and/or FW Loader update
 
 1. **Replacement of Existing Application**: The new firmware update process begins with the replacement of the existing application by a new DFU image.
-   This image includes an Installer along with updates for the Firmware Loader and/or the SoftDevice.
-#. **Validation**: Once the new DFU image is transferred, the system validates both the Installer image and the additional image(s) (Firmware Loader and/or the SoftDevice).
+   This image includes an Installer along with updates for the firmware loader and/or the SoftDevice.
+#. **Validation**: Once the new DFU image is transferred, the system validates both the Installer image and the additional image(s) (firmware loader and/or the SoftDevice).
 #. **Installation**: After successful validation, the Installer image is activated.
-   The Installer carries out the necessary actions to copy the Firmware Loader and SoftDevice to their designated locations in the device's memory.
-#. **Device Restart and Final Validation**: Following the installation, the device restarts and performs a final validation of the newly installed Firmware Loader and SoftDevice.
+   The Installer carries out the necessary actions to copy the firmware loader and SoftDevice to their designated locations in the device's memory.
+#. **Device Restart and Final Validation**: Following the installation, the device restarts and performs a final validation of the newly installed firmware loader and SoftDevice.
 #. **Entry into DFU Mode**: Once the final validation is complete, the device enters DFU mode, ready to receive any further new images.
 
-After a successful update of the SoftDevice and/or Firmware Loader, the application must be updated again following the process described in `Application update`_.
+After a successful update of the SoftDevice and/or firmware loader, the application must be updated again following the process described in `Application update`_.

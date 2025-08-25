@@ -1,4 +1,4 @@
-.. nrf_bm_api:
+.. _nrf_bm_api:
 
 API documentation
 #################
