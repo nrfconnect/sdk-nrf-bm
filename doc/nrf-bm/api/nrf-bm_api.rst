@@ -1,7 +1,9 @@
 .. nrf_bm_api:
 
-API documentation
-#################
+Bare Metal API documentation
+############################
+
+The following API reference has been generated from header files in the nrf-bm repository.
 
 .. contents::
    :local:

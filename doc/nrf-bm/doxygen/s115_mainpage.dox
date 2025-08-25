@@ -1,0 +1,8 @@
+/**
+@mainpage S115 SoftDevice s115_9.0.0-3.prototype API
+
+@details The S115 SoftDevice is a proprietary Bluetooth LE® stack supported by the nRF Connect SDK Bare Metal option.
+
+<a href="topics.html">API Reference</a>
+
+*/

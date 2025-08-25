@@ -118,27 +118,39 @@ doxyfile_path = os.path.join(doxyfile_dir, 'nrf-bm.doxyfile')
 # Change to the directory containing the Doxyfile
 os.chdir(doxyfile_dir)
 
-# Run Doxygen
-print("Running Doxygen...")
+# Run Doxygen for BM
+print("Running Doxygen for nrf-bm...")
 call(['doxygen', 'nrf-bm.doxyfile'])
+
+# Run Doxygen for S115
+print("Running Doxygen for S115...")
+call(['doxygen', 's115.doxyfile'])
 
 # Change back to the original directory
 os.chdir(original_dir)
 
-# Path to the Doxygen output directory
+# Copy nrf_bm doxygen xml output 
 doxygen_output_dir = os.path.abspath('doxygen/doxygen/nrf-bm_api_xml')
-
-# Destination directory for Doxygen XML files within the Sphinx source
 doxygen_dest_dir = os.path.join(source_dir, 'doxygen/nrf-bm_api_xml')
-
-# Copy Doxygen XML output to the Sphinx source directory
 if os.path.exists(doxygen_output_dir):
     if os.path.exists(doxygen_dest_dir):
         shutil.rmtree(doxygen_dest_dir)  # Remove the existing directory if it exists
     shutil.copytree(doxygen_output_dir, doxygen_dest_dir)
-    print(f"Copied Doxygen XML files to {doxygen_dest_dir}")
+    print(f"Copied Doxygen XML files for nRF Connect SDK to {doxygen_dest_dir}")
 else:
-    print("Doxygen output directory not found.")
+    print("Doxygen output directory for nRF Connect SDK not found.")
+    exit()
+
+# Copy s115 doxygen xml output 
+doxygen_output_dir_s115 = os.path.abspath('doxygen/doxygen/s115_api_xml')
+doxygen_dest_dir_s115 = os.path.join(source_dir, 'doxygen/s115_api_xml')
+if os.path.exists(doxygen_output_dir_s115):
+    if os.path.exists(doxygen_dest_dir_s115):
+        shutil.rmtree(doxygen_dest_dir_s115)  # Remove the existing directory if it exists
+    shutil.copytree(doxygen_output_dir_s115, doxygen_dest_dir_s115)
+    print(f"Copied Doxygen XML files for s115 to {doxygen_dest_dir_s115}")
+else:
+    print("Doxygen output directory for s115 not found.")
     exit()
 
 # Run Sphinx

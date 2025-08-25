@@ -41,4 +41,5 @@ The |BMlong| is a distinct repository that incorporates elements from the existi
    app_dev/dfu/index.rst
    release_notes.rst
    s115_docs.rst
-   api/api.rst
+   api/nrf-bm_api.rst
+   api/s115_api.rst
