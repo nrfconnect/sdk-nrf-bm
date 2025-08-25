@@ -1,4 +1,4 @@
-.. _app_bootloaders:
+.. _bm_dfu:
 
 Device Firmware Update (DFU)
 ############################

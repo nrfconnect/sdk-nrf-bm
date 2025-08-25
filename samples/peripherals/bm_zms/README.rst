@@ -1,7 +1,7 @@
 .. _bm_zms_sample:
 
-BM_ZMS
-######
+Bare Metal Zephyr Memory Storage (BM_ZMS)
+#########################################
 
 .. contents::
    :local:
