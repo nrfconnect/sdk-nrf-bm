@@ -46,6 +46,7 @@
 /lib/bm_zms/                              @nrfconnect/ncs-bm @rghaddab
 /lib/ble_adv/                             @nrfconnect/ncs-bm
 /lib/ble_conn_params/                     @nrfconnect/ncs-bm
+/lib/ble_conn_state/                      @nrfconnect/ncs-bm
 /lib/ble_gq/                              @nrfconnect/ncs-bm
 /lib/ble_qwr/                             @nrfconnect/ncs-bm
 /lib/ble_racp/                            @nrfconnect/ncs-bm

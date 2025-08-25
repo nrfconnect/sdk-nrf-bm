@@ -1,0 +1,31 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+menuconfig BLE_CONN_STATE
+	bool "Event scheduler"
+	help
+	  A library to defer event processing to main().
+
+if BLE_CONN_STATE
+
+config BLE_CONN_STATE_USER_FLAG_COUNT
+	int "User flag count"
+	range 0 24
+	default 24
+	help
+	   The number of available user flags.
+
+config BLE_CONN_STATE_DEFAULT_FLAG_COLLECTION_COUNT
+	int "Default flag collection count"
+	default 6
+	help
+	   The number of flags kept for each connection, excluding user flags.
+
+module=BLE_CONN_STATE
+module-dep=LOG
+module-str=BLE Connection state
+source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+
+endif
