@@ -1,7 +1,7 @@
 .. _s115_docs:
 
-S115 SoftDevice release notes and migration notes
-#################################################
+S115 SoftDevice release notes and migration document
+####################################################
 
 See the following documentation for the details regarding new releases of the S115 SoftDevice.
 

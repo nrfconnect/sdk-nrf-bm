@@ -1,3 +1,5 @@
+:orphan:
+
 .. _nrf5_bm_migration:
 
 Migration notes - nRF5 SDK to nRF Connect SDK Bare Metal
