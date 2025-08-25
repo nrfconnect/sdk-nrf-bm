@@ -7,8 +7,9 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 
-#define STORAGE_NODE		DT_NODELABEL(storage_partition)
-#define BM_ZMS_PARTITION_OFFSET	DT_REG_ADDR(STORAGE_NODE)
+#define STORAGE_NODE DT_NODELABEL(storage0_partition)
+#define BM_ZMS_PARTITION_OFFSET DT_REG_ADDR(STORAGE_NODE)
+#define BM_ZMS_PARTITION_SIZE DT_REG_SIZE(STORAGE_NODE)
 
 #if defined(CONFIG_SOFTDEVICE)
 #include <nrf_sdh.h>
@@ -16,9 +17,6 @@
 #endif
 
 #include <bm_zms.h>
-
-#define MAX_ITERATIONS 2
-#define DELETE_ITERATION 1
 
 static struct bm_zms_fs fs;
 static bool nvm_is_full;
@@ -163,10 +161,10 @@ int main(void)
 	}
 
 	fs.offset = BM_ZMS_PARTITION_OFFSET;
-	fs.sector_size = 1024U; /* 1kB sector size. */
-	fs.sector_count = 3U;
+	fs.sector_size = CONFIG_BM_ZMS_SECTOR_SIZE;
+	fs.sector_count = (BM_ZMS_PARTITION_SIZE / CONFIG_BM_ZMS_SECTOR_SIZE);
 
-	for (i = 0; i < MAX_ITERATIONS; i++) {
+	for (i = 0; i < CONFIG_BM_ZMS_ITERATIONS_MAX; i++) {
 		rc = bm_zms_mount(&fs);
 		if (rc) {
 			LOG_INF("Storage Init failed, rc=%d", rc);
@@ -251,7 +249,7 @@ int main(void)
 		wait_for_ongoing_writes();
 
 		/* Each DELETE_ITERATION delete all basic items */
-		if (!(i % DELETE_ITERATION) && (i)) {
+		if (!(i % CONFIG_BM_ZMS_ITERATIONS_DELETE_INTERVAL) && (i)) {
 			rc = delete_basic_items(&fs);
 			if (rc) {
 				goto idle;
@@ -259,7 +257,7 @@ int main(void)
 		}
 	}
 
-	if (i != MAX_ITERATIONS) {
+	if (i != CONFIG_BM_ZMS_ITERATIONS_MAX) {
 		LOG_INF("Error: Something went wrong at iteration %u rc=%d", i, rc);
 		goto idle;
 	}
