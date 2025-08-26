@@ -82,6 +82,26 @@ extern "C" {
 /** Not enough resources for operation */
 #define NRF_ERROR_RESOURCES                   (NRF_ERROR_BASE_NUM + 19)
 
+#include <errno.h>
+
+/** @brief Enumerated type for nrfx error codes. */
+typedef enum {
+    NRFX_SUCCESS                   = 0,           ///< Operation performed successfully.
+    NRFX_ERROR_INTERNAL            = ECANCELED,   ///< Internal error.
+    NRFX_ERROR_NO_MEM              = ENOMEM,      ///< No memory for operation.
+    NRFX_ERROR_NOT_SUPPORTED       = ENOTSUP,     ///< Not supported.
+    NRFX_ERROR_INVALID_PARAM       = EINVAL,      ///< Invalid parameter.
+    NRFX_ERROR_INVALID_STATE       = EINPROGRESS, ///< Invalid state, operation disallowed in this state.
+    NRFX_ERROR_INVALID_LENGTH      = E2BIG,       ///< Invalid length.
+    NRFX_ERROR_TIMEOUT             = ETIMEDOUT,   ///< Operation timed out.
+    NRFX_ERROR_FORBIDDEN           = EPERM,       ///< Operation is forbidden.
+    NRFX_ERROR_NULL                = EFAULT,      ///< Null pointer.
+    NRFX_ERROR_INVALID_ADDR        = EACCES,      ///< Bad memory address.
+    NRFX_ERROR_BUSY                = EBUSY,       ///< Busy.
+    NRFX_ERROR_ALREADY             = EALREADY,    ///< Operation already done.
+    NRFX_ERROR_ALREADY_INITIALIZED = EALREADY,    ///< @deprecated Use @ref NRFX_ERROR_ALREADY instead.
+} nrfx_err_t;
+
 #ifdef __cplusplus
 }
 #endif
