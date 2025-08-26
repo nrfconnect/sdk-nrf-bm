@@ -8,6 +8,10 @@
 #include <zephyr/kernel.h>
 #include <zephyr/irq.h>
 #include <zephyr/storage/flash_map.h>
+#include <zephyr/logging/log.h>
+#include <zephyr/logging/log_ctrl.h>
+
+LOG_MODULE_REGISTER(sdh_irq_connect, CONFIG_NRF_SDH_LOG_LEVEL);
 
 #if CONFIG_SOC_SERIES_NRF52X
 #include <zephyr/linker/linker-defs.h>
@@ -55,6 +59,11 @@ static void sd_enable_irq_forwarding(void)
 #ifdef CONFIG_BOOTLOADER_MCUBOOT
 	softdevice_vector_forward_address += CONFIG_ROM_START_OFFSET;
 #endif
+
+	LOG_INF("SoftDevice forward address: 0x%x", softdevice_vector_forward_address);
+
+	while (LOG_PROCESS()) {
+	}
 
 	CallSoftDeviceResetHandler();
 	irq_forwarding_enabled_magic_number_holder = IRQ_FORWARDING_ENABLED_MAGIC_NUMBER;
