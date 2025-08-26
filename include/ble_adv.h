@@ -33,7 +33,7 @@ extern "C" {
 #define BLE_ADV_BLE_OBSERVER_PRIO 0
 
 /** TODO: what is the purpose of this library being multi-instance?
- *  If it's not multi-instace, then let it define its own BLE observer
+ *  If it's not multi-instance, then let it define its own BLE observer
  *  and let the application register a handler instead of defining an
  *  instance with a macro..
  */
