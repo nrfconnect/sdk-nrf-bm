@@ -122,9 +122,6 @@ static void on_conn_params_update(uint16_t conn_handle, int idx,
 		return;
 	}
 
-	/** TODO: should use a timer here
-	 *  what is this really used for
-	 */
 	if (links[idx].retries) {
 		links[idx].retries--;
 		conn_params_negotiate(conn_handle, idx);
