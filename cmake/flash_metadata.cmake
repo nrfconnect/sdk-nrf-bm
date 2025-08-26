@@ -36,7 +36,6 @@ if(CONFIG_BOOT_FIRMWARE_LOADER)
     ${CMAKE_BINARY_DIR}/../softdevice.signed.hex
     ${sysbuild_dir}/flash_metadata.hex
     DEPENDS
-    ${ZEPHYR_BINARY_DIR}/${KERNEL_NAME}.hex
     flash_metadata_generation
     signed_softdevice_target
     ${ZEPHYR_BINARY_DIR}/${KERNEL_NAME}.hex
