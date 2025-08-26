@@ -122,7 +122,6 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
       endif()
 
       if(SB_CONFIG_BM_BOOTLOADER_MCUBOOT_FIRMWARE_LOADER_ENTRANCE_GPIO)
-        set_config_bool(mcuboot CONFIG_GPIO y)
         set_config_bool(mcuboot CONFIG_BOOT_FIRMWARE_LOADER_ENTRANCE_GPIO y)
       endif()
     endif()
