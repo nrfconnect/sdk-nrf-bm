@@ -37,6 +37,7 @@ Apache-2.0: |
   ^nrf-bm/drivers/flash/soc_flash_nrf_rram.c
   ^nrf-bm/subsys/storage/flash_map/
   ^nrf-bm/lib/zephyr_queue/src/queue.c
+  ^nrf-bm/sysbuild/image_configurations/MAIN_image_default.cmake
   ^nrf-bm/subsys/mgmt/mcumgr/CMakeLists.txt
   ^nrf-bm/subsys/mgmt/mcumgr/Kconfig
   ^nrf-bm/subsys/mgmt/mcumgr/grp/CMakeLists.txt
