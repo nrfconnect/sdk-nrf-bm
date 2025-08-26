@@ -3,6 +3,13 @@
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
+
+/** @file
+ *
+ * @defgroup event_scheduler NCS Bare Metal Event Scheduler library
+ * @{
+ */
+
 #ifndef EVENT_SCHEDULER_H__
 #define EVENT_SCHEDULER_H__
 
@@ -72,3 +79,5 @@ int event_scheduler_process(void);
 #endif
 
 #endif /* EVENT_SCHEDULER_H__ */
+
+/** @} */
