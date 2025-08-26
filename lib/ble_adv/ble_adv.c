@@ -491,16 +491,12 @@ int ble_adv_whitelist_reply(struct ble_adv *ble_adv,
 		return -EPERM;
 	}
 
-	/** TODO: what does whitelist support in this module really do?
-	 *  it only seems to change the filter policy...
-	 */
 	ble_adv->whitelist_reply_expected = false;
 	ble_adv->whitelist_in_use = (addr_cnt > 0 || irk_cnt > 0);
 
 	return 0;
 }
 
-/** TODO: can this be removed? */
 int ble_adv_restart_without_whitelist(struct ble_adv *ble_adv)
 {
 	int err;
@@ -524,7 +520,6 @@ int ble_adv_restart_without_whitelist(struct ble_adv *ble_adv)
 	return 0;
 }
 
-/** TODO: can this be removed? */
 int ble_adv_data_update(struct ble_adv *ble_adv, const struct ble_adv_data *adv_data,
 			const struct ble_adv_data *sr_data)
 {

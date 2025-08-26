@@ -27,16 +27,10 @@
 extern "C" {
 #endif
 
-/** TODO: Are we gonna need priorities again?
- *  If so, this should be a Kconfig!
+/**
+ * @brief Advertising module BLE event observer priority.
  */
 #define BLE_ADV_BLE_OBSERVER_PRIO 0
-
-/** TODO: what is the purpose of this library being multi-instance?
- *  If it's not multi-instace, then let it define its own BLE observer
- *  and let the application register a handler instead of defining an
- *  instance with a macro..
- */
 
 /**
  * @brief Declare an instance of a BLE advertising library.
@@ -188,7 +182,6 @@ struct ble_adv {
 	 */
 	ble_gap_adv_params_t adv_params;
 
-	/** TODO: Kconfig */
 #ifdef BLE_GAP_ADV_SET_DATA_SIZE_EXTENDED_CONNECTABLE_MAX_SUPPORTED
 	/** Advertising data sets in encoded form. Current and swap buffer */
 	uint8_t enc_adv_data[2][BLE_GAP_ADV_SET_DATA_SIZE_EXTENDED_CONNECTABLE_MAX_SUPPORTED];
@@ -344,11 +337,6 @@ int ble_adv_whitelist_reply(struct ble_adv *ble_adv,
  * @retval -EFAULT @p ble_adv is @c NULL.
  */
 int ble_adv_restart_without_whitelist(struct ble_adv *ble_adv);
-
-/** TODO: do we even need this function ?
- *  It doesn't provide much value on it's only used in one sample in nRF5.
- *  It's probably just one SD call..
- */
 
 /**@brief   Function for updating advertising data.
  *
