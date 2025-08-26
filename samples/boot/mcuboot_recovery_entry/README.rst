@@ -68,7 +68,21 @@ This sample can be found under :file:`samples/boot/mcuboot_recovery_entry` in th
 Testing
 =======
 
-TBD.
+1. Compile and program the application.
+#. Connect the device to the computer to access the UART.
+   If you use a development kit, the UART is forwarded as a COM port (Windows) or ttyACM device (Linux) after you connect the development kit over USB.
+#. Connect to the DK with a terminal emulator (for example, the `Serial Terminal app`_) to VCOM1.
+#. Reset the DK.
+#. Observe in the terminal that the device boots into application mode and then advertises with the default name ``nRF_BM_Entry``.
+#. Connect to your device using the `nRF Connect Device Manager`_ mobile application.
+#. Under the :guilabel:`image` tab, tap :guilabel:`Advanced`.
+   Then, in the reset control pane, select :guilabel:`Switch to bootloader mode` and tap :guilabel:`Send Reset Command`.
+   Observe in the terminal that the device reboots into Firmware Loader mode and advertises with the default Firmware Loader name ``nRF_BM_MCUmgr``.
+#. Using the `nRF Connect Device Manager`_ mobile application, go back to the device list and refresh it by swiping down.
+   Connect to your device that now advertises with the default firmware loader name ``nRF_BM_MCUmgr``.
+#. Under the :guilabel:`image` tab, tap :guilabel:`Advanced`.
+   Then, in the image control pane, tap :guilabel:`Read`.
+   Observe that the details of the currently loaded application are displayed.
 
 Dependencies
 ************
