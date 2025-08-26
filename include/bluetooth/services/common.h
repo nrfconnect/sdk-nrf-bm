@@ -14,7 +14,6 @@
 extern "C" {
 #endif
 
-/** TODO: rename this.. */
 static inline uint16_t is_notification_enabled(const uint8_t *gatts_write_data)
 {
 	const uint16_t cccd_val = sys_get_le16(gatts_write_data);
