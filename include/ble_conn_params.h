@@ -114,8 +114,8 @@ typedef void (*ble_conn_params_evt_handler_t)(const struct ble_conn_params_evt *
  *
  * @param handler Handler.
  *
- * @returns 0 On success.
- * @returns -EFAULT If @p handler is @c NULL.
+ * @retval 0 On success.
+ * @retval -EFAULT If @p handler is @c NULL.
  */
 int ble_conn_params_evt_handler_set(ble_conn_params_evt_handler_t handler);
 
@@ -129,9 +129,9 @@ int ble_conn_params_evt_handler_set(ble_conn_params_evt_handler_t handler);
  * @param conn_handle Connection handle.
  * @param conn_params Connection parameters.
  *
- * @returns 0 Connection parameter update initiated successfully.
- * @returns -EINVAL If @p conn_handle is invalid.
- * @returns -EFAULT If @p conn_params is @c NULL.
+ * @retval 0 Connection parameter update initiated successfully.
+ * @retval -EINVAL If @p conn_handle is invalid.
+ * @retval -EFAULT If @p conn_params is @c NULL.
  */
 int ble_conn_params_override(uint16_t conn_handle, const ble_gap_conn_params_t *conn_params);
 
@@ -152,8 +152,8 @@ int ble_conn_params_override(uint16_t conn_handle, const ble_gap_conn_params_t *
  * @param conn_handle Handle to the connection.
  * @param att_mtu Desired ATT MTU.
  *
- * @return 0 On success.
- * @return -EINVAL Invalid ATT MTU or connection handle.
+ * @retval 0 On success.
+ * @retval -EINVAL Invalid ATT MTU or connection handle.
  */
 int ble_conn_params_att_mtu_set(uint16_t conn_handle, uint16_t att_mtu);
 
@@ -163,9 +163,9 @@ int ble_conn_params_att_mtu_set(uint16_t conn_handle, uint16_t att_mtu);
  * @param conn_handle Handle to the connection.
  * @param[out] att_mtu The ATT MTU value.
  *
- * @return 0 On success.
- * @return -EINVAL Invalid connection handle.
- * @return -EFAULT @p att_mtu is @c NULL.
+ * @retval 0 On success.
+ * @retval -EINVAL Invalid connection handle.
+ * @retval -EFAULT @p att_mtu is @c NULL.
  */
 int ble_conn_params_att_mtu_get(uint16_t conn_handle, uint16_t *att_mtu);
 
@@ -178,8 +178,8 @@ int ble_conn_params_att_mtu_get(uint16_t conn_handle, uint16_t *att_mtu);
  * @param conn_handle Handle to the connection.
  * @param data_length Desired GAP data length.
  *
- * @return 0 On success.
- * @return -EINVAL Invalid data length or connection handle.
+ * @retval 0 On success.
+ * @retval -EINVAL Invalid data length or connection handle.
  */
 int ble_conn_params_data_length_set(uint16_t conn_handle, struct ble_conn_params_data_length dl);
 
@@ -189,9 +189,9 @@ int ble_conn_params_data_length_set(uint16_t conn_handle, struct ble_conn_params
  * @param conn_handle Handle to the connection.
  * @param[out] data_length The data length value.
  *
- * @return 0 On success.
- * @return -EINVAL Invalid connection handle.
- * @return -EFAULT @p data_length is @c NULL.
+ * @retval 0 On success.
+ * @retval -EINVAL Invalid connection handle.
+ * @retval -EFAULT @p data_length is @c NULL.
  */
 int ble_conn_params_data_length_get(uint16_t conn_handle, struct ble_conn_params_data_length *dl);
 
@@ -204,8 +204,8 @@ int ble_conn_params_data_length_get(uint16_t conn_handle, struct ble_conn_params
  * @param conn_handle Handle to the connection.
  * @param phy_pref Desired GAP radio PHY mode.
  *
- * @return 0 On success.
- * @return -EINVAL Invalid data length or connection handle.
+ * @retval 0 On success.
+ * @retval -EINVAL Invalid data length or connection handle.
  */
 int ble_conn_params_phy_radio_mode_set(uint16_t conn_handle, ble_gap_phys_t phy_pref);
 
@@ -215,9 +215,9 @@ int ble_conn_params_phy_radio_mode_set(uint16_t conn_handle, ble_gap_phys_t phy_
  * @param conn_handle Handle to the connection.
  * @param[out] phy_pref The radio PHY mode.
  *
- * @return 0 On success.
- * @return -EINVAL Invalid connection handle.
- * @return -EFAULT @p phy_pref is @c NULL.
+ * @retval 0 On success.
+ * @retval -EINVAL Invalid connection handle.
+ * @retval -EFAULT @p phy_pref is @c NULL.
  */
 int ble_conn_params_phy_radio_mode_get(uint16_t conn_handle, ble_gap_phys_t *phy_pref);
 
