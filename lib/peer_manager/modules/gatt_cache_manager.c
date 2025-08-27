@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/sys/atomic.h>
 #include <nrf_error.h>
 #include <ble_gap.h>
 #include <ble_err.h>
@@ -19,6 +20,58 @@
 #include <modules/gatt_cache_manager.h>
 
 LOG_MODULE_REGISTER(gatt_cache_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
+
+#define NRF_MTX_LOCKED      1
+#define NRF_MTX_UNLOCKED    0
+
+typedef atomic_t nrf_mtx_t;
+
+/**
+ * @brief Initialize mutex.
+ *
+ * This function _must_ be called before nrf_mtx_trylock() and nrf_mtx_unlock() functions.
+ *
+ * @param[in, out] p_mtx The mutex to be initialized.
+ */
+__STATIC_INLINE void nrf_mtx_init(nrf_mtx_t *p_mtx)
+{
+	ASSERT(p_mtx != NULL);
+
+	atomic_set(p_mtx, NRF_MTX_UNLOCKED);
+}
+
+/**
+ * @brief Try to lock a mutex.
+ *
+ * If the mutex is already held by another context, this function will return immediately.
+ *
+ * @param[in, out] p_mtx The mutex to be locked.
+ * @return true if lock was acquired, false if not
+ */
+__STATIC_INLINE bool nrf_mtx_trylock(nrf_mtx_t *p_mtx)
+{
+	ASSERT(p_mtx != NULL);
+
+	return atomic_cas(p_mtx, NRF_MTX_UNLOCKED, NRF_MTX_LOCKED);
+}
+
+/**
+ * @brief Unlock a mutex.
+ *
+ * This function _must_ only be called when holding the lock. Unlocking a mutex which you do not
+ * hold will give undefined behavior.
+ *
+ * @note Unlock must happen from the same context as the one used to lock the mutex.
+ *
+ * @param[in, out] p_mtx The mutex to be unlocked.
+ */
+__STATIC_INLINE void nrf_mtx_unlock(nrf_mtx_t *p_mtx)
+{
+	ASSERT(p_mtx != NULL);
+	ASSERT(*p_mtx == NRF_MTX_LOCKED);
+
+	atomic_set(p_mtx, NRF_MTX_UNLOCKED);
+}
 
 /* The number of registered event handlers. */
 #define GCM_EVENT_HANDLERS_CNT ARRAY_SIZE(m_evt_handlers)
@@ -72,7 +125,8 @@ static int m_flag_car_handle_queried;
 static int m_flag_car_value_queried;
 
 #ifdef CONFIG_PM_SERVICE_CHANGED_ENABLED
-STATIC_ASSERT(CONFIG_PM_SERVICE_CHANGED_ENABLED || !NRF_SDH_BLE_SERVICE_CHANGED,
+BUILD_ASSERT(IS_ENABLED(CONFIG_PM_SERVICE_CHANGED_ENABLED) ||
+	     !IS_ENABLED(CONFIG_NRF_SDH_BLE_SERVICE_CHANGED),
 	"CONFIG_PM_SERVICE_CHANGED_ENABLED should be enabled "
 	"if NRF_SDH_BLE_SERVICE_CHANGED is enabled.");
 #else
