@@ -35,16 +35,20 @@ any: |
 # Allow different licenses from external sources
 Apache-2.0: |
   ^nrf-bm/drivers/flash/soc_flash_nrf_rram.c
-  ^nrf-bm/subsys/storage/flash_map/
+  ^nrf-bm/include/bm_zms.h
+  ^nrf-bm/lib/bm_zms/
   ^nrf-bm/lib/zephyr_queue/src/queue.c
+  ^nrf-bm/modules/hal_nordic/nrfx/Kconfig
+  ^nrf-bm/samples/mcumgr/uart_mcumgr/src/smp_uart.c
+  ^nrf-bm/samples/mcumgr/uart_mcumgr/src/uart_mcumgr.c
   ^nrf-bm/subsys/mgmt/mcumgr/CMakeLists.txt
-  ^nrf-bm/subsys/mgmt/mcumgr/Kconfig
   ^nrf-bm/subsys/mgmt/mcumgr/grp/CMakeLists.txt
-  ^nrf-bm/subsys/mgmt/mcumgr/grp/Kconfig
   ^nrf-bm/subsys/mgmt/mcumgr/grp/img_mgmt/CMakeLists.txt
   ^nrf-bm/subsys/mgmt/mcumgr/grp/img_mgmt/Kconfig
+  ^nrf-bm/subsys/mgmt/mcumgr/grp/Kconfig
   ^nrf-bm/subsys/mgmt/mcumgr/grp/os_mgmt/CMakeLists.txt
   ^nrf-bm/subsys/mgmt/mcumgr/grp/os_mgmt/Kconfig
+  ^nrf-bm/subsys/mgmt/mcumgr/Kconfig
   ^nrf-bm/subsys/mgmt/mcumgr/mgmt/CMakeLists.txt
   ^nrf-bm/subsys/mgmt/mcumgr/mgmt/Kconfig
   ^nrf-bm/subsys/mgmt/mcumgr/smp/CMakeLists.txt
@@ -53,10 +57,7 @@ Apache-2.0: |
   ^nrf-bm/subsys/mgmt/mcumgr/transport/Kconfig
   ^nrf-bm/subsys/mgmt/mcumgr/transport/src/smp.c
   ^nrf-bm/subsys/mgmt/mcumgr/util/CMakeLists.txt
+  ^nrf-bm/subsys/storage/flash_map/
   ^nrf-bm/sysbuild/Kconfig.bm
-  ^nrf-bm/samples/mcumgr/uart_mcumgr/src/smp_uart.c
-  ^nrf-bm/samples/mcumgr/uart_mcumgr/src/uart_mcumgr.c
   ^nrf-bm/tests/lib/bm_timer/include/zephyr/kernel.h
-  ^nrf-bm/lib/bm_zms/
-  ^nrf-bm/include/bm_zms.h
   ^nrf-bm/tests/lib/bm_zms/
