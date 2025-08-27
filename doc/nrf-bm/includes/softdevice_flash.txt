@@ -1,3 +1,8 @@
+.. note::
+
+   When building for an MCUboot board target, this step is not required.
+   With the MCUboot board target, the SoftDevice is signed and included as part of the build process.
+
 To flash the S115 SoftDevice binary to your device:
 
 1. Open the |nRFVSC| terminal
