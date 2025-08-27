@@ -10,5 +10,6 @@ This chapter provides an overview of the Device Firmware Update (DFU) capabiliti
    :caption: Subpages:
 
    memory_partitioning
+   single_bank_dfu
    bootloader_keys
    ug_dfu
