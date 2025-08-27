@@ -70,3 +70,7 @@
 .. _`nRF54L10`: https://docs.nordicsemi.com/category/nRF54L10-category
 .. _`nRF54L05`: https://docs.nordicsemi.com/category/nRF54L05-category
 .. _`nrfx documentation`: https://docs.nordicsemi.com/bundle/nrfx-apis-latest/page/index.html
+
+.. ### Release notes and migration
+
+.. _`nrfx migration guides`: https://github.com/NordicSemiconductor/nrfx/wiki/nrfx-2.11.0-to-3.0.0
