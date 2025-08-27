@@ -299,7 +299,6 @@ int ble_nus_data_send(struct ble_nus *nus, uint8_t *data,
 {
 	int err;
 	ble_gatts_hvx_params_t hvx_params = {
-		.handle = nus->tx_handles.value_handle,
 		.p_data = data,
 		.p_len = len,
 		.type = BLE_GATT_HVX_NOTIFICATION
@@ -326,6 +325,8 @@ int ble_nus_data_send(struct ble_nus *nus, uint8_t *data,
 	if (!ctx->is_notification_enabled) {
 		return -EINVAL;
 	}
+
+	hvx_params.handle = nus->tx_handles.value_handle;
 
 	err =  sd_ble_gatts_hvx(conn_handle, &hvx_params);
 	switch (err) {
