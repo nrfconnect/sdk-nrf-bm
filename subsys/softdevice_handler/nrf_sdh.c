@@ -294,4 +294,4 @@ static int sd_irq_init(void)
 	return 0;
 }
 
-SYS_INIT(sd_irq_init, POST_KERNEL, 0);
+SYS_INIT(sd_irq_init, APPLICATION, 0);

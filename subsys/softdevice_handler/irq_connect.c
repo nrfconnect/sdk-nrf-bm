@@ -134,4 +134,4 @@ __attribute__((weak)) void C_POWER_CLOCK_Handler(void)
 
 #endif
 
-SYS_INIT(irq_init, PRE_KERNEL_1, 0);
+SYS_INIT(irq_init, APPLICATION, 0);
