@@ -7,15 +7,21 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <limits.h>
+#include <zephyr/sys/atomic.h>
 #include <nrf_error.h>
 #include <bluetooth/peer_manager/peer_manager_types.h>
 #include <modules/peer_id.h>
 
+#define BITS_SIZEOF(type) (sizeof(type) * CHAR_BIT)
+#define ATOMIC_BITMAP(name)                                                                        \
+	atomic_t name[(PM_PEER_ID_N_AVAILABLE_IDS - 1) / BITS_SIZEOF(atomic_t) + 1]                \
+
 typedef struct {
 	/** Bitmap designating which peer IDs are in use. */
-	NRF_ATFLAGS_DEF_MEMBER(used_peer_ids, PM_PEER_ID_N_AVAILABLE_IDS);
+	ATOMIC_BITMAP(used_peer_ids);
 	/** Bitmap designating which peer IDs are marked for deletion. */
-	NRF_ATFLAGS_DEF_MEMBER(deleted_peer_ids, PM_PEER_ID_N_AVAILABLE_IDS);
+	ATOMIC_BITMAP(deleted_peer_ids);
 } pi_t;
 
 static pi_t m_pi = {{0}, {0}};
@@ -30,7 +36,7 @@ void peer_id_init(void)
 	internal_state_reset(&m_pi);
 }
 
-static pm_peer_id_t claim(pm_peer_id_t peer_id, nrf_atflags_t *p_peer_id_flags)
+static pm_peer_id_t claim(pm_peer_id_t peer_id, atomic_t *p_peer_id_flags)
 {
 	pm_peer_id_t allocated_peer_id = PM_PEER_ID_INVALID;
 
@@ -48,7 +54,7 @@ static pm_peer_id_t claim(pm_peer_id_t peer_id, nrf_atflags_t *p_peer_id_flags)
 	return allocated_peer_id;
 }
 
-static void release(pm_peer_id_t peer_id, nrf_atflags_t *p_peer_id_flags)
+static void release(pm_peer_id_t peer_id, atomic_t *p_peer_id_flags)
 {
 	if (peer_id < PM_PEER_ID_N_AVAILABLE_IDS) {
 		nrf_atflags_clear(p_peer_id_flags, peer_id);
@@ -95,7 +101,7 @@ bool peer_id_is_deleted(pm_peer_id_t peer_id)
 	return false;
 }
 
-pm_peer_id_t next_id_get(pm_peer_id_t prev_peer_id, nrf_atflags_t *p_peer_id_flags)
+pm_peer_id_t next_id_get(pm_peer_id_t prev_peer_id, atomic_t *p_peer_id_flags)
 {
 	pm_peer_id_t i = (prev_peer_id == PM_PEER_ID_INVALID) ? 0 : (prev_peer_id + 1);
 
