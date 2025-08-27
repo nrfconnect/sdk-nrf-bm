@@ -9,7 +9,7 @@
 typedef int k_timeout_t;
 
 struct k_timer {
-	int foo[2];
+	int foo[52];
 };
 
 typedef void (*k_timer_expiry_t)(struct k_timer *timer);

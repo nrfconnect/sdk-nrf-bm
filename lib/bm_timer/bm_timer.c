@@ -18,7 +18,9 @@ LOG_MODULE_REGISTER(bm_timer, CONFIG_BM_TIMER_LOG_LEVEL);
 #define BM_TIMER_IRQn GRTC_IRQn
 #else
 #define BM_TIMER_IRQn
+#if !defined(CONFIG_UNITY)
 #error "Unsupported"
+#endif /* !CONFIG_UNITY */
 #endif /* CONFIG_SOC_SERIES_NRF5xx */
 
 static void irq_prio_lvl_configure(void)
