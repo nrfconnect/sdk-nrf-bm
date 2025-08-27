@@ -25,13 +25,19 @@ Integration and structure
 The |BMlong| is a distinct repository that incorporates elements from the existing |NCS|:
 
 * **Repository-Level Filtering:** |BMshort| utilizes a repository-level filtering mechanism designed to include components beneficial for bare metal development.
-  However, this approach is based on the best possible method available, which means that some components that are not ideally suited for bare metal applications will also be included.
+  However, this approach is based on the best possible method available, which means that some components that are not suited for bare metal applications will also be included.
   Developers should be aware of these limitations and exercise discretion when utilizing the repository.
-* **Tools:** Tools such as the compiler and linker from the original |NCS| are reused in the Bare Metal option.
+* **Reuse of nRF Connect SDK components:** The |BMshort| solution reuses some components (such as modules/libraries) from the |NCS| repositories.
+  These components are included and reused because they do not rely on Zephyr RTOS primitives, making them suitable for the bare metal SDK.
+  Examples of modules/libraries reused in |BMshort| are logging, crypto functionality, and smaller libraries like CRC calculation, signing scripts, and ring buffer.
+* **nrfx:** The |BMshort| solution does not use Zephyr drivers and the Devicetree configuration for peripherals.
+  Instead, nrfx drivers are used directly.
+  |BMShort| uses the nrfx drivers that come with |NCS|.
+* **Tools:** Tools such as the compiler and linker from the original |NCS| are reused in |BMshort|.
   The existing nRF Connect extension in |VSC| is the recommended IDE for working with Bare Metal.
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
    :caption: Contents
 
    install_nrf_bm.rst
