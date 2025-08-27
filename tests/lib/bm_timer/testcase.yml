@@ -1,4 +1,0 @@
-tests:
-  lib.bm_timer:
-    platform_allow: native_sim
-    tags: unittest

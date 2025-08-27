@@ -23,11 +23,9 @@ LOG_MODULE_REGISTER(bm_timer, CONFIG_BM_TIMER_LOG_LEVEL);
 
 static void irq_prio_lvl_configure(void)
 {
-#if !defined(CONFIG_UNITY)
 	NVIC_SetPriority(BM_TIMER_IRQn, (uint32_t)CONFIG_BM_TIMER_IRQ_PRIO);
 
 	LOG_DBG("Timer IRQ priority level set to %d", CONFIG_BM_TIMER_IRQ_PRIO);
-#endif
 }
 
 static void bm_timer_handler(struct k_timer *timer)
