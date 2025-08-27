@@ -34,7 +34,7 @@ extern "C" {
 #define PM_BUFFER_INIT(p_buffer, n_blocks, block_size, err_code)                                   \
 	do {                                                                                       \
 		__ALIGN(4) static uint8_t buffer_memory[(n_blocks) * (block_size)];                \
-		static NRF_ATFLAGS_DEF(mutex_memory, n_blocks);                                    \
+		static atomic_t mutex_memory[(n_blocks - 1) / (sizeof(atomic_t) * 8) + 1];         \
 		err_code = pm_buffer_init((p_buffer), buffer_memory, (n_blocks) * (block_size),    \
 					  mutex_memory, (n_blocks), (block_size));                 \
 	} while (0)
@@ -46,7 +46,7 @@ typedef struct {
 	 */
 	uint8_t *p_memory;
 	/** @brief A mutex group with one mutex for each buffer entry. */
-	nrf_atflags_t *p_mutex;
+	atomic_t *p_mutex;
 	/** @brief The number of allocatable blocks in the buffer. */
 	uint32_t n_blocks;
 	/** @brief The size of each block in the buffer. */
@@ -69,7 +69,7 @@ typedef struct {
  * @retval NRF_ERROR_INVALID_PARAM  A parameter was 0 or NULL or a size was too small.
  */
 uint32_t pm_buffer_init(pm_buffer_t *p_buffer, uint8_t *p_buffer_memory,
-			  uint32_t buffer_memory_size, nrf_atflags_t *p_mutex_memory,
+			  uint32_t buffer_memory_size, atomic_t *p_mutex_memory,
 			  uint32_t n_blocks, uint32_t block_size);
 
 /**

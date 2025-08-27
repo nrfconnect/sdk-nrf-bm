@@ -7,35 +7,31 @@
 
 #include <stdbool.h>
 #include <string.h>
+#include <zephyr/sys/atomic.h>
 #include <nrf_error.h>
 #include <modules/pm_buffer.h>
 
 #define BUFFER_IS_VALID(p_buffer)                                                                  \
 	((p_buffer != NULL) && (p_buffer->p_memory != NULL) && (p_buffer->p_mutex != NULL))
 
-static bool mutex_lock(nrf_atflags_t *p_mutex, uint32_t mutex_id)
+static bool mutex_lock(atomic_t *mutex, int index)
 {
-	bool locked = !nrf_atflags_fetch_set(p_mutex, mutex_id);
-
-	__DMB();
-	return locked;
+	return !atomic_test_and_set_bit(mutex, index);
 }
 
-static void mutex_unlock(nrf_atflags_t *p_mutex, uint32_t mutex_id)
+static void mutex_unlock(atomic_t *mutex, int index)
 {
-	__DMB();
-	nrf_atflags_clear(p_mutex, mutex_id);
+	atomic_clear_bit(mutex, index);
 }
 
-static bool mutex_lock_status_get(nrf_atflags_t *p_mutex, uint32_t mutex_id)
+static bool mutex_lock_status_get(atomic_t *mutex, int index)
 {
-	__DMB();
-	return nrf_atflags_get(p_mutex, mutex_id);
+	return atomic_test_bit(mutex, index);
 }
 
 uint32_t pm_buffer_init(pm_buffer_t *p_buffer, uint8_t *p_buffer_memory,
-			  uint32_t buffer_memory_size, nrf_atflags_t *p_mutex_memory,
-			  uint32_t n_blocks, uint32_t block_size)
+			uint32_t buffer_memory_size, atomic_t *p_mutex_memory,
+			uint32_t n_blocks, uint32_t block_size)
 {
 	if ((p_buffer != NULL) && (p_buffer_memory != NULL) && (p_mutex_memory != NULL) &&
 	    (buffer_memory_size >= (n_blocks * block_size)) && (n_blocks != 0) &&
