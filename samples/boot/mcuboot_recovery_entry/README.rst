@@ -83,6 +83,23 @@ Testing
 #. Under the :guilabel:`image` tab, tap :guilabel:`Advanced`.
    Then, in the image control pane, tap :guilabel:`Read`.
    Observe that the details of the currently loaded application are displayed.
+#. Build an application with a modified image version by changing the :kconfig:option:`CONFIG_MCUBOOT_IMGTOOL_SIGN_VERSION` Kconfig option.
+   One way of changing the option is to add ``CONFIG_MCUBOOT_IMGTOOL_SIGN_VERSION="1.0.0+0"`` to the sample's :file:`prj.conf` file to override the default version string.
+#. Transfer the :file:`<build_dir>/installer_softdevice_firmware_loader.bin` and :file:`<build_dir>/<app_name>/zephyr/zephyr.signed.bin` files to your mobile device.
+#. In nRF Connect Device Manager application, tap the :guilabel:`Image` tab at the bottom to move to the image management tab.
+   If you only see the basic image tab view, tap :guilabel:`Advanced` to switch to the advanced image tab view.
+#. Under :guilabel:`Firmware Upload` select the update file to load:
+
+   * Choose :file:`installer_softdevice_firmware_loader.bin` to update the SoftDevice and Firmware Loader images.
+     This is only needed if the SoftDevice or Firmware Loader images have been updated.
+     This image must be loaded first if it is needed.
+   * Choose :file:`zephyr.signed.bin` to load the application update.
+
+#. Tap the :guilabel:`Upload` button, then select the :guilabel:`Image 0` option to begin the firmware update process.
+#. The mobile device will connect and load the firmware update to the device.
+#. Once completed, reboot the device.
+   If the Installer image was loaded, then it will apply the updates and reboot into Firmware Loader mode automatically and allow for loading the application firmware update using the same process.
+   If an application update was loaded, then the new application will begin executing.
 
 Dependencies
 ************
