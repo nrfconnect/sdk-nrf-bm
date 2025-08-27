@@ -13,7 +13,7 @@ Follow these steps to create your first build configuration for this sample:
    This information will be used in the steps that follow.
 
    .. note::
-      The following steps will use the **Hello SoftDevice** sample as reference.
+      The following screenshots show the **Hello SoftDevice** sample as reference.
 
 #. In the `Applications View`_, click :guilabel:`Add build configuration`.
 
@@ -52,11 +52,34 @@ Follow these steps to create your first build configuration for this sample:
 
    The |VSC| extension generates the configuration file and triggers the build process, which can take some time. You can monitor its progress in the notification that appears.
 
-   When the process is complete, the `Actions View`_ appears.
-   In this View, you can trigger the build process again, flash the built application, start a debug session (if debug options were set when building), or generate a memory report.
-   The build files appear in the build's `Details View`_, which is named after your application.
+.. tabs::
 
-   .. figure:: /images/show_build_configuration_files.png
-      :alt: Build configuration files
+   .. group-tab:: Simple board variants
 
-      Build configuration files
+      When the process is complete, the `Actions View`_ appears.
+      In this View, you can trigger the build process again, flash the built application, start a debug session (if debug options were set when building), or generate a memory report.
+      The build files appear in the build's `Details View`_, which is named after your application.
+
+      .. figure:: /images/show_build_configuration_files.png
+         :alt: Build configuration files
+
+         Build configuration files
+
+   .. group-tab:: MCUboot board variants
+
+      When the process is complete, the `Actions View`_ appears.
+      In this View, you can trigger the build process again, flash the built application, start a debug session (if debug options were set when building), or generate a memory report.
+      The build files appear in the build's `Details View`_, which is named after your application.
+
+      .. figure:: /images/show_build_configuration_files_mcuboot.png
+         :alt: Build configuration files
+
+         Build configuration files with MCUboot board variant
+
+      When selecting an MCUboot board variant, the configuration of the memory includes both MCUboot and single-bank DFU.
+      This will automatically include and compile the extra images needed for the partitions.
+      When the build process is completed, the Application view will list all images.
+
+      For details on how the memory partitions are organized when including MCUboot and DFU, see :ref:`dfu_memory_partitioning`.
+
+      For how to program your board and run the images, see :ref:`ug_dfu`.
