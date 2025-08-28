@@ -10,6 +10,7 @@
 #include <nrf_sdh_soc.h>
 #include <nrf_soc.h>
 #include <psa/crypto.h>
+#include <cracen_psa.h>
 #include <zephyr/logging/log.h>
 
 LOG_MODULE_DECLARE(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
@@ -48,7 +49,7 @@ static void softdevice_rng_seed(void)
 	psa_status_t status;
 	uint8_t seed[SD_RAND_SEED_SIZE];
 
-	status = psa_generate_random(seed, sizeof(seed));
+	status = cracen_get_trng(seed, sizeof(seed));
 	if (status == PSA_SUCCESS) {
 		err = sd_rand_seed_set(seed);
 		memset(seed, 0, sizeof(seed));
