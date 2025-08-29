@@ -7,7 +7,10 @@
 #include <stdint.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/atomic.h>
+#include <zephyr/sys/__assert.h>
 #include <nrf_error.h>
+#include <nrf_strerror.h>
+#include <nordic_common.h>
 #include <ble_gap.h>
 #include <ble_err.h>
 #include <ble_conn_state.h>
@@ -35,7 +38,7 @@ typedef atomic_t nrf_mtx_t;
  */
 __STATIC_INLINE void nrf_mtx_init(nrf_mtx_t *p_mtx)
 {
-	ASSERT(p_mtx != NULL);
+	__ASSERT(p_mtx != NULL, "");
 
 	atomic_set(p_mtx, NRF_MTX_UNLOCKED);
 }
@@ -50,7 +53,7 @@ __STATIC_INLINE void nrf_mtx_init(nrf_mtx_t *p_mtx)
  */
 __STATIC_INLINE bool nrf_mtx_trylock(nrf_mtx_t *p_mtx)
 {
-	ASSERT(p_mtx != NULL);
+	__ASSERT(p_mtx != NULL, "");
 
 	return atomic_cas(p_mtx, NRF_MTX_UNLOCKED, NRF_MTX_LOCKED);
 }
@@ -67,8 +70,8 @@ __STATIC_INLINE bool nrf_mtx_trylock(nrf_mtx_t *p_mtx)
  */
 __STATIC_INLINE void nrf_mtx_unlock(nrf_mtx_t *p_mtx)
 {
-	ASSERT(p_mtx != NULL);
-	ASSERT(*p_mtx == NRF_MTX_LOCKED);
+	__ASSERT(p_mtx != NULL, "");
+	__ASSERT(*p_mtx == NRF_MTX_LOCKED, "");
 
 	atomic_set(p_mtx, NRF_MTX_UNLOCKED);
 }
@@ -326,7 +329,7 @@ static uint32_t service_changed_cccd(uint16_t conn_handle, uint16_t *p_cccd)
 
 	uint32_t err_code = sd_ble_gatts_initial_user_handle_get(&end_handle);
 
-	ASSERT(err_code == NRF_SUCCESS);
+	__ASSERT(err_code == NRF_SUCCESS, "");
 
 	for (uint16_t handle = 1; handle < end_handle; handle++) {
 		ble_uuid_t uuid;

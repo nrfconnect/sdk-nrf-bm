@@ -5,9 +5,12 @@
  */
 
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 #include <zephyr/logging/log.h>
 #include <nrf_error.h>
+#include <nrf_strerror.h>
+#include <nordic_common.h>
 #include <ble_gap.h>
 #include <ble_gattc.h>
 #include <ble_conn_state.h>

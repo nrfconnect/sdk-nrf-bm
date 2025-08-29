@@ -7,6 +7,7 @@
 
 #include <zephyr/logging/log.h>
 #include <nrf_error.h>
+#include <nrf_strerror.h>
 #include <bm_timer.h>
 #include <modules/id_manager.h>
 #include <modules/auth_status_tracker.h>

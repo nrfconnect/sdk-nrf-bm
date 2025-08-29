@@ -4,9 +4,11 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
+#include <stdint.h>
 #include <string.h>
 #include <zephyr/logging/log.h>
 #include <nrf_error.h>
+#include <nrf_strerror.h>
 #include <ble.h>
 #include <ble_gap.h>
 #include <ble_err.h>

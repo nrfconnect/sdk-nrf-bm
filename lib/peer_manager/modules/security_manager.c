@@ -7,6 +7,7 @@
 #include <string.h>
 #include <zephyr/logging/log.h>
 #include <nrf_error.h>
+#include <nrf_strerror.h>
 #include <ble_err.h>
 #include <ble_conn_state.h>
 #include <modules/id_manager.h>
