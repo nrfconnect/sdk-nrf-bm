@@ -46,6 +46,7 @@
 /lib/bm_zms/                              @nrfconnect/ncs-bm @rghaddab
 /lib/ble_adv/                             @nrfconnect/ncs-bm
 /lib/ble_conn_params/                     @nrfconnect/ncs-bm
+/lib/ble_conn_state/                      @nrfconnect/ncs-bm
 /lib/ble_gq/                              @nrfconnect/ncs-bm
 /lib/ble_qwr/                             @nrfconnect/ncs-bm
 /lib/ble_racp/                            @nrfconnect/ncs-bm
@@ -54,6 +55,7 @@
 /lib/bm_timer/                            @nrfconnect/ncs-bm
 /lib/boot_banner/                         @nrfconnect/ncs-bm
 /lib/event_scheduler/                     @nrfconnect/ncs-bm
+/lib/peer_manager/                        @nrfconnect/ncs-bm
 /lib/sensorsim/                           @nrfconnect/ncs-bm
 /lib/zephyr_queue/                        @nrfconnect/ncs-pluto
 
