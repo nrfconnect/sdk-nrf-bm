@@ -27,7 +27,7 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 SoftDevice Handler
 ==================
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Updated the system initialization to initialize on application level.
 
 Boards
 ======
