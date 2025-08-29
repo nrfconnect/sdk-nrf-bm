@@ -42,7 +42,7 @@ static pm_peer_id_t claim(pm_peer_id_t peer_id, atomic_t *p_peer_id_flags)
 
 	if (peer_id == PM_PEER_ID_INVALID) {
 		allocated_peer_id =
-			nrf_atflags_find_and_set_flag(p_peer_id_flags, PM_PEER_ID_N_AVAILABLE_IDS);
+//todo->			nrf_atflags_find_and_set_flag(p_peer_id_flags, PM_PEER_ID_N_AVAILABLE_IDS);
 		if (allocated_peer_id == PM_PEER_ID_N_AVAILABLE_IDS) {
 			allocated_peer_id = PM_PEER_ID_INVALID;
 		}
