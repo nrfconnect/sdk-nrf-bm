@@ -13,7 +13,7 @@ jobs:
       - runs-on=${{ github.run_id }}
       - runner=64cpu-linux-x64
     # Keep aligned with target NCS version
-    container: ghcr.io/nrfconnect/sdk-nrf-toolchain:v2.9.1
+    container: ghcr.io/nrfconnect/sdk-nrf-toolchain:v3.1.0
     defaults:
       run:
         # Bash shell is needed to set toolchain related environment variables in docker container
