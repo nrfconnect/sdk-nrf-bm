@@ -111,7 +111,7 @@ typedef void (*bm_zms_cb_t)(bm_zms_evt_t const *p_evt);
  * @param fs Pointer to the file system structure.
  *
  * @retval 0 on success.
- * @retval negative number on failure.
+ * @retval -ENOMEM if no more callback slots are available.
  */
 int bm_zms_register(struct bm_zms_fs *fs, bm_zms_cb_t cb);
 
