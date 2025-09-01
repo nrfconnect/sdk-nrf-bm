@@ -268,7 +268,7 @@ static void timer_start(void)
 	err = bm_timer_start(&global.timer, BM_TIMER_US_TO_TICKS(global.detection_delay / 2),
 			       NULL);
 	if (err) {
-		LOG_WRN("Failed to start app_timer (err:%d)", err);
+		LOG_WRN("Failed to start bm_timer (err:%d)", err);
 	}
 }
 
