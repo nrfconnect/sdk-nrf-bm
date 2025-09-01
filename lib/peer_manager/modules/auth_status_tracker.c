@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-
+#include <stdbool.h>
+#include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <nrf_error.h>
 #include <nrf_strerror.h>
@@ -15,9 +16,9 @@
 LOG_MODULE_REGISTER(auth_status_tracker, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
 /* Assume that waiting interval doubles with each failed authentication. */
-#define PAIR_REWARD_TICKS APP_TIMER_TICKS(CONFIG_PM_RA_PROTECTION_REWARD_PERIOD)
+#define PAIR_REWARD_TICKS BM_TIMER_MS_TO_TICKS(CONFIG_PM_RA_PROTECTION_REWARD_PERIOD)
 #define PENALITY_LVL_TO_PENALITY_MS(_lvl) (CONFIG_PM_RA_PROTECTION_MIN_WAIT_INTERVAL * (1 << _lvl))
-#define PENALITY_LVL_TO_PENALITY_TICKS(_lvl) APP_TIMER_TICKS(PENALITY_LVL_TO_PENALITY_MS(_lvl))
+#define PENALITY_LVL_TO_PENALITY_TICKS(_lvl) BM_TIMER_MS_TO_TICKS(PENALITY_LVL_TO_PENALITY_MS(_lvl))
 #define PENALITY_LVL_NEXT_SET(_lvl)                                                                \
 	_lvl = (PENALITY_LVL_TO_PENALITY_MS(_lvl) >= (CONFIG_PM_RA_PROTECTION_MAX_WAIT_INTERVAL))  \
 		       ? (_lvl)                                                                    \
@@ -51,9 +52,9 @@ typedef struct {
 	bool is_valid;
 } blacklisted_peer_t;
 
-APP_TIMER_DEF(m_pairing_attempt_timer);
+static struct bm_timer m_pairing_attempt_timer;
 static blacklisted_peer_t m_blacklisted_peers[CONFIG_PM_RA_PROTECTION_TRACKED_PEERS_NUM];
-static uint32_t m_ticks_cnt;
+static uint64_t m_ticks_cnt;
 
 /**
  * @brief Function for updating the state of blacklisted peers after timer has been stopped or
@@ -129,19 +130,18 @@ static uint32_t blacklisted_peers_state_update(uint32_t ticks_passed)
  */
 static void blacklisted_peers_state_transition_handle(void *context)
 {
-	uint32_t err_code;
+	int err;
 	uint32_t minimal_ticks;
 	uint32_t ticks_passed = (uint32_t)context;
 
 	minimal_ticks = blacklisted_peers_state_update(ticks_passed);
-	m_ticks_cnt = app_timer_cnt_get();
+	m_ticks_cnt = k_uptime_ticks();
 
 	if (minimal_ticks != UINT32_MAX) {
-		err_code = app_timer_start(m_pairing_attempt_timer, minimal_ticks,
+		err = bm_timer_start(&m_pairing_attempt_timer, minimal_ticks,
 					   (void *)minimal_ticks);
-		if (err_code != NRF_SUCCESS) {
-			LOG_WRN("app_timer_start() returned %s",
-				nrf_strerror_get(err_code));
+		if (err) {
+			LOG_WRN("bm_timer_start() returned %d", err);
 		}
 		LOG_DBG("Restarting the timer");
 	}
@@ -149,14 +149,18 @@ static void blacklisted_peers_state_transition_handle(void *context)
 
 uint32_t ast_init(void)
 {
-	uint32_t err_code = app_timer_create(&m_pairing_attempt_timer, APP_TIMER_MODE_SINGLE_SHOT,
-					       blacklisted_peers_state_transition_handle);
+	int err_code = bm_timer_init(&m_pairing_attempt_timer, BM_TIMER_MODE_SINGLE_SHOT,
+					blacklisted_peers_state_transition_handle);
+	if (err_code) {
+		return NRF_ERROR_INTERNAL;
+	}
 
-	return err_code;
+	return NRF_SUCCESS;
 }
 
 void ast_auth_error_notify(uint16_t conn_handle)
 {
+	int err;
 	uint32_t err_code;
 	ble_gap_addr_t peer_addr;
 	uint32_t new_timeout;
@@ -173,15 +177,14 @@ void ast_auth_error_notify(uint16_t conn_handle)
 	}
 
 	/* Stop the timer and update the state of all blacklisted peers. */
-	err_code = app_timer_stop(m_pairing_attempt_timer);
-	if (err_code != NRF_SUCCESS) {
-		LOG_WRN("app_timer_stop() returned %s", nrf_strerror_get(err_code));
+	err = bm_timer_stop(&m_pairing_attempt_timer);
+	if (err) {
+		LOG_WRN("bm_timer_stop() returned %d", err);
 		return;
 	}
 
-	new_timeout = blacklisted_peers_state_update(
-		app_timer_cnt_diff_compute(app_timer_cnt_get(), m_ticks_cnt));
-	m_ticks_cnt = app_timer_cnt_get();
+	new_timeout = blacklisted_peers_state_update((uint32_t)(k_uptime_ticks() - m_ticks_cnt));
+	m_ticks_cnt = k_uptime_ticks();
 
 	/* Check if authorization has failed for already blacklisted peer. */
 	for (uint32_t id = 0; id < ARRAY_SIZE(m_blacklisted_peers); id++) {
@@ -239,11 +242,9 @@ void ast_auth_error_notify(uint16_t conn_handle)
 
 	/* Restart the timer. */
 	if (new_timeout != UINT32_MAX) {
-		err_code =
-			app_timer_start(m_pairing_attempt_timer, new_timeout, (void *)new_timeout);
-		if (err_code != NRF_SUCCESS) {
-			LOG_WRN("app_timer_start() returned %s",
-				nrf_strerror_get(err_code));
+		err = bm_timer_start(&m_pairing_attempt_timer, new_timeout, (void *)new_timeout);
+		if (err) {
+			LOG_WRN("bm_timer_start() returned %d", err);
 		}
 	}
 }

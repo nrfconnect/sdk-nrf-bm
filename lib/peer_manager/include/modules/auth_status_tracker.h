@@ -16,6 +16,7 @@
 #ifndef AUTH_STATUS_TRACKER_H__
 #define AUTH_STATUS_TRACKER_H__
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <ble_gap.h>
 
