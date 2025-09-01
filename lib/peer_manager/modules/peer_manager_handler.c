@@ -157,7 +157,7 @@ static void _conn_secure(uint16_t conn_handle, bool force)
 }
 
 #if CONFIG_PM_HANDLER_SEC_DELAY_MS > 0
-APP_TIMER_DEF(secure_delay_timer);
+static struct bm_timer secure_delay_timer;
 
 typedef union {
 	struct {
@@ -181,13 +181,13 @@ static void delayed_conn_secure(void *context)
 
 static void conn_secure(uint16_t conn_handle, bool force)
 {
-	uint32_t err_code;
+	int err;
 	static bool created;
 
 	if (!created) {
-		err_code = app_timer_create(&secure_delay_timer, APP_TIMER_MODE_SINGLE_SHOT,
-					    delayed_conn_secure);
-		APP_ERROR_CHECK(err_code);
+		err = bm_timer_init(&secure_delay_timer, BM_TIMER_MODE_SINGLE_SHOT,
+					delayed_conn_secure);
+		APP_ERROR_CHECK(err);
 		created = true;
 	}
 
@@ -196,10 +196,10 @@ static void conn_secure(uint16_t conn_handle, bool force)
 	sec_context.values.conn_handle = conn_handle;
 	sec_context.values.force = force;
 
-	err_code = app_timer_start(secure_delay_timer,
-				   APP_TIMER_TICKS(CONFIG_PM_HANDLER_SEC_DELAY_MS),
+	err = bm_timer_start(secure_delay_timer,
+				   BM_TIMER_MS_TO_TICKS(CONFIG_PM_HANDLER_SEC_DELAY_MS),
 				   sec_context.p_void);
-	APP_ERROR_CHECK(err_code);
+	APP_ERROR_CHECK(err);
 }
 
 #else
@@ -572,9 +572,9 @@ void pm_handler_secure_on_connection(ble_evt_t const *p_ble_evt)
 
 #if CONFIG_PM_HANDLER_SEC_DELAY_MS > 0
 	case BLE_GAP_EVT_DISCONNECTED: {
-		uint32_t err_code = app_timer_stop(secure_delay_timer);
+		int err = bm_timer_stop(&secure_delay_timer);
 
-		APP_ERROR_CHECK(err_code);
+		APP_ERROR_CHECK(err);
 	} break;
 #endif
 
