@@ -48,11 +48,30 @@ config PM_PEER_RANKS_ENABLED
 config PM_LESC_ENABLED
 	bool "Enable/disable LESC support in Peer Manager."
 	default n
+	depends on PSA_WANT_ALG_ECDH
+	depends on PSA_WANT_GENERATE_RANDOM
+	depends on PSA_WANT_KEY_TYPE_ECC_KEY_PAIR_GENERATE
+	depends on PSA_WANT_KEY_TYPE_ECC_KEY_PAIR_IMPORT
+	depends on PSA_WANT_KEY_TYPE_ECC_KEY_PAIR_EXPORT
+	depends on PSA_WANT_ECC_SECP_R1_256
+	depends on (MBEDTLS_PSA_STATIC_KEY_SLOTS && MBEDTLS_PSA_KEY_SLOT_COUNT >= 1) || \
+		   MBEDTLS_ENABLE_HEAP
+
 	help
 	  Enable/disable LESC support in Peer Manager.
 	  If set to true, you need to call nrf_ble_lesc_request_handler() in the main loop to
 	  respond to LESC-related BLE events. If LESC support is not required, set this to false to
 	  save code space.
+
+if PM_LESC_ENABLED
+
+config PM_LESC_GENERATE_NEW_KEYS
+	bool "Generate new LESC key pair after every pairing attempt"
+	default n
+	help
+	  New LESC keys are generated on the auth status event.
+
+endif # PM_LESC_ENABLED
 
 config PM_RA_PROTECTION_ENABLED
 	bool "Enable/disable protection against repeated pairing attempts in Peer Manager."
