@@ -112,6 +112,7 @@ typedef void (*bm_zms_cb_t)(bm_zms_evt_t const *p_evt);
  *
  * @retval 0 on success.
  * @retval -ENOMEM if no more callback slots are available.
+ * @retval -EINVAL if @p fs or @p cb are NULL.
  */
 int bm_zms_register(struct bm_zms_fs *fs, bm_zms_cb_t cb);
 

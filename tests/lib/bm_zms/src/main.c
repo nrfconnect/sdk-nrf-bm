@@ -116,6 +116,12 @@ ZTEST_F(bm_zms, test_bm_zms_register)
 {
 	int err;
 
+	err = bm_zms_register(NULL, &bm_zms_test_handler);
+	zassert_true(err == -EINVAL, "bm_zms_register unexpected failure");
+
+	err = bm_zms_register(&fixture->fs, NULL);
+	zassert_true(err == -EINVAL, "bm_zms_register unexpected failure");
+
 	err = bm_zms_register(&fixture->fs, &bm_zms_test_handler);
 	zassert_true(err == 0, "bm_zms_register call failure");
 }

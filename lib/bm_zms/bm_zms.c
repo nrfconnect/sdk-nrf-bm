@@ -322,6 +322,10 @@ int bm_zms_register(struct bm_zms_fs *fs, bm_zms_cb_t cb)
 {
 	int i;
 
+	if (!fs || !cb) {
+		return -EINVAL;
+	}
+
 	for (i = 0; i < CONFIG_BM_ZMS_MAX_USERS; i++) {
 		if (zms_cb_table[i] == NULL) {
 			break;

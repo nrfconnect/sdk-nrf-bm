@@ -52,7 +52,9 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Libraries
 =========
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* :ref:`lib_bm_zms` library:
+
+   * Updated the :c:func:`bm_zms_register` function to return ``-EINVAL`` when passing ``NULL`` input parameters.
 
 Samples
 =======
