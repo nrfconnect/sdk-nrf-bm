@@ -48,6 +48,15 @@ Bluetooth LE Connection State library
    :inner:
    :members:
 
+.. _api_ble_radio_notif:
+
+Bluetooth LE Radio Notification library
+=======================================
+
+.. doxygengroup:: ble_radio_notification
+   :inner:
+   :members:
+
 .. _api_bm_buttons:
 
 Bare Metal Buttons library

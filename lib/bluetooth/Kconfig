@@ -10,6 +10,7 @@ rsource "ble_conn_params/Kconfig"
 rsource "ble_conn_state/Kconfig"
 rsource "ble_gq/Kconfig"
 rsource "ble_racp/Kconfig"
+rsource "ble_radio_notification/Kconfig"
 rsource "ble_qwr/Kconfig"
 rsource "peer_manager/Kconfig"
 
