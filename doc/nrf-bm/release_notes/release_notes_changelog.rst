@@ -69,6 +69,8 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Libraries
 =========
 
+* Added the :ref:`lib_ble_radio_notification` library.
+
 * Updated the following libraries to return ``nrf_errors`` instead of ``errnos``:
 
   * :ref:`lib_ble_adv`.
@@ -117,7 +119,7 @@ Samples
 Bluetooth samples
 -----------------
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+Added the :ref:`ble_radio_ntf_sample` sample.
 
 Peripheral samples
 ------------------
