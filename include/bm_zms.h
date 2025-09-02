@@ -137,7 +137,7 @@ int bm_zms_mount(struct bm_zms_fs *fs);
  * @param fs Pointer to the file system.
  *
  * @retval 0 if the clear operation is queued successfully.
- * @retval -EACCES if `fs` is not mounted.
+ * @retval -EACCES if @p fs is not mounted.
  * @retval -EIO if there is an internal error.
  */
 int bm_zms_clear(struct bm_zms_fs *fs);
@@ -159,7 +159,7 @@ int bm_zms_clear(struct bm_zms_fs *fs);
  *         On error, returns negative value of error codes defined in `errno.h`.
  * @retval -EACCES if BM_ZMS is still not initialized.
  * @retval -EIO if there is an internal error.
- * @retval -EINVAL if `len` is invalid.
+ * @retval -EINVAL if @p len is invalid.
  */
 ssize_t bm_zms_write(struct bm_zms_fs *fs, uint32_t id, const void *data, size_t len);
 
@@ -190,7 +190,7 @@ int bm_zms_delete(struct bm_zms_fs *fs, uint32_t id);
  * @retval Number of bytes read (> 0) on success.
  * @retval -EACCES if BM_ZMS is still not initialized.
  * @retval -EIO if there is a memory read/write error.
- * @retval -ENOENT if there is no entry with the given `id`.
+ * @retval -ENOENT if there is no entry with the given @p id.
  */
 ssize_t bm_zms_read(struct bm_zms_fs *fs, uint32_t id, void *data, size_t len);
 
@@ -210,7 +210,7 @@ ssize_t bm_zms_read(struct bm_zms_fs *fs, uint32_t id, void *data, size_t len);
  * @retval Number of bytes read (> 0) on success.
  * @retval -EACCES if BM_ZMS is still not initialized.
  * @retval -EIO if there is a memory read/write error.
- * @retval -ENOENT if there is no entry with the given `id` and history counter.
+ * @retval -ENOENT if there is no entry with the given @p id and history counter.
  */
 ssize_t bm_zms_read_hist(struct bm_zms_fs *fs, uint32_t id, void *data, size_t len, uint32_t cnt);
 
@@ -222,10 +222,10 @@ ssize_t bm_zms_read_hist(struct bm_zms_fs *fs, uint32_t id, void *data, size_t l
  *
  * @return Data length contained in the ATE. On success, it will be equal to the number of bytes
  *         in the ATE. On error, returns negative value of error codes defined in `errno.h`.
- * @retval Length of the entry with the given `id` (> 0) on success.
+ * @retval Length of the entry with the given @p id (> 0) on success.
  * @retval -EACCES if BM_ZMS is still not initialized.
  * @retval -EIO if there is a memory read/write error.
- * @retval -ENOENT if there is no entry with the given id and history counter.
+ * @retval -ENOENT if there is no entry with the given @p id and history counter.
  */
 ssize_t bm_zms_get_data_length(struct bm_zms_fs *fs, uint32_t id);
 
