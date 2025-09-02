@@ -72,10 +72,10 @@ static int delete_and_verify_items(struct bm_zms_fs *fs, uint32_t id)
 
 	return 0;
 error1:
-	LOG_INF("Error while deleting item rc=%d", rc);
+	LOG_ERR("Error while deleting item rc=%d", rc);
 	return rc;
 error2:
-	LOG_INF("Error, Delete failed item should not be present");
+	LOG_ERR("Error, Delete failed item should not be present");
 	return -1;
 }
 
@@ -85,25 +85,25 @@ static int delete_basic_items(struct bm_zms_fs *fs)
 
 	rc = delete_and_verify_items(fs, IP_ADDRESS_ID);
 	if (rc) {
-		LOG_INF("Error while deleting item %x rc=%d", IP_ADDRESS_ID, rc);
+		LOG_ERR("Error while deleting item %x rc=%d", IP_ADDRESS_ID, rc);
 		return rc;
 	}
 	wait_for_ongoing_writes();
 	rc = delete_and_verify_items(fs, KEY_VALUE_ID);
 	if (rc) {
-		LOG_INF("Error while deleting item %x rc=%d", KEY_VALUE_ID, rc);
+		LOG_ERR("Error while deleting item %x rc=%d", KEY_VALUE_ID, rc);
 		return rc;
 	}
 	wait_for_ongoing_writes();
 	rc = delete_and_verify_items(fs, CNT_ID);
 	if (rc) {
-		LOG_INF("Error while deleting item %x rc=%d", CNT_ID, rc);
+		LOG_ERR("Error while deleting item %x rc=%d", CNT_ID, rc);
 		return rc;
 	}
 	wait_for_ongoing_writes();
 	rc = delete_and_verify_items(fs, LONG_DATA_ID);
 	if (rc) {
-		LOG_INF("Error while deleting item %x rc=%d", LONG_DATA_ID, rc);
+		LOG_ERR("Error while deleting item %x rc=%d", LONG_DATA_ID, rc);
 	}
 	wait_for_ongoing_writes();
 
@@ -125,7 +125,7 @@ void bm_zms_sample_handler(bm_zms_evt_t const *p_evt)
 			nvm_is_full = true;
 			return;
 		}
-		LOG_INF("BM_ZMS Error received %d", p_evt->result);
+		LOG_ERR("BM_ZMS Error received %d", p_evt->result);
 	} else {
 		LOG_WRN("Unhandled BM_ZMS event ID %u", p_evt->id);
 	}
@@ -167,7 +167,7 @@ int main(void)
 	for (i = 0; i < CONFIG_BM_ZMS_ITERATIONS_MAX; i++) {
 		rc = bm_zms_mount(&fs);
 		if (rc) {
-			LOG_INF("Storage Init failed, rc=%d", rc);
+			LOG_ERR("Storage Init failed, rc=%d", rc);
 			goto idle;
 		}
 		wait_for_init();
@@ -188,7 +188,7 @@ int main(void)
 		LOG_INF("Adding IP_ADDRESS %s at id %u", buf, IP_ADDRESS_ID);
 		rc = bm_zms_write(&fs, IP_ADDRESS_ID, &buf, strlen(buf));
 		if (rc < 0) {
-			LOG_INF("Error while writing Entry rc=%d", rc);
+			LOG_ERR("Error while writing Entry rc=%d", rc);
 			goto idle;
 		}
 		wait_for_ongoing_writes();
@@ -205,7 +205,7 @@ int main(void)
 		LOG_INF("Adding key/value at id %x", KEY_VALUE_ID);
 		rc = bm_zms_write(&fs, KEY_VALUE_ID, &key, sizeof(key));
 		if (rc < 0) {
-			LOG_INF("Error while writing Entry rc=%d", rc);
+			LOG_ERR("Error while writing Entry rc=%d", rc);
 			goto idle;
 		}
 		wait_for_ongoing_writes();
@@ -217,14 +217,14 @@ int main(void)
 		if (rc > 0) { /* item was found, show it */
 			LOG_INF("Id: %d, loop_cnt: %u", CNT_ID, i_cnt);
 			if ((i > 0) && (i_cnt != (i - 1))) {
-				LOG_INF("Error loop_cnt %u must be %d", i_cnt, i - 1);
+				LOG_ERR("Error loop_cnt %u must be %d", i_cnt, i - 1);
 				goto idle;
 			}
 		}
 		LOG_INF("Adding counter at id %u", CNT_ID);
 		rc = bm_zms_write(&fs, CNT_ID, &i, sizeof(i));
 		if (rc < 0) {
-			LOG_INF("Error while writing Entry rc=%d", rc);
+			LOG_ERR("Error while writing Entry rc=%d", rc);
 			goto idle;
 		}
 		wait_for_ongoing_writes();
@@ -243,7 +243,7 @@ int main(void)
 		LOG_INF("Adding Longarray at id %d", LONG_DATA_ID);
 		rc = bm_zms_write(&fs, LONG_DATA_ID, &longarray, sizeof(longarray));
 		if (rc < 0) {
-			LOG_INF("Error while writing Entry rc=%d", rc);
+			LOG_ERR("Error while writing Entry rc=%d", rc);
 			goto idle;
 		}
 		wait_for_ongoing_writes();
@@ -258,7 +258,7 @@ int main(void)
 	}
 
 	if (i != CONFIG_BM_ZMS_ITERATIONS_MAX) {
-		LOG_INF("Error: Something went wrong at iteration %u rc=%d", i, rc);
+		LOG_ERR("Error: Something went wrong at iteration %u rc=%d", i, rc);
 		goto idle;
 	}
 
@@ -275,11 +275,11 @@ int main(void)
 	/* Calculate free space and verify that it is 0 */
 	free_space = bm_zms_calc_free_space(&fs);
 	if (free_space < 0) {
-		LOG_INF("Error while computing free space, rc=%d", free_space);
+		LOG_ERR("Error while computing free space, rc=%d", free_space);
 		goto idle;
 	}
 	if (free_space > 0) {
-		LOG_INF("Error: free_space should be 0, computed %u", free_space);
+		LOG_ERR("Error: free_space should be 0, computed %u", free_space);
 		goto idle;
 	}
 	LOG_INF("Memory is full let's delete all items");
@@ -287,13 +287,13 @@ int main(void)
 	for (uint32_t n = 0; n < id; n++) {
 		rc = delete_and_verify_items(&fs, n);
 		if (rc) {
-			LOG_INF("Error deleting at id %u", n);
+			LOG_ERR("Error deleting at id %u", n);
 			goto idle;
 		}
 	}
 	rc = delete_basic_items(&fs);
 	if (rc) {
-		LOG_INF("Error deleting basic items");
+		LOG_ERR("Error deleting basic items");
 		goto idle;
 	}
 
@@ -302,7 +302,7 @@ int main(void)
 	 */
 	free_space = bm_zms_calc_free_space(&fs);
 	if (free_space < 0) {
-		LOG_INF("Error while computing free space, rc=%d", free_space);
+		LOG_ERR("Error while computing free space, rc=%d", free_space);
 		goto idle;
 	}
 	LOG_INF("Free space in storage is %u bytes", free_space);
@@ -310,7 +310,8 @@ int main(void)
 	/* Let's clean the storage now */
 	rc = bm_zms_clear(&fs);
 	if (rc < 0) {
-		LOG_INF("Error while cleaning the storage, rc=%d", rc);
+		LOG_ERR("Error while cleaning the storage, rc=%d", rc);
+		goto idle;
 	}
 
 	LOG_INF("BM_ZMS sample finished Successfully");
