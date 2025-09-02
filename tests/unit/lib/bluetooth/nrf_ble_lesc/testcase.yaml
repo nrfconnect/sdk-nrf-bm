@@ -1,0 +1,4 @@
+tests:
+  lib.peer_manager.nrf_ble_lesc:
+    platform_allow: native_sim
+    tags: unittest
