@@ -1,0 +1,11 @@
+# Redefine these symbols without dependencies, so that tests
+# can enable them without having to enable the dependencies too.
+config PM_LESC
+	default y
+
+# Redefine Kconfigs used by the tested module that are defined in
+# other modules we do not want to enable.
+config NRF_SDH_BLE_TOTAL_LINK_COUNT
+	default 2
+
+source "Kconfig.zephyr"
