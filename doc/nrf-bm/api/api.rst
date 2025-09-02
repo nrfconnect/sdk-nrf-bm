@@ -42,6 +42,12 @@ Advertising and Scan Response Data Encoder
 .. doxygengroup:: ble_sdk_lib_advdata
    :inner:
 
+Bluetooth LE Radio Notification library
+=======================================
+
+.. doxygengroup:: ble_radio_notification
+   :inner:
+
 Bare Metal Zephyr Memory Storage (ZMS)
 ======================================
 
