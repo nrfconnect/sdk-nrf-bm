@@ -224,6 +224,15 @@ int _nrf_sdh_ble_idx_get(uint16_t conn_handle)
 	return -1;
 }
 
+uint16_t nrf_sdh_ble_conn_handle_get(int idx)
+{
+	if (idx >= 0 && idx < ARRAY_SIZE(conn_handles)) {
+		return conn_handles[idx];
+	}
+
+	return BLE_CONN_HANDLE_INVALID;
+}
+
 static void idx_assign(uint16_t conn_handle)
 {
 	__ASSERT(conn_handle != BLE_CONN_HANDLE_INVALID, "Got invalid conn_handle from SoftDevice");

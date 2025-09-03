@@ -27,6 +27,7 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 SoftDevice Handler
 ==================
 
+* Added the :c:func:`nrf_sdh_ble_conn_handle_get` function.
 * Updated the system initialization to initialize on application level.
 
 Boards
