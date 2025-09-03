@@ -8,6 +8,7 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/util.h>
 #include <nrf_error.h>
+#include <nrf_sdh_ble.h>
 #include <nrf_soc.h>
 #include <ble.h>
 #include <ble_gap.h>
@@ -38,6 +39,7 @@ extern void gcm_im_evt_handler(pm_evt_t *p_event);
 static pm_evt_handler_internal_t const m_evt_handlers[] = {pm_im_evt_handler, gcm_im_evt_handler};
 
 typedef struct {
+	uint16_t conn_handle;
 	pm_peer_id_t peer_id;
 	ble_gap_addr_t peer_address;
 } im_connection_t;
@@ -119,6 +121,12 @@ void im_ble_evt_handler(ble_evt_t const *ble_evt)
 	gap_evt = ble_evt->evt.gap_evt;
 	bonded_matching_peer_id = PM_PEER_ID_INVALID;
 
+	const int idx = nrf_sdh_ble_idx_get(gap_evt.conn_handle);
+
+	__ASSERT((idx >= 0) && (idx < IM_MAX_CONN_HANDLES),
+		 "Invalid idx %d for conn_handle %#x, evt_id %#x",
+		 idx, gap_evt.conn_handle, p_ble_evt->header.evt_id);
+
 	if (gap_evt.params.connected.peer_addr.addr_type !=
 	    BLE_GAP_ADDR_TYPE_RANDOM_PRIVATE_NON_RESOLVABLE) {
 		/* Search the database for bonding data matching the one that triggered the event.
@@ -165,8 +173,9 @@ void im_ble_evt_handler(ble_evt_t const *ble_evt)
 		}
 	}
 
-	m_connections[gap_evt.conn_handle].peer_id = bonded_matching_peer_id;
-	m_connections[gap_evt.conn_handle].peer_address = gap_evt.params.connected.peer_addr;
+	m_connections[idx].conn_handle = gap_evt.conn_handle;
+	m_connections[idx].peer_id = bonded_matching_peer_id;
+	m_connections[idx].peer_address = gap_evt.params.connected.peer_addr;
 
 	if (bonded_matching_peer_id != PM_PEER_ID_INVALID) {
 		/* Send a bonded peer event */
@@ -235,22 +244,26 @@ pm_peer_id_t im_find_duplicate_bonding_data(pm_peer_data_bonding_t const *p_bond
 
 pm_peer_id_t im_peer_id_get_by_conn_handle(uint16_t conn_handle)
 {
-	if ((conn_handle >= IM_MAX_CONN_HANDLES) || !ble_conn_state_valid(conn_handle)) {
+	const int idx = nrf_sdh_ble_idx_get(conn_handle);
+
+	if ((idx < 0) || (idx >= IM_MAX_CONN_HANDLES) || !ble_conn_state_valid(conn_handle)) {
 		return PM_PEER_ID_INVALID;
 	}
 
-	return m_connections[conn_handle].peer_id;
+	return m_connections[idx].peer_id;
 }
 
 uint32_t im_ble_addr_get(uint16_t conn_handle, ble_gap_addr_t *p_ble_addr)
 {
 	NRF_PM_DEBUG_CHECK(p_ble_addr != NULL);
 
-	if ((conn_handle >= IM_MAX_CONN_HANDLES) || !ble_conn_state_valid(conn_handle)) {
+	const int idx = nrf_sdh_ble_idx_get(conn_handle);
+
+	if ((idx < 0) || (idx >= IM_MAX_CONN_HANDLES) || !ble_conn_state_valid(conn_handle)) {
 		return BLE_ERROR_INVALID_CONN_HANDLE;
 	}
 
-	*p_ble_addr = m_connections[conn_handle].peer_address;
+	*p_ble_addr = m_connections[idx].peer_address;
 	return NRF_SUCCESS;
 }
 
@@ -301,10 +314,10 @@ uint16_t im_conn_handle_get(pm_peer_id_t peer_id)
 		return BLE_CONN_HANDLE_INVALID;
 	}
 
-	for (uint16_t conn_handle = 0; conn_handle < IM_MAX_CONN_HANDLES; conn_handle++) {
-		if ((m_connections[conn_handle].peer_id == peer_id) &&
-		    ble_conn_state_valid(conn_handle)) {
-			return conn_handle;
+	for (uint16_t idx = 0; idx < IM_MAX_CONN_HANDLES; idx++) {
+		if ((m_connections[idx].peer_id == peer_id) &&
+		    ble_conn_state_valid(m_connections[idx].conn_handle)) {
+			return m_connections[idx].conn_handle;
 		}
 	}
 	return BLE_CONN_HANDLE_INVALID;
@@ -326,21 +339,21 @@ bool im_master_id_is_valid(ble_gap_master_id_t const *p_master_id)
 
 void im_new_peer_id(uint16_t conn_handle, pm_peer_id_t peer_id)
 {
-	if (conn_handle < IM_MAX_CONN_HANDLES) {
-		m_connections[conn_handle].peer_id = peer_id;
+	const int idx = nrf_sdh_ble_idx_get(conn_handle);
+
+	if (idx >= 0 && idx < IM_MAX_CONN_HANDLES) {
+		m_connections[idx].peer_id = peer_id;
 	}
 }
 
 uint32_t im_peer_free(pm_peer_id_t peer_id)
 {
-	uint16_t conn_handle;
-	uint32_t ret;
+	const uint16_t conn_handle = im_conn_handle_get(peer_id);
+	const int idx = nrf_sdh_ble_idx_get(conn_handle);
+	const uint32_t ret = pdb_peer_free(peer_id);
 
-	conn_handle = im_conn_handle_get(peer_id);
-	ret = pdb_peer_free(peer_id);
-
-	if (ret == NRF_SUCCESS && (conn_handle < IM_MAX_CONN_HANDLES)) {
-		m_connections[conn_handle].peer_id = PM_PEER_ID_INVALID;
+	if (ret == NRF_SUCCESS && (idx >= 0) && (idx < IM_MAX_CONN_HANDLES)) {
+		m_connections[idx].peer_id = PM_PEER_ID_INVALID;
 	}
 	return ret;
 }
