@@ -17,12 +17,11 @@
 
 LOG_MODULE_REGISTER(ble_bms, CONFIG_BLE_CONN_STATE_LOG_LEVEL);
 
-/** The number of flags kept for each connection, including user flags. */
-#define TOTAL_FLAG_COLLECTION_COUNT (CONFIG_BLE_CONN_STATE_DEFAULT_FLAG_COLLECTION_COUNT + \
-				     CONFIG_BLE_CONN_STATE_USER_FLAG_COUNT)
+#define BLE_CONN_STATE_DEFAULT_FLAG_COLLECTION_COUNT 6
 
-/** Connection handles in the same order as they are indexed in the atomics */
-struct ble_conn_state_conn_handle_list connections;
+/** The number of flags kept for each connection, including user flags. */
+#define TOTAL_FLAG_COLLECTION_COUNT (BLE_CONN_STATE_DEFAULT_FLAG_COLLECTION_COUNT + \
+				     CONFIG_BLE_CONN_STATE_USER_FLAG_COUNT)
 
 /**
  * @brief Structure containing all the flag collections maintained by the Connection State module.
@@ -45,7 +44,7 @@ struct ble_conn_state_flag_collections {
 	/** Flags indicating which connections have bonded using LE Secure Connections (LESC). */
 	atomic_t lesc_flags;
 	/** Flags that can be reserved by the user. The flags will be cleared when a connection is
-	 *  invalidated, otherwise, the user is wholly responsible for the flag states.
+	 *  invalidated, otherwise, the user is entirely responsible for the flag states.
 	 */
 	atomic_t user_flags[CONFIG_BLE_CONN_STATE_USER_FLAG_COUNT];
 };
@@ -85,6 +84,7 @@ static inline void bcs_internal_state_reset(void)
 
 static struct ble_conn_state_conn_handle_list conn_handle_list_get(atomic_t flags)
 {
+	uint16_t conn_handle;
 	struct ble_conn_state_conn_handle_list conn_handle_list = {
 		.len = 0
 	};
@@ -92,7 +92,8 @@ static struct ble_conn_state_conn_handle_list conn_handle_list_get(atomic_t flag
 	if (flags) {
 		for (uint32_t i = 0; i < BLE_CONN_STATE_MAX_CONNECTIONS; i++) {
 			if (atomic_test_bit(&flags, i)) {
-				conn_handle_list.conn_handles[conn_handle_list.len++] = i;
+				conn_handle = nrf_sdh_ble_conn_handle_get(i);
+				conn_handle_list.conn_handles[conn_handle_list.len++] = conn_handle;
 			}
 		}
 	}
@@ -116,41 +117,41 @@ static uint32_t active_flag_count(atomic_t flags)
 /**
  * @brief Function for activating a connection record.
  *
- * @param conn_handle  The connection handle to copy into the record.
+ * @param idx  The connection handle to copy into the record.
  *
  * @return whether the record was activated successfully.
  */
-static bool record_activate(uint16_t conn_handle)
+static bool record_activate(int idx)
 {
-	if (conn_handle >= BLE_CONN_STATE_MAX_CONNECTIONS) {
+	if (idx < 0) {
 		return false;
 	}
 
-	atomic_set_bit(&bcs.flags.connected_flags, conn_handle);
-	atomic_set_bit(&bcs.flags.valid_flags, conn_handle);
+	atomic_set_bit(&bcs.flags.connected_flags, idx);
+	atomic_set_bit(&bcs.flags.valid_flags, idx);
 	return true;
 }
 
 /**
  * @brief Function for marking a connection record as invalid and resetting the values.
  *
- * @param conn_handle  The connection to invalidate.
+ * @param idx  The connection to invalidate.
  */
-static void record_invalidate(uint16_t conn_handle)
+static void record_invalidate(int idx)
 {
 	for (uint32_t i = 0; i < TOTAL_FLAG_COLLECTION_COUNT; i++) {
-		atomic_clear_bit(&bcs.flag_array[i], conn_handle);
+		atomic_clear_bit(&bcs.flag_array[i], idx);
 	}
 }
 
 /**
  * @brief Function for marking a connection as disconnected. See @ref BLE_CONN_STATUS_DISCONNECTED.
  *
- * @param conn_handle The connection to set as disconnected.
+ * @param idx The connection to set as disconnected.
  */
-static void record_set_disconnected(uint16_t conn_handle)
+static void record_set_disconnected(int idx)
 {
-	atomic_clear_bit(&bcs.flags.connected_flags, conn_handle);
+	atomic_clear_bit(&bcs.flags.connected_flags, idx);
 }
 
 /**
@@ -166,7 +167,7 @@ static void record_purge_disconnected(void)
 	disconnected_list = conn_handle_list_get(disconnected_flags);
 
 	for (uint32_t i = 0; i < disconnected_list.len; i++) {
-		record_invalidate(disconnected_list.conn_handles[i]);
+		record_invalidate(nrf_sdh_ble_idx_get(disconnected_list.conn_handles[i]));
 	}
 }
 
@@ -187,39 +188,13 @@ void ble_conn_state_init(void)
 	bcs_internal_state_reset();
 }
 
-static void flag_toggle(atomic_t *flags, uint16_t conn_handle, bool value)
+static void flag_toggle(atomic_t *flags, int idx, bool value)
 {
 	if (value) {
-		atomic_set_bit(flags, conn_handle);
+		atomic_set_bit(flags, idx);
 	} else {
-		atomic_clear_bit(flags, conn_handle);
+		atomic_clear_bit(flags, idx);
 	}
-}
-
-int conn_id_get(uint8_t conn_idx)
-{
-	return connections.conn_handles[conn_idx];
-}
-
-int conn_idx_get(uint32_t conn_id)
-{
-	for (int i = 0; i < connections.len; i++) {
-		if (connections.conn_handles[i] == conn_id) {
-			return i;
-		}
-	}
-
-	/* conn_id not found in list */
-
-	for (int i = 0; i < BLE_CONN_STATE_MAX_CONNECTIONS; i++) {
-		if (atomic_test_bit(&bcs.flags.connected_flags, i) == false) {
-			record_invalidate(i);
-			connections.conn_handles[i] = conn_id;
-			return i;
-		}
-	}
-
-	return -1;
 }
 
 /**
@@ -234,20 +209,20 @@ void ble_evt_handler(ble_evt_t const *ble_evt, void *ctx)
 static void ble_evt_handler(ble_evt_t const *ble_evt, void *ctx)
 #endif
 {
-	uint16_t conn_handle = ble_evt->evt.gap_evt.conn_handle;
+	int idx = nrf_sdh_ble_idx_get(ble_evt->evt.gap_evt.conn_handle);
 
 	switch (ble_evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:
 		record_purge_disconnected();
 
-		if (!record_activate(conn_handle)) {
+		if (!record_activate(idx)) {
 			/* No more records available. Should not happen. */
 			LOG_ERR("No more records available");
 			__ASSERT(false, "No more records available");
 #ifdef CONFIG_BLE_GAP_ROLE_CENTRAL
 		} else if (ble_evt->evt.gap_evt.params.connected.role == BLE_GAP_ROLE_CENTRAL) {
 			/* Central */
-			atomic_set_bit(&bcs.flags.central_flags, conn_handle);
+			atomic_set_bit(&bcs.flags.central_flags, idx);
 #endif
 		} else {
 			/* No implementation required. */
@@ -255,22 +230,22 @@ static void ble_evt_handler(ble_evt_t const *ble_evt, void *ctx)
 
 		break;
 	case BLE_GAP_EVT_DISCONNECTED:
-		record_set_disconnected(conn_handle);
+		record_set_disconnected(idx);
 		break;
 	case BLE_GAP_EVT_CONN_SEC_UPDATE:
 		uint8_t sec_lv = ble_evt->evt.gap_evt.params.conn_sec_update.conn_sec.sec_mode.lv;
 
 		/* Set/unset flags based on security level. */
-		flag_toggle(&bcs.flags.lesc_flags, conn_handle, sec_lv >= 4);
-		flag_toggle(&bcs.flags.mitm_protected_flags, conn_handle, sec_lv >= 3);
-		flag_toggle(&bcs.flags.encrypted_flags, conn_handle, sec_lv >= 2);
+		flag_toggle(&bcs.flags.lesc_flags, idx, sec_lv >= 4);
+		flag_toggle(&bcs.flags.mitm_protected_flags, idx, sec_lv >= 3);
+		flag_toggle(&bcs.flags.encrypted_flags, idx, sec_lv >= 2);
 		break;
 	case BLE_GAP_EVT_AUTH_STATUS:
 		if (ble_evt->evt.gap_evt.params.auth_status.auth_status ==
 		    BLE_GAP_SEC_STATUS_SUCCESS) {
 			bool lesc = ble_evt->evt.gap_evt.params.auth_status.lesc;
 
-			flag_toggle(&bcs.flags.lesc_flags, conn_handle, lesc);
+			flag_toggle(&bcs.flags.lesc_flags, idx, lesc);
 		}
 
 		break;
@@ -279,24 +254,33 @@ static void ble_evt_handler(ble_evt_t const *ble_evt, void *ctx)
 
 NRF_SDH_BLE_OBSERVER(ble_evt_observer, ble_evt_handler, NULL, BLE_CONN_STATE_BLE_OBSERVER_PRIO);
 
-bool ble_conn_state_valid(uint16_t conn_handle)
+bool ble_conn_state_valid_idx(int idx)
 {
-	if (conn_handle >= BLE_CONN_STATE_MAX_CONNECTIONS) {
+	if (idx < 0) {
 		return false;
 	}
 
-	return atomic_test_bit(&bcs.flags.valid_flags, conn_handle);
+	return atomic_test_bit(&bcs.flags.valid_flags, idx);
+}
+
+bool ble_conn_state_valid(uint16_t conn_handle)
+{
+	int idx = nrf_sdh_ble_idx_get(conn_handle);
+
+	return ble_conn_state_valid_idx(idx);
 }
 
 uint8_t ble_conn_state_role(uint16_t conn_handle)
 {
 	uint8_t role = BLE_GAP_ROLE_INVALID;
 
-	if (ble_conn_state_valid(conn_handle)) {
+	int idx = nrf_sdh_ble_idx_get(conn_handle);
+
+	if (ble_conn_state_valid_idx(idx)) {
 #if defined(CONFIG_SOFTDEVICE_PERIPHERAL) && defined(CONFIG_SOFTDEVICE_CENTRAL)
 		bool central;
 
-		central = atomic_test_bit(&bcs.flags.central_flags, conn_handle);
+		central = atomic_test_bit(&bcs.flags.central_flags, idx);
 		role = central ? BLE_GAP_ROLE_CENTRAL : BLE_GAP_ROLE_PERIPH;
 #elif defined(CONFIG_SOFTDEVICE_CENTRAL)
 		role = BLE_GAP_ROLE_CENTRAL;
@@ -313,8 +297,10 @@ enum ble_conn_state_status ble_conn_state_status(uint16_t conn_handle)
 	bool connected;
 	enum ble_conn_state_status conn_status = BLE_CONN_STATUS_INVALID;
 
-	if (ble_conn_state_valid(conn_handle)) {
-		connected = atomic_test_bit(&bcs.flags.connected_flags, conn_handle);
+	int idx = nrf_sdh_ble_idx_get(conn_handle);
+
+	if (ble_conn_state_valid_idx(idx)) {
+		connected = atomic_test_bit(&bcs.flags.connected_flags, idx);
 		conn_status = connected ? BLE_CONN_STATUS_CONNECTED : BLE_CONN_STATUS_DISCONNECTED;
 	}
 
@@ -323,8 +309,10 @@ enum ble_conn_state_status ble_conn_state_status(uint16_t conn_handle)
 
 bool ble_conn_state_encrypted(uint16_t conn_handle)
 {
-	if (ble_conn_state_valid(conn_handle)) {
-		return atomic_test_bit(&bcs.flags.encrypted_flags, conn_handle);
+	int idx = nrf_sdh_ble_idx_get(conn_handle);
+
+	if (ble_conn_state_valid_idx(idx)) {
+		return atomic_test_bit(&bcs.flags.encrypted_flags, idx);
 	}
 
 	return false;
@@ -332,8 +320,10 @@ bool ble_conn_state_encrypted(uint16_t conn_handle)
 
 bool ble_conn_state_mitm_protected(uint16_t conn_handle)
 {
-	if (ble_conn_state_valid(conn_handle)) {
-		return atomic_test_bit(&bcs.flags.mitm_protected_flags, conn_handle);
+	int idx = nrf_sdh_ble_idx_get(conn_handle);
+
+	if (ble_conn_state_valid_idx(idx)) {
+		return atomic_test_bit(&bcs.flags.mitm_protected_flags, idx);
 	}
 
 	return false;
@@ -341,8 +331,10 @@ bool ble_conn_state_mitm_protected(uint16_t conn_handle)
 
 bool ble_conn_state_lesc(uint16_t conn_handle)
 {
-	if (ble_conn_state_valid(conn_handle)) {
-		return atomic_test_bit(&bcs.flags.lesc_flags, conn_handle);
+	int idx = nrf_sdh_ble_idx_get(conn_handle);
+
+	if (ble_conn_state_valid_idx(idx)) {
+		return atomic_test_bit(&bcs.flags.lesc_flags, idx);
 	}
 
 	return false;
@@ -400,8 +392,10 @@ struct ble_conn_state_conn_handle_list ble_conn_state_periph_handles(void)
 
 uint16_t ble_conn_state_conn_idx(uint16_t conn_handle)
 {
-	if (ble_conn_state_valid(conn_handle)) {
-		return conn_handle;
+	int idx = nrf_sdh_ble_idx_get(conn_handle);
+
+	if (ble_conn_state_valid_idx(idx)) {
+		return idx;
 	}
 
 	return BLE_CONN_STATE_MAX_CONNECTIONS;
@@ -415,8 +409,10 @@ int ble_conn_state_user_flag_acquire(void)
 
 bool ble_conn_state_user_flag_get(uint16_t conn_handle, uint16_t flag_index)
 {
-	if (user_flag_is_acquired(flag_index) && ble_conn_state_valid(conn_handle)) {
-		return atomic_test_bit(&bcs.flags.user_flags[flag_index], conn_handle);
+	int idx = nrf_sdh_ble_idx_get(conn_handle);
+
+	if (user_flag_is_acquired(flag_index) && ble_conn_state_valid_idx(idx)) {
+		return atomic_test_bit(&bcs.flags.user_flags[flag_index], idx);
 	}
 
 	return false;
@@ -425,8 +421,10 @@ bool ble_conn_state_user_flag_get(uint16_t conn_handle, uint16_t flag_index)
 
 void ble_conn_state_user_flag_set(uint16_t conn_handle, uint16_t flag_index, bool value)
 {
-	if (user_flag_is_acquired(flag_index) && ble_conn_state_valid(conn_handle)) {
-		flag_toggle(&bcs.flags.user_flags[flag_index], conn_handle, value);
+	int idx = nrf_sdh_ble_idx_get(conn_handle);
+
+	if (user_flag_is_acquired(flag_index) && ble_conn_state_valid_idx(idx)) {
+		flag_toggle(&bcs.flags.user_flags[flag_index], idx, value);
 	}
 }
 
@@ -440,9 +438,9 @@ static uint32_t for_each_set_flag(atomic_t flags,
 	}
 
 	if (flags) {
-		for (uint32_t i = 0; i < BLE_CONN_STATE_MAX_CONNECTIONS; i++) {
-			if (atomic_test_bit(&flags, i)) {
-				user_function(i, ctx);
+		for (uint32_t idx = 0; idx < BLE_CONN_STATE_MAX_CONNECTIONS; idx++) {
+			if (atomic_test_bit(&flags, idx)) {
+				user_function(nrf_sdh_ble_conn_handle_get(idx), ctx);
 				call_count += 1;
 			}
 		}

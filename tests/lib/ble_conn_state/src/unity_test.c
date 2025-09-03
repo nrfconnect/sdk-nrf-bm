@@ -8,8 +8,59 @@
 #include <string.h>
 #include <stddef.h>
 #include <errno.h>
+#include <zephyr/sys/util.h>
 
 #include <ble_conn_state.h>
+
+static uint16_t conn_handle1;
+static uint16_t conn_handle2 = 1;
+static uint16_t conn_handle3 = 2;
+static uint16_t conn_handle4 = 3;
+static uint16_t conn_handle5 = 4;
+static uint16_t conn_handle6 = 5;
+static uint16_t conn_handle7 = 10;
+static uint16_t conn_handle8 = 19;
+
+static uint16_t conn_handles_registered[CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT] = {
+	[0 ... CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT - 1] = BLE_CONN_HANDLE_INVALID,
+};
+
+void conn_handle_register(uint16_t conn_handle)
+{
+	for (int i = 0; i < ARRAY_SIZE(conn_handles_registered) ; i++) {
+		if (conn_handles_registered[i] == BLE_CONN_HANDLE_INVALID) {
+			conn_handles_registered[i] = conn_handle;
+			return;
+		}
+	}
+}
+
+void conn_handle_deregister(uint16_t conn_handle)
+{
+	for (int i = 0; i < ARRAY_SIZE(conn_handles_registered) ; i++) {
+		if (conn_handles_registered[i] == conn_handle) {
+			conn_handles_registered[i] = BLE_CONN_HANDLE_INVALID;
+			return;
+		}
+	}
+}
+
+int _nrf_sdh_ble_idx_get(uint16_t conn_handle)
+{
+
+	for (int i = 0; i < ARRAY_SIZE(conn_handles_registered) ; i++) {
+		if (conn_handles_registered[i] == conn_handle) {
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+uint16_t nrf_sdh_ble_conn_handle_get(int idx)
+{
+	return conn_handles_registered[idx];
+}
 
 extern void ble_evt_handler(ble_evt_t const *ble_evt, void *ctx);
 
@@ -88,16 +139,26 @@ ble_evt_t *auth_status_evt(uint16_t conn_handle, bool lesc, uint8_t auth_status)
 
 void test_ble_conn_state_init(void)
 {
-	uint16_t conn_handle1 = 0;
-	uint16_t conn_handle2 = 1;
-	uint16_t conn_handle3 = 2;
-	uint16_t conn_handle4 = 3;
-	uint16_t conn_handle5 = 4;
-	uint16_t conn_handle6 = 5;
-	uint16_t conn_handle7 = 10;
-	uint16_t conn_handle8 = 19;
 	uint8_t  dummy_role   = BLE_GAP_ROLE_PERIPH;
 	uint32_t valid_conn_handles;
+
+	conn_handle1 = 0;
+	conn_handle2 = 1;
+	conn_handle3 = 2;
+	conn_handle4 = 3;
+	conn_handle5 = 4;
+	conn_handle6 = 5;
+	conn_handle7 = 10;
+	conn_handle8 = 19;
+
+	conn_handle_register(conn_handle1);
+	conn_handle_register(conn_handle2);
+	conn_handle_register(conn_handle3);
+	conn_handle_register(conn_handle4);
+	conn_handle_register(conn_handle5);
+	conn_handle_register(conn_handle6);
+	conn_handle_register(conn_handle7);
+	conn_handle_register(conn_handle8);
 
 	ble_evt_handler(connected_evt(conn_handle1, dummy_role), NULL);
 	ble_evt_handler(connected_evt(conn_handle2, dummy_role), NULL);
@@ -121,14 +182,14 @@ void test_ble_conn_state_valid(void)
 {
 	bool valid;
 
-	uint16_t conn_handle1 = 0;
-	uint16_t conn_handle2 = 1;
-	uint16_t conn_handle3 = 2;
-	uint16_t conn_handle4 = 3;
-	uint16_t conn_handle5 = 4;
-	uint16_t conn_handle6 = 5;
-	uint16_t conn_handle7 = 10;
-	uint16_t conn_handle8 = BLE_CONN_STATE_MAX_CONNECTIONS-1;
+	conn_handle1 = 0;
+	conn_handle2 = 1;
+	conn_handle3 = 2;
+	conn_handle4 = 3;
+	conn_handle5 = 4;
+	conn_handle6 = 5;
+	conn_handle7 = 10;
+	conn_handle8 = BLE_CONN_STATE_MAX_CONNECTIONS-1;
 	uint8_t  dummy_role   = BLE_GAP_ROLE_PERIPH;
 	char msg[] = "conn_handle = 65535";
 
@@ -140,6 +201,15 @@ void test_ble_conn_state_valid(void)
 		valid = ble_conn_state_valid(conn_handle);
 		TEST_ASSERT_FALSE(valid);
 	}
+
+	conn_handle_register(conn_handle1);
+	conn_handle_register(conn_handle2);
+	conn_handle_register(conn_handle3);
+	conn_handle_register(conn_handle4);
+	conn_handle_register(conn_handle5);
+	conn_handle_register(conn_handle6);
+	conn_handle_register(conn_handle7);
+	conn_handle_register(conn_handle8);
 
 	/* Activate some conn. handles and check that those are reported as valid. */
 	ble_evt_handler(connected_evt(conn_handle1, dummy_role), NULL);
@@ -180,12 +250,15 @@ void test_ble_conn_state_valid(void)
 			 * event occurs
 			 */
 			TEST_ASSERT(valid);
+		} else {
+			TEST_ASSERT_FALSE_MESSAGE(valid, msg);
 		}
 	}
 
 	/* Reactivating a connection handle and checking that the disconnected handles are now
 	 * invalid
 	 */
+	conn_handle_register(conn_handle3);
 	ble_evt_handler(connected_evt(conn_handle3, dummy_role), NULL);
 
 	for (uint16_t conn_handle = 0; conn_handle < (65535); conn_handle++) {
@@ -208,6 +281,9 @@ void test_ble_conn_state_role(void)
 	uint16_t conn_handle1 = 15;
 	uint16_t conn_handle2 = 16;
 
+	conn_handle_register(conn_handle1);
+	conn_handle_register(conn_handle2);
+
 	/* Testing that invalid handle has an invalid role. */
 	role = ble_conn_state_role(BLE_CONN_HANDLE_INVALID);
 	TEST_ASSERT_EQUAL_UINT(BLE_GAP_ROLE_INVALID, role);
@@ -218,6 +294,7 @@ void test_ble_conn_state_role(void)
 
 #if defined(BLE_GAP_ROLE_CENTRAL)
 	/* Activating a connection with CENTRAL role. */
+	conn_handle_register(conn_handle1);
 	ble_evt_handler(connected_evt(conn_handle1, BLE_GAP_ROLE_CENTRAL), NULL);
 
 	/* Test that the role is properly returned. */
@@ -236,18 +313,20 @@ void test_ble_conn_state_role(void)
 	TEST_ASSERT_EQUAL_UINT(BLE_GAP_ROLE_CENTRAL, role);
 
 	/* Test that a disconnected handle is invalidated after a connection has occurred. */
+	conn_handle_register(conn_handle2);
 	ble_evt_handler(connected_evt(conn_handle2, BLE_GAP_ROLE_CENTRAL), NULL);
 	role = ble_conn_state_role(conn_handle1);
 	TEST_ASSERT_EQUAL_UINT(BLE_GAP_ROLE_INVALID, role);
 #endif
-
 	/* (Re)activate both connections */
 	ble_evt_handler(disconnected_evt(conn_handle1), NULL);
 	ble_evt_handler(disconnected_evt(conn_handle2), NULL);
 #if defined(BLE_GAP_ROLE_CENTRAL)
+	conn_handle_register(conn_handle1);
 	ble_evt_handler(connected_evt(conn_handle1, BLE_GAP_ROLE_CENTRAL), NULL);
 #endif
 
+	conn_handle_register(conn_handle2);
 	ble_evt_handler(connected_evt(conn_handle2, BLE_GAP_ROLE_PERIPH), NULL);
 
 #if defined(BLE_GAP_ROLE_CENTRAL)
@@ -270,8 +349,11 @@ void test_ble_conn_state_encrypted(void)
 {
 	bool encrypted, mitm_protected, lesc;
 
-	uint16_t conn_handle1 = 12;
-	uint16_t dummy_conn_handle2 = 17;
+	conn_handle1 = 12;
+	conn_handle2 = 17; /* dummy conn handle */
+
+	conn_handle_register(conn_handle1);
+	conn_handle_register(conn_handle2);
 
 	/* Testing that an invalid handle returns unencrypted. */
 	encrypted      = ble_conn_state_encrypted(BLE_CONN_HANDLE_INVALID);
@@ -354,11 +436,11 @@ void test_ble_conn_state_encrypted(void)
 	TEST_ASSERT_FALSE(lesc);
 
 	/* Adding a second connection. */
-	ble_evt_handler(connected_evt(dummy_conn_handle2, BLE_GAP_ROLE_PERIPH), NULL);
-	ble_evt_handler(conn_sec_update_evt(dummy_conn_handle2, 4), NULL);
-	encrypted      = ble_conn_state_encrypted(dummy_conn_handle2);
-	mitm_protected = ble_conn_state_mitm_protected(dummy_conn_handle2);
-	lesc           = ble_conn_state_lesc(dummy_conn_handle2);
+	ble_evt_handler(connected_evt(conn_handle2, BLE_GAP_ROLE_PERIPH), NULL);
+	ble_evt_handler(conn_sec_update_evt(conn_handle2, 4), NULL);
+	encrypted      = ble_conn_state_encrypted(conn_handle2);
+	mitm_protected = ble_conn_state_mitm_protected(conn_handle2);
+	lesc           = ble_conn_state_lesc(conn_handle2);
 	TEST_ASSERT(encrypted);
 	TEST_ASSERT(mitm_protected);
 	TEST_ASSERT(lesc);
@@ -387,11 +469,14 @@ void test_ble_conn_state_status(void)
 {
 	bool valid;
 
-	uint16_t conn_handle1 = 0;
+	conn_handle1 = 0;
+	conn_handle_register(conn_handle1);
 #if defined(BLE_GAP_ROLE_CENTRAL)
-	uint16_t conn_handle2 = 12;
+	conn_handle2 = 12;
+	conn_handle_register(conn_handle2);
 #endif
-	uint16_t conn_handle3 = 19;
+	conn_handle3 = 19;
+	conn_handle_register(conn_handle3);
 	uint8_t  dummy_role;
 
 #if defined(BLE_GAP_ROLE_CENTRAL)
@@ -492,6 +577,7 @@ void test_ble_conn_state_connections_and_list(void)
 
 	/* Activating all connections. Testing that n is updated. */
 	for (int i = 0; i < 8; i++) {
+		conn_handle_register(conn_handles[i]);
 		ble_evt_handler(connected_evt(conn_handles[i], BLE_GAP_ROLE_PERIPH), NULL);
 	}
 
@@ -626,6 +712,7 @@ void test_ble_conn_status_n_peripherals_and_handle(void)
 	/* Connect one device as peripheral, and check that the number of peripherals is
 	 * correctly updated
 	 */
+	conn_handle_register(BLE_CONN_STATE_MAX_CONNECTIONS-1);
 	ble_evt_handler(connected_evt(BLE_CONN_STATE_MAX_CONNECTIONS-1, BLE_GAP_ROLE_PERIPH), NULL);
 	TEST_ASSERT_EQUAL(1, ble_conn_state_peripheral_conn_count());
 
@@ -644,10 +731,12 @@ void test_ble_conn_status_n_peripherals_and_handle(void)
 	ble_evt_handler(connected_evt(BLE_CONN_STATE_MAX_CONNECTIONS, BLE_GAP_ROLE_PERIPH), NULL);
 
 	/* app_error_handler_bare_Expect(NRF_ERROR_NO_MEM); */
+	conn_handle_register(1000);
 	ble_evt_handler(connected_evt(1000, BLE_GAP_ROLE_PERIPH), NULL);
 
 	/* Connect some handles */
 	for (int i = 0; i < BLE_CONN_STATE_MAX_CONNECTIONS-1; i++) {
+		conn_handle_register(i);
 		ble_evt_handler(connected_evt(i, BLE_GAP_ROLE_PERIPH), NULL);
 	}
 	/* Should report all peripherals */
@@ -699,6 +788,7 @@ void test_ble_conn_state_user_flag_set_get(void)
 	char out_str[] = "flag_id index: 00, conn_handle index: 00.";
 
 	for (int i = 0; i < BLE_CONN_STATE_MAX_CONNECTIONS; i++) {
+		conn_handle_register(conn_handles[i]);
 		ble_evt_handler(connected_evt(conn_handles[i], BLE_GAP_ROLE_PERIPH), NULL);
 	}
 
@@ -862,6 +952,7 @@ void test_ble_conn_state_for_each_set_user_flag(void)
 	}
 
 	for (int i = 0; i < 10; i++) {
+		conn_handle_register(conn_handles[i]);
 		ble_evt_handler(connected_evt(conn_handles[i], BLE_GAP_ROLE_PERIPH), NULL);
 	}
 
@@ -972,7 +1063,12 @@ void setUp(void)
 }
 void tearDown(void)
 {
+	/* Maximum connection handle allowed is 100*/
+	for (int i = 0; i < 100; i++) {
+		conn_handle_deregister(i);
+	}
 }
+
 
 extern int unity_main(void);
 
