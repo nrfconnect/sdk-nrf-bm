@@ -106,6 +106,15 @@ static inline int nrf_sdh_ble_idx_get(uint16_t conn_handle)
 	return _nrf_sdh_ble_idx_get(conn_handle);
 }
 
+/**
+ * @brief Get the connection handle for an assigned index.
+ *
+ * @param[in] idx Assigned index.
+ *
+ * @returns The connection handle for the given index or @c BLE_CONN_HANDLE_INVALID if not found.
+ */
+uint16_t nrf_sdh_ble_conn_handle_get(int idx);
+
 #ifdef __cplusplus
 }
 #endif
