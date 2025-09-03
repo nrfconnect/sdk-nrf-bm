@@ -28,6 +28,7 @@ SoftDevice Handler
 ==================
 
 * Updated the system initialization to initialize on application level.
+* Added the :c:func:`nrf_sdh_ble_conn_handle_get` function.
 
 Boards
 ======
