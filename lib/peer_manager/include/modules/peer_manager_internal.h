@@ -180,11 +180,11 @@ typedef void (*pm_evt_handler_internal_t)(pm_evt_t *p_event);
 	BYTES_TO_WORDS(sizeof(ble_gatt_db_srv_t) * (service_count))
 
 /**
- * @brief Macro for calculating the flash size of remote GATT database data.
+ * @brief Macro for calculating the number of services that can be stored in a region of n words.
  *
  * @param[in]  n_words  The length in number of words.
  *
- * @return The number of words that the data takes in flash.
+ * @return The number of services that can be stored in a region of n words.
  */
 #define PM_REMOTE_DB_N_SERVICES(n_words) (((n_words)*BYTES_PER_WORD) / sizeof(ble_gatt_db_srv_t))
 
