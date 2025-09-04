@@ -6,12 +6,12 @@
 
 #include <string.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/sys/util.h>
 #include <nrf_error.h>
 #include <nrf_strerror.h>
 #include <ble_err.h>
 #include <ble_conn_state.h>
 #include <sdk_macros.h>
-#include <nordic_common.h>
 #include <modules/id_manager.h>
 #include <modules/security_dispatcher.h>
 #include <modules/peer_database.h>
@@ -376,7 +376,6 @@ bool sm_sec_is_sufficient(uint16_t conn_handle, pm_conn_sec_status_t *p_sec_stat
  */
 static void sec_req_process(pm_evt_t const *p_event)
 {
-	uint32_t err_code;
 	bool null_params = false;
 	bool force_repairing = false;
 
@@ -392,9 +391,8 @@ static void sec_req_process(pm_evt_t const *p_event)
 		force_repairing = !sm_sec_is_sufficient(p_event->conn_handle, &sec_status_req);
 	}
 
-	err_code = link_secure(p_event->conn_handle, null_params, force_repairing, true);
+	(void)link_secure(p_event->conn_handle, null_params, force_repairing, true);
 	/* The error code has been properly handled inside link_secure(). */
-	UNUSED_VARIABLE(err_code);
 }
 #endif
 
@@ -436,14 +434,14 @@ void sm_smd_evt_handler(pm_evt_t *p_event)
 /** @brief Function handling a pending params_reply. See @ref ble_conn_state_user_function_t. */
 static void params_reply_pending_handle(uint16_t conn_handle, void *p_context)
 {
-	UNUSED_PARAMETER(p_context);
+	ARG_UNUSED(p_context);
 	smd_params_reply_perform(conn_handle, NULL);
 }
 
 /** @brief Function handling a pending link_secure. See @ref ble_conn_state_user_function_t. */
 static void link_secure_pending_handle(uint16_t conn_handle, void *p_context)
 {
-	UNUSED_PARAMETER(p_context);
+	ARG_UNUSED(p_context);
 
 	bool force_repairing =
 		ble_conn_state_user_flag_get(conn_handle, m_flag_link_secure_force_repairing);
@@ -451,9 +449,7 @@ static void link_secure_pending_handle(uint16_t conn_handle, void *p_context)
 		ble_conn_state_user_flag_get(conn_handle, m_flag_link_secure_null_params);
 
 	/* If this fails, it will be automatically retried. */
-	uint32_t err_code = link_secure(conn_handle, null_params, force_repairing, true);
-
-	UNUSED_VARIABLE(err_code);
+	(void)link_secure(conn_handle, null_params, force_repairing, true);
 }
 
 /**

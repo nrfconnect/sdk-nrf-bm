@@ -7,9 +7,9 @@
 #include <stdint.h>
 #include <string.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/sys/util.h>
 #include <nrf_error.h>
 #include <nrf_strerror.h>
-#include <nordic_common.h>
 #include <ble.h>
 #include <ble_gap.h>
 #include <ble_err.h>
@@ -582,9 +582,8 @@ static void auth_status_success_process(ble_gap_evt_t const *p_gap_evt)
 		send_unexpected_error(conn_handle, err_code);
 		pairing_success_evt_send(p_gap_evt, false);
 		if (new_peer_id) {
-			UNUSED_RETURN_VALUE(
-				/* We are already in a bad state. */
-				im_peer_free(peer_id));
+			/* Unused return value. We are already in a bad state. */
+			(void)im_peer_free(peer_id);
 		}
 	}
 }

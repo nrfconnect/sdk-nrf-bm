@@ -19,6 +19,7 @@
 #include <ble.h>
 #include <ble_gap.h>
 #include <bluetooth/peer_manager/peer_manager_types.h>
+#include <zephyr/sys/util.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -120,8 +121,20 @@ typedef pm_peer_data_const_t pm_peer_data_flash_t;
  */
 typedef void (*pm_evt_handler_internal_t)(pm_evt_t *p_event);
 
+/** @brief Macro for showing that a variable is unused. */
+#define UNUSED_VARIABLE(X) ((void)(X))
+
 /** @brief The number of bytes in a word. */
 #define BYTES_PER_WORD (4)
+
+/**
+ * @brief Macro for calculating the number of words that are needed to hold a number of bytes.
+ *
+ * @param[in]  n_bytes  The number of bytes.
+ *
+ * @returns The number of words needed to hold @p n_bytes bytes.
+ */
+#define BYTES_TO_WORDS(n_bytes) DIV_ROUND_UP((n_bytes), BYTES_PER_WORD)
 
 /**
  * @brief Macro for calculating the flash size of bonding data.

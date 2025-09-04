@@ -7,10 +7,10 @@
 #include <stdint.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/atomic.h>
+#include <zephyr/sys/util.h>
 #include <zephyr/sys/__assert.h>
 #include <nrf_error.h>
 #include <nrf_strerror.h>
-#include <nordic_common.h>
 #include <ble_gap.h>
 #include <ble_err.h>
 #include <ble_conn_state.h>
@@ -427,19 +427,19 @@ static void service_changed_send_in_evt(uint16_t conn_handle)
 
 static void apply_pending_handle(uint16_t conn_handle, void *p_context)
 {
-	UNUSED_PARAMETER(p_context);
+	ARG_UNUSED(p_context);
 	local_db_apply_in_evt(conn_handle);
 }
 
 static __INLINE void apply_pending_flags_check(void)
 {
-	UNUSED_RETURN_VALUE(ble_conn_state_for_each_set_user_flag(m_flag_local_db_apply_pending,
-								  apply_pending_handle, NULL));
+	(void)ble_conn_state_for_each_set_user_flag(m_flag_local_db_apply_pending,
+						    apply_pending_handle, NULL);
 }
 
 static void db_update_pending_handle(uint16_t conn_handle, void *p_context)
 {
-	UNUSED_PARAMETER(p_context);
+	ARG_UNUSED(p_context);
 	if (nrf_mtx_trylock(&m_db_update_in_progress_mutex)) {
 		if (local_db_update_in_evt(conn_handle)) {
 			/* Successfully started writing to flash. */
@@ -453,7 +453,7 @@ static void db_update_pending_handle(uint16_t conn_handle, void *p_context)
 #if CONFIG_PM_SERVICE_CHANGED_ENABLED
 static void sc_send_pending_handle(uint16_t conn_handle, void *p_context)
 {
-	UNUSED_PARAMETER(p_context);
+	ARG_UNUSED(p_context);
 	if (!ble_conn_state_user_flag_get(conn_handle, m_flag_service_changed_sent)) {
 		service_changed_send_in_evt(conn_handle);
 	}
@@ -461,8 +461,8 @@ static void sc_send_pending_handle(uint16_t conn_handle, void *p_context)
 
 static __INLINE void service_changed_pending_flags_check(void)
 {
-	UNUSED_RETURN_VALUE(ble_conn_state_for_each_set_user_flag(m_flag_service_changed_pending,
-								  sc_send_pending_handle, NULL));
+	(void)(ble_conn_state_for_each_set_user_flag(m_flag_service_changed_pending,
+						     sc_send_pending_handle, NULL));
 }
 
 static void service_changed_needed(uint16_t conn_handle)
@@ -475,7 +475,7 @@ static void service_changed_needed(uint16_t conn_handle)
 
 static void car_update_pending_handle(uint16_t conn_handle, void *p_context)
 {
-	UNUSED_PARAMETER(p_context);
+	ARG_UNUSED(p_context);
 
 	ble_uuid_t car_uuid;
 
@@ -509,9 +509,8 @@ static __INLINE void update_pending_flags_check(void)
 	uint32_t count = ble_conn_state_for_each_set_user_flag(m_flag_local_db_update_pending,
 							       db_update_pending_handle, NULL);
 	if (count == 0) {
-		count = ble_conn_state_for_each_set_user_flag(m_flag_car_update_pending,
-							      car_update_pending_handle, NULL);
-		UNUSED_RETURN_VALUE(count);
+		(void)ble_conn_state_for_each_set_user_flag(m_flag_car_update_pending,
+							    car_update_pending_handle, NULL);
 	}
 }
 

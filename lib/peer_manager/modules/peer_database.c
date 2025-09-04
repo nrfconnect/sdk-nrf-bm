@@ -6,9 +6,9 @@
 
 #include <string.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/sys/util.h>
 #include <nrf_error.h>
 #include <nrf_strerror.h>
-#include <nordic_common.h>
 #include <sdk_macros.h>
 #include <bluetooth/peer_manager/peer_manager_types.h>
 #include <modules/peer_manager_internal.h>

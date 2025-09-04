@@ -6,6 +6,7 @@
 
 #include <string.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/sys/util.h>
 #include <nrf_error.h>
 #include <nrf_soc.h>
 #include <ble.h>

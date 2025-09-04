@@ -10,7 +10,6 @@
 #include <zephyr/logging/log.h>
 #include <nrf_error.h>
 #include <nrf_strerror.h>
-#include <nordic_common.h>
 #include <ble_gap.h>
 #include <ble_gattc.h>
 #include <ble_conn_state.h>
@@ -102,11 +101,10 @@ static const char *sec_err_string_get(pm_sec_error_code_t error)
 		}
 	}
 
-	int len = snprintf(errstr, sizeof(errstr), "%s 0x%hx",
+	(void)snprintf(errstr, sizeof(errstr), "%s 0x%hx",
 			   (error < PM_CONN_SEC_ERROR_BASE) ? "BLE_GAP_SEC_STATUS"
 							    : "PM_CONN_SEC_ERROR",
 			   error);
-	UNUSED_VARIABLE(len);
 	return errstr;
 }
 
