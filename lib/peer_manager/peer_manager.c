@@ -12,6 +12,8 @@
 #include <ble_conn_state.h>
 #include <bluetooth/peer_manager/peer_manager.h>
 #include <sdk_macros.h>
+#include <nrf_strerror.h>
+#include <nordic_common.h>
 #include <modules/security_manager.h>
 #include <modules/security_dispatcher.h>
 #include <modules/gatt_cache_manager.h>

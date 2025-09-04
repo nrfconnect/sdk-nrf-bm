@@ -8,6 +8,8 @@
 #include <stdint.h>
 #include <string.h>
 #include <zephyr/logging/log.h>
+#include <nordic_common.h>
+#include <sdk_macros.h>
 #include <nrf_error.h>
 #include <bluetooth/peer_manager/peer_manager_types.h>
 #include <bm_zms.h>
