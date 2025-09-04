@@ -15,7 +15,7 @@
 #include <modules/peer_id.h>
 #include <modules/peer_data_storage.h>
 
-LOG_MODULE_REGISTER(peer_data_storage, CONFIG_PEER_MANAGER_LOG_LEVEL);
+LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
 /* Macro for verifying that the peer id is within a valid range. */
 #define VERIFY_PEER_ID_IN_RANGE(id)                                                                \

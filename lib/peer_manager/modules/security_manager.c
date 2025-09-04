@@ -21,7 +21,7 @@
 #include <modules/nrf_ble_lesc.h>
 #endif
 
-LOG_MODULE_REGISTER(security_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
+LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
 /* The number of registered event handlers. */
 #define SM_EVENT_HANDLERS_CNT ARRAY_SIZE(m_evt_handlers)

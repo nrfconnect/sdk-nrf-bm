@@ -23,7 +23,7 @@
 
 #include <modules/security_dispatcher.h>
 
-LOG_MODULE_REGISTER(security_dispatcher, CONFIG_PEER_MANAGER_LOG_LEVEL);
+LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
 /* The number of registered event handlers. */
 #define SMD_EVENT_HANDLERS_CNT ARRAY_SIZE(m_evt_handlers)

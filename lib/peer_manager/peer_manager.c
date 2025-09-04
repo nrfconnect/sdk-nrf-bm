@@ -21,7 +21,7 @@
 #include <modules/id_manager.h>
 #include <modules/peer_manager_internal.h>
 
-LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
+LOG_MODULE_REGISTER(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
 /** Macro indicating whether the module has been initialized properly. */
 #define MODULE_INITIALIZED (m_module_initialized)

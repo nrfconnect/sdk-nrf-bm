@@ -8,7 +8,7 @@
 #include <nrf_error.h>
 #include <modules/nrf_ble_lesc.h>
 
-LOG_MODULE_REGISTER(nrf_ble_lesc, CONFIG_PEER_MANAGER_LOG_LEVEL);
+LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
 /** @brief Descriptor of the peer public key. */
 typedef struct {

@@ -22,7 +22,7 @@
 #include <modules/peer_database.h>
 #include <modules/gatt_cache_manager.h>
 
-LOG_MODULE_REGISTER(gatt_cache_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
+LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
 #define NRF_MTX_LOCKED      1
 #define NRF_MTX_UNLOCKED    0

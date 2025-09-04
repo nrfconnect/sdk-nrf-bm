@@ -22,7 +22,7 @@
 
 #include <modules/peer_manager_handler.h>
 
-LOG_MODULE_REGISTER(peer_manager_handler, CONFIG_PEER_MANAGER_LOG_LEVEL);
+LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
 static const char * const m_roles_str[] = {
 	"Invalid Role",

@@ -17,7 +17,7 @@
 #include <modules/peer_database.h>
 #include <modules/peer_data_storage.h>
 
-LOG_MODULE_REGISTER(id_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
+LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
 #define IM_MAX_CONN_HANDLES	   (20)
 #define IM_NO_INVALID_CONN_HANDLES (0xFF)

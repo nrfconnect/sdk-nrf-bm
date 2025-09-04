@@ -13,7 +13,7 @@
 #include <modules/id_manager.h>
 #include <modules/auth_status_tracker.h>
 
-LOG_MODULE_REGISTER(auth_status_tracker, CONFIG_PEER_MANAGER_LOG_LEVEL);
+LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
 /* Assume that waiting interval doubles with each failed authentication. */
 #define PAIR_REWARD_TICKS BM_TIMER_MS_TO_TICKS(CONFIG_PM_RA_PROTECTION_REWARD_PERIOD)

@@ -19,7 +19,7 @@
 #include <modules/id_manager.h>
 #include <modules/gatts_cache_manager.h>
 
-LOG_MODULE_REGISTER(gatts_cache_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
+LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
 #if !defined(CONFIG_PM_SERVICE_CHANGED_ENABLED) || (CONFIG_PM_SERVICE_CHANGED_ENABLED == 1)
 
