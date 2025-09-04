@@ -407,9 +407,9 @@ static void peer_manager_init(void)
 		return;
 	}
 
-	err = pm_evt_handler_register(pm_evt_handler);
+	err = pm_register(pm_evt_handler);
 	if (err) {
-		printk("pm_evt_handler_register() failed, err: %d\n", err);
+		printk("pm_register() failed, err: %d\n", err);
 		return;
 	}
 }
