@@ -22,6 +22,8 @@
 
 #include <modules/peer_manager_handler.h>
 
+#define APP_ERROR_CHECK
+
 LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
 static const char * const m_roles_str[] = {
