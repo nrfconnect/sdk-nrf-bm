@@ -744,7 +744,7 @@ uint32_t pm_peer_data_store(pm_peer_id_t peer_id, pm_peer_data_id_t data_id, voi
 {
 	VERIFY_MODULE_INITIALIZED();
 	VERIFY_PARAM_NOT_NULL(p_data);
-	if (ALIGN_NUM(4, length) != length) {
+	if (!IS_ALIGNED(length, 4)) {
 		return NRF_ERROR_INVALID_PARAM;
 	}
 
@@ -773,7 +773,7 @@ uint32_t pm_peer_data_bonding_store(pm_peer_id_t peer_id, pm_peer_data_bonding_t
 				      pm_store_token_t *p_token)
 {
 	return pm_peer_data_store(peer_id, PM_PEER_DATA_ID_BONDING, p_data,
-				  ALIGN_NUM(4, sizeof(pm_peer_data_bonding_t)), p_token);
+				  ROUND_UP(sizeof(pm_peer_data_bonding_t), 4), p_token);
 }
 
 uint32_t pm_peer_data_remote_db_store(pm_peer_id_t peer_id, ble_gatt_db_srv_t const *p_data,
