@@ -529,8 +529,7 @@ uint32_t pdb_peer_free(pm_peer_id_t peer_id)
 		return err_code;
 	}
 
-	LOG_ERR("Peer ID %d was not properly released. pds_peer_id_free() returned %s. "
-		"peer_id: %d",
+	LOG_ERR("Peer ID %d was not properly released. pds_peer_id_free() returned %s",
 		peer_id, nrf_strerror_get(err_code));
 
 	return NRF_ERROR_INTERNAL;
