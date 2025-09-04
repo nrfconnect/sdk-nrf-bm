@@ -77,3 +77,5 @@
 .. _`nrfx migration guides`: https://github.com/NordicSemiconductor/nrfx/wiki/nrfx-2.11.0-to-3.0.0
 .. _`Migration notes - nRF5 SDK to nRF Connect SDK Bare Metal option`: https://docs.nordicsemi.com/bundle/nrf-bm-latest/page/migration/nrf5_bm_migration.html
 .. _`S115 9.0.0-3.prototype API reference`: https://docs.nordicsemi.com/bundle/s115_9.0.0-3.prototype_api/page/topics.html
+.. _`nRF5 SDK DFU memory layout`: https://docs.nordicsemi.com/bundle/sdk_nrf5_v17.1.0/page/lib_bootloader.html
+.. _`MCUmgr SMP protocol`: https://docs.zephyrproject.org/latest/services/device_mgmt/smp_protocol.html
