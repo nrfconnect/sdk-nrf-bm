@@ -167,6 +167,17 @@ extern "C" {
 #define UNUSED_PARAMETER(X)    UNUSED_VARIABLE(X)
 #define UNUSED_RETURN_VALUE(X) UNUSED_VARIABLE(X)
 
+/**
+ * @brief Macro for calculating the number of words that are needed to hold a number of bytes.
+ *
+ * @details Adds 3 and divides by 4.
+ *
+ * @param[in]  n_bytes  The number of bytes.
+ *
+ * @return The number of words that @p n_bytes take up (rounded up).
+ */
+#define BYTES_TO_WORDS(n_bytes) (((n_bytes) + 3) >> 2)
+
 #ifdef __cplusplus
 }
 #endif
