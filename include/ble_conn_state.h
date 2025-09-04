@@ -54,6 +54,9 @@ enum ble_conn_state_status {
 /** The maximum number of connections supported. */
 #define BLE_CONN_STATE_MAX_CONNECTIONS  BLE_GAP_ROLE_COUNT_COMBINED_MAX
 
+/** UInvalid user flag. */
+#define BLE_CONN_STATE_USER_FLAG_INVALID CONFIG_BLE_CONN_STATE_USER_FLAG_COUNT
+
 /** @brief Type used to present a list of conn_handles. */
 struct ble_conn_state_conn_handle_list {
 	/** The length of the list. */
@@ -241,7 +244,8 @@ uint16_t ble_conn_state_conn_idx(uint16_t conn_handle);
  *          The state of user flags will not be modified by the connection state module, except to
  *          set it to 0 for a connection when that connection is invalidated.
  *
- * @return The index of the acquired flag, or -ENOSPC if none are available.
+ * @return The index of the acquired flag,
+ *         or BLE_CONN_STATE_USER_FLAG_INVALID if none are available.
  */
 int ble_conn_state_user_flag_acquire(void);
 

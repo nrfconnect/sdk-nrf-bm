@@ -331,7 +331,7 @@ int ble_conn_state_user_flag_acquire(void)
 		}
 	}
 
-	return -ENOSPC;
+	return BLE_CONN_STATE_USER_FLAG_INVALID;
 }
 
 bool ble_conn_state_user_flag_get(uint16_t conn_handle, uint16_t flag_index)

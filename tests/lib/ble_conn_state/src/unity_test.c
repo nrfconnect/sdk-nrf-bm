@@ -769,8 +769,8 @@ void test_ble_conn_state_user_flag_acquire(void)
 		}
 	}
 
-	TEST_ASSERT_EQUAL(-ENOSPC, ble_conn_state_user_flag_acquire());
-	TEST_ASSERT_EQUAL(-ENOSPC, ble_conn_state_user_flag_acquire());
+	TEST_ASSERT_EQUAL(BLE_CONN_STATE_USER_FLAG_INVALID, ble_conn_state_user_flag_acquire());
+	TEST_ASSERT_EQUAL(BLE_CONN_STATE_USER_FLAG_INVALID, ble_conn_state_user_flag_acquire());
 }
 
 void test_ble_conn_state_user_flag_set_get(void)
