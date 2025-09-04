@@ -91,14 +91,11 @@ In |BMshort|, there are a few ready-made partitioning schemes that can be select
 Partitioning can be tweaked by making simple changes to textual **Devicetree** files which define the layout of the memory.
 These can be edited in the board files, or applied to existing boards as **overlays**.
 
-Libraries and drivers
-*********************
+Bluetooth LE libraries
+**********************
 
 Whereas nRF5 supported different short range protocols such as Gazell, ESB, and Ant, those are not supported by |BMshort|.
 In general, |BMshort| support focuses on Bluetooth Low Energy.
-
-Bluetooth LE libraries
-======================
 
 Bluetooth LE features that are natively offered by the SoftDevice are mostly unchanged from the nRF5, and the SoftDevice documentation highlights any differences.
 As for the collection of Bluetooth LE libraries that were available in the nRF5, |BMshort| offers a limited subset, where each service may have slightly different API and functionality compared to their respective nRF5 implementation.
@@ -205,8 +202,32 @@ See table below for a summary of supported libraries.
      - Yes
      -
 
+SoftDevice integration
+**********************
+
+The SoftDevice, serving as a Bluetooth Low Energy protocol stack, maintains a consistent API from the nRF5 SDK to the |BMshort| environment.
+For instance, the API functionalities in SoftDevice S115 are comparable to those in S113.
+
+However, notable changes have occurred in how the SoftDevice is integrated within the system.
+
+Memory placement and boot process
+=================================
+
+In the nRF5 SDK, the SoftDevice was bundled with the Master Boot Record (MBR) and positioned at the beginning of the non-volatile memory (NVM).
+This setup was crucial for the device's booting process and interrupt handling.
+In contrast, in the |BMshort| environment, the SoftDevice is treated more like a peripheral driver that is initialized by the application.
+The MBR is no longer used, and the SoftDevice is now located at the top of the memory.
+
+Interrupt Handling
+==================
+
+The responsibility for interrupt handling has shifted in |BMshort| - the application must now manage interrupts and forward them to the SoftDevice as needed.
+
+It is important to note that while the API remains compatible, the SoftDevices themselves are not binary-compatible between the two environments.
+SoftDevices from the nRF5 SDK cannot be reused in |BMshort|, and similarly, the S115 SoftDevice is not compatible with the nRF5 SDK.
+
 Other libraries
-===============
+***************
 
 Regarding other utility libraries unrelated to Bluetooth LE, like ``app_timer``, a limited selection is available, often with a different name and slightly different API than their nRF5 variant.
 
@@ -223,34 +244,55 @@ This is due to several factors, including:
 DFU
 ***
 
-The DFU mechanism has changed from nRF5.
-Some of the core functionality remains, although implemented differently.
+The Device Firmware Update (DFU) mechanism has evolved from the nRF5 SDK to |BMshort|.
+While some core functionalities remain, they have been implemented differently.
 
-Firstly, |BMshort| supports single-bank DFU updates.
-It also supports SoftDevice updates as well as buttonless DFU.
+Memory partitioning comparison
+==============================
 
-In nRF5, the two major DFU components were the ``MBR`` firmware, (delivered beside the SoftDevice), and the nRF5 bootloader.
-The ``MBR`` acted as a very simple first-stage bootloader, only booting the application or the bootloader, and supporting basic copy functionality.
-The nRF5 bootloader had the capability to download new firmware, or SoftDevice + Bootloader images, which would then be verified and copied by the ``MBR``.
+The following diagram shows the mapping of memory partitions in an nRF5 solution versus the |BMshort| solution.
 
-The bootloader has changed - |BMshort| uses the open-source MCUboot project as first-stage (immutable) bootloader, instead of the MBR.
-MCUboot is also used in the |NCS| and other open-source projects.
+.. figure:: /images/nrf5_bm_memory_part.svg
+   :alt: nRF5 SDK memory partitioning for DFU
 
-A major difference is that the nRF5 bootloader included the transport (such as BLE, UART), whereas MCUboot does not.
-MCUboot just decides which firmware to boot and verifies it before booting.
+For more details about the two solutions, see `nRF5 SDK DFU memory layout`_ and |BMshort| :ref:`dfu_memory_partitioning`.
 
-The actual download of the new firmware image is done by a dedicated firmware image called the Firmware Loader.
-This firmware is provided in |Bmshort|.
-In case of an application update, the Firmware Loader copies the new firmware in the application bank (or slot).
-MCUboot will then verify and boot the updated firmware.
+Like the nRF5 SDK, the Bare Metal also supports single-bank DFU updates, as well as updates to the SoftDevice and the firmware loader.
 
-In case of a SoftDevice or Firmware Loader application update, the Firmware Loader on the device receives an image called Installer which is bundled with the new SoftDevice and/or Firmware Loader application.
-The Installer firmware is also provided in |BMshort|.
-This image is saved in place of the application by the Firmware Loader.
-The Installer boots next after being verified by MCUboot, and proceeds to overwrite the Firmware Loader and SoftDevice as necessary.
-The new Firmware Loader boots next to receive a new application image.
+Bootloader Changes
+==================
 
-The host and mobile tools for DFU have changed, and new versions of both are made available by Nordic.
+In the nRF5 SDK, the boot process involved two main components: the Master Boot Record (MBR), delivered with the SoftDevice, and the nRF5 Bootloader.
+The MBR served as a simple first-stage bootloader, responsible for jumping to either the application or the bootloader and supporting basic copy functionality for replacing the bootloader or the SoftDevice.
+
+The nRF5 Bootloader was capable of downloading new firmware or combined SoftDevice and Bootloader images, which the MBR could then copy if needed.
+
+In the |BMshort| solution, the bootloader has been replaced by the open-source MCUboot project, which serves as the first-stage (immutable) bootloader.
+MCUboot, also used in the |NCS| and other open-source projects, focuses primarily on image validation.
+It ensures that before an image is started, it has not been tampered with and is signed by the correct author.
+
+Firmware loader changes
+=======================
+
+The firmware loader in |BMshort| is somewhat comparable to the nRF5 Bootloader in functionality.
+However, their roles differ slightly.
+While the nRF5 Bootloader managed both the download process and image validation, the firmware loader in |BMshort| is solely responsible for the download process.
+Image validation is handled by MCUboot.
+
+The process for updating the SoftDevice and the firmware loader is similar in both the old and new solutions, requiring the reuse of application space as storage for the update.
+The key difference lies in how the update is moved from temporary storage to the correct partition.
+In the nRF5 SDK, this copy functionality was managed by the MBR, whereas in |BMshort|, it is handled by an installer image that is downloaded along with the new update.
+
+Protocol Changes
+================
+
+The protocol used to upload new images to the device has also changed.
+The previous nRF5 SDK solution utilized a Nordic proprietary DFU protocol, while |BMshort| adopts the `MCUmgr SMP protocol`_, which is also used in the |NCS|.
+
+Tool Compatibility
+==================
+
+The desktop and mobile tools available for the |NCS| are also compatible with the |BMshort| solution.
 
 Drivers
 *******
