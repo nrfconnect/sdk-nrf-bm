@@ -56,6 +56,10 @@ Libraries
 
    * Updated the :c:func:`bm_zms_register` function to return ``-EINVAL`` when passing ``NULL`` input parameters.
 
+* :ref:`lib_ble_conn_params` library:
+
+   * Fixed an issue that caused the :kconfig:option:`CONFIG_BLE_CONN_PARAMS_INITIATE_DATA_LENGTH_UPDATE` Kconfig option to always be hidden.
+
 Samples
 =======
 
