@@ -120,7 +120,8 @@ config BLE_CONN_PARAMS_DATA_LENGTH_RX
 	  definitive max data length of 251, the ATT MTU needs to be configured to at least 247.
 
 config BLE_CONN_PARAMS_INITIATE_DATA_LENGTH_UPDATE
-	bool "Initiate data length update on connection" if BLE_CONN_PARAMS_DATA_LENGTH != 27
+	bool "Initiate data length update on connection" if BLE_CONN_PARAMS_DATA_LENGTH_TX != 27 || \
+							    BLE_CONN_PARAMS_DATA_LENGTH_RX != 27
 
 endif # BLE_CONN_PARAMS_AUTO_DATA_LENGTH
 
