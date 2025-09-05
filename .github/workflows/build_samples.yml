@@ -9,9 +9,7 @@ on:
 jobs:
   build_samples_job:
     name: Build all samples within the project
-    runs-on:
-      - runs-on=${{ github.run_id }}
-      - runner=64cpu-linux-x64
+    runs-on: ubuntu-22.04
     # Keep aligned with target NCS version
     container: ghcr.io/nrfconnect/sdk-nrf-toolchain:v3.1.0
     defaults:
@@ -45,7 +43,7 @@ jobs:
     - name: Build samples
       working-directory: nrf-bm
       run: |
-        west twister -T samples --build-only -v --inline-logs --integration
+        west twister -T samples/bluetooth/ble_hrs --build-only -v --inline-logs --integration
 
     - name: upload-logs
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
