@@ -62,9 +62,9 @@ You can specify the connection parameters using Kconfig options:
 * :kconfig:option:`CONFIG_BLE_CONN_PARAMS_MAX_SUP_TIMEOUT_DEVIATION` - Allowed deviation from the specified supervision timeout.
 
 If the device has the peripheral role in a connection and the connection parameters are not within the specified range, then the library will request a renegotiation.
-The number of renegotiation attempts is configured by the :kconfig:option:`CONFIG_CONFIG_BLE_CONN_PARAMS_NEGOTIATION_RETRIES` Kconfig option.
+The number of renegotiation attempts is configured by the :kconfig:option:`CONFIG_BLE_CONN_PARAMS_NEGOTIATION_RETRIES` Kconfig option.
 
-If the peripheral and central device cannot agree on a set of connection parameters after the given number of negotiation attempts, and the :kconfig:option:`CONFIG_CONFIG_BLE_CONN_PARAMS_DISCONNECT_ON_FAILURE` Kconfig option is set, the device disconnects automatically.
+If the peripheral and central device cannot agree on a set of connection parameters after the given number of negotiation attempts, and the :kconfig:option:`CONFIG_BLE_CONN_PARAMS_DISCONNECT_ON_FAILURE` Kconfig option is set, the device disconnects automatically.
 
 A connection parameter update procedure can be started using the :c:func:`ble_conn_params_override` function.
 
