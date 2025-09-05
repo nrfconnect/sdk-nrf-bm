@@ -74,7 +74,7 @@ static void event_prepare(bm_zms_evt_t *p_evt)
 
 	case ZMS_OP_WRITE:
 		atomic_sub(&cur_op.fs->ongoing_writes, 1);
-		p_evt->id = BM_ZMS_EVT_WRITE;
+		p_evt->id = cur_op.len ? BM_ZMS_EVT_WRITE : BM_ZMS_EVT_DELETE;
 		p_evt->ate_id = cur_op.id;
 		break;
 

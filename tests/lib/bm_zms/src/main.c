@@ -95,7 +95,7 @@ void bm_zms_test_handler(bm_zms_evt_t const *p_evt)
 	if (p_evt->id == BM_ZMS_EVT_INIT) {
 		zassert_true(p_evt->result == 0, "bm_zms_init call failure: %d",
 			     p_evt->result);
-	} else if (p_evt->id == BM_ZMS_EVT_WRITE) {
+	} else if ((p_evt->id == BM_ZMS_EVT_WRITE) || (p_evt->id == BM_ZMS_EVT_DELETE)) {
 		if (p_evt->result == 0) {
 			return;
 		}

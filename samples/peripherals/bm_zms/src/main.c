@@ -117,7 +117,7 @@ void bm_zms_sample_handler(bm_zms_evt_t const *p_evt)
 			LOG_ERR("BM_ZMS initialization failed with error %d", p_evt->result);
 			return;
 		}
-	} else if (p_evt->id == BM_ZMS_EVT_WRITE) {
+	} else if ((p_evt->id == BM_ZMS_EVT_WRITE) || (p_evt->id == BM_ZMS_EVT_DELETE)) {
 		if (!p_evt->result) {
 			return;
 		}
