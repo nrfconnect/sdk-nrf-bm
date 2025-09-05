@@ -28,6 +28,7 @@ SoftDevice Handler
 ==================
 
 * Updated the system initialization to initialize on application level.
+* Updated the entropy source to use the CRACEN true random number generator instead of the CRACEN pseudorandom number generator.
 
 Boards
 ======
