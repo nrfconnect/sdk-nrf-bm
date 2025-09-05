@@ -112,12 +112,12 @@ static int delete_basic_items(struct bm_zms_fs *fs)
 
 void bm_zms_sample_handler(bm_zms_evt_t const *p_evt)
 {
-	if (p_evt->id == BM_ZMS_EVT_INIT) {
+	if (p_evt->evt_id == BM_ZMS_EVT_INIT) {
 		if (p_evt->result) {
 			LOG_ERR("BM_ZMS initialization failed with error %d", p_evt->result);
 			return;
 		}
-	} else if (p_evt->id == BM_ZMS_EVT_WRITE) {
+	} else if (p_evt->evt_id == BM_ZMS_EVT_WRITE) {
 		if (!p_evt->result) {
 			return;
 		}
@@ -127,7 +127,7 @@ void bm_zms_sample_handler(bm_zms_evt_t const *p_evt)
 		}
 		LOG_ERR("BM_ZMS Error received %d", p_evt->result);
 	} else {
-		LOG_WRN("Unhandled BM_ZMS event ID %u", p_evt->id);
+		LOG_WRN("Unhandled BM_ZMS event ID %u", p_evt->evt_id);
 	}
 }
 

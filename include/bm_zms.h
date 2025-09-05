@@ -40,9 +40,11 @@ typedef enum {
 
 /**@brief A BM_ZMS event. */
 typedef struct {
-	bm_zms_evt_id_t id; /* The event ID. See @ref bm_zms_evt_id_t. */
-	uint32_t result;    /* The result of the operation related to this event. */
-	uint32_t ate_id;    /* The ATE id in case of a write operation. */
+	bm_zms_evt_id_t evt_id; /* The event ID. See @ref bm_zms_evt_id_t. */
+	uint32_t result;        /* The result of the operation related to this event. */
+	uint32_t id;            /* The ID of the entry as specified in the corresponding
+				 * write/delete operation.
+				 */
 } bm_zms_evt_t;
 
 /* Init flags. */

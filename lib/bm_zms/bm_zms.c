@@ -69,21 +69,21 @@ static void event_prepare(bm_zms_evt_t *p_evt)
 {
 	switch (cur_op.op_code) {
 	case ZMS_OP_INIT:
-		p_evt->id = BM_ZMS_EVT_INIT;
+		p_evt->evt_id = BM_ZMS_EVT_INIT;
 		break;
 
 	case ZMS_OP_WRITE:
 		atomic_sub(&cur_op.fs->ongoing_writes, 1);
-		p_evt->id = BM_ZMS_EVT_WRITE;
-		p_evt->ate_id = cur_op.id;
+		p_evt->evt_id = BM_ZMS_EVT_WRITE;
+		p_evt->id = cur_op.id;
 		break;
 
 	case ZMS_OP_CLEAR:
-		p_evt->id = BM_ZMS_EVT_CLEAR;
+		p_evt->evt_id = BM_ZMS_EVT_CLEAR;
 		break;
 
 	case ZMS_OP_NONE:
-		p_evt->id = BM_ZMS_EVT_NONE;
+		p_evt->evt_id = BM_ZMS_EVT_NONE;
 		break;
 	default:
 		/* Should not happen. */

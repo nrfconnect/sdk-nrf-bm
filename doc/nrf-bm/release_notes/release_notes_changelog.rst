@@ -54,7 +54,11 @@ Libraries
 
 * :ref:`lib_bm_zms` library:
 
-   * Updated the :c:func:`bm_zms_register` function to return ``-EINVAL`` when passing ``NULL`` input parameters.
+   * Updated:
+
+     * The :c:func:`bm_zms_register` function to return ``-EINVAL`` when passing ``NULL`` input parameters.
+     * The name of the :c:struct:`bm_zms_evt_t` ``id`` field to :c:member:`bm_zms_evt_t.evt_id`.
+     * The name of the :c:struct:`bm_zms_evt_t` ``ate_id`` field to :c:member:`bm_zms_evt_t.id`.
 
 Samples
 =======
