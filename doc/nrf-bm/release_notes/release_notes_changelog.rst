@@ -55,6 +55,7 @@ Libraries
 * :ref:`lib_bm_zms` library:
 
    * Updated the :c:func:`bm_zms_register` function to return ``-EINVAL`` when passing ``NULL`` input parameters.
+   * Added the :c:enumerator:`BM_ZMS_EVT_DELETE` event ID to distinguish :c:func:`bm_zms_delete` events.
 
 Samples
 =======
