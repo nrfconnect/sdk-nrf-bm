@@ -32,10 +32,11 @@ extern "C" {
 
 /** BM_ZMS event IDs. */
 typedef enum {
-	BM_ZMS_EVT_NONE,  /* Event if an internal error happened before queuing an operation. */
-	BM_ZMS_EVT_INIT,  /* Event for @ref bm_zms_init. */
-	BM_ZMS_EVT_WRITE, /* Event for @ref bm_zms_write. */
-	BM_ZMS_EVT_CLEAR, /* Event for @ref bm_zms_clear. */
+	BM_ZMS_EVT_NONE,   /* Event if an internal error happened before queuing an operation. */
+	BM_ZMS_EVT_INIT,   /* Event for @ref bm_zms_init. */
+	BM_ZMS_EVT_WRITE,  /* Event for @ref bm_zms_write. */
+	BM_ZMS_EVT_DELETE, /* Event for @ref bm_zms_delete. */
+	BM_ZMS_EVT_CLEAR,  /* Event for @ref bm_zms_clear. */
 } bm_zms_evt_id_t;
 
 /**@brief A BM_ZMS event. */
