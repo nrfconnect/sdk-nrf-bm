@@ -18,8 +18,8 @@
 #include <sensorsim.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
-
 #include <bluetooth/peer_manager/peer_manager.h>
+#include <bluetooth/peer_manager/peer_manager_handler.h>
 
 LOG_MODULE_REGISTER(app, CONFIG_BLE_HRS_SAMPLE_LOG_LEVEL);
 

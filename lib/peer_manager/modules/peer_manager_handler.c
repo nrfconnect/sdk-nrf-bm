@@ -14,12 +14,11 @@
 #include <ble_gattc.h>
 #include <ble_conn_state.h>
 #include <bluetooth/peer_manager/peer_manager.h>
+#include <bluetooth/peer_manager/peer_manager_handler.h>
 
 #if CONFIG_PM_HANDLER_SEC_DELAY_MS > 0
 #include <bm_timer.h>
 #endif
-
-#include <modules/peer_manager_handler.h>
 
 LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
