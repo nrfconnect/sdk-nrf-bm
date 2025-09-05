@@ -4,6 +4,9 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
+# SoftDevice variant
+CONFIG_SOFTDEVICE_S115=y
+
 # Enable console
 CONFIG_CONSOLE=y
 CONFIG_BM_UARTE_CONSOLE=y
