@@ -67,7 +67,7 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Peripheral samples
 ------------------
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Added the :ref:`pwm_sample` sample.
 
 DFU samples
 -----------
