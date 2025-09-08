@@ -165,26 +165,36 @@ uint32_t gscm_local_db_cache_update(uint16_t conn_handle)
 				&p_local_gatt_db->len, p_local_gatt_db->flags);
 
 			if (err_code == NRF_SUCCESS) {
-				pm_peer_data_flash_t curr_peer_data;
+				uint8_t local_gatt_db_buf[PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE] = {
+					0
+				};
+				uint32_t local_gatt_db_size = PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE;
+				pm_peer_data_local_gatt_db_t *curr_p_local_gatt_db =
+					(pm_peer_data_local_gatt_db_t *)local_gatt_db_buf;
+				pm_peer_data_t curr_peer_data;
 
-				err_code = pdb_peer_data_ptr_get(peer_id,
-								PM_PEER_DATA_ID_GATT_LOCAL,
-								&curr_peer_data);
+				curr_peer_data.p_all_data = local_gatt_db_buf;
+
+				err_code = pds_peer_data_read(peer_id,
+							PM_PEER_DATA_ID_GATT_LOCAL,
+							&curr_peer_data,
+							&local_gatt_db_size);
 
 				if ((err_code != NRF_SUCCESS) &&
 					(err_code != NRF_ERROR_NOT_FOUND)) {
-					LOG_ERR("pdb_peer_data_ptr_get() returned %s "
+					LOG_ERR("pds_peer_data_read() returned %s "
 						"for conn_handle: %d",
 						nrf_strerror_get(err_code),
 						conn_handle);
 					return NRF_ERROR_INTERNAL;
 				}
 
+
 				if ((err_code == NRF_ERROR_NOT_FOUND) ||
 					(p_local_gatt_db->len !=
-					curr_peer_data.p_local_gatt_db->len) ||
+					curr_p_local_gatt_db->len) ||
 					(memcmp(p_local_gatt_db->data,
-						curr_peer_data.p_local_gatt_db->data,
+						curr_p_local_gatt_db->data,
 						p_local_gatt_db->len) != 0)) {
 					err_code = pdb_write_buf_store(
 						peer_id, PM_PEER_DATA_ID_GATT_LOCAL,
@@ -249,18 +259,24 @@ uint32_t gscm_local_db_cache_apply(uint16_t conn_handle)
 
 	pm_peer_id_t peer_id = im_peer_id_get_by_conn_handle(conn_handle);
 	uint32_t err_code;
-	pm_peer_data_flash_t peer_data;
+	pm_peer_data_t peer_data;
 	uint8_t const *p_sys_attr_data = NULL;
 	uint16_t sys_attr_len = 0;
 	uint32_t sys_attr_flags = (SYS_ATTR_BOTH);
 	bool all_attributes_applied = true;
 
 	if (peer_id != PM_PEER_ID_INVALID) {
-		err_code = pdb_peer_data_ptr_get(peer_id, PM_PEER_DATA_ID_GATT_LOCAL, &peer_data);
+		uint8_t local_gatt_db_buf[PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE] = { 0 };
+		uint32_t local_gatt_db_size = PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE;
+		pm_peer_data_local_gatt_db_t *curr_p_local_gatt_db =
+			(pm_peer_data_local_gatt_db_t *)local_gatt_db_buf;
+		peer_data.p_all_data = &local_gatt_db_buf;
+		err_code = pds_peer_data_read(peer_id, PM_PEER_DATA_ID_GATT_LOCAL, &peer_data,
+					      &local_gatt_db_size);
 		if (err_code == NRF_SUCCESS) {
 			pm_peer_data_local_gatt_db_t const *p_local_gatt_db;
 
-			p_local_gatt_db = peer_data.p_local_gatt_db;
+			p_local_gatt_db = curr_p_local_gatt_db;
 			p_sys_attr_data = p_local_gatt_db->data;
 			sys_attr_len = p_local_gatt_db->len;
 			sys_attr_flags = p_local_gatt_db->flags;
@@ -315,19 +331,21 @@ bool gscm_service_changed_ind_needed(uint16_t conn_handle)
 {
 	uint32_t err_code;
 	bool service_changed_state;
-	pm_peer_data_flash_t peer_data;
+	uint32_t service_changed_state_size = sizeof(bool);
+	pm_peer_data_t peer_data;
 
-	peer_data.p_service_changed_pending = &service_changed_state;
+	peer_data.p_all_data = &service_changed_state;
 	pm_peer_id_t peer_id = im_peer_id_get_by_conn_handle(conn_handle);
 
 	err_code =
-		pdb_peer_data_ptr_get(peer_id, PM_PEER_DATA_ID_SERVICE_CHANGED_PENDING, &peer_data);
+		pds_peer_data_read(peer_id, PM_PEER_DATA_ID_SERVICE_CHANGED_PENDING, &peer_data,
+				   &service_changed_state_size);
 
 	if (err_code != NRF_SUCCESS) {
 		return false;
 	}
 
-	return *peer_data.p_service_changed_pending;
+	return service_changed_state;
 }
 
 uint32_t gscm_service_changed_ind_send(uint16_t conn_handle)

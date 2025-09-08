@@ -75,22 +75,26 @@ uint32_t pds_peer_data_read(pm_peer_id_t peer_id, pm_peer_data_id_t data_id,
 /**
  * @brief Function to prepare iterating over peer data in flash using @ref pds_peer_data_iterate.
  *        Call this function once each time before iterating using @ref pds_peer_data_iterate.
+ *
+ * @param[in]  p_peer_id_iter The peer ID used for keeping track of the iteration.
  */
-void pds_peer_data_iterate_prepare(void);
+void pds_peer_data_iterate_prepare(pm_peer_id_t *p_peer_id_iter);
 
 /**
  * @brief Function for iterating peers' data in flash.
  *        Always call @ref pds_peer_data_iterate_prepare before starting iterating.
  *
- * @param[in]  data_id    The peer data to iterate over.
- * @param[out] p_peer_id  The peer the data belongs to.
- * @param[out] p_data     The peer data in flash.
+ * @param[in]  data_id        The peer data to iterate over.
+ * @param[out] p_peer_id      The peer the data belongs to.
+ * @param[out] p_data         The peer data in flash. @ref p_data.p_all_data must point to a buffer
+ *                            of size @ref PM_PEER_DATA_MAX_SIZE.
+ * @param[in]  p_peer_id_iter The peer ID used for keeping track of the iteration.
  *
  * @retval true   If the operation was successful.
  * @retval false  If the data was not found in flash, or another error occurred.
  */
 bool pds_peer_data_iterate(pm_peer_data_id_t data_id, pm_peer_id_t *const p_peer_id,
-			   pm_peer_data_flash_t *const p_data);
+			   pm_peer_data_flash_t *const p_data, pm_peer_id_t *p_peer_id_iter);
 
 /**
  * @brief Function for storing peer data in flash. If the same piece of data already exists for the

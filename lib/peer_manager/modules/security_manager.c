@@ -15,6 +15,7 @@
 #include <modules/id_manager.h>
 #include <modules/security_dispatcher.h>
 #include <modules/peer_database.h>
+#include <modules/peer_data_storage.h>
 #include <modules/security_manager.h>
 
 #if CONFIG_PM_LESC_ENABLED
@@ -150,12 +151,17 @@ static void send_unexpected_error(uint16_t conn_handle, uint32_t err_code)
  */
 static bool key_is_lesc(pm_peer_id_t peer_id)
 {
-	pm_peer_data_flash_t peer_data;
+	pm_peer_data_bonding_t bonding_data = { 0 };
+	uint32_t bonding_data_size = sizeof(pm_peer_data_bonding_t);
+	pm_peer_data_t peer_data;
 	uint32_t err_code;
 
-	err_code = pdb_peer_data_ptr_get(peer_id, PM_PEER_DATA_ID_BONDING, &peer_data);
+	peer_data.p_all_data = &bonding_data;
 
-	return (err_code == NRF_SUCCESS) && (peer_data.p_bonding_data->own_ltk.enc_info.lesc);
+	err_code = pds_peer_data_read(peer_id, PM_PEER_DATA_ID_BONDING, &peer_data,
+				      &bonding_data_size);
+
+	return (err_code == NRF_SUCCESS) && (bonding_data.own_ltk.enc_info.lesc);
 }
 
 /**

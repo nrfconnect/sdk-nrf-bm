@@ -24,6 +24,8 @@
 extern "C" {
 #endif
 
+#define CODE_DISABLED 0
+
 /**
  * @brief The size (in bytes) of each block in the internal buffer accessible via
  *        @ref pdb_write_buf_get.
@@ -61,6 +63,7 @@ uint32_t pdb_init(void);
  */
 uint32_t pdb_peer_free(pm_peer_id_t peer_id);
 
+#if CODE_DISABLED /* Disabled */
 /**
  * @brief Function for retrieving a pointer to peer data in flash (read-only).
  *
@@ -78,6 +81,7 @@ uint32_t pdb_peer_free(pm_peer_id_t peer_id);
  */
 uint32_t pdb_peer_data_ptr_get(pm_peer_id_t peer_id, pm_peer_data_id_t data_id,
 				 pm_peer_data_flash_t *const p_peer_data);
+#endif
 
 /**
  * @brief Function for retrieving pointers to a write buffer for peer data.

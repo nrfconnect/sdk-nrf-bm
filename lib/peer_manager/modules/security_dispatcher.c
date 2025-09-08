@@ -235,24 +235,28 @@ static uint32_t link_secure_central_encryption(uint16_t conn_handle, pm_peer_id_
 	uint32_t err_code;
 	ble_gap_enc_key_t const *p_existing_key = NULL;
 	bool lesc = false;
+	pm_peer_data_bonding_t bonding_data = { 0 };
 
-	err_code = pdb_peer_data_ptr_get(peer_id, PM_PEER_DATA_ID_BONDING, &peer_data);
+	peer_data.p_all_data = &bonding_data;
+
+	err_code = pds_peer_data_read(peer_id, PM_PEER_DATA_ID_BONDING, &peer_data,
+				      sizeof(pm_peer_data_bonding_t));
 
 	if (err_code == NRF_SUCCESS) {
 		/* Use peer's key since they are peripheral. */
-		p_existing_key = &(peer_data.p_bonding_data->peer_ltk);
+		p_existing_key = &(bonding_data.peer_ltk);
 
-		lesc = peer_data.p_bonding_data->own_ltk.enc_info.lesc;
+		lesc = bonding_data.own_ltk.enc_info.lesc;
 		/* LESC was used during bonding. */
 		if (lesc) {
 			/* For LESC, always use own key. */
-			p_existing_key = &(peer_data.p_bonding_data->own_ltk);
+			p_existing_key = &(bonding_data.own_ltk);
 		}
 	}
 
 	if ((err_code != NRF_SUCCESS) && (err_code != NRF_ERROR_NOT_FOUND)) {
 		if (err_code != NRF_ERROR_BUSY) {
-			NRF_LOG_ERROR("Could not retrieve stored bond. pdb_peer_data_ptr_get() "
+			NRF_LOG_ERROR("Could not retrieve stored bond. pds_peer_data_read() "
 				      "returned %s. "
 				      "peer_id: %d",
 				      nrf_strerror_get(err_code), peer_id);
@@ -345,7 +349,7 @@ static void sec_info_request_process(ble_gap_evt_t const *p_gap_evt)
 {
 	uint32_t err_code;
 	ble_gap_enc_info_t const *p_enc_info = NULL;
-	pm_peer_data_flash_t peer_data;
+	pm_peer_data_t peer_data;
 	pm_peer_id_t peer_id =
 		im_peer_id_get_by_master_id(&p_gap_evt->params.sec_info_request.master_id);
 
@@ -362,12 +366,18 @@ static void sec_info_request_process(ble_gap_evt_t const *p_gap_evt)
 	sec_proc_start(p_gap_evt->conn_handle, true, PM_CONN_SEC_PROCEDURE_ENCRYPTION);
 
 	if (peer_id != PM_PEER_ID_INVALID) {
-		err_code = pdb_peer_data_ptr_get(peer_id, PM_PEER_DATA_ID_BONDING, &peer_data);
+		pm_peer_data_bonding_t bonding_data = { 0 };
+		uint32_t bonding_data_size = sizeof(pm_peer_data_bonding_t);
+
+		peer_data.p_all_data = &bonding_data;
+
+		err_code = pds_peer_data_read(peer_id, PM_PEER_DATA_ID_BONDING, &peer_data,
+					      &bonding_data_size);
 
 		if (err_code == NRF_SUCCESS) {
 			/* There is stored bonding data for this peer. */
 			ble_gap_enc_key_t const *p_existing_key =
-				&peer_data.p_bonding_data->own_ltk;
+				&bonding_data.own_ltk;
 
 			if (p_gap_evt->params.sec_info_request.enc_info &&
 			    (p_existing_key->enc_info.lesc ||

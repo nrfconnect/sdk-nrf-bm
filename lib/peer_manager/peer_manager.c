@@ -642,10 +642,13 @@ uint32_t pm_peer_id_list(pm_peer_id_t *p_peer_list, uint32_t *const p_list_size,
 
 		if (skip_no_addr || skip_no_irk) {
 			/* Get data */
-			pm_bond_data.p_bonding_data = NULL;
+			pm_peer_data_bonding_t bonding_data = { 0 };
+			uint32_t bonding_data_size = sizeof(pm_peer_data_bonding_t);
+
+			pm_bond_data.p_all_data = &bonding_data;
 
 			err_code = pds_peer_data_read(current_peer_id, PM_PEER_DATA_ID_BONDING,
-						      &pm_bond_data, NULL);
+						      &pm_bond_data, &bonding_data_size);
 
 			if (err_code == NRF_ERROR_NOT_FOUND) {
 				skip = true;
@@ -655,7 +658,7 @@ uint32_t pm_peer_id_list(pm_peer_id_t *p_peer_list, uint32_t *const p_list_size,
 
 			/* Check data */
 			if (skip_no_addr) {
-				p_gap_addr = &pm_bond_data.p_bonding_data->peer_ble_id.id_addr_info;
+				p_gap_addr = &bonding_data.peer_ble_id.id_addr_info;
 
 				if ((p_gap_addr->addr_type != BLE_GAP_ADDR_TYPE_PUBLIC) &&
 				    (p_gap_addr->addr_type != BLE_GAP_ADDR_TYPE_RANDOM_STATIC)) {
@@ -664,7 +667,7 @@ uint32_t pm_peer_id_list(pm_peer_id_t *p_peer_list, uint32_t *const p_list_size,
 			}
 			if (skip_no_irk) {
 				if (!peer_is_irk(
-					    &pm_bond_data.p_bonding_data->peer_ble_id.id_info)) {
+					    &bonding_data.peer_ble_id.id_info)) {
 					skip = true;
 				}
 			}
@@ -672,11 +675,14 @@ uint32_t pm_peer_id_list(pm_peer_id_t *p_peer_list, uint32_t *const p_list_size,
 
 		if (skip_no_car) {
 			/* Get data */
-			pm_car_data.p_central_addr_res = NULL;
+			uint32_t central_addr_res = 0;
+			uint32_t central_addr_res_size = sizeof(uint32_t);
+
+			pm_car_data.p_all_data = &central_addr_res;
 
 			err_code = pds_peer_data_read(current_peer_id,
 						      PM_PEER_DATA_ID_CENTRAL_ADDR_RES,
-						      &pm_car_data, NULL);
+						      &pm_car_data, &central_addr_res_size);
 
 			if (err_code == NRF_ERROR_NOT_FOUND) {
 				skip = true;
@@ -685,7 +691,7 @@ uint32_t pm_peer_id_list(pm_peer_id_t *p_peer_list, uint32_t *const p_list_size,
 			}
 
 			/* Check data */
-			if (*pm_car_data.p_central_addr_res == 0) {
+			if (central_addr_res == 0) {
 				skip = true;
 			}
 		}
@@ -804,7 +810,9 @@ uint32_t pm_peer_new(pm_peer_id_t *p_new_peer_id, pm_peer_data_bonding_t *p_bond
 {
 	uint32_t err_code;
 	pm_peer_id_t peer_id;
+	pm_peer_id_t peer_id_iter;
 	pm_peer_data_flash_t peer_data;
+	uint8_t peer_data_buffer[PM_PEER_DATA_MAX_SIZE] = { 0 };
 
 	VERIFY_MODULE_INITIALIZED();
 	VERIFY_PARAM_NOT_NULL(p_bonding_data);
@@ -812,11 +820,15 @@ uint32_t pm_peer_new(pm_peer_id_t *p_new_peer_id, pm_peer_data_bonding_t *p_bond
 
 	memset(&peer_data, 0, sizeof(pm_peer_data_flash_t));
 
+	peer_data.p_all_data = peer_data_buffer;
+
 	/* Search through existing bonds to look for a duplicate. */
-	pds_peer_data_iterate_prepare();
+	pds_peer_data_iterate_prepare(&peer_id_iter);
 
 	/* @note This check is not thread safe since data is not copied while iterating. */
-	while (pds_peer_data_iterate(PM_PEER_DATA_ID_BONDING, &peer_id, &peer_data)) {
+	/* todo: update comment above. */
+	while (pds_peer_data_iterate(PM_PEER_DATA_ID_BONDING, &peer_id, &peer_data,
+		&peer_id_iter)) {
 		if (im_is_duplicate_bonding_data(p_bonding_data, peer_data.p_bonding_data)) {
 			*p_new_peer_id = peer_id;
 			return NRF_SUCCESS;

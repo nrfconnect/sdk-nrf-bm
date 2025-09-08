@@ -340,7 +340,7 @@ static void delete_bonds(void)
 
 	err = pm_peers_delete();
 	if (err) {
-		printk("Failed to delete peers, err %d\n", err);
+		LOG_ERR("Failed to delete peers, err %d", err);
 	}
 }
 
@@ -353,7 +353,7 @@ static void advertising_start(bool erase_bonds)
 	} else {
 		err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
 		if (err) {
-			printk("Failed to start advertising, err %d\n", err);
+			LOG_ERR("Failed to start advertising, err %d", err);
 		}
 	}
 }
@@ -373,14 +373,14 @@ static void pm_evt_handler(pm_evt_t const *p_evt)
 	}
 }
 
-static void peer_manager_init(void)
+static int peer_manager_init(void)
 {
 	ble_gap_sec_params_t sec_param;
 	int err;
 
 	err = pm_init();
 	if (err) {
-		return;
+		return -EFAULT;
 	}
 
 	memset(&sec_param, 0, sizeof(ble_gap_sec_params_t));
@@ -403,15 +403,17 @@ static void peer_manager_init(void)
 
 	err = pm_sec_params_set(&sec_param);
 	if (err) {
-		printk("pm_sec_params_set() failed, err: %d\n", err);
-		return;
+		LOG_ERR("pm_sec_params_set() failed, err: %d", err);
+		return -EFAULT;
 	}
 
 	err = pm_register(pm_evt_handler);
 	if (err) {
-		printk("pm_register() failed, err: %d\n", err);
-		return;
+		LOG_ERR("pm_register() failed, err: %d", err);
+		return -EFAULT;
 	}
+
+	return 0;
 }
 
 int main(void)
@@ -470,7 +472,13 @@ int main(void)
 
 	LOG_INF("Bluetooth enabled");
 
-	peer_manager_init();
+	err = peer_manager_init();
+	if (err) {
+		LOG_ERR("Failed to initialize Peer Manager, err %d", err);
+		goto idle;
+	}
+
+	LOG_INF("Peer Manager initialized");
 
 	err = ble_hrs_init(&ble_hrs, &hrs_cfg);
 	if (err) {

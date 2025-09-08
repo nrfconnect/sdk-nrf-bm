@@ -138,14 +138,18 @@ void im_ble_evt_handler(ble_evt_t const *ble_evt)
 
 		pm_peer_id_t peer_id;
 		pm_peer_data_flash_t peer_data;
+		uint8_t peer_data_buffer[PM_PEER_DATA_MAX_SIZE] = { 0 };
+		pm_peer_id_t peer_id_iter;
 
-		pds_peer_data_iterate_prepare();
+		peer_data.p_all_data = peer_data_buffer;
+
+		pds_peer_data_iterate_prepare(&peer_id_iter);
 
 		switch (gap_evt.params.connected.peer_addr.addr_type) {
 		case BLE_GAP_ADDR_TYPE_PUBLIC:
 		case BLE_GAP_ADDR_TYPE_RANDOM_STATIC: {
 			while (pds_peer_data_iterate(PM_PEER_DATA_ID_BONDING, &peer_id,
-						     &peer_data)) {
+						     &peer_data, &peer_id_iter)) {
 				if (addr_compare(
 					    &gap_evt.params.connected.peer_addr,
 					    &peer_data.p_bonding_data->peer_ble_id.id_addr_info)) {
@@ -157,7 +161,7 @@ void im_ble_evt_handler(ble_evt_t const *ble_evt)
 
 		case BLE_GAP_ADDR_TYPE_RANDOM_PRIVATE_RESOLVABLE: {
 			while (pds_peer_data_iterate(PM_PEER_DATA_ID_BONDING, &peer_id,
-						     &peer_data)) {
+						     &peer_data, &peer_id_iter)) {
 				if (im_address_resolve(
 					    &gap_evt.params.connected.peer_addr,
 					    &peer_data.p_bonding_data->peer_ble_id.id_info)) {
@@ -227,12 +231,17 @@ pm_peer_id_t im_find_duplicate_bonding_data(pm_peer_data_bonding_t const *p_bond
 {
 	pm_peer_id_t peer_id;
 	pm_peer_data_flash_t peer_data_duplicate;
+	uint8_t peer_data_buffer[PM_PEER_DATA_MAX_SIZE] = { 0 };
+	pm_peer_id_t peer_id_iter;
+
+	peer_data_duplicate.p_all_data = peer_data_buffer;
 
 	NRF_PM_DEBUG_CHECK(p_bonding_data != NULL);
 
-	pds_peer_data_iterate_prepare();
+	pds_peer_data_iterate_prepare(&peer_id_iter);
 
-	while (pds_peer_data_iterate(PM_PEER_DATA_ID_BONDING, &peer_id, &peer_data_duplicate)) {
+	while (pds_peer_data_iterate(PM_PEER_DATA_ID_BONDING, &peer_id, &peer_data_duplicate,
+		&peer_id_iter)) {
 		if ((peer_id != peer_id_skip) &&
 		    im_is_duplicate_bonding_data(p_bonding_data,
 						 peer_data_duplicate.p_bonding_data)) {
@@ -288,13 +297,18 @@ pm_peer_id_t im_peer_id_get_by_master_id(ble_gap_master_id_t const *p_master_id)
 {
 	pm_peer_id_t peer_id;
 	pm_peer_data_flash_t peer_data;
+	uint8_t peer_data_buffer[PM_PEER_DATA_MAX_SIZE] = { 0 };
+	pm_peer_id_t peer_id_iter;
 
 	NRF_PM_DEBUG_CHECK(p_master_id != NULL);
 
-	pds_peer_data_iterate_prepare();
+	peer_data.p_all_data = peer_data_buffer;
+
+	pds_peer_data_iterate_prepare(&peer_id_iter);
 
 	/* For each stored peer, check if the master_id matches p_master_id */
-	while (pds_peer_data_iterate(PM_PEER_DATA_ID_BONDING, &peer_id, &peer_data)) {
+	while (pds_peer_data_iterate(PM_PEER_DATA_ID_BONDING, &peer_id, &peer_data,
+		&peer_id_iter)) {
 		if (im_master_ids_compare(p_master_id,
 					  &peer_data.p_bonding_data->own_ltk.master_id) ||
 		    im_master_ids_compare(p_master_id,

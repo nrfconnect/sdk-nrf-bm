@@ -16,6 +16,8 @@
 #include <bluetooth/peer_manager/peer_manager.h>
 #include <bluetooth/peer_manager/peer_manager_handler.h>
 
+#define CODE_DISABLED 0
+
 #if CONFIG_PM_HANDLER_SEC_DELAY_MS > 0
 #include <bm_timer.h>
 #endif
@@ -239,8 +241,10 @@ static void rank_highest(pm_peer_id_t peer_id)
 void pm_handler_flash_clean(pm_evt_t const *p_pm_evt)
 {
 	uint32_t err_code;
+#if CODE_DISABLED /* todo: temporarily disabled. */
 	/* Indicates whether garbage collection is currently being run. */
 	static bool flash_cleaning;
+#endif
 	/* Indicates whether a successful write happened after the last garbage
 	 * collection. If this is false when flash is full, it means just a
 	 * garbage collection won't work, so some data should be deleted.
@@ -296,6 +300,7 @@ void pm_handler_flash_clean(pm_evt_t const *p_pm_evt)
 		break;
 
 	case PM_EVT_STORAGE_FULL:
+#if CODE_DISABLED /* todo: temporarily disabled. */
 		if (!flash_cleaning) {
 			err_code = NRF_SUCCESS;
 			LOG_INF("Attempting to clean flash.");
@@ -339,6 +344,7 @@ void pm_handler_flash_clean(pm_evt_t const *p_pm_evt)
 				}
 			}
 		}
+#endif
 		break;
 
 	case PM_EVT_ERROR_UNEXPECTED:
@@ -364,7 +370,7 @@ void pm_handler_flash_clean(pm_evt_t const *p_pm_evt)
 	case PM_EVT_SERVICE_CHANGED_IND_CONFIRMED:
 	case PM_EVT_SLAVE_SECURITY_REQ:
 		break;
-
+#if CODE_DISABLED /* todo: temporarily disabled. */
 	case PM_EVT_FLASH_GARBAGE_COLLECTED:
 		flash_cleaning = false;
 		flash_write_after_gc = false;
@@ -393,7 +399,7 @@ void pm_handler_flash_clean(pm_evt_t const *p_pm_evt)
 			pm_handler_flash_clean_on_return();
 		}
 		break;
-
+#endif
 	default:
 		break;
 	}
@@ -556,6 +562,7 @@ void pm_handler_disconnect_on_insufficient_sec(pm_evt_t const *p_pm_evt,
 			uint32_t err_code = sd_ble_gap_disconnect(
 				p_pm_evt->conn_handle, BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
 			APP_ERROR_CHECK(err_code);
+			LOG_ERR("sd_ble_gap_disconnect() error 0x%x", err_code);
 		}
 	}
 }

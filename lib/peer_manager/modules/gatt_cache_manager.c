@@ -495,11 +495,15 @@ static void car_update_pending_handle(uint16_t conn_handle, void *p_context)
 
 static void car_update_needed(uint16_t conn_handle)
 {
+	uint32_t central_addr_res = 0;
+	uint32_t central_addr_res_size = sizeof(uint32_t);
 	pm_peer_data_t peer_data;
+
+	peer_data.p_all_data = &central_addr_res;
 
 	if (pds_peer_data_read(im_peer_id_get_by_conn_handle(conn_handle),
 			       PM_PEER_DATA_ID_CENTRAL_ADDR_RES, &peer_data,
-			       NULL) == NRF_ERROR_NOT_FOUND) {
+			       &central_addr_res_size) == NRF_ERROR_NOT_FOUND) {
 		ble_conn_state_user_flag_set(conn_handle, m_flag_car_update_pending, true);
 	}
 }
@@ -560,14 +564,18 @@ void gcm_pdb_evt_handler(pm_evt_t *p_event)
 #if CONFIG_PM_SERVICE_CHANGED_ENABLED
 		case PM_PEER_DATA_ID_SERVICE_CHANGED_PENDING: {
 			uint32_t err_code;
-			pm_peer_data_flash_t peer_data;
+			bool service_changed_pending = false;
+			uint32_t service_changed_pending_size = sizeof(bool);
+			pm_peer_data_t peer_data;
 
-			err_code = pdb_peer_data_ptr_get(p_event->peer_id,
-							 PM_PEER_DATA_ID_SERVICE_CHANGED_PENDING,
-							 &peer_data);
+			peer_data.p_all_data = &service_changed_pending;
+
+			err_code = pds_peer_data_read(p_event->peer_id,
+						      PM_PEER_DATA_ID_SERVICE_CHANGED_PENDING,
+						      &peer_data, &service_changed_pending_size);
 
 			if (err_code == NRF_SUCCESS) {
-				if (*peer_data.p_service_changed_pending) {
+				if (service_changed_pending) {
 					uint16_t conn_handle = im_conn_handle_get(p_event->peer_id);
 
 					if (conn_handle != BLE_CONN_HANDLE_INVALID) {

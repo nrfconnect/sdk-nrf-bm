@@ -16,6 +16,8 @@
 #include <modules/pm_buffer.h>
 #include <modules/peer_database.h>
 
+#define CODE_DISABLED 0
+
 LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
 /**
@@ -535,6 +537,7 @@ uint32_t pdb_peer_free(pm_peer_id_t peer_id)
 	return NRF_ERROR_INTERNAL;
 }
 
+#if CODE_DISABLED /* Removed */
 uint32_t pdb_peer_data_ptr_get(pm_peer_id_t peer_id, pm_peer_data_id_t data_id,
 				 pm_peer_data_flash_t *const p_peer_data)
 {
@@ -544,6 +547,7 @@ uint32_t pdb_peer_data_ptr_get(pm_peer_id_t peer_id, pm_peer_data_id_t data_id,
 	/* Pass NULL to only retrieve a pointer. */
 	return pds_peer_data_read(peer_id, data_id, (pm_peer_data_t *)p_peer_data, NULL);
 }
+#endif
 
 uint32_t pdb_write_buf_get(pm_peer_id_t peer_id, pm_peer_data_id_t data_id, uint32_t n_bufs,
 			     pm_peer_data_t *p_peer_data)

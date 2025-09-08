@@ -11,6 +11,10 @@ menuconfig PEER_MANAGER
 
 if PEER_MANAGER
 
+config PM_BM_ZMS_SECTOR_SIZE
+	int "Sector size"
+	default 1024
+
 config PM_BLE_OBSERVER_PRIO
 	int "Priority with which BLE events are dispatched to the Peer Manager module."
 	default 1

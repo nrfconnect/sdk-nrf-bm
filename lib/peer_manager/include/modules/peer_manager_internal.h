@@ -25,6 +25,10 @@
 extern "C" {
 #endif
 
+/** @brief Max size for @ref pm_peer_data_local_gatt_db_t.data */
+#define PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE 128
+#define PM_PEER_DATA_MAX_SIZE PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE
+
 /**
  * @brief One piece of data associated with a peer, together with its type.
  *
