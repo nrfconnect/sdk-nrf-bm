@@ -22,6 +22,8 @@ LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 typedef struct {
 	/** @brief Peer public key. Stored in little-endian. */
 	uint8_t value[BLE_GAP_LESC_P256_PK_LEN];
+	/** @brief Peer connection handle. */
+	uint16_t conn_handle;
 	/** @brief Flag indicating that the public key has been requested to compute DH key. */
 	bool is_requested;
 	/** @brief Flag indicating that the public key is valid. */
@@ -202,19 +204,16 @@ void nrf_ble_lesc_peer_oob_data_handler_set(nrf_ble_lesc_peer_oob_data_handler h
 }
 
 /**
- * @brief Function for calculating a DH key and responding to the DH key request on a given
- *        connection handle.
+ * @brief Function for calculating a DH key and responding to the DH key request.
  *
  * @param[in]  p_peer_public_key  ECC peer public key, used to compute shared secret.
- * @param[in]  conn_handle        Connection handle.
  *
  * @retval NRF_SUCCESS        If the operation was successful.
  * @retval NRF_ERROR_INTERNAL If @ref psa_raw_key_agreement, or @ref psa_generate_random failed.
  * @returns Other error codes might be returned by @ref sd_ble_gap_lesc_dhkey_reply.
  * functions.
  */
-static uint32_t compute_and_give_dhkey(nrf_ble_lesc_peer_pub_key_t *p_peer_public_key,
-				       uint16_t conn_handle)
+static uint32_t compute_and_give_dhkey(nrf_ble_lesc_peer_pub_key_t *p_peer_public_key)
 {
 	psa_status_t status = PSA_ERROR_BAD_STATE;
 	uint8_t *p_shared_secret = m_lesc_dh_key.key;
@@ -253,8 +252,10 @@ static uint32_t compute_and_give_dhkey(nrf_ble_lesc_peer_pub_key_t *p_peer_publi
 		}
 	}
 
-	LOG_INF("Calling sd_ble_gap_lesc_dhkey_reply on conn_handle: %d", conn_handle);
-	return sd_ble_gap_lesc_dhkey_reply(conn_handle, &m_lesc_dh_key);
+	LOG_INF("Calling sd_ble_gap_lesc_dhkey_reply on conn_handle: %d",
+		p_peer_public_key->conn_handle);
+
+	return sd_ble_gap_lesc_dhkey_reply(p_peer_public_key->conn_handle, &m_lesc_dh_key);
 }
 
 uint32_t nrf_ble_lesc_request_handler(void)
@@ -268,7 +269,7 @@ uint32_t nrf_ble_lesc_request_handler(void)
 
 	for (uint16_t i = 0; i < NRF_BLE_LESC_LINK_COUNT; i++) {
 		if (m_peer_keys[i].is_requested) {
-			err_code = compute_and_give_dhkey(&m_peer_keys[i], i);
+			err_code = compute_and_give_dhkey(&m_peer_keys[i]);
 			m_peer_keys[i].is_requested = false;
 			m_peer_keys[i].is_valid = false;
 			m_peer_keys[i].passkey_requested = false;
@@ -335,6 +336,7 @@ static uint32_t on_dhkey_request(uint16_t conn_handle, int idx,
 		}
 	} else {
 		memcpy(m_peer_keys[idx].value, p_public_raw, BLE_GAP_LESC_P256_PK_LEN);
+		m_peer_keys[idx].conn_handle = conn_handle;
 		m_peer_keys[idx].is_valid = true;
 	}
 
