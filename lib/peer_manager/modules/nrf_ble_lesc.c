@@ -10,7 +10,6 @@
 #include <nrf_error.h>
 #include <nrf_sdh_ble.h>
 #include <psa/crypto.h>
-#include <sdk_macros.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/byteorder.h>
 #include <zephyr/sys/util.h>
@@ -260,7 +259,7 @@ static uint32_t compute_and_give_dhkey(nrf_ble_lesc_peer_pub_key_t *p_peer_publi
 
 uint32_t nrf_ble_lesc_request_handler(void)
 {
-	uint32_t err_code = NRF_SUCCESS;
+	uint32_t err_code;
 
 	/* If the LESC module is in an invalid state, a restart is required. */
 	if (m_ble_lesc_internal_error) {
@@ -275,11 +274,13 @@ uint32_t nrf_ble_lesc_request_handler(void)
 			m_peer_keys[i].passkey_requested = false;
 			m_peer_keys[i].passkey_displayed = false;
 
-			VERIFY_SUCCESS(err_code);
+			if (err_code != NRF_SUCCESS) {
+				return err_code;
+			}
 		}
 	}
 
-	return err_code;
+	return NRF_SUCCESS;
 }
 
 /**
