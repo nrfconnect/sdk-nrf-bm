@@ -18,6 +18,7 @@
 #include <sensorsim.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
+#include <bluetooth/peer_manager/nrf_ble_lesc.h>
 #include <bluetooth/peer_manager/peer_manager.h>
 #include <bluetooth/peer_manager/peer_manager_handler.h>
 
@@ -245,12 +246,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		break;
 
 	case BLE_GAP_EVT_SEC_PARAMS_REQUEST:
-		/* Pairing not supported */
-		err = sd_ble_gap_sec_params_reply(evt->evt.gap_evt.conn_handle,
-						  BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP, NULL, NULL);
-		if (err) {
-			LOG_ERR("Failed to reply with Security params, nrf_error %#x", err);
-		}
+		LOG_INF("BLE_GAP_EVT_SEC_PARAMS_REQUEST");
 		break;
 
 	case BLE_GATTS_EVT_SYS_ATTR_MISSING:
@@ -524,6 +520,8 @@ int main(void)
 
 idle:
 	while (true) {
+		(void)nrf_ble_lesc_request_handler();
+
 		while (LOG_PROCESS()) {
 		}
 
