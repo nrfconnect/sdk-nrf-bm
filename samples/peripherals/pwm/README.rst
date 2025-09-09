@@ -7,7 +7,7 @@ PWM
    :local:
    :depth: 2
 
-The PWM sample demonstrates how to configure and use PWM with |BMlong|.
+The PWM sample demonstrates how to configure and use pulse width modulation (PWM) with |BMlong|.
 
 Requirements
 ************
@@ -67,13 +67,13 @@ The sample supports the following development kits:
 Overview
 ********
 
-The sample initializes a PWM instance that blinks LED1 and LED3 on the device.
+The sample initializes a PWM instance that blinks **LED 1** and **LED 3** on the device.
 
 .. note::
 
   The PWM signal can be exposed only on GPIO pins that belong to the same domain as the target pin.
-  For nRF54L-series there is only one domain which contains both PWM and GPIO: PWM20/21/22 and GPIO Port P1.
-  For the nRF54L Series only LEDs connected to P1 can work with PWM,  for the nRF54L15DK this is LED1 and LED3.
+  For the nRF54L Series, there is only one domain which contains both PWM and GPIO: PWM20/21/22 and GPIO Port P1.
+  Therefore, for these devices, only LEDs connected to P1 can work with PWM - for the nRF54L15 DK these are **LED 1** and **LED 3**.
 
 Building and running
 ********************
@@ -93,4 +93,4 @@ You can test this sample by performing the following steps:
 
 1. Compile and program the application.
 #. Observe that the ``PWM sample started`` message is printed.
-#. Observe that LED1 and LED3 are blinking.
+#. Observe that **LED 1** and **LED 3** are blinking.
