@@ -35,7 +35,7 @@ LOG_MODULE_REGISTER(app, CONFIG_BLE_HRS_SAMPLE_LOG_LEVEL);
 /* Keypress notifications not enabled. */
 #define SEC_PARAM_KEYPRESS                  0
 /* No I/O capabilities. */
-#define SEC_PARAM_IO_CAPABILITIES           BLE_GAP_IO_CAPS_NONE
+#define SEC_PARAM_IO_CAPABILITIES           BLE_GAP_IO_CAPS_DISPLAY_ONLY
 /* Out Of Band data not available. */
 #define SEC_PARAM_OOB                       0
 /* Minimum encryption key size. */
@@ -247,6 +247,11 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 
 	case BLE_GAP_EVT_SEC_PARAMS_REQUEST:
 		LOG_INF("BLE_GAP_EVT_SEC_PARAMS_REQUEST");
+		break;
+
+	case BLE_GAP_EVT_PASSKEY_DISPLAY:
+		LOG_INF("Passkey: %.*s", BLE_GAP_PASSKEY_LEN,
+			evt->evt.gap_evt.params.passkey_display.passkey);
 		break;
 
 	case BLE_GATTS_EVT_SYS_ATTR_MISSING:
