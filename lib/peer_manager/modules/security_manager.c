@@ -19,7 +19,7 @@
 #include <modules/security_manager.h>
 
 #if CONFIG_PM_LESC_ENABLED
-#include <modules/nrf_ble_lesc.h>
+#include <bluetooth/peer_manager/nrf_ble_lesc.h>
 #endif
 
 LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
