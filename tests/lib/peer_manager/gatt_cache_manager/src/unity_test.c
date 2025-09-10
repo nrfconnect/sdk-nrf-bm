@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2025 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+ */
 
 #define NRF_SDH_BLE_SERVICE_CHANGED 1
 #include "unity.h"
