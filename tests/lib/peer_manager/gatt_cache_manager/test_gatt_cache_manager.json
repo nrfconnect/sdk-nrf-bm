@@ -1,0 +1,31 @@
+{
+    "_attrs": [
+        "unit_test"
+    ],
+    "_config_overrides": [
+        {
+            "PEER_MANAGER_ENABLED": 1
+        }
+    ],
+    "_headers": [
+        "..\\..\\gatt_cache_manager.c"
+    ],
+    "_includes": [
+        "..\\..\\cmock"
+    ],
+    "_links": [
+        "appskeleton_unity_nrf52",
+        "s132:cmock",
+        "id_manager:cmock",
+        "security_dispatcher:cmock",
+        "gatts_cache_manager:cmock",
+        "ble_conn_state:cmock",
+        "nrf_mtx:cmock",
+        "peer_database:cmock",
+        "peer_data_storage:cmock",
+        "peer_manager:noimpl",
+        "app_error:weak_win32",
+        "nrf_log"
+    ],
+    "_name": "test_gatt_cache_manager"
+}
