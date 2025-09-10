@@ -350,7 +350,8 @@ bool pds_peer_data_iterate(pm_peer_data_id_t data_id, pm_peer_id_t *const p_peer
 
 	/* We found a suitable Peer ID. */
 
-	*p_peer_id = *p_peer_id_iter;
+	/* `p_peer_id_iter` counts the iterations, so the Peer ID is iterations minus one. */
+	*p_peer_id = (*p_peer_id_iter) - 1;
 
 	/* `ret` is equal the exact amount of data contained in the entry, so copy that amount
 	 * safely.
