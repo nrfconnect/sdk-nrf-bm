@@ -333,7 +333,7 @@ bool pds_peer_data_iterate(pm_peer_data_id_t data_id, pm_peer_id_t *const p_peer
 	do {
 		uint32_t entry_id = peer_id_peer_data_id_to_entry_id(*p_peer_id_iter, data_id);
 
-		ret = bm_zms_read(&fs, entry_id, temp_buf, PM_PEER_DATA_MAX_SIZE);
+		ret = bm_zms_read(&fs, entry_id, temp_buf, sizeof(temp_buf));
 		if (ret < 0 && ret != -ENOENT) {
 			LOG_ERR("Could not read data from NVM. bm_zms_read() returned %d. "
 				"peer_id: %d",
