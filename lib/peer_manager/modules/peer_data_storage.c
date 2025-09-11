@@ -421,7 +421,7 @@ uint32_t pds_peer_data_read(pm_peer_id_t peer_id, pm_peer_data_id_t data_id,
 		return NRF_ERROR_INTERNAL;
 	}
 
-	memcpy(p_data->p_all_data, temp_buf, *p_buf_len);
+	memcpy(p_data->p_all_data, temp_buf, MIN(*p_buf_len, ret));
 
 	if (*p_buf_len < ret) {
 		return NRF_ERROR_DATA_SIZE;

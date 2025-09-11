@@ -365,10 +365,10 @@ static void sec_info_request_process(ble_gap_evt_t const *p_gap_evt)
 
 	sec_proc_start(p_gap_evt->conn_handle, true, PM_CONN_SEC_PROCEDURE_ENCRYPTION);
 
-	if (peer_id != PM_PEER_ID_INVALID) {
-		pm_peer_data_bonding_t bonding_data = { 0 };
-		uint32_t bonding_data_size = sizeof(pm_peer_data_bonding_t);
+	pm_peer_data_bonding_t bonding_data = { 0 };
+	uint32_t bonding_data_size = sizeof(pm_peer_data_bonding_t);
 
+	if (peer_id != PM_PEER_ID_INVALID) {
 		peer_data.p_all_data = &bonding_data;
 
 		err_code = pds_peer_data_read(peer_id, PM_PEER_DATA_ID_BONDING, &peer_data,
