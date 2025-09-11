@@ -22,12 +22,26 @@
 #include <modules/peer_database.h>
 #include <modules/gatt_cache_manager.h>
 
+#if CONFIG_UNITY
+#define STATIC
+#define CONFIG_PM_SERVICE_CHANGED_ENABLED 1
+#else
+#define STATIC static
+#endif
+
 LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
 #define NRF_MTX_LOCKED      1
 #define NRF_MTX_UNLOCKED    0
 
 typedef atomic_t nrf_mtx_t;
+
+#if CONFIG_UNITY
+void nrf_mtx_init(nrf_mtx_t *p_mtx);
+bool nrf_mtx_trylock(nrf_mtx_t *p_mtx);
+void nrf_mtx_unlock(nrf_mtx_t *p_mtx);
+
+#else
 
 /**
  * @brief Initialize mutex.
@@ -36,7 +50,7 @@ typedef atomic_t nrf_mtx_t;
  *
  * @param[in, out] p_mtx The mutex to be initialized.
  */
-__STATIC_INLINE void nrf_mtx_init(nrf_mtx_t *p_mtx)
+static void nrf_mtx_init(nrf_mtx_t *p_mtx)
 {
 	__ASSERT(p_mtx != NULL, "");
 
@@ -51,7 +65,7 @@ __STATIC_INLINE void nrf_mtx_init(nrf_mtx_t *p_mtx)
  * @param[in, out] p_mtx The mutex to be locked.
  * @return true if lock was acquired, false if not
  */
-__STATIC_INLINE bool nrf_mtx_trylock(nrf_mtx_t *p_mtx)
+static bool nrf_mtx_trylock(nrf_mtx_t *p_mtx)
 {
 	__ASSERT(p_mtx != NULL, "");
 
@@ -68,13 +82,14 @@ __STATIC_INLINE bool nrf_mtx_trylock(nrf_mtx_t *p_mtx)
  *
  * @param[in, out] p_mtx The mutex to be unlocked.
  */
-__STATIC_INLINE void nrf_mtx_unlock(nrf_mtx_t *p_mtx)
+static void nrf_mtx_unlock(nrf_mtx_t *p_mtx)
 {
 	__ASSERT(p_mtx != NULL, "");
 	__ASSERT(*p_mtx == NRF_MTX_LOCKED, "");
 
 	atomic_set(p_mtx, NRF_MTX_UNLOCKED);
 }
+#endif
 
 /* The number of registered event handlers. */
 #define GCM_EVENT_HANDLERS_CNT ARRAY_SIZE(m_evt_handlers)
@@ -90,7 +105,7 @@ static pm_evt_handler_internal_t m_evt_handlers[] = {pm_gcm_evt_handler};
 
 static bool m_module_initialized;
 /** @brief Mutex indicating whether a local DB write operation is ongoing. */
-static nrf_mtx_t m_db_update_in_progress_mutex;
+STATIC nrf_mtx_t m_db_update_in_progress_mutex;
 /**
  * @brief Flag ID for flag collection to keep track of which connections need a local DB update
  *        procedure.
@@ -141,7 +156,7 @@ BUILD_ASSERT(IS_ENABLED(CONFIG_PM_SERVICE_CHANGED_ENABLED) ||
  *
  * @param[out]  The instance to reset.
  */
-static void internal_state_reset(void)
+STATIC void internal_state_reset(void)
 {
 	m_module_initialized = false;
 }
@@ -322,7 +337,7 @@ static bool local_db_update_in_evt(uint16_t conn_handle)
  *
  * @return Any error from @ref sd_ble_gatts_value_get or @ref sd_ble_gatts_attr_get.
  */
-static uint32_t service_changed_cccd(uint16_t conn_handle, uint16_t *p_cccd)
+STATIC uint32_t service_changed_cccd(uint16_t conn_handle, uint16_t *p_cccd)
 {
 	bool sc_found = false;
 	uint16_t end_handle;
@@ -425,7 +440,7 @@ static void service_changed_send_in_evt(uint16_t conn_handle)
 }
 #endif
 
-static void apply_pending_handle(uint16_t conn_handle, void *p_context)
+STATIC void apply_pending_handle(uint16_t conn_handle, void *p_context)
 {
 	ARG_UNUSED(p_context);
 	local_db_apply_in_evt(conn_handle);
@@ -437,7 +452,7 @@ static __INLINE void apply_pending_flags_check(void)
 						    apply_pending_handle, NULL);
 }
 
-static void db_update_pending_handle(uint16_t conn_handle, void *p_context)
+STATIC void db_update_pending_handle(uint16_t conn_handle, void *p_context)
 {
 	ARG_UNUSED(p_context);
 	if (nrf_mtx_trylock(&m_db_update_in_progress_mutex)) {
@@ -451,7 +466,7 @@ static void db_update_pending_handle(uint16_t conn_handle, void *p_context)
 }
 
 #if CONFIG_PM_SERVICE_CHANGED_ENABLED
-static void sc_send_pending_handle(uint16_t conn_handle, void *p_context)
+STATIC void sc_send_pending_handle(uint16_t conn_handle, void *p_context)
 {
 	ARG_UNUSED(p_context);
 	if (!ble_conn_state_user_flag_get(conn_handle, m_flag_service_changed_sent)) {
@@ -473,7 +488,7 @@ static void service_changed_needed(uint16_t conn_handle)
 }
 #endif
 
-static void car_update_pending_handle(uint16_t conn_handle, void *p_context)
+STATIC void car_update_pending_handle(uint16_t conn_handle, void *p_context)
 {
 	ARG_UNUSED(p_context);
 
@@ -621,13 +636,13 @@ uint32_t gcm_init(void)
 	m_flag_car_handle_queried = ble_conn_state_user_flag_acquire();
 	m_flag_car_value_queried = ble_conn_state_user_flag_acquire();
 
-	if ((m_flag_local_db_update_pending == CONFIG_BLE_CONN_STATE_USER_FLAG_COUNT) ||
-	    (m_flag_local_db_apply_pending == CONFIG_BLE_CONN_STATE_USER_FLAG_COUNT) ||
-	    (m_flag_service_changed_pending == CONFIG_BLE_CONN_STATE_USER_FLAG_COUNT) ||
-	    (m_flag_service_changed_sent == CONFIG_BLE_CONN_STATE_USER_FLAG_COUNT) ||
-	    (m_flag_car_update_pending == CONFIG_BLE_CONN_STATE_USER_FLAG_COUNT) ||
-	    (m_flag_car_handle_queried == CONFIG_BLE_CONN_STATE_USER_FLAG_COUNT) ||
-	    (m_flag_car_value_queried == CONFIG_BLE_CONN_STATE_USER_FLAG_COUNT)) {
+	if ((m_flag_local_db_update_pending == -1) ||
+	    (m_flag_local_db_apply_pending == -1) ||
+	    (m_flag_service_changed_pending == -1) ||
+	    (m_flag_service_changed_sent == -1) ||
+	    (m_flag_car_update_pending == -1) ||
+	    (m_flag_car_handle_queried == -1) ||
+	    (m_flag_car_value_queried == -1)) {
 		LOG_ERR("Could not acquire conn_state user flags. Increase "
 			"BLE_CONN_STATE_USER_FLAG_COUNT in the ble_conn_state module.");
 		return NRF_ERROR_INTERNAL;
