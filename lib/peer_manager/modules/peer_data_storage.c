@@ -397,6 +397,7 @@ uint32_t pds_peer_data_read(pm_peer_id_t peer_id, pm_peer_data_id_t data_id,
 			      pm_peer_data_t *const p_data, uint32_t const *const p_buf_len)
 {
 	ssize_t ret;
+	uint8_t temp_buf[PM_PEER_DATA_MAX_SIZE] = { 0 };
 
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
 	NRF_PM_DEBUG_CHECK(p_data != NULL);
@@ -407,12 +408,23 @@ uint32_t pds_peer_data_read(pm_peer_id_t peer_id, pm_peer_data_id_t data_id,
 
 	uint32_t entry_id = peer_id_peer_data_id_to_entry_id(peer_id, data_id);
 
-	ret = bm_zms_read(&fs, entry_id, p_data->p_all_data, *p_buf_len);
-	if (ret < 0) {
+	ret = bm_zms_read(&fs, entry_id, temp_buf, sizeof(temp_buf));
+	if (ret == -ENOENT) {
+		LOG_DBG("Could not read entry %d. bm_zms_read() returned %d. "
+			"peer_id: %d, data_id: %d", entry_id,
+			ret, peer_id, data_id);
+		return NRF_ERROR_NOT_FOUND;
+	} else if (ret < 0) {
 		LOG_ERR("Could not read data from NVM. bm_zms_read() returned %d. "
 			"peer_id: %d",
 			ret, peer_id);
 		return NRF_ERROR_INTERNAL;
+	}
+
+	memcpy(p_data->p_all_data, temp_buf, *p_buf_len);
+
+	if (*p_buf_len < ret) {
+		return NRF_ERROR_DATA_SIZE;
 	}
 
 	return NRF_SUCCESS;
