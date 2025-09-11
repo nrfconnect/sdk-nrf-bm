@@ -18,10 +18,30 @@
 #include <sensorsim.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
+#include <bluetooth/peer_manager/nrf_ble_lesc.h>
+#include <bluetooth/peer_manager/peer_manager.h>
+#include <bluetooth/peer_manager/peer_manager_handler.h>
 
 LOG_MODULE_REGISTER(app, CONFIG_BLE_HRS_SAMPLE_LOG_LEVEL);
 
 #define CONN_TAG 1
+
+/* Perform bonding. */
+#define SEC_PARAM_BOND                      1
+/* Man In The Middle protection not required. */
+#define SEC_PARAM_MITM                      0
+/* LE Secure Connections enabled. */
+#define SEC_PARAM_LESC                      1
+/* Keypress notifications not enabled. */
+#define SEC_PARAM_KEYPRESS                  0
+/* No I/O capabilities. */
+#define SEC_PARAM_IO_CAPABILITIES           BLE_GAP_IO_CAPS_DISPLAY_ONLY
+/* Out Of Band data not available. */
+#define SEC_PARAM_OOB                       0
+/* Minimum encryption key size. */
+#define SEC_PARAM_MIN_KEY_SIZE              7
+/* Maximum encryption key size. */
+#define SEC_PARAM_MAX_KEY_SIZE              16
 
 BLE_ADV_DEF(ble_adv); /* BLE advertising instance */
 BLE_BAS_DEF(ble_bas); /* BLE battery service instance */
@@ -226,12 +246,12 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		break;
 
 	case BLE_GAP_EVT_SEC_PARAMS_REQUEST:
-		/* Pairing not supported */
-		err = sd_ble_gap_sec_params_reply(evt->evt.gap_evt.conn_handle,
-						  BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP, NULL, NULL);
-		if (err) {
-			LOG_ERR("Failed to reply with Security params, nrf_error %#x", err);
-		}
+		LOG_INF("BLE_GAP_EVT_SEC_PARAMS_REQUEST");
+		break;
+
+	case BLE_GAP_EVT_PASSKEY_DISPLAY:
+		LOG_INF("Passkey: %.*s", BLE_GAP_PASSKEY_LEN,
+			evt->evt.gap_evt.params.passkey_display.passkey);
 		break;
 
 	case BLE_GATTS_EVT_SYS_ATTR_MISSING:
@@ -313,6 +333,90 @@ static void ble_hrs_evt_handler(struct ble_hrs *hrs, const struct ble_hrs_evt *e
 	}
 }
 
+static void delete_bonds(void)
+{
+	uint32_t err;
+
+	printk("Erase bonds!\n");
+
+	err = pm_peers_delete();
+	if (err) {
+		LOG_ERR("Failed to delete peers, err %d", err);
+	}
+}
+
+static void advertising_start(bool erase_bonds)
+{
+	int err;
+
+	if (erase_bonds) {
+		delete_bonds();
+	} else {
+		err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
+		if (err) {
+			LOG_ERR("Failed to start advertising, err %d", err);
+		}
+	}
+}
+
+static void pm_evt_handler(pm_evt_t const *p_evt)
+{
+	pm_handler_on_pm_evt(p_evt);
+	pm_handler_disconnect_on_sec_failure(p_evt);
+	pm_handler_flash_clean(p_evt);
+
+	switch (p_evt->evt_id) {
+	case PM_EVT_PEERS_DELETE_SUCCEEDED:
+		advertising_start(false);
+		break;
+	default:
+		break;
+	}
+}
+
+static int peer_manager_init(void)
+{
+	ble_gap_sec_params_t sec_param;
+	int err;
+
+	err = pm_init();
+	if (err) {
+		return -EFAULT;
+	}
+
+	memset(&sec_param, 0, sizeof(ble_gap_sec_params_t));
+
+	/* Security parameters to be used for all security procedures. */
+	sec_param = (ble_gap_sec_params_t) {
+		.bond = SEC_PARAM_BOND,
+		.mitm = SEC_PARAM_MITM,
+		.lesc = SEC_PARAM_LESC,
+		.keypress = SEC_PARAM_KEYPRESS,
+		.io_caps = SEC_PARAM_IO_CAPABILITIES,
+		.oob = SEC_PARAM_OOB,
+		.min_key_size = SEC_PARAM_MIN_KEY_SIZE,
+		.max_key_size = SEC_PARAM_MAX_KEY_SIZE,
+		.kdist_own.enc = 1,
+		.kdist_own.id = 1,
+		.kdist_peer.enc = 1,
+		.kdist_peer.id = 1,
+	};
+
+	err = pm_sec_params_set(&sec_param);
+	if (err) {
+		LOG_ERR("pm_sec_params_set() failed, err: %d", err);
+		return -EFAULT;
+	}
+
+	err = pm_register(pm_evt_handler);
+	if (err) {
+		LOG_ERR("pm_register() failed, err: %d", err);
+		return -EFAULT;
+	}
+
+	return 0;
+}
+
 int main(void)
 {
 	int err;
@@ -369,6 +473,14 @@ int main(void)
 
 	LOG_INF("Bluetooth enabled");
 
+	err = peer_manager_init();
+	if (err) {
+		LOG_ERR("Failed to initialize Peer Manager, err %d", err);
+		goto idle;
+	}
+
+	LOG_INF("Peer Manager initialized");
+
 	err = ble_hrs_init(&ble_hrs, &hrs_cfg);
 	if (err) {
 		LOG_ERR("Failed to initialize heart rate service, err %d", err);
@@ -413,6 +525,8 @@ int main(void)
 
 idle:
 	while (true) {
+		(void)nrf_ble_lesc_request_handler();
+
 		while (LOG_PROCESS()) {
 		}
 

@@ -9,9 +9,7 @@ on:
 jobs:
   twister_job:
     name: Run Twister patch series (PR)
-    runs-on:
-      - runs-on=${{ github.run_id }}
-      - runner=4cpu-linux-x64
+    runs-on: ubuntu-22.04
     # Keep aligned with target NCS version
     container: ghcr.io/nrfconnect/sdk-nrf-toolchain:v3.1.0
     defaults:
