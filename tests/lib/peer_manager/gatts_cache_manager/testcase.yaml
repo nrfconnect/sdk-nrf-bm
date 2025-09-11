@@ -1,0 +1,4 @@
+tests:
+  lib.peer_manager.gatts_cache_manager:
+    platform_allow: native_sim
+    tags: unittest
