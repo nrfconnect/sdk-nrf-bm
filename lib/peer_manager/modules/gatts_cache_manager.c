@@ -19,6 +19,13 @@
 #include <modules/id_manager.h>
 #include <modules/gatts_cache_manager.h>
 
+#if CONFIG_UNITY
+#define STATIC
+#define CONFIG_PM_SERVICE_CHANGED_ENABLED 1
+#else
+#define STATIC static
+#endif
+
 LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
 #if !defined(CONFIG_PM_SERVICE_CHANGED_ENABLED) || (CONFIG_PM_SERVICE_CHANGED_ENABLED == 1)
@@ -35,16 +42,11 @@ extern void pm_gscm_evt_handler(pm_evt_t *p_gcm_evt);
 static pm_evt_handler_internal_t m_evt_handlers[] = {pm_gscm_evt_handler};
 #endif
 
-/* Syntactic sugar, two spoons. */
-#define SYS_ATTR_SYS  (BLE_GATTS_SYS_ATTR_FLAG_SYS_SRVCS)
-#define SYS_ATTR_USR  (BLE_GATTS_SYS_ATTR_FLAG_USR_SRVCS)
-#define SYS_ATTR_BOTH (SYS_ATTR_SYS | SYS_ATTR_USR)
-
 static bool m_module_initialized;
 static pm_peer_id_t m_current_sc_store_peer_id;
 
 /** @brief Function for resetting the module variable(s) of the GSCM module. */
-static void internal_state_reset(void)
+STATIC void internal_state_reset(void)
 {
 	m_module_initialized = false;
 	m_current_sc_store_peer_id = PM_PEER_ID_INVALID;
@@ -169,8 +171,6 @@ uint32_t gscm_local_db_cache_update(uint16_t conn_handle)
 					0
 				};
 				uint32_t local_gatt_db_size = PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE;
-				pm_peer_data_local_gatt_db_t *curr_p_local_gatt_db =
-					(pm_peer_data_local_gatt_db_t *)local_gatt_db_buf;
 				pm_peer_data_t curr_peer_data;
 
 				curr_peer_data.p_all_data = local_gatt_db_buf;
@@ -179,6 +179,10 @@ uint32_t gscm_local_db_cache_update(uint16_t conn_handle)
 							PM_PEER_DATA_ID_GATT_LOCAL,
 							&curr_peer_data,
 							&local_gatt_db_size);
+
+
+				pm_peer_data_local_gatt_db_t *curr_p_local_gatt_db
+					= curr_peer_data.p_local_gatt_db;
 
 				if ((err_code != NRF_SUCCESS) &&
 					(err_code != NRF_ERROR_NOT_FOUND)) {
@@ -268,15 +272,13 @@ uint32_t gscm_local_db_cache_apply(uint16_t conn_handle)
 	if (peer_id != PM_PEER_ID_INVALID) {
 		uint8_t local_gatt_db_buf[PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE] = { 0 };
 		uint32_t local_gatt_db_size = PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE;
-		pm_peer_data_local_gatt_db_t *curr_p_local_gatt_db =
-			(pm_peer_data_local_gatt_db_t *)local_gatt_db_buf;
 		peer_data.p_all_data = &local_gatt_db_buf;
 		err_code = pds_peer_data_read(peer_id, PM_PEER_DATA_ID_GATT_LOCAL, &peer_data,
 					      &local_gatt_db_size);
 		if (err_code == NRF_SUCCESS) {
 			pm_peer_data_local_gatt_db_t const *p_local_gatt_db;
 
-			p_local_gatt_db = curr_p_local_gatt_db;
+			p_local_gatt_db = peer_data.p_local_gatt_db;
 			p_sys_attr_data = p_local_gatt_db->data;
 			sys_attr_len = p_local_gatt_db->len;
 			sys_attr_flags = p_local_gatt_db->flags;
@@ -345,7 +347,7 @@ bool gscm_service_changed_ind_needed(uint16_t conn_handle)
 		return false;
 	}
 
-	return service_changed_state;
+	return *peer_data.p_service_changed_pending;
 }
 
 uint32_t gscm_service_changed_ind_send(uint16_t conn_handle)

@@ -24,6 +24,11 @@
 extern "C" {
 #endif
 
+/* Syntactic sugar, two spoons. */
+#define SYS_ATTR_SYS  (BLE_GATTS_SYS_ATTR_FLAG_SYS_SRVCS)
+#define SYS_ATTR_USR  (BLE_GATTS_SYS_ATTR_FLAG_USR_SRVCS)
+#define SYS_ATTR_BOTH (SYS_ATTR_SYS | SYS_ATTR_USR)
+
 /**
  * @brief Function for initializing the GATT Server Cache Manager module.
  *
