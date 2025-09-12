@@ -28,7 +28,7 @@ jobs:
           fi
 
       - name: Upload src.tar.gz
-        uses: nrfconnect/action-src-mirror@main
+        uses: nrfconnect/action-src-mirror@toolchain-version
         with:
           git-ref: ${{ github.ref_name }}
           path: 'nrf-bm'
@@ -39,3 +39,4 @@ jobs:
           artifactory-pass: ${{ secrets.COM_NORDICSEMI_FILES_PASSWORD }}
           stable: ${{ env.STABLE }}
           repository-type: 'nrf-bm'
+          toolchain-version: 'v3.1.0'
