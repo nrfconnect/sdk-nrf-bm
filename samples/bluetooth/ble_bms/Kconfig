@@ -1,0 +1,21 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "BLE BMS sample"
+
+config QWR_MEM_BUFF_SIZE
+	int "QWR memory buffer size"
+	default 512
+
+
+module=BLE_BMS_SAMPLE
+module-dep=LOG
+module-str=BLE Bond Management Service Sample
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endmenu # "BLE BMS sample"
+
+source "Kconfig.zephyr"
