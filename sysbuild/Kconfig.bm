@@ -51,6 +51,19 @@ config BM_BOOTLOADER_MCUBOOT_SIGNATURE_KEY_FILE
 	help
 	  Absolute path to signing key file to use with MCUBoot.
 
+config BM_BOOTLOADER_MCUBOOT_SIGNATURE_USING_KMU
+	bool "Use KMU stored keys for signature verification"
+	depends on SOC_SERIES_NRF54LX && BM_BOOTLOADER_MCUBOOT_SIGNATURE_TYPE_ED25519
+	help
+	  The device needs to be provisioned with proper set of keys.
+
+config BM_BOOTLOADER_MCUBOOT_GENERATE_DEFAULT_KMU_KEYFILE
+	bool "Generate default keyfile for provisioning during build"
+	depends on BM_BOOTLOADER_MCUBOOT_SIGNATURE_USING_KMU
+	default y
+	help
+	  If enabled, the build system will generate keyfile.json file in the build directory.
+
 menu "Firmware loader entrance modes"
 	depends on !BM_FIRMWARE_LOADER_NONE
 
