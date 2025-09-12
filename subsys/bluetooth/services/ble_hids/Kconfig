@@ -1,0 +1,151 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+menuconfig BLE_HIDS
+	bool "HID service"
+	depends on SOFTDEVICE_PERIPHERAL
+
+if BLE_HIDS
+
+config BLE_HIDS_BOOT_MOUSE
+	bool "Add boot mouse input characteristic"
+	help
+	  Add the boot mouse input characteristic.
+
+menu "Boot mouse input characteristic security mode"
+	visible if BLE_HIDS_BOOT_MOUSE
+
+characteristic=BLE_HIDS_BOOT_MOUSE_INPUT_CHAR_READ
+characteristic-str=read operation
+rsource "${ZEPHYR_NRF_BM_MODULE_DIR}/subsys/bluetooth/services/Kconfig.template.sec_mode"
+
+characteristic=BLE_HIDS_BOOT_MOUSE_INPUT_CCCD_WRITE
+characteristic-str=CCCD write operation
+rsource "${ZEPHYR_NRF_BM_MODULE_DIR}/subsys/bluetooth/services/Kconfig.template.sec_mode"
+
+endmenu
+
+config BLE_HIDS_BOOT_KEYBOARD
+	bool "Add boot keyboard characteristics"
+	help
+	  Add the boot keyboard input and output characteristics.
+
+menu "Boot keyboard input report characteristic security mode"
+	visible if BLE_HIDS_BOOT_KEYBOARD
+
+characteristic=BLE_HIDS_BOOT_KEYBOARD_INPUT_CHAR_READ
+characteristic-str=read operation
+rsource "${ZEPHYR_NRF_BM_MODULE_DIR}/subsys/bluetooth/services/Kconfig.template.sec_mode"
+
+characteristic=BLE_HIDS_BOOT_KEYBOARD_INPUT_CCCD_WRITE
+characteristic-str=CCCD write operation
+rsource "${ZEPHYR_NRF_BM_MODULE_DIR}/subsys/bluetooth/services/Kconfig.template.sec_mode"
+
+endmenu
+
+menu "Boot keyboard output report characteristic security mode"
+	visible if BLE_HIDS_BOOT_KEYBOARD
+
+characteristic=BLE_HIDS_BOOT_KEYBOARD_OUTPUT_CHAR_READ
+characteristic-str=read operation
+rsource "${ZEPHYR_NRF_BM_MODULE_DIR}/subsys/bluetooth/services/Kconfig.template.sec_mode"
+
+characteristic=BLE_HIDS_BOOT_KEYBOARD_OUTPUT_CHAR_WRITE
+characteristic-str=write operation
+rsource "${ZEPHYR_NRF_BM_MODULE_DIR}/subsys/bluetooth/services/Kconfig.template.sec_mode"
+
+endmenu
+
+choice
+	prompt "Default HID protocol mode"
+	depends on BLE_HIDS_BOOT_KEYBOARD || BLE_HIDS_BOOT_MOUSE
+
+config BLE_HIDS_PROTOCOL_MODE_REPORT
+	bool "Report"
+config BLE_HIDS_PROTOCOL_MODE_BOOT
+	bool "Boot"
+
+endchoice
+
+config BLE_HIDS_DEFAULT_PROTOCOL_MODE
+	int
+	default 00 if BLE_HIDS_PROTOCOL_MODE_BOOT
+	default 01 if BLE_HIDS_PROTOCOL_MODE_REPORT
+
+menu "Protocol mode characteristic security mode"
+
+characteristic=BLE_HIDS_PROTOCOL_MODE_CHAR_READ
+characteristic-str=read operation
+rsource "${ZEPHYR_NRF_BM_MODULE_DIR}/subsys/bluetooth/services/Kconfig.template.sec_mode"
+
+characteristic=BLE_HIDS_PROTOCOL_MODE_CHAR_WRITE
+characteristic-str=write operation
+rsource "${ZEPHYR_NRF_BM_MODULE_DIR}/subsys/bluetooth/services/Kconfig.template.sec_mode"
+
+endmenu
+
+menu "Control point characteristic security mode"
+
+characteristic=BLE_HIDS_CONTROL_POINT_CHAR_WRITE
+characteristic-str=write operation
+rsource "${ZEPHYR_NRF_BM_MODULE_DIR}/subsys/bluetooth/services/Kconfig.template.sec_mode"
+
+endmenu
+
+menu "HID information characteristic security mode"
+
+characteristic=BLE_HIDS_INFORMATION_CHAR_READ
+characteristic-str=read operation
+rsource "${ZEPHYR_NRF_BM_MODULE_DIR}/subsys/bluetooth/services/Kconfig.template.sec_mode"
+
+endmenu
+
+config BLE_HIDS_MAX_INPUT_REP
+	int "Number of input reports"
+	range 0 8
+	default 8
+	help
+	  Number of input reports
+
+config BLE_HIDS_INPUT_REPORT_MAX_LEN
+	int "Maximum input report length" if (BLE_HIDS_MAX_INPUT_REP != 0)
+	default 0 if (BLE_HIDS_MAX_INPUT_REP = 0)
+	default 8
+
+config BLE_HIDS_MAX_OUTPUT_REP
+	int "Number of output reports"
+	range 0 8
+	default 3
+	help
+	  Number of output reports
+
+config BLE_HIDS_OUTPUT_REPORT_MAX_LEN
+	int "Maximum output report length" if (BLE_HIDS_MAX_OUTPUT_REP != 0)
+	default 0 if (BLE_HIDS_MAX_OUTPUT_REP = 0)
+	default 1
+
+config BLE_HIDS_MAX_FEATURE_REP
+	int "Number of feature reports"
+	range 0 8
+	default 1
+	help
+	  Number of feature reports
+
+config BLE_HIDS_FEATURE_REPORT_MAX_LEN
+	int "Maximum feature report length" if (BLE_HIDS_MAX_FEATURE_REP != 0)
+	default 0 if (BLE_HIDS_MAX_FEATURE_REP = 0)
+	default 2
+
+config BLE_HIDS_MAX_CLIENTS
+	int "Maximum HID clients"
+	range 1 NRF_SDH_BLE_PERIPHERAL_LINK_COUNT
+	default 1
+
+module=BLE_HIDS
+module-dep=LOG
+module-str=BLE HID service
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endif
