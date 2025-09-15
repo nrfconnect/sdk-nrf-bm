@@ -38,3 +38,12 @@ Using a key in a project
 ------------------------
 
 Once a key has been generated, it can be used in a project by setting the :kconfig:option:`SB_CONFIG_BM_BOOTLOADER_MCUBOOT_SIGNATURE_KEY_FILE` sysbuild Kconfig option to the absolute path of the generated ``.pem`` key file.
+
+.. _ug_bootloader_kmu:
+
+KMU (Key Management Unit)
+*************************
+
+The nRF54L series of SoCs contain a KMU - key management unit, this on-die peripheral can be used by CRACEN to securely store and use keys without allowing the contents to be read out.
+In order to boot images when the KMU feature is enabled, the MCUboot singing key must be programmed to the KMU prior to loading the firmware or the device will be unable to boot.
+This feature can be enabled with :kconfig:option:`SB_CONFIG_BM_BOOTLOADER_MCUBOOT_SIGNATURE_USING_KMU`, another sysbuild Kconfig is used to determine if the public key file should be automatically programmed to boards when ``west flash`` is used with the ``--erase`` or ``--recover`` arguments, when :kconfig:option:`SB_CONFIG_BM_BOOTLOADER_MCUBOOT_GENERATE_DEFAULT_KMU_KEYFILE` is enabled (it is enabled by default) then this process is enabled and should be the first command used after building the project to set the board up for development.
