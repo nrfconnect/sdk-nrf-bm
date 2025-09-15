@@ -34,7 +34,7 @@ SoftDevice Handler
 Boards
 ======
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Boards must now select a SoftDevice sysbuild Kconfig in the `Kconfig.sysbuild` file e.g. :kconfig:option:`SB_CONFIG_SOFTDEVICE_S115`.
 
 DFU
 ===
