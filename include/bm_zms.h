@@ -42,7 +42,15 @@ typedef enum {
 /**@brief A BM_ZMS event. */
 typedef struct {
 	bm_zms_evt_id_t evt_id; /* The event ID. See @ref bm_zms_evt_id_t. */
-	uint32_t result;        /* The result of the operation related to this event. */
+	uint32_t result;        /* The result of the operation related to this event.
+				 * The operation might have failed for one of the following reasons:
+				 * -ENOSPC:  There is no free space in flash.
+				 * -EIO:     Internal BM_ZMS error.
+				 * -ENOTSUP: The BM_ZMS version is not supported.
+				 * -ENOEXEC: Bad BM_ZMS format.
+				 * -EFAULT:  Bad sector layout.
+				 * -ENOMEM:  The internal queue buffer is full.
+				 */
 	uint32_t id;            /* The ID of the entry as specified in the corresponding
 				 * write/delete operation.
 				 */
