@@ -42,7 +42,7 @@ typedef enum {
 /**@brief A BM_ZMS event. */
 typedef struct {
 	bm_zms_evt_id_t evt_id; /* The event ID. See @ref bm_zms_evt_id_t. */
-	uint32_t result;        /* The result of the operation related to this event.
+	int result;		/* The result of the operation related to this event.
 				 * The operation might have failed for one of the following reasons:
 				 * -ENOSPC:  There is no free space in flash.
 				 * -EIO:     Internal BM_ZMS error.
