@@ -226,6 +226,10 @@ int _nrf_sdh_ble_idx_get(uint16_t conn_handle)
 
 uint16_t nrf_sdh_ble_conn_handle_get(int idx)
 {
+	if (CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT == 1) {
+		return conn_handles[0];
+	}
+
 	if (idx >= 0 && idx < ARRAY_SIZE(conn_handles)) {
 		return conn_handles[idx];
 	}
@@ -235,6 +239,11 @@ uint16_t nrf_sdh_ble_conn_handle_get(int idx)
 
 static void idx_assign(uint16_t conn_handle)
 {
+	if (CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT == 1) {
+		conn_handles[0] = conn_handle;
+		return;
+	}
+
 	__ASSERT(conn_handle != BLE_CONN_HANDLE_INVALID, "Got invalid conn_handle from SoftDevice");
 
 	for (int idx = 0; idx < ARRAY_SIZE(conn_handles); idx++) {
@@ -257,6 +266,11 @@ static void idx_assign(uint16_t conn_handle)
 
 static void idx_unassign(uint16_t conn_handle)
 {
+	if (CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT == 1) {
+		conn_handles[0] = BLE_CONN_HANDLE_INVALID;
+		return;
+	}
+
 	for (int idx = 0; idx < ARRAY_SIZE(conn_handles); idx++) {
 		if (conn_handles[idx] == conn_handle) {
 			conn_handles[idx] = BLE_CONN_HANDLE_INVALID;
@@ -289,8 +303,7 @@ static void ble_evt_poll(void *context)
 			LOG_DBG("BLE event: %#x", ble_evt->header.evt_id);
 		}
 
-		if ((CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT > 1) &&
-		    (ble_evt->header.evt_id == BLE_GAP_EVT_CONNECTED)) {
+		if (ble_evt->header.evt_id == BLE_GAP_EVT_CONNECTED) {
 			idx_assign(ble_evt->evt.gap_evt.conn_handle);
 		}
 
@@ -300,8 +313,7 @@ static void ble_evt_poll(void *context)
 			obs->handler(ble_evt, obs->context);
 		}
 
-		if ((CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT > 1) &&
-		    (ble_evt->header.evt_id == BLE_GAP_EVT_DISCONNECTED)) {
+		if (ble_evt->header.evt_id == BLE_GAP_EVT_DISCONNECTED) {
 			idx_unassign(ble_evt->evt.gap_evt.conn_handle);
 		}
 	}
