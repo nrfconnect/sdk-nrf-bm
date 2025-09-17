@@ -1,0 +1,38 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "BLE HIDS Mouse sample"
+
+menu "Battery measurement simulation"
+
+config BATTERY_LEVEL_MEAS_INTERVAL_MS
+	int "Battery level measurement interval in ms"
+	default 10000
+
+config BATTERY_LEVEL_MIN
+	int "Minimum battery level as returned by the simulated measurement function"
+	default 81
+
+config BATTERY_LEVEL_MAX
+	int "Maximum battery level as returned by the simulated measurement function"
+	default 100
+
+config BATTERY_LEVEL_INCREMENT
+	int "Battery level increment value"
+	default 1
+	help
+	   Value by which the battery level is incremented/decremented for each call to
+	   the simulated measurement function.
+endmenu # Battery measurement simulation
+
+module=BLE_HIDS_MOUSE_SAMPLE
+module-dep=LOG
+module-str=BLE HIDS Mouse Sample
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endmenu # "BLE HIDS Mouse sample"
+
+source "Kconfig.zephyr"

@@ -58,6 +58,7 @@ Libraries
 
   * The ``ble_conn_state`` library.
   * The ``peer_manager`` library.
+  * The :ref:`lib_ble_service_hids`.
 
 * :ref:`lib_bm_zms` library:
 
@@ -81,6 +82,8 @@ Samples
 
 Bluetooth samples
 -----------------
+
+* Added the :ref:`ble_hids_keyboard_sample` and :ref:`ble_hids_mouse_sample` samples.
 
 * :ref:`ble_hrs_sample` sample:
 
