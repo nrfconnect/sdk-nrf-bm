@@ -58,6 +58,8 @@ Libraries
 
 * :ref:`lib_bm_zms` library:
 
+   * Fixed an issue where some data would be written incorrectly to storage if the data size was not a multiple of the program unit of 16 bytes.
+
    * Updated:
 
      * The :c:func:`bm_zms_register` function to return ``-EINVAL`` when passing ``NULL`` input parameters.
