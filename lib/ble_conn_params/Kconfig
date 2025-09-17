@@ -48,7 +48,7 @@ config BLE_CONN_PARAMS_SUP_TIMEOUT
 config BLE_CONN_PARAMS_MAX_PERIPHERAL_LATENCY_DEVIATION
 	int "Maximum peripheral latency deviation"
 	range 0 499
-	default 0
+	default 6
 	help
 	  How much the peripheral latency can deviate from the desired value.
 
