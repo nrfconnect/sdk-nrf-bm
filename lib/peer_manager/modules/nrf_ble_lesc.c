@@ -13,6 +13,7 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/byteorder.h>
 #include <zephyr/sys/util.h>
+#include <zephyr/sys/printk.h>
 
 #include <bluetooth/peer_manager/nrf_ble_lesc.h>
 
@@ -63,6 +64,8 @@ static nrf_ble_lesc_peer_oob_data_handler m_lesc_oobd_peer_handler;
 #define ECC_PUB_KEY_UNCOMPRESSED_FORMAT_MARKER 0x04
 #define ECC_PUB_KEY_EXPORT_SIZE \
 	PSA_EXPORT_PUBLIC_KEY_OUTPUT_SIZE(PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_SECP_R1), 256)
+#define ECC_PRIV_KEY_EXPORT_SIZE \
+	PSA_EXPORT_KEY_OUTPUT_SIZE(PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_SECP_R1), 256)
 #define COORD_SIZE (BLE_GAP_LESC_P256_PK_LEN / 2)
 
 /* Convert an ECC (secp256r1) public key from between big-endian and little-endian.
@@ -126,7 +129,11 @@ uint32_t nrf_ble_lesc_keypair_generate(void)
 
 	psa_key_attributes_t key_attributes = PSA_KEY_ATTRIBUTES_INIT;
 
+#if defined(CONFIG_PM_LESC_PRIVATE_KEY_EXPORT)
+	psa_set_key_usage_flags(&key_attributes, PSA_KEY_USAGE_DERIVE | PSA_KEY_USAGE_EXPORT);
+#else
 	psa_set_key_usage_flags(&key_attributes, PSA_KEY_USAGE_DERIVE);
+#endif
 	psa_set_key_lifetime(&key_attributes, PSA_KEY_LIFETIME_VOLATILE);
 	psa_set_key_algorithm(&key_attributes, PSA_ALG_ECDH);
 	psa_set_key_type(&key_attributes, PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_SECP_R1));
@@ -144,6 +151,26 @@ uint32_t nrf_ble_lesc_keypair_generate(void)
 		LOG_ERR("psa_export_public_key() returned status %d", status);
 		return NRF_ERROR_INTERNAL;
 	}
+
+#if defined(CONFIG_PM_LESC_PRIVATE_KEY_EXPORT)
+	uint8_t priv_key[ECC_PRIV_KEY_EXPORT_SIZE];
+	size_t priv_key_len = 0;
+
+	LOG_WRN("CONFIG_PM_LESC_PRIVATE_KEY_EXPORT is not to be used in production!");
+	status = psa_export_key(m_keypair_id, priv_key, sizeof(priv_key), &priv_key_len);
+	if (status != PSA_SUCCESS) {
+		LOG_ERR("psa_export_key() returned status %d", status);
+	} else {
+		printk("PRIV KEY: 0x");
+		for (int i = 0; i < sizeof(priv_key); i++) {
+			printk("%02x", priv_key[i]);
+		}
+
+		printk("\n\n");
+	}
+
+#endif
+
 	/* Convert from big-endian to little-endian.
 	 * Drop the first byte indicating the serialization format.
 	 */
