@@ -14,14 +14,37 @@
 #include <bluetooth/services/ble_bas.h>
 #include <bluetooth/services/ble_dis.h>
 #include <bluetooth/services/ble_hrs.h>
+#include <bm_buttons.h>
 #include <bm_timer.h>
 #include <sensorsim.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
+#include <bluetooth/peer_manager/nrf_ble_lesc.h>
+#include <bluetooth/peer_manager/peer_manager.h>
+#include <bluetooth/peer_manager/peer_manager_handler.h>
+
+#include <board-config.h>
 
 LOG_MODULE_REGISTER(app, CONFIG_BLE_HRS_SAMPLE_LOG_LEVEL);
 
 #define CONN_TAG 1
+
+/* Perform bonding. */
+#define SEC_PARAM_BOND 1
+/* Man In The Middle protection not required. */
+#define SEC_PARAM_MITM 0
+/* LE Secure Connections enabled. */
+#define SEC_PARAM_LESC 1
+/* Keypress notifications not enabled. */
+#define SEC_PARAM_KEYPRESS 0
+/* No I/O capabilities. */
+#define SEC_PARAM_IO_CAPABILITIES BLE_GAP_IO_CAPS_DISPLAY_ONLY
+/* Out Of Band data not available. */
+#define SEC_PARAM_OOB 0
+/* Minimum encryption key size. */
+#define SEC_PARAM_MIN_KEY_SIZE 7
+/* Maximum encryption key size. */
+#define SEC_PARAM_MAX_KEY_SIZE 16
 
 BLE_ADV_DEF(ble_adv); /* BLE advertising instance */
 BLE_BAS_DEF(ble_bas); /* BLE battery service instance */
@@ -201,16 +224,10 @@ static void simulated_meas_start(void)
 
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {
-	int err;
-
 	switch (evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:
 		LOG_INF("Peer connected");
 		conn_handle = evt->evt.gap_evt.conn_handle;
-		err = sd_ble_gatts_sys_attr_set(conn_handle, NULL, 0, 0);
-		if (err) {
-			LOG_ERR("Failed to set system attributes, nrf_error %#x", err);
-		}
 		break;
 
 	case BLE_GAP_EVT_DISCONNECTED:
@@ -226,21 +243,12 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		break;
 
 	case BLE_GAP_EVT_SEC_PARAMS_REQUEST:
-		/* Pairing not supported */
-		err = sd_ble_gap_sec_params_reply(evt->evt.gap_evt.conn_handle,
-						  BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP, NULL, NULL);
-		if (err) {
-			LOG_ERR("Failed to reply with Security params, nrf_error %#x", err);
-		}
+		LOG_INF("BLE_GAP_EVT_SEC_PARAMS_REQUEST");
 		break;
 
-	case BLE_GATTS_EVT_SYS_ATTR_MISSING:
-		LOG_INF("System attribute missing event");
-		/* No system attributes have been stored */
-		err = sd_ble_gatts_sys_attr_set(conn_handle, NULL, 0, 0);
-		if (err) {
-			LOG_ERR("Failed to set system attributes, nrf_error %#x", err);
-		}
+	case BLE_GAP_EVT_PASSKEY_DISPLAY:
+		LOG_INF("Passkey: %.*s", BLE_GAP_PASSKEY_LEN,
+			evt->evt.gap_evt.params.passkey_display.passkey);
 		break;
 	}
 }
@@ -313,9 +321,125 @@ static void ble_hrs_evt_handler(struct ble_hrs *hrs, const struct ble_hrs_evt *e
 	}
 }
 
+static int buttons_init(bool *erase_bonds)
+{
+	int err;
+	const struct bm_buttons_config cfg[] = {
+		{
+			.pin_number = BOARD_PIN_BTN_1,
+			.active_state = BM_BUTTONS_ACTIVE_LOW,
+			.pull_config = BM_BUTTONS_PIN_PULLUP,
+			.handler = NULL,
+		},
+	};
+
+	err = bm_buttons_init(cfg, ARRAY_SIZE(cfg), BM_BUTTONS_DETECTION_DELAY_MIN_US);
+	if (err) {
+		return err;
+	}
+
+	err = bm_buttons_enable();
+	if (err) {
+		return err;
+	}
+
+	if (erase_bonds != NULL) {
+		*erase_bonds = bm_buttons_is_pressed(BOARD_PIN_BTN_1);
+	}
+
+	return 0;
+}
+
+static void delete_bonds(void)
+{
+	uint32_t err;
+
+	LOG_INF("Erase bonds!");
+
+	err = pm_peers_delete();
+	if (err) {
+		LOG_ERR("Failed to delete peers, err %d", err);
+	}
+}
+
+static void advertising_start(bool erase_bonds)
+{
+	int err;
+
+	if (erase_bonds) {
+		delete_bonds();
+	} else {
+		err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
+		if (err) {
+			LOG_ERR("Failed to start advertising, err %d", err);
+		} else {
+			LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
+		}
+	}
+}
+
+static void pm_evt_handler(pm_evt_t const *p_evt)
+{
+	pm_handler_on_pm_evt(p_evt);
+	pm_handler_disconnect_on_sec_failure(p_evt);
+	pm_handler_flash_clean(p_evt);
+
+	switch (p_evt->evt_id) {
+	case PM_EVT_PEERS_DELETE_SUCCEEDED:
+		advertising_start(false);
+		break;
+	default:
+		break;
+	}
+}
+
+static int peer_manager_init(void)
+{
+	ble_gap_sec_params_t sec_param;
+	int err;
+
+	err = pm_init();
+	if (err) {
+		return -EFAULT;
+	}
+
+	memset(&sec_param, 0, sizeof(ble_gap_sec_params_t));
+
+	/* Security parameters to be used for all security procedures. */
+	sec_param = (ble_gap_sec_params_t) {
+		.bond = SEC_PARAM_BOND,
+		.mitm = SEC_PARAM_MITM,
+		.lesc = SEC_PARAM_LESC,
+		.keypress = SEC_PARAM_KEYPRESS,
+		.io_caps = SEC_PARAM_IO_CAPABILITIES,
+		.oob = SEC_PARAM_OOB,
+		.min_key_size = SEC_PARAM_MIN_KEY_SIZE,
+		.max_key_size = SEC_PARAM_MAX_KEY_SIZE,
+		.kdist_own.enc = 1,
+		.kdist_own.id = 1,
+		.kdist_peer.enc = 1,
+		.kdist_peer.id = 1,
+	};
+
+	err = pm_sec_params_set(&sec_param);
+	if (err) {
+		LOG_ERR("pm_sec_params_set() failed, err: %d", err);
+		return -EFAULT;
+	}
+
+	err = pm_register(pm_evt_handler);
+	if (err) {
+		LOG_ERR("pm_register() failed, err: %d", err);
+		return -EFAULT;
+	}
+
+	return 0;
+}
+
 int main(void)
 {
 	int err;
+	bool erase_bonds = false;
 	uint8_t body_sensor_location = BLE_HRS_BODY_SENSOR_LOCATION_FINGER;
 	ble_uuid_t adv_uuid_list[] = {
 		{ .uuid = BLE_UUID_HEART_RATE_SERVICE, .type = BLE_UUID_TYPE_BLE },
@@ -369,6 +493,14 @@ int main(void)
 
 	LOG_INF("Bluetooth enabled");
 
+	err = peer_manager_init();
+	if (err) {
+		LOG_ERR("Failed to initialize Peer Manager, err %d", err);
+		goto idle;
+	}
+
+	LOG_INF("Peer Manager initialized");
+
 	err = ble_hrs_init(&ble_hrs, &hrs_cfg);
 	if (err) {
 		LOG_ERR("Failed to initialize heart rate service, err %d", err);
@@ -395,6 +527,12 @@ int main(void)
 		goto idle;
 	}
 
+	err = buttons_init(&erase_bonds);
+	if (err) {
+		LOG_ERR("Failed to initialize buttons, err %d", err);
+		goto idle;
+	}
+
 	err = ble_adv_init(&ble_adv, &ble_adv_cfg);
 	if (err) {
 		LOG_ERR("Failed to initialize advertising, err %d", err);
@@ -403,16 +541,12 @@ int main(void)
 
 	simulated_meas_start();
 
-	err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
-	if (err) {
-		LOG_ERR("Failed to start advertising, err %d", err);
-		goto idle;
-	}
-
-	LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
+	advertising_start(erase_bonds);
 
 idle:
 	while (true) {
+		(void)nrf_ble_lesc_request_handler();
+
 		while (LOG_PROCESS()) {
 		}
 

@@ -82,7 +82,9 @@ Samples
 Bluetooth samples
 -----------------
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* :ref:`ble_hrs_sample` sample:
+
+  * Added support for bonding and pairing.
 
 Peripheral samples
 ------------------
