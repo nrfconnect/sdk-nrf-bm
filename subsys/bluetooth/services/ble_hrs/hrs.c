@@ -292,6 +292,7 @@ int ble_hrs_heart_rate_measurement_send(struct ble_hrs *hrs, uint16_t heart_rate
 	case BLE_ERROR_INVALID_CONN_HANDLE:
 		return -ENOTCONN;
 	case NRF_ERROR_INVALID_STATE:
+	case BLE_ERROR_GATTS_SYS_ATTR_MISSING:
 		return -EPIPE;
 	default:
 		LOG_ERR("Failed to notify heart rate measurement, nrf_error %#x", err);

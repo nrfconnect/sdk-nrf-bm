@@ -216,6 +216,7 @@ int ble_bas_battery_level_update(struct ble_bas *bas, uint16_t conn_handle, uint
 	case BLE_ERROR_INVALID_CONN_HANDLE:
 		return -ENOTCONN;
 	case NRF_ERROR_INVALID_STATE:
+	case BLE_ERROR_GATTS_SYS_ATTR_MISSING:
 		return -EPIPE;
 	default:
 		LOG_ERR("Failed to notify battery level, nrf_error %#x", err);

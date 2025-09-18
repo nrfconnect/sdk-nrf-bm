@@ -335,6 +335,7 @@ int ble_nus_data_send(struct ble_nus *nus, uint8_t *data,
 	case BLE_ERROR_INVALID_CONN_HANDLE:
 		return -ENOTCONN;
 	case NRF_ERROR_INVALID_STATE:
+	case BLE_ERROR_GATTS_SYS_ATTR_MISSING:
 		return -EPIPE;
 	case NRF_ERROR_RESOURCES:
 		return -EAGAIN;
