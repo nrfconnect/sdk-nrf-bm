@@ -19,19 +19,21 @@
 
 LOG_MODULE_REGISTER(app, CONFIG_STORAGE_SAMPLE_LOG_LEVEL);
 
-/* Two disjoint storage partitions to showcase multiple clients of the storage library. */
 #define STORAGE0_PARTITION DT_NODELABEL(storage0_partition)
 #define STORAGE0_START DT_REG_ADDR(STORAGE0_PARTITION)
 #define STORAGE0_SIZE DT_REG_SIZE(STORAGE0_PARTITION)
-#define STORAGE1_PARTITION DT_NODELABEL(storage1_partition)
-#define STORAGE1_START DT_REG_ADDR(STORAGE1_PARTITION)
-#define STORAGE1_SIZE DT_REG_SIZE(STORAGE1_PARTITION)
 
 /* Write buffer size must be a multiple of the program unit.
  * To support both RRAM (16 bytes) and SoftDevice (4 bytes) backends,
  * that is 16 bytes.
  */
 #define BUFFER_BLOCK_SIZE 16
+
+/* Two disjoint storage regions to showcase multiple clients of the storage library. */
+#define STORAGE_A_START STORAGE0_START
+#define STORAGE_A_END (STORAGE_A_START + BUFFER_BLOCK_SIZE)
+#define STORAGE_B_START STORAGE_A_END
+#define STORAGE_B_END (STORAGE_B_START + BUFFER_BLOCK_SIZE)
 
 /* Forward declarations. */
 static void bm_storage_evt_handler_a(struct bm_storage_evt *evt);
@@ -42,14 +44,14 @@ static volatile int outstanding_writes;
 
 static struct bm_storage storage_a = {
 	.evt_handler = bm_storage_evt_handler_a,
-	.start_addr = STORAGE0_START,
-	.end_addr = STORAGE0_START + STORAGE0_SIZE,
+	.start_addr = STORAGE_A_START,
+	.end_addr = STORAGE_A_END,
 };
 
 static struct bm_storage storage_b = {
 	.evt_handler = bm_storage_evt_handler_b,
-	.start_addr = STORAGE1_START,
-	.end_addr = STORAGE1_START + STORAGE1_SIZE,
+	.start_addr = STORAGE_B_START,
+	.end_addr = STORAGE_B_END,
 };
 
 static void bm_storage_evt_handler_a(struct bm_storage_evt *evt)

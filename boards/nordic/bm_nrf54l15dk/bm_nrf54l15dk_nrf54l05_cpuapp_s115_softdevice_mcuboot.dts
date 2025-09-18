@@ -59,13 +59,13 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 
-			storage0_partition: partition@0 {
-				label = "storage0";
+			peer_manager_partition: partition@0 {
+				label = "peer_manager";
 				reg = <0x00000000 DT_SIZE_K(4)>;
 			};
 
-			storage1_partition: partition@1000 {
-				label = "storage1";
+			storage0_partition: partition@1000 {
+				label = "storage0";
 				reg = <0x00001000 DT_SIZE_K(4)>;
 			};
 		};
