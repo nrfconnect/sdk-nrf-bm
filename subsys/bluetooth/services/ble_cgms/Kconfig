@@ -9,10 +9,6 @@ menuconfig BLE_CGMS
 
 if BLE_CGMS
 
-config BLE_CGMS_BLE_OBSERVER_PRIO
-	int "SoftDevice event observer priority"
-	default 0
-
 config BLE_CGMS_DB_RECORDS_MAX
 	int "Number of records that can be stored in the database"
 	default 100
