@@ -18,19 +18,19 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {
 	LOG_INF("BLE event %d", evt->header.evt_id);
 }
-NRF_SDH_BLE_OBSERVER(sdh_ble, on_ble_evt, NULL, 0);
+NRF_SDH_BLE_OBSERVER(sdh_ble, on_ble_evt, NULL, USER_LOW);
 
 static void on_soc_evt(uint32_t evt, void *ctx)
 {
 	LOG_INF("SoC event");
 }
-NRF_SDH_SOC_OBSERVER(sdh_soc, on_soc_evt, NULL, 0);
+NRF_SDH_SOC_OBSERVER(sdh_soc, on_soc_evt, NULL, USER_LOW);
 
 static void on_state_change(enum nrf_sdh_state_evt state, void *ctx)
 {
 	LOG_INF("SoftDevice state has changed to %d", state);
 }
-NRF_SDH_STATE_EVT_OBSERVER(sdh_state, on_state_change, NULL, 0);
+NRF_SDH_STATE_EVT_OBSERVER(sdh_state, on_state_change, NULL, USER_LOW);
 
 int main(void)
 {

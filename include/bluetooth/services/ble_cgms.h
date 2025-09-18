@@ -17,14 +17,6 @@
  *          of the sensor. Session Run Time and Session Start Time can be used to convey timing
  *          information between the sensor and the collector. The Specific Ops Control Point
  *          is used to stop and start monitoring sessions, among other things.
- *
- * @note    The application must register this module as BLE event observer using the
- *          NRF_SDH_BLE_OBSERVER macro. Example:
- *          @code
- *              struct ble_cgms instance;
- *              NRF_SDH_BLE_OBSERVER(anything, BLE_CGMS_BLE_OBSERVER_PRIO,
- *                                   ble_cgms_on_ble_evt, &instance);
- *          @endcode
  */
 
 #ifndef BLE_CGMS_H__
@@ -51,7 +43,7 @@ extern "C" {
 	static struct ble_cgms _name;                                                              \
 	NRF_SDH_BLE_OBSERVER(_name ## _obs,                                                        \
 			     ble_cgms_on_ble_evt, &_name,                                          \
-			     CONFIG_BLE_CGMS_BLE_OBSERVER_PRIO)
+			     HIGH)
 
 #define OPCODE_LENGTH 1
 #define HANDLE_LENGTH 2

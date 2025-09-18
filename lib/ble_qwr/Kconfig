@@ -14,10 +14,6 @@ config BLE_QWR_MAX_ATTR
 	help
 	   Maximum queued writes attributes
 
-config BLE_QWR_BLE_OBSERVER_PRIO
-	int "BLE observer priority"
-	default 2
-
 module=BLE_QWR
 module-str=BLE QWR
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
