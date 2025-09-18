@@ -12,6 +12,8 @@ zephyr_library_sources(
   irq_connect.c
 )
 
+zephyr_library_sources_ifdef(CONFIG_NRF_SDH_SOC_RAND_SEED rand_seed.c)
+
 if(CONFIG_SOFTDEVICE_S115)
   zephyr_library_sources(irq_forward.s)
   # Suppress the swap_helper.S file so that z_arm_svc can be defined manually
