@@ -5,6 +5,8 @@
  */
 
  /* Override NCS default. */
+#include "bm_nrf54l15dk_nrf54l051015_peripherals.dtsi"
+
 /delete-node/ &cpuapp_sram;
 
 / {
