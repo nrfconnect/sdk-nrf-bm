@@ -6,11 +6,9 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <nrf_soc.h>
 #include <bm/softdevice_handler/nrf_sdh.h>
 #include <bm/softdevice_handler/nrf_sdh_soc.h>
-#include <nrf_soc.h>
-#include <psa/crypto.h>
-#include <cracen_psa.h>
 #include <zephyr/logging/log.h>
 
 LOG_MODULE_DECLARE(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
@@ -43,27 +41,6 @@ static const char *tostr(uint32_t evt)
 	}
 }
 
-static void softdevice_rng_seed(void)
-{
-	uint32_t nrf_err = NRF_ERROR_INVALID_DATA;
-	psa_status_t status;
-	uint8_t seed[SD_RAND_SEED_SIZE];
-
-	status = cracen_get_trng(seed, sizeof(seed));
-	if (status == PSA_SUCCESS) {
-		nrf_err = sd_rand_seed_set(seed);
-		memset(seed, 0, sizeof(seed));
-		if (nrf_err == NRF_SUCCESS) {
-			LOG_DBG("SoftDevice RNG seeded");
-			return;
-		}
-	} else {
-		LOG_ERR("Generate random failed, psa status %d", status);
-	}
-
-	LOG_ERR("Failed to seed SoftDevice RNG, nrf_error %#x", nrf_err);
-}
-
 static void soc_evt_poll(void *context)
 {
 	uint32_t nrf_err;
@@ -79,10 +56,6 @@ static void soc_evt_poll(void *context)
 			LOG_DBG("SoC event: %s", tostr(evt_id));
 		} else {
 			LOG_DBG("SoC event: 0x%x", evt_id);
-		}
-
-		if (evt_id == NRF_EVT_RAND_SEED_REQUEST) {
-			softdevice_rng_seed();
 		}
 
 		/* Forward the event to SoC observers. */
