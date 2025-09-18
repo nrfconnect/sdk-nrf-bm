@@ -21,12 +21,6 @@ config PM_BM_ZMS_SECTOR_SIZE
 	int "BM_ZMS sector size"
 	default 1024
 
-config PM_BLE_OBSERVER_PRIO
-	int "BLE events priority"
-	default 1
-	help
-	  Priority with which BLE events are dispatched to the Peer Manager module.
-
 config PM_MAX_REGISTRANTS
 	int "Maximum number of event handlers that can be registered"
 	default 3

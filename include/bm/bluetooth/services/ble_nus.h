@@ -48,7 +48,7 @@ void ble_nus_on_ble_evt(ble_evt_t const *ble_evt, void *context);
 	NRF_SDH_BLE_OBSERVER(_name ## _obs,                                                        \
 			     ble_nus_on_ble_evt,                                                   \
 			     &_name,                                                               \
-			     0)
+			     HIGH)
 
 #define OPCODE_LENGTH 1
 #define HANDLE_LENGTH 2

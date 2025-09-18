@@ -30,7 +30,7 @@ extern "C" {
 #define BLE_HRS_DEF(_name)                                                                         \
 	static struct ble_hrs _name;                                                               \
 	extern void ble_hrs_on_ble_evt(const ble_evt_t *ble_evt, void *ctx);                       \
-	NRF_SDH_BLE_OBSERVER(_name##_obs, ble_hrs_on_ble_evt, &_name, 0)
+	NRF_SDH_BLE_OBSERVER(_name##_obs, ble_hrs_on_ble_evt, &_name, HIGH)
 
 /**
  * @defgroup BLE_HRS_BODY_SENSOR_LOCATION HRS Body sensor location

@@ -71,9 +71,9 @@ static void on_state_evt_change(enum nrf_sdh_state_evt evt, void *ctx);
 RING_BUF_DECLARE(sd_fifo, CONFIG_BM_STORAGE_BACKEND_SD_QUEUE_SIZE *
 		 sizeof(struct bm_storage_sd_op));
 
-NRF_SDH_SOC_OBSERVER(sdh_soc, on_soc_evt, NULL, 0);
-NRF_SDH_STATE_REQ_OBSERVER(sdh_state_req, on_state_req_change, NULL, 0);
-NRF_SDH_STATE_EVT_OBSERVER(sdh_state_evt, on_state_evt_change, NULL, 0);
+NRF_SDH_SOC_OBSERVER(sdh_soc, on_soc_evt, NULL, HIGH);
+NRF_SDH_STATE_REQ_OBSERVER(sdh_state_req, on_state_req_change, NULL, HIGH);
+NRF_SDH_STATE_EVT_OBSERVER(sdh_state_evt, on_state_evt_change, NULL, HIGH);
 
 static inline bool is_aligned32(uint32_t addr)
 {

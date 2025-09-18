@@ -41,7 +41,7 @@ extern "C" {
 					sizeof(uint32_t) * BYTES_TO_WORDS(BLE_HIDS_LINK_CTX_SIZE), \
 			},                                                                         \
 	};                                                                                         \
-	NRF_SDH_BLE_OBSERVER(_name##_obs, ble_hids_on_ble_evt, &_name, 0)
+	NRF_SDH_BLE_OBSERVER(_name##_obs, ble_hids_on_ble_evt, &_name, HIGH)
 
 /**
  * @brief HID boot keyboard input report maximum size, in bytes.

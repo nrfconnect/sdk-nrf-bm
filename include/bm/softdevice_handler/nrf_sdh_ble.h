@@ -17,6 +17,7 @@
 
 #include <stdint.h>
 #include <ble.h>
+#include <bm/softdevice_handler/nrf_sdh.h>
 #include <zephyr/sys/iterable_sections.h>
 
 #ifdef __cplusplus
@@ -54,11 +55,12 @@ struct nrf_sdh_ble_evt_observer {
  * @param _handler State request handler.
  * @param _ctx A context passed to the state request handler.
  * @param _prio Priority of the observer's event handler.
- *		The lower the number, the higher the priority.
+ *		Allowed input: `HIGHEST`, `HIGH`, `USER`, `USER_LOW`, `LOWEST`.
  */
 #define NRF_SDH_BLE_OBSERVER(_observer, _handler, _ctx, _prio)                                     \
+	PRIO_LEVEL_IS_VALID(_prio);                                                                \
 	static const TYPE_SECTION_ITERABLE(struct nrf_sdh_ble_evt_observer, _observer,             \
-					   nrf_sdh_ble_evt_observers, _prio) = {                   \
+					   nrf_sdh_ble_evt_observers, PRIO_LEVEL_ORD(_prio)) = {   \
 		.handler = _handler,                                                               \
 		.context = _ctx,                                                                   \
 	};
