@@ -18,10 +18,6 @@ config BLE_CONN_STATE_USER_FLAG_COUNT
 	help
 	   The number of available user flags.
 
-config BLE_CONN_STATE_BLE_OBSERVER_PRIO
-	int "BLE observer priority"
-	default 0
-
 module=BLE_CONN_STATE
 module-str=BLE Connection state
 source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"

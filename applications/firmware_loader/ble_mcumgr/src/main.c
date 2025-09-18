@@ -127,7 +127,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 	};
 }
 
-NRF_SDH_BLE_OBSERVER(sdh_ble, on_ble_evt, NULL, 0);
+NRF_SDH_BLE_OBSERVER(sdh_ble, on_ble_evt, NULL, USER_LOW);
 
 /**
  * @brief BLE advertising event handler

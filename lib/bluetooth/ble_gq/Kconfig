@@ -30,10 +30,6 @@ config BLE_GQ_HEAP_SIZE
 	  Default value used for GATT queue instances defined using BLE_GQ_DEF. Sets the heap size
 	  for storing additional data that can be of variable size.
 
-config BLE_GQ_OBSERVER_PRIO
-	int "SoftDevice event observer priority"
-	default 0
-
 module=BLE_GQ
 module-str=BLE GATT Queue
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"

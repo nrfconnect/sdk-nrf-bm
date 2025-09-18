@@ -186,7 +186,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		data_length_update(conn_handle, idx);
 	}
 }
-NRF_SDH_BLE_OBSERVER(ble_observer, on_ble_evt, NULL, 0);
+NRF_SDH_BLE_OBSERVER(ble_observer, on_ble_evt, NULL, HIGH);
 
 uint32_t ble_conn_params_data_length_set(uint16_t conn_handle,
 					 struct ble_conn_params_data_length dl)

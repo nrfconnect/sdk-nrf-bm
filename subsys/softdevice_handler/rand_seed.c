@@ -42,4 +42,4 @@ static void on_rand_seed_evt(uint32_t evt, void *ctx)
 	LOG_DBG("SoftDevice RNG seeded");
 }
 
-NRF_SDH_SOC_OBSERVER(rand_seed, on_rand_seed_evt, NULL, 0);
+NRF_SDH_SOC_OBSERVER(rand_seed, on_rand_seed_evt, NULL, HIGH);
