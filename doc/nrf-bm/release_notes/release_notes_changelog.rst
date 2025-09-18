@@ -27,6 +27,10 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 SoftDevice Handler
 ==================
 
+* Added:
+
+  * The :option:`NRF_SDH_SOC_RAND_SEED` Kconfig option to control whether to automatically respond to SoftDevice random seed requests.
+
 * Removed:
 
   * The ``NRF_SDH_BLE`` Kconfig option.
