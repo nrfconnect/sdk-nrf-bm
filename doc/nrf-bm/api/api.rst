@@ -111,11 +111,14 @@ GATT Queue
 Services
 ********
 
+.. _api_ble_bas:
+
 Battery Service
 ===============
 
 .. doxygengroup:: ble_bas
    :inner:
+   :members:
 
 .. _api_ble_cgms:
 
