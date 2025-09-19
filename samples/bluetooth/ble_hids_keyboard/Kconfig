@@ -1,0 +1,20 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "BLE HIDS Keyboard sample"
+
+config BLE_HIDS_REPORT_FIFO_SIZE
+	int "Report FIFO size"
+	default 10
+
+module=BLE_HIDS_KEYBOARD_SAMPLE
+module-dep=LOG
+module-str=BLE HIDS Keyboard Sample
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endmenu # "BLE HIDS Keyboard sample"
+
+source "Kconfig.zephyr"
