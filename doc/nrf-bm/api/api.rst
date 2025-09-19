@@ -123,11 +123,14 @@ Continuous Glucose Monitoring Service
 .. doxygengroup:: ble_cgms
    :inner:
 
+.. _api_dis:
+
 Device Information Service
 ==========================
 
 .. doxygengroup:: ble_dis
    :inner:
+   :members:
 
 Heart Rate Service
 ==================
