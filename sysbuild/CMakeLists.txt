@@ -64,9 +64,15 @@ function(bm_install_setup)
           set_config_bool(mcuboot CONFIG_PSA_USE_CRACEN_KEY_AGREEMENT_DRIVER n)
           set_config_bool(mcuboot CONFIG_PSA_USE_CRACEN_KEY_DERIVATION_DRIVER n)
           set_config_bool(mcuboot CONFIG_BOOT_HMAC_SHA512 n)
-          set_config_bool(mcuboot CONFIG_BOOT_SIGNATURE_USING_KMU n)
           set_config_bool(mcuboot CONFIG_BOOT_KEY_IMPORT_BYPASS_ASN y)
-          set_config_bool(mcuboot CONFIG_PSA_USE_CRACEN_HASH_DRIVER y)
+
+          if(SB_CONFIG_BM_BOOTLOADER_MCUBOOT_SIGNATURE_USING_KMU)
+            set_config_bool(mcuboot CONFIG_BOOT_SIGNATURE_USING_KMU y)
+            set_config_bool(mcuboot CONFIG_PSA_USE_CRACEN_HASH_DRIVER n)
+          else()
+            set_config_bool(mcuboot CONFIG_BOOT_SIGNATURE_USING_KMU n)
+            set_config_bool(mcuboot CONFIG_PSA_USE_CRACEN_HASH_DRIVER y)
+          endif()
         endif()
       endif()
 
@@ -271,6 +277,10 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_post_cmake)
       ALL
       DEPENDS ${CMAKE_BINARY_DIR}/production.hex
     )
+
+    if(SB_CONFIG_BM_BOOTLOADER_MCUBOOT_GENERATE_DEFAULT_KMU_KEYFILE)
+      include(${ZEPHYR_NRF_BM_MODULE_DIR}/cmake/sysbuild/generate_default_keyfile.cmake)
+    endif()
   endif()
 endfunction()
 
