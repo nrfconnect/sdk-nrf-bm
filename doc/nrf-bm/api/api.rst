@@ -117,11 +117,14 @@ Battery Service
 .. doxygengroup:: ble_bas
    :inner:
 
+.. _api_ble_cgms:
+
 Continuous Glucose Monitoring Service
 =====================================
 
 .. doxygengroup:: ble_cgms
    :inner:
+   :members:
 
 .. _api_dis:
 
