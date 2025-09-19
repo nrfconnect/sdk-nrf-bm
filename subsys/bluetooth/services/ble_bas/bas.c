@@ -194,7 +194,7 @@ int ble_bas_battery_level_update(struct ble_bas *bas, uint16_t conn_handle, uint
 		return -EINVAL;
 	}
 
-	LOG_INF("Battery level: %d%%", battery_level);
+	LOG_DBG("Battery level: %d%%", battery_level);
 	bas->battery_level = battery_level;
 
 	if (!bas->can_notify) {
