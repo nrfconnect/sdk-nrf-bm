@@ -141,6 +141,15 @@ LED Button Service
 .. doxygengroup:: ble_lbs
    :inner:
 
+.. _api_ble_nus:
+
+Nordic UART Service (NUS)
+=========================
+
+.. doxygengroup:: ble_nus
+   :inner:
+   :members:
+
 SoftDevice Handler
 ******************
 
