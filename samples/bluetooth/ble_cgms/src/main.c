@@ -88,7 +88,6 @@ static uint8_t qwr_mem[CONFIG_QWR_MEM_BUFF_SIZE];
 static void battery_level_update(void)
 {
 	int err;
-	uint32_t nrf_err;
 	uint32_t battery_level;
 
 	err = (uint8_t)sensorsim_measure(&battery_sim_state, &battery_level);
@@ -96,13 +95,12 @@ static void battery_level_update(void)
 		LOG_ERR("Sensorsim measure failed, err %d", err);
 	}
 
-	nrf_err = ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level);
-	if ((nrf_err != NRF_SUCCESS) &&
-	    (nrf_err != NRF_ERROR_INVALID_STATE) &&
-	    (nrf_err != NRF_ERROR_RESOURCES) &&
-	    (nrf_err != NRF_ERROR_BUSY) &&
-	    (nrf_err != BLE_ERROR_GATTS_SYS_ATTR_MISSING)) {
-		__ASSERT(false, "Battery level update failed, nrf_error %d", nrf_err);
+	err = ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level);
+	if (err) {
+		/* Ignore if not in a connection or notifications disabled in CCCD. */
+		if (err != -ENOTCONN && err != -EPIPE) {
+			LOG_ERR("Failed to update battery level, err %d", err);
+		}
 	}
 }
 
