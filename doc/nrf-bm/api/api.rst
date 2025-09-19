@@ -138,11 +138,14 @@ Device Information Service
    :inner:
    :members:
 
+.. _api_ble_hrs:
+
 Heart Rate Service
 ==================
 
 .. doxygengroup:: ble_hrs
    :inner:
+   :members:
 
 .. _api_lbs:
 
