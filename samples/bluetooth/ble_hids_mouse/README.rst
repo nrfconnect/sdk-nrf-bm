@@ -82,6 +82,7 @@ Button 0:
 
 Button 1:
    Simulate mouse movement to the up.
+   Keep the button pressed while resetting the board to delete peers.
 
 Button 2:
    Simulate mouse movement to the right.

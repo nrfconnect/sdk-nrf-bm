@@ -83,6 +83,7 @@ Button 0:
 
 Button 1:
    Simulates the Shift key.
+   Keep the button pressed while resetting the board to delete peers.
 
 LED 0:
    Lit when the device is advertising.
