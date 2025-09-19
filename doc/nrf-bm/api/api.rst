@@ -135,11 +135,14 @@ Heart Rate Service
 .. doxygengroup:: ble_hrs
    :inner:
 
+.. _api_lbs:
+
 LED Button Service
 ==================
 
 .. doxygengroup:: ble_lbs
    :inner:
+   :members:
 
 .. _api_ble_nus:
 
