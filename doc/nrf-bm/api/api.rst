@@ -129,11 +129,14 @@ Device Information Service
 .. doxygengroup:: ble_dis
    :inner:
 
+.. _api_ble_hrs:
+
 Heart Rate Service
 ==================
 
 .. doxygengroup:: ble_hrs
    :inner:
+   :members:
 
 LED Button Service
 ==================
