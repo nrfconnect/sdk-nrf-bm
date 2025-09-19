@@ -86,6 +86,10 @@ Bluetooth samples
 
   * Added support for bonding and pairing.
 
+* :ref:`ble_cgms_sample` sample:
+
+  * Corrected the return type for the :c:func:`ble_bas_battery_level_update` function.
+
 Peripheral samples
 ------------------
 
