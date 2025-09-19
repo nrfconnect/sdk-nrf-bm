@@ -42,7 +42,8 @@ config PM_FLASH_BUFFERS
 
 config PM_SERVICE_CHANGED
 	bool "Service changed management for GATT server in Peer Manager."
-	default y
+	default y if NRF_SDH_BLE_SERVICE_CHANGED
+	default n
 	help
 	  Service changed management for GATT server in Peer Manager.
 	  If not using a GATT server, or using a server without a service changed characteristic,
