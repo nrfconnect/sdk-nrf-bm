@@ -425,6 +425,11 @@ uint32_t pds_peer_data_store(pm_peer_id_t peer_id, pm_peer_data_const_t const *p
 		return NRF_ERROR_INTERNAL;
 	}
 
+	if (p_store_token != NULL) {
+		/* Update the store token. */
+		*p_store_token = entry_id;
+	}
+
 	return NRF_SUCCESS;
 }
 
