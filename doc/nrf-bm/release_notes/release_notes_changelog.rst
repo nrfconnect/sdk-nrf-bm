@@ -27,7 +27,9 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 SoftDevice Handler
 ==================
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Removed:
+
+  * The ``NRF_SDH_BLE`` Kconfig option.
 
 Boards
 ======

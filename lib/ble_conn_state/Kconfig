@@ -5,7 +5,7 @@
 #
 menuconfig BLE_CONN_STATE
 	bool "Connection state"
-	depends on NRF_SDH_BLE
+	depends on SOFTDEVICE
 	help
 	  A library to defer event processing to main().
 
