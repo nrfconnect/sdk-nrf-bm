@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <nrf_soc.h>
 #include <nrf_sdh.h>
 #include <nrf_sdh_soc.h>
@@ -13,9 +14,13 @@
 
 LOG_MODULE_DECLARE(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
 
-static const char *tostr(uint32_t evt)
+const char *nrf_sdh_soc_evt_tostr(uint32_t evt)
 {
+	int err;
+	static char buf[sizeof("SoC event: 0xFFFFFFFF")];
+
 	switch (evt) {
+#if defined(CONFIG_NRF_SDH_STR_TABLES)
 	case NRF_EVT_HFCLKSTARTED:
 		return "NRF_EVT_HFCLKSTARTED";
 	case NRF_EVT_POWER_FAILURE_WARNING:
@@ -36,8 +41,13 @@ static const char *tostr(uint32_t evt)
 		return "NRF_EVT_RADIO_SESSION_CLOSED";
 	case NRF_EVT_RAND_SEED_REQUEST:
 		return "NRF_EVT_RAND_SEED_REQUEST";
+#endif
 	default:
-		return "Unknown";
+		err = snprintf(buf, sizeof(buf), "SoC event: %#x", evt);
+		__ASSERT(err != -1, "Encode error");
+		__ASSERT(err < sizeof(buf), "Buffer too small");
+		(void) err;
+		return buf;
 	}
 }
 
@@ -52,11 +62,7 @@ static void soc_evt_poll(void *context)
 			break;
 		}
 
-		if (IS_ENABLED(CONFIG_NRF_SDH_STR_TABLES)) {
-			LOG_DBG("SoC event: %s", tostr(evt_id));
-		} else {
-			LOG_DBG("SoC event: 0x%x", evt_id);
-		}
+		LOG_DBG("%s", nrf_sdh_soc_evt_tostr(evt_id));
 
 		/* Forward the event to SoC observers. */
 		TYPE_SECTION_FOREACH(
