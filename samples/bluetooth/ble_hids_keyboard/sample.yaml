@@ -1,5 +1,5 @@
 sample:
-  name: BLE HIDS Keyboard
+  name: Bluetooth LE Human Interface Device Service Keyboard Sample
 tests:
   sample.ble_hids_keyboard:
     sysbuild: true
