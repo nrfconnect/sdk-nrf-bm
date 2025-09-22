@@ -39,6 +39,8 @@ config NRF_SDH_DISPATCH_MODEL
 	default 1 if NRF_SDH_DISPATCH_MODEL_SCHED
 	default 2 if NRF_SDH_DISPATCH_MODEL_POLL
 
+menu "Clock configuration"
+
 config NRF_SDH_CLOCK_LF_SRC
 	int "LF Clock"
 	default 1
@@ -54,6 +56,8 @@ config NRF_SDH_CLOCK_LF_RC_TEMP_CTIV
 config NRF_SDH_CLOCK_LF_ACCURACY
 	int "Accuracy"
 	default 0
+
+endmenu
 
 config NRF_SDH_BLE_CONN_TAG
 	int "Connection tag"
