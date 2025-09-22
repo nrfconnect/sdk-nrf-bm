@@ -15,9 +15,10 @@
 
 LOG_MODULE_DECLARE(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
 
-const char *gap_evt_tostr(int evt)
+const char *ble_evt_tostr(int evt)
 {
 	switch (evt) {
+	/* GAP */
 	case BLE_GAP_EVT_CONNECTED:
 		return "BLE_GAP_EVT_CONNECTED";
 	case BLE_GAP_EVT_DISCONNECTED:
@@ -70,6 +71,53 @@ const char *gap_evt_tostr(int evt)
 #endif
 	case BLE_GAP_EVT_ADV_SET_TERMINATED:
 		return "BLE_GAP_EVT_ADV_SET_TERMINATED";
+
+	/* GATTS */
+	case BLE_GATTS_EVT_WRITE:
+		return "BLE_GATTS_EVT_WRITE";
+	case BLE_GATTS_EVT_RW_AUTHORIZE_REQUEST:
+		return "BLE_GATTS_EVT_RW_AUTHORIZE_REQUEST";
+	case BLE_GATTS_EVT_SYS_ATTR_MISSING:
+		return "BLE_GATTS_EVT_SYS_ATTR_MISSING";
+	case BLE_GATTS_EVT_HVC:
+		return "BLE_GATTS_EVT_HVC";
+	case BLE_GATTS_EVT_SC_CONFIRM:
+		return "BLE_GATTS_EVT_SC_CONFIRM";
+	case BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST:
+		return "BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST";
+	case BLE_GATTS_EVT_TIMEOUT:
+		return "BLE_GATTS_EVT_TIMEOUT";
+	case BLE_GATTS_EVT_HVN_TX_COMPLETE:
+		return "BLE_GATTS_EVT_HVN_TX_COMPLETE";
+
+	/* GATTC */
+	case BLE_GATTC_EVT_PRIM_SRVC_DISC_RSP:
+		return "BLE_GATTC_EVT_PRIM_SRVC_DISC_RSP";
+	case BLE_GATTC_EVT_REL_DISC_RSP:
+		return "BLE_GATTC_EVT_REL_DISC_RSP";
+	case BLE_GATTC_EVT_CHAR_DISC_RSP:
+		return "BLE_GATTC_EVT_CHAR_DISC_RSP";
+	case BLE_GATTC_EVT_DESC_DISC_RSP:
+		return "BLE_GATTC_EVT_DESC_DISC_RSP";
+	case BLE_GATTC_EVT_ATTR_INFO_DISC_RSP:
+		return "BLE_GATTC_EVT_ATTR_INFO_DISC_RSP";
+	case BLE_GATTC_EVT_CHAR_VAL_BY_UUID_READ_RSP:
+		return "BLE_GATTC_EVT_CHAR_VAL_BY_UUID_READ_RSP";
+	case BLE_GATTC_EVT_READ_RSP:
+		return "BLE_GATTC_EVT_READ_RSP";
+	case BLE_GATTC_EVT_CHAR_VALS_READ_RSP:
+		return "BLE_GATTC_EVT_CHAR_VALS_READ_RSP";
+	case BLE_GATTC_EVT_WRITE_RSP:
+		return "BLE_GATTC_EVT_WRITE_RSP";
+	case BLE_GATTC_EVT_HVX:
+		return "BLE_GATTC_EVT_HVX";
+	case BLE_GATTC_EVT_EXCHANGE_MTU_RSP:
+		return "BLE_GATTC_EVT_EXCHANGE_MTU_RSP";
+	case BLE_GATTC_EVT_TIMEOUT:
+		return "BLE_GATTC_EVT_TIMEOUT";
+	case BLE_GATTC_EVT_WRITE_CMD_TX_COMPLETE:
+		return "BLE_GATTC_EVT_WRITE_CMD_TX_COMPLETE";
+
 	default:
 		return "unknown";
 	}
@@ -304,7 +352,7 @@ static void ble_evt_poll(void *context)
 		}
 
 		if (IS_ENABLED(CONFIG_NRF_SDH_STR_TABLES)) {
-			LOG_DBG("BLE event: %s", gap_evt_tostr(ble_evt->header.evt_id));
+			LOG_DBG("BLE event: %s", ble_evt_tostr(ble_evt->header.evt_id));
 		} else {
 			LOG_DBG("BLE event: %#x", ble_evt->header.evt_id);
 		}
