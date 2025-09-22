@@ -6,18 +6,23 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <ble.h>
 #include <bm/softdevice_handler/nrf_sdh.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
-#include <ble.h>
 #include <zephyr/logging/log.h>
 
 #define APP_RAM_START DT_REG_ADDR(DT_CHOSEN(zephyr_sram))
 
 LOG_MODULE_DECLARE(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
 
-const char *ble_evt_tostr(int evt)
+const char *nrf_sdh_ble_evt_to_str(uint32_t evt)
 {
+	int err;
+	static char buf[sizeof("BLE event: 0xFFFFFFFF")];
+
 	switch (evt) {
+#if defined(CONFIG_NRF_SDH_STR_TABLES)
 	/* GAP */
 	case BLE_GAP_EVT_CONNECTED:
 		return "BLE_GAP_EVT_CONNECTED";
@@ -117,9 +122,13 @@ const char *ble_evt_tostr(int evt)
 		return "BLE_GATTC_EVT_TIMEOUT";
 	case BLE_GATTC_EVT_WRITE_CMD_TX_COMPLETE:
 		return "BLE_GATTC_EVT_WRITE_CMD_TX_COMPLETE";
-
+#endif
 	default:
-		return "unknown";
+		err = snprintf(buf, sizeof(buf), "BLE event: %#x", evt);
+		__ASSERT(err > 0, "Encode error");
+		__ASSERT(err < sizeof(buf), "Buffer too small");
+		(void)err;
+		return buf;
 	}
 }
 
@@ -351,11 +360,7 @@ static void ble_evt_poll(void *context)
 			break;
 		}
 
-		if (IS_ENABLED(CONFIG_NRF_SDH_STR_TABLES)) {
-			LOG_DBG("BLE event: %s", ble_evt_tostr(ble_evt->header.evt_id));
-		} else {
-			LOG_DBG("BLE event: %#x", ble_evt->header.evt_id);
-		}
+		LOG_DBG("%s", nrf_sdh_ble_evt_to_str(ble_evt->header.evt_id));
 
 		if (ble_evt->header.evt_id == BLE_GAP_EVT_CONNECTED) {
 			idx_assign(ble_evt->evt.gap_evt.conn_handle);

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <nrf_soc.h>
 #include <bm/softdevice_handler/nrf_sdh.h>
 #include <bm/softdevice_handler/nrf_sdh_soc.h>
@@ -13,31 +14,40 @@
 
 LOG_MODULE_DECLARE(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
 
-static const char *tostr(uint32_t evt)
+const char *nrf_sdh_soc_evt_to_str(uint32_t evt)
 {
+	int err;
+	static char buf[sizeof("SoC event: 0xFFFFFFFF")];
+
 	switch (evt) {
+#if defined(CONFIG_NRF_SDH_STR_TABLES)
 	case NRF_EVT_HFCLKSTARTED:
-		return "The HFCLK has started";
+		return "NRF_EVT_HFCLKSTARTED";
 	case NRF_EVT_POWER_FAILURE_WARNING:
-		return "A power failure warning has occurred";
+		return "NRF_EVT_POWER_FAILURE_WARNING";
 	case NRF_EVT_FLASH_OPERATION_SUCCESS:
-		return "Flash operation has completed successfully";
+		return "NRF_EVT_FLASH_OPERATION_SUCCESS";
 	case NRF_EVT_FLASH_OPERATION_ERROR:
-		return "Flash operation has timed out with an error";
+		return "NRF_EVT_FLASH_OPERATION_ERROR";
 	case NRF_EVT_RADIO_BLOCKED:
-		return "A radio timeslot was blocked";
+		return "NRF_EVT_RADIO_BLOCKED";
 	case NRF_EVT_RADIO_CANCELED:
-		return "A radio timeslot was canceled by SoftDevice";
+		return "NRF_EVT_RADIO_CANCELED";
 	case NRF_EVT_RADIO_SIGNAL_CALLBACK_INVALID_RETURN:
-		return "A radio timeslot signal callback handler return was invalid";
+		return "NRF_EVT_RADIO_SIGNAL_CALLBACK_INVALID_RETURN";
 	case NRF_EVT_RADIO_SESSION_IDLE:
-		return "A radio timeslot session is idle";
+		return "NRF_EVT_RADIO_SESSION_IDLE";
 	case NRF_EVT_RADIO_SESSION_CLOSED:
-		return "A radio timeslot session is closed";
+		return "NRF_EVT_RADIO_SESSION_CLOSED";
 	case NRF_EVT_RAND_SEED_REQUEST:
-		return "SoftDevice RNG needs to be seeded";
+		return "NRF_EVT_RAND_SEED_REQUEST";
+#endif
 	default:
-		return "Unknown";
+		err = snprintf(buf, sizeof(buf), "SoC event: %#x", evt);
+		__ASSERT(err > 0, "Encode error");
+		__ASSERT(err < sizeof(buf), "Buffer too small");
+		(void)err;
+		return buf;
 	}
 }
 
@@ -52,11 +62,7 @@ static void soc_evt_poll(void *context)
 			break;
 		}
 
-		if (IS_ENABLED(CONFIG_NRF_SDH_STR_TABLES)) {
-			LOG_DBG("SoC event: %s", tostr(evt_id));
-		} else {
-			LOG_DBG("SoC event: 0x%x", evt_id);
-		}
+		LOG_DBG("%s", nrf_sdh_soc_evt_to_str(evt_id));
 
 		/* Forward the event to SoC observers. */
 		TYPE_SECTION_FOREACH(

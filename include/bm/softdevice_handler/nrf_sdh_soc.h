@@ -59,6 +59,17 @@ struct nrf_sdh_soc_evt_observer {
 		.context = _ctx,                                                                   \
 	};
 
+/**
+ * @brief Stringify a SoftDevice SoC event.
+ *
+ * If :option:`CONFIG_NRF_SDH_STR_TABLES` is enabled, returns the event name.
+ * Otherwise, returns the supplied integer as a string.
+ *
+ * @param evt An @ref NRF_SOC_SVCS enumeration value.
+ * @return A statically allocated string containing the event name or numerical value.
+ */
+const char *nrf_sdh_soc_evt_to_str(uint32_t evt);
+
 #ifdef __cplusplus
 }
 #endif

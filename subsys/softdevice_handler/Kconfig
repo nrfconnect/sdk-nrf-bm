@@ -138,11 +138,11 @@ config NRF_SDH_SOC_RAND_SEED
 	  using CRACEN to generate the random seed.
 
 config NRF_SDH_STR_TABLES
-	bool "Build string tables for SoftDevice handler events"
+	bool "Build string tables for SoftDevice events"
 	default y
 	help
-	  Make prints nicer by printing the stringified version of certain enumerations.
-	  Disable to save non-volatile memory.
+	  Compile a table of stringified SoftDevice events for nrf_sdh_ble_evt_to_str() and
+	  nrf_sdh_soc_evt_to_str(). Disable to save non-volatile memory.
 
 module=NRF_SDH
 module-str= SoftDevice handler log level
