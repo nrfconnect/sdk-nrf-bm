@@ -85,6 +85,17 @@ int nrf_sdh_ble_app_ram_start_get(uint32_t *app_ram_start);
 int nrf_sdh_ble_enable(uint8_t conn_cfg_tag);
 
 /**
+ * @brief Stringify a SoftDevice BLE event.
+ *
+ * If :option:`CONFIG_NRF_SDH_STR_TABLES` is enabled, returns the event name.
+ * Otherwise, returns the supplied integer as a string.
+ *
+ * @param evt A @ref BLE_GAP_EVTS, @ref BLE_GATTS_EVTS, or @ref BLE_GATTC_EVTS enumeration value.
+ * @returns A statically allocated string containing the event name or numerical value.
+ */
+const char *nrf_sdh_ble_evt_to_str(uint32_t evt);
+
+/**
  * @brief Get the assigned index for a connection handle.
  *
  * The returned value can be used for indexing into arrays where each element is associated
