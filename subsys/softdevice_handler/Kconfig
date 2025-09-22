@@ -75,6 +75,8 @@ endmenu
 
 if NRF_SDH_BLE
 
+menu "Default BLE configuration"
+
 config NRF_SDH_BLE_CONN_TAG
 	int "Connection tag"
 	range 1 255
@@ -121,6 +123,8 @@ config NRF_SDH_BLE_VS_UUID_COUNT
 
 config NRF_SDH_BLE_SERVICE_CHANGED
 	bool "Include the Service Changed characteristic in the Attribute Table"
+
+endmenu
 
 endif # NRF_SDH_BLE
 
