@@ -13,6 +13,7 @@
 #include <zephyr/logging/log_ctrl.h>
 #include <zephyr/mgmt/mcumgr/mgmt/callbacks.h>
 #include <bluetooth/services/ble_mcumgr.h>
+#include <zephyr/settings/settings.h>
 
 LOG_MODULE_REGISTER(app, CONFIG_APP_LOG_LEVEL);
 
@@ -179,6 +180,14 @@ int main(void)
 		LOG_ERR("Failed to enable BLE: %d", err);
 		return 0;
 	}
+
+	err = settings_subsys_init();
+
+	if (err) {
+		LOG_ERR("Failed to enable settings: %d", err);
+	}
+
+/*	settings_load(); */
 
 	LOG_INF("Bluetooth enabled");
 
