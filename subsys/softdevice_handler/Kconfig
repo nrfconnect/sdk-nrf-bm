@@ -59,6 +59,8 @@ config NRF_SDH_CLOCK_LF_ACCURACY
 
 endmenu
 
+menu "Default BLE configuration"
+
 config NRF_SDH_BLE_CONN_TAG
 	int "Connection tag"
 	range 1 255
@@ -105,6 +107,8 @@ config NRF_SDH_BLE_VS_UUID_COUNT
 
 config NRF_SDH_BLE_SERVICE_CHANGED
 	bool "Include the Service Changed characteristic in the Attribute Table"
+
+endmenu
 
 config NRF_SDH_SOC_RAND_SEED
 	bool "Automatically respond to SoftDevice random seeds requests"
