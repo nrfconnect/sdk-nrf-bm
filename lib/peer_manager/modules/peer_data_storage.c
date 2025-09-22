@@ -276,14 +276,12 @@ static void bm_zms_evt_handler(bm_zms_evt_t const *p_evt)
 static void wait_for_init(void)
 {
 	while (!fs.init_flags.initialized) {
-#if defined(CONFIG_SOFTDEVICE)
 		/* Wait for an event. */
 		__WFE();
 
 		/* Clear Event Register */
 		__SEV();
 		__WFE();
-#endif
 	}
 }
 
