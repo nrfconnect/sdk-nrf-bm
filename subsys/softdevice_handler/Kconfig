@@ -12,10 +12,6 @@ menuconfig NRF_SDH
 
 if NRF_SDH
 
-config NRF_SDH_BLE
-	bool "BLE events"
-	default y
-
 choice
 	prompt "Dispatch model"
 	default NRF_SDH_DISPATCH_MODEL_SCHED
@@ -61,8 +57,6 @@ config NRF_SDH_CLOCK_LF_RC_TEMP_CTIV
 config NRF_SDH_CLOCK_LF_ACCURACY
 	int "Accuracy"
 	default 0
-
-if NRF_SDH_BLE
 
 config NRF_SDH_BLE_CONN_TAG
 	int "Connection tag"
@@ -110,8 +104,6 @@ config NRF_SDH_BLE_VS_UUID_COUNT
 
 config NRF_SDH_BLE_SERVICE_CHANGED
 	bool "Include the Service Changed characteristic in the Attribute Table"
-
-endif # NRF_SDH_BLE
 
 config NRF_SDH_STR_TABLES
 	bool "Build string tables for SoftDevice handler events"
