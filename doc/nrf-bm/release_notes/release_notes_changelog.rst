@@ -41,6 +41,10 @@ SoftDevice Handler
   * The :c:func:`nrf_sdh_ble_evt_to_str` function to stringify a BLE event.
   * The :c:func:`nrf_sdh_soc_evt_to_str` function to stringify a SoC event.
 
+* Removed:
+
+  * The ``nrf_sdh_ble_app_ram_start_get`` function, use ``DT_REG_ADDR(DT_CHOSEN(zephyr_sram))`` instead.
+
 Boards
 ======
 
