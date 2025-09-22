@@ -132,17 +132,6 @@ const char *nrf_sdh_ble_evt_to_str(uint32_t evt)
 	}
 }
 
-int nrf_sdh_ble_app_ram_start_get(uint32_t *app_ram_start)
-{
-	if (!app_ram_start) {
-		return -EFAULT;
-	}
-
-	*app_ram_start = APP_RAM_START;
-
-	return 0;
-}
-
 static int default_cfg_set(void)
 {
 	int err;

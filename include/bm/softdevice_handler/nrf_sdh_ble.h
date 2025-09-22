@@ -66,16 +66,6 @@ struct nrf_sdh_ble_evt_observer {
 	};
 
 /**
- * @brief Retrieve the starting address of the application's RAM.
- *
- * @param[out] app_ram_start The starting address of the application's RAM.
- *
- * @retval 0 On success.
- * @retval -EFAULT @p app_ram_start is @c NULL.
- */
-int nrf_sdh_ble_app_ram_start_get(uint32_t *app_ram_start);
-
-/**
  * @brief Enable the SoftDevice Bluetooth stack.
  *
  * @param[in] conn_tag Connection configuration tag.
