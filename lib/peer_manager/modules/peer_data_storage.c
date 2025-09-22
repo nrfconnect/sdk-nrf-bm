@@ -50,6 +50,9 @@ static volatile bool m_peer_delete_deferred;
 
 static struct bm_zms_fs fs;
 
+/* Keeps track of the number of peers currently under delete processing. */
+static atomic_t delete_counter;
+
 /* Function for dispatching events to all registered event handlers. */
 static void pds_evt_send(pm_evt_t *p_event)
 {
@@ -244,6 +247,9 @@ static void bm_zms_evt_handler(bm_zms_evt_t const *p_evt)
 			} else if (p_evt->result < 0) {
 				/* Unrecoverable error. */
 				LOG_ERR("BM_ZMS delete failed with error %d", p_evt->result);
+
+				atomic_dec(&delete_counter);
+
 				pds_evt.evt_id = PM_EVT_PEER_DELETE_FAILED;
 				pds_evt.params.peer_delete_failed.error = NRF_ERROR_INTERNAL;
 				pds_evt_send(&pds_evt);
@@ -253,8 +259,14 @@ static void bm_zms_evt_handler(bm_zms_evt_t const *p_evt)
 
 				ret = find_next_data_entry_in_peer(peer_id, &next_entry_id);
 				if (ret == NRF_SUCCESS) {
+					/* Process the next entry for the peer. */
 					m_peer_delete_deferred = true;
 				} else if (ret == NRF_ERROR_NOT_FOUND) {
+					atomic_dec(&delete_counter);
+
+					/* Process the next deleted peers, if any are present. */
+					m_peer_delete_deferred = true;
+
 					pds_evt.evt_id = PM_EVT_PEER_DELETE_SUCCEEDED;
 					peer_id_free(pds_evt.peer_id);
 					pds_evt_send(&pds_evt);
@@ -464,7 +476,14 @@ uint32_t pds_peer_id_free(pm_peer_id_t peer_id)
 	VERIFY_PEER_ID_IN_RANGE(peer_id);
 
 	(void)peer_id_delete(peer_id);
-	peer_data_delete_process();
+
+	/* Only start processing on the first delete request.
+	 * `peer_data_delete_process` will iteratively take care of processing all the peers marked
+	 * for deletion.
+	 */
+	if (atomic_inc(&delete_counter) == 0) {
+		peer_data_delete_process();
+	}
 
 	return NRF_SUCCESS;
 }
