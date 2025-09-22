@@ -1,5 +1,5 @@
 sample:
-  name: BLE HIDS Mouse
+  name: Bluetooth LE Human Interface Device Service Mouse Sample
 tests:
   sample.ble_hids_mouse:
     sysbuild: true
