@@ -31,6 +31,8 @@ SoftDevice Handler
 
   * The :option:`NRF_SDH_SOC_RAND_SEED` Kconfig option to control whether to automatically respond to SoftDevice random seed requests.
   * Priority levels for SoftDevice event observers: HIGHEST, HIGH, USER, USER_LOW, LOWEST.
+  * The :c:func:`nrf_sdh_ble_evt_tostr` function to stringify a BLE event.
+  * The :c:func:`nrf_sdh_soc_evt_tostr` function to stringify a SoC event.
 
 * Removed:
 
