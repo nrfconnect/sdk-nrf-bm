@@ -366,7 +366,8 @@ uint32_t im_peer_free(pm_peer_id_t peer_id)
 	const int idx = nrf_sdh_ble_idx_get(conn_handle);
 	const uint32_t ret = pdb_peer_free(peer_id);
 
-	if (ret == NRF_SUCCESS && (idx >= 0) && (idx < IM_MAX_CONN_HANDLES)) {
+	if ((ret == NRF_SUCCESS) && (conn_handle != BLE_CONN_HANDLE_INVALID) && (idx >= 0) &&
+	    (idx < IM_MAX_CONN_HANDLES)) {
 		m_connections[idx].peer_id = PM_PEER_ID_INVALID;
 	}
 	return ret;
