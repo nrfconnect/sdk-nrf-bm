@@ -7,11 +7,9 @@ MCU manager Service (MCUmgr)
    :local:
    :depth: 2
 
-Overview
-********
-
 The MCU manager service allows for remote management of the device over Bluetooth.
-This is based on the Simple Management Protocol (SMP) provided by `MCUmgr`_, an open source project that provides a management subsystem that is portable across multiple real-time operating systems.
+
+It is based on the Simple Management Protocol (SMP) provided by `MCUmgr`_, an open source project that provides a management subsystem that is portable across multiple real-time operating systems.
 
 Configuration
 *************

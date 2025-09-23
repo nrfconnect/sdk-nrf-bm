@@ -1,6 +1,8 @@
-.. _nrf_bm_release_notes_0899:
+:orphan:
 
-Release Notes for |BMlong| v0.8.99
+.. _nrf_bm_release_notes_0999:
+
+Release Notes for |BMlong| v0.9.99
 ##################################
 
 The most relevant changes that are present on the main branch of the nRF Connect SDK Bare Metal, as compared to the latest official release, are tracked in this file.
@@ -27,14 +29,12 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 SoftDevice Handler
 ==================
 
-* Added the :c:func:`nrf_sdh_ble_conn_handle_get` function.
-* Updated the system initialization to initialize on application level.
-* Updated the entropy source to use the CRACEN true random number generator instead of the CRACEN pseudorandom number generator.
+No changes since the latest nRF Connect SDK Bare Metal release.
 
 Boards
 ======
 
-* Boards must now select a SoftDevice sysbuild Kconfig in the `Kconfig.sysbuild` file e.g. :kconfig:option:`SB_CONFIG_SOFTDEVICE_S115`.
+No changes since the latest nRF Connect SDK Bare Metal release.
 
 DFU
 ===
@@ -54,28 +54,7 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Libraries
 =========
 
-* Added:
-
-  * The ``ble_conn_state`` library.
-  * The ``peer_manager`` library.
-  * The :ref:`lib_ble_service_hids`.
-
-* :ref:`lib_bm_zms` library:
-
-   * Fixed an issue where some data would be written incorrectly to storage if the data size was not a multiple of the program unit of 16 bytes.
-
-   * Updated:
-
-     * The :c:func:`bm_zms_register` function to return ``-EINVAL`` when passing ``NULL`` input parameters.
-     * The name of the :c:struct:`bm_zms_evt_t` ``id`` field to :c:member:`bm_zms_evt_t.evt_id`.
-     * The name of the :c:struct:`bm_zms_evt_t` ``ate_id`` field to :c:member:`bm_zms_evt_t.id`.
-     * The type of :c:member:`bm_zms_evt_t.result` from ``uint32_t`` to ``int``.
-
-   * Added the :c:enumerator:`BM_ZMS_EVT_DELETE` event ID to distinguish :c:func:`bm_zms_delete` events.
-
-* :ref:`lib_ble_conn_params` library:
-
-   * Fixed an issue that caused the :kconfig:option:`CONFIG_BLE_CONN_PARAMS_INITIATE_DATA_LENGTH_UPDATE` Kconfig option to always be hidden.
+No changes since the latest nRF Connect SDK Bare Metal release.
 
 Samples
 =======
@@ -83,15 +62,7 @@ Samples
 Bluetooth samples
 -----------------
 
-* Added the :ref:`ble_hids_keyboard_sample` and :ref:`ble_hids_mouse_sample` samples.
-
-* :ref:`ble_hrs_sample` sample:
-
-  * Added support for bonding and pairing.
-
-* :ref:`ble_cgms_sample` sample:
-
-  * Corrected the return type for the :c:func:`ble_bas_battery_level_update` function.
+No changes since the latest nRF Connect SDK Bare Metal release.
 
 Peripheral samples
 ------------------

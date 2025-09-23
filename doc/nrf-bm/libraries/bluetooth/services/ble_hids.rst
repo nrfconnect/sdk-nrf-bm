@@ -1,7 +1,7 @@
 .. _lib_ble_service_hids:
 
-Bluetooth: Human Interface Device Service (HIDS)
-################################################
+Human Interface Device Service (HIDS)
+#####################################
 
 .. contents::
    :local:
@@ -10,10 +10,14 @@ Bluetooth: Human Interface Device Service (HIDS)
 Overview
 ********
 
-This module implements the ``Human Interface Device Service`` with the corresponding set of characteristics.
-During initialization it adds the Human Interface Device Service and a set of characteristics as per the Human Interface Device Service specification and the user requirements to the BLE stack database.
+This module implements the Human Interface Device Service with the corresponding set of characteristics.
+During initialization, it adds the Human Interface Device Service and a set of characteristics as per the Human Interface Device Service specification and the user requirements to the Bluetooth LE stack database.
 
-If enabled, notification of Input Report characteristics is performed when the application calls the corresponding ``ble_hids_xx_input_report_send()`` function.
+If enabled, notification of Input Report characteristics is performed when the application calls one of the corresponding functions:
+
+* :c:func:`ble_hids_inp_rep_send`
+* :c:func:`ble_hids_boot_kb_inp_rep_send`
+* :c:func:`ble_hids_boot_mouse_inp_rep_send`
 
 Configuration
 *************
@@ -50,7 +54,12 @@ For a full list of events see the :c:enum:`ble_hids_evt_type` enum.
 The application can send input reports by calling the :c:func:`ble_hids_inp_rep_send` function.
 Separate functions exist for sending boot keyboard and boot mouse input reports.
 See the :c:func:`ble_hids_boot_kb_inp_rep_send` and :c:func:`ble_hids_boot_mouse_inp_rep_send` functions, respectively.
-The application can get the current output reports by calling the :c:func:`ble_hids_outp_rep_send` function.
+The application can get the current output reports by calling the :c:func:`ble_hids_outp_rep_get` function.
+
+Usage of this service is demonstrated in the following samples:
+
+* :ref:`ble_hids_keyboard_sample`
+* :ref:`ble_hids_mouse_sample`
 
 Dependencies
 ************
@@ -66,4 +75,4 @@ API documentation
 | Header file: :file:`include/bluetooth/services/ble_hids.h`
 | Source files: :file:`subsys/bluetooth/services/ble_hids/`
 
-   :ref:`Human Interface Device Service (HIDS) API reference <api_human_interface_device_service>`
+:ref:`Human Interface Device Service (HIDS) API reference <api_human_interface_device_service>`

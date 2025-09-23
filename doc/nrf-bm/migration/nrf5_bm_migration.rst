@@ -7,10 +7,6 @@ This document outlines the high-level differences between nRF5 SDK and the |BMlo
 
 It is meant to provide support when migrating an application built on nRF5 SDK to |BMshort|.
 
-.. note::
-
-   This document is in development and being constantly updated.
-
 Project files
 *************
 
@@ -91,6 +87,26 @@ In |BMshort|, there are a few ready-made partitioning schemes that can be select
 Partitioning can be tweaked by making simple changes to textual **Devicetree** files which define the layout of the memory.
 These can be edited in the board files, or applied to existing boards as **overlays**.
 
+.. _nrf5_bm_migration_nvm:
+
+Non-volatile Memory (NVM)
+*************************
+
+The nRF51 and nRF52 devices supported by the nRF5 SDK utilized flash memory as their non-volatile memory (NVM) technology for storing program code and data.
+In contrast, the nRF54L devices employ RRAM, a different NVM technology.
+
+To support the new RRAM storage technology, the |BMshort| introduces :ref:`lib_bm_zms`, which is optimized for RRAM and replaces FDS.
+Unlike FDS, which uses a file/record ID indexing scheme based on flash pages, Zephyr Memory Storage uses a key-value indexing system that is better suited for RRAM’s access patterns and performance characteristics.
+
+It is technically feasible to reuse a file system that expects flash behavior on a device that has RRAM.
+This can be done by adding an abstraction layer that emulates the flash behavior.
+However, this approach is generally not recommended for production-ready applications.
+Emulating flash memory behavior on RRAM can lead to a significant increase in write operations, potentially accelerating wear on the NVM.
+
+For a robust, production-ready solution, it is recommended to adopt a storage or file system that natively supports RRAM technology.
+The |BMlong| environment integrates the :ref:`lib_bm_zms` system, which is designed to be compatible with various NVM technologies, including RRAM.
+This system ensures optimal performance and longevity for your applications.
+
 Bluetooth LE libraries
 **********************
 
@@ -147,9 +163,9 @@ See table below for a summary of supported libraries.
      -
      -
    * - ``ble_conn_state``
-     - No
-     -
      - Yes
+     - Name unchanged
+     -
      -
    * - ``ble_dtm``
      - No
@@ -197,9 +213,9 @@ See table below for a summary of supported libraries.
      - Yes
      -
    * - ``peer_manager``
-     - No
-     - Unchanged
      - Yes
+     - Name unchanged
+     -
      -
 
 SoftDevice integration

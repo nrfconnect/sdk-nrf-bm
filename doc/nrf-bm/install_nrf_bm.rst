@@ -73,7 +73,7 @@ Every |BMlong| release consists of:
 
       #. In the next page you will be prompted to **Select SDK type**, click :guilabel:`nRF Connect SDK Bare Metal`.
 
-      #. In the next page you will be prompted to **Select an SDK version (or enter the branch, tag or commit SHA) to install...**, click :guilabel:`v0.8.0` marked on the right by the label :guilabel:`Pre-packaged SDKs & Toolchains`.
+      #. In the next page you will be prompted to **Select an SDK version (or enter the branch, tag or commit SHA) to install...**, click :guilabel:`v0.9.0` marked on the right by the label :guilabel:`Pre-packaged SDKs & Toolchains`.
 
       #. In the next page you will be prompted to select a destination for the SDK. The default suggestion is recommended. Then press **Enter**.
          This will proceed by installing |BMshort| and the respective Toolchain it requires.
@@ -119,7 +119,7 @@ Every |BMlong| release consists of:
 
             #. In the next page you will be prompted to **Select SDK type**, click :guilabel:`nRF Connect SDK Bare Metal`.
 
-            #. In the next page you will be prompted to **Select an SDK version (or enter the branch, tag or commit SHA) to install...**, click :guilabel:`v0.8.0` marked on the right by the label :guilabel:`GitHub`.
+            #. In the next page you will be prompted to **Select an SDK version (or enter the branch, tag or commit SHA) to install...**, click :guilabel:`v0.9.0` marked on the right by the label :guilabel:`GitHub`.
 
             #. In the next page you will be prompted to select a destination for the SDK. The default suggestion is recommended. Then press **Enter**.
                This will proceed by installing |BMshort|.
