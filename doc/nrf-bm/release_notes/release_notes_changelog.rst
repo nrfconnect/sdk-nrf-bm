@@ -53,6 +53,7 @@ SoftDevice Handler
     Register a state event observer and return non-zero to :c:enum:`NRF_SDH_STATE_EVT_ENABLE_PREPARE`
     or :c:enum:`NRF_SDH_STATE_EVT_DISABLE_PREPARE` to abort state changes instead.
   * The ``nrf_sdh_request_continue`` function.
+  * The ``nrf_sdh_is_enabled`` function, use the SoftDevice native function :c:func:`sd_softdevice_is_enabled` instead.
 
 Boards
 ======
