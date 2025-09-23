@@ -16,6 +16,8 @@
 
 LOG_MODULE_DECLARE(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
 
+extern int sdh_state_evt_observer_notify(enum nrf_sdh_state_evt state);
+
 const char *nrf_sdh_ble_evt_to_str(uint32_t evt)
 {
 	int err;
@@ -248,9 +250,7 @@ int nrf_sdh_ble_enable(uint8_t conn_cfg_tag)
 
 	LOG_DBG("SoftDevice BLE enabled");
 
-	TYPE_SECTION_FOREACH(struct nrf_sdh_state_evt_observer, nrf_sdh_state_evt_observers, obs) {
-		obs->handler(NRF_SDH_STATE_EVT_BLE_ENABLED, obs->context);
-	}
+	(void)sdh_state_evt_observer_notify(NRF_SDH_STATE_EVT_BLE_ENABLED);
 
 	return 0;
 }

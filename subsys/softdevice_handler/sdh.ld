@@ -1,4 +1,3 @@
-ITERABLE_SECTION_ROM(nrf_sdh_state_req_observers, 4)
 ITERABLE_SECTION_ROM(nrf_sdh_state_evt_observers, 4)
 ITERABLE_SECTION_ROM(nrf_sdh_stack_evt_observers, 4)
 ITERABLE_SECTION_ROM(nrf_sdh_soc_evt_observers, 4)
