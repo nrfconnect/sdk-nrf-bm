@@ -7,7 +7,7 @@ Bluetooth: Human Interface Device Service Mouse
    :local:
    :depth: 2
 
-The Peripheral HIDS mouse sample demonstrates how to use the :ref:`hids_readme` to implement a mouse input device that you can connect to your computer.
+The Peripheral HIDS mouse sample demonstrates how to use the :ref:`lib_ble_service_hids` to implement a mouse input device that you can connect to your computer.
 
 Requirements
 ************
@@ -80,15 +80,21 @@ User interface
 Button 0:
    Simulate mouse movement to the left.
 
+   During bonding, press it to confirm that the passkey is correct.
+   See `Testing`_.
+
 Button 1:
-   Simulate mouse movement to the up.
+   Simulate mouse movement upwards.
+
    Keep the button pressed while resetting the board to delete bonding information for all peers stored on the device.
+
+   During bonding, press it to reject the passkey.
 
 Button 2:
    Simulate mouse movement to the right.
 
 Button 3:
-   Simulate mouse movement to the down.
+   Simulate mouse movement downwards.
 
 LED 0:
    Lit when the device is advertising.
@@ -118,15 +124,20 @@ This sample can be found under :file:`samples/bluetooth/ble_hids_mouse/` in the 
 Testing
 =======
 
-You can test this sample using a computer or a smart phone.
+You can test this sample using a computer or a smartphone.
 
 1. Compile and program the application.
 #. In the Serial Terminal, using the `Serial Terminal app`_ or |VSC|, observe that the ``BLE HIDS Mouse sample started.`` message is printed.
 #. Observe that the ``Advertising as nRF_BM_HIDS_MOUSE`` message is printed.
-#. In your computer or mobile phone, open the bluetooth settings and scan for advertising devices.
+#. On your computer or mobile phone, open the Bluetooth settings and scan for advertising devices.
    Your device should be advertising as ``nRF_BM_HIDS_MOUSE``.
    If the device is not advertising, you might need to use the :guilabel:`Reset Board` option in |VSC|.
 #. :guilabel:`Connect` to your device.
-   When prompted, provide the passkey from the terminal output, or confirm that the passkey is correct by pressing ``Button 0``.
+
+   After having connected, your computer or mobile phone may attempt to pair or bond with your device in order to encrypt the link.
+
+   You may be prompted to compare or enter a passkey as part of the authentication step.
+   If prompted, provide the passkey from the terminal output, or confirm that the passkey is correct by pressing **Button 0** on the kit.
+
    The terminal output in |VSC| indicates ``Peer connected``.
 #. Observe that the device is detected as a mouse, and you can move the mouse by pressing the buttons on the DK.

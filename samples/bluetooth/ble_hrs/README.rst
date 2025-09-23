@@ -86,6 +86,15 @@ The sensor measurements are simulated the following way:
 When notification of Heart Rate Measurement characteristic is enabled, the Heart Rate Measurement, containing the current value for all the components of the Heart Rate Measurement characteristic, is notified each time the Heart Rate measurement timer expires.
 When notification of Battery Level characteristic is enabled, the Battery Level is notified each time the Battery Level measurement timer expires.
 
+The sample supports bonding with the connected device.
+The services security configurations are kept open to allow reading the characteristics without bonding with the device.
+
+User interface
+**************
+
+Button 1:
+   Keep the button pressed while resetting the board to delete bonding information for all peers stored on the device.
+
 Programming the S115 SoftDevice
 *******************************
 
@@ -117,6 +126,11 @@ Make sure that these are installed before starting the testing procedure.
    Your device should be advertising as ``nRF_BM_HRS``.
    If the device is not advertising, you might need to use the :guilabel:`Reset Board` option in |VSC|.
 #. :guilabel:`Connect` to your device.
+
+   After having connected, your computer or mobile phone may attempt to pair or bond with your device in order to encrypt the link.
+
+   You may be prompted to enter a passkey as part of the authentication step.
+   If prompted, provide the passkey from the terminal output.
    The terminal output in |VSC| indicates ``Peer connected``.
 #. Observe that the services are shown in the connected device and that you can start receiving values for the Heart Rate and the Battery Service by clicking the Play button.
    Heart Rate notifications are received every second, and Battery Level notifications are received every two seconds.

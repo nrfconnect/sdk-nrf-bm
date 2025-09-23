@@ -1,7 +1,7 @@
 .. _lib_ble_service_dis:
 
-Bluetooth: Device Information Service (DIS)
-###########################################
+Device Information Service (DIS)
+################################
 
 .. contents::
    :local:

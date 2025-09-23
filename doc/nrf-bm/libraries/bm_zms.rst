@@ -339,11 +339,7 @@ Cache size
 API Reference
 *************
 
-The BM_ZMS API is provided by the :file:`bm_zms.h`.
+| Header file: :file:`include/bm_zms.h`
+| Source files: :file:`lib/bm_zms/`
 
-.. doxygengroup:: bm_zms_data_structures
-
-.. doxygengroup:: bm_zms_high_level_api
-
-.. comment
-   not documenting .. doxygengroup:: bm_zms
+:ref:`Bare Metal Zephyr Memory Storage API reference <api_ble_bm_zms>`

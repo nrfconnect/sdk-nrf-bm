@@ -12,110 +12,125 @@ API documentation
 Libraries
 *********
 
-Bluetooth LE Connection Parameter library
-=========================================
-
-.. doxygengroup:: ble_conn_params
-   :inner:
-
-Bluetooth LE MCUmgr Service library
-===================================
-
-.. doxygengroup:: ble_mcumgr
-   :inner:
-
-Bluetooth LE Nordic UART Service library
-========================================
-
-.. doxygengroup:: ble_nus
-   :inner:
-
-Bluetooth LE advertising library
+Bluetooth LE Advertising library
 ================================
 
 .. doxygengroup:: ble_adv
    :inner:
+   :members:
 
 Advertising and Scan Response Data Encoder
 ------------------------------------------
 
 .. doxygengroup:: ble_sdk_lib_advdata
    :inner:
+   :members:
 
-.. _api_peer_manager:
+.. _api_ble_conn_params:
 
-Peer Manager
-============
+Bluetooth LE Connection Parameter library
+=========================================
 
-.. doxygengroup:: peer_manager
+.. doxygengroup:: ble_conn_params
    :inner:
    :members:
 
-Bare Metal Zephyr Memory Storage (ZMS)
-======================================
+.. _api_ble_conn_state:
 
-.. doxygengroup:: bm_zms
+Bluetooth LE Connection State library
+=====================================
+
+.. doxygengroup:: ble_conn_state
    :inner:
+   :members:
 
 Bare Metal Buttons library
 ==========================
 
 .. doxygengroup:: bm_buttons
    :inner:
-
-Bare Metal Storage library
-==========================
-
-.. doxygengroup:: bm_storage
-   :inner:
-
-Bare Metal Storage library backend
-----------------------------------
-
-.. doxygengroup:: bm_storage_backend
-   :inner:
-
-Bare Metal Timer library
-========================
-
-.. doxygengroup:: bm_timer
-   :inner:
-
-Bare Metal Low Power UART with EasyDMA driver
-=============================================
-
-.. doxygengroup:: bm_lpuarte
-   :inner:
+   :members:
 
 Bare Metal Event Scheduler library
 ==================================
 
 .. doxygengroup:: event_scheduler
    :inner:
+   :members:
 
-Queued Writes module
-====================
+Bare Metal Low Power UART with EasyDMA driver
+=============================================
 
-.. doxygengroup:: ble_qwr
+.. doxygengroup:: bm_lpuarte
    :inner:
+   :members:
 
-Sensor data simulator library
-=============================
+Bare Metal Storage library
+==========================
 
-.. doxygengroup:: sensorsim
+.. doxygengroup:: bm_storage
    :inner:
+   :members:
 
-Record Access Control Point
-===========================
+Bare Metal Storage library backend
+----------------------------------
 
-.. doxygengroup:: ble_racp
+.. doxygengroup:: bm_storage_backend
    :inner:
+   :members:
+
+Bare Metal Timer library
+========================
+
+.. doxygengroup:: bm_timer
+   :inner:
+   :members:
+
+.. _api_ble_bm_zms:
+
+Bare Metal Zephyr Memory Storage (ZMS)
+======================================
+
+.. doxygengroup:: bm_zms
+   :inner:
+   :members:
 
 GATT Queue
 ==========
 
 .. doxygengroup:: ble_gq
    :inner:
+   :members:
+
+.. _api_peer_manager:
+
+Peer Manager library
+====================
+
+.. doxygengroup:: peer_manager
+   :inner:
+   :members:
+
+Queued Writes module
+====================
+
+.. doxygengroup:: ble_qwr
+   :inner:
+   :members:
+
+Record Access Control Point
+===========================
+
+.. doxygengroup:: ble_racp
+   :inner:
+   :members:
+
+Sensor data simulator library
+=============================
+
+.. doxygengroup:: sensorsim
+   :inner:
+   :members:
 
 Services
 ********
@@ -174,15 +189,6 @@ LED Button Service
    :inner:
    :members:
 
-.. _api_ble_nus:
-
-Nordic UART Service (NUS)
-=========================
-
-.. doxygengroup:: ble_nus
-   :inner:
-   :members:
-
 .. _api_mcu_manager_service:
 
 MCU manager Service (MCUmgr)
@@ -192,11 +198,21 @@ MCU manager Service (MCUmgr)
    :inner:
    :members:
 
+.. _api_ble_nus:
+
+Nordic UART Service (NUS)
+=========================
+
+.. doxygengroup:: ble_nus
+   :inner:
+   :members:
+
 SoftDevice Handler
 ******************
 
 .. doxygengroup:: nrf_sdh
    :inner:
+   :members:
 
 Utils
 *****
@@ -206,21 +222,25 @@ nRF Error Codes
 
 .. doxygengroup:: nrf_error
    :inner:
+   :members:
 
 Service UUID definitions
 ========================
 
 .. doxygengroup:: UUID_SERVICES
    :inner:
+   :members:
 
 Characteristic UUID definitions
 ===============================
 
 .. doxygengroup:: UUID_CHARACTERISTICS
    :inner:
+   :members:
 
 Bluetooth LE Date Time characteristic type
 ==========================================
 
 .. doxygengroup:: ble_sdk_srv_date_time
    :inner:
+   :members:

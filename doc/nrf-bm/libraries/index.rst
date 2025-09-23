@@ -8,9 +8,15 @@ Nordic Semiconductor provides a variety of libraries and services that are used 
 Here you can find documentation for these libraries, including API documentation.
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :glob:
-   :caption: Subpages:
+   :caption: Bluetooth® libraries and services:
 
    bluetooth/index.rst
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+   :caption: Other libraries:
+
    *
