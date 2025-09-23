@@ -5,10 +5,18 @@
 #
 menu "Logging"
 
+if LOG
+
 if !LOG_MODE_MINIMAL
+
+if !LOG_FRONTEND_ONLY
 
 rsource "backends/Kconfig"
 
-endif
+endif # !LOG_FRONTEND_ONLY
+
+endif # !LOG_MODE_MINIMAL
+
+endif # LOG
 
 endmenu

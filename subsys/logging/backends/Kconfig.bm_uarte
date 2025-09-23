@@ -5,7 +5,7 @@
 #
 
 menuconfig LOG_BACKEND_BM_UARTE
-	bool "UARTE log backend"
+	bool "Bare Metal UARTE backend"
 	select LOG_BACKEND_SUPPORTS_FORMAT_TIMESTAMP
 	help
 	  When enabled, the backend uses the nrfx UARTE driver to output logs and printk.
