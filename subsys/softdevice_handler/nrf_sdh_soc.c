@@ -72,7 +72,7 @@ static void soc_evt_poll(void *context)
 	}
 
 	__ASSERT(nrf_err == NRF_ERROR_NOT_FOUND,
-		 "Failed to receive SoftDevice event, nrf_error %#x", nrf_err);
+		 "Failed to receive SoftDevice SoC event, nrf_error %#x", nrf_err);
 }
 
 /* Listen to SoftDevice events */
