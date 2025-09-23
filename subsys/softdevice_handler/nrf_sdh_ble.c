@@ -318,7 +318,8 @@ static void ble_evt_poll(void *context)
 		}
 	}
 
-	__ASSERT(err == NRF_ERROR_NOT_FOUND,
+	/* An SoC event may have triggered this round of polling, and BLE may not be enabled */
+	__ASSERT((err == NRF_ERROR_NOT_FOUND) || (err == BLE_ERROR_NOT_ENABLED),
 		"Failed to receive SoftDevice event, nrf_error %#x", err);
 }
 
