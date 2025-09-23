@@ -147,6 +147,15 @@ Heart Rate Service
    :inner:
    :members:
 
+.. _api_human_interface_device_service:
+
+Human Interface Device Service
+==============================
+
+.. doxygengroup:: ble_hids
+   :inner:
+   :members:
+
 .. _api_lbs:
 
 LED Button Service
@@ -162,6 +171,15 @@ Nordic UART Service (NUS)
 =========================
 
 .. doxygengroup:: ble_nus
+   :inner:
+   :members:
+
+.. _api_mcu_manager_service:
+
+MCU manager Service (MCUmgr)
+============================
+
+.. doxygengroup:: ble_mcumgr
    :inner:
    :members:
 

@@ -66,5 +66,4 @@ API documentation
 | Header file: :file:`include/bluetooth/services/ble_hids.h`
 | Source files: :file:`subsys/bluetooth/services/ble_hids/`
 
-   .. doxygengroup:: ble_hids
-      :members:
+   :ref:`Human Interface Device Service (HIDS) API reference <api_human_interface_device_service>`

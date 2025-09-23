@@ -42,7 +42,6 @@ The |BMlong| is a distinct repository that incorporates elements from the existi
 
    install_nrf_bm.rst
    drivers.rst
-   ble_services/index.rst
    libraries/index.rst
    samples.rst
    app_dev/dfu/index.rst
