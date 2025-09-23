@@ -19,8 +19,7 @@ LOG_MODULE_REGISTER(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
 #warning Please select NRF_CLOCK_LF_ACCURACY_500_PPM when using NRF_CLOCK_LF_SRC_RC
 #endif
 
-static atomic_t sdh_enabled;	/* Whether the SoftDevice is enabled. */
-static atomic_t sdh_suspended;	/* Whether this module is suspended. */
+static atomic_t sdh_suspended;	/* Whether this module is pulling SoftDevice events or not. */
 
 static char *state_tostr(enum nrf_sdh_state_evt s)
 {
@@ -97,6 +96,7 @@ __weak void softdevice_fault_handler(uint32_t id, uint32_t pc, uint32_t info)
 int nrf_sdh_enable_request(void)
 {
 	int err;
+	uint8_t sd_is_enabled;
 	const nrf_clock_lf_cfg_t clock_lf_cfg = {
 		.source = CONFIG_NRF_SDH_CLOCK_LF_SRC,
 		.rc_ctiv = CONFIG_NRF_SDH_CLOCK_LF_RC_CTIV,
@@ -104,7 +104,8 @@ int nrf_sdh_enable_request(void)
 		.accuracy = CONFIG_NRF_SDH_CLOCK_LF_ACCURACY
 	};
 
-	if (sdh_enabled) {
+	(void)sd_softdevice_is_enabled(&sd_is_enabled);
+	if (sd_is_enabled) {
 		return -EALREADY;
 	}
 
@@ -119,7 +120,6 @@ int nrf_sdh_enable_request(void)
 		return -EINVAL;
 	}
 
-	atomic_set(&sdh_enabled, true);
 	atomic_set(&sdh_suspended, false);
 
 	/* Enable event interrupt, the priority has already been set by the stack. */
@@ -134,8 +134,10 @@ int nrf_sdh_enable_request(void)
 int nrf_sdh_disable_request(void)
 {
 	int err;
+	uint8_t sd_is_enabled;
 
-	if (!sdh_enabled) {
+	(void)sd_softdevice_is_enabled(&sd_is_enabled);
+	if (!sd_is_enabled) {
 		return -EALREADY;
 	}
 
@@ -151,8 +153,6 @@ int nrf_sdh_disable_request(void)
 		return -EINVAL;
 	}
 
-	atomic_set(&sdh_enabled, false);
-
 	NVIC_DisableIRQ((IRQn_Type)SD_EVT_IRQn);
 
 	/* Notify observers about a finished SoftDevice enable process. */
@@ -161,14 +161,18 @@ int nrf_sdh_disable_request(void)
 	return 0;
 }
 
-bool nrf_sdh_is_enabled(void)
-{
-	return sdh_enabled;
-}
-
 void nrf_sdh_suspend(void)
 {
-	if (!sdh_enabled || sdh_suspended) {
+	uint8_t sd_is_enabled;
+
+	(void)sd_softdevice_is_enabled(&sd_is_enabled);
+
+	if (!sd_is_enabled) {
+		LOG_WRN("Tried to suspend, but SoftDevice is disabled");
+		return;
+	}
+	if (sdh_suspended) {
+		LOG_WRN("Tried to suspend, but already is suspended");
 		return;
 	}
 
@@ -179,7 +183,16 @@ void nrf_sdh_suspend(void)
 
 void nrf_sdh_resume(void)
 {
-	if ((!sdh_suspended) || (!sdh_enabled)) {
+	uint8_t sd_is_enabled;
+
+	(void)sd_softdevice_is_enabled(&sd_is_enabled);
+
+	if (!sd_is_enabled) {
+		LOG_WRN("Tried to resume, but SoftDevice is disabled");
+		return;
+	}
+	if (!sdh_suspended) {
+		LOG_WRN("Tried to resume, but not suspended");
 		return;
 	}
 
@@ -192,7 +205,11 @@ void nrf_sdh_resume(void)
 
 bool nrf_sdh_is_suspended(void)
 {
-	return (!sdh_enabled) || (sdh_suspended);
+	uint8_t sd_is_enabled;
+
+	(void) sd_softdevice_is_enabled(&sd_is_enabled);
+
+	return (!sd_is_enabled || sdh_suspended);
 }
 
 void nrf_sdh_evts_poll(void)

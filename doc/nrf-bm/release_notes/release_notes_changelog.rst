@@ -46,6 +46,7 @@ SoftDevice Handler
     or ``NRF_SDH_STATE_EVT_DISABLE_PREPARE`` to abort state changes instead.
   * The ``nrf_sdh_ble_app_ram_start_get`` function.
   * The ``nrf_sdh_request_continue`` function.
+  * The ``nrf_sdh_is_enabled`` function.
 
 Boards
 ======
