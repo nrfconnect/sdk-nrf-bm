@@ -16,12 +16,6 @@ if LOG_BACKEND_BM_UARTE
 config LOG_BACKEND_UART
 	default n
 
-# This is required to output printk immediately when we have the console.
-# If not, we wait on log_process, which can be problematic if we add a print right before exiting the
-# application.
-config LOG_PRINTK
-	default n if CONSOLE
-
 # Disable deprecated symbol
 config DEPRECATED_UART_NRFX_UARTE_LEGACY_SHIM
 	bool
