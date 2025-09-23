@@ -402,7 +402,7 @@ void pm_handler_pm_evt_log(pm_evt_t const *p_pm_evt)
 		break;
 
 	case PM_EVT_PEER_DELETE_SUCCEEDED:
-		LOG_ERR("Peer deleted successfully: peer_id: %d", p_pm_evt->peer_id);
+		LOG_INF("Peer deleted successfully: peer_id: %d", p_pm_evt->peer_id);
 		break;
 
 	case PM_EVT_PEER_DELETE_FAILED:
