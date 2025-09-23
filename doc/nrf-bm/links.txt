@@ -79,3 +79,7 @@
 .. _`S115 9.0.0-3.prototype API reference`: https://docs.nordicsemi.com/bundle/s115_9.0.0-3.prototype_api/page/topics.html
 .. _`nRF5 SDK DFU memory layout`: https://docs.nordicsemi.com/bundle/sdk_nrf5_v17.1.0/page/lib_bootloader.html
 .. _`MCUmgr SMP protocol`: https://docs.zephyrproject.org/latest/services/device_mgmt/smp_protocol.html
+
+.. ### Other links
+
+.. _`Bluetooth Core Specification`: https://www.bluetooth.org/en-us/specification/adopted-specifications

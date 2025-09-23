@@ -42,6 +42,15 @@ Advertising and Scan Response Data Encoder
 .. doxygengroup:: ble_sdk_lib_advdata
    :inner:
 
+.. _api_peer_manager:
+
+Peer Manager
+============
+
+.. doxygengroup:: peer_manager
+   :inner:
+   :members:
+
 Bare Metal Zephyr Memory Storage (ZMS)
 ======================================
 
