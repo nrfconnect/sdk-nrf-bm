@@ -245,14 +245,6 @@ int nrf_sdh_disable_request(void);
 int nrf_sdh_observer_ready(struct nrf_sdh_state_evt_observer *observer);
 
 /**
- * @brief Retrieve the SoftDevice state.
- *
- * @retval true If the SoftDevice is enabled.
- * @retval false If the SoftDevice is disabled.
- */
-bool nrf_sdh_is_enabled(void);
-
-/**
  * @brief Stop processing SoftDevice events.
  *
  * This function disables the SoftDevice interrupt.
