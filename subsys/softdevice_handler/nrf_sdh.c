@@ -19,7 +19,8 @@ LOG_MODULE_REGISTER(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
 #warning Please select NRF_CLOCK_LF_ACCURACY_500_PPM when using NRF_CLOCK_LF_SRC_RC
 #endif
 
-static atomic_t sdh_suspended;	/* Whether this module is pulling SoftDevice events or not. */
+/* Whether this module is pulling SoftDevice events or not. */
+static atomic_t sdh_is_suspended;
 
 static char *state_tostr(enum nrf_sdh_state_evt s)
 {
@@ -109,7 +110,7 @@ int nrf_sdh_enable_request(void)
 		return -EINVAL;
 	}
 
-	atomic_set(&sdh_suspended, false);
+	atomic_set(&sdh_is_suspended, false);
 
 	/* Enable event interrupt, the priority has already been set by the stack. */
 	NVIC_EnableIRQ((IRQn_Type)SD_EVT_IRQn);
@@ -160,14 +161,14 @@ void nrf_sdh_suspend(void)
 		LOG_WRN("Tried to suspend, but SoftDevice is disabled");
 		return;
 	}
-	if (sdh_suspended) {
+	if (sdh_is_suspended) {
 		LOG_WRN("Tried to suspend, but already is suspended");
 		return;
 	}
 
 	NVIC_DisableIRQ((IRQn_Type)SD_EVT_IRQn);
 
-	atomic_set(&sdh_suspended, true);
+	atomic_set(&sdh_is_suspended, true);
 }
 
 void nrf_sdh_resume(void)
@@ -180,7 +181,7 @@ void nrf_sdh_resume(void)
 		LOG_WRN("Tried to resume, but SoftDevice is disabled");
 		return;
 	}
-	if (!sdh_suspended) {
+	if (!sdh_is_suspended) {
 		LOG_WRN("Tried to resume, but not suspended");
 		return;
 	}
@@ -189,12 +190,12 @@ void nrf_sdh_resume(void)
 	NVIC_SetPendingIRQ((IRQn_Type)SD_EVT_IRQn);
 	NVIC_EnableIRQ((IRQn_Type)SD_EVT_IRQn);
 
-	atomic_set(&sdh_suspended, false);
+	atomic_set(&sdh_is_suspended, false);
 }
 
 bool nrf_sdh_is_suspended(void)
 {
-	return sdh_suspended;
+	return sdh_is_suspended;
 }
 
 void nrf_sdh_evts_poll(void)
