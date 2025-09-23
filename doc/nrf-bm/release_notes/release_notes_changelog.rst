@@ -45,6 +45,7 @@ SoftDevice Handler
     Register a state event observer and return non-zero to ``NRF_SDH_STATE_EVT_ENABLE_PREPARE``
     or ``NRF_SDH_STATE_EVT_DISABLE_PREPARE`` to abort state changes instead.
   * The ``nrf_sdh_ble_app_ram_start_get`` function.
+  * The ``nrf_sdh_request_continue`` function.
 
 Boards
 ======
