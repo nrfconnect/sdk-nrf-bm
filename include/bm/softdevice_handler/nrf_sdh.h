@@ -124,6 +124,10 @@ struct nrf_sdh_state_evt_observer {
 	 * @brief A context parameter to the event handler.
 	 */
 	void *context;
+	/**
+	 * @brief The observer's state during the latest SoftDevice state transistion.
+	 */
+	bool is_busy;
 };
 
 /**
@@ -132,8 +136,10 @@ struct nrf_sdh_state_evt_observer {
  * A SoftDevice state observer receives events when the SoftDevice state has changed
  * or is about to change. An observer may return non-zero when receiving
  * @ref NRF_SDH_STATE_EVT_ENABLE_PREPARE or @ref NRF_SDH_STATE_EVT_DISABLE_PREPARE
- * to halt the state change. A state change halted this way can be resumed
- * by calling @ref nrf_sdh_request_continue().
+ * to halt the state change.
+ *
+ * Note that state events may be sent from various contexts, depending on the context
+ * of the initiator of the SoftDevice state change.
  *
  * @param _observer Name of the observer.
  * @param _handler State request handler.
@@ -144,8 +150,8 @@ struct nrf_sdh_state_evt_observer {
 #define NRF_SDH_STATE_EVT_OBSERVER(_observer, _handler, _ctx, _prio)                               \
 	PRIO_LEVEL_IS_VALID(_prio);                                                                \
 	static int _handler(enum nrf_sdh_state_evt, void *);                                       \
-	const TYPE_SECTION_ITERABLE(struct nrf_sdh_state_evt_observer, _observer,                  \
-				    nrf_sdh_state_evt_observers, PRIO_LEVEL_ORD(_prio)) = {        \
+	TYPE_SECTION_ITERABLE(struct nrf_sdh_state_evt_observer, _observer,                        \
+			      nrf_sdh_state_evt_observers, PRIO_LEVEL_ORD(_prio)) = {              \
 		.handler = _handler,                                                               \
 		.context = _ctx,                                                                   \
 	};
@@ -194,40 +200,49 @@ struct nrf_sdh_stack_evt_observer {
 /**
  * @brief Enable the SoftDevice.
  *
- * Enable the SoftDevice and send state events to registered observers.
- * An observer may halt the SoftDevice state change by returning non-zero when receiving
- * @ref NRF_SDH_STATE_EVT_ENABLE_PREPARE.
+ * Request to enable the SoftDevice. An observer may stop the SoftDevice state change
+ * by returning non-zero when receiving the @ref NRF_SDH_STATE_EVT_ENABLE_PREPARE event.
+ * If an observer does so, it must call @ref nrf_sdh_observer_ready() when it becomes ready.
  *
- * @retval 0 On success.
- * @retval -EALREADY The SoftDevice is already enabled.
- * @retval -EBUSY An observer was busy, retry later.
+ * @retval 0 If the SoftDevice has been enabled.
+ * @retval -EALREADY If the SoftDevice is already enabled.
+ * @retval -EINPROGRESS If a state change has already been requested.
+ * @retval -EBUSY The request was sent, but one or more observer were busy.
+ *		  Once all observers have become ready, the SoftDevice will change state
+ *		  and the @ref NRF_SDH_STATE_EVT_ENABLED event is sent.
  */
 int nrf_sdh_enable_request(void);
 
 /**
  * @brief Disable the SoftDevice.
  *
- * Disable the SoftDevice and send state events to registered observers.
- * An observer may halt the SoftDevice state change by returning non-zero when receiving
- * @ref NRF_SDH_STATE_EVT_DISABLE_PREPARE.
+ * Request to disable the SoftDevice. An observer may stop the SoftDevice state change
+ * by returning non-zero when receiving the @ref NRF_SDH_STATE_EVT_DISABLE_PREPARE event.
+ * If an observer does so, it must call @ref nrf_sdh_observer_ready() when it becomes ready.
  *
- * @retval 0 On success.
- * @retval -EALREADY The SoftDevice is already disabled.
- * @retval -EBUSY An observer was busy, retry later.
+ * @retval 0 If the SoftDevice has been disabled.
+ * @retval -EALREADY If the SoftDevice is already disabled.
+ * @retval -EINPROGRESS If a state change has already been requested.
+ * @retval -EBUSY The request was sent, but one or more observer were busy.
+ *		  Once all observers have become ready, the SoftDevice will change state
+ *		  and the @ref NRF_SDH_STATE_EVT_DISABLED event is sent.
  */
 int nrf_sdh_disable_request(void);
 
 /**
- * @brief Function for restarting the SoftDevice Enable/Disable process.
+ * @brief Mark an observer ready for a SoftDevice state change.
  *
- * Modules which did not acknowledge a @ref NRF_SDH_STATE_REQ_ENABLE or
- * @ref NRF_SDH_STATE_REQ_DISABLE request must call this function to restart the
- * SoftDevice state change process.
+ * This function will dispatch an event to all remaining observers that were busy, if any.
+ * If the caller was the last observer to become ready, this function will change
+ * the SoftDevice state.
  *
- * @retval 0 On success.
- * @retval -EINVAL No state change request was pending.
+ * @param observer The observer to mark as ready.
+ *
+ * @retval 0 The observer is marked as ready.
+ * @retval -EFAULT If @p observer is @c NULL.
+ * @retval -EPERM If called when no request to change the SoftDevice state was made.
  */
-int nrf_sdh_request_continue(void);
+int nrf_sdh_observer_ready(struct nrf_sdh_state_evt_observer *observer);
 
 /**
  * @brief Retrieve the SoftDevice state.

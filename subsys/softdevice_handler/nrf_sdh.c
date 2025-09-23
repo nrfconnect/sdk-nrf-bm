@@ -39,10 +39,18 @@ static char *state_to_str(enum nrf_sdh_state_evt s)
 	};
 }
 
-/* Used in nrf_sdh_ble.c */
-int sdh_state_evt_observer_notify(enum nrf_sdh_state_evt state)
+/**
+ * @brief Notify a state change to state observers.
+ *
+ * Extern in nrf_sdh_ble.c
+ *
+ * @param state The state to be notified.
+ * @return true If any observers are busy.
+ * @return false If no observers are busy.
+ */
+bool sdh_state_evt_observer_notify(enum nrf_sdh_state_evt state)
 {
-	int busy;
+	bool busy;
 	bool all_ready;
 	bool busy_is_allowed;
 
@@ -57,22 +65,23 @@ int sdh_state_evt_observer_notify(enum nrf_sdh_state_evt state)
 			  (state == NRF_SDH_STATE_EVT_DISABLE_PREPARE);
 
 	TYPE_SECTION_FOREACH(struct nrf_sdh_state_evt_observer, nrf_sdh_state_evt_observers, obs) {
-		busy = obs->handler(state, obs->context);
-
-		all_ready &= !busy;
-		if (!busy) {
-			continue;
+		/* If it's a _PREPARE event, dispatch only to busy observers, and update
+		 * their busy state in RAM. Otherwise dispatch unconditionally to all observers.
+		 */
+		if (busy_is_allowed && obs->is_busy) {
+			obs->is_busy = !!obs->handler(state, obs->context);
+			if (obs->is_busy) {
+				LOG_DBG("SoftDevice observer %p is busy", obs);
+			}
+			all_ready &= !obs->is_busy;
+		} else {
+			busy = obs->handler(state, obs->context);
+			(void) busy;
+			__ASSERT(!busy, "Returning non-zero from these events is ignored");
 		}
-		if (!busy_is_allowed) {
-			__ASSERT(busy_is_allowed,
-				 "Returning non-zero from these events is ignored");
-			continue;
-		}
-
-		LOG_DBG("SoftDevice observer %p is busy", obs);
 	}
 
-	return all_ready ? 0 : -EBUSY;
+	return !all_ready;
 }
 
 __weak void softdevice_fault_handler(uint32_t id, uint32_t pc, uint32_t info)
@@ -98,7 +107,7 @@ __weak void softdevice_fault_handler(uint32_t id, uint32_t pc, uint32_t info)
 	}
 }
 
-int nrf_sdh_enable_request(void)
+static int nrf_sdh_enable(void)
 {
 	int err;
 	const nrf_clock_lf_cfg_t clock_lf_cfg = {
@@ -110,21 +119,6 @@ int nrf_sdh_enable_request(void)
 		.hfint_ctiv = CONFIG_NRF_SDH_CLOCK_HFINT_CALIBRATION_INTERVAL,
 	};
 
-	if (sdh_enabled) {
-		return -EALREADY;
-	}
-
-	/* Notify observers about starting SoftDevice enable process. */
-	atomic_set(&sdh_transition, true);
-
-	err = sdh_state_evt_observer_notify(NRF_SDH_STATE_EVT_ENABLE_PREPARE);
-	if (err) {
-		/* Leave sdh_transition to 1, so process can be continued */
-		return -EBUSY;
-	}
-
-	atomic_set(&sdh_transition, false);
-
 	err = sd_softdevice_enable(&clock_lf_cfg, softdevice_fault_handler);
 	if (err) {
 		LOG_ERR("Failed to enable SoftDevice, nrf_error %#x", err);
@@ -133,34 +127,19 @@ int nrf_sdh_enable_request(void)
 
 	atomic_set(&sdh_enabled, true);
 	atomic_set(&sdh_suspended, false);
+	atomic_set(&sdh_transition, false);
 
 	/* Enable event interrupt, the priority has already been set by the stack. */
 	NVIC_EnableIRQ((IRQn_Type)SD_EVT_IRQn);
 
-	/* Notify observers about a finished SoftDevice enable process. */
 	(void)sdh_state_evt_observer_notify(NRF_SDH_STATE_EVT_ENABLED);
 
 	return 0;
 }
 
-int nrf_sdh_disable_request(void)
+static int nrf_sdh_disable(void)
 {
 	int err;
-
-	if (!sdh_enabled) {
-		return -EALREADY;
-	}
-
-	atomic_set(&sdh_transition, true);
-
-	/* Notify observers about starting SoftDevice disable process. */
-	err = sdh_state_evt_observer_notify(NRF_SDH_STATE_EVT_DISABLE_PREPARE);
-	if (err) {
-		/* Leave sdh_transition to 1, so process can be continued */
-		return -EBUSY;
-	}
-
-	atomic_set(&sdh_transition, false);
 
 	err = sd_softdevice_disable();
 	if (err) {
@@ -169,26 +148,110 @@ int nrf_sdh_disable_request(void)
 	}
 
 	atomic_set(&sdh_enabled, false);
+	atomic_set(&sdh_transition, false);
 
 	NVIC_DisableIRQ((IRQn_Type)SD_EVT_IRQn);
 
-	/* Notify observers about a finished SoftDevice enable process. */
 	(void)sdh_state_evt_observer_notify(NRF_SDH_STATE_EVT_DISABLED);
 
 	return 0;
 }
 
-int nrf_sdh_request_continue(void)
+int nrf_sdh_enable_request(void)
 {
-	if (!sdh_transition) {
-		return -EINVAL;
-	}
+	bool busy;
 
 	if (sdh_enabled) {
-		return nrf_sdh_disable_request();
-	} else {
-		return nrf_sdh_enable_request();
+		return -EALREADY;
 	}
+	if (sdh_transition) {
+		return -EINPROGRESS;
+	}
+
+	atomic_set(&sdh_transition, true);
+
+	/* Assume all observers to be busy */
+	TYPE_SECTION_FOREACH(struct nrf_sdh_state_evt_observer,
+			     nrf_sdh_state_evt_observers, obs) {
+		obs->is_busy = true;
+	}
+
+	busy = sdh_state_evt_observer_notify(NRF_SDH_STATE_EVT_ENABLE_PREPARE);
+	if (busy) {
+		/* Leave sdh_transition to 1, so process can be continued */
+		return -EBUSY;
+	}
+
+	return nrf_sdh_enable();
+}
+
+int nrf_sdh_disable_request(void)
+{
+	bool busy;
+
+	if (!sdh_enabled) {
+		return -EALREADY;
+	}
+	if (sdh_transition) {
+		return -EINPROGRESS;
+	}
+
+	atomic_set(&sdh_transition, true);
+
+	/* Assume all observers to be busy */
+	TYPE_SECTION_FOREACH(struct nrf_sdh_state_evt_observer,
+			     nrf_sdh_state_evt_observers, obs) {
+		obs->is_busy = true;
+	}
+
+	busy = sdh_state_evt_observer_notify(NRF_SDH_STATE_EVT_DISABLE_PREPARE);
+	if (busy) {
+		/* Leave sdh_transition to 1, so process can be continued */
+		return -EBUSY;
+	}
+
+	return nrf_sdh_disable();
+}
+
+int nrf_sdh_observer_ready(struct nrf_sdh_state_evt_observer *obs)
+{
+	int err;
+	bool busy;
+	uint8_t enabled;
+
+	if (!obs) {
+		return -EFAULT;
+	}
+	if (!sdh_transition) {
+		return -EPERM;
+	}
+	if (!obs->is_busy) {
+		LOG_WRN("Observer %p is not busy", obs);
+		return 0;
+	}
+
+	obs->is_busy = false;
+
+	(void)sd_softdevice_is_enabled(&enabled);
+
+	busy = sdh_state_evt_observer_notify(enabled ? NRF_SDH_STATE_EVT_DISABLE_PREPARE
+						     : NRF_SDH_STATE_EVT_ENABLE_PREPARE);
+
+	/* Another observer needs to ready itself */
+	if (busy) {
+		return 0;
+	}
+
+	if (enabled) {
+		err = nrf_sdh_disable();
+	} else {
+		err = nrf_sdh_enable();
+	}
+
+	__ASSERT(!err, "Failed to change SoftDevice state");
+	(void) err;
+
+	return 0;
 }
 
 bool nrf_sdh_is_enabled(void)

@@ -1,0 +1,1 @@
+ITERABLE_SECTION_RAM(nrf_sdh_state_evt_observers, 4)

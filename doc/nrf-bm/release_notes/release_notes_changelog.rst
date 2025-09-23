@@ -40,6 +40,7 @@ SoftDevice Handler
   * Priority levels for SoftDevice event observers: HIGHEST, HIGH, USER, USER_LOW, LOWEST.
   * The :c:func:`nrf_sdh_ble_evt_to_str` function to stringify a BLE event.
   * The :c:func:`nrf_sdh_soc_evt_to_str` function to stringify a SoC event.
+  * The :c:func:`nrf_sdh_observer_ready` function to ready an observer for a SoftDevice state change.
 
 * Changed:
 
@@ -51,6 +52,7 @@ SoftDevice Handler
   * The ``NRF_SDH_STATE_REQ_OBSERVER`` macro and relative data types.
     Register a state event observer and return non-zero to :c:enum:`NRF_SDH_STATE_EVT_ENABLE_PREPARE`
     or :c:enum:`NRF_SDH_STATE_EVT_DISABLE_PREPARE` to abort state changes instead.
+  * The ``nrf_sdh_request_continue`` function.
 
 Boards
 ======
