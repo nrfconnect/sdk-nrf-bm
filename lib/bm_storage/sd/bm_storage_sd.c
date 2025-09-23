@@ -339,8 +339,6 @@ static void on_soc_evt(uint32_t evt, void *ctx)
 
 	if (!state.paused) {
 		queue_process();
-	} else {
-		nrf_sdh_request_continue();
 	}
 }
 

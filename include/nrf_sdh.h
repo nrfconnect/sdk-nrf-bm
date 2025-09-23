@@ -132,8 +132,7 @@ struct nrf_sdh_state_evt_observer {
  * A SoftDevice state observer receives events when the SoftDevice state has changed
  * or is about to change. An observer may return non-zero when receiving
  * @ref NRF_SDH_STATE_EVT_ENABLE_PREPARE or @ref NRF_SDH_STATE_EVT_DISABLE_PREPARE
- * to halt the state change. A state change halted this way can be resumed
- * by calling @ref nrf_sdh_request_continue().
+ * to halt the state change.
  *
  * @param _observer Name of the observer.
  * @param _handler State request handler.
@@ -216,18 +215,6 @@ int nrf_sdh_enable_request(void);
  * @retval -EBUSY An observer was busy, retry later.
  */
 int nrf_sdh_disable_request(void);
-
-/**
- * @brief Function for restarting the SoftDevice Enable/Disable process.
- *
- * Modules which did not acknowledge a @ref NRF_SDH_STATE_REQ_ENABLE or
- * @ref NRF_SDH_STATE_REQ_DISABLE request must call this function to restart the
- * SoftDevice state change process.
- *
- * @retval 0 On success.
- * @retval -EINVAL No state change request was pending.
- */
-int nrf_sdh_request_continue(void);
 
 /**
  * @brief Retrieve the SoftDevice state.

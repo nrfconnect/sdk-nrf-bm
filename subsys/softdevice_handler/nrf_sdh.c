@@ -21,7 +21,6 @@ LOG_MODULE_REGISTER(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
 
 static atomic_t sdh_enabled;	/* Whether the SoftDevice is enabled. */
 static atomic_t sdh_suspended;	/* Whether this module is suspended. */
-static atomic_t sdh_transition; /* Whether enable/disable process was started. */
 
 static char *state_tostr(enum nrf_sdh_state_evt s)
 {
@@ -98,16 +97,10 @@ int nrf_sdh_enable_request(void)
 		return -EALREADY;
 	}
 
-	/* Notify observers about starting SoftDevice enable process. */
-	atomic_set(&sdh_transition, true);
-
 	err = sdh_state_evt_observer_notify(NRF_SDH_STATE_EVT_ENABLE_PREPARE);
 	if (err) {
-		/* Leave sdh_transition to 1, so process can be continued */
 		return -EBUSY;
 	}
-
-	atomic_set(&sdh_transition, false);
 
 	err = sd_softdevice_enable(&clock_lf_cfg, softdevice_fault_handler);
 	if (err) {
@@ -135,16 +128,11 @@ int nrf_sdh_disable_request(void)
 		return -EALREADY;
 	}
 
-	atomic_set(&sdh_transition, true);
-
 	/* Notify observers about starting SoftDevice disable process. */
 	err = sdh_state_evt_observer_notify(NRF_SDH_STATE_EVT_DISABLE_PREPARE);
 	if (err) {
-		/* Leave sdh_transition to 1, so process can be continued */
 		return -EBUSY;
 	}
-
-	atomic_set(&sdh_transition, false);
 
 	err = sd_softdevice_disable();
 	if (err) {
@@ -160,19 +148,6 @@ int nrf_sdh_disable_request(void)
 	(void) sdh_state_evt_observer_notify(NRF_SDH_STATE_EVT_DISABLED);
 
 	return 0;
-}
-
-int nrf_sdh_request_continue(void)
-{
-	if (!sdh_transition) {
-		return -EINVAL;
-	}
-
-	if (sdh_enabled) {
-		return nrf_sdh_disable_request();
-	} else {
-		return nrf_sdh_enable_request();
-	}
 }
 
 bool nrf_sdh_is_enabled(void)
