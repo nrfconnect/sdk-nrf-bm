@@ -41,9 +41,16 @@ SoftDevice Handler
   * The :c:func:`nrf_sdh_ble_evt_to_str` function to stringify a BLE event.
   * The :c:func:`nrf_sdh_soc_evt_to_str` function to stringify a SoC event.
 
+* Changed:
+
+  * The return type of the :c:type:`nrf_sdh_state_evt_handler_t` event handler to ``int``.
+
 * Removed:
 
   * The ``nrf_sdh_ble_app_ram_start_get`` function, use ``DT_REG_ADDR(DT_CHOSEN(zephyr_sram))`` instead.
+  * The ``NRF_SDH_STATE_REQ_OBSERVER`` macro and relative data types.
+    Register a state event observer and return non-zero to :c:enum:`NRF_SDH_STATE_EVT_ENABLE_PREPARE`
+    or :c:enum:`NRF_SDH_STATE_EVT_DISABLE_PREPARE` to abort state changes instead.
 
 Boards
 ======
