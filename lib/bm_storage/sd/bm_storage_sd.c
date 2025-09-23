@@ -9,6 +9,7 @@
 #include <zephyr/sys/ring_buffer.h>
 #include <nrfx.h>
 #include <nrf_soc.h>
+#include <nrf_sdm.h>
 #include <nrf_sdh_soc.h>
 #include <nrf_sdh.h>
 #include <nrf_error.h>
@@ -226,7 +227,7 @@ uint32_t bm_storage_backend_init(struct bm_storage *storage)
 		return NRF_ERROR_BUSY;
 	}
 
-	state.sd_enabled = nrf_sdh_is_enabled();
+	sd_softdevice_is_enabled((uint8_t *)&state.sd_enabled);
 
 	state.type = BM_STORAGE_SD_STATE_IDLE;
 
