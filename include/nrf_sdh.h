@@ -201,6 +201,7 @@ struct nrf_sdh_stack_evt_observer {
  *
  * @retval 0 On success.
  * @retval -EALREADY The SoftDevice is already enabled.
+ * @retval -EBUSY An observer was busy, retry later.
  */
 int nrf_sdh_enable_request(void);
 
@@ -213,6 +214,7 @@ int nrf_sdh_enable_request(void);
  *
  * @retval 0 On success.
  * @retval -EALREADY The SoftDevice is already disabled.
+ * @retval -EBUSY An observer was busy, retry later.
  */
 int nrf_sdh_disable_request(void);
 
