@@ -26,9 +26,11 @@ static void on_soc_evt(uint32_t evt, void *ctx)
 }
 NRF_SDH_SOC_OBSERVER(sdh_soc, on_soc_evt, NULL, USER_LOW);
 
-static void on_state_change(enum nrf_sdh_state_evt state, void *ctx)
+static int on_state_change(enum nrf_sdh_state_evt state, void *ctx)
 {
-	LOG_INF("SoftDevice state has changed to %d", state);
+	LOG_INF("SoftDevice state %d", state);
+
+	return 0;
 }
 NRF_SDH_STATE_EVT_OBSERVER(sdh_state, on_state_change, NULL, USER_LOW);
 
