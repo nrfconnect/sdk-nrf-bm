@@ -301,11 +301,7 @@ void nrf_sdh_resume(void)
 
 bool nrf_sdh_is_suspended(void)
 {
-	uint8_t sd_is_enabled;
-
-	(void)sd_softdevice_is_enabled(&sd_is_enabled);
-
-	return (!sd_is_enabled || sdh_suspended);
+	return sdh_suspended;
 }
 
 void nrf_sdh_evts_poll(void)
