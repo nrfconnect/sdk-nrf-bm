@@ -18,4 +18,3 @@ tests:
   lib.bm_zms.softdevice:
     extra_args:
       - CONFIG_SOFTDEVICE=y
-      - CONFIG_NRF_SDH=y
