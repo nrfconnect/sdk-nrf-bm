@@ -14,4 +14,4 @@ toolchain:
   - zephyr
 sysbuild: true
 ram: 78
-flash: 282
+flash: 286

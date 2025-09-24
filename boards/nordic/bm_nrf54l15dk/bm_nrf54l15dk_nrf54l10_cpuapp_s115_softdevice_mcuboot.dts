@@ -48,14 +48,14 @@
 
 		boot_partition: partition@0 {
 			label = "boot";
-			reg = <0x00000000 DT_SIZE_K(36)>;
+			reg = <0x00000000 DT_SIZE_K(31)>;
 		};
 
-		storage_partition: partition@9000 {
+		storage_partition: partition@7c00 {
 			compatible = "fixed-subpartitions";
 			label = "storage";
-			reg = <0x00009000 DT_SIZE_K(8)>;
-			ranges = <0x0 0x9000 DT_SIZE_K(8)>;
+			reg = <0x00007c00 DT_SIZE_K(8)>;
+			ranges = <0x0 0x7c00 DT_SIZE_K(8)>;
 			#address-cells = <1>;
 			#size-cells = <1>;
 
@@ -70,9 +70,11 @@
 			};
 		};
 
-		slot0_partition: partition@b000 {
+		/* Area from 0x9c00 to 0xa000 is unused due to alignment */
+
+		slot0_partition: partition@a000 {
 			label = "slot0";
-			reg = <0x0000b000 DT_SIZE_K(794)>;
+			reg = <0x0000a000 DT_SIZE_K(798)>;
 		};
 
 		slot1_partition: partition@d1800 {
