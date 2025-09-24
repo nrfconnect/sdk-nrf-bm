@@ -57,7 +57,7 @@ config PM_PEER_RANKS_ENABLED
 
 config PM_LESC_ENABLED
 	bool "Enable/disable LESC support in Peer Manager."
-	default n
+	default y
 	depends on PSA_WANT_ALG_ECDH
 	depends on PSA_WANT_GENERATE_RANDOM
 	depends on PSA_WANT_KEY_TYPE_ECC_KEY_PAIR_GENERATE
