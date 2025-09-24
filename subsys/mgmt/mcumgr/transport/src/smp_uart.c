@@ -74,7 +74,7 @@ static void smp_uart_rx_frag(struct uart_mcumgr_rx_buf *rx_buf)
 
 static uint16_t smp_uart_get_mtu(const struct net_buf *nb)
 {
-	return CONFIG_UART_MCUMGR_RX_BUF_SIZE;
+	return CONFIG_MCUMGR_TRANSPORT_BM_UART_RX_BUF_SIZE;
 }
 
 static int smp_uart_tx_pkt(struct net_buf *nb)
