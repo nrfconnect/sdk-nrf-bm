@@ -2,3 +2,4 @@ setuptools
 wheel
 west
 gitlint
+python-dotenv
