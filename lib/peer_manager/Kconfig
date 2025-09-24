@@ -40,11 +40,12 @@ config PM_FLASH_BUFFERS
 	  Number of internal buffers for flash operations.
 	  Decrease this value to lower RAM usage.
 
-config PM_SERVICE_CHANGED_ENABLED
-	bool "Enable/disable the service changed management for GATT server in Peer Manager."
-	default y
+config PM_SERVICE_CHANGED
+	bool "Service changed management for GATT server in Peer Manager."
+	default y if NRF_SDH_BLE_SERVICE_CHANGED
+	default n
 	help
-	  Enable/disable the service changed management for GATT server in Peer Manager.
+	  Service changed management for GATT server in Peer Manager.
 	  If not using a GATT server, or using a server without a service changed characteristic,
 	  disable this to save code space.
 

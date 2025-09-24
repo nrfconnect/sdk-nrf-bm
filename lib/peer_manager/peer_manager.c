@@ -453,7 +453,7 @@ uint32_t pm_conn_sec_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *p_
 
 void pm_local_database_has_changed(void)
 {
-#if !defined(CONFIG_PM_SERVICE_CHANGED_ENABLED) || (CONFIG_PM_SERVICE_CHANGED_ENABLED == 1)
+#if !defined(CONFIG_PM_SERVICE_CHANGED) || (CONFIG_PM_SERVICE_CHANGED == 1)
 	VERIFY_MODULE_INITIALIZED_VOID();
 
 	gcm_local_database_has_changed();
