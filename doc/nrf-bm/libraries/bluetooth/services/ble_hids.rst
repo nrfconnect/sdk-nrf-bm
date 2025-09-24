@@ -22,17 +22,17 @@ Set the :kconfig:option:`CONFIG_BLE_HIDS` Kconfig option to enable the service.
 
 The HID service can be configured by using the following Kconfig options:
 
-* The :kconfig:option:`CONFIG_BLE_HIDS_BOOT_MOUSE` Kconfig option adds the boot mouse input characteristic.
-* The :kconfig:option:`CONFIG_BLE_HIDS_BOOT_KEYBOARD` Kconfig option adds the boot keyboard input and output characteristics.
-* The :kconfig:option:`CONFIG_BLE_HIDS_PROTOCOL_MODE_REPORT` Kconfig option sets the default HID protocol mode to report mode.
-* The :kconfig:option:`CONFIG_BLE_HIDS_PROTOCOL_MODE_BOOT` Kconfig option sets the default HID protocol mode to boot mode.
-* The :kconfig:option:`CONFIG_BLE_HIDS_INPUT_REPORT_MAX_NUM` Kconfig option sets the number of input reports.
-* The :kconfig:option:`CONFIG_BLE_HIDS_INPUT_REPORT_MAX_LEN` Kconfig option sets the maximum length of the input reports.
-* The :kconfig:option:`CONFIG_BLE_HIDS_OUTPUT_REPORT_MAX_NUM` Kconfig option sets the number of output reports.
-* The :kconfig:option:`CONFIG_BLE_HIDS_OUTPUT_REPORT_MAX_LEN` Kconfig option sets the maximum length of the output reports.
-* The :kconfig:option:`CONFIG_BLE_HIDS_FEATURE_REPORT_MAX_NUM` Kconfig option sets the number of feature reports.
-* The :kconfig:option:`CONFIG_BLE_HIDS_FEATURE_REPORT_MAX_LEN` Kconfig option sets the maximum length of the feature reports.
-* The :kconfig:option:`CONFIG_BLE_HIDS_MAX_CLIENTS` Kconfig option sets the maximum number of HID clients.
+* :kconfig:option:`CONFIG_BLE_HIDS_BOOT_MOUSE` - Adds the boot mouse input characteristic.
+* :kconfig:option:`CONFIG_BLE_HIDS_BOOT_KEYBOARD` - Adds the boot keyboard input and output characteristics.
+* :kconfig:option:`CONFIG_BLE_HIDS_PROTOCOL_MODE_REPORT` - Sets the default HID protocol mode to report mode.
+* :kconfig:option:`CONFIG_BLE_HIDS_PROTOCOL_MODE_BOOT` - Sets the default HID protocol mode to boot mode.
+* :kconfig:option:`CONFIG_BLE_HIDS_INPUT_REPORT_MAX_NUM` - Sets the number of input reports.
+* :kconfig:option:`CONFIG_BLE_HIDS_INPUT_REPORT_MAX_LEN` - Sets the maximum length of the input reports.
+* :kconfig:option:`CONFIG_BLE_HIDS_OUTPUT_REPORT_MAX_NUM` - Sets the number of output reports.
+* :kconfig:option:`CONFIG_BLE_HIDS_OUTPUT_REPORT_MAX_LEN` - Sets the maximum length of the output reports.
+* :kconfig:option:`CONFIG_BLE_HIDS_FEATURE_REPORT_MAX_NUM` - Sets the number of feature reports.
+* :kconfig:option:`CONFIG_BLE_HIDS_FEATURE_REPORT_MAX_LEN` - Sets the maximum length of the feature reports.
+* :kconfig:option:`CONFIG_BLE_HIDS_MAX_CLIENTS` - Sets the maximum number of HID clients.
 
 Initialization
 ==============
