@@ -60,6 +60,8 @@
 .. _`System reset`: https://docs.zephyrproject.org/latest/services/device_mgmt/smp_groups/smp_group_0.html#system-reset
 .. _`Image tool`: https://docs.mcuboot.com/imgtool.html
 .. _`Vector table requirement`: https://developer.arm.com/documentation/100235/0002/sqf1486724325622
+.. _`Introduction to KMU key provisioning`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/app_dev/device_guides/nrf54l/kmu_basics.html
+.. _`Performing KMU provisioning`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/app_dev/device_guides/nrf54l/kmu_provision.html
 
 .. ### Release notes
 
