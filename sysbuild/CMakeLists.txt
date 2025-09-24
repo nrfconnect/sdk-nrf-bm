@@ -22,6 +22,7 @@ function(bm_install_setup)
       )
 
       add_overlay_dts(${SB_CONFIG_BM_FIRMWARE_LOADER_IMAGE_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/image_configurations/FIRMWARE_LOADER_image_default.overlay)
+      add_overlay_config(mcuboot ${CMAKE_CURRENT_SOURCE_DIR}/image_configurations/BOOTLOADER_image_default.conf)
 
       # Enable LTO on MCUboot image
       add_overlay_config(mcuboot ${CMAKE_CURRENT_SOURCE_DIR}/image_configurations/lto.conf)
