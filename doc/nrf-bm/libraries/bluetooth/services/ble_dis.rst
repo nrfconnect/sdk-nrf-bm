@@ -26,28 +26,28 @@ Set the :kconfig:option:`CONFIG_BLE_DIS` Kconfig option to enable the service.
 
 The DIS service can be configured by using the following Kconfig options:
 
-* The :kconfig:option:`BLE_DIS_MANUFACTURER_NAME` sets the manufacturer name.
-* The :kconfig:option:`BLE_DIS_MODEL_NUMBER` sets the model number.
-* The :kconfig:option:`BLE_DIS_SERIAL_NUMBER` sets the serial number.
-* The :kconfig:option:`BLE_DIS_HW_REVISION` sets the hardware revision.
-* The :kconfig:option:`BLE_DIS_FW_REVISION` sets the firmware revision.
-* The :kconfig:option:`BLE_DIS_SW_REVISION` sets the software revision.
-* The :kconfig:option:`BLE_DIS_SYSTEM_ID` includes the system ID characteristic in the Device Information Service.
-* The :kconfig:option:`BLE_DIS_SYSTEM_ID_OUI` sets the organization unique ID.
-* The :kconfig:option:`BLE_DIS_SYSTEM_ID_MID` sets the manufacturer unique ID.
-* The :kconfig:option:`BLE_DIS_PNP_ID` includes plug and play ID characteristic.
-* The :kconfig:option:`BLE_DIS_PNP_VID_SRC` sets the vendor ID source.
-* The :kconfig:option:`BLE_DIS_PNP_VID` sets the vendor ID.
-* The :kconfig:option:`BLE_DIS_PNP_PID` sets the product ID.
-* The :kconfig:option:`BLE_DIS_PNP_VER` sets the product version.
-* The :kconfig:option:`BLE_DIS_REGULATORY_CERT` includes IEEE regulatory certifications.
-* The :kconfig:option:`BLE_DIS_REGULATORY_CERT_LIST` sets the regulatory certification list.
-* The :kconfig:option:`BLE_DIS_CHAR_SEC_MODE_JUST_WORKS` sets the service security mode to open link.
-* The :kconfig:option:`BLE_DIS_CHAR_SEC_MODE_ENCRYPTED` sets the service security mode to encrypted.
-* The :kconfig:option:`BLE_DIS_CHAR_SEC_MODE_ENCRYPTED_MITM` sets the service security mode to encrypted with man in the middle protection.
-* The :kconfig:option:`BLE_DIS_CHAR_SEC_MODE_LESC_ENCRYPTED_MITM` sets the service security mode to LESC encryption with man-in-the-middle protection.
-* The :kconfig:option:`BLE_DIS_CHAR_SEC_MODE_SIGNED` sets the service security mode to signing or encryption required.
-* The :kconfig:option:`BLE_DIS_CHAR_SEC_MODE_SIGNED_MITM` sets the service security mode to signing or encryption required, with man in the middle protection.
+* :kconfig:option:`BLE_DIS_MANUFACTURER_NAME` - Sets the manufacturer name.
+* :kconfig:option:`BLE_DIS_MODEL_NUMBER` - Sets the model number.
+* :kconfig:option:`BLE_DIS_SERIAL_NUMBER` - Sets the serial number.
+* :kconfig:option:`BLE_DIS_HW_REVISION` - Sets the hardware revision.
+* :kconfig:option:`BLE_DIS_FW_REVISION` - Sets the firmware revision.
+* :kconfig:option:`BLE_DIS_SW_REVISION` - Sets the software revision.
+* :kconfig:option:`BLE_DIS_SYSTEM_ID` - Includes the system ID characteristic in the Device Information Service.
+* :kconfig:option:`BLE_DIS_SYSTEM_ID_OUI` - Sets the organization unique ID.
+* :kconfig:option:`BLE_DIS_SYSTEM_ID_MID` - Sets the manufacturer unique ID.
+* :kconfig:option:`BLE_DIS_PNP_ID` - Includes plug and play ID characteristic.
+* :kconfig:option:`BLE_DIS_PNP_VID_SRC` - Sets the vendor ID source.
+* :kconfig:option:`BLE_DIS_PNP_VID` - Sets the vendor ID.
+* :kconfig:option:`BLE_DIS_PNP_PID` - Sets the product ID.
+* :kconfig:option:`BLE_DIS_PNP_VER` - Sets the product version.
+* :kconfig:option:`BLE_DIS_REGULATORY_CERT` - Includes IEEE regulatory certifications.
+* :kconfig:option:`BLE_DIS_REGULATORY_CERT_LIST` - Sets the regulatory certification list.
+* :kconfig:option:`BLE_DIS_CHAR_SEC_MODE_JUST_WORKS` - Sets the service security mode to open link.
+* :kconfig:option:`BLE_DIS_CHAR_SEC_MODE_ENCRYPTED` - Sets the service security mode to encrypted.
+* :kconfig:option:`BLE_DIS_CHAR_SEC_MODE_ENCRYPTED_MITM` - Sets the service security mode to encrypted with man in the middle protection.
+* :kconfig:option:`BLE_DIS_CHAR_SEC_MODE_LESC_ENCRYPTED_MITM` - Sets the service security mode to LESC encryption with man-in-the-middle protection.
+* :kconfig:option:`BLE_DIS_CHAR_SEC_MODE_SIGNED` - Sets the service security mode to signing or encryption required.
+* :kconfig:option:`BLE_DIS_CHAR_SEC_MODE_SIGNED_MITM` - Sets the service security mode to signing or encryption required, with man in the middle protection.
 
 Initialization
 ==============

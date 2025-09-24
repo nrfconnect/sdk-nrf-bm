@@ -25,8 +25,8 @@ Set the :kconfig:option:`CONFIG_BLE_CGMS` Kconfig option to enable the service.
 
 The CGMS service can be configured by using the following Kconfig options:
 
-* The :kconfig:option:`CONFIG_BLE_CGMS_BLE_OBSERVER_PRIO` Kconfig option sets the observer priority of the CGMS instance.
-* The :kconfig:option:`CONFIG_BLE_CGMS_DB_RECORDS_MAX` Kconfig option sets the maximum number of records that can be stored in the database.
+* :kconfig:option:`CONFIG_BLE_CGMS_BLE_OBSERVER_PRIO` - Sets the observer priority of the CGMS instance.
+* :kconfig:option:`CONFIG_BLE_CGMS_DB_RECORDS_MAX` - Sets the maximum number of records that can be stored in the database.
 
 Initialization
 ==============
