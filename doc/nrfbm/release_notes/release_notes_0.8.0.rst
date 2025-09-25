@@ -213,7 +213,7 @@ Peripheral samples
 
   * :ref:`bm_zms_sample` sample.
   * :ref:`bm_lpuarte_sample` sample.
-  * :ref:`storage_sample` sample.
+  * :ref:`bm_storage_sample` sample.
 
 DFU samples
 -----------
