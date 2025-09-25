@@ -42,13 +42,13 @@ DOXYFILE_ENCODING      = UTF-8
 # title of most generated pages and in a few other places.
 # The default value is: My Project.
 
-PROJECT_NAME           = "nRF Connect SDK Bare Metal option API"
+PROJECT_NAME           = "nRF Connect SDK Bare Metal API"
 
 # The PROJECT_NUMBER tag can be used to enter a project or revision number. This
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER         = 0.8.0
+PROJECT_NUMBER         = @DOCSET_VERSION@
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewer a
@@ -61,7 +61,7 @@ PROJECT_BRIEF          =
 # pixels and the maximum width should not exceed 200 pixels. Doxygen will copy
 # the logo to the output directory.
 
-PROJECT_LOGO           = ../../_doxygen/logo.png
+PROJECT_LOGO           = @NRF_BM_BASE@/doc/_doxygen/logo.png
 
 # With the PROJECT_ICON tag one can specify an icon that is included in the tabs
 # when the HTML document is shown. Doxygen will copy the logo to the output
@@ -74,7 +74,7 @@ PROJECT_ICON           =
 # entered, it will be relative to the location where Doxygen was started. If
 # left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = doxygen
+OUTPUT_DIRECTORY       = @DOCSET_BUILD_DIR@
 
 # If the CREATE_SUBDIRS tag is set to YES then Doxygen will create up to 4096
 # sub-directories (in 2 levels) under the output directory of each output format
@@ -180,7 +180,7 @@ FULL_PATH_NAMES        = YES
 # will be relative from the directory where Doxygen is started.
 # This tag requires that the tag FULL_PATH_NAMES is set to YES.
 
-STRIP_FROM_PATH        = ../../../
+STRIP_FROM_PATH        = @DOCSET_SOURCE_BASE@
 
 # The STRIP_FROM_INC_PATH tag can be used to strip a user-defined part of the
 # path mentioned in the documentation of a class, which tells the reader which
@@ -279,7 +279,13 @@ TAB_SIZE               = 8
 # with the commands \{ and \} for these it is advised to use the version @{ and
 # @} or use a double escape (\\{ and \\})
 
-ALIASES                =
+ALIASES                = events="<dl class="params"><dt>Events generated</dt><dd><table class="params">" \
+                         event{1}="<tr><td colspan=2>\1</td></tr>" \
+                         event{2}="<tr><td class="paramname">\1</td><td>\2</td></tr>" \
+                         endevents="</table></dd></dl>" \
+                         mscs="<dl class="params"><dt>Relevant Message Sequence Charts</dt><dd><table class="params">" \
+                         mmsc{1}="<tr><td class="paramname">\1</td></tr>" \
+                         endmscs="</table></dd></dl>"
 
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C sources
 # only. Doxygen will then generate output that is more tailored for C. For
@@ -857,14 +863,14 @@ QUIET                  = YES
 # Tip: Turn warnings on while writing the documentation.
 # The default value is: YES.
 
-WARNINGS               = YES
+WARNINGS               = NO
 
 # If the WARN_IF_UNDOCUMENTED tag is set to YES then Doxygen will generate
 # warnings for undocumented members. If EXTRACT_ALL is set to YES then this flag
 # will automatically be disabled.
 # The default value is: YES.
 
-WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_UNDOCUMENTED   = NO
 
 # If the WARN_IF_DOC_ERROR tag is set to YES, Doxygen will generate warnings for
 # potential errors in the documentation, such as documenting some parameters in
@@ -872,14 +878,14 @@ WARN_IF_UNDOCUMENTED   = YES
 # using markup commands wrongly.
 # The default value is: YES.
 
-WARN_IF_DOC_ERROR      = YES
+WARN_IF_DOC_ERROR      = NO
 
 # If WARN_IF_INCOMPLETE_DOC is set to YES, Doxygen will warn about incomplete
 # function parameter documentation. If set to NO, Doxygen will accept that some
 # parameters have no documentation without warning.
 # The default value is: YES.
 
-WARN_IF_INCOMPLETE_DOC = YES
+WARN_IF_INCOMPLETE_DOC = NO
 
 # This WARN_NO_PARAMDOC option can be enabled to get warnings for functions that
 # are documented, but have no documentation for their parameters or return
@@ -955,16 +961,16 @@ WARN_LOGFILE           =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = ../../../include/ \
-                         ../../../include/bm/ \
-                         ../../../include/bm/bluetooth \
-                         ../../../include/bm/bluetooth/services \
-                         ../../../include/bm/bluetooth/peer_manager \
-                         ../../../include/bm/drivers \
-                         ../../../include/bm/fs \
-                         ../../../include/bm/softdevice_handler \
-                         ../../../include/bm/storage \
-                         mainpage.dox
+INPUT                  = @DOCSET_SOURCE_BASE@/include/ \
+                         @DOCSET_SOURCE_BASE@/include/bm/ \
+                         @DOCSET_SOURCE_BASE@/include/bm/bluetooth \
+                         @DOCSET_SOURCE_BASE@/include/bm/bluetooth/services \
+                         @DOCSET_SOURCE_BASE@/include/bm/bluetooth/peer_manager \
+                         @DOCSET_SOURCE_BASE@/include/bm/drivers \
+                         @DOCSET_SOURCE_BASE@/include/bm/fs \
+                         @DOCSET_SOURCE_BASE@/include/bm/softdevice_handler \
+                         @DOCSET_SOURCE_BASE@/include/bm/storage \
+                         @DOCSET_SOURCE_BASE@/doc/nrf-bm/doxygen/mainpage.dox
 
 # This tag can be used to specify the character encoding of the source files
 # that Doxygen parses. Internally Doxygen uses the UTF-8 encoding. Doxygen uses
@@ -1291,7 +1297,7 @@ HTML_FILE_EXTENSION    = .html
 # of the possible markers and block names see the documentation.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_HEADER            = ../../_doxygen/header.html
+HTML_HEADER            = @NRF_BM_BASE@/doc/_doxygen/header.html
 
 # The HTML_FOOTER tag can be used to specify a user-defined HTML footer for each
 # generated HTML page. If the tag is left blank Doxygen will generate a standard
@@ -1331,7 +1337,7 @@ HTML_STYLESHEET        =
 # documentation.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_EXTRA_STYLESHEET  = ../../_doxygen/doxygen-awesome.css
+HTML_EXTRA_STYLESHEET  = @NRF_BM_BASE@/doc/_doxygen/doxygen-awesome.css
 
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
 # other source files which should be copied to the HTML output directory. Note
@@ -1341,9 +1347,10 @@ HTML_EXTRA_STYLESHEET  = ../../_doxygen/doxygen-awesome.css
 # files will be copied as-is; there are no commands or markers available.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_EXTRA_FILES       = ../../_doxygen/doxygen-awesome-darkmode-toggle.js \
-                         ../../_doxygen/doxygen-awesome-paragraph-link.js \
-                         ../../_doxygen/doxygen-awesome-interactive-toc.js
+HTML_EXTRA_FILES       = @NRF_BM_BASE@/doc/_doxygen/doxygen-awesome-darkmode-toggle.js \
+                         @NRF_BM_BASE@/doc/_doxygen/doxygen-awesome-fragment-copy-button.js \
+                         @NRF_BM_BASE@/doc/_doxygen/doxygen-awesome-paragraph-link.js \
+                         @NRF_BM_BASE@/doc/_doxygen/doxygen-awesome-interactive-toc.js
 
 # The HTML_COLORSTYLE tag can be used to specify if the generated HTML output
 # should be rendered with a dark or light theme.
@@ -2230,7 +2237,7 @@ GENERATE_XML           = YES
 # The default directory is: xml.
 # This tag requires that the tag GENERATE_XML is set to YES.
 
-XML_OUTPUT             = nrf-bm_api_xml
+XML_OUTPUT             = xml
 
 # If the XML_PROGRAMLISTING tag is set to YES, Doxygen will dump the program
 # listings (including syntax highlighting and cross-referencing information) to
@@ -2401,13 +2408,6 @@ INCLUDE_FILE_PATTERNS  =
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
 PREDEFINED             = __DOXYGEN__ \
-                         CONFIG_BLE_QWR_MAX_ATTR=1 \
-                         CONFIG_BLE_SCAN_FILTER=1 \
-                         CONFIG_BLE_SCAN_NAME_COUNT=1 \
-                         CONFIG_BLE_SCAN_SHORT_NAME_COUNT=1 \
-                         CONFIG_BLE_SCAN_ADDRESS_COUNT=1 \
-                         CONFIG_BLE_SCAN_UUID_COUNT=1 \
-                         CONFIG_BLE_SCAN_APPEARANCE_COUNT=1 \
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
 # tag can be used to specify a list of macro names that should be expanded. The
@@ -2841,5 +2841,3 @@ MSCGEN_TOOL            =
 # command).
 
 MSCFILE_DIRS           =
-
-@INCLUDE = ../../_doxygen/aliases.doxyfile

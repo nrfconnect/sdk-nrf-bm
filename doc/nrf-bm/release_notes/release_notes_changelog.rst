@@ -128,8 +128,8 @@ Libraries
 
    * Renamed:
 
-     * The ``ble_adv_whitelist_reply``function to :c:func:`ble_adv_allow_list_reply`.
-     * The ``ble_adv_restart_without_whitelist``function to :c:func:`ble_adv_restart_without_allow_list`.
+     * The ``ble_adv_whitelist_reply`` function to :c:func:`ble_adv_allow_list_reply`.
+     * The ``ble_adv_restart_without_whitelist`` function to :c:func:`ble_adv_restart_without_allow_list`.
      * The ``BLE_ADV_EVT_FAST_WHITELIST`` enumerator in the :c:enum:`ble_adv_evt_type` enumeration to :c:enumerator:`BLE_ADV_EVT_FAST_ALLOW_LIST`.
      * The ``BLE_ADV_EVT_SLOW_WHITELIST`` enumerator in the :c:enum:`ble_adv_evt_type` enumeration to :c:enumerator:`BLE_ADV_EVT_SLOW_ALLOW_LIST`.
      * The ``BLE_ADV_EVT_WHITELIST_REQUEST`` enumerator in the :c:enum:`ble_adv_evt_type` enumeration to :c:enumerator:`BLE_ADV_EVT_ALLOW_LIST_REQUEST`.
@@ -211,7 +211,7 @@ Libraries
      * All instances of ``pm_failure_evt_t`` to struct :c:struct:`pm_failure_evt` and removed the ``pm_failure_evt_t`` type.
      * All instances of ``pm_evt_t`` to struct :c:struct:`pm_evt` and removed the ``pm_evt_t`` type.
      * The name of the ``pm_whitelist_get`` function to :c:func:`pm_allow_list_get`.
-     * The name of the ``pm_whitelist_set``function to :c:func:`pm_allow_list_set`.
+     * The name of the ``pm_whitelist_set`` function to :c:func:`pm_allow_list_set`.
      * The name of the ``PM_EVT_SLAVE_SECURITY_REQ`` enumerator in the :c:enum:`pm_evt_id` enumeration to :c:enumerator:`PM_EVT_PERIPHERAL_SECURITY_REQ`.
      * The name of the ``slave_security_req`` member in the :c:struct:`pm_evt` structure to :c:member:`pm_evt.peripheral_security_req`.
 

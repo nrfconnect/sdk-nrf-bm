@@ -76,7 +76,7 @@ Programming the S115 SoftDevice
 
 .. include:: /includes/softdevice_flash.txt
 
-.. _ble_hrs_sample_testing:
+.. _ble_hrs_central_sample_testing:
 
 Building and running
 ********************
