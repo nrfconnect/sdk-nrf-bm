@@ -12,6 +12,8 @@ API documentation
 Libraries
 *********
 
+.. _api_ble_conn_params:
+
 Bluetooth LE Connection Parameter library
 =========================================
 

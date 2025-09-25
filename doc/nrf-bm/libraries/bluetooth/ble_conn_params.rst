@@ -146,4 +146,4 @@ API documentation
 | Header file: :file:`include/ble_conn_params.h`
 | Source files: :file:`lib/ble_conn_params/`
 
-   .. doxygengroup:: ble_conn_params
+:ref:`Bluetooth LE Connection Parameter library API reference <api_ble_conn_params>`
