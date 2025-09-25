@@ -1,12 +1,11 @@
 ALIASES += \
 
 ### Aliases from SD
-ALIASES += events="<dl class="params"><dt>Events generated</dt><dd><table class="params">"
+ALIASES += events="<dl class=\"params\"><dt>Events generated</dt><dd><table class=\"params\">"
 ALIASES += event{1}="<tr><td colspan=2>\1</td></tr>"
-ALIASES += event{2}="<tr><td class="paramname">\1</td><td>\2</td></tr>"
+ALIASES += event{2}="<tr><td class=\"paramname\">\1</td><td>\2</td></tr>"
 ALIASES += endevents="</table></dd></dl>"
 
-# @msc is reserved, use @mmsc as "my @msc"
-ALIASES += mscs="<dl class="params"><dt>Relevant Message Sequence Charts</dt><dd><table class="params">"
-ALIASES += mmsc{1}="<tr><td class="paramname">\1</td></tr>"
+ALIASES += mscs="<dl class=\"params\"><dt>Relevant Message Sequence Charts</dt><dd><table class=\"params\">"
+ALIASES += mmsc{1}="<tr><td class=\"paramname\">\1</td></tr>"
 ALIASES += endmscs="</table></dd></dl>"

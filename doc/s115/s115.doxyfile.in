@@ -42,13 +42,13 @@ DOXYFILE_ENCODING      = UTF-8
 # title of most generated pages and in a few other places.
 # The default value is: My Project.
 
-PROJECT_NAME           = "nRF Connect SDK Bare Metal option API"
+PROJECT_NAME           = "S115 SoftDevice API documentation"
 
 # The PROJECT_NUMBER tag can be used to enter a project or revision number. This
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER         = 0.8.0
+PROJECT_NUMBER         = @DOCSET_VERSION@
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewer a
@@ -61,7 +61,7 @@ PROJECT_BRIEF          =
 # pixels and the maximum width should not exceed 200 pixels. Doxygen will copy
 # the logo to the output directory.
 
-PROJECT_LOGO           = ../../_doxygen/logo.png
+PROJECT_LOGO           = @NRFBM_BASE@/doc/_doxygen/logo.png
 
 # With the PROJECT_ICON tag one can specify an icon that is included in the tabs
 # when the HTML document is shown. Doxygen will copy the logo to the output
@@ -74,7 +74,7 @@ PROJECT_ICON           =
 # entered, it will be relative to the location where Doxygen was started. If
 # left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = doxygen
+OUTPUT_DIRECTORY       = @DOCSET_BUILD_DIR@
 
 # If the CREATE_SUBDIRS tag is set to YES then Doxygen will create up to 4096
 # sub-directories (in 2 levels) under the output directory of each output format
@@ -168,7 +168,7 @@ INLINE_INHERITED_MEMB  = YES
 # shortest path that makes the file name unique will be used
 # The default value is: YES.
 
-FULL_PATH_NAMES        = YES
+FULL_PATH_NAMES        = NO
 
 # The STRIP_FROM_PATH tag can be used to strip a user-defined part of the path.
 # Stripping is only done if one of the specified strings matches the left-hand
@@ -180,7 +180,7 @@ FULL_PATH_NAMES        = YES
 # will be relative from the directory where Doxygen is started.
 # This tag requires that the tag FULL_PATH_NAMES is set to YES.
 
-STRIP_FROM_PATH        = ../../../
+STRIP_FROM_PATH        = @DOCSET_SOURCE_BASE@/components/softdevice/s115/s115_API/
 
 # The STRIP_FROM_INC_PATH tag can be used to strip a user-defined part of the
 # path mentioned in the documentation of a class, which tells the reader which
@@ -189,7 +189,7 @@ STRIP_FROM_PATH        = ../../../
 # specify the list of include paths that are normally passed to the compiler
 # using the -I flag.
 
-STRIP_FROM_INC_PATH    =
+STRIP_FROM_INC_PATH    = @DOCSET_SOURCE_BASE@/components/softdevice/s115/s115_API/include/
 
 # If the SHORT_NAMES tag is set to YES, Doxygen will generate much shorter (but
 # less readable) file names. This can be useful is your file systems doesn't
@@ -780,7 +780,7 @@ SHOW_USED_FILES        = YES
 # (if specified).
 # The default value is: YES.
 
-SHOW_FILES             = YES
+SHOW_FILES             = NO
 
 # Set the SHOW_NAMESPACES tag to NO to disable the generation of the Namespaces
 # page. This will remove the Namespaces entry from the Quick Index and from the
@@ -955,16 +955,9 @@ WARN_LOGFILE           =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = ../../../include/ \
-                         ../../../include/bm/ \
-                         ../../../include/bm/bluetooth \
-                         ../../../include/bm/bluetooth/services \
-                         ../../../include/bm/bluetooth/peer_manager \
-                         ../../../include/bm/drivers \
-                         ../../../include/bm/fs \
-                         ../../../include/bm/softdevice_handler \
-                         ../../../include/bm/storage \
-                         mainpage.dox
+INPUT                  = @DOCSET_SOURCE_BASE@/components/softdevice/s115/s115_API/doc/ \
+                         @DOCSET_SOURCE_BASE@/components/softdevice/s115/s115_API/include/ \
+                         @DOCSET_SOURCE_BASE@/doc/s115/mainpage.dox
 
 # This tag can be used to specify the character encoding of the source files
 # that Doxygen parses. Internally Doxygen uses the UTF-8 encoding. Doxygen uses
@@ -1010,7 +1003,7 @@ FILE_PATTERNS          = *.h, *.dox
 # be searched for input files as well.
 # The default value is: NO.
 
-RECURSIVE              = NO
+RECURSIVE              = YES
 
 # The EXCLUDE tag can be used to specify files and/or directories that should be
 # excluded from the INPUT source files. This way you can easily exclude a
@@ -1131,7 +1124,7 @@ FILTER_SOURCE_PATTERNS =
 # (index.html). This can be useful if you have a project on for instance GitHub
 # and want to reuse the introduction page also for the Doxygen output.
 
-USE_MDFILE_AS_MAINPAGE = YES
+USE_MDFILE_AS_MAINPAGE =
 
 # The Fortran standard specifies that for fixed formatted Fortran code all
 # characters from position 72 are to be considered as comment. A common
@@ -1291,7 +1284,7 @@ HTML_FILE_EXTENSION    = .html
 # of the possible markers and block names see the documentation.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_HEADER            = ../../_doxygen/header.html
+HTML_HEADER            = @NRFBM_BASE@/doc/_doxygen/header.html
 
 # The HTML_FOOTER tag can be used to specify a user-defined HTML footer for each
 # generated HTML page. If the tag is left blank Doxygen will generate a standard
@@ -1331,7 +1324,7 @@ HTML_STYLESHEET        =
 # documentation.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_EXTRA_STYLESHEET  = ../../_doxygen/doxygen-awesome.css
+HTML_EXTRA_STYLESHEET  = @NRFBM_BASE@/doc/_doxygen/doxygen-awesome.css
 
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
 # other source files which should be copied to the HTML output directory. Note
@@ -1341,9 +1334,9 @@ HTML_EXTRA_STYLESHEET  = ../../_doxygen/doxygen-awesome.css
 # files will be copied as-is; there are no commands or markers available.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_EXTRA_FILES       = ../../_doxygen/doxygen-awesome-darkmode-toggle.js \
-                         ../../_doxygen/doxygen-awesome-paragraph-link.js \
-                         ../../_doxygen/doxygen-awesome-interactive-toc.js
+HTML_EXTRA_FILES       = @NRFBM_BASE@/doc/_doxygen/doxygen-awesome-darkmode-toggle.js \
+                         @NRFBM_BASE@/doc/_doxygen/doxygen-awesome-paragraph-link.js \
+                         @NRFBM_BASE@/doc/_doxygen/doxygen-awesome-interactive-toc.js
 
 # The HTML_COLORSTYLE tag can be used to specify if the generated HTML output
 # should be rendered with a dark or light theme.
@@ -2230,7 +2223,7 @@ GENERATE_XML           = YES
 # The default directory is: xml.
 # This tag requires that the tag GENERATE_XML is set to YES.
 
-XML_OUTPUT             = nrf-bm_api_xml
+XML_OUTPUT             = xml
 
 # If the XML_PROGRAMLISTING tag is set to YES, Doxygen will dump the program
 # listings (including syntax highlighting and cross-referencing information) to
@@ -2401,7 +2394,14 @@ INCLUDE_FILE_PATTERNS  =
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
 PREDEFINED             = __DOXYGEN__ \
-                         CONFIG_BLE_QWR_MAX_ATTR=1 \
+                         __cplusplus \
+                         "SVCALL(number, return_type, signature):= return_type signature" \
+                         BLE_STACK_SUPPORT_REQD \
+                         ENABLE_DEBUG_LOG_SUPPORT \
+                         SPI_MASTER_0_ENABLE \
+                         SPI_MASTER_1_ENABLE \
+                         ENABLE_DEBUG_LOG_SUPPORT \
+                         SUPPRESS_INLINE_IMPLEMENTATION
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
 # tag can be used to specify a list of macro names that should be expanded. The
@@ -2836,4 +2836,4 @@ MSCGEN_TOOL            =
 
 MSCFILE_DIRS           =
 
-@INCLUDE = ../../_doxygen/aliases.doxyfile
+@INCLUDE = ../_doxygen/aliases.doxyfile
