@@ -17,4 +17,13 @@ rsource "samples/Kconfig"
 rsource "subsys/Kconfig"
 # zephyr-keep-sorted-stop
 
+config PROGRAM_SOFTDEVICE_WITH_APP
+	bool "Program SoftDevice together with application (none MCUboot board variant)"
+	depends on !BOOTLOADER_MCUBOOT
+	depends on SOFTDEVICE
+	default y
+
+config SOFTDEVICE_FILE
+	string "SoftDevice file (DO NOT ALTER)"
+
 endif # NCS_BM
