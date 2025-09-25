@@ -1,6 +1,9 @@
 name: Documentation Build
 
-on: [push, pull_request, workflow_dispatch]
+on: [push, pull_request]
+
+env:
+  DOXYGEN_VERSION: 1.12.0
 
 jobs:
   build:
@@ -8,14 +11,43 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          path: sdk-nrf-bm/nrf-bm
 
-      - name: Install Doxygen
-        run: sudo apt-get install -y doxygen
+      - name: Install system dependencies
+        run: |
+          sudo apt-get install -y cmake ninja-build
+          wget --no-verbose "https://github.com/doxygen/doxygen/releases/download/Release_${DOXYGEN_VERSION//./_}/doxygen-${DOXYGEN_VERSION}.linux.bin.tar.gz"
+          sudo tar xf doxygen-${DOXYGEN_VERSION}.linux.bin.tar.gz -C /opt
+          echo "/opt/doxygen-${DOXYGEN_VERSION}/bin" >> $GITHUB_PATH
+
+      - name: Set up Python
+        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+        with:
+          python-version: 3.12
+          cache: pip
+          cache-dependency-path: sdk-nrf-bm/nrf-bm/doc/requirements.txt
+
+      - name: Install Python dependencies
+        working-directory: sdk-nrf-bm/nrf-bm
+        run: |
+          pip install west
+          pip install -r doc/requirements.txt
+
+      - name: West update
+        working-directory: sdk-nrf-bm/nrf-bm
+        run: |
+          west init -l .
+          west update -o=--depth=1 -n
+          west zephyr-export
 
       - name: Build
+        working-directory: sdk-nrf-bm/nrf-bm
         run: |
-          cd doc/nrf-bm
-          python3 gen_docs.py
+          cmake -G Ninja -S doc -B doc/_build
+          cmake --build doc/_build
 
       - name: Check version
         run: |
@@ -31,7 +63,7 @@ jobs:
           echo "VERSION=${VERSION}" >> "$GITHUB_ENV"
 
       - name: Prepare Azure upload
-        working-directory: doc/nrf-bm/_build/html
+        working-directory: sdk-nrf-bm/nrf-bm/doc/_build/html
         run: |
           MONITOR="monitor_${{ github.run_id }}.txt"
 
@@ -48,7 +80,7 @@ jobs:
           zip -rq "${ARCHIVE}" .
 
       - name: Find nRF Connect SDK Bare Metal Edited Documents
-        working-directory: doc
+        working-directory: sdk-nrf-bm/nrf-bm
         run: |
           COMMENT="comment.txt"
           PREFIX="https://ncsbmdoc.z6.web.core.windows.net/PR-${{ github.event.pull_request.number }}/"
@@ -56,13 +88,13 @@ jobs:
           echo "You can find the documentation preview for this PR [here](${PREFIX})." >> $COMMENT
 
       - name: Stage files for publish
+        working-directory: sdk-nrf-bm/nrf-bm
         run: |
-          rm -rf publish
-          mkdir -p publish
-          cp doc/nrf-bm/_build/html/monitor_*.txt publish/
-          cp doc/nrf-bm/_build/html/*.zip publish/
-          if [[ -f doc/nrf-bm/_build/html/pr.txt ]]; then cp doc/nrf-bm/_build/html/pr.txt publish/; fi
-          cp doc/comment.txt publish/
+          mkdir publish
+          cp doc/_build/html/monitor_*.txt publish/
+          cp doc/_build/html/*.zip publish/
+          if [[ -f doc/_build/html/pr.txt ]]; then cp doc/_build/html/pr.txt publish/; fi
+          cp comment.txt publish/
 
       - name: Store
         if: ${{ !contains(github.event.pull_request.labels.*.name, 'external') || contains(github.event.pull_request.labels.*.name, 'CI-trusted-author') }}
@@ -71,4 +103,4 @@ jobs:
           name: docs
           retention-days: 5
           path: |
-            publish/*
+            sdk-nrf-bm/nrf-bm/publish/*

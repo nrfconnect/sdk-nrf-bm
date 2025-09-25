@@ -8,7 +8,7 @@ NFC: Text record for Type 2 Tag
    :depth: 2
 
 The NFC Text record for Type 2 Tag sample shows how to use the NFC tag to expose a text record on a Type 2 Tag to NFC polling devices.
-It uses the :ref:`lib_nfc_ndef`.
+It uses the NFC Data Exchange Format (NDEF).
 
 Requirements
 ************
@@ -81,9 +81,7 @@ Dependencies
 
 This sample uses the following |NCS| libraries:
 
-* :ref:`nfc_ndef_msg`
-* :ref:`nfc_text`
+* NDEF messages
+* Text records
 
-In addition, it uses the Type 2 Tag library from `sdk-nrfxlib`_:
-
-* :ref:`nrfxlib:nfc_api_type2`
+In addition, it uses the Type 2 Tag library from `sdk-nrfxlib`_.
