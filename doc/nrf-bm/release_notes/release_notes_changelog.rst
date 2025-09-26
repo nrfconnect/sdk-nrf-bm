@@ -1,5 +1,3 @@
-:orphan:
-
 .. _nrf_bm_release_notes_0999:
 
 Release Notes for |BMlong| v0.9.99
