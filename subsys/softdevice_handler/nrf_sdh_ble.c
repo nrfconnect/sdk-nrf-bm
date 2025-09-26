@@ -6,18 +6,24 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <ble.h>
 #include <nrf_sdh.h>
 #include <nrf_sdh_ble.h>
-#include <ble.h>
 #include <zephyr/logging/log.h>
 
 #define APP_RAM_START DT_REG_ADDR(DT_CHOSEN(zephyr_sram))
 
 LOG_MODULE_DECLARE(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
 
-const char *gap_evt_tostr(int evt)
+const char *nrf_sdh_ble_evt_tostr(uint32_t evt)
 {
+	int err;
+	static char buf[sizeof("BLE event: 0xFFFFFFFF")];
+
 	switch (evt) {
+#if defined(CONFIG_NRF_SDH_STR_TABLES)
+	/* GAP */
 	case BLE_GAP_EVT_CONNECTED:
 		return "BLE_GAP_EVT_CONNECTED";
 	case BLE_GAP_EVT_DISCONNECTED:
@@ -70,20 +76,60 @@ const char *gap_evt_tostr(int evt)
 #endif
 	case BLE_GAP_EVT_ADV_SET_TERMINATED:
 		return "BLE_GAP_EVT_ADV_SET_TERMINATED";
+
+	/* GATTS */
+	case BLE_GATTS_EVT_WRITE:
+		return "BLE_GATTS_EVT_WRITE";
+	case BLE_GATTS_EVT_RW_AUTHORIZE_REQUEST:
+		return "BLE_GATTS_EVT_RW_AUTHORIZE_REQUEST";
+	case BLE_GATTS_EVT_SYS_ATTR_MISSING:
+		return "BLE_GATTS_EVT_SYS_ATTR_MISSING";
+	case BLE_GATTS_EVT_HVC:
+		return "BLE_GATTS_EVT_HVC";
+	case BLE_GATTS_EVT_SC_CONFIRM:
+		return "BLE_GATTS_EVT_SC_CONFIRM";
+	case BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST:
+		return "BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST";
+	case BLE_GATTS_EVT_TIMEOUT:
+		return "BLE_GATTS_EVT_TIMEOUT";
+	case BLE_GATTS_EVT_HVN_TX_COMPLETE:
+		return "BLE_GATTS_EVT_HVN_TX_COMPLETE";
+
+	/* GATTC */
+	case BLE_GATTC_EVT_PRIM_SRVC_DISC_RSP:
+		return "BLE_GATTC_EVT_PRIM_SRVC_DISC_RSP";
+	case BLE_GATTC_EVT_REL_DISC_RSP:
+		return "BLE_GATTC_EVT_REL_DISC_RSP";
+	case BLE_GATTC_EVT_CHAR_DISC_RSP:
+		return "BLE_GATTC_EVT_CHAR_DISC_RSP";
+	case BLE_GATTC_EVT_DESC_DISC_RSP:
+		return "BLE_GATTC_EVT_DESC_DISC_RSP";
+	case BLE_GATTC_EVT_ATTR_INFO_DISC_RSP:
+		return "BLE_GATTC_EVT_ATTR_INFO_DISC_RSP";
+	case BLE_GATTC_EVT_CHAR_VAL_BY_UUID_READ_RSP:
+		return "BLE_GATTC_EVT_CHAR_VAL_BY_UUID_READ_RSP";
+	case BLE_GATTC_EVT_READ_RSP:
+		return "BLE_GATTC_EVT_READ_RSP";
+	case BLE_GATTC_EVT_CHAR_VALS_READ_RSP:
+		return "BLE_GATTC_EVT_CHAR_VALS_READ_RSP";
+	case BLE_GATTC_EVT_WRITE_RSP:
+		return "BLE_GATTC_EVT_WRITE_RSP";
+	case BLE_GATTC_EVT_HVX:
+		return "BLE_GATTC_EVT_HVX";
+	case BLE_GATTC_EVT_EXCHANGE_MTU_RSP:
+		return "BLE_GATTC_EVT_EXCHANGE_MTU_RSP";
+	case BLE_GATTC_EVT_TIMEOUT:
+		return "BLE_GATTC_EVT_TIMEOUT";
+	case BLE_GATTC_EVT_WRITE_CMD_TX_COMPLETE:
+		return "BLE_GATTC_EVT_WRITE_CMD_TX_COMPLETE";
+#endif
 	default:
-		return "unknown";
+		err = snprintf(buf, sizeof(buf), "BLE event: %#x", evt);
+		__ASSERT(err != -1, "Encode error");
+		__ASSERT(err < sizeof(buf), "Buffer too small");
+		(void) err;
+		return buf;
 	}
-}
-
-int nrf_sdh_ble_app_ram_start_get(uint32_t *app_ram_start)
-{
-	if (!app_ram_start) {
-		return -EFAULT;
-	}
-
-	*app_ram_start = APP_RAM_START;
-
-	return 0;
 }
 
 static int default_cfg_set(void)
@@ -297,11 +343,7 @@ static void ble_evt_poll(void *context)
 			break;
 		}
 
-		if (IS_ENABLED(CONFIG_NRF_SDH_STR_TABLES)) {
-			LOG_DBG("BLE event: %s", gap_evt_tostr(ble_evt->header.evt_id));
-		} else {
-			LOG_DBG("BLE event: %#x", ble_evt->header.evt_id);
-		}
+		LOG_DBG("%s", nrf_sdh_ble_evt_tostr(ble_evt->header.evt_id));
 
 		if (ble_evt->header.evt_id == BLE_GAP_EVT_CONNECTED) {
 			idx_assign(ble_evt->evt.gap_evt.conn_handle);
@@ -320,8 +362,8 @@ static void ble_evt_poll(void *context)
 
 	/* An SoC event may have triggered this round of polling, and BLE may not be enabled */
 	__ASSERT((err == NRF_ERROR_NOT_FOUND) || (err == BLE_ERROR_NOT_ENABLED),
-		"Failed to receive SoftDevice event, nrf_error %#x", err);
+		"Failed to receive SoftDevice BLE event, nrf_error %#x", err);
 }
 
 /* Listen to SoftDevice events */
-NRF_SDH_STACK_EVT_OBSERVER(ble_evt_obs, ble_evt_poll, NULL, 0);
+NRF_SDH_STACK_EVT_OBSERVER(ble_evt_obs, ble_evt_poll, NULL, HIGH);

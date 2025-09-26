@@ -6,62 +6,49 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <nrf_soc.h>
 #include <nrf_sdh.h>
 #include <nrf_sdh_soc.h>
-#include <nrf_soc.h>
-#include <psa/crypto.h>
-#include <cracen_psa.h>
 #include <zephyr/logging/log.h>
 
 LOG_MODULE_DECLARE(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
 
-static const char *tostr(uint32_t evt)
+const char *nrf_sdh_soc_evt_tostr(uint32_t evt)
 {
+	int err;
+	static char buf[sizeof("SoC event: 0xFFFFFFFF")];
+
 	switch (evt) {
+#if defined(CONFIG_NRF_SDH_STR_TABLES)
 	case NRF_EVT_HFCLKSTARTED:
-		return "The HFCLK has started";
+		return "NRF_EVT_HFCLKSTARTED";
 	case NRF_EVT_POWER_FAILURE_WARNING:
-		return "A power failure warning has occurred";
+		return "NRF_EVT_POWER_FAILURE_WARNING";
 	case NRF_EVT_FLASH_OPERATION_SUCCESS:
-		return "Flash operation has completed successfully";
+		return "NRF_EVT_FLASH_OPERATION_SUCCESS";
 	case NRF_EVT_FLASH_OPERATION_ERROR:
-		return "Flash operation has timed out with an error";
+		return "NRF_EVT_FLASH_OPERATION_ERROR";
 	case NRF_EVT_RADIO_BLOCKED:
-		return "A radio timeslot was blocked";
+		return "NRF_EVT_RADIO_BLOCKED";
 	case NRF_EVT_RADIO_CANCELED:
-		return "A radio timeslot was canceled by SoftDevice";
+		return "NRF_EVT_RADIO_CANCELED";
 	case NRF_EVT_RADIO_SIGNAL_CALLBACK_INVALID_RETURN:
-		return "A radio timeslot signal callback handler return was invalid";
+		return "NRF_EVT_RADIO_SIGNAL_CALLBACK_INVALID_RETURN";
 	case NRF_EVT_RADIO_SESSION_IDLE:
-		return "A radio timeslot session is idle";
+		return "NRF_EVT_RADIO_SESSION_IDLE";
 	case NRF_EVT_RADIO_SESSION_CLOSED:
-		return "A radio timeslot session is closed";
+		return "NRF_EVT_RADIO_SESSION_CLOSED";
 	case NRF_EVT_RAND_SEED_REQUEST:
-		return "SoftDevice RNG needs to be seeded";
+		return "NRF_EVT_RAND_SEED_REQUEST";
+#endif
 	default:
-		return "Unknown";
+		err = snprintf(buf, sizeof(buf), "SoC event: %#x", evt);
+		__ASSERT(err != -1, "Encode error");
+		__ASSERT(err < sizeof(buf), "Buffer too small");
+		(void) err;
+		return buf;
 	}
-}
-
-static void softdevice_rng_seed(void)
-{
-	uint32_t err = NRF_ERROR_INVALID_DATA;
-	psa_status_t status;
-	uint8_t seed[SD_RAND_SEED_SIZE];
-
-	status = cracen_get_trng(seed, sizeof(seed));
-	if (status == PSA_SUCCESS) {
-		err = sd_rand_seed_set(seed);
-		memset(seed, 0, sizeof(seed));
-		if (err == NRF_SUCCESS) {
-			LOG_DBG("SoftDevice RNG seeded");
-			return;
-		}
-	} else {
-		LOG_ERR("Generate random failed, psa status %d", status);
-	}
-
-	LOG_ERR("Failed to seed SoftDevice RNG, nrf_error %#x", err);
 }
 
 static void soc_evt_poll(void *context)
@@ -75,15 +62,7 @@ static void soc_evt_poll(void *context)
 			break;
 		}
 
-		if (IS_ENABLED(CONFIG_NRF_SDH_STR_TABLES)) {
-			LOG_DBG("SoC event: %s", tostr(evt_id));
-		} else {
-			LOG_DBG("SoC event: 0x%x", evt_id);
-		}
-
-		if (evt_id == NRF_EVT_RAND_SEED_REQUEST) {
-			softdevice_rng_seed();
-		}
+		LOG_DBG("%s", nrf_sdh_soc_evt_tostr(evt_id));
 
 		/* Forward the event to SoC observers. */
 		TYPE_SECTION_FOREACH(
@@ -93,8 +72,8 @@ static void soc_evt_poll(void *context)
 	}
 
 	__ASSERT(err == NRF_ERROR_NOT_FOUND,
-		 "Failed to receive SoftDevice event, nrf_error %#x", err);
+		 "Failed to receive SoftDevice SoC event, nrf_error %#x", err);
 }
 
 /* Listen to SoftDevice events */
-NRF_SDH_STACK_EVT_OBSERVER(soc_evt_obs, soc_evt_poll, NULL, 0);
+NRF_SDH_STACK_EVT_OBSERVER(soc_evt_obs, soc_evt_poll, NULL, HIGHEST);

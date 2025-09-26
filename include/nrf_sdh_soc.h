@@ -16,6 +16,7 @@
 #define NRF_SDH_SOC_H__
 
 #include <stdint.h>
+#include <nrf_sdh.h>
 #include <zephyr/sys/iterable_sections.h>
 
 #ifdef __cplusplus
@@ -48,14 +49,26 @@ struct nrf_sdh_soc_evt_observer {
  * @param _handler State request handler.
  * @param _ctx A context passed to the state request handler.
  * @param _prio Priority of the observer's event handler.
- *		The lower the number, the higher the priority.
+ *		Allowed input: `HIGHEST`, `HIGH`, `USER`, `USER_LOW`, `LOWEST`.
  */
 #define NRF_SDH_SOC_OBSERVER(_observer, _handler, _ctx, _prio)                                     \
+	PRIO_LEVEL_IS_VALID(_prio);                                                                \
 	const TYPE_SECTION_ITERABLE(struct nrf_sdh_soc_evt_observer, _observer,                    \
-				    nrf_sdh_soc_evt_observers, _prio) = {                          \
+				    nrf_sdh_soc_evt_observers, PRIO_LEVEL_ORD(_prio)) = {          \
 		.handler = _handler,                                                               \
 		.context = _ctx,                                                                   \
 	};
+
+/**
+ * @brief Stringify a SoftDevice SoC event.
+ *
+ * If :option:`CONFIG_NRF_SDH_STR_TABLES` is enabled, returns the event name.
+ * Otherwise, returns the supplied integer as a string.
+ *
+ * @param evt A NRF_SOC_SVCS enumeration value.
+ * @return const char* A statically allocated string containing the event name or numerical value.
+ */
+const char *nrf_sdh_soc_evt_tostr(uint32_t evt);
 
 #ifdef __cplusplus
 }
