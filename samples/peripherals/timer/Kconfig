@@ -23,7 +23,6 @@ config BYE_TIMER_DURATION_MS
 	default 4000
 
 module=TIMER_SAMPLE
-module-dep=LOG
 module-str=Timer Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

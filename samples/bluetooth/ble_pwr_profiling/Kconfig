@@ -44,7 +44,6 @@ config BLE_PWR_PROFILING_LED
 	bool "Power profiling LED"
 
 module=BLE_PWR_PROFILING_SAMPLE
-module-dep=LOG
 module-str=BLE Power Profiling Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

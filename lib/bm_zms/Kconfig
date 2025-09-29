@@ -72,7 +72,6 @@ config BM_ZMS_OP_QUEUE_SIZE
 	  defines the maximum number of operations that can be queued in BM_ZMS
 
 module=BM_ZMS
-module-dep=LOG
 module-str=BM_ZMS
 source "subsys/logging/Kconfig.template.log_config"
 

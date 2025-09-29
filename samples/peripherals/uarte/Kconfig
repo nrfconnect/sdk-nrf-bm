@@ -27,7 +27,6 @@ config UARTE_IRQ_PRIO
 	default 5
 
 module=UARTE_SAMPLE
-module-dep=LOG
 module-str=UARTE Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

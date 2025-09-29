@@ -19,7 +19,6 @@ config BLE_QWR_BLE_OBSERVER_PRIO
 	default 2
 
 module=BLE_QWR
-module-dep=LOG
 module-str=BLE QWR
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

@@ -121,7 +121,6 @@ config NRF_SDH_STR_TABLES
 	  Disable to save non-volatile memory.
 
 module=NRF_SDH
-module-dep=LOG
 module-str= SoftDevice handler log level
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

@@ -37,7 +37,6 @@ config NUS_UART_RX_BUF_SIZE
 	  UART RX is double buffered, so the actual buffer will be twice as large.
 
 module=BLE_NUS_SAMPLE
-module-dep=LOG
 module-str=BLE NUS Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

@@ -29,7 +29,6 @@ config BATTERY_LEVEL_INCREMENT
 endmenu # Battery measurement simulation
 
 module=BLE_HIDS_MOUSE_SAMPLE
-module-dep=LOG
 module-str=BLE HIDS Mouse Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

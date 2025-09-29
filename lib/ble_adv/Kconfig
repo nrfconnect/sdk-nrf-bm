@@ -120,7 +120,6 @@ config BLE_ADV_SECONDARY_PHY
 	default 0x04 if BLE_ADV_SECONDARY_PHY_CODED
 
 module=BLE_ADV
-module-dep=LOG
 module-str=BLE Advertising
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

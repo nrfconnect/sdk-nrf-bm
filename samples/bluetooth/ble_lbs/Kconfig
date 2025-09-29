@@ -7,7 +7,6 @@
 menu "BLE LBS sample"
 
 module=BLE_LBS_SAMPLE
-module-dep=LOG
 module-str=BLE LED Button Service Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

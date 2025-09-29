@@ -26,7 +26,6 @@ config LPUARTE_GPIOTE_IRQ_PRIO
 	default 3
 
 module=LPUARTE_SAMPLE
-module-dep=LOG
 module-str=Low Power UARTE Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

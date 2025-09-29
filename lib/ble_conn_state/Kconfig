@@ -23,7 +23,6 @@ config BLE_CONN_STATE_BLE_OBSERVER_PRIO
 	default 0
 
 module=BLE_CONN_STATE
-module-dep=LOG
 module-str=BLE Connection state
 source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
 

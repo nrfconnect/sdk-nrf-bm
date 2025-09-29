@@ -44,7 +44,8 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Logging
 =======
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Removed ``module-dep=LOG`` in Kconfig files.
+  This is no longer defined.
 
 Drivers
 =======

@@ -21,7 +21,6 @@ config BM_ZMS_ITERATIONS_DELETE_INTERVAL
 	  Specifies the number of iterations between deleting all basic items.
 
 module=BM_ZMS_SAMPLE
-module-dep=LOG
 module-str=Bare Metal ZMS Sample
 source "subsys/logging/Kconfig.template.log_config"
 
