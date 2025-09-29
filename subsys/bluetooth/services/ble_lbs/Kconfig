@@ -10,7 +10,6 @@ menuconfig BLE_LBS
 if BLE_LBS
 
 module=BLE_LBS
-module-dep=LOG
 module-str=BLE LED Button Service
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

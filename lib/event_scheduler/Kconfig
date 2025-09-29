@@ -19,7 +19,6 @@ config EVENT_SCHEDULER_BUF_SIZE
 	  This is a dedicated heap.
 
 module=EVENT_SCHEDULER
-module-dep=LOG
 module-str=Event scheduler
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

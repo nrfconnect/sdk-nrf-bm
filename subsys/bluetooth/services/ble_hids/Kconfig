@@ -78,7 +78,6 @@ config BLE_HIDS_MAX_CLIENTS
 	default 1
 
 module=BLE_HIDS
-module-dep=LOG
 module-str=BLE HID service
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

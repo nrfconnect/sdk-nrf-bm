@@ -9,7 +9,6 @@ menuconfig BLE_BAS
 if BLE_BAS
 
 module=BLE_BAS
-module-dep=LOG
 module-str=BLE Battery service
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

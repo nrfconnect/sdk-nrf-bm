@@ -129,7 +129,6 @@ config PM_HANDLER_SEC_DELAY_MS
 	  This might be necessary for interoperability reasons, especially as peripheral.
 
 module=PEER_MANAGER
-module-dep=LOG
 module-str=Peer Manager
 source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
 

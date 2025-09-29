@@ -107,7 +107,6 @@ config SENSOR_CONTACT_DETECTED_INTERVAL
 endmenu # "Sensor contact simulation"
 
 module=BLE_HRS_SAMPLE
-module-dep=LOG
 module-str=BLE Heart Rate Service Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

@@ -7,7 +7,6 @@
 menu "BLE MCUmgr sample"
 
 module=APP
-module-dep=LOG
 module-str=BLE MCUmgr Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

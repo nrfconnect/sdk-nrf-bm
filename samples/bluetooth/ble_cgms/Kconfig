@@ -63,7 +63,6 @@ config GLUCOSE_CONCENTRATION_MIN
 endmenu # "BLE CGMS sample"
 
 module=BLE_CGMS_SAMPLE
-module-dep=LOG
 module-str=BLE CGMS Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
