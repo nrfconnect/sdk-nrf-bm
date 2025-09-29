@@ -94,6 +94,7 @@
 /tests/lib/ble_racp/                      @nrfconnect/ncs-bm
 /tests/lib/ble_adv/                       @nrfconnect/ncs-bm-test
 /tests/lib/bm_storage/                    @nrfconnect/ncs-bm
+/tests/lib/peer_manager/                  @nrfconnect/ncs-bm
 /tests/subsys/bluetooth/services/ble_nus/ @nrfconnect/ncs-bm @nrfconnect/ncs-bm-test
 
 # Zephyr module
