@@ -89,7 +89,7 @@ config PM_LESC_PRIVATE_KEY_EXPORT
 
 endif # PM_LESC
 
-config PM_RA_PROTECTION_ENABLED
+config PM_RA_PROTECTION
 	bool "Enable/disable protection against repeated pairing attempts in Peer Manager."
 	default n
 	help

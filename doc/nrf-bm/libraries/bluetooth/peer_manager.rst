@@ -82,7 +82,7 @@ If there is any pending DH key request, the function will calculate the requeste
 Repeated pairing attempts protection
 ====================================
 
-You can enable protection against repeated pairing attempts by setting the :kconfig:option:`CONFIG_PM_RA_PROTECTION_ENABLED` Kconfig option.
+You can enable protection against repeated pairing attempts by setting the :kconfig:option:`CONFIG_PM_RA_PROTECTION` Kconfig option.
 This functionality is disabled by default.
 In this mode, the Peer Manager uses the timing module to keep track of peers that failed at the pairing procedure.
 Future pairing attempts from these peers are rejected for a certain period of time.
@@ -132,7 +132,7 @@ Set the :kconfig:option:`CONFIG_PEER_MANAGER` Kconfig option to enable the libra
 Some features are disabled by default and can be optionally enabled:
 
 * :kconfig:option:`CONFIG_PM_LESC` - Enables LESC support in Peer Manager.
-* :kconfig:option:`CONFIG_PM_RA_PROTECTION_ENABLED` - Enables protection against repeated pairing attempts in Peer Manager.
+* :kconfig:option:`CONFIG_PM_RA_PROTECTION` - Enables protection against repeated pairing attempts in Peer Manager.
 
 Initialization
 ==============
