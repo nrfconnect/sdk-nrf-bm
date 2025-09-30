@@ -73,7 +73,7 @@ The Security Dispatcher interfaces with the SoftDevice and the non-volatile stor
 LE Secure Connections support
 =============================
 
-You can enable support for LE Secure Connections (LESC) pairing by setting the :kconfig:option:`CONFIG_PM_LESC_ENABLED` Kconfig option.
+You can enable support for LE Secure Connections (LESC) pairing by setting the :kconfig:option:`CONFIG_PM_LESC` Kconfig option.
 This functionality is disabled by default.
 In this mode, the Peer Manager handles internally all requests for Diffie-Hellman keys from the SoftDevice.
 When enabled, it is necessary to call the :c:func:`nrf_ble_lesc_request_handler` function in the main context of the application.
@@ -131,7 +131,7 @@ Set the :kconfig:option:`CONFIG_PEER_MANAGER` Kconfig option to enable the libra
 
 Some features are disabled by default and can be optionally enabled:
 
-* :kconfig:option:`CONFIG_PM_LESC_ENABLED` - Enables LESC support in Peer Manager.
+* :kconfig:option:`CONFIG_PM_LESC` - Enables LESC support in Peer Manager.
 * :kconfig:option:`CONFIG_PM_RA_PROTECTION_ENABLED` - Enables protection against repeated pairing attempts in Peer Manager.
 
 Initialization

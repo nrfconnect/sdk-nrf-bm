@@ -241,15 +241,15 @@ bool pm_sec_is_sufficient(uint16_t conn_handle, pm_conn_sec_status_t *p_sec_stat
  *
  * @note The key must continue to reside in application memory as it is not copied by Peer Manager.
  *
- * @note This function is deprecated. LESC keys are now handled internally if @ref PM_LESC_ENABLED
- *       is true. If @ref PM_LESC_ENABLED is false, this function works as before.
+ * @note This function is deprecated. LESC keys are now handled internally if @ref PM_LESC
+ *       is true. If @ref PM_LESC is false, this function works as before.
  *
  * @param[in]  p_public_key  The public key to use for all subsequent LESC operations.
  *
  * @retval NRF_SUCCESS                    If pairing was initiated successfully.
  * @retval NRF_ERROR_INVALID_STATE        If the Peer Manager is not initialized.
  * @retval NRF_ERROR_FORBIDDEN            If LESC module support is enabled (see @ref
- * PM_LESC_ENABLED).
+ * PM_LESC).
  */
 uint32_t pm_lesc_public_key_set(ble_gap_lesc_p256_pk_t *p_public_key);
 

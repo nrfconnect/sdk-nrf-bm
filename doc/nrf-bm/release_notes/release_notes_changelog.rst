@@ -59,6 +59,7 @@ Libraries
 
      * The ``CONFIG_PM_SERVICE_CHANGED_ENABLED`` Kconfig option to :kconfig:option:`CONFIG_PM_SERVICE_CHANGED`.
      * The ``CONFIG_PM_PEER_RANKS_ENABLED`` Kconfig option to :kconfig:option:`CONFIG_PM_PEER_RANKS`.
+     * The ``CONFIG_PM_LESC_ENABLED`` Kconfig option to :kconfig:option:`CONFIG_PM_LESC`.
 
 Samples
 =======
