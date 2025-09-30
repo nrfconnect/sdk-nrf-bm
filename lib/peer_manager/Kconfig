@@ -48,7 +48,7 @@ config PM_SERVICE_CHANGED
 	  If not using a GATT server, or using a server without a service changed characteristic,
 	  disable this to save code space.
 
-config PM_PEER_RANKS_ENABLED
+config PM_PEER_RANKS
 	bool "Enable/disable the peer rank management in Peer Manager."
 	default y
 	help

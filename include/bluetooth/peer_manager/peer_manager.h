@@ -773,7 +773,7 @@ uint32_t pm_peers_delete(void);
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  * @retval NRF_ERROR_INTERNAL       If an internal error occurred.
  * @retval NRF_ERROR_NOT_SUPPORTED  If peer rank functionality has been disabled via the @ref
- *                                  PM_PEER_RANKS_ENABLED configuration option.
+ *                                  PM_PEER_RANKS configuration option.
  */
 uint32_t pm_peer_ranks_get(pm_peer_id_t *p_highest_ranked_peer, uint32_t *p_highest_rank,
 			   pm_peer_id_t *p_lowest_ranked_peer, uint32_t *p_lowest_rank);
@@ -808,7 +808,7 @@ uint32_t pm_peer_ranks_get(pm_peer_id_t *p_highest_ranked_peer, uint32_t *p_high
  *                                  values, while still keeping their order.
  * @retval NRF_ERROR_INTERNAL       If an internal error occurred.
  * @retval NRF_ERROR_NOT_SUPPORTED  If peer rank functionality has been disabled via the @ref
- *                                  PM_PEER_RANKS_ENABLED configuration option.
+ *                                  PM_PEER_RANKS configuration option.
  */
 uint32_t pm_peer_rank_highest(pm_peer_id_t peer_id);
 

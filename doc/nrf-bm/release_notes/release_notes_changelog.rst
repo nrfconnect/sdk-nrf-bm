@@ -55,7 +55,10 @@ Libraries
 
 * :ref:`lib_peer_manager` library:
 
-   * Updated the ``CONFIG_PM_SERVICE_CHANGED_ENABLED`` Kconfig option to :kconfig:option:`CONFIG_PM_SERVICE_CHANGED`.
+   * Updated:
+
+     * The ``CONFIG_PM_SERVICE_CHANGED_ENABLED`` Kconfig option to :kconfig:option:`CONFIG_PM_SERVICE_CHANGED`.
+     * The ``CONFIG_PM_PEER_RANKS_ENABLED`` Kconfig option to :kconfig:option:`CONFIG_PM_PEER_RANKS`.
 
 Samples
 =======
