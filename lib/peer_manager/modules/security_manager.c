@@ -18,7 +18,7 @@
 #include <modules/peer_data_storage.h>
 #include <modules/security_manager.h>
 
-#if CONFIG_PM_LESC_ENABLED
+#if defined(CONFIG_PM_LESC)
 #include <bluetooth/peer_manager/nrf_ble_lesc.h>
 #endif
 
@@ -57,7 +57,7 @@ static ble_gap_sec_params_t *mp_sec_params;
 /** Whether @ref sm_sec_params_set has been called. */
 static bool m_sec_params_set;
 
-#if CONFIG_PM_LESC_ENABLED == 0
+#if !defined(CONFIG_PM_LESC)
 /* Pointer, provided by the user, to the public key to use for LESC procedures. */
 static ble_gap_lesc_p256_pk_t *m_p_public_key;
 #endif
@@ -318,11 +318,11 @@ static void smd_params_reply_perform(uint16_t conn_handle,
 
 	params_req_send(conn_handle, p_peer_params, &context);
 
-#if CONFIG_PM_LESC_ENABLED
+#if defined(CONFIG_PM_LESC)
 	p_public_key = nrf_ble_lesc_public_key_get();
 #else
 	p_public_key = m_p_public_key;
-#endif /* CONFIG_PM_LESC_ENABLED */
+#endif /* CONFIG_PM_LESC */
 	err_code = smd_params_reply(conn_handle, context.p_sec_params, p_public_key);
 
 	flags_set_from_err_code(conn_handle, err_code, true);
@@ -374,7 +374,7 @@ bool sm_sec_is_sufficient(uint16_t conn_handle, pm_conn_sec_status_t *p_sec_stat
 	return (err_code == NRF_SUCCESS) && !unmet_reqs;
 }
 
-#ifdef CONFIG_SOFTDEVICE_CENTRAL
+#if defined(CONFIG_SOFTDEVICE_CENTRAL)
 /**
  * @brief Function for handling @ref PM_EVT_SLAVE_SECURITY_REQ events.
  *
@@ -426,7 +426,7 @@ void sm_smd_evt_handler(pm_evt_t *p_event)
 		params_req_process(p_event);
 		break;
 	case PM_EVT_SLAVE_SECURITY_REQ:
-#ifdef CONFIG_SOFTDEVICE_CENTRAL
+#if defined(CONFIG_SOFTDEVICE_CENTRAL)
 		sec_req_process(p_event);
 #endif
 		/* fallthrough */
@@ -499,7 +499,7 @@ uint32_t sm_init(void)
 {
 	NRF_PM_DEBUG_CHECK(!m_module_initialized);
 
-#if CONFIG_PM_LESC_ENABLED
+#if defined(CONFIG_PM_LESC)
 	uint32_t err_code = nrf_ble_lesc_init();
 
 	if (err_code != NRF_SUCCESS) {
@@ -528,7 +528,7 @@ void sm_ble_evt_handler(ble_evt_t const *p_ble_evt)
 	NRF_PM_DEBUG_CHECK(p_ble_evt != NULL);
 
 	smd_ble_evt_handler(p_ble_evt);
-#if CONFIG_PM_LESC_ENABLED
+#if defined(CONFIG_PM_LESC)
 	nrf_ble_lesc_on_ble_evt(p_ble_evt);
 #endif
 	(void)ble_conn_state_for_each_set_user_flag(m_flag_params_reply_pending_busy,
@@ -661,13 +661,13 @@ uint32_t sm_lesc_public_key_set(ble_gap_lesc_p256_pk_t *p_public_key)
 {
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
 
-#if CONFIG_PM_LESC_ENABLED
+#if defined(CONFIG_PM_LESC)
 	return NRF_ERROR_FORBIDDEN;
 #else
 	m_p_public_key = p_public_key;
 
 	return NRF_SUCCESS;
-#endif /* CONFIG_PM_LESC_ENABLED */
+#endif /* CONFIG_PM_LESC */
 }
 
 uint32_t sm_link_secure(uint16_t conn_handle, bool force_repairing)

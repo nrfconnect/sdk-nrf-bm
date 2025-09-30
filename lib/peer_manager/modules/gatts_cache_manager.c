@@ -21,7 +21,7 @@
 
 LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
-#if !defined(CONFIG_PM_SERVICE_CHANGED_ENABLED) || (CONFIG_PM_SERVICE_CHANGED_ENABLED == 1)
+#if defined(CONFIG_PM_SERVICE_CHANGED)
 
 /* The number of registered event handlers. */
 #define GSCM_EVENT_HANDLERS_CNT ARRAY_SIZE(m_evt_handlers)
@@ -49,11 +49,11 @@ static void internal_state_reset(void)
 	m_module_initialized = false;
 	m_current_sc_store_peer_id = PM_PEER_ID_INVALID;
 
-	/* If CONFIG_PM_SERVICE_CHANGED_ENABLED is 0, this variable is unused. */
+	/* If CONFIG_PM_SERVICE_CHANGED is 0, this variable is unused. */
 	UNUSED_VARIABLE(m_current_sc_store_peer_id);
 }
 
-#if !defined(CONFIG_PM_SERVICE_CHANGED_ENABLED) || (CONFIG_PM_SERVICE_CHANGED_ENABLED == 1)
+#if defined(CONFIG_PM_SERVICE_CHANGED)
 static void evt_send(pm_evt_t *p_gscm_evt)
 {
 	p_gscm_evt->conn_handle = im_conn_handle_get(p_gscm_evt->peer_id);
@@ -319,7 +319,7 @@ uint32_t gscm_local_db_cache_apply(uint16_t conn_handle)
 	return err_code;
 }
 
-#if !defined(CONFIG_PM_SERVICE_CHANGED_ENABLED) || (CONFIG_PM_SERVICE_CHANGED_ENABLED == 1)
+#if defined(CONFIG_PM_SERVICE_CHANGED)
 void gscm_local_database_has_changed(void)
 {
 	NRF_PM_DEBUG_CHECK(m_module_initialized);

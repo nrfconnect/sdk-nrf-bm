@@ -18,46 +18,40 @@ menuconfig PEER_MANAGER
 if PEER_MANAGER
 
 config PM_BM_ZMS_SECTOR_SIZE
-	int "Sector size"
+	int "BM_ZMS sector size"
 	default 1024
 
 config PM_BLE_OBSERVER_PRIO
-	int "Priority with which BLE events are dispatched to the Peer Manager module."
+	int "BLE events priority"
 	default 1
 	help
 	  Priority with which BLE events are dispatched to the Peer Manager module.
 
 config PM_MAX_REGISTRANTS
-	int "Number of event handlers that can be registered."
+	int "Maximum number of event handlers that can be registered"
 	default 3
-	help
-	  Number of event handlers that can be registered.
 
 config PM_FLASH_BUFFERS
-	int "Number of internal buffers for flash operations."
+	int "Number of internal buffers for non-volatile storage operations"
 	default 4
 	help
-	  Number of internal buffers for flash operations.
-	  Decrease this value to lower RAM usage.
+	  Decrease this value to reduce RAM usage.
 
-config PM_SERVICE_CHANGED_ENABLED
-	bool "Enable/disable the service changed management for GATT server in Peer Manager."
+config PM_SERVICE_CHANGED
+	bool "Service changed management for GATT server"
 	default y
 	help
-	  Enable/disable the service changed management for GATT server in Peer Manager.
-	  If not using a GATT server, or using a server without a service changed characteristic,
-	  disable this to save code space.
+	  Disable this option to reduce memory usage if not using a GATT server, or using a server
+	  without a service changed characteristic.
 
-config PM_PEER_RANKS_ENABLED
-	bool "Enable/disable the peer rank management in Peer Manager."
+config PM_PEER_RANKS
+	bool "Peer rank management"
 	default y
 	help
-	  Enable/disable the peer rank management in Peer Manager.
-	  Set this to false to save code space if not using the peer rank API.
+	  Disable this option to reduce memory usage if not using the peer rank API.
 
-config PM_LESC_ENABLED
-	bool "Enable/disable LESC support in Peer Manager."
-	default n
+config PM_LESC
+	bool "LE Secure Connections (LESC) support"
 	depends on PSA_WANT_ALG_ECDH
 	depends on PSA_WANT_GENERATE_RANDOM
 	depends on PSA_WANT_KEY_TYPE_ECC_KEY_PAIR_GENERATE
@@ -68,16 +62,14 @@ config PM_LESC_ENABLED
 		   MBEDTLS_ENABLE_HEAP
 
 	help
-	  Enable/disable LESC support in Peer Manager.
-	  If set to true, you need to call nrf_ble_lesc_request_handler() in the main loop to
-	  respond to LESC-related BLE events. If LESC support is not required, set this to false to
-	  save code space.
+	  If enabled, you need to call nrf_ble_lesc_request_handler() in the main loop to
+	  respond to LESC-related BLE events. If LESC support is not required, disable this option
+	  to reduce memory usage.
 
-if PM_LESC_ENABLED
+if PM_LESC
 
 config PM_LESC_GENERATE_NEW_KEYS
 	bool "Generate new LESC key pair after every pairing attempt"
-	default n
 	help
 	  New LESC keys are generated on the auth status event.
 
@@ -87,45 +79,42 @@ config PM_LESC_PRIVATE_KEY_EXPORT
 	  Export private key.
 	  This is for for debugging purposes only and is not to be used in production!
 
-endif # PM_LESC_ENABLED
+endif # PM_LESC
 
-config PM_RA_PROTECTION_ENABLED
-	bool "Enable/disable protection against repeated pairing attempts in Peer Manager."
-	default n
+config PM_RA_PROTECTION
+	bool "Protection against repeated pairing attempts"
 	help
-	  Enable/disable protection against repeated pairing attempts in Peer Manager.
+	  Enable protection against repeated Bluetooth pairing attempts from the same device.
+	  Offending peers will be temporarily blacklisted with increasing backoff times to
+	  prevent pairing spam or brute-force attacks.
+
+if PM_RA_PROTECTION
 
 config PM_RA_PROTECTION_TRACKED_PEERS_NUM
-	int "Maximum number of peers whose authorization status can be tracked."
+	int "Maximum number of peers whose authorization status can be tracked"
 	default 8
-	help
-	  Maximum number of peers whose authorization status can be tracked.
 
 config PM_RA_PROTECTION_MIN_WAIT_INTERVAL
-	int "Minimum waiting interval (in ms) before a new pairing attempt can be initiated."
+	int "Minimum waiting interval (in ms) before a new pairing attempt can be initiated"
 	default 4000
-	help
-	  Minimum waiting interval (in ms) before a new pairing attempt can be initiated.
 
 config PM_RA_PROTECTION_MAX_WAIT_INTERVAL
-	int "Maximum waiting interval (in ms) before a new pairing attempt can be initiated."
+	int "Maximum waiting interval (in ms) before a new pairing attempt can be initiated"
 	default 64000
-	help
-	  Maximum waiting interval (in ms) before a new pairing attempt can be initiated.
 
 config PM_RA_PROTECTION_REWARD_PERIOD
-	int "Reward period (in ms)."
+	int "Reward period (in ms)"
 	default 10000
 	help
-	  Reward period (in ms).
 	  The waiting interval is gradually decreased when no new failed pairing attempts are made
 	  during reward period.
 
+endif # PM_RA_PROTECTION
+
 config PM_HANDLER_SEC_DELAY_MS
-	int "Delay before starting security."
+	int "Delay before starting security"
 	default 0
 	help
-	  Delay before starting security.
 	  This might be necessary for interoperability reasons, especially as peripheral.
 
 module=PEER_MANAGER
