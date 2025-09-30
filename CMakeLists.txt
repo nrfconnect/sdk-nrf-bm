@@ -7,6 +7,7 @@
 if(CONFIG_NCS_BM)
   zephyr_include_directories(include)
 
+  include(cmake/merge_app_softdevice.cmake)
   include(cmake/version.cmake)
 
   add_subdirectory(drivers)
