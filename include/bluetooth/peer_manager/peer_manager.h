@@ -201,7 +201,7 @@ uint32_t pm_conn_sec_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *p_
  *          are not subscribed to the service changed indication when this function is called do not
  *          receive an indication, and no events are sent to the user. Likewise, if the service
  *          changed characteristic is not present in the local database, or if the @ref
- *          PM_SERVICE_CHANGED_ENABLED is set to 0, no indications are sent peers, and no events are
+ *          PM_SERVICE_CHANGED is set to 0, no indications are sent peers, and no events are
  *          sent to the user.
  */
 void pm_local_database_has_changed(void);

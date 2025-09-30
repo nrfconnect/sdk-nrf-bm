@@ -53,7 +53,9 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Libraries
 =========
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* :ref:`lib_peer_manager` library:
+
+   * Updated the ``CONFIG_PM_SERVICE_CHANGED_ENABLED`` Kconfig option to :kconfig:option:`CONFIG_PM_SERVICE_CHANGED`.
 
 Samples
 =======
