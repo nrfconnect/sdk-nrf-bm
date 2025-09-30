@@ -39,6 +39,7 @@ config PM_FLASH_BUFFERS
 
 config PM_SERVICE_CHANGED
 	bool "Service changed management for GATT server"
+	depends on NRF_SDH_BLE_SERVICE_CHANGED
 	default y
 	help
 	  Disable this option to reduce memory usage if not using a GATT server, or using a server

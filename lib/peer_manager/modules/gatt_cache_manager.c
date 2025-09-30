@@ -127,15 +127,6 @@ static int m_flag_car_handle_queried;
  */
 static int m_flag_car_value_queried;
 
-#ifdef CONFIG_PM_SERVICE_CHANGED
-BUILD_ASSERT(IS_ENABLED(CONFIG_PM_SERVICE_CHANGED) ||
-	     !IS_ENABLED(CONFIG_NRF_SDH_BLE_SERVICE_CHANGED),
-	"CONFIG_PM_SERVICE_CHANGED should be enabled "
-	"if NRF_SDH_BLE_SERVICE_CHANGED is enabled.");
-#else
-#define CONFIG_PM_SERVICE_CHANGED 1
-#endif
-
 /**
  * @brief Function for resetting the module variable(s) of the GSCM module.
  *
