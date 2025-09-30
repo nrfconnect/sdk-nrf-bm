@@ -127,13 +127,13 @@ static int m_flag_car_handle_queried;
  */
 static int m_flag_car_value_queried;
 
-#ifdef CONFIG_PM_SERVICE_CHANGED_ENABLED
-BUILD_ASSERT(IS_ENABLED(CONFIG_PM_SERVICE_CHANGED_ENABLED) ||
+#ifdef CONFIG_PM_SERVICE_CHANGED
+BUILD_ASSERT(IS_ENABLED(CONFIG_PM_SERVICE_CHANGED) ||
 	     !IS_ENABLED(CONFIG_NRF_SDH_BLE_SERVICE_CHANGED),
-	"CONFIG_PM_SERVICE_CHANGED_ENABLED should be enabled "
+	"CONFIG_PM_SERVICE_CHANGED should be enabled "
 	"if NRF_SDH_BLE_SERVICE_CHANGED is enabled.");
 #else
-#define CONFIG_PM_SERVICE_CHANGED_ENABLED 1
+#define CONFIG_PM_SERVICE_CHANGED 1
 #endif
 
 /**
@@ -310,7 +310,7 @@ static bool local_db_update_in_evt(uint16_t conn_handle)
 	return success;
 }
 
-#if CONFIG_PM_SERVICE_CHANGED_ENABLED
+#if defined(CONFIG_PM_SERVICE_CHANGED)
 
 /**
  * @brief Function for getting the value of the CCCD for the service changed characteristic.
@@ -450,7 +450,7 @@ static void db_update_pending_handle(uint16_t conn_handle, void *p_context)
 	}
 }
 
-#if CONFIG_PM_SERVICE_CHANGED_ENABLED
+#if defined(CONFIG_PM_SERVICE_CHANGED)
 static void sc_send_pending_handle(uint16_t conn_handle, void *p_context)
 {
 	ARG_UNUSED(p_context);
@@ -529,7 +529,7 @@ void gcm_im_evt_handler(pm_evt_t *p_event)
 	switch (p_event->evt_id) {
 	case PM_EVT_BONDED_PEER_CONNECTED:
 		local_db_apply_in_evt(p_event->conn_handle);
-#if (CONFIG_PM_SERVICE_CHANGED_ENABLED == 1)
+#if defined(CONFIG_PM_SERVICE_CHANGED)
 		service_changed_needed(p_event->conn_handle);
 #endif
 		car_update_needed(p_event->conn_handle);
@@ -561,7 +561,7 @@ void gcm_pdb_evt_handler(pm_evt_t *p_event)
 			break;
 		}
 
-#if CONFIG_PM_SERVICE_CHANGED_ENABLED
+#if defined(CONFIG_PM_SERVICE_CHANGED)
 		case PM_PEER_DATA_ID_SERVICE_CHANGED_PENDING: {
 			uint32_t err_code;
 			bool service_changed_pending = false;
@@ -676,7 +676,7 @@ void gcm_ble_evt_handler(ble_evt_t const *p_ble_evt)
 		local_db_apply_in_evt(conn_handle);
 		break;
 
-#if CONFIG_PM_SERVICE_CHANGED_ENABLED
+#if defined(CONFIG_PM_SERVICE_CHANGED)
 	case BLE_GATTS_EVT_SC_CONFIRM: {
 		pm_evt_t event = {
 			.evt_id = PM_EVT_SERVICE_CHANGED_IND_CONFIRMED,
@@ -779,7 +779,7 @@ void gcm_ble_evt_handler(ble_evt_t const *p_ble_evt)
 	}
 
 	apply_pending_flags_check();
-#if CONFIG_PM_SERVICE_CHANGED_ENABLED
+#if defined(CONFIG_PM_SERVICE_CHANGED)
 	service_changed_pending_flags_check();
 #endif
 }
@@ -794,7 +794,7 @@ uint32_t gcm_local_db_cache_update(uint16_t conn_handle)
 	return NRF_SUCCESS;
 }
 
-#if CONFIG_PM_SERVICE_CHANGED_ENABLED
+#if defined(CONFIG_PM_SERVICE_CHANGED)
 void gcm_local_database_has_changed(void)
 {
 	gscm_local_database_has_changed();

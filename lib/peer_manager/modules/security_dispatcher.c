@@ -18,9 +18,9 @@
 #include <modules/peer_data_storage.h>
 #include <modules/peer_database.h>
 #include <modules/id_manager.h>
-#if CONFIG_PM_RA_PROTECTION_ENABLED
+#if defined(CONFIG_PM_RA_PROTECTION)
 #include <modules/auth_status_tracker.h>
-#endif /* CONFIG_PM_RA_PROTECTION_ENABLED */
+#endif /* CONFIG_PM_RA_PROTECTION */
 
 #include <modules/security_dispatcher.h>
 
@@ -229,7 +229,7 @@ static void sec_proc_start(uint16_t conn_handle, bool success, pm_conn_sec_proce
 	}
 }
 
-#ifdef CONFIG_SOFTDEVICE_CENTRAL
+#if defined(CONFIG_SOFTDEVICE_CENTRAL)
 /**
  * @brief Function for initiating encryption as a central. See @ref smd_link_secure for more
  *        info.
@@ -632,9 +632,9 @@ static void auth_status_process(ble_gap_evt_t const *p_gap_evt)
 
 	default:
 		auth_status_failure_process(p_gap_evt);
-#if CONFIG_PM_RA_PROTECTION_ENABLED
+#if defined(CONFIG_PM_RA_PROTECTION)
 		ast_auth_error_notify(p_gap_evt->conn_handle);
-#endif /* CONFIG_PM_RA_PROTECTION_ENABLED */
+#endif /* CONFIG_PM_RA_PROTECTION */
 		break;
 	}
 }
@@ -700,13 +700,13 @@ uint32_t smd_init(void)
 		return NRF_ERROR_INTERNAL;
 	}
 
-#if CONFIG_PM_RA_PROTECTION_ENABLED
+#if defined(CONFIG_PM_RA_PROTECTION)
 	uint32_t err_code = ast_init();
 
 	if (err_code != NRF_SUCCESS) {
 		return err_code;
 	}
-#endif /* CONFIG_PM_RA_PROTECTION_ENABLED */
+#endif /* CONFIG_PM_RA_PROTECTION */
 
 	m_module_initialized = true;
 
@@ -805,12 +805,12 @@ uint32_t smd_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *p_sec_para
 		return BLE_ERROR_INVALID_CONN_HANDLE;
 	}
 
-#if CONFIG_PM_RA_PROTECTION_ENABLED
+#if defined(CONFIG_PM_RA_PROTECTION)
 	/* Check for repeated attempts here. */
 	if (ast_peer_blacklisted(conn_handle)) {
 		sec_status = BLE_GAP_SEC_STATUS_REPEATED_ATTEMPTS;
 	} else
-#endif /* CONFIG_PM_RA_PROTECTION_ENABLED */
+#endif /* CONFIG_PM_RA_PROTECTION */
 		if (p_sec_params == NULL) {
 			/* NULL params means reject pairing. */
 			sec_status = BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP;

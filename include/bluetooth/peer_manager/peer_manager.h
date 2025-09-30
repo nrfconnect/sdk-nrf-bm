@@ -200,9 +200,9 @@ uint32_t pm_conn_sec_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *p_
  *          PM_EVT_SERVICE_CHANGED_IND_CONFIRMED when the peer sends its confirmation. Peers that
  *          are not subscribed to the service changed indication when this function is called do not
  *          receive an indication, and no events are sent to the user. Likewise, if the service
- *          changed characteristic is not present in the local database, or if the @ref
- *          PM_SERVICE_CHANGED_ENABLED is set to 0, no indications are sent peers, and no events are
- *          sent to the user.
+ *          changed characteristic is not present in the local database, or if the
+ *          @c CONFIG_PM_SERVICE_CHANGED Kconfig option is disabled, no indications are sent peers,
+ *          and no events are sent to the user.
  */
 void pm_local_database_has_changed(void);
 
@@ -241,15 +241,16 @@ bool pm_sec_is_sufficient(uint16_t conn_handle, pm_conn_sec_status_t *p_sec_stat
  *
  * @note The key must continue to reside in application memory as it is not copied by Peer Manager.
  *
- * @note This function is deprecated. LESC keys are now handled internally if @ref PM_LESC_ENABLED
- *       is true. If @ref PM_LESC_ENABLED is false, this function works as before.
+ * @note This function is deprecated. LESC keys are now handled internally if the @c CONFIG_PM_LESC
+ *       Kconfig option is enabled. If the @c CONFIG_PM_LESC Kconfig option is disabled, this
+ *       function works as before.
  *
  * @param[in]  p_public_key  The public key to use for all subsequent LESC operations.
  *
  * @retval NRF_SUCCESS                    If pairing was initiated successfully.
  * @retval NRF_ERROR_INVALID_STATE        If the Peer Manager is not initialized.
- * @retval NRF_ERROR_FORBIDDEN            If LESC module support is enabled (see @ref
- * PM_LESC_ENABLED).
+ * @retval NRF_ERROR_FORBIDDEN            If LESC module support is enabled (see the
+ *                                        @c CONFIG_PM_LESC Kconfig option).
  */
 uint32_t pm_lesc_public_key_set(ble_gap_lesc_p256_pk_t *p_public_key);
 
@@ -772,8 +773,8 @@ uint32_t pm_peers_delete(void);
  * @retval NRF_ERROR_NOT_FOUND      If no peer with stored peer rank was found.
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  * @retval NRF_ERROR_INTERNAL       If an internal error occurred.
- * @retval NRF_ERROR_NOT_SUPPORTED  If peer rank functionality has been disabled via the @ref
- *                                  PM_PEER_RANKS_ENABLED configuration option.
+ * @retval NRF_ERROR_NOT_SUPPORTED  If peer rank functionality has been disabled via the
+ *                                  @c CONFIG_PM_PEER_RANKS Kconfig option.
  */
 uint32_t pm_peer_ranks_get(pm_peer_id_t *p_highest_ranked_peer, uint32_t *p_highest_rank,
 			   pm_peer_id_t *p_lowest_ranked_peer, uint32_t *p_lowest_rank);
@@ -807,8 +808,8 @@ uint32_t pm_peer_ranks_get(pm_peer_id_t *p_highest_ranked_peer, uint32_t *p_high
  *                                  around to 0. To fix this, manually update all ranks to smaller
  *                                  values, while still keeping their order.
  * @retval NRF_ERROR_INTERNAL       If an internal error occurred.
- * @retval NRF_ERROR_NOT_SUPPORTED  If peer rank functionality has been disabled via the @ref
- *                                  PM_PEER_RANKS_ENABLED configuration option.
+ * @retval NRF_ERROR_NOT_SUPPORTED  If peer rank functionality has been disabled via the
+ *                                  @c CONFIG_PM_PEER_RANKS Kconfig option.
  */
 uint32_t pm_peer_rank_highest(pm_peer_id_t peer_id);
 
