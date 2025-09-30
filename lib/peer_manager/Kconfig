@@ -42,6 +42,7 @@ config PM_FLASH_BUFFERS
 
 config PM_SERVICE_CHANGED
 	bool "Enable/disable the service changed management for GATT server in Peer Manager."
+	depends on NRF_SDH_BLE_SERVICE_CHANGED
 	default y
 	help
 	  Enable/disable the service changed management for GATT server in Peer Manager.
