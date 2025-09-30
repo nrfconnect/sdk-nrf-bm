@@ -95,6 +95,8 @@ config PM_RA_PROTECTION
 	help
 	  Enable/disable protection against repeated pairing attempts in Peer Manager.
 
+if PM_RA_PROTECTION
+
 config PM_RA_PROTECTION_TRACKED_PEERS_NUM
 	int "Maximum number of peers whose authorization status can be tracked."
 	default 8
@@ -120,6 +122,8 @@ config PM_RA_PROTECTION_REWARD_PERIOD
 	  Reward period (in ms).
 	  The waiting interval is gradually decreased when no new failed pairing attempts are made
 	  during reward period.
+
+endif # PM_RA_PROTECTION
 
 config PM_HANDLER_SEC_DELAY_MS
 	int "Delay before starting security."
