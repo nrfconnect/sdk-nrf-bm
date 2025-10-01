@@ -24,6 +24,11 @@ S115 SoftDevice
 
 No changes since the latest nRF Connect SDK Bare Metal release.
 
+S145 SoftDevice
+===============
+
+* Added the S145 SoftDevice for central support.
+
 SoftDevice Handler
 ==================
 
@@ -31,6 +36,8 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 
 Boards
 ======
+
+* Added nrf54l15DK board variants for the S145 SoftDevice.
 
 * MCUboot partition size has been reduced from 36 KiB to 31 KiB for the following board targets:
 

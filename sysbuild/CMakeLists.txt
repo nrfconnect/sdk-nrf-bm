@@ -185,7 +185,7 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
       set_config_bool(${SB_CONFIG_BM_FIRMWARE_LOADER_IMAGE_NAME} CONFIG_SOFTDEVICE n)
     endif()
   else()
-    foreach(option SOFTDEVICE_S115)
+    foreach(option SOFTDEVICE_S115 SOFTDEVICE_S145)
       if(SB_CONFIG_${option})
         set_config_bool(${DEFAULT_IMAGE} CONFIG_${option} y)
 

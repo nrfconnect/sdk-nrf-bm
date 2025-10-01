@@ -9,15 +9,27 @@ board:
           cpucluster: cpuapp
           variants:
             - name: mcuboot
+        - name: s145_softdevice
+          cpucluster: cpuapp
+          variants:
+            - name: mcuboot
     - name: nrf54l10
       variants:
         - name: s115_softdevice
           cpucluster: cpuapp
           variants:
             - name: mcuboot
+        - name: s145_softdevice
+          cpucluster: cpuapp
+          variants:
+            - name: mcuboot
     - name: nrf54l15
       variants:
         - name: s115_softdevice
+          cpucluster: cpuapp
+          variants:
+            - name: mcuboot
+        - name: s145_softdevice
           cpucluster: cpuapp
           variants:
             - name: mcuboot
@@ -33,14 +45,20 @@ runners:
               - bm_nrf54l15dk/nrf54l05/cpuapp
               - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice
               - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+              - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice
+              - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot
           - boards:
               - bm_nrf54l15dk/nrf54l10/cpuapp
               - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice
               - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
+              - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice
+              - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice/mcuboot
           - boards:
               - bm_nrf54l15dk/nrf54l15/cpuapp
               - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice
               - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+              - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice
+              - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice/mcuboot
     '--erase':
       - runners:
           - nrfjprog
@@ -52,14 +70,20 @@ runners:
               - bm_nrf54l15dk/nrf54l05/cpuapp
               - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice
               - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+              - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice
+              - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot
           - boards:
               - bm_nrf54l15dk/nrf54l10/cpuapp
               - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice
               - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
+              - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice
+              - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice/mcuboot
           - boards:
               - bm_nrf54l15dk/nrf54l15/cpuapp
               - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice
               - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+              - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice
+              - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice/mcuboot
     '--reset':
       - runners:
           - nrfjprog
@@ -71,11 +95,17 @@ runners:
               - bm_nrf54l15dk/nrf54l05/cpuapp
               - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice
               - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+              - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice
+              - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot
           - boards:
               - bm_nrf54l15dk/nrf54l10/cpuapp
               - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice
               - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
+              - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice
+              - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice/mcuboot
           - boards:
               - bm_nrf54l15dk/nrf54l15/cpuapp
               - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice
               - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+              - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice
+              - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice/mcuboot
