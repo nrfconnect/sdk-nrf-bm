@@ -12,25 +12,14 @@
 #include <zephyr/drivers/console/uart_mcumgr.h>
 #include <zephyr/mgmt/mcumgr/mgmt/mgmt.h>
 #include <zephyr/mgmt/mcumgr/mgmt/callbacks.h>
-#include <zephyr/sys/reboot.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/init.h>
 #include <nrfx_uarte.h>
-#include <smp_uart.h>
 #include <board-config.h>
 
-LOG_MODULE_REGISTER(uart_mcumgr, CONFIG_UART_MCUMGR_SAMPLE_LOG_LEVEL);
+LOG_MODULE_REGISTER(uart_mcumgr, CONFIG_MCUMGR_TRANSPORT_LOG_LEVEL);
 
-static char uarte_rx_buf[CONFIG_UART_MCUMGR_RX_BUF_SIZE];
-static bool should_reboot;
-
-static enum mgmt_cb_return os_mgmt_reboot_hook(uint32_t event, enum mgmt_cb_return prev_status,
-					       int32_t *rc, uint16_t *group, bool *abort_more,
-					       void *data, size_t data_size);
-
-static struct mgmt_callback os_mgmt_reboot_callback = {
-	.callback = os_mgmt_reboot_hook,
-	.event_id = MGMT_EVT_OP_OS_MGMT_RESET,
-};
+static char uarte_rx_buf[CONFIG_MCUMGR_TRANSPORT_BM_UART_RX_BUF_SIZE];
 
 /** MCUmgr UARTE instance */
 static const nrfx_uarte_t uarte_inst = NRFX_UARTE_INSTANCE(BOARD_APP_UARTE_INST);
@@ -49,7 +38,7 @@ static bool uart_mcumgr_ignoring;
 
 /** Contains buffers to hold incoming request fragments. */
 K_MEM_SLAB_DEFINE(uart_mcumgr_slab, sizeof(struct uart_mcumgr_rx_buf),
-		  CONFIG_UART_MCUMGR_RX_BUF_COUNT, 1);
+		  CONFIG_MCUMGR_TRANSPORT_BM_UART_RX_BUF_COUNT, 1);
 
 static struct uart_mcumgr_rx_buf *uart_mcumgr_alloc_rx_buf(void)
 {
@@ -210,29 +199,29 @@ void uart_mcumgr_register(uart_mcumgr_recv_fn *cb)
 /**
  * @brief Initialize UARTE driver.
  */
-static int uarte_init(void)
+static int bm_uarte_init(void)
 {
 	int err;
 
 	nrfx_uarte_config_t uarte_config = NRFX_UARTE_DEFAULT_CONFIG(BOARD_APP_UARTE_PIN_TX,
 								     BOARD_APP_UARTE_PIN_RX);
 
-#if defined(CONFIG_UARTE_HWFC)
+#if defined(CONFIG_MCUMGR_TRANSPORT_BM_UART_UARTE_HWFC)
 	uarte_config.config.hwfc = NRF_UARTE_HWFC_ENABLED;
 	uarte_config.cts_pin = BOARD_APP_UARTE_PIN_CTS;
 	uarte_config.rts_pin = BOARD_APP_UARTE_PIN_RTS;
 #endif
 
-#if defined(CONFIG_UARTE_PARITY)
+#if defined(CONFIG_MCUMGR_TRANSPORT_BM_UART_UARTE_PARITY)
 	uarte_config.parity = NRF_UARTE_PARITY_INCLUDED;
 #endif
 
-	uarte_config.interrupt_priority = CONFIG_UARTE_IRQ_PRIO;
+	uarte_config.interrupt_priority = CONFIG_MCUMGR_TRANSPORT_BM_UART_UARTE_IRQ_PRIO;
 
 	/** We need to connect the IRQ ourselves. */
 	IRQ_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(BOARD_APP_UARTE_INST)),
-		    CONFIG_UARTE_IRQ_PRIO, NRFX_UARTE_INST_HANDLER_GET(BOARD_APP_UARTE_INST),
-		    0, 0);
+		    CONFIG_MCUMGR_TRANSPORT_BM_UART_UARTE_IRQ_PRIO,
+		    NRFX_UARTE_INST_HANDLER_GET(BOARD_APP_UARTE_INST), 0, 0);
 
 	irq_enable(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(BOARD_APP_UARTE_INST)));
 
@@ -251,55 +240,13 @@ static int uarte_init(void)
 		(GPIO_PIN_CNF_PULL_Pullup << GPIO_PIN_CNF_PULL_Pos);
 #endif
 
-	return 0;
-}
-
-static enum mgmt_cb_return os_mgmt_reboot_hook(uint32_t event, enum mgmt_cb_return prev_status,
-					       int32_t *rc, uint16_t *group, bool *abort_more,
-					       void *data, size_t data_size)
-{
-	if (event == MGMT_EVT_OP_OS_MGMT_RESET) {
-		should_reboot = true;
-		*rc = MGMT_ERR_EOK;
-
-		return MGMT_CB_ERROR_RC;
-
-	}
-
-	return MGMT_CB_OK;
-}
-
-int main(void)
-{
-	int err;
-
-	LOG_INF("UART MCUmgr sample started");
-
-	mgmt_callback_register(&os_mgmt_reboot_callback);
-
-	err = uarte_init();
-
-	if (err) {
-		LOG_ERR("Failed to enable UARTE, err %d", err);
-		return -1;
-	}
-
 	err = nrfx_uarte_rx(&uarte_inst, uarte_rx_buf, 1);
 
 	if (err != NRFX_SUCCESS) {
 		LOG_ERR("UART RX failed, nrfx err %d", err);
 	}
 
-	while (should_reboot == false) {
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
-
-		smp_uart_process_rx_queue();
-	}
-
-	sys_reboot(SYS_REBOOT_WARM);
+	return err;
 }
+
+SYS_INIT(bm_uarte_init, APPLICATION, 0);
