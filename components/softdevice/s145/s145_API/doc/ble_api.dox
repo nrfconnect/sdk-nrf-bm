@@ -107,24 +107,18 @@
  * --- [label = "Establish connection with different connection configurations"];
  * |||;
  * APP rbox APP [label="Establish connection with the default connection configuration"];
- * APP=>SD [label = "sd_ble_gap_adv_set_configure(&adv_handle, adv_data, params)"];
- * APP<<SD [label = "NRF_SUCCESS"];
- * APP=>SD [label = "sd_ble_gap_adv_start(adv_handle, conn_cfg_tag = BLE_CONN_CFG_TAG_DEFAULT);"];
+ * APP=>SD [label = "sd_ble_gap_connect(params, conn_cfg_tag = BLE_CONN_CFG_TAG_DEFAULT);"];
  * APP<<SD [label = "NRF_SUCCESS"];
  * |||;
  * APP rbox APP [label="Establish connection with connection configuration #1"];
- * APP=>SD [label = "sd_ble_gap_adv_set_configure(&adv_handle, adv_data, params)"];
- * APP<<SD [label = "NRF_SUCCESS"];
- * APP=>SD [label = "sd_ble_gap_adv_start(adv_handle, conn_cfg_tag = 1);"];
+ * APP=>SD [label = "sd_ble_gap_connect(params, conn_cfg_tag = 1);"];
  * APP<<SD [label = "NRF_SUCCESS"];
  * |||;
  * --- [label = " No more connections can be established with connection configuration #1"];
  * |||;
  * APP note SD [label = "A connection cannot be established if the number of established connections is equal to the connection count of the connection configuration"];
  * |||;
- * APP=>SD [label = "sd_ble_gap_adv_set_configure(&adv_handle, adv_data, params)"];
- * APP<<SD [label = "NRF_SUCCESS"];
- * APP=>SD [label = "sd_ble_gap_adv_start(adv_handle, conn_cfg_tag = 1);"];
+ * APP=>SD [label = "sd_ble_gap_connect(params, conn_cfg_tag = 1);"];
  * APP<<SD [label = "NRF_ERROR_CONN_COUNT"];
  * @endmsc
  * @}
@@ -191,6 +185,8 @@
  * @defgroup BLE_GAP_MSC Message Sequence Charts
  * @{
  * @defgroup BLE_GAP_ADV_MSC Advertising
+ * @{
+ * @defgroup BLE_GAP_ADV_MSC_LEGACY Advertising using legacy advertising PDUs
  * @msc
  * hscale = "1.5";
  * APP,SD,SCANNERS;
@@ -213,6 +209,32 @@
  * --- [label = " Variant #2 Advertisement Timeout "];
  * APP<<=SD [label = "BLE_GAP_EVT_ADV_SET_TERMINATED"];
  * @endmsc
+ * @defgroup BLE_GAP_ADV_MSC_AE Advertising using extended advertising PDUs
+ * @msc
+ * hscale = "1.5";
+ * APP,SD,SCANNERS;
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_adv_set_configure(&adv_handle, adv_data, params : properties : type = BLE_GAP_ADV_TYPE_EXTENDED_*)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * APP=>SD [label = "sd_ble_gap_adv_start(adv_handle, conn_cfg_tag = BLE_CONN_CFG_TAG_DEFAULT)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * SD->SCANNERS [label = "Advertisement (ADV_EXT_IND) on 1MBPS", textcolor="#000080", linecolor="#000080"];
+ * SD->SCANNERS [label = "Advertisement (AUX_*_IND) on 1MBPS/2MBPS", textcolor="#000080", linecolor="#000080"];
+ * SD->SCANNERS [label = "Advertisement (ADV_EXT_IND) on 1MBPS", textcolor="#000080", linecolor="#000080"];
+ * SD->SCANNERS [label = "Advertisement (AUX_*_IND) on 1MBPS/2MBPS", textcolor="#000080", linecolor="#000080"];
+ * ...;
+ * SD->SCANNERS [label = "Advertisement (ADV_EXT_IND) on 1MBPS", textcolor="#000080", linecolor="#000080"];
+ * SD->SCANNERS [label = "Advertisement (AUX_*_IND) on 1MBPS/2MBPS", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * --- [label = " Variant #1 App Stops Advertisement "];
+ * APP=>SD [label = "sd_ble_gap_adv_stop(adv_handle)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * --- [label = " Variant #2 Advertisement Timeout "];
+ * APP<<=SD [label = "BLE_GAP_EVT_ADV_SET_TERMINATED"];
+ * @endmsc
+ * @}
  *
  * @defgroup BLE_GAP_CONN_MSC Peripheral Connection Establishment and Termination
  * @msc
@@ -912,7 +934,796 @@
  * @endmsc
  * @}
  *
-  * @defgroup BLE_GAP_PRIVACY_MSC Privacy
+  *
+ * @defgroup BLE_GAP_SCAN_MSC Scanning
+ * @defgroup BLE_GAP_SCAN_MSC_LEGACY Scanning for advertisers performing legacy advertising
+ * @{
+ * @msc
+ * hscale = "1.5";
+ * APP,SD,ADVERTISERS;
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_scan_start(params : extended = 0, adv_report_buffer)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * SD<-ADVERTISERS [label = "Advertisement (ADV_IND/ADV_DIRECT_IND/ADV_NONCONN_IND)", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_ADV_REPORT {bdaddr, rssi, data}"];
+ * APP=>SD [label = "sd_ble_gap_scan_start(params = NULL, adv_report_buffer)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD<-ADVERTISERS [label = "Advertisement (ADV_IND/ADV_DIRECT_IND/ADV_NONCONN_IND)", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_ADV_REPORT {bdaddr, rssi, data}"];
+ * APP=>SD [label = "sd_ble_gap_scan_start(params = NULL, adv_report_buffer)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD<-ADVERTISERS [label = "Advertisement (ADV_IND/ADV_DIRECT_IND/ADV_NONCONN_IND)", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_ADV_REPORT {bdaddr, rssi, data}"];
+ * APP=>SD [label = "sd_ble_gap_scan_start(params = NULL, adv_report_buffer)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * ...;
+ * SD<-ADVERTISERS [label = "Advertisement (ADV_IND/ADV_DIRECT_IND/ADV_NONCONN_IND)", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_ADV_REPORT {bdaddr, rssi, data}"];
+ * ...;
+ * APP<<=SD [label = "BLE_GAP_EVT_TIMEOUT {BLE_GAP_TIMEOUT_SRC_SCAN}"];
+ * --- [label = " Variant #1 Active scanning "];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_scan_start(params : {extended = 0, active = 1}, adv_report_buffer)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * SD<-ADVERTISERS [label = "Scannable Advertisement (ADV_SCAN_IND)", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_ADV_REPORT {bdaddr, rssi, data}"];
+ * APP=>SD [label = "sd_ble_gap_scan_start(params = NULL, adv_report_buffer)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD->ADVERTISERS [label = "Scan Request (SCAN_REQ)", textcolor="#000080", linecolor="#000080"];
+ * SD<-ADVERTISERS [label = "Scan Response (SCAN_RSP)", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_ADV_REPORT {bdaddr, rssi, data}"];
+ * ...;
+ * APP<<=SD [label = "BLE_GAP_EVT_TIMEOUT {BLE_GAP_TIMEOUT_SRC_SCAN}"];
+ * |||;
+ * @endmsc
+ * @defgroup BLE_GAP_SCAN_MSC_AE Scanning for advertisers performing legacy and extended advertising
+ * @{
+ * @msc
+ * hscale = "1.5";
+ * APP,SD,ADVERTISERS;
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_scan_start(params : {extended = 1, report_incomplete_evts = 0}, adv_report_buffer)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * SD<-ADVERTISERS [label = "Advertisement (ADV_*_IND)", textcolor="#000080", linecolor="#000080"];
+ * SD<-ADVERTISERS [label = "Advertisement (AUX_*_IND)", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_ADV_REPORT {type : status = BLE_GAP_ADV_DATA_STATUS_COMPLETE, data}"];
+ * APP=>SD [label = "sd_ble_gap_scan_start(params = NULL, adv_report_buffer)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD<-ADVERTISERS [label = "Advertisement (ADV_*_IND)", textcolor="#000080", linecolor="#000080"];
+ * SD<-ADVERTISERS [label = "Advertisement (AUX_*_IND)", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_ADV_REPORT {type : status = BLE_GAP_ADV_DATA_STATUS_COMPLETE, data}"];
+ * APP=>SD [label = "sd_ble_gap_scan_start(params = NULL, adv_report_buffer)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * ...;
+ * SD<-ADVERTISERS [label = "Advertisement (ADV_*_IND)", textcolor="#000080", linecolor="#000080"];
+ * SD<-ADVERTISERS [label = "Advertisement (AUX_*_IND)", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_ADV_REPORT {type : status = BLE_GAP_ADV_DATA_STATUS_COMPLETE, data}"];
+ * ...;
+ * APP<<=SD [label = "BLE_GAP_EVT_TIMEOUT {BLE_GAP_TIMEOUT_SRC_SCAN}"];
+ * |||;
+ * --- [label = " Variant #1 Active scanning "];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_scan_start(params : {extended = 1, active = 1, report_incomplete_evts = 0}, adv_report_buffer)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * SD<-ADVERTISERS [label = "Scannable Advertisement (ADV_EXT_IND) on primary_phy", textcolor="#000080", linecolor="#000080"];
+ * SD<-ADVERTISERS [label = "Scannable Advertisement (AUX_ADV_IND) on secondary_phy", textcolor="#000080", linecolor="#000080"];
+ * SD->ADVERTISERS [label = "Scan Request (AUX_SCAN_REQ) on secondary_phy", textcolor="#000080", linecolor="#000080"];
+ * SD<-ADVERTISERS [label = "Scan Response (AUX_SCAN_RSP) on secondary_phy", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_ADV_REPORT {type : {extended_pdu = 1, scannable = 1, scan_response = 1}, data}"];
+ * APP=>SD [label = "sd_ble_gap_scan_start(params = NULL, adv_report_buffer)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD<-ADVERTISERS [label = "Legacy Scannable Advertisement (ADV_SCAN_IND) with adv_data ", textcolor="#000080", linecolor="#000080"];
+ * SD->ADVERTISERS [label = "Legacy Scan Request (SCAN_REQ)", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_ADV_REPORT {type : {extended_pdu = 0, scannable = 1, scan_response = 0}, adv_data}"];
+ * APP=>SD [label = "sd_ble_gap_scan_start(params = NULL, adv_report_buffer)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD<-ADVERTISERS [label = "Legacy Scan Response (SCAN_RSP) with scan_rsp_data", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_ADV_REPORT {type : {extended_pdu = 0, scannable = 1, scan_response = 1}, scan_rsp_data}"];
+ * APP=>SD [label = "sd_ble_gap_scan_start(params = NULL, adv_report_buffer)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * ...;
+ * SD<-ADVERTISERS [label = "Non-Scannable Advertisement (ADV_EXT_IND)", textcolor="#000080", linecolor="#000080"];
+ * SD<-ADVERTISERS [label = "Non-Scannable Advertisement (AUX_*_IND)", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_ADV_REPORT {type : {extended_pdu = 1, scannable = 0, scan_response = 0}, data}"];
+ * ...;
+ * APP<<=SD [label = "BLE_GAP_EVT_TIMEOUT {BLE_GAP_TIMEOUT_SRC_SCAN}"];
+ * |||;
+ * --- [label = " Variant #2 Reporting incomplete advertising reports"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_scan_start(params : {extended = 1, report_incomplete_evts = 1}, adv_report_buffer)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * SD<-ADVERTISERS [label = "Advertisement (ADV_*_IND)", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_ADV_REPORT {type : status = BLE_GAP_ADV_DATA_STATUS_INCOMPLETE_MORE_DATA, aux_pointer}"];
+ * |||;
+ * SD<-ADVERTISERS [label = "Advertisement (AUX_*_IND) containing data1", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_ADV_REPORT {type : status = BLE_GAP_ADV_DATA_STATUS_INCOMPLETE_MORE_DATA, data1}"];
+ * |||;
+ * SD<-ADVERTISERS [label = "Advertisement (AUX_*_IND) containing data2", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_ADV_REPORT {type : status = BLE_GAP_ADV_DATA_STATUS_COMPLETE, data1 + data2}"];
+ * |||;
+ * APP rbox APP  [label="Process the advertising report and instruct the SoftDevice to continue scanning"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_scan_start(params = NULL, adv_report_buffer)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * @endmsc
+ *
+ * @}
+ * @defgroup BLE_GAP_CENTRAL_CONN_MSC Central Connection Establishment and Termination
+ * @{
+ * @defgroup BLE_GAP_CENTRAL_CONN_MSC_LEGACY Connecting to legacy advertisers
+ * @msc
+ * hscale = "1.5";
+ * APP,SD,PERIPHERAL;
+ * |||;
+ * PERIPHERAL rbox PERIPHERAL [label="Peripheral Start Connectable Advertising"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_connect(scan_params : extended = 0, conn_params)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD<:PERIPHERAL [label = "Advertisement (ADV_IND/ADV_DIRECT_IND)", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * --- [label = " Variant #1 Connection Established "];
+ * SD:>PERIPHERAL [label = "LL Connect (CONNECT_IND)", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONNECTED"];
+ * |||;
+ * --- [label = " Variant #2 Connection Establishment Cancelled "];
+ * APP=>SD [label = "sd_ble_gap_connect_cancel()"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * --- [label = " Variant #3 Connection Timeout "];
+ * |||;
+ * SD rbox SD [label = "Connection timeout reached"];
+ * |||;
+ * APP<<=SD [label = "BLE_GAP_EVT_TIMEOUT {BLE_GAP_TIMEOUT_SRC_CONN}"];
+ * @endmsc
+ * @defgroup BLE_GAP_CENTRAL_CONN_MSC_AE Connecting to advertisers performing extended advertising
+ * @msc
+ * hscale = "1.5";
+ * APP,SD,PERIPHERAL;
+ * |||;
+ * PERIPHERAL rbox PERIPHERAL [label="Peripheral Start Extended Connectable Advertising"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_connect(scan_params={extended=1,scan_phys=PHY_A and PHY_B}, conn_params)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD<:PERIPHERAL [label = "Advertisement (ADV_EXT_IND) on primary_phy=PHY_A or PHY_B", textcolor="#000080", linecolor="#000080"];
+ * SD<:PERIPHERAL [label = "Advertisement (AUX_ADV_IND) on secondary_phy=ANY", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * --- [label = " Variant #1 Connection Established "];
+ * SD:>PERIPHERAL [label = "LL Connect Request(AUX_CONNECT_REQ) on secondary_phy", textcolor="#000080", linecolor="#000080"];
+ * SD<:PERIPHERAL [label = "LL Connect Response(AUX_CONNECT_RSP) on secondary_phy", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONNECTED"];
+ * |||;
+ * --- [label = " Variant #2 Connection Establishment Cancelled "];
+ * APP=>SD [label = "sd_ble_gap_connect_cancel()"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * --- [label = " Variant #3 Connection Timeout "];
+ * |||;
+ * SD rbox SD [label = "Connection timeout reached"];
+ * |||;
+ * APP<<=SD [label = "BLE_GAP_EVT_TIMEOUT {BLE_GAP_TIMEOUT_SRC_CONN}"];
+ * |||;
+ * --- [label = " Variant #4 Connection Establishment failure due to mismatching PHYs"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_connect(scan_params={extended=1,scan_phys=PHY_A}, conn_params)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD<:PERIPHERAL [label = "Advertisement (ADV_EXT_IND) on primary_phy=PHY_B", textcolor="#000080", linecolor="#000080"];
+ * SD<:PERIPHERAL [label = "Advertisement (AUX_ADV_IND) on secondary_phy=ANY", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * SD rbox SD [label = "Connection timeout reached"];
+ * |||;
+ * APP<<=SD [label = "BLE_GAP_EVT_TIMEOUT {BLE_GAP_TIMEOUT_SRC_CONN}"];
+ * @endmsc
+ * @}
+ *
+ * @defgroup BLE_GAP_CENTRAL_CPU_MSC Central Connection Parameter Update
+ * @msc
+ * hscale = "1.5";
+ * APP,SD,PERIPHERAL;
+ * |||;
+ * APP rbox PERIPHERAL [label="Connection Established with conn. params. CP#1"];
+ * |||;
+ * --- [label = " Unsolicited procedure"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_conn_param_update(CP#2)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * SD:>PERIPHERAL [label = "LL Connection Update (LL_CONNECTION_UPDATE_IND)", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_PARAM_UPDATE {CP#2}"];
+ * |||;
+ * --- [label = " Peripheral Solicited procedure"];
+ * |||;
+ * SD<:PERIPHERAL [label = "L2CAP Connection Parameter Update Request {CP#3}", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_PARAM_UPDATE_REQUEST {CP#3}"];
+ * |||;
+ * --- [label = " Variant #1 App Accepts "];
+ * APP=>SD [label = "sd_ble_gap_conn_param_update(CP#3)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD:>PERIPHERAL [label = "L2CAP Connection Parameter Update Response: Accepted", textcolor="#000080", linecolor="#000080"];
+ * SD:>PERIPHERAL [label = "LL Connection Update (LL_CONNECTION_UPDATE_IND)", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_PARAM_UPDATE {CP#3}"];
+ * |||;
+ * --- [label = " Variant #2 App Rejects "];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_conn_param_update(NULL)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD:>PERIPHERAL [label = "L2CAP Connection Parameter Update Response: Rejected", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * @endmsc
+ *
+ * @defgroup BLE_GAP_CENTRAL_SEC_MSC Central Security Procedures
+ * @{
+ *
+ * @defgroup BLE_GAP_CENTRAL_SEC_REQ_MSC Security Request Reception
+ * @msc
+ * hscale = "1.5";
+ * APP,SD,PERIPHERAL;
+ * |||;
+ * APP rbox PERIPHERAL [label="Connection Established"];
+ * |||;
+ * SD<:PERIPHERAL [label = "SMP Security Request", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_SEC_REQUEST {bond, mitm}"];
+ * |||;
+ * --- [label = " Variant #1 Central initiates Security Establishment "];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_encrypt(ediv, rand, LTK)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * APP rbox PERIPHERAL [label = "Encrypted with LTK"];
+ * |||;
+ * --- [label = " Variant #2 Central Triggers pairing or bonding "];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_authenticate(params)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * APP rbox PERIPHERAL [label = "Pairing procedure"];
+ * |||;
+ * --- [label = " Variant #3 Central rejects the Security Request "];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_authenticate(NULL)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * SD:>PERIPHERAL [label = "SMP Pairing Failed: Pairing Not Supported", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_AUTH_STATUS {auth_status: Pairing Not Supp, error_src: local}"];
+ * |||;
+ * @endmsc
+ *
+ * @defgroup BLE_GAP_CENTRAL_LEGACY_MSC Central Legacy Pairing
+ * @{
+ *
+ * @defgroup BLE_GAP_CENTRAL_PAIRING_JW_MSC Pairing: Just Works
+ * @msc
+ * hscale = "2";
+ * APP,SD,PERIPHERAL;
+ * |||;
+ * APP rbox PERIPHERAL [label="Connection Established"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_authenticate(no_bond, no_mitm, no_io_caps)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD:>PERIPHERAL [label = "SMP Pairing Request", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * SD<:PERIPHERAL [label = "SMP Pairing Response", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_SEC_PARAMS_REQUEST {peer_params: no_bond, no_mitm, no_io_caps}"];
+ * |||;
+ * --- [label = " Variant #1 Central Accepts Peripheral parameters "];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_sec_params_reply(SUCCESS, own_params: NULL, p_keyset: NULL)"];
+ * |||;
+ * SD abox PERIPHERAL [label="Legacy Pairing Phase 2", textbgcolor="#7f7fff"];
+ * |||;
+ * APP rbox PERIPHERAL [label = "Encrypted with STK"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {ENC_NO_MITM}"];
+ * APP<<=SD [label = "BLE_GAP_EVT_AUTH_STATUS {SUCCESS}"];
+ * |||;
+ * --- [label = " Variant #2 Central Rejects Peripheral parameters "];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_sec_params_reply(BLE_GAP_SEC_STATUS_INVALID_PARAMS, own_params: NULL, p_keyset: NULL)"];
+ * |||;
+ * SD:>PERIPHERAL [label = "SMP Pairing Failed", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * APP<<=SD [label = "BLE_GAP_EVT_AUTH_STATUS {FAILURE}"];
+ * @endmsc
+ *
+ * @defgroup BLE_GAP_CENTRAL_BONDING_JW_MSC Bonding: Just Works
+ * @msc
+ * hscale = "2";
+ * APP,SD,PERIPHERAL;
+ * |||;
+ * APP rbox PERIPHERAL [label="Connection Established"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_authenticate(bond, no_mitm, no_io_caps)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD:>PERIPHERAL [label = "SMP Pairing Request", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * SD<:PERIPHERAL [label = "SMP Pairing Response", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_SEC_PARAMS_REQUEST {peer_params: bond, no_mitm, no_io_caps}"];
+ * APP=>SD [label = "sd_ble_gap_sec_params_reply(SUCCESS, own_params: NULL, p_keyset)"];
+ * |||;
+ * SD abox PERIPHERAL [label="Legacy Pairing Phase 2", textbgcolor="#7f7fff"];
+ * |||;
+ * APP rbox PERIPHERAL [label = "Encrypted with STK"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {ENC_NO_MITM}"];
+ * |||;
+ * SD abox PERIPHERAL [label="SMP Pairing Phase 3", textbgcolor="#7f7fff"];
+ * |||;
+ * APP<<=SD [label = "BLE_GAP_EVT_AUTH_STATUS {SUCCESS}"];
+ * APP rbox APP [label = "Keys stored in keyset"];
+ * @endmsc
+ *
+ * @defgroup BLE_GAP_CENTRAL_BONDING_PK_PERIPH_MSC Bonding: Passkey Entry, Central displays
+ * @msc
+ * hscale = "2";
+ * APP,SD,PERIPHERAL;
+ * |||;
+ * APP rbox PERIPHERAL [label="Connection Established"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_authenticate(bond, mitm, display)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD:>PERIPHERAL [label = "SMP Pairing Request", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * SD<:PERIPHERAL [label = "SMP Pairing Response}", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_SEC_PARAMS_REQUEST {peer_params: bond, mitm, keyboard}"];
+ * APP=>SD [label = "sd_ble_gap_sec_params_reply(SUCCESS, own_params: NULL, p_keyset)"];
+ * |||;
+ * APP<<=SD [label = "BLE_GAP_EVT_PASSKEY_DISPLAY {passkey, match_request=0}"];
+ * APP rbox APP [label="Passkey displayed to the user"];
+ * |||;
+ * SD abox PERIPHERAL [label="Legacy Pairing Phase 2", textbgcolor="#7f7fff"];
+ * |||;
+ * APP rbox PERIPHERAL [label = "Encrypted with STK"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {ENC_MITM}"];
+ * |||;
+ * SD abox PERIPHERAL [label="SMP Pairing Phase 3", textbgcolor="#7f7fff"];
+ * |||;
+ * APP<<=SD [label = "BLE_GAP_EVT_AUTH_STATUS {SUCCESS}"];
+ * APP rbox APP [label = "Keys stored in keyset"];
+ * @endmsc
+ *
+ * @defgroup BLE_GAP_CENTRAL_BONDING_PK_PERIPH_OOB_MSC Bonding: Passkey Entry, User Inputs on Central or OOB
+ * @msc
+ * hscale = "2";
+ * APP,SD,PERIPHERAL;
+ * |||;
+ * APP rbox PERIPHERAL [label="Connection Established"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_authenticate(bond, mitm, keyboard)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD:>PERIPHERAL [label = "SMP Pairing Request", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * SD<:PERIPHERAL [label = "SMP Pairing Response", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_SEC_PARAMS_REQUEST {peer_params: bond, mitm, display}"];
+ * APP=>SD [label = "sd_ble_gap_sec_params_reply(SUCCESS, own_params: NULL, p_keyset)"];
+ * |||;
+ * APP<<=SD [label = "BLE_GAP_EVT_AUTH_KEY_REQUEST {type}"];
+ * APP rbox APP [label="User enters Passkey or data received Out Of Band"];
+ * APP=>SD [label = "sd_ble_gap_auth_key_reply(passkey or OOB)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * SD abox PERIPHERAL [label="Legacy Pairing Phase 2", textbgcolor="#7f7fff"];
+ * |||;
+ * APP rbox PERIPHERAL [label = "Encrypted with STK"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {ENC_MITM}"];
+ * |||;
+ * SD abox PERIPHERAL [label="SMP Pairing Phase 3", textbgcolor="#7f7fff"];
+ * |||;
+ * APP<<=SD [label = "BLE_GAP_EVT_AUTH_STATUS {SUCCESS}"];
+ * APP rbox APP [label = "Keys stored in keyset"];
+ * @endmsc
+ *
+ * @}
+ *
+ * @defgroup BLE_GAP_CENTRAL_LESC_MSC Central LESC Pairing
+ * @{
+ * @defgroup BLE_GAP_CENTRAL_LESC_PAIRING_JW_MSC Pairing: Just Works
+ * @msc
+ * hscale = "2";
+ * APP,SD,PERIPHERAL;
+ * |||;
+ * APP rbox PERIPHERAL [label="Connection Established"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_authenticate(lesc, no_bond, no_mitm, no_io_caps)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD:>PERIPHERAL [label = "SMP Pairing Request", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * SD<:PERIPHERAL [label = "SMP Pairing Response", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_SEC_PARAMS_REQUEST {peer_params: lesc, no_bond, no_mitm, no_io_caps}"];
+ * APP=>SD [label = "sd_ble_gap_sec_params_reply(SUCCESS, own_params: NULL, p_pk_own)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * SD:>PERIPHERAL [label = "SMP Pairing Public Key: PKa", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * SD<:PERIPHERAL [label = "SMP Pairing Public Key: PKb", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_LESC_DHKEY_REQUEST {p_peer_pk}"];
+ * |||;
+ * APP abox APP [label="App starts DHKey calculation"];
+ * |||;
+ * SD abox PERIPHERAL [label="LESC Authentication Stage 1", textbgcolor="#7f7fff"];
+ * |||;
+ * APP abox APP [label="App completes DHKey calculation"];
+ * APP=>SD [label = "sd_ble_gap_lesc_dhkey_reply(p_dhkey)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD:>PERIPHERAL [label = "SMP Pairing DHKey Check: Ea", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * SD<:PERIPHERAL [label = "SMP Pairing DHKey Check: Eb", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * APP rbox PERIPHERAL [label = "Encrypted with LTK"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {ENC_NO_MITM}"];
+ * APP<<=SD [label = "BLE_GAP_EVT_AUTH_STATUS {SUCCESS}"];
+ * @endmsc
+ *
+ * @defgroup BLE_GAP_CENTRAL_LESC_BONDING_NC_MSC Bonding: Numeric Comparison
+ * @msc
+ * hscale = "2";
+ * APP,SD,PERIPHERAL;
+ * |||;
+ * APP rbox PERIPHERAL [label="Connection Established"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_authenticate(lesc, bond, mitm, display(kbd/yesno))"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD:>PERIPHERAL [label = "SMP Pairing Request", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * SD<:PERIPHERAL [label = "SMP Pairing Response", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_SEC_PARAMS_REQUEST {peer_params: lesc, bond, mitm, display(kbd/yesno)}"];
+ * APP=>SD [label = "sd_ble_gap_sec_params_reply(SUCCESS, own_params: NULL, keyset with p_pk_own)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * SD:>PERIPHERAL [label = "SMP Pairing Public Key: PKa", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * SD<:PERIPHERAL [label = "SMP Pairing Public Key: PKb", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_LESC_DHKEY_REQUEST {p_peer_pk}"];
+ * |||;
+ * APP abox APP [label="App starts DHKey calculation"];
+ * |||;
+ * SD abox PERIPHERAL [label="LESC Authentication Stage 1", textbgcolor="#7f7fff"];
+ * |||;
+ * APP<<=SD [label = "BLE_GAP_EVT_PASSKEY_DISPLAY {passkey, match_request=1}"];
+ * APP rbox APP [label="Passkey displayed to the user, user compares values"];
+ * |||;
+ * --- [label = " Variant #1 User confirms on both sides "];
+ * APP=>SD [label = "sd_ble_gap_auth_key_reply(BLE_GAP_AUTH_KEY_TYPE_PASSKEY, NULL)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * APP abox APP [label="App completes DHKey calculation"];
+ * APP=>SD [label = "sd_ble_gap_lesc_dhkey_reply(p_dhkey)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD:>PERIPHERAL [label = "SMP Pairing DHKey Check: Ea", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * SD<:PERIPHERAL [label = "SMP Pairing DHKey Check: Eb", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * APP rbox PERIPHERAL [label = "Encrypted with LTK"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {LESC_ENC_MITM}"];
+ * |||;
+ * SD abox PERIPHERAL [label="SMP Pairing Phase 3", textbgcolor="#7f7fff"];
+ * |||;
+ * APP<<=SD [label = "BLE_GAP_EVT_AUTH_STATUS {SUCCESS}"];
+ * APP rbox APP [label = "Keys stored in keyset"];
+ * --- [label = " Variant #2 User does not confirm locally "];
+ * APP=>SD [label = "sd_ble_gap_auth_key_reply(BLE_GAP_AUTH_KEY_TYPE_NONE, NULL)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * APP<<=SD [label = "BLE_GAP_EVT_AUTH_STATUS {auth_status: num comp failure, error_src: local}"];
+ * SD:>PERIPHERAL [label = "SMP Pairing failed", textcolor="#000080", linecolor="#000080"];
+ * --- [label = " Variant #3 User does not confirm remotely "];
+ * SD<:PERIPHERAL [label = "SMP Pairing failed", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_AUTH_STATUS {auth_status: num comp failure, error_src: remote}"];
+ * @endmsc
+ *
+ * @defgroup BLE_GAP_CENTRAL_LESC_BONDING_PKE_PD_MSC Bonding: Passkey Entry: Central Displays
+ * @msc
+ * hscale = "2";
+ * APP,SD,PERIPHERAL;
+ * |||;
+ * APP rbox PERIPHERAL [label="Connection Established"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_authenticate(lesc, bond, mitm, display)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD:>PERIPHERAL [label = "SMP Pairing Request", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * SD<:PERIPHERAL [label = "SMP Pairing Response", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_SEC_PARAMS_REQUEST {peer_params: lesc, bond, mitm, keyboard}"];
+ * APP=>SD [label = "sd_ble_gap_sec_params_reply(SUCCESS, own_params: NULL, keyset with p_pk_own)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * APP<<=SD [label = "BLE_GAP_EVT_PASSKEY_DISPLAY {passkey, match_request=0}"];
+ * APP rbox APP [label="Passkey displayed to the user"];
+ * |||;
+ * SD:>PERIPHERAL [label = "SMP Pairing Public Key: PKa", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * SD<:PERIPHERAL [label = "SMP Pairing Public Key: PKb", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_LESC_DHKEY_REQUEST {p_peer_pk}"];
+ * |||;
+ * APP abox APP [label="App starts DHKey calculation"];
+ * |||;
+ * --- [label = " Optional keypresses from peer "];
+ * SD<:PERIPHERAL [label = "Keypress Notification", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_KEY_PRESSED {type}"];
+ * APP abox APP [label="App displays keypress"];
+ * SD<:PERIPHERAL [label = "Keypress Notification", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_KEY_PRESSED {type}"];
+ * APP abox APP [label="App displays keypress"];
+ * |||;
+ * --- [label = ""];
+ * SD abox PERIPHERAL [label="LESC Authentication Stage 1", textbgcolor="#7f7fff"];
+ * |||;
+ * APP abox APP [label="App completes DHKey calculation"];
+ * APP=>SD [label = "sd_ble_gap_lesc_dhkey_reply(p_dhkey)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD:>PERIPHERAL [label = "SMP Pairing DHKey Check: Ea", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * SD<:PERIPHERAL [label = "SMP Pairing DHKey Check: Eb", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * APP rbox PERIPHERAL [label = "Encrypted with LTK"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {LESC_ENC_MITM}"];
+ * |||;
+ * SD abox PERIPHERAL [label="SMP Pairing Phase 3", textbgcolor="#7f7fff"];
+ * |||;
+ * APP<<=SD [label = "BLE_GAP_EVT_AUTH_STATUS {SUCCESS}"];
+ * APP rbox APP [label = "Keys stored in keyset"];
+ * @endmsc
+ *
+ * @defgroup BLE_GAP_CENTRAL_LESC_BONDING_PKE_CD_MSC Bonding: Passkey Entry: User Inputs on Central
+ * @msc
+ * hscale = "2";
+ * APP,SD,PERIPHERAL;
+ * |||;
+ * APP rbox PERIPHERAL [label="Connection Established"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_authenticate(lesc, bond, mitm, keyboard)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD:>PERIPHERAL [label = "SMP Pairing Request", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * SD<:PERIPHERAL [label = "SMP Pairing Response", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_SEC_PARAMS_REQUEST {peer_params: lesc, bond, mitm, display}"];
+ * APP=>SD [label = "sd_ble_gap_sec_params_reply(SUCCESS, own_params: NULL, keyset with p_pk_own)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * APP<<=SD [label = "BLE_GAP_EVT_AUTH_KEY_REQUEST {passkey}"];
+ * APP rbox APP [label="User enters Passkey"];
+ * |||;
+ * SD:>PERIPHERAL [label = "SMP Pairing Public Key: PKa", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * SD<:PERIPHERAL [label = "SMP Pairing Public Key: PKb", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_LESC_DHKEY_REQUEST {p_peer_pk}"];
+ * |||;
+ * APP abox APP [label="App starts DHKey calculation"];
+ * |||;
+ * --- [label = " Optional keypresses sent to peer "];
+ * APP=>SD [label = "sd_ble_gap_keypress_notify(type)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD:>PERIPHERAL [label = "Keypress Notification", textcolor="#000080", linecolor="#000080"];
+ * APP=>SD [label = "sd_ble_gap_keypress_notify(type)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD:>PERIPHERAL [label = "Keypress Notification", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * --- [label = ""];
+ * APP=>SD [label = "sd_ble_gap_auth_key_reply(passkey)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD abox PERIPHERAL [label="LESC Authentication Stage 1", textbgcolor="#7f7fff"];
+ * |||;
+ * APP abox APP [label="App completes DHKey calculation"];
+ * APP=>SD [label = "sd_ble_gap_lesc_dhkey_reply(p_dhkey)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD:>PERIPHERAL [label = "SMP Pairing DHKey Check: Ea", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * SD<:PERIPHERAL [label = "SMP Pairing DHKey Check: Eb", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * APP rbox PERIPHERAL [label = "Encrypted with LTK"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {LESC_ENC_MITM}"];
+ * |||;
+ * SD abox PERIPHERAL [label="SMP Pairing Phase 3", textbgcolor="#7f7fff"];
+ * |||;
+ * APP<<=SD [label = "BLE_GAP_EVT_AUTH_STATUS {SUCCESS}"];
+ * APP rbox APP [label = "Keys stored in keyset"];
+ * @endmsc
+ *
+ * @defgroup BLE_GAP_CENTRAL_LESC_BONDING_OOB_MSC Bonding: Out of Band
+ * @msc
+ * hscale = "2";
+ * APP,SD,PERIPHERAL;
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_addr_set(addr)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * APP=>SD [label = "sd_ble_gap_lesc_oob_data_get(p_pk_own, p_oobd_own)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * APP abox PERIPHERAL [label="OOB communication: oobd_own sent and/or oobd_peer received", textbgcolor="silver"];
+ * |||;
+ * APP rbox PERIPHERAL [label="Connection Established"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_authenticate(lesc, bond, oob)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD:>PERIPHERAL [label = "SMP Pairing Request", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * SD<:PERIPHERAL [label = "SMP Pairing Response", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_SEC_PARAMS_REQUEST {peer_params: lesc, bond, oob}"];
+ * APP=>SD [label = "sd_ble_gap_sec_params_reply(SUCCESS, own_params: NULL, keyset with p_pk_own)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * SD:>PERIPHERAL [label = "SMP Pairing Public Key: PKa", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * SD<:PERIPHERAL [label = "SMP Pairing Public Key: PKb", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_LESC_DHKEY_REQUEST {p_peer_pk, oobd_req=1}"];
+ * |||;
+ * APP abox APP [label="App starts DHKey calculation"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_lesc_oob_data_set(p_oobd_own, p_oobd_peer)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * SD abox PERIPHERAL [label="LESC Authentication Stage 1", textbgcolor="#7f7fff"];
+ * |||;
+ * APP abox APP [label="App completes DHKey calculation"];
+ * APP=>SD [label = "sd_ble_gap_lesc_dhkey_reply(p_dhkey)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD:>PERIPHERAL [label = "SMP Pairing DHKey Check: Ea", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * SD<:PERIPHERAL [label = "SMP Pairing DHKey Check: Eb", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * APP rbox PERIPHERAL [label = "Encrypted with LTK"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {LESC_ENC_MITM}"];
+ * |||;
+ * SD abox PERIPHERAL [label="SMP Pairing Phase 3", textbgcolor="#7f7fff"];
+ * |||;
+ * APP<<=SD [label = "BLE_GAP_EVT_AUTH_STATUS {SUCCESS}"];
+ * APP rbox APP [label = "Keys stored in keyset"];
+ * @endmsc
+ * @}
+ *
+ * @defgroup BLE_GAP_CENTRAL_INVALID_SMP_PDU_MSC Unexpected Security Packet Reception
+ * @msc
+ * hscale = "1.5";
+ * APP,SD,PEER;
+ * |||;
+ * APP rbox PEER [label="Connection Established"];
+ * |||;
+ * APP rbox PEER [label="No pairing in progress"];
+ * |||;
+ * PEER rbox PEER [label="Peer misbehaving"];
+ * |||;
+ * SD<:PEER [label = "SMP Pairing Failed (or other unexpected SMP PDU)", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_AUTH_STATUS {PDU_INVALID}"];
+ * |||;
+ * @endmsc
+ *
+ * @defgroup BLE_GAP_CENTRAL_ENC_MSC Encryption Establishment using stored keys
+ * @msc
+ * hscale = "1.5";
+ * APP,SD,PERIPHERAL;
+ * |||;
+ * APP rbox PERIPHERAL [label="Connection Established"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_encrypt(ediv, rand, LTK)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * SD:>PERIPHERAL [label = "LL Encryption Request (LL_ENC_REQ)", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * --- [label = " Variant #1 Peripheral replies with keys "];
+ * |||;
+ * PERIPHERAL rbox PERIPHERAL [label = "Peripheral Loads Keys"];
+ * SD<:PERIPHERAL [label = "LL Encryption Response (LL_ENC_RSP)", textcolor="#000080", linecolor="#000080"];
+ * APP rbox PERIPHERAL [label = "Encrypted with LTK"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE"];
+ * |||;
+ * --- [label = " Variant #2 Peripheral keys missing "];
+ * |||;
+ * PERIPHERAL rbox PERIPHERAL [label = "Peripheral Keys Missing"];
+ * SD<:PERIPHERAL [label = "LL Reject Ind (LL_REJECT_IND): Pin or Key Missing", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE"];
+ * APP rbox PERIPHERAL [label = "Link is NOT encrypted"];
+ * |||;
+ * --- [label = " Variant #3 Incorrect peripheral keys "];
+ * |||;
+ * PERIPHERAL rbox PERIPHERAL [label = "Peripheral Loads Incorrect Keys"];
+ * SD<:PERIPHERAL [label = "LL Encryption Response (LL_ENC_RSP)", textcolor="#000080", linecolor="#000080"];
+ * APP rbox PERIPHERAL [label = "Link Terminated due to authentication error"];
+ * APP<<=SD [label = "BLE_GAP_EVT_DISCONNECTED {MIC Failure}"];
+ * |||;
+ * @endmsc
+ *
+ * @defgroup BLE_GAP_CENTRAL_ENC_AUTH_MUTEX_MSC Central Encryption and Authentication mutual exclusion
+ * @msc
+ * hscale = "1.5";
+ * APP,SD,PEER;
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_encrypt(ediv, rand, LTK)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * SD:>PEER [label = "Encryption Start (LL_START_ENC_REQ)", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * APP note SD [label = " Encryption in progress, authentication disallowed"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_authenticate()"];
+ * APP<<SD [label = "NRF_ERROR_INVALID_STATE"];
+ * |||;
+ * SD<:PEER [label = "Encryption Complete (LL_START_ENC_RSP)", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE "];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_conn_param_update()"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * SD:>PEER [label = "Connection Update Start (LL_CONNECTION_UPDATE_IND)", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_encrypt(ediv, rand, LTK)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * SD rbox SD [label="Encryption queued"];
+ * |||;
+ * APP note SD [label = " Encryption queued, authentication disallowed"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_authenticate()"];
+ * APP<<SD [label = "NRF_ERROR_INVALID_STATE"];
+ * |||;
+ * SD<:PEER [label = "Connection Update Complete", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_PARAM_UPDATE"];
+ * |||;
+ * SD:>PEER [label = "Encryption Start (LL_START_ENC_REQ)", textcolor="#000080", linecolor="#000080"];
+ * SD<:PEER [label = "Encryption Complete (LL_START_ENC_RSP)", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE "];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_authenticate()"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * APP note SD [label = " Authentication in progress, encryption disallowed"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_encrypt(ediv, rand, LTK)"];
+ * APP<<SD [label = "NRF_ERROR_INVALID_STATE"];
+ * @endmsc
+ * @}
+ *
+ * @defgroup BLE_GAP_WL_SHARE_MSC Whitelist Sharing
+ * @msc
+ * hscale = "1.5";
+ * APP,SD;
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_adv_set_configure(&adv_handle, adv_data, params: { fp = CONNREQ })"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * APP=>SD [label = "sd_ble_gap_whitelist_set(WL#1)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * APP=>SD [label = "sd_ble_gap_adv_start(adv_handle)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * SD rbox SD [label="Advertising with Whitelist #1"];
+ * |||;
+ * APP note APP [label = "Unable to change whitelist while adv in progress"];
+ * APP=>SD [label = "sd_ble_gap_whitelist_set(WL#2)"];
+ * APP<<SD [label = "BLE_ERROR_GAP_WHITELIST_IN_USE"];
+ * |||;
+ * APP note APP [label = "Scan with the current active whitelist"];
+ * APP=>SD [label = "sd_ble_gap_scan_start(use_whitelist = 1, adv_report_buffer)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * SD rbox SD [label="Advertising and scanning with Whitelist #1"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_adv_stop(adv_handle)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * SD rbox SD [label="Scanning with Whitelist #1"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_scan_stop()"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_whitelist_set(WL#2)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * APP=>SD [label = "sd_ble_gap_scan_start(use_whitelist = 1, adv_report_buffer)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * SD rbox SD [label="Scanning with Whitelist #2"];
+ * |||;
+ * APP note APP [label = "Connect with the current active whitelist"];
+ * APP=>SD [label = "sd_ble_gap_connect(use_whitelist = 1)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * SD note SD [label = "Scanning is automatically stopped"];
+ * SD rbox SD [label="Connecting with Whitelist #2"];
+ * |||;
+ * @endmsc
+ *
+ * @defgroup BLE_GAP_PRIVACY_MSC Privacy
  * @{
  *
  * @defgroup BLE_GAP_PRIVACY_ADV_MSC Private Advertising
@@ -962,6 +1773,126 @@
  * SD->SCANNERS [label = "Advertisement (ADV_*_IND), Addr = Non-Resolvable2", textcolor="#000080", linecolor="#000080"];
  * @endmsc
   *
+ * @defgroup BLE_GAP_PRIVACY_SCAN_MSC Private Scanning
+ * @msc
+ * hscale = "1.5";
+ * APP,SD,ADVERTISERS;
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_addr_set(addr)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * --- [label = " Variant #1 Active Scan with address resolvable by local IRKs "];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_privacy_set(params: {mode: DEVICE_PRIVACY, private_addr_type: RESOLVABLE } "];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+
+ * APP=>SD [label = "sd_ble_gap_device_identities_set(pp_id_keys: {peer_addr1, peer_irk1}, {peer_addr2, peer_irk2}, pp_local_irks: {local_irk1, local_irk2}) "];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_scan_start(params, adv_report_buffer)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * ADVERTISERS->SD [label = "Advertisement (ADV_IND/ADV_SCAN_IND), Addr = peer_addr1", textcolor="#000080", linecolor="#000080"];
+ * SD box ADVERTISERS [label = "peer_addr1 is in the device identity list, respond with an address generated from local_irk1"];
+ * SD->ADVERTISERS [label = "Scan Request packet (SCAN_REQ), Addr = Resolvable", textcolor="#000080", linecolor="#000080"];
+ * ADVERTISERS->SD [label = "Scan Response packet (SCAN_RSP), Addr = peer_addr1", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * ...;
+ * ADVERTISERS->SD [label = "Advertisement (ADV_IND/ADV_SCAN_IND), Addr = Resolvable2", textcolor="#000080", linecolor="#000080"];
+ * SD box ADVERTISERS [label = "Resolvable2 resolved to device identity peer_addr2 in the device identity list, respond with an address generated from local_irk2"];
+ * SD->ADVERTISERS [label = "Scan Request packet (SCAN_REQ), Addr = Resolvable", textcolor="#000080", linecolor="#000080"];
+ * ADVERTISERS->SD [label = "Scan Response packet (SCAN_RSP), Addr = peer_addr1", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * ...;
+ * ADVERTISERS->SD [label = "Advertisement (ADV_IND/ADV_SCAN_IND), Addr = peer_addr3", textcolor="#000080", linecolor="#000080"];
+ * SD box ADVERTISERS [label = "peer_addr3 is not in the device identity list, respond with the random static address"];
+ * SD->ADVERTISERS [label = "Scan Request packet (SCAN_REQ), Addr = addr", textcolor="#000080", linecolor="#000080"];
+ * ADVERTISERS->SD [label = "Scan Response packet (SCAN_RSP), Addr = peer_addr3", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * --- [label = " Variant #2 Active Scan with non-resolvable address "];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_privacy_set(params: {mode: DEVICE_PRIVACY, private_addr_type: NON_RESOLVABLE } "];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_scan_start(params, adv_report_buffer)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * ADVERTISERS->SD [label = "Advertisement (ADV_IND/ADV_SCAN_IND)", textcolor="#000080", linecolor="#000080"];
+ * SD->ADVERTISERS [label = "Scan Request packet (SCAN_REQ), Addr = Non-Resolvable", textcolor="#000080", linecolor="#000080"];
+ * ADVERTISERS->SD [label = "Scan Response packet (SCAN_REQ)", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * @endmsc
+ *
+ * @defgroup BLE_GAP_PRIVACY_SCAN_PRIVATE_SCAN_MSC Scan Private Devices
+ * @msc
+ * hscale = "1.5";
+ * APP,SD,ADVERTISERS;
+ * |||;
+
+ * APP=>SD [label = "sd_ble_gap_device_identities_set(pp_id_keys: {peer_addr1, peer_irk1}, pp_local_irks: NULL) "];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * --- [label = " Variant #1 Scan and resolve private devices "];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_scan_start(params, adv_report_buffer)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * ADVERTISERS->SD [label = "Advertisement (ADV_*_IND), Addr = Resolvable1", textcolor="#000080", linecolor="#000080"];
+ * SD note ADVERTISERS [label="Resolvable1 resolved to device identity peer_addr1"];
+ * APP<<=SD [label = "BLE_GAP_EVT_ADV_REPORT {peer_addr1, rssi, data}"];
+ * APP=>SD [label = "sd_ble_gap_scan_start(params = NULL, adv_report_buffer)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * ADVERTISERS->SD [label = "Advertisement (ADV_*_IND), Addr = peer_addr2", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_ADV_REPORT {peer_addr2, rssi, data}"];
+ * |||;
+ * --- [label = " Variant #2 Scan and resolve private devices with whitelist "];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_whitelist_set({peer_addr1, Resolvable2}) "];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_scan_start(params, adv_report_buffer)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * ADVERTISERS->SD [label = "Advertisement (ADV_*_IND), Addr = Resolvable1", textcolor="#000080", linecolor="#000080"];
+ * SD note ADVERTISERS [label="Resolvable1 resolved to device identity peer_addr1 which is in the whitelist"];
+ * APP<<=SD [label = "BLE_GAP_EVT_ADV_REPORT {peer_addr1, rssi, data}"];
+ * APP=>SD [label = "sd_ble_gap_scan_start(params = NULL, adv_report_buffer)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * ADVERTISERS->SD [label = "Advertisement (ADV_*_IND), Addr = Resolvable2", textcolor="#000080", linecolor="#000080"];
+ * SD note ADVERTISERS [label="Resolvable2 did not resolve to a device identity but is in the whitelist"];
+ * APP<<=SD [label = "BLE_GAP_EVT_ADV_REPORT {Resolvable2, rssi, data}"];
+ * APP=>SD [label = "sd_ble_gap_scan_start(params = NULL, adv_report_buffer)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * ADVERTISERS->SD [label = "Advertisement (ADV_*_IND), Addr = Resolvable3", textcolor="#000080", linecolor="#000080"];
+ * SD note ADVERTISERS [label="Resolvable3 is not in the whitelist, no report generated"];
+ * |||;
+ * --- [label = " Variant #3 Scan directed advertisers and resolve initiator address using local IRK in device identity list"];
+ * |||;
+
+ * APP=>SD [label = "sd_ble_gap_device_identities_set(pp_id_keys: {peer_addr1, peer_irk1}, pp_local_irks: local_irk1) "];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_scan_start(params, adv_report_buffer)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * ADVERTISERS->SD [label = "Advertisement (ADV_*_IND), Advertiser Addr = Resolvable, Initiator Addr = Resolvable", textcolor="#000080", linecolor="#000080"];
+ * ADVERTISERS box SD [label = "Advertiser Address resolved using peer_irk1, Initiator address resolved using local_irk1"];
+ * APP<<=SD [label = "BLE_GAP_EVT_ADV_REPORT {peer_addr: peer_addr1"];
+ * |||;
+ * --- [label = " Variant #5 Scan directed advertisers with unresolved direct address "];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_scan_start(params: {adv_dir_report = 1}, adv_report)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * ADVERTISERS->SD [label = "Advertisement (ADV_*_IND), Advertiser Addr = peer_addr2, Initiator Addr = Resolvable2", textcolor="#000080", linecolor="#000080"];
+ * ADVERTISERS box SD [label = "Resolvable2 could not be resolved, report the unresolved direct address"];
+ * APP<<=SD [label = "BLE_GAP_EVT_ADV_REPORT {peer_addr: peer_addr2, direct_addr: Resolvable2}"];
+ * |||;
+ * @endmsc
  *
  * @defgroup BLE_GAP_PRIVACY_ADV_DIR_PRIV_MSC Directed Advertising
  * @msc
@@ -1052,12 +1983,104 @@
  * |||;
  * @endmsc
  *
-  *
+  * @defgroup BLE_GAP_CENTRAL_CONN_PRIV_MSC Central Connection Establishment with Private Peer
+ * @msc
+ * hscale = "1.5";
+ * APP,SD,PERIPHERAL;
+ * |||;
+
+ * APP=>SD [label = "sd_ble_gap_device_identities_set(pp_id_keys: {peer_addr1, peer_irk1}, pp_local_irks: NULL) "];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * PERIPHERAL rbox PERIPHERAL [label="Peripheral Start Connectable Advertising"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_connect(peer_addr = {peer_addr1, addr_id_peer = 1})"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * SD:>PERIPHERAL [label = "Scanning", textcolor="#000080", linecolor="#000080"];
+ * --- [label = " Variant #1 Peer used resolvable addresses during connection setup "];
+ * |||;
+ * SD<:>PERIPHERAL [label = "Connection Establishment", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONNECTED, peer_addr = {peer_addr1, addr_id_peer = 1}"];
+ * |||;
+ * --- [label = " Variant #2 Peer used identity address during connection setup "];
+ * |||;
+ * SD<:>PERIPHERAL [label = "Connection Establishment", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONNECTED, peer_addr = {peer_addr1, addr_id_peer = 0}"];
+ * |||;
+ * @endmsc
+ *
  * @}
  *
  * @defgroup BLE_GAP_EVT_PHY_MSC PHY Update Procedure
  * @{
  *
+ * @defgroup BLE_GAP_CENTRAL_PHY_UPDATE Central PHY Update
+ * @msc
+ * hscale = "1.5";
+ * APP,SD,PERIPHERAL;
+ * |||;
+ * APP rbox PERIPHERAL [label="Connection Established. Current TX PHY and RX PHY are both 1Mbit"];
+ * |||;
+ * --- [label = " Variant #1 Initiated by Peripheral - no change in PHY "];
+ * SD<=PERIPHERAL [label = "PHY Request (LL_PHY_REQ) {tx_phys=2Mbit, rx_phys=2Mbit}", textcolor="#000080", linecolor="#000080"];
+
+ * APP<<=SD [label = "BLE_GAP_EVT_PHY_UPDATE_REQUEST {peer_preferred_phys={tx_phys=2Mbit, rx_phys=2Mbit}}"];
+ * APP=>SD [label = "sd_ble_gap_phy_update(conn_handle, {tx_phys=1Mbit, rx_phys=1Mbit})"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD=>PERIPHERAL [label = "PHY Update (LL_PHY_UPDATE_IND) - No change", textcolor="#000080", linecolor="#000080"];
+
+ * APP<<=SD   [label = "BLE_GAP_EVT_PHY_UPDATE {status=Success, {tx_phy=1Mbit, rx_phy=1Mbit}}"];
+ * |||;
+ * --- [label = " Variant #2 Initiated by Peripheral - change of PHY required"];
+ * SD<=PERIPHERAL [label = "PHY Request (LL_PHY_REQ) {tx_phys=2Mbit, rx_phys=2Mbit}", textcolor="#000080", linecolor="#000080"];
+
+ * APP<<=SD [label = "BLE_GAP_EVT_PHY_UPDATE_REQUEST {peer_preferred_phys={tx_phys=2Mbit, rx_phys=2Mbit}}"];
+ * APP=>SD [label = "sd_ble_gap_phy_update(conn_handle, {tx_phys=2Mbit, rx_phys=2Mbit})"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD=>PERIPHERAL [label = "PHY Update (LL_PHY_UPDATE_IND) {M_TO_S_PHY=2Mbit, S_TO_M_PHY=2Mbit}", textcolor="#000080", linecolor="#000080"];
+
+ * APP<<=SD [label = "BLE_GAP_EVT_PHY_UPDATE {status=Success, {tx_phy=2Mbit, rx_phy=2Mbit}}"];
+ * |||;
+ * --- [label = " Variant #3 Initiated by APP, not supported by peer"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_phy_update(conn_handle, {ALL_PHY, ALL_PHY}) "];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD=>PERIPHERAL [label="PHY Request (LL_PHY_REQ)", textcolor="#000080", linecolor="#000080"];
+ * SD<=PERIPHERAL [label="Unknown Response (LL_UNKNOWN_RSP)", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label="BLE_GAP_EVT_PHY_UPDATE {Status=Not Supported}"];
+ * |||;
+ * --- [label = " Variant #4 Initiated by APP, change required"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_phy_update(conn_handle, {ALL_PHY, ALL_PHY}) "];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD=>PERIPHERAL [label = "PHY Request (LL_PHY_REQ) {ALL_PHY, ALL_PHY}", textcolor="#000080", linecolor="#000080"];
+ * SD<=PERIPHERAL [label = "PHY Response (LL_PHY_RSP) {ALL_PHY, ALL_PHY}", textcolor="#000080", linecolor="#000080"];
+ * SD=>PERIPHERAL [label = "PHY Update (LL_PHY_UPDATE_IND) {M_TO_S_PHY=2Mbit, S_TO_M_PHY=2Mbit}", textcolor="#000080", linecolor="#000080"];
+
+ * APP<<=SD [label = "BLE_GAP_EVT_PHY_UPDATE {status=Success, {tx_phy=2Mbit, rx_phy=2Mbit}}"];
+ * |||;
+ * --- [label = " Variant #5 Initiated by Peripheral - APP has no preferences for TX direction"];
+ * SD<=PERIPHERAL [label = "PHY Request (LL_PHY_REQ) {tx_phys=2Mbit, rx_phys=1Mbit}", textcolor="#000080", linecolor="#000080"];
+
+ * APP<<=SD [label = "BLE_GAP_EVT_PHY_UPDATE_REQUEST {peer_preferred_phys={tx_phys=2Mbit, rx_phys=1Mbit}}"];
+ * APP=>SD [label = "sd_ble_gap_phy_update(conn_handle, {tx_phys=BLE_GAP_PHY_AUTO, rx_phys=2Mbit})"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD=>PERIPHERAL [label = "PHY Update (LL_PHY_UPDATE_IND) {M_TO_S_PHY=1Mbit, S_TO_M_PHY=2Mbit}", textcolor="#000080", linecolor="#000080"];
+
+ * APP<<=SD [label = "BLE_GAP_EVT_PHY_UPDATE {status=Success, {tx_phy=1Mbit, rx_phy=2Mbit}}"];
+ * |||;
+ * --- [label = " Variant #6 Initiated by APP, peer responding with invalid parameters"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_phy_update(conn_handle, {ALL_PHY, ALL_PHY}) "];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD=>PERIPHERAL [label="PHY Request (LL_PHY_REQ) {ALL_PHY, ALL_PHY}", textcolor="#000080", linecolor="#000080"];
+ * SD<=PERIPHERAL [label="PHY Response (LL_PHY_RSP) {tx_phys=0x00, rx_phys=0x00}", textcolor="#000080", linecolor="#000080"];
+ * SD=>PERIPHERAL [label="Unknown Response (LL_UNKNOWN_RSP)", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label="BLE_GAP_EVT_PHY_UPDATE {Status=Invalid LMP Parameters}"];
+ * |||;
+ * @endmsc
+ * @}
  *
  * @defgroup BLE_GAP_PERIPHERAL_PHY_UPDATE Peripheral PHY Update
  * @msc

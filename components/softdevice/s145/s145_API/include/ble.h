@@ -276,6 +276,7 @@ typedef union
  * place of @ref ble_conn_cfg_t::conn_cfg_tag.
  *
  * @sa sd_ble_gap_adv_start()
+ * @sa sd_ble_gap_connect()
  *
  * @mscs
  * @mmsc{@ref BLE_CONN_CFG}
@@ -287,6 +288,7 @@ typedef struct
   uint8_t              conn_cfg_tag;        /**< The application chosen tag that can be use to
                                                  select this configuration when creating a connection.
                                                  Must be different for all connection configurations added and not @ref BLE_CONN_CFG_TAG_DEFAULT.
+                                                 @sa sd_ble_gap_connect().
                                                  @sa sd_ble_gap_adv_start().
  */
   union
@@ -341,10 +343,12 @@ typedef union
  *          is referenced in the event documentation.
  *          If the application fails to do so, the BLE connection may timeout, or the SoftDevice may stop
  *          communicating with the peer device.
+ *          - @ref BLE_GAP_EVT_CONN_PARAM_UPDATE_REQUEST
  *          - @ref BLE_GAP_EVT_DATA_LENGTH_UPDATE_REQUEST
  *          - @ref BLE_GAP_EVT_PHY_UPDATE_REQUEST
  *          - @ref BLE_GAP_EVT_SEC_PARAMS_REQUEST
  *          - @ref BLE_GAP_EVT_SEC_INFO_REQUEST
+ *          - @ref BLE_GAP_EVT_SEC_REQUEST
  *          - @ref BLE_GAP_EVT_AUTH_KEY_REQUEST
  *          - @ref BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST
  *          - @ref BLE_EVT_USER_MEM_REQUEST

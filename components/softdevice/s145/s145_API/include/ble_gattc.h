@@ -312,7 +312,7 @@ typedef struct
  *          See Bluetooth Core Specification, Vol 3, Part C, "10.3.2.2 Handling of GATT indications and notifications" for more details.
  *          The SoftDevice generates @ref BLE_GAP_EVT_CONN_SEC_UPDATE event on every change in the connection security level.
  *          Application can also obtain current security level any time using @ref sd_ble_gap_conn_sec_get.
- *          Use @ref sd_ble_gap_authenticate to request raising of the security level.
+ *          Use @ref sd_ble_gap_authenticate or @ref sd_ble_gap_encrypt to request raising of the security level.
  *
  * @mscs
  * @mmsc{@ref BLE_GATTC_HVI_MSC}
