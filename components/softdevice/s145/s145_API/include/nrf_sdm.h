@@ -71,7 +71,7 @@ extern "C" {
 #define SD_BUGFIX_VERSION (0)
 
 /** @brief The SoftDevice variant of this firmware. */
-#define SD_VARIANT_ID 115
+#define SD_VARIANT_ID 145
 
 /** @brief The full version number for the SoftDevice binary this header file was distributed
  *         with, as a decimal number in the form Mmmmbbb, where:
@@ -127,7 +127,7 @@ the start of the SoftDevice */
 #define SD_SIZE_GET(baseaddr) (*((uint32_t *) ((baseaddr) + SD_SIZE_OFFSET)))
 
 /** @brief Defines the amount of flash that is used by the SoftDevice. */
-#define SD_FLASH_SIZE 0x1ac00
+#define SD_FLASH_SIZE 0x24000
 
 /** @brief Defines a macro for retrieving the actual FWID value from a given base address. */
 #define SD_FWID_GET(baseaddr) (*((uint16_t *) ((baseaddr) + SD_FWID_OFFSET)))

@@ -10,5 +10,5 @@ See the following documentation for the details regarding new releases of the S1
    :glob:
    :caption: Subpages:
 
-   s115_9.0.0-3.prototype_release-notes.main.rst
-   s115_9.0.0-3.prototype_migration-document.main.rst
+   s115_9.0.0-4.prototype_release-notes.main.rst
+   s115_9.0.0-4.prototype_migration-document.main.rst

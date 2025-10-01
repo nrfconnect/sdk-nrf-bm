@@ -45,20 +45,20 @@ To flash the S115 SoftDevice binary to your device:
 
          .. code-block:: console
 
-            nrfutil device program --firmware components/softdevice/s115/s115_9.0.0-3.prototype_nrf54l15_softdevice.hex --options chip_erase_mode=ERASE_NONE
+            nrfutil device program --firmware components/softdevice/s115/s115_nrf54l15_9.0.0-4.prototype_softdevice.hex --options chip_erase_mode=ERASE_NONE
 
       .. group-tab:: nRF54L10
 
          .. code-block:: console
 
-            nrfutil device program --firmware components/softdevice/s115/s115_9.0.0-3.prototype_nrf54l10_softdevice.hex --options chip_erase_mode=ERASE_NONE
+            nrfutil device program --firmware components/softdevice/s115/s115_nrf54l10_9.0.0-4.prototype_softdevice.hex --options chip_erase_mode=ERASE_NONE
 
       .. group-tab:: nRF54L05
 
          .. code-block:: console
 
-            nrfutil device program --firmware components/softdevice/s115/s115_9.0.0-3.prototype_nrf54l05_softdevice.hex --options chip_erase_mode=ERASE_NONE
+            nrfutil device program --firmware components/softdevice/s115/s115_nrf54l05_9.0.0-4.prototype_softdevice.hex --options chip_erase_mode=ERASE_NONE
 
    .. note::
       Keep in mind that the flashed SoftDevice variant must be in sync with the board target that you are planning to use in the build configuration of the sample.
-      For example, for the ``bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice`` board target, you must use the SoftDevice binary :file:`s115_9.0.0-3.prototype_nrf54l15_softdevice.hex` .
+      For example, for the ``bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice`` board target, you must use the SoftDevice binary :file:`s115_nrf54l15_9.0.0-4.prototype_softdevice.hex` .
