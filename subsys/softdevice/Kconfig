@@ -23,16 +23,28 @@ config SOFTDEVICE_QOS_CHANNEL_SURVEY_REPORT
 
 if SOFTDEVICE
 
+choice SOFTDEVICE_VARIANT
+	prompt "SoftDevice variant"
+
 config SOFTDEVICE_S115
 	bool "s115 SoftDevice"
 	depends on SOC_SERIES_NRF54LX
 	select SOFTDEVICE_PERIPHERAL
 	select SOFTDEVICE_DATA_LENGTH_UPDATE
-	default y
+
+config SOFTDEVICE_S145
+	bool "s145 SoftDevice"
+	depends on SOC_SERIES_NRF54LX
+	select SOFTDEVICE_PERIPHERAL
+	select SOFTDEVICE_CENTRAL
+	select SOFTDEVICE_DATA_LENGTH_UPDATE
+
+endchoice # SOFTDEVICE_VARIANT
 
 config SOFTDEVICE_VARIANT_STR
 	string
 	default "s115" if SOFTDEVICE_S115
+	default "s145" if SOFTDEVICE_S145
 
 endif
 

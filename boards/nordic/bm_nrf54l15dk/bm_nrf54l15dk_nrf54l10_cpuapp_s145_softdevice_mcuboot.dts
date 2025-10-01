@@ -1,0 +1,121 @@
+/*
+ * Copyright (c) 2025 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+ */
+
+/dts-v1/;
+
+#include <nordic/nrf54l10_cpuapp.dtsi>
+#include "bm_nrf54l15dk_nrf54l10_cpuapp_common.dtsi"
+
+/ {
+	sram@2002FC00 {
+		compatible = "zephyr,memory-region", "mmio-sram";
+		reg = <0x2002FC00 DT_SIZE_K(1)>;
+		zephyr,memory-region = "RetainedMem";
+		status = "okay";
+
+		retainedmem {
+			compatible = "zephyr,retained-ram";
+			status = "okay";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			settings_partition0: settings_partition@0 {
+				compatible = "zephyr,retention";
+				status = "okay";
+				reg = <0x0 DT_SIZE_K(1)>;
+			};
+		};
+	};
+
+	chosen {
+		zephyr,flash = &cpuapp_rram;
+		zephyr,code-partition = &slot0_partition;
+		zephyr,sram = &app_ram;
+		zephyr,settings-partition = &settings_partition0;
+	};
+};
+
+&cpuapp_rram {
+	status = "okay";
+
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		boot_partition: partition@0 {
+			label = "boot";
+			reg = <0x00000000 DT_SIZE_K(31)>;
+		};
+
+		storage_partition: partition@7c00 {
+			compatible = "fixed-subpartitions";
+			label = "storage";
+			reg = <0x00007c00 DT_SIZE_K(8)>;
+			ranges = <0x0 0x7c00 DT_SIZE_K(8)>;
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			peer_manager_partition: partition@0 {
+				label = "peer_manager";
+				reg = <0x00000000 DT_SIZE_K(4)>;
+			};
+
+			storage0_partition: partition@1000 {
+				label = "storage0";
+				reg = <0x00001000 DT_SIZE_K(4)>;
+			};
+		};
+
+		/* Area from 0x9c00 to 0xa000 is unused due to alignment */
+
+		slot0_partition: partition@a000 {
+			label = "slot0";
+			reg = <0x0000a000 DT_SIZE_K(760)>;
+		};
+
+		slot1_partition: partition@c8000 {
+			label = "slot1";
+			reg = <0x000c8000 DT_SIZE_K(64)>;
+		};
+
+		/* Area from 0xd8000 to 0xd8400 is unused due to alignment */
+
+		softdevice_partition: partition@d8400 {
+			label = "softdevice";
+			reg = <0x000d8400 (DT_SIZE_K(146) + 0x200)>;
+		};
+
+		metadata_partition: partition@fce00 {
+			label = "metadata";
+			reg = <0x000fce00 0x200>;
+		};
+	};
+};
+
+&cpuapp_sram {
+	status = "okay";
+
+	partitions {
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		softdevice_static_ram: partition@20000080 {
+			label = "softdevice_static_ram";
+			reg = <0x20000080 0x1780>;
+		};
+
+		softdevice_dynamic_ram: partition@20001800 {
+			label = "softdevice_dynamic_ram";
+			reg = <0x20001800 DT_SIZE_K(12)>;
+		};
+
+		app_ram: partition@20004800 {
+			label = "app_ram";
+			reg = <0x20004800 DT_SIZE_K(173)>;
+		};
+	};
+};
