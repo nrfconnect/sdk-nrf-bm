@@ -5,6 +5,8 @@
 #
 menuconfig BLE_CONN_PARAMS
 	bool "BLE Connection Parameters"
+	depends on SOFTDEVICE
+	depends on NRF_SDH
 
 if BLE_CONN_PARAMS
 
