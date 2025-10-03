@@ -53,7 +53,9 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Libraries
 =========
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* :ref:`lib_ble_conn_params` library:
+
+   * Added missing Kconfig dependencies.
 
 Samples
 =======
