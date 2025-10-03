@@ -389,7 +389,7 @@ static void ble_evt_handler(ble_evt_t const *ble_evt, void *ctx)
 			/* No more records available. Should not happen. */
 			LOG_ERR("No more records available");
 			__ASSERT(false, "No more records available");
-#ifdef CONFIG_BLE_GAP_ROLE_CENTRAL
+#ifdef BLE_GAP_ROLE_CENTRAL
 		} else if (ble_evt->evt.gap_evt.params.connected.role == BLE_GAP_ROLE_CENTRAL) {
 			/* Central */
 			atomic_set_bit(&bcs.flags.central_flags, idx);

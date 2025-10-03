@@ -50,15 +50,6 @@ config BM_ZMS_CUSTOM_BLOCK_SIZE
 	help
 	  Changes the internal buffer size of BM_ZMS.
 
-config BM_ZMS_LOOKUP_CACHE_FOR_SETTINGS
-	bool "BM_ZMS Storage lookup cache optimized for settings"
-	depends on BM_ZMS_LOOKUP_CACHE && SETTINGS_BM_ZMS
-	help
-	  Enable usage of lookup cache based on hashes to get, the best BM_ZMS performance,
-	  provided that the BM_ZMS is used only for the purpose of providing the settings
-	  backend. This option should NOT be enabled if the BM_ZMS is also written to
-	  directly, outside the settings layer.
-
 config BM_ZMS_MAX_USERS
 	int "BM_ZMS maximum users"
 	default 8

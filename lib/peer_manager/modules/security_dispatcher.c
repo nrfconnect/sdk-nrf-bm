@@ -417,7 +417,7 @@ static void sec_info_request_process(ble_gap_evt_t const *p_gap_evt)
 #endif /* BLE_GAP_ROLE_PERIPH */
 
 /**
- * @brief Function for sending a CONFIG_REQ event.
+ * @brief Function for sending a PM_EVT_CONN_SEC_CONFIG_REQ event.
  *
  * @param[in]  conn_handle  The connection the sec parameters are needed for.
  */
