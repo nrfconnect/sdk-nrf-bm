@@ -106,6 +106,13 @@ function(bm_install_setup)
       sysbuild_add_dependencies(FLASH ${DEFAULT_IMAGE} softdevice)
     endif()
   endif()
+
+  if(SB_CONFIG_BM_CRACEN_MICROCODE_LOAD_ONCE)
+    set_config_bool(firmware_loader CONFIG_CRACEN_LOAD_MICROCODE n)
+    set_config_bool(mcuboot CONFIG_CRACEN_LOAD_MICROCODE y)
+    set_config_bool(${DEFAULT_IMAGE} CONFIG_CRACEN_LOAD_MICROCODE n)
+  endif()
+
 endfunction()
 
 function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
