@@ -42,6 +42,13 @@ config BM_BOOTLOADER_MCUBOOT_SIGNATURE_TYPE_ED25519
 
 endchoice
 
+config BM_CRACEN_MICROCODE_LOAD_ONCE
+	bool "Load CRACEN microcode once only"
+	depends on BM_BOOTLOADER_MCUBOOT_SIGNATURE_TYPE_ED25519
+	default y
+	help
+	  Enable CRACEN microcode loading in MCUBoot, while disabling elsewhere.
+
 config BM_BOOTLOADER_MCUBOOT_SIGNATURE_KEY_FILE
 	string "Signing PEM key file" if !BM_BOOTLOADER_MCUBOOT_SIGNATURE_TYPE_NONE
 	default "$(ZEPHYR_MCUBOOT_MODULE_DIR)/root-ec-p256.pem" if BM_BOOTLOADER_MCUBOOT_SIGNATURE_TYPE_ECDSA_P256
