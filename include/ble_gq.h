@@ -75,7 +75,7 @@ extern "C" {
 		.data_pool = &CONCAT(_name, _heap),                                                \
 	};                                                                                         \
 	NRF_SDH_BLE_OBSERVER(CONCAT(_name, _obs), ble_gq_on_ble_evt, (void *)&_name,               \
-			     CONFIG_BLE_GQ_OBSERVER_PRIO)
+			     HIGH)
 
 /**
  * @brief Helper macro for initializing connection handle array. Used in @ref BLE_GQ_CUSTOM_DEF.

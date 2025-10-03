@@ -311,7 +311,7 @@ static void ble_evt_handler(ble_evt_t const *p_ble_evt, void *p_context)
 	gcm_ble_evt_handler(p_ble_evt);
 }
 
-NRF_SDH_BLE_OBSERVER(m_ble_evt_observer, ble_evt_handler, NULL, CONFIG_PM_BLE_OBSERVER_PRIO);
+NRF_SDH_BLE_OBSERVER(m_ble_evt_observer, ble_evt_handler, NULL, HIGH);
 
 /** @brief Function for resetting the internal state of this module. */
 static void internal_state_reset(void)

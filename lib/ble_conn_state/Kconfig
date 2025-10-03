@@ -5,7 +5,7 @@
 #
 menuconfig BLE_CONN_STATE
 	bool "Connection state"
-	depends on NRF_SDH_BLE
+	depends on SOFTDEVICE
 	help
 	  A library to defer event processing to main().
 
@@ -17,10 +17,6 @@ config BLE_CONN_STATE_USER_FLAG_COUNT
 	default 24
 	help
 	   The number of available user flags.
-
-config BLE_CONN_STATE_BLE_OBSERVER_PRIO
-	int "BLE observer priority"
-	default 0
 
 module=BLE_CONN_STATE
 module-str=BLE Connection state

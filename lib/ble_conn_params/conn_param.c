@@ -167,28 +167,30 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		break;
 	}
 }
-NRF_SDH_BLE_OBSERVER(ble_observer, on_ble_evt, NULL, 0);
+NRF_SDH_BLE_OBSERVER(ble_observer, on_ble_evt, NULL, HIGH);
 
-static void on_state_evt(enum nrf_sdh_state_evt evt, void *ctx)
+static int on_state_evt(enum nrf_sdh_state_evt evt, void *ctx)
 {
 	int err;
 
 	if (evt != NRF_SDH_STATE_EVT_BLE_ENABLED) {
-		return;
+		return 0;
 	}
 
 	err = sd_ble_gap_ppcp_set(&ppcp);
 	if (err) {
 		LOG_ERR("Failed to set preferred conn params, nrf_error %#x", err);
-		return;
+		return 0;
 	}
 
 	LOG_DBG("conn. interval min %u max %u, peripheral latency %u, sup. timeout %u",
 		ppcp.min_conn_interval, ppcp.max_conn_interval,
 		ppcp.slave_latency,
 		ppcp.conn_sup_timeout);
+
+	return 0;
 }
-NRF_SDH_STATE_EVT_OBSERVER(ble_conn_params_sdh_state_observer, on_state_evt, NULL, 0);
+NRF_SDH_STATE_EVT_OBSERVER(ble_conn_params_sdh_state_observer, on_state_evt, NULL, HIGH);
 
 int ble_conn_params_override(uint16_t conn_handle, const ble_gap_conn_params_t *conn_params)
 {
