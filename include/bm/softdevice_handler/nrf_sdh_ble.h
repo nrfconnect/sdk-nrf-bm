@@ -63,7 +63,7 @@ struct nrf_sdh_ble_evt_observer {
 					   nrf_sdh_ble_evt_observers, PRIO_LEVEL_ORD(_prio)) = {   \
 		.handler = _handler,                                                               \
 		.context = _ctx,                                                                   \
-	};
+	}
 
 /**
  * @brief Enable the SoftDevice Bluetooth stack.
