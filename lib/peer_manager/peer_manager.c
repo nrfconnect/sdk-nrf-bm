@@ -63,7 +63,7 @@ static void evt_send(pm_evt_t const *p_pm_evt)
 	}
 }
 
-#if CONFIG_PM_PEER_RANKS_ENABLED == 1
+#if defined(CONFIG_PM_PEER_RANKS)
 /** @brief Function for initializing peer rank static variables. */
 static void rank_vars_update(void)
 {
@@ -92,7 +92,7 @@ void pm_pdb_evt_handler(pm_evt_t *p_pdb_evt)
 	p_pdb_evt->conn_handle = im_conn_handle_get(p_pdb_evt->peer_id);
 
 	switch (p_pdb_evt->evt_id) {
-#if CONFIG_PM_PEER_RANKS_ENABLED == 1
+#if defined(CONFIG_PM_PEER_RANKS)
 	case PM_EVT_PEER_DATA_UPDATE_SUCCEEDED:
 		if (p_pdb_evt->params.peer_data_update_succeeded.action == PM_PEER_DATA_OP_UPDATE) {
 			if ((m_peer_rank_token != PM_STORE_TOKEN_INVALID) &&
@@ -167,7 +167,7 @@ void pm_pdb_evt_handler(pm_evt_t *p_pdb_evt)
 			evt_send(&pm_delete_all_evt);
 		}
 
-#if CONFIG_PM_PEER_RANKS_ENABLED == 1
+#if defined(CONFIG_PM_PEER_RANKS)
 		if (m_peer_rank_initialized && (p_pdb_evt->peer_id == m_highest_ranked_peer)) {
 			/* Update peer rank variable if highest ranked peer has been deleted. */
 			rank_vars_update();
@@ -373,7 +373,7 @@ uint32_t pm_init(void)
 
 	m_flag_conn_excluded = ble_conn_state_user_flag_acquire();
 
-	/* If CONFIG_PM_PEER_RANKS_ENABLED is 0, these variables are unused. */
+	/* If CONFIG_PM_PEER_RANKS is 0, these variables are unused. */
 	UNUSED_VARIABLE(m_peer_rank_initialized);
 	UNUSED_VARIABLE(m_peer_rank_token);
 	UNUSED_VARIABLE(m_current_highest_peer_rank);
@@ -453,7 +453,7 @@ uint32_t pm_conn_sec_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *p_
 
 void pm_local_database_has_changed(void)
 {
-#if !defined(CONFIG_PM_SERVICE_CHANGED_ENABLED) || (CONFIG_PM_SERVICE_CHANGED_ENABLED == 1)
+#if defined(CONFIG_PM_SERVICE_CHANGED)
 	VERIFY_MODULE_INITIALIZED_VOID();
 
 	gcm_local_database_has_changed();
@@ -918,7 +918,7 @@ uint32_t pm_peers_delete(void)
 uint32_t pm_peer_ranks_get(pm_peer_id_t *p_highest_ranked_peer, uint32_t *p_highest_rank,
 			     pm_peer_id_t *p_lowest_ranked_peer, uint32_t *p_lowest_rank)
 {
-#if CONFIG_PM_PEER_RANKS_ENABLED == 0
+#if !defined(CONFIG_PM_PEER_RANKS)
 	return NRF_ERROR_NOT_SUPPORTED;
 #else
 	VERIFY_MODULE_INITIALIZED();
@@ -983,7 +983,7 @@ uint32_t pm_peer_ranks_get(pm_peer_id_t *p_highest_ranked_peer, uint32_t *p_high
 #endif
 }
 
-#if CONFIG_PM_PEER_RANKS_ENABLED == 1
+#if defined(CONFIG_PM_PEER_RANKS)
 /** @brief Function for initializing peer rank functionality. */
 static void rank_init(void)
 {
@@ -993,7 +993,7 @@ static void rank_init(void)
 
 uint32_t pm_peer_rank_highest(pm_peer_id_t peer_id)
 {
-#if CONFIG_PM_PEER_RANKS_ENABLED == 0
+#if !defined(CONFIG_PM_PEER_RANKS)
 	return NRF_ERROR_NOT_SUPPORTED;
 #else
 	VERIFY_MODULE_INITIALIZED();

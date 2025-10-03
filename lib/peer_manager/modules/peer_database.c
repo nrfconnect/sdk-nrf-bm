@@ -38,7 +38,7 @@ LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 /* Peer Database event handlers in other Peer Manager submodules. */
 extern void pm_pdb_evt_handler(pm_evt_t *p_event);
 extern void sm_pdb_evt_handler(pm_evt_t *p_event);
-#if !defined(CONFIG_PM_SERVICE_CHANGED_ENABLED) || (CONFIG_PM_SERVICE_CHANGED_ENABLED == 1)
+#if defined(CONFIG_PM_SERVICE_CHANGED)
 extern void gscm_pdb_evt_handler(pm_evt_t *p_event);
 #endif
 extern void gcm_pdb_evt_handler(pm_evt_t *p_event);
@@ -50,7 +50,7 @@ extern void gcm_pdb_evt_handler(pm_evt_t *p_event);
 static pm_evt_handler_internal_t const m_evt_handlers[] = {
 	pm_pdb_evt_handler,
 	sm_pdb_evt_handler,
-#if !defined(CONFIG_PM_SERVICE_CHANGED_ENABLED) || (CONFIG_PM_SERVICE_CHANGED_ENABLED == 1)
+#if defined(CONFIG_PM_SERVICE_CHANGED)
 	gscm_pdb_evt_handler,
 #endif
 	gcm_pdb_evt_handler,
