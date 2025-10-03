@@ -24,6 +24,11 @@ S115 SoftDevice
 
 No changes since the latest nRF Connect SDK Bare Metal release.
 
+S145 SoftDevice
+===============
+
+No changes since the latest nRF Connect SDK Bare Metal release.
+
 SoftDevice Handler
 ==================
 
@@ -32,7 +37,7 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Boards
 ======
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Added nrf54l15DK board variants for the S145 SoftDevice.
 
 DFU
 ===
