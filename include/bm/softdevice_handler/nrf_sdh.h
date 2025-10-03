@@ -154,7 +154,7 @@ struct nrf_sdh_state_evt_observer {
 			      nrf_sdh_state_evt_observers, PRIO_LEVEL_ORD(_prio)) = {              \
 		.handler = _handler,                                                               \
 		.context = _ctx,                                                                   \
-	};
+	}
 
 /**
  * @brief SoftDevice stack event handler.
@@ -195,7 +195,7 @@ struct nrf_sdh_stack_evt_observer {
 				    nrf_sdh_stack_evt_observers, PRIO_LEVEL_ORD(_prio)) = {        \
 		.handler = _handler,                                                               \
 		.context = _ctx,                                                                   \
-	};
+	}
 
 /**
  * @brief Enable the SoftDevice.

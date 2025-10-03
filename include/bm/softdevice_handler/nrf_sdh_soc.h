@@ -57,7 +57,7 @@ struct nrf_sdh_soc_evt_observer {
 				    nrf_sdh_soc_evt_observers, PRIO_LEVEL_ORD(_prio)) = {          \
 		.handler = _handler,                                                               \
 		.context = _ctx,                                                                   \
-	};
+	}
 
 /**
  * @brief Stringify a SoftDevice SoC event.
