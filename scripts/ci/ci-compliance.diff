@@ -1,0 +1,17 @@
+diff --git a/west.yml b/west.yml
+index 14a19d9..156cee6 100644
+--- a/west.yml
++++ b/west.yml
+@@ -32,6 +32,13 @@ manifest:
+           - zephyr
+           - cmock
+           - zcbor
++          # For compliance CI testing only
++          - matter
++          - openthread
++          - azure-sdk-for-c
++          - trusted-firmware-m
++          - memfault-firmware-sdk
++          - cjson
+     - name: sdk-nrf-bm-internal
+       path: nrf-bm-internal
