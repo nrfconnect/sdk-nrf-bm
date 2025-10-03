@@ -53,7 +53,6 @@ config PM_PEER_RANKS
 
 config PM_LESC
 	bool "LE Secure Connections (LESC) support"
-	default n
 	depends on PSA_WANT_ALG_ECDH
 	depends on PSA_WANT_GENERATE_RANDOM
 	depends on PSA_WANT_KEY_TYPE_ECC_KEY_PAIR_GENERATE
@@ -72,7 +71,6 @@ if PM_LESC
 
 config PM_LESC_GENERATE_NEW_KEYS
 	bool "Generate new LESC key pair after every pairing attempt"
-	default n
 	help
 	  New LESC keys are generated on the auth status event.
 
@@ -86,7 +84,6 @@ endif # PM_LESC
 
 config PM_RA_PROTECTION
 	bool "Protection against repeated pairing attempts"
-	default n
 	help
 	  Enable protection against repeated Bluetooth pairing attempts from the same device.
 	  Offending peers will be temporarily blacklisted with increasing backoff times to
