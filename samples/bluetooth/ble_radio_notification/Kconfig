@@ -1,0 +1,20 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "BLE Radio Notification sample"
+
+config BLE_RADIO_NOTIFICATION_DISTANCE_US
+	int "Distance between the active notification signal and start of radio event preparation"
+	range 50 5500
+	default 800
+
+module=BLE_RADIO_NOTIFICATION_SAMPLE
+module-str=BLE Radio Notification Sample
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endmenu # "BLE Radio Notification sample"
+
+source "Kconfig.zephyr"

@@ -1,0 +1,35 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+menuconfig BLE_RADIO_NOTIFICATION
+	bool "BLE Radio Notification"
+	depends on SOFTDEVICE
+
+if BLE_RADIO_NOTIFICATION
+
+choice BLE_RADIO_NOTIFICATION_TYPE
+	prompt "Radio notification type"
+	default BLE_RADIO_NOTIFICATION_ON_BOTH
+
+config BLE_RADIO_NOTIFICATION_ON_ACTIVE
+	bool "On active"
+
+config BLE_RADIO_NOTIFICATION_ON_INACTIVE
+	bool "On inactive"
+
+config BLE_RADIO_NOTIFICATION_ON_BOTH
+	bool "On both active and inactive"
+
+endchoice # BLE_RADIO_NOTIFICATION_TYPE
+
+config BLE_RADIO_NOTIFICATION_IRQ_PRIO
+	int "BLE Radio Notification IRQ priority"
+	default 3
+
+module=BLE_RADIO_NOTIFICATION
+module-str=BLE Radio Notification
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endif # BLE_RADIO_NOTIFICATION
