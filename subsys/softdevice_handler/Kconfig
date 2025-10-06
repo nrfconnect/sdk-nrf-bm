@@ -6,15 +6,8 @@
 menuconfig NRF_SDH
 	bool "Softdevice handler"
 	depends on SOFTDEVICE
-	depends on NRF_SECURITY
-	depends on MBEDTLS_PSA_CRYPTO_C
-	depends on PSA_WANT_GENERATE_RANDOM
 
 if NRF_SDH
-
-config NRF_SDH_BLE
-	bool "BLE events"
-	default y
 
 choice
 	prompt "Dispatch model"
@@ -46,6 +39,8 @@ config NRF_SDH_DISPATCH_MODEL
 	default 1 if NRF_SDH_DISPATCH_MODEL_SCHED
 	default 2 if NRF_SDH_DISPATCH_MODEL_POLL
 
+menu "Clock configuration"
+
 config NRF_SDH_CLOCK_LF_SRC
 	int "LF Clock"
 	default 1
@@ -62,7 +57,9 @@ config NRF_SDH_CLOCK_LF_ACCURACY
 	int "Accuracy"
 	default 0
 
-if NRF_SDH_BLE
+endmenu
+
+menu "Default BLE configuration"
 
 config NRF_SDH_BLE_CONN_TAG
 	int "Connection tag"
@@ -111,14 +108,23 @@ config NRF_SDH_BLE_VS_UUID_COUNT
 config NRF_SDH_BLE_SERVICE_CHANGED
 	bool "Include the Service Changed characteristic in the Attribute Table"
 
-endif # NRF_SDH_BLE
+endmenu
 
-config NRF_SDH_STR_TABLES
-	bool "Build string tables for SoftDevice handler events"
+config NRF_SDH_SOC_RAND_SEED
+	bool "Automatically respond to SoftDevice random seeds requests"
+	depends on NRF_SECURITY
+	depends on MBEDTLS_PSA_CRYPTO_C
 	default y
 	help
-	  Make prints nicer by printing the stringified version of certain enumerations.
-	  Disable to save non-volatile memory.
+	  Automatically seed SoftDevice upon NRF_EVT_RAND_SEED_REQUEST events,
+	  using CRACEN to generate the random seed.
+
+config NRF_SDH_STR_TABLES
+	bool "Build string tables for SoftDevice events"
+	default y
+	help
+	  Compile a table of stringified SoftDevice events for nrf_sdh_ble_evt_tostr() and
+	  nrf_sdh_soc_evt_tostr(). Disable to save non-volatile memory.
 
 module=NRF_SDH
 module-str= SoftDevice handler log level

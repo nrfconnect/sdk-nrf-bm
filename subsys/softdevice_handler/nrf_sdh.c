@@ -19,21 +19,9 @@ LOG_MODULE_REGISTER(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
 #warning Please select NRF_CLOCK_LF_ACCURACY_500_PPM when using NRF_CLOCK_LF_SRC_RC
 #endif
 
-static atomic_t sdh_enabled;	/* Whether the SoftDevice is enabled. */
-static atomic_t sdh_suspended;	/* Whether this module is suspended. */
-static atomic_t sdh_transition; /* Whether enable/disable process was started. */
+/* Whether this module is pulling SoftDevice events or not. */
+static atomic_t sdh_is_suspended;
 
-static char *req_tostr(enum nrf_sdh_state_req r)
-{
-	switch (r) {
-	case NRF_SDH_STATE_REQ_ENABLE:
-		return "enable";
-	case NRF_SDH_STATE_REQ_DISABLE:
-		return "disable";
-	default:
-		return "unknown";
-	};
-}
 static char *state_tostr(enum nrf_sdh_state_evt s)
 {
 	switch (s) {
@@ -50,38 +38,37 @@ static char *state_tostr(enum nrf_sdh_state_evt s)
 	};
 }
 
-static int sdh_state_req_observer_notify(enum nrf_sdh_state_req req)
+/* Used in nrf_sdh_ble.c */
+int sdh_state_evt_observer_notify(enum nrf_sdh_state_evt state)
 {
-	if (IS_ENABLED(CONFIG_NRF_SDH_STR_TABLES)) {
-		LOG_INF("State change request: %s", req_tostr(req));
-	} else {
-		LOG_INF("State change request: %#x", req);
-	}
+	int busy;
+	bool busy_is_allowed;
 
-	TYPE_SECTION_FOREACH(struct nrf_sdh_state_req_observer, nrf_sdh_state_req_observers, obs) {
-		if (obs->handler(req, obs->context)) {
-			LOG_DBG("Notify observer %p => ready", obs);
-		} else {
-			/* Do not let SoftDevice change state now */
-			LOG_DBG("Notify observer %p => busy", obs);
-			return -EBUSY;
-		}
-	}
-
-	return 0;
-}
-
-static void sdh_state_evt_observer_notify(enum nrf_sdh_state_evt state)
-{
 	if (IS_ENABLED(CONFIG_NRF_SDH_STR_TABLES)) {
 		LOG_DBG("State change: %s", state_tostr(state));
 	} else {
 		LOG_DBG("State change: %#x", state);
 	}
 
+	busy_is_allowed = (state == NRF_SDH_STATE_EVT_ENABLE_PREPARE) ||
+			  (state == NRF_SDH_STATE_EVT_DISABLE_PREPARE);
+
 	TYPE_SECTION_FOREACH(struct nrf_sdh_state_evt_observer, nrf_sdh_state_evt_observers, obs) {
-		obs->handler(state, obs->context);
+		busy = obs->handler(state, obs->context);
+		if (!busy) {
+			continue;
+		}
+		if (!busy_is_allowed) {
+			__ASSERT(busy_is_allowed,
+				 "Returning non-zero from these events is ignored");
+			continue;
+		}
+		/* Do not let SoftDevice change state now */
+		LOG_DBG("Notify observer %p => busy", obs);
+		return -EBUSY;
 	}
+
+	return 0;
 }
 
 __weak void softdevice_fault_handler(uint32_t id, uint32_t pc, uint32_t info)
@@ -110,6 +97,7 @@ __weak void softdevice_fault_handler(uint32_t id, uint32_t pc, uint32_t info)
 int nrf_sdh_enable_request(void)
 {
 	int err;
+	uint8_t sd_is_enabled;
 	const nrf_clock_lf_cfg_t clock_lf_cfg = {
 		.source = CONFIG_NRF_SDH_CLOCK_LF_SRC,
 		.rc_ctiv = CONFIG_NRF_SDH_CLOCK_LF_RC_CTIV,
@@ -117,24 +105,15 @@ int nrf_sdh_enable_request(void)
 		.accuracy = CONFIG_NRF_SDH_CLOCK_LF_ACCURACY
 	};
 
-	if (sdh_enabled) {
+	(void)sd_softdevice_is_enabled(&sd_is_enabled);
+	if (sd_is_enabled) {
 		return -EALREADY;
 	}
 
-	atomic_set(&sdh_transition, true);
-
-	err = sdh_state_req_observer_notify(NRF_SDH_STATE_REQ_ENABLE);
+	err = sdh_state_evt_observer_notify(NRF_SDH_STATE_EVT_ENABLE_PREPARE);
 	if (err) {
-		/** TODO: should this be Success instead? */
-		/* Leave sdh_transition to 1, so process can be continued */
-		__ASSERT(err == -EBUSY, "Unknown return value %d from sdh req observer", err);
 		return -EBUSY;
 	}
-
-	atomic_set(&sdh_transition, false);
-
-	/* Notify observers about starting SoftDevice enable process. */
-	sdh_state_evt_observer_notify(NRF_SDH_STATE_EVT_ENABLE_PREPARE);
 
 	err = sd_softdevice_enable(&clock_lf_cfg, softdevice_fault_handler);
 	if (err) {
@@ -142,14 +121,13 @@ int nrf_sdh_enable_request(void)
 		return -EINVAL;
 	}
 
-	atomic_set(&sdh_enabled, true);
-	atomic_set(&sdh_suspended, false);
+	atomic_set(&sdh_is_suspended, false);
 
 	/* Enable event interrupt, the priority has already been set by the stack. */
 	NVIC_EnableIRQ((IRQn_Type)SD_EVT_IRQn);
 
 	/* Notify observers about a finished SoftDevice enable process. */
-	sdh_state_evt_observer_notify(NRF_SDH_STATE_EVT_ENABLED);
+	(void)sdh_state_evt_observer_notify(NRF_SDH_STATE_EVT_ENABLED);
 
 	return 0;
 }
@@ -157,26 +135,18 @@ int nrf_sdh_enable_request(void)
 int nrf_sdh_disable_request(void)
 {
 	int err;
+	uint8_t sd_is_enabled;
 
-	if (!sdh_enabled) {
+	(void)sd_softdevice_is_enabled(&sd_is_enabled);
+	if (!sd_is_enabled) {
 		return -EALREADY;
 	}
 
-	atomic_set(&sdh_transition, true);
-
-	/* Notify observers about SoftDevice disable request. */
-	err = sdh_state_req_observer_notify(NRF_SDH_STATE_REQ_DISABLE);
+	/* Notify observers about starting SoftDevice disable process. */
+	err = sdh_state_evt_observer_notify(NRF_SDH_STATE_EVT_DISABLE_PREPARE);
 	if (err) {
-		/** TODO: should this be Success instead? */
-		/* Leave sdh_transition to 1, so process can be continued */
-		__ASSERT(err == -EBUSY, "Unknown return value %d from sdh req observer", err);
 		return -EBUSY;
 	}
-
-	atomic_set(&sdh_transition, false);
-
-	/* Notify observers about starting SoftDevice disable process. */
-	sdh_state_evt_observer_notify(NRF_SDH_STATE_EVT_DISABLE_PREPARE);
 
 	err = sd_softdevice_disable();
 	if (err) {
@@ -184,48 +154,46 @@ int nrf_sdh_disable_request(void)
 		return -EINVAL;
 	}
 
-	atomic_set(&sdh_enabled, false);
-
 	NVIC_DisableIRQ((IRQn_Type)SD_EVT_IRQn);
 
 	/* Notify observers about a finished SoftDevice enable process. */
-	sdh_state_evt_observer_notify(NRF_SDH_STATE_EVT_DISABLED);
+	(void)sdh_state_evt_observer_notify(NRF_SDH_STATE_EVT_DISABLED);
 
 	return 0;
 }
 
-int nrf_sdh_request_continue(void)
-{
-	if (!sdh_transition) {
-		return -EINVAL;
-	}
-
-	if (sdh_enabled) {
-		return nrf_sdh_disable_request();
-	} else {
-		return nrf_sdh_enable_request();
-	}
-}
-
-bool nrf_sdh_is_enabled(void)
-{
-	return sdh_enabled;
-}
-
 void nrf_sdh_suspend(void)
 {
-	if (!sdh_enabled || sdh_suspended) {
+	uint8_t sd_is_enabled;
+
+	(void)sd_softdevice_is_enabled(&sd_is_enabled);
+
+	if (!sd_is_enabled) {
+		LOG_WRN("Tried to suspend, but SoftDevice is disabled");
+		return;
+	}
+	if (sdh_is_suspended) {
+		LOG_WRN("Tried to suspend, but already is suspended");
 		return;
 	}
 
 	NVIC_DisableIRQ((IRQn_Type)SD_EVT_IRQn);
 
-	atomic_set(&sdh_suspended, true);
+	atomic_set(&sdh_is_suspended, true);
 }
 
 void nrf_sdh_resume(void)
 {
-	if ((!sdh_suspended) || (!sdh_enabled)) {
+	uint8_t sd_is_enabled;
+
+	(void)sd_softdevice_is_enabled(&sd_is_enabled);
+
+	if (!sd_is_enabled) {
+		LOG_WRN("Tried to resume, but SoftDevice is disabled");
+		return;
+	}
+	if (!sdh_is_suspended) {
+		LOG_WRN("Tried to resume, but not suspended");
 		return;
 	}
 
@@ -233,12 +201,12 @@ void nrf_sdh_resume(void)
 	NVIC_SetPendingIRQ((IRQn_Type)SD_EVT_IRQn);
 	NVIC_EnableIRQ((IRQn_Type)SD_EVT_IRQn);
 
-	atomic_set(&sdh_suspended, false);
+	atomic_set(&sdh_is_suspended, false);
 }
 
 bool nrf_sdh_is_suspended(void)
 {
-	return (!sdh_enabled) || (sdh_suspended);
+	return sdh_is_suspended;
 }
 
 void nrf_sdh_evts_poll(void)

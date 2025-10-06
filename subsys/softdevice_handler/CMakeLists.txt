@@ -8,8 +8,11 @@ zephyr_linker_sources(SECTIONS sdh.ld)
 zephyr_library_sources(
   nrf_sdh.c
   nrf_sdh_soc.c
+  nrf_sdh_ble.c
   irq_connect.c
 )
+
+zephyr_library_sources_ifdef(CONFIG_NRF_SDH_SOC_RAND_SEED rand_seed.c)
 
 if(CONFIG_SOFTDEVICE_S115)
   zephyr_library_sources(irq_forward.s)
@@ -21,8 +24,4 @@ if(CONFIG_SOFTDEVICE_S115)
     PROPERTY HEADER_FILE_ONLY ON
   )
   target_link_options(app PUBLIC "-Wl,--defsym=z_arm_svc=SVC_Handler")
-endif()
-
-if(CONFIG_NRF_SDH_BLE)
-  zephyr_library_sources(nrf_sdh_ble.c)
 endif()

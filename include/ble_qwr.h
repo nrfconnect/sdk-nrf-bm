@@ -41,7 +41,7 @@ extern "C" {
 	NRF_SDH_BLE_OBSERVER(_name ## _obs,                                                        \
 			     ble_qwr_on_ble_evt,                                                   \
 			     &_name,                                                               \
-			     CONFIG_BLE_QWR_BLE_OBSERVER_PRIO)
+			     HIGH)
 
 /* Error code used by the module to reject prepare write requests on non-registered attributes. */
 #define BLE_QWR_REJ_REQUEST_ERR_CODE BLE_GATT_STATUS_ATTERR_APP_BEGIN + 0
