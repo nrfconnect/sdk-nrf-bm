@@ -1,0 +1,12 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menuconfig BLE_SCAN
+	bool "BLE scan"
+	depends on SOFTDEVICE
+	select EXPERIMENTAL
+	help
+	  scan.
