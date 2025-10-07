@@ -1,0 +1,39 @@
+#
+# Copyright (c) 2024 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "BLE HRS central sample"
+
+config APP_USE_TARGET_PERIPHERAL_NAME
+	bool "Use target peripheral name"
+	default y
+
+if APP_USE_TARGET_PERIPHERAL_NAME
+
+config APP_TARGET_PERIPHERAL_NAME
+	string "Target peripheral name"
+	default "nRF_BM_HRS"
+
+endif # APP_USE_TARGET_PERIPHERAL_NAME
+
+config APP_USE_TARGET_PERIPHERAL_ADDR
+	bool "Use target peripheral address"
+
+if APP_USE_TARGET_PERIPHERAL_ADDR
+
+config APP_TARGET_PERIPHERAL_ADDR
+	hex "Target peripheral address"
+	range 0x0 0xffffffffffff
+	default 0x78E7F806C5D8
+
+endif # APP_USE_TARGET_PERIPHERAL_ADDR
+
+module=APP_BLE_HRS_CENTRAL_SAMPLE
+module-str=BLE Heart Rate Central Service Sample
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endmenu # "BLE HRS central sample"
+
+source "Kconfig.zephyr"
