@@ -25,7 +25,7 @@ config BM_INSTALL_ENTRIES
 	  Special field, set by sysbuild automatically, do not alter.
 
 config BM_METADATA_WRITE
-	bool "Enable metadata write functions (DO NOT ALTER)"
+	bool "Metadata write functions (DO NOT ALTER)"
 	select FLASH
 	select FLASH_MAP
 	help
