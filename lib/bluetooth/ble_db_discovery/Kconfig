@@ -1,0 +1,12 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menuconfig BLE_DB_DISCOVERY
+	bool "BLE DB discovery"
+	depends on SOFTDEVICE
+	select EXPERIMENTAL
+	help
+	  database discovery.
