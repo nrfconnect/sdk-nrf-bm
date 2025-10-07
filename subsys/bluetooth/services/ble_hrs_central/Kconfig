@@ -1,0 +1,27 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menuconfig BLE_HRS_CENTRAL
+	bool "BLE Heart rate service central [EXPERIMENTAL]"
+	depends on SOFTDEVICE
+	select EXPERIMENTAL
+	help
+	  Heart rate service central library.
+
+if BLE_HRS_CENTRAL
+
+config BLE_HRS_CENTRAL_RR_INTERVALS_MAX_COUNT
+	int "Maximum number of RR intervals per HRM notification"
+	default 20
+	help
+	  Maximum number of RR intervals to be decoded for each HRM notifications
+	  (any extra RR intervals are ignored).
+
+module=BLE_HRS_CENTRAL
+module-str=BLE Heart rate client
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endif # BLE_HRS_CENTRAL
