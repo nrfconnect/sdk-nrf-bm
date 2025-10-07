@@ -5,6 +5,7 @@
 #
 add_subdirectory_ifdef(CONFIG_BLE_BAS ble_bas)
 add_subdirectory_ifdef(CONFIG_BLE_CGMS ble_cgms)
+add_subdirectory_ifdef(CONFIG_BLE_DB_DISCOVERY ble_db_discovery)
 add_subdirectory_ifdef(CONFIG_BLE_DIS ble_dis)
 add_subdirectory_ifdef(CONFIG_BLE_HIDS ble_hids)
 add_subdirectory_ifdef(CONFIG_BLE_HRS ble_hrs)
