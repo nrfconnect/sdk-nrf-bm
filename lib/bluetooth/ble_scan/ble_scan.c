@@ -1,66 +1,19 @@
-/**
- * Copyright (c) 2018 - 2021, Nordic Semiconductor ASA
+/*
+ * Copyright (c) 2015 - 2025 Nordic Semiconductor ASA
  *
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form, except as embedded into a Nordic
- *    Semiconductor ASA integrated circuit in a product or a software update for
- *    such product, must reproduce the above copyright notice, this list of
- *    conditions and the following disclaimer in the documentation and/or other
- *    materials provided with the distribution.
- *
- * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- *
- * 4. This software, with or without modification, must only be used with a
- *    Nordic Semiconductor ASA integrated circuit.
- *
- * 5. Any software provided in binary form under this license must not be reverse
- *    engineered, decompiled, modified and/or disassembled.
- *
- * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
- * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
- * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
 // #include "sdk_common.h"
 
 #include <stdlib.h>
 #include <stdbool.h>
-
-// #include "nrf_ble_scan.h"
-
 #include <string.h>
 
 #include <bm/bluetooth/ble_scan.h>
-// #include "app_error.h"
-// #include "nrf_assert.h"
-// #include "sdk_macros.h"
-// #include "ble_advdata.h"
-
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(ble_scan, 3);
 
-// <e> NRF_BLE_SCAN_ENABLED - nrf_ble_scan - Scanning Module
-//==========================================================
-#ifndef NRF_BLE_SCAN_ENABLED
-#define NRF_BLE_SCAN_ENABLED 1
-#endif
 // <o> NRF_BLE_SCAN_BUFFER - Data length for an advertising set.
 #ifndef NRF_BLE_SCAN_BUFFER
 #define NRF_BLE_SCAN_BUFFER 31
@@ -96,40 +49,11 @@ LOG_MODULE_REGISTER(ble_scan, 3);
 #define NRF_BLE_SCAN_SCAN_WINDOW 80
 #endif
 
-// <o> NRF_BLE_SCAN_MIN_CONNECTION_INTERVAL - Determines minimum connection interval in
-// milliseconds.
-#ifndef NRF_BLE_SCAN_MIN_CONNECTION_INTERVAL
-#define NRF_BLE_SCAN_MIN_CONNECTION_INTERVAL 100
-#endif
-
-// <o> NRF_BLE_SCAN_MAX_CONNECTION_INTERVAL - Determines maximum connection interval in
-// milliseconds.
-#ifndef NRF_BLE_SCAN_MAX_CONNECTION_INTERVAL
-#define NRF_BLE_SCAN_MAX_CONNECTION_INTERVAL 500
-#endif
-
 // <o> NRF_BLE_SCAN_SLAVE_LATENCY - Determines the slave latency in counts of connection events.
 #ifndef NRF_BLE_SCAN_SLAVE_LATENCY
 #define NRF_BLE_SCAN_SLAVE_LATENCY 5
 #endif
 
-// <o> NRF_BLE_SCAN_SUPERVISION_TIMEOUT - Determines the supervision time-out in units of 10
-// millisecond.
-#ifndef NRF_BLE_SCAN_SUPERVISION_TIMEOUT
-#define NRF_BLE_SCAN_SUPERVISION_TIMEOUT 6200
-#endif
-
-/**@brief Function for establishing the connection with a device.
- *
- * @details Connection is established if @ref NRF_BLE_SCAN_EVT_FILTER_MATCH
- *          or @ref NRF_BLE_SCAN_EVT_WHITELIST_ADV_REPORT occurs and the module was
- *          initialized in the automatic connection mode. This function can generate an event
- *          to the main application when @ref sd_ble_gap_connect is used inside the function and it
- * returns value that is different than @ref NRF_SUCCESS.
- *
- * @param[in] p_scan_ctx   Pointer to the Scanning Module instance.
- * @param[in] p_adv_report Advertising data.
- */
 static void nrf_ble_scan_connect_with_target(struct nrf_ble_scan const *const p_scan_ctx,
 					     ble_gap_evt_adv_report_t const *const p_adv_report)
 {
@@ -174,17 +98,6 @@ static void nrf_ble_scan_connect_with_target(struct nrf_ble_scan const *const p_
 #if CONFIG_BT_SCAN_FILTER_ENABLE || 1
 #if (NRF_BLE_SCAN_ADDRESS_CNT > 0)
 
-/**@brief Function for searching for the provided address in the advertisement packets.
- *
- * @details Use this function to parse the received advertising data for the provided address.
- *
- *
- * @param[in]   p_adv_report   Advertising data to parse.
- * @param[in]   p_addr         Address to search for. The address length must correspond to @ref
- * BLE_GAP_ADDR_LEN.
- *
- * @return   True if the provided address was found, false otherwise.
- */
 static bool find_peer_addr(ble_gap_evt_adv_report_t const *const p_adv_report,
 			   ble_gap_addr_t const *p_addr)
 {
@@ -197,15 +110,6 @@ static bool find_peer_addr(ble_gap_evt_adv_report_t const *const p_adv_report,
 	return false;
 }
 
-/** @brief Function for comparing the provided address with the addresses of the advertising
- * devices.
- *
- * @param[in] p_adv_report    Advertising data to parse.
- * @param[in] p_scan_ctx      Pointer to the Scanning Module instance.
- *
- * @retval True when the address matches with the addresses of the advertising devices. False
- * otherwise.
- */
 static bool adv_addr_compare(ble_gap_evt_adv_report_t const *const p_adv_report,
 			     struct nrf_ble_scan const *const p_scan_ctx)
 {
@@ -222,18 +126,6 @@ static bool adv_addr_compare(ble_gap_evt_adv_report_t const *const p_adv_report,
 	return false;
 }
 
-/**@brief Function for adding target address to the scanning filter.
- *
- * @param[in]     p_addr            Target address in the format required by the SoftDevice. If you
- * need to convert the address, use @ref nrf_ble_scan_copy_addr_to_sd_gap_addr. The address length
- * must correspond to @ref BLE_GAP_ADDR_LEN.
- * @param[in,out] p_scan_ctx        Pointer to the Scanning Module instance.
- *
- * @retval NRF_SUCCESS                    If the filter is added successfully or if you try to add a
- * filter that was already added before.
- * @retval NRF_ERROR_NO_MEMORY            If the number of available filters is exceeded.
- * @retval BLE_ERROR_GAP_INVALID_BLE_ADDR If the BLE address type is invalid.
- */
 static int nrf_ble_scan_addr_filter_add(struct nrf_ble_scan *const p_scan_ctx,
 					uint8_t const *p_addr)
 {
@@ -272,13 +164,7 @@ static int nrf_ble_scan_addr_filter_add(struct nrf_ble_scan *const p_scan_ctx,
 #endif // NRF_BLE_SCAN_ADDRESS_CNT
 
 #if (NRF_BLE_SCAN_NAME_CNT > 0)
-/** @brief Function for comparing the provided name with the advertised name.
- *
- * @param[in] p_adv_report    Advertising data to parse.
- * @param[in] p_scan_ctx      Pointer to the Scanning Module instance.
- *
- * @retval True when the names match. False otherwise.
- */
+
 static bool adv_name_compare(ble_gap_evt_adv_report_t const *p_adv_report,
 			     struct nrf_ble_scan const *const p_scan_ctx)
 {
@@ -301,18 +187,6 @@ static bool adv_name_compare(ble_gap_evt_adv_report_t const *p_adv_report,
 	return false;
 }
 
-/**@brief Function for adding name of the peripheral to the scanning filter.
- *
- * @param[in]     p_name            Peripheral name.
- * @param[in,out] p_scan_ctx        Pointer to the Scanning Module instance.
- *
- * @retval NRF_SUCCESS              If the filter is added successfully or if you try to add a
- * filter that was already added before.
- * @retval NRF_ERROR_NULL           If a NULL pointer is passed as input.
- * @retval NRF_ERROR_DATA_SIZE      If the name filter length is too long. The maximum filter name
- * length corresponds to @ref NRF_BLE_SCAN_NAME_MAX_LEN.
- * @retval NRF_ERROR_NO_MEMORY      If the number of available filters is exceeded.
- */
 static int nrf_ble_scan_name_filter_add(struct nrf_ble_scan *const p_scan_ctx, char const *p_name)
 {
 	uint8_t index;
@@ -348,13 +222,6 @@ static int nrf_ble_scan_name_filter_add(struct nrf_ble_scan *const p_scan_ctx, c
 #endif // NRF_BLE_SCAN_NAME_CNT
 
 #if (NRF_BLE_SCAN_SHORT_NAME_CNT > 0)
-/** @brief Function for comparing the provided short name with the advertised short name.
- *
- * @param[in] p_adv_report    Advertising data to parse.
- * @param[in] p_scan_ctx      Pointer to the Scanning Module instance.
- *
- * @retval True when the names match. False otherwise.
- */
 static bool adv_short_name_compare(ble_gap_evt_adv_report_t const *const p_adv_report,
 				   struct nrf_ble_scan const *const p_scan_ctx)
 {
@@ -379,18 +246,6 @@ static bool adv_short_name_compare(ble_gap_evt_adv_report_t const *const p_adv_r
 	return false;
 }
 
-/**@brief Function for adding the short name of the peripheral to the scanning filter.
- *
- * @param[in]     p_short_name      Short name of the peripheral.
- * @param[in,out] p_scan_ctx        Pointer to the Scanning Module instance.
- *
- * @retval NRF_SUCCESS              If the filter is added successfully or if you try to add a
- * filter that was already added before.
- * @retval NRF_ERROR_NULL           If a NULL pointer is passed as input.
- * @retval NRF_ERROR_DATA_SIZE      If the name filter length is too long. The maximum filter name
- * length corresponds to @ref NRF_BLE_SCAN_SHORT_NAME_MAX_LEN.
- * @retval NRF_ERROR_NO_MEMORY      If the number of available filters is exceeded.
- */
 static int nrf_ble_scan_short_name_filter_add(struct nrf_ble_scan *const p_scan_ctx,
 					      nrf_ble_scan_short_name_t const *p_short_name)
 {
@@ -432,13 +287,7 @@ static int nrf_ble_scan_short_name_filter_add(struct nrf_ble_scan *const p_scan_
 #endif
 
 #if (NRF_BLE_SCAN_UUID_CNT > 0)
-/**@brief Function for comparing the provided UUID with the UUID in the advertisement packets.
- *
- * @param[in]   p_adv_report   Advertising data to parse.
- * @param[in]   p_scan_ctx     Pointer to the Scanning Module instance.
- *
- * @return      True if the UUIDs match. False otherwise.
- */
+
 static bool adv_uuid_compare(ble_gap_evt_adv_report_t const *const p_adv_report,
 			     struct nrf_ble_scan const *const p_scan_ctx)
 {
@@ -477,15 +326,6 @@ static bool adv_uuid_compare(ble_gap_evt_adv_report_t const *const p_adv_report,
 	return false;
 }
 
-/**@brief Function for adding UUID to the scanning filter.
- *
- * @param[in]     uuid       UUID, 16-bit size.
- * @param[in,out] p_scan_ctx Pointer to the Scanning Module instance.
- *
- * @retval NRF_SUCCESS              If the scanning started. Otherwise, an error code is returned,
- * also if you tried to add a filter that was already added before.
- * @retval NRF_ERROR_NO_MEMORY      If the number of available filters is exceeded.
- */
 static int nrf_ble_scan_uuid_filter_add(struct nrf_ble_scan *const p_scan_ctx,
 					ble_uuid_t const *p_uuid)
 {
@@ -515,14 +355,7 @@ static int nrf_ble_scan_uuid_filter_add(struct nrf_ble_scan *const p_scan_ctx,
 #endif // NRF_BLE_SCAN_UUID_CNT
 
 #if (NRF_BLE_SCAN_APPEARANCE_CNT)
-/**@brief Function for comparing the provided appearance with the appearance in the advertisement
- * packets.
- *
- * @param[in]     p_adv_report Advertising data to parse.
- * @param[in,out] p_scan_ctx   Pointer to the Scanning Module instance.
- *
- * @return      True if the appearances match. False otherwise.
- */
+
 static bool adv_appearance_compare(ble_gap_evt_adv_report_t const *const p_adv_report,
 				   struct nrf_ble_scan const *const p_scan_ctx)
 {
@@ -544,16 +377,6 @@ static bool adv_appearance_compare(ble_gap_evt_adv_report_t const *const p_adv_r
 	return false;
 }
 
-/**@brief Function for adding appearance to the scanning filter.
- *
- * @param[in]     appearance       Appearance to be added.
- * @param[in,out] p_scan_ctx       Pointer to the Scanning Module instance.
- *
- * @retval NRF_SUCCESS             If the filter is added successfully or if you try to add a filter
- * that was already added before.
- * @retval NRF_ERROR_NULL          If a NULL pointer is passed as input.
- * @retval NRF_ERROR_NO_MEMORY     If the number of available filters is exceeded.
- */
 static int nrf_ble_scan_appearance_filter_add(struct nrf_ble_scan *const p_scan_ctx,
 					      uint16_t appearance)
 {
@@ -581,45 +404,49 @@ static int nrf_ble_scan_appearance_filter_add(struct nrf_ble_scan *const p_scan_
 
 #endif // NRF_BLE_SCAN_APPEARANCE_CNT
 
-int nrf_ble_scan_filter_set(struct nrf_ble_scan *const p_scan_ctx,
-			    enum nrf_ble_scan_filter_type type, void const *p_data)
+int nrf_ble_scan_filter_set(struct nrf_ble_scan *const scan_ctx, enum nrf_ble_scan_filter_type type,
+			    void const *data)
 {
-	// VERIFY_PARAM_NOT_NULL(p_scan_ctx);
-	// VERIFY_PARAM_NOT_NULL(p_data);
+	if (scan_ctx == NULL) {
+		return NRF_ERROR_NULL;
+	}
+	if (data == NULL) {
+		return NRF_ERROR_NULL;
+	}
 
 	switch (type) {
 #if (NRF_BLE_SCAN_NAME_CNT > 0)
 	case SCAN_NAME_FILTER: {
-		char *p_name = (char *)p_data;
-		return nrf_ble_scan_name_filter_add(p_scan_ctx, p_name);
+		char *name = (char *)data;
+		return nrf_ble_scan_name_filter_add(scan_ctx, name);
 	}
 #endif
 
 #if (NRF_BLE_SCAN_SHORT_NAME_CNT > 0)
 	case SCAN_SHORT_NAME_FILTER: {
-		nrf_ble_scan_short_name_t *p_short_name = (nrf_ble_scan_short_name_t *)p_data;
-		return nrf_ble_scan_short_name_filter_add(p_scan_ctx, p_short_name);
+		nrf_ble_scan_short_name_t *short_name = (nrf_ble_scan_short_name_t *)data;
+		return nrf_ble_scan_short_name_filter_add(scan_ctx, short_name);
 	}
 #endif
 
 #if (NRF_BLE_SCAN_ADDRESS_CNT > 0)
 	case SCAN_ADDR_FILTER: {
-		uint8_t *p_addr = (uint8_t *)p_data;
-		return nrf_ble_scan_addr_filter_add(p_scan_ctx, p_addr);
+		uint8_t *addr = (uint8_t *)data;
+		return nrf_ble_scan_addr_filter_add(scan_ctx, addr);
 	}
 #endif
 
 #if (NRF_BLE_SCAN_UUID_CNT > 0)
 	case SCAN_UUID_FILTER: {
-		ble_uuid_t *p_uuid = (ble_uuid_t *)p_data;
-		return nrf_ble_scan_uuid_filter_add(p_scan_ctx, p_uuid);
+		ble_uuid_t *uuid = (ble_uuid_t *)data;
+		return nrf_ble_scan_uuid_filter_add(scan_ctx, uuid);
 	}
 #endif
 
 #if (NRF_BLE_SCAN_APPEARANCE_CNT > 0)
 	case SCAN_APPEARANCE_FILTER: {
-		uint16_t appearance = *((uint16_t *)p_data);
-		return nrf_ble_scan_appearance_filter_add(p_scan_ctx, appearance);
+		uint16_t appearance = *((uint16_t *)data);
+		return nrf_ble_scan_appearance_filter_add(scan_ctx, appearance);
 	}
 #endif
 
