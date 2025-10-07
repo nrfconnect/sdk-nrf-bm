@@ -14,7 +14,7 @@ manifest:
   projects:
     - name: nrf
       repo-path: sdk-nrf
-      revision: b1f505fd71ac276f0640e833e9b8c0400d0e974f
+      revision: pull/24872/head
       import:
         name-allowlist:
           - cmsis_6
