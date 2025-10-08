@@ -12,12 +12,16 @@ API documentation
 Libraries
 *********
 
+.. _api_ble_adv:
+
 Bluetooth LE Advertising library
 ================================
 
 .. doxygengroup:: ble_adv
    :inner:
    :members:
+
+.. _api_ble_adv_data_encoder:
 
 Advertising and Scan Response Data Encoder
 ------------------------------------------
