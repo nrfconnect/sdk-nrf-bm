@@ -4,15 +4,17 @@
 #
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 
-import os
-import struct
-from intelhex import IntelHex
-import zlib
-import sys
 import argparse
+import os
 import pathlib
 import pickle
+import struct
+import sys
+import zlib
 from dataclasses import dataclass
+
+from intelhex import IntelHex
+
 
 @dataclass
 class PartitionInfo:
@@ -35,7 +37,7 @@ class CMakeCache(dict):
         """
         configs = cls()
         try:
-            with open(filename, 'r') as config:
+            with open(filename) as config:
                 for line in config:
                     if (line.startswith("#") or line.startswith("//") or len(line) < 4):
                         continue
@@ -60,7 +62,7 @@ class KConfig(dict):
         """
         configs = cls()
         try:
-            with open(filename, 'r') as config:
+            with open(filename) as config:
                 for line in config:
                     if not (line.startswith("CONFIG_") or line.startswith("SB_CONFIG_")):
                         continue
@@ -103,7 +105,9 @@ def get_partition_info(partitions, partition_name):
     return False
 
 def main():
-    partitions = [PartitionInfo('boot_partition'), PartitionInfo('slot0_partition'), PartitionInfo('slot1_partition'), PartitionInfo('softdevice_partition'), PartitionInfo('metadata_partition')]
+    partitions = [PartitionInfo('boot_partition'), PartitionInfo('slot0_partition'),
+                  PartitionInfo('slot1_partition'), PartitionInfo('softdevice_partition'),
+                  PartitionInfo('metadata_partition')]
     args = parse_args()[0]
 
     if args.build_dir.is_dir() is False:
@@ -157,7 +161,8 @@ def main():
 
     if 'SB_CONFIG_BM_FIRMWARE_LOADER_NONE' not in sysbuild_kconfig_defines:
         # Load firmware loader Kconfig file
-        firmware_loader_build_dir = args.build_dir / sysbuild_kconfig_defines['SB_CONFIG_BM_FIRMWARE_LOADER_IMAGE_NAME'][1:-1] / 'zephyr'
+        firmware_loader_build_dir = args.build_dir / \
+            sysbuild_kconfig_defines['SB_CONFIG_BM_FIRMWARE_LOADER_IMAGE_NAME'][1:-1] / 'zephyr'
         firmware_loader_kconfig_file = firmware_loader_build_dir / '.config'
 
         if firmware_loader_build_dir.is_dir() is False:
@@ -165,7 +170,8 @@ def main():
             sys.exit(1)
 
         if firmware_loader_kconfig_file.exists() is False:
-            print(f"Firmware loader Kconfig file does not exist: {str(firmware_loader_kconfig_file)}")
+            print("Firmware loader Kconfig file does not exist: "
+                  "{str(firmware_loader_kconfig_file)}")
             sys.exit(1)
 
         firmware_loader_partition_info = get_partition_info(partitions, 'slot1_partition')
@@ -176,7 +182,8 @@ def main():
     softdevice_start_address = softdevice_partition_info.start_address
     softdevice_size = softdevice_partition_info.size
 
-    # Generate metadata hex for direct west flash usage: SoftDevice, firmware loader, padding, checksum
+    # Generate metadata hex for direct west flash usage: SoftDevice, firmware loader, padding,
+    # checksum
     flash_metadata_data = struct.pack('<II', softdevice_start_address, softdevice_size)
     flash_metadata_data += struct.pack('<II', firmware_loader_start_address, firmware_loader_size)
     padding_size = int(bm_install_entry_size) - ((8 * int(bm_install_images)) + 4)
