@@ -29,7 +29,7 @@ extern "C" {
 /** @brief Handle to uniquely identify a peer for which we have persistently stored data. */
 typedef uint16_t pm_peer_id_t;
 
-/** @brief Type that is used to hold a reference to a stored item in flash. */
+/** @brief Type that is used to hold a reference to a stored item in non-volatile storage. */
 typedef uint32_t pm_store_token_t;
 
 /**
@@ -91,10 +91,10 @@ typedef uint16_t pm_sec_error_code_t;
 
 /**
  * @defgroup PM_PEER_ID_VERSIONS All versions of Peer IDs.
- * @brief The data ID for each iteration of the data formats in flash.
- * @details Each time the format (in flash) of a piece of peer data changes, the data ID will also
- *          be updated. This list of defines is a record of each data ID that has ever existed, and
- *          code that caters to legacy formats can find the relevant IDs here.
+ * @brief The data ID for each iteration of the data formats in non-volatile storage.
+ * @details Each time the format (in non-volatile storage) of a piece of peer data changes, the data
+ *          ID will also be updated. This list of defines is a record of each data ID that has ever
+ *          existed, and code that caters to legacy formats can find the relevant IDs here.
  * @{
  */
 /** @brief The smallest data ID. */
@@ -173,9 +173,9 @@ typedef enum {
 /** @brief Configuration of a security procedure. */
 typedef struct {
 	/**
-	 * @brief Whether to allow the peer to pair if it wants to, but is
-	 *        already bonded. If this is false, the procedure is rejected, and no
-	 *        more events are sent. Default: false.
+	 * @brief Whether to allow the peer to pair if it wants to, but is already bonded.
+	 *        If this is false, the procedure is rejected, and no more events are sent.
+	 *        Default: false.
 	 */
 	bool allow_repairing;
 } pm_conn_sec_config_t;
@@ -231,8 +231,7 @@ typedef struct {
 	/** @brief The communication on this link is encrypted. */
 	uint8_t encrypted: 1;
 	/**
-	 * @brief The encrypted communication is also protected against man-in-the-middle
-	 *        attacks.
+	 * @brief The encrypted communication is also protected against man-in-the-middle attacks.
 	 */
 	uint8_t mitm_protected: 1;
 	/** @brief The peer is bonded. */
@@ -246,152 +245,136 @@ typedef struct {
 /** @brief Types of events that can come from the @ref peer_manager module. */
 typedef enum {
 	/**
-	 * @brief A connected peer has been identified as one with
-	 *         which we have a bond. When performing bonding with a peer
-	 *         for the first time, this event will not be sent until a new
-	 *         connection is established with the peer. When we are
-	 *         central, this event is always sent when the Peer Manager
-	 *         receives the @ref BLE_GAP_EVT_CONNECTED event. When we are
-	 *         peripheral, this event might in rare cases arrive later.
+	 * @brief A connected peer has been identified as one with which we have a bond.
+	 *        When performing bonding with a peer for the first time, this event will not be
+	 *        sent until a new connection is established with the peer. When we are central,
+	 *        this event is always sent when the Peer Manager receives the
+	 *        @ref BLE_GAP_EVT_CONNECTED event. When we are peripheral, this event might
+	 *        in rare cases arrive later.
 	 */
 	PM_EVT_BONDED_PEER_CONNECTED,
 	/**
-	 * @brief A new connection has been established. This event is a
-	 *         wrapper for @ref BLE_GAP_EVT_CONNECTED event and contains its
-	 *         parameters. Reply with @ref pm_conn_exclude before the event
-	 *         handler returns to exclude BLE events targeting this connection
-	 *         from being handled by the Peer Manager
+	 * @brief A new connection has been established. This event is a wrapper for
+	 *        @ref BLE_GAP_EVT_CONNECTED event and contains its parameters. Reply with
+	 *        @ref pm_conn_exclude before the event handler returns to exclude BLE events
+	 *        targeting this connection from being handled by the Peer Manager
 	 */
 	PM_EVT_CONN_CONFIG_REQ,
 	/**
-	 * @brief A security procedure has started on a link, initiated
-	 *         either locally or remotely. The security procedure is using the
-	 *         last parameters provided via @ref pm_sec_params_set. This event is
-	 *         always followed by either a @ref PM_EVT_CONN_SEC_SUCCEEDED or a
-	 *         @ref PM_EVT_CONN_SEC_FAILED event. This is an informational event;
-	 *         no action is needed for the procedure to proceed.
+	 * @brief A security procedure has started on a link, initiated either locally or remotely.
+	 *        The security procedure is using the last parameters provided via
+	 *        @ref pm_sec_params_set. This event is always followed by either a
+	 *        @ref PM_EVT_CONN_SEC_SUCCEEDED or a @ref PM_EVT_CONN_SEC_FAILED event.
+	 *        This is an informational event; no action is needed for the procedure to proceed.
 	 */
 	PM_EVT_CONN_SEC_START,
 	/**
-	 * @brief A link has been encrypted, either as a result of a
-	 *         call to @ref pm_conn_secure or a result of an action by th
-	 *         peer. The event structure contains more information about the
-	 *         circumstances. This event might contain a peer ID with the
-	 *         value @ref PM_PEER_ID_INVALID, which means that the peer
-	 *         (central) used an address that could not be identified, but it
-	 *         used an encryption key (LTK) that is present in the database.
+	 * @brief A link has been encrypted, either as a result of a call to @ref pm_conn_secure or
+	 *        a result of an action by the peer. The event structure contains more information
+	 *        about the circumstances. This event might contain a peer ID with the
+	 *        value @ref PM_PEER_ID_INVALID, which means that the peer (central) used an
+	 *        address that could not be identified, but it used an encryption key (LTK) that
+	 *        is present in the database.
 	 */
 	PM_EVT_CONN_SEC_SUCCEEDED,
 	/**
-	 * @brief A pairing or encryption procedure has failed. In some
-	 *        cases, this means that security is not possible on this link
-	 *        (temporarily or permanently). How to handle this error depends on
-	 *        the application.
+	 * @brief A pairing or encryption procedure has failed. In some cases, this means that
+	 *        security is not possible on this link (temporarily or permanently).
+	 *        How to handle this error depends on the application.
 	 */
 	PM_EVT_CONN_SEC_FAILED,
 	/**
-	 * @brief The peer (central) has requested pairing, but a bond
-	 *        already exists with that peer. Reply by calling @ref
-	 *        pm_conn_sec_config_reply before the event handler returns. If
-	 *        no reply is sent, a default is used.
+	 * @brief The peer (central) has requested pairing, but a bond already exists with
+	 *        that peer. Reply by calling @ref pm_conn_sec_config_reply before the
+	 *        event handler returns. If no reply is sent, a default is used.
 	 */
 	PM_EVT_CONN_SEC_CONFIG_REQ,
 	/**
-	 * @brief Security parameters (@ref ble_gap_sec_params_t) are
-	 *        needed for an ongoing security procedure. Reply with @ref
-	 *        pm_conn_sec_params_reply before the event handler returns. If
-	 *        no reply is sent, the parameters given in @ref
-	 *        pm_sec_params_set are used. If a peripheral connection, the
-	 *        central's sec_params will be available in the event.
+	 * @brief Security parameters (@ref ble_gap_sec_params_t) are needed for an ongoing
+	 *        security procedure. Reply with @ref pm_conn_sec_params_reply before the
+	 *        event handler returns. If no reply is sent, the parameters given in
+	 *        @ref pm_sec_params_set are used. If a peripheral connection, the central's
+	 *        sec_params will be available in the event.
 	 */
 	PM_EVT_CONN_SEC_PARAMS_REQ,
 	/**
-	 * @brief There is no more room for peer data in flash storage. To
-	 *        solve this problem, delete data that is not needed anymore and run a
-	 *        garbage collection procedure in FDS.
+	 * @brief There is no more room for peer data in non-volatile storage.
+	 *        To solve this problem, delete data that is not needed anymore and run a
+	 *        garbage collection procedure in ZMS.
 	 */
 	PM_EVT_STORAGE_FULL,
 	/**
-	 * @brief An unrecoverable error happened inside Peer Manager. An
-	 *        operation failed with the provided error.
+	 * @brief An unrecoverable error happened inside Peer Manager. An operation failed with
+	 *        the provided error.
 	 */
 	PM_EVT_ERROR_UNEXPECTED,
 	/**
-	 * @brief A piece of peer data was stored, updated, or
-	 *        cleared in flash storage. This event is sent for all
-	 *        successful changes to peer data, also those initiated
-	 *        internally in Peer Manager. To identify an operation,
-	 *        compare the store token in the event with the store
-	 *        token received during the initiating function call.
-	 *        Events from internally initiated changes might have
-	 *        invalid store tokens.
+	 * @brief A piece of peer data was stored, updated, or cleared in non-volatile storage.
+	 *        This event is sent for all successful changes to peer data, also those initiated
+	 *        internally in Peer Manager. To identify an operation, compare the store token
+	 *        in the event with the store token received during the initiating function call.
+	 *        Events from internally initiated changes might have invalid store tokens.
 	 */
 	PM_EVT_PEER_DATA_UPDATE_SUCCEEDED,
 	/**
-	 * @brief A piece of peer data could not be stored,
-	 *        updated, or cleared in flash storage. This event is sent
-	 *        instead of @ref PM_EVT_PEER_DATA_UPDATE_SUCCEEDED for the
-	 *        failed operation.
+	 * @brief A piece of peer data could not be stored, updated, or cleared in non-volatile
+	 *        storage. This event is sent instead of @ref PM_EVT_PEER_DATA_UPDATE_SUCCEEDED
+	 *        for the failed operation.
 	 */
 	PM_EVT_PEER_DATA_UPDATE_FAILED,
 	/**
-	 * @brief A peer was cleared from flash storage, for example
-	 *        because a call to @ref pm_peer_delete succeeded. This event
-	 *        can also be sent as part of a call to @ref pm_peers_delete
-	 *        or internal cleanup.
+	 * @brief A peer was cleared from non-volatile storage, for example because of a call to
+	 *        @ref pm_peer_delete succeeded. This event can also be sent as part of a call to
+	 *        @ref pm_peers_delete or internal cleanup.
 	 */
 	PM_EVT_PEER_DELETE_SUCCEEDED,
 	/**
-	 * @brief A peer could not be cleared from flash storage. This
-	 *        event is sent instead of @ref PM_EVT_PEER_DELETE_SUCCEEDED for
-	 *        the failed operation.
+	 * @brief A peer could not be cleared from non-volatile storage. This event is sent
+	 *        instead of @ref PM_EVT_PEER_DELETE_SUCCEEDED for the failed operation.
 	 */
 	PM_EVT_PEER_DELETE_FAILED,
 	/**
-	 * @brief A call to @ref pm_peers_delete has completed
-	 *        successfully. Flash storage now contains no peer data.
+	 * @brief A call to @ref pm_peers_delete has completed successfully. The non-volatile
+	 *        storage now contains no peer data.
 	 */
 	PM_EVT_PEERS_DELETE_SUCCEEDED,
 	/**
-	 * @brief A call to @ref pm_peers_delete has failed, which
-	 *        means that at least one of the peers could not be deleted.
-	 *        Other peers might have been deleted, or might still be queued
-	 *        to be deleted. No more @ref PM_EVT_PEERS_DELETE_SUCCEEDED or
-	 *        @ref PM_EVT_PEERS_DELETE_FAILED events are sent until the
-	 *        next time @ref pm_peers_delete is called.
+	 * @brief A call to @ref pm_peers_delete has failed, which means that at least one of
+	 *        the peers could not be deleted. Other peers might have been deleted, or might
+	 *        still be queued to be deleted. No more @ref PM_EVT_PEERS_DELETE_SUCCEEDED or
+	 *        @ref PM_EVT_PEERS_DELETE_FAILED events are sent until the next time
+	 *        @ref pm_peers_delete is called.
 	 */
 	PM_EVT_PEERS_DELETE_FAILED,
 	/**
-	 * @brief Local database values for a peer (taken from
-	 *        flash storage) have been provided to the SoftDevice.
+	 * @brief Local database values for a peer (taken from non-volatile storage) have been
+	 *        provided to the SoftDevice.
 	 */
 	PM_EVT_LOCAL_DB_CACHE_APPLIED,
 	/**
-	 * @brief Local database values for a peer (taken from
-	 *        flash storage) were rejected by the SoftDevice, which
-	 *        means that either the database has changed or the
-	 *        user has manually set the local database to an
-	 *        invalid value (using @ref pm_peer_data_store).
+	 * @brief Local database values for a peer (taken from non-volatile storage) were rejected
+	 *        by the SoftDevice, which means that either the database has changed or the user
+	 *        has manually set the local database to an invalid value
+	 *        (using @ref pm_peer_data_store).
 	 */
 	PM_EVT_LOCAL_DB_CACHE_APPLY_FAILED,
 	/**
 	 * @brief A service changed indication has been sent to a
-	 *        peer, as a result of a call to @ref
-	 *        pm_local_database_has_changed. This event will be
-	 *        followed by a @ref PM_EVT_SERVICE_CHANGED_IND_CONFIRMED
+	 *        peer, as a result of a call to @ref pm_local_database_has_changed.
+	 *        This event will be followed by a @ref PM_EVT_SERVICE_CHANGED_IND_CONFIRMED
 	 *        event if the peer acknowledges the indication.
 	 */
 	PM_EVT_SERVICE_CHANGED_IND_SENT,
 	/**
-	 * @brief A service changed indication that was sent
-	 *        has been confirmed by a peer. The peer can now be
-	 *        considered aware that the local database has
-	 *        changed.
+	 * @brief A service changed indication that was sent has been confirmed by a peer.
+	 *        The peer can now be considered aware that the local database has changed.
 	 */
 	PM_EVT_SERVICE_CHANGED_IND_CONFIRMED,
 	/** @brief The peer (peripheral) has requested link encryption, which has been enabled. */
 	PM_EVT_SLAVE_SECURITY_REQ,
-	/** @brief The flash has been garbage collected (By FDS), possibly freeing up space. */
+	/**
+	 * @brief The non-volatile storage has been garbage collected, possibly freeing up space.
+	 */
 	PM_EVT_FLASH_GARBAGE_COLLECTED,
 	/** @brief Garbage collection was attempted but failed. */
 	PM_EVT_FLASH_GARBAGE_COLLECTION_FAILED,
@@ -421,8 +404,8 @@ typedef struct {
 	/**
 	 * @brief Whether bonding data was successfully requested to be stored.
 	 *        This is false if: No bonding happened, or an internal error occurred
-	 *        when trying to store the data, or if the data was rejected via @ref
-	 *        pm_conn_sec_config_reply.
+	 *        when trying to store the data, or if the data was rejected via
+	 *        @ref pm_conn_sec_config_reply.
 	 */
 	bool data_stored;
 } pm_conn_secured_evt_t;
@@ -463,17 +446,16 @@ typedef struct {
 	/** @brief What happened to the data. */
 	pm_peer_data_op_t action;
 	/**
-	 * @brief Token that identifies the operation. For @ref
-	 *        PM_PEER_DATA_OP_DELETE actions, this token can be disregarded. For @ref
-	 *        PM_PEER_DATA_OP_UPDATE actions, compare this token with the token that is
-	 *        received from a call to a @ref PM_PEER_DATA_FUNCTIONS function.
+	 * @brief Token that identifies the operation. For @ref PM_PEER_DATA_OP_DELETE actions,
+	 *        this token can be disregarded. For @ref PM_PEER_DATA_OP_UPDATE actions,
+	 *        compare this token with the token that is received from a call to a
+	 *        @ref PM_PEER_DATA_FUNCTIONS function.
 	 */
 	uint32_t token;
 	/**
-	 * @brief If this is false, no operation was done in flash,
-	 *        because the value was already what it should be. Please note
-	 *        that in certain scenarios, this flag will be true even if the
-	 *        new value is the same as the old.
+	 * @brief If this is false, no operation was done in non-volatile storage,
+	 *        because the value was already what it should be. Please note that in certain
+	 *        scenarios, this flag will be true even if the new value is the same as the old.
 	 */
 	uint8_t flash_changed: 1;
 } pm_peer_data_update_succeeded_evt_t;
@@ -485,10 +467,10 @@ typedef struct {
 	/** @brief The action that failed. */
 	pm_peer_data_op_t action;
 	/**
-	 * @brief Token that identifies the operation. For @ref
-	 *        PM_PEER_DATA_OP_DELETE actions, this token can be disregarded. For @ref
-	 *        PM_PEER_DATA_OP_UPDATE actions, compare this token with the token that is
-	 *        received from a call to a @ref PM_PEER_DATA_FUNCTIONS function.
+	 * @brief Token that identifies the operation. For @ref PM_PEER_DATA_OP_DELETE actions,
+	 *        this token can be disregarded. For @ref PM_PEER_DATA_OP_UPDATE actions, compare
+	 *        this token with the token that is received from a call to a
+	 *        @ref PM_PEER_DATA_FUNCTIONS function.
 	 */
 	uint32_t token;
 	/** @brief An error code that describes the failure. */
@@ -526,8 +508,7 @@ typedef struct {
 		/** @brief Parameters specific to the @ref PM_EVT_CONN_SEC_PARAMS_REQ event. */
 		pm_conn_sec_params_req_evt_t conn_sec_params_req;
 		/**
-		 * @brief Parameters specific to the @ref PM_EVT_PEER_DATA_UPDATE_SUCCEEDED
-		 *        event.
+		 * @brief Parameters specific to the @ref PM_EVT_PEER_DATA_UPDATE_SUCCEEDED event.
 		 */
 		pm_peer_data_update_succeeded_evt_t peer_data_update_succeeded;
 		/** @brief Parameters specific to the @ref PM_EVT_PEER_DATA_UPDATE_FAILED event. */

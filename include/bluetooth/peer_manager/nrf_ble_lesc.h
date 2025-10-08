@@ -27,56 +27,57 @@ extern "C" {
 typedef ble_gap_lesc_oob_data_t *(*nrf_ble_lesc_peer_oob_data_handler)(uint16_t conn_handle);
 
 /**
- * @brief   Function for initializing the LESC module.
+ * @brief Initialize the LESC module.
  *
  * @details This function initializes the PSA crypto for ECC and ECDH calculations, which are
  *          required to handle LESC authentication procedures.
  *
- * @retval NRF_SUCCESS        If the operation was successful.
- * @retval NRF_ERROR_INTERNAL If @ref psa_crypto_init failed.
+ * @retval NRF_SUCCESS         If the operation was successful.
+ * @retval NRF_ERROR_INTERNAL  If @ref psa_crypto_init failed.
  * @returns Other error codes might be returned by the @ref nrf_ble_lesc_keypair_generate function.
  */
 uint32_t nrf_ble_lesc_init(void);
 
 /**
- * @brief   Function for generating ECC keypair used for the LESC procedure.
+ * @brief Generate ECC keypair used for the LESC procedure.
  *
  * @details This function generates an ECC key pair, which consists of a private and public key.
- * Keys are generated using ECC and are used to create LESC DH key during authentication procedures.
+ *          Keys are generated using ECC and are used to create LESC DH key during authentication
+ *          procedures.
  *
- * @retval NRF_SUCCESS        If the operation was successful.
- * @retval NRF_ERROR_BUSY     If any pending request needs to be processed by @ref
- *                            nrf_ble_lesc_request_handler.
- * @retval NRF_ERROR_INTERNAL If @ref psa_generate_key, or @ref psa_export_public_key failed.
+ * @retval NRF_SUCCESS         If the operation was successful.
+ * @retval NRF_ERROR_BUSY      If any pending request needs to be processed by @ref
+ *                             nrf_ble_lesc_request_handler.
+ * @retval NRF_ERROR_INTERNAL  If @ref psa_generate_key, or @ref psa_export_public_key failed.
  * @returns Other error codes might be returned.
  */
 uint32_t nrf_ble_lesc_keypair_generate(void);
 
 /**
- * @brief   Function for generating LESC OOB data.
+ * @brief Generate LESC OOB data.
  *
  * @details This function generates LESC OOB data, which can be transmitted Out-Of-Band to the peer
  *          device and used during LESC procedure. It is required to generate ECC keypair with @ref
  *          nrf_ble_lesc_keypair_generate before calling this function.
  *
- * @retval NRF_SUCCESS               If the operation was successful.
- * @retval NRF_ERROR_INVALID_STATE   If the ECC keypair hasn't been generated or is currently
- *                                   being generated.
+ * @retval NRF_SUCCESS              If the operation was successful.
+ * @retval NRF_ERROR_INVALID_STATE  If the ECC keypair hasn't been generated or is currently
+ *                                  being generated.
  */
 uint32_t nrf_ble_lesc_own_oob_data_generate(void);
 
 /**
- * @brief   Function for accessing the ECC public key used for LESC DH key generation.
+ * @brief Get the ECC public key used for LESC DH key generation.
  *
  * @details This function can be used to access the ECC public key, which is required to generate a
- * LESC DH key at the peer side.
+ *          LESC DH key at the peer side.
  *
  * @return Pointer to the generated public key or NULL if the key has not been generated yet.
  */
 ble_gap_lesc_p256_pk_t *nrf_ble_lesc_public_key_get(void);
 
 /**
- * @brief   Function for accessing LESC OOB data.
+ * @brief Get the LESC Out-of-Band data.
  *
  * @details This function can be used to access LESC OOB data that is associated with this device.
  *          It is required to regenerate LESC OOB data with @ref nrf_ble_lesc_own_oob_data_generate,
@@ -88,14 +89,14 @@ ble_gap_lesc_p256_pk_t *nrf_ble_lesc_public_key_get(void);
 ble_gap_lesc_oob_data_t *nrf_ble_lesc_own_oob_data_get(void);
 
 /**
- * @brief   Function for setting the handler used to retrieve peer OOB data.
+ * @brief Set the handler used to retrieve peer OOB data.
  *
- * @param[in]   handler   Function to retrieve peer OOB data.
+ * @param[in] handler  Function to retrieve peer OOB data.
  */
 void nrf_ble_lesc_peer_oob_data_handler_set(nrf_ble_lesc_peer_oob_data_handler handler);
 
 /**
- * @brief   Function for responding to a DH key requests.
+ * @brief Respond to DH key requests.
  *
  * @details This function calculates DH keys and supplies them to the SoftDevice if there are any
  *          pending requests for keys.
@@ -103,19 +104,19 @@ void nrf_ble_lesc_peer_oob_data_handler_set(nrf_ble_lesc_peer_oob_data_handler h
  * @note This function should be called systematically (e.g. in the main application loop) to handle
  *       any pending DH key requests.
  *
- * @retval NRF_SUCCESS        If the operation was successful.
- * @retval NRF_ERROR_INTERNAL If the LESC module encountered an internal error. The only way to
- * recover from this type of error is to reset the application.
+ * @retval NRF_SUCCESS         If the operation was successful.
+ * @retval NRF_ERROR_INTERNAL  If the LESC module encountered an internal error. The only way to
+ *                             recover from this type of error is to reset the application.
  * @returns Other error codes might be returned by the @ref sd_ble_gap_lesc_dhkey_reply function.
  */
 uint32_t nrf_ble_lesc_request_handler(void);
 
 /**
- * @brief   Function for handling BLE stack events.
+ * @brief Handle BLE stack events.
  *
  * @details This function handles events from the BLE stack that are of interest to the module.
  *
- * @param[in]   ble_evt  Event received from the BLE stack.
+ * @param[in] ble_evt  Event received from the BLE stack.
  */
 void nrf_ble_lesc_on_ble_evt(ble_evt_t const *ble_evt);
 
