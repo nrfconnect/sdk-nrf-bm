@@ -470,7 +470,7 @@ static void send_params_req(uint16_t conn_handle, ble_gap_sec_params_t const *p_
 		.evt_id = PM_EVT_CONN_SEC_PARAMS_REQ,
 		.conn_handle = conn_handle,
 		.params = {
-				.conn_sec_params_req = {.p_peer_params = p_peer_params},
+				.conn_sec_params_req = {.peer_params = p_peer_params},
 			},
 	};
 

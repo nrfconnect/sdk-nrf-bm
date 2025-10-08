@@ -85,16 +85,16 @@ uint32_t pm_register(pm_evt_handler_t event_handler);
  *          peer are rejected.
  *
  *          This function can be called multiple times with different parameters, even with NULL as
- *          @p p_sec_params, in which case the Peer Manager starts rejecting all procedures again.
+ *          @p sec_params, in which case the Peer Manager starts rejecting all procedures again.
  *
- * @param[in]  p_sec_params  Security parameters to be used for subsequent security procedures.
+ * @param[in]  sec_params  Security parameters to be used for subsequent security procedures.
  *
  * @retval NRF_SUCCESS              If the parameters were set successfully.
  * @retval NRF_ERROR_INVALID_PARAM  If the combination of parameters is invalid.
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  * @retval NRF_ERROR_INTERNAL       If an internal error occurred.
  */
-uint32_t pm_sec_params_set(ble_gap_sec_params_t *p_sec_params);
+uint32_t pm_sec_params_set(ble_gap_sec_params_t *sec_params);
 
 /**
  * @brief Function for establishing encryption on a connection, and optionally establishing a bond.
@@ -151,12 +151,12 @@ uint32_t pm_conn_secure(uint16_t conn_handle, bool force_repairing);
  *          be normally handled by the Peer Manager.
  *
  * @param[in]  conn_handle   The connection to be excluded.
- * @param[in]  p_context     The context found in the request event that this function replies to.
+ * @param[in]  context       The context found in the request event that this function replies to.
  *
  * @retval NRF_SUCCESS              Successful reply.
- * @retval NRF_ERROR_NULL           p_context was null.
+ * @retval NRF_ERROR_NULL           @p context was null.
  */
-uint32_t pm_conn_exclude(uint16_t conn_handle, void const *p_context);
+uint32_t pm_conn_exclude(uint16_t conn_handle, void const *context);
 
 /**
  * @brief Function for providing security configuration for a link.
@@ -167,9 +167,9 @@ uint32_t pm_conn_exclude(uint16_t conn_handle, void const *p_context);
  *          for the value of the default.
  *
  * @param[in]  conn_handle        The connection to set the configuration for.
- * @param[in]  p_conn_sec_config  The configuration.
+ * @param[in]  conn_sec_config    The configuration.
  */
-void pm_conn_sec_config_reply(uint16_t conn_handle, pm_conn_sec_config_t *p_conn_sec_config);
+void pm_conn_sec_config_reply(uint16_t conn_handle, pm_conn_sec_config_t *conn_sec_config);
 
 /**
  * @brief Function for providing security parameters for a link.
@@ -179,16 +179,16 @@ void pm_conn_sec_config_reply(uint16_t conn_handle, pm_conn_sec_config_t *p_conn
  *          is not called in time, the parameters given in @ref pm_sec_params_set are used.
  *
  * @param[in]  conn_handle   The connection to set the parameters for.
- * @param[in]  p_sec_params  The parameters. If NULL, the security procedure is rejected.
- * @param[in]  p_context     The context found in the request event that this function replies to.
+ * @param[in]  sec_params    The parameters. If NULL, the security procedure is rejected.
+ * @param[in]  context       The context found in the request event that this function replies to.
  *
  * @retval NRF_SUCCESS              Successful reply.
- * @retval NRF_ERROR_NULL           p_sec_params or p_context was null.
- * @retval NRF_ERROR_INVALID_PARAM  Value of p_sec_params was invalid.
+ * @retval NRF_ERROR_NULL           @p sec_params or @p context was null.
+ * @retval NRF_ERROR_INVALID_PARAM  Value of @p sec_params was invalid.
  * @retval NRF_ERROR_INVALID_STATE  This module is not initialized.
  */
-uint32_t pm_conn_sec_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *p_sec_params,
-				  void const *p_context);
+uint32_t pm_conn_sec_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *sec_params,
+				  void const *context);
 
 /**
  * @brief Function for manually informing that the local database has changed.
@@ -210,27 +210,27 @@ void pm_local_database_has_changed(void);
  * @brief Function for getting the security status of a connection.
  *
  * @param[in]  conn_handle        Connection handle of the link as provided by the SoftDevice.
- * @param[out] p_conn_sec_status  Security status of the link.
+ * @param[out] conn_sec_status    Security status of the link.
  *
  * @retval NRF_SUCCESS                    If pairing was initiated successfully.
  * @retval BLE_ERROR_INVALID_CONN_HANDLE  If the connection handle is invalid.
- * @retval NRF_ERROR_NULL                 If @p p_conn_sec_status was NULL.
+ * @retval NRF_ERROR_NULL                 If @p conn_sec_status was NULL.
  * @retval NRF_ERROR_INVALID_STATE        If the Peer Manager is not initialized.
  */
-uint32_t pm_conn_sec_status_get(uint16_t conn_handle, pm_conn_sec_status_t *p_conn_sec_status);
+uint32_t pm_conn_sec_status_get(uint16_t conn_handle, pm_conn_sec_status_t *conn_sec_status);
 
 /**
  * @brief Function for comparing the security status of a connection against a baseline.
  *
  * @param[in]  conn_handle       Connection handle of the link as provided by the SoftDevice.
- * @param[out] p_sec_status_req  Target baseline security status to compare against.
+ * @param[out] sec_status_req    Target baseline security status to compare against.
  *
  * @retval true   If the security status of the connection matches or exceeds the baseline on all
  *                points.
  * @retval false  If the security status of the connection does not fulfil the baseline, or could
  *                not be retrieved.
  */
-bool pm_sec_is_sufficient(uint16_t conn_handle, pm_conn_sec_status_t *p_sec_status_req);
+bool pm_sec_is_sufficient(uint16_t conn_handle, pm_conn_sec_status_t *sec_status_req);
 
 /**
  * @brief Experimental function for specifying the public key to use for LESC operations.
@@ -245,14 +245,14 @@ bool pm_sec_is_sufficient(uint16_t conn_handle, pm_conn_sec_status_t *p_sec_stat
  *       Kconfig option is enabled. If the @c CONFIG_PM_LESC Kconfig option is disabled, this
  *       function works as before.
  *
- * @param[in]  p_public_key  The public key to use for all subsequent LESC operations.
+ * @param[in]  public_key  The public key to use for all subsequent LESC operations.
  *
  * @retval NRF_SUCCESS                    If pairing was initiated successfully.
  * @retval NRF_ERROR_INVALID_STATE        If the Peer Manager is not initialized.
  * @retval NRF_ERROR_FORBIDDEN            If LESC module support is enabled (see the
  *                                        @c CONFIG_PM_LESC Kconfig option).
  */
-uint32_t pm_lesc_public_key_set(ble_gap_lesc_p256_pk_t *p_public_key);
+uint32_t pm_lesc_public_key_set(ble_gap_lesc_p256_pk_t *public_key);
 
 /**
  * @brief Function for setting or clearing the whitelist.
@@ -262,9 +262,9 @@ uint32_t pm_lesc_public_key_set(ble_gap_lesc_p256_pk_t *p_public_key);
  * peers that can be retrieved later by @ref pm_whitelist_get to pass to the @ref
  * lib_ble_advertising.
  *
- * To clear the current whitelist, pass either NULL as @p p_peers or zero as @p peer_cnt.
+ * To clear the current whitelist, pass either NULL as @p peers or zero as @p peer_cnt.
  *
- * @param[in] p_peers   The peers to add to the whitelist. Pass NULL to clear the current whitelist.
+ * @param[in] peers   The peers to add to the whitelist. Pass NULL to clear the current whitelist.
  * @param[in] peer_cnt  The number of peers to add to the whitelist. The number must not be greater
  * than
  *                      @ref BLE_GAP_WHITELIST_ADDR_MAX_COUNT. Pass zero to clear the current
@@ -272,14 +272,14 @@ uint32_t pm_lesc_public_key_set(ble_gap_lesc_p256_pk_t *p_public_key);
  *
  * @retval NRF_SUCCESS                      If the whitelist was successfully set or cleared.
  * @retval BLE_GAP_ERROR_WHITELIST_IN_USE   If a whitelist is already in use and cannot be set.
- * @retval BLE_ERROR_GAP_INVALID_BLE_ADDR   If a peer in @p p_peers has an address that cannot
+ * @retval BLE_ERROR_GAP_INVALID_BLE_ADDR   If a peer in @p peers has an address that cannot
  *                                          be used for whitelisting.
- * @retval NRF_ERROR_NOT_FOUND              If any of the peers in @p p_peers cannot be found.
+ * @retval NRF_ERROR_NOT_FOUND              If any of the peers in @p peers cannot be found.
  * @retval NRF_ERROR_DATA_SIZE              If @p peer_cnt is greater than
  *                                          @ref BLE_GAP_WHITELIST_ADDR_MAX_COUNT.
  * @retval NRF_ERROR_INVALID_STATE          If the Peer Manager is not initialized.
  */
-uint32_t pm_whitelist_set(pm_peer_id_t const *p_peers, uint32_t peer_cnt);
+uint32_t pm_whitelist_set(pm_peer_id_t const *peers, uint32_t peer_cnt);
 
 /**
  * @brief Function for retrieving the previously set whitelist.
@@ -290,18 +290,18 @@ uint32_t pm_whitelist_set(pm_peer_id_t const *p_peers, uint32_t peer_cnt);
  * To retrieve only GAP addresses or only IRKs, provide only one of the
  * buffers. If a buffer is provided, its size must be specified.
  *
- * @param[out]   p_addrs    The buffer where to store GAP addresses. Pass NULL to retrieve
- *                          only IRKs (in that case, @p p_irks must not be NULL).
- * @param[in,out] p_addr_cnt In: The size of the @p p_addrs buffer.
- *                          May be NULL if and only if @p p_addrs is NULL.
+ * @param[out]    addrs     The buffer where to store GAP addresses. Pass NULL to retrieve
+ *                          only IRKs (in that case, @p irks must not be NULL).
+ * @param[in,out] addr_cnt  In: The size of the @p addrs buffer.
+ *                          May be NULL if and only if @p addrs is NULL.
  *                          Out: The number of GAP addresses copied into the buffer.
- *                          If @p p_addrs is NULL, this parameter remains unchanged.
- * @param[out]   p_irks     The buffer where to store IRKs. Pass NULL to retrieve
- *                          only GAP addresses (in that case, @p p_addrs must not NULL).
- * @param[in,out] p_irk_cnt  In: The size of the @p p_irks buffer.
- *                          May be NULL if and only if @p p_irks is NULL.
+ *                          If @p addrs is NULL, this parameter remains unchanged.
+ * @param[out]    irks      The buffer where to store IRKs. Pass NULL to retrieve
+ *                          only GAP addresses (in that case, @p addrs must not NULL).
+ * @param[in,out] irk_cnt   In: The size of the @p irks buffer.
+ *                          May be NULL if and only if @p irks is NULL.
  *                          Out: The number of IRKs copied into the buffer.
- *                          If @p p_irks is NULL, this parameter remains unchanged.
+ *                          If @p irks is NULL, this parameter remains unchanged.
  *
  * @retval NRF_SUCCESS                      If the whitelist was successfully retrieved.
  * @retval BLE_ERROR_GAP_INVALID_BLE_ADDR   If a peer has an address that cannot be used for
@@ -313,8 +313,8 @@ uint32_t pm_whitelist_set(pm_peer_id_t const *p_peers, uint32_t peer_cnt);
  *                                          cannot be found. It might have been deleted.
  * @retval NRF_ERROR_INVALID_STATE          If the Peer Manager is not initialized.
  */
-uint32_t pm_whitelist_get(ble_gap_addr_t *p_addrs, uint32_t *p_addr_cnt, ble_gap_irk_t *p_irks,
-			  uint32_t *p_irk_cnt);
+uint32_t pm_whitelist_get(ble_gap_addr_t *addrs, uint32_t *addr_cnt, ble_gap_irk_t *irks,
+			  uint32_t *irk_cnt);
 
 /**
  * @brief Function for setting and clearing the device identities list.
@@ -323,7 +323,7 @@ uint32_t pm_whitelist_get(ble_gap_addr_t *p_addrs, uint32_t *p_addr_cnt, ble_gap
  *       peers that have no Central Address Resolution. See @ref pm_peer_id_list with skip_id
  *       @ref PM_PEER_ID_LIST_SKIP_NO_CAR.
  *
- * @param[in]   p_peers     The peers to add to the device identities list. Pass NULL to clear
+ * @param[in]   peers       The peers to add to the device identities list. Pass NULL to clear
  *                          the device identities list.
  * @param[in]   peer_cnt    The number of peers. Pass zero to clear the device identities list.
  *
@@ -339,7 +339,7 @@ uint32_t pm_whitelist_get(ble_gap_addr_t *p_addrs, uint32_t *p_addr_cnt, ble_gap
  * @retval NRF_ERROR_NOT_SUPPORTED                  If using a SoftDevice that does not support
  *                                                  device identities, e.g. S130 v2.0.
  */
-uint32_t pm_device_identities_list_set(pm_peer_id_t const *p_peers, uint32_t peer_cnt);
+uint32_t pm_device_identities_list_set(pm_peer_id_t const *peers, uint32_t peer_cnt);
 
 /**
  * @brief Function for setting the local <em>Bluetooth</em> identity address.
@@ -359,11 +359,11 @@ uint32_t pm_device_identities_list_set(pm_peer_id_t const *p_peers, uint32_t pee
  * @note The SoftDevice functions @ref sd_ble_gap_addr_set and @ref sd_ble_gap_privacy_set must not
  *       be called when using the Peer Manager. Use the Peer Manager equivalents instead.
  *
- * @param[in] p_addr The GAP address to be set.
+ * @param[in] addr The GAP address to be set.
  *
  * @retval NRF_SUCCESS                     If the identity address was set successfully.
- * @retval NRF_ERROR_NULL                  If @p p_addr is NULL.
- * @retval NRF_ERROR_INVALID_ADDR          If the @p p_addr pointer is invalid.
+ * @retval NRF_ERROR_NULL                  If @p addr is NULL.
+ * @retval NRF_ERROR_INVALID_ADDR          If the @p addr pointer is invalid.
  * @retval BLE_ERROR_GAP_INVALID_BLE_ADDR  If the BLE address is invalid.
  * @retval NRF_ERROR_BUSY                  If the SoftDevice was busy. Process SoftDevice events
  *                                         and retry.
@@ -371,7 +371,7 @@ uint32_t pm_device_identities_list_set(pm_peer_id_t const *p_peers, uint32_t pee
  * function was called while advertising, scanning, or while connected.
  * @retval NRF_ERROR_INTERNAL              If an internal error occurred.
  */
-uint32_t pm_id_addr_set(ble_gap_addr_t const *p_addr);
+uint32_t pm_id_addr_set(ble_gap_addr_t const *addr);
 
 /**
  * @brief Function for retrieving the local <em>Bluetooth</em> identity address.
@@ -380,13 +380,13 @@ uint32_t pm_id_addr_set(ble_gap_addr_t const *p_addr);
  * This means that the address type will always be either @ref BLE_GAP_ADDR_TYPE_PUBLIC or @ref
  * BLE_GAP_ADDR_TYPE_RANDOM_STATIC.
  *
- * @param[out] p_addr Pointer to the address structure to be filled in.
+ * @param[out] addr Pointer to the address structure to be filled in.
  *
  * @retval NRF_SUCCESS             If the address was retrieved successfully.
- * @retval NRF_ERROR_NULL          If @p p_addr is NULL.
+ * @retval NRF_ERROR_NULL          If @p addr is NULL.
  * @retval NRF_ERROR_INVALID_STATE If the Peer Manager is not initialized.
  */
-uint32_t pm_id_addr_get(ble_gap_addr_t *p_addr);
+uint32_t pm_id_addr_get(ble_gap_addr_t *addr);
 
 /**
  * @brief Function for configuring privacy settings.
@@ -397,10 +397,10 @@ uint32_t pm_id_addr_get(ble_gap_addr_t *p_addr);
  *       and @ref sd_ble_gap_privacy_set must not be called when using the Peer Manager.
  *       Use this function instead.
  *
- * @param[in] p_privacy_params Privacy settings.
+ * @param[in] privacy_params Privacy settings.
  *
  * @retval NRF_SUCCESS                     If the privacy settings were configured successfully.
- * @retval NRF_ERROR_NULL                  If @p p_privacy_params is NULL.
+ * @retval NRF_ERROR_NULL                  If @p privacy_params is NULL.
  * @retval NRF_ERROR_BUSY                  If the operation could not be performed at this time.
  *                                         Process SoftDevice events and retry.
  * @retval NRF_ERROR_INVALID_PARAM         If the address type is invalid.
@@ -408,60 +408,60 @@ uint32_t pm_id_addr_get(ble_gap_addr_t *p_addr);
  *                                         privacy are enabled.
  * @retval NRF_ERROR_INVALID_STATE         If the Peer Manager is not initialized.
  */
-uint32_t pm_privacy_set(pm_privacy_params_t const *p_privacy_params);
+uint32_t pm_privacy_set(pm_privacy_params_t const *privacy_params);
 
 /**
  * @brief Function for retrieving privacy settings.
  *
  * The privacy settings that are returned include the current IRK as well.
  *
- * @param[out] p_privacy_params Privacy settings.
+ * @param[out] privacy_params Privacy settings.
  *
  * @retval NRF_SUCCESS              If the privacy settings were retrieved successfully.
- * @retval NRF_ERROR_NULL           If @p p_privacy_params or @p p_privacy_params->p_device_irk is
+ * @retval NRF_ERROR_NULL           If @p privacy_params or @p privacy_params->p_device_irk is
  *                                  NULL.
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  */
-uint32_t pm_privacy_get(pm_privacy_params_t *p_privacy_params);
+uint32_t pm_privacy_get(pm_privacy_params_t *privacy_params);
 
 /**
  * @brief Function for resolving a resolvable address with an identity resolution key (IRK).
  *
- * @param[in] p_addr  A private random resolvable address.
- * @param[in] p_irk   An identity resolution key (IRK).
+ * @param[in] addr  A private random resolvable address.
+ * @param[in] irk   An identity resolution key (IRK).
  *
  * @retval true   The IRK used matched the one used to create the address.
  * @retval false  The IRK used did not match the one used to create the address, or an argument was
  *                NULL or invalid.
  */
-bool pm_address_resolve(ble_gap_addr_t const *p_addr, ble_gap_irk_t const *p_irk);
+bool pm_address_resolve(ble_gap_addr_t const *addr, ble_gap_irk_t const *irk);
 
 /**
  * @brief Function for getting the connection handle of the connection with a bonded peer.
  *
  * @param[in]  peer_id        The peer ID of the bonded peer.
- * @param[out] p_conn_handle  Connection handle, or @ref BLE_CONN_HANDLE_INVALID if none could be
+ * @param[out] conn_handle    Connection handle, or @ref BLE_CONN_HANDLE_INVALID if none could be
  *                            resolved. The conn_handle can refer to a recently disconnected
  * connection.
  *
  * @retval NRF_SUCCESS              If the connection handle was retrieved successfully.
- * @retval NRF_ERROR_NULL           If @p p_conn_handle was NULL.
+ * @retval NRF_ERROR_NULL           If @p conn_handle was NULL.
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  */
-uint32_t pm_conn_handle_get(pm_peer_id_t peer_id, uint16_t *p_conn_handle);
+uint32_t pm_conn_handle_get(pm_peer_id_t peer_id, uint16_t *conn_handle);
 
 /**
  * @brief Function for retrieving the ID of a peer, given its connection handle.
  *
  * @param[in]  conn_handle  The connection handle of the peer.
- * @param[out] p_peer_id    The peer ID, or @ref PM_PEER_ID_INVALID if the peer is not bonded or
+ * @param[out] peer_id      The peer ID, or @ref PM_PEER_ID_INVALID if the peer is not bonded or
  *                          @p conn_handle does not refer to a valid connection.
  *
  * @retval NRF_SUCCESS              If the peer ID was retrieved successfully.
- * @retval NRF_ERROR_NULL           If @p p_peer_id was NULL.
+ * @retval NRF_ERROR_NULL           If @p peer_id was NULL.
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  */
-uint32_t pm_peer_id_get(uint16_t conn_handle, pm_peer_id_t *p_peer_id);
+uint32_t pm_peer_id_get(uint16_t conn_handle, pm_peer_id_t *peer_id);
 
 /**
  * @brief Function for retrieving a filtered list of peer IDs.
@@ -469,14 +469,14 @@ uint32_t pm_peer_id_get(uint16_t conn_handle, pm_peer_id_t *p_peer_id);
  * @details This function starts searching from @p first_peer_id. IDs ordering
  *          is the same as for @ref pm_next_peer_id_get(). If the first_peer_id
  *          is @ref PM_PEER_ID_INVALID, the function starts searching from the first ID.
- *          The function looks for the ID's number specified by @p p_list_size. Only those IDs that
+ *          The function looks for the ID's number specified by @p list_size. Only those IDs that
  *          match @p skip_id are added to the list. The number of returned elements is determined
- *          by @p p_list_size.
+ *          by @p list_size.
  *
- * @warning The size of the @p p_peer_list buffer must be equal or greater than @p p_list_size.
+ * @warning The size of the @p peer_list buffer must be equal or greater than @p list_size.
  *
- * @param[out]    p_peer_list   Pointer to peer IDs list buffer.
- * @param[in,out] p_list_size   The amount of IDs to return / The number of returned IDs.
+ * @param[out]    peer_list     Pointer to peer IDs list buffer.
+ * @param[in,out] list_size     The amount of IDs to return / The number of returned IDs.
  * @param[in]     first_peer_id The first ID from which the search begins. IDs ordering
  *                              is the same as for @ref pm_next_peer_id_get()
  * @param[in]     skip_id       It determines which peer ID will be added to list.
@@ -486,8 +486,8 @@ uint32_t pm_peer_id_get(uint16_t conn_handle, pm_peer_id_t *p_peer_id);
  * @retval NRF_ERROR_NULL           If peer_list or list_size was NULL.
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  */
-uint32_t pm_peer_id_list(pm_peer_id_t *p_peer_list, uint32_t *const p_list_size,
-			   pm_peer_id_t first_peer_id, pm_peer_id_list_skip_t skip_id);
+uint32_t pm_peer_id_list(pm_peer_id_t *peer_list, uint32_t *const list_size,
+			 pm_peer_id_t first_peer_id, pm_peer_id_list_skip_t skip_id);
 
 /**
  * @brief Function for getting the next peer ID in the sequence of all used peer IDs.
@@ -543,10 +543,10 @@ uint32_t pm_peer_count(void);
  *
  * @param[in]    peer_id   Peer ID to get data for.
  * @param[in]    data_id   Which type of data to read.
- * @param[out]   p_data    Where to put the retrieved data. The documentation for
+ * @param[out]   data      Where to put the retrieved data. The documentation for
  *                         @ref pm_peer_data_id_t specifies what data type each data ID is stored
  * as.
- * @param[in,out] p_len    In: The length in bytes of @p p_data.
+ * @param[in,out] len      In: The length in bytes of @p data.
  *                         Out: The length in bytes of the read data, if the read was successful.
  *
  * @retval NRF_SUCCESS              If the data was read successfully.
@@ -561,27 +561,27 @@ uint32_t pm_peer_count(void);
  * bytes) when storing.
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  */
-uint32_t pm_peer_data_load(pm_peer_id_t peer_id, pm_peer_data_id_t data_id, void *p_data,
-			     uint32_t *p_len);
+uint32_t pm_peer_data_load(pm_peer_id_t peer_id, pm_peer_data_id_t data_id, void *data,
+			   uint32_t *len);
 
 /**
  * @brief Function for reading a peer's bonding data (@ref PM_PEER_DATA_ID_BONDING).
  * @details See @ref pm_peer_data_load for parameters and return values.
  */
-uint32_t pm_peer_data_bonding_load(pm_peer_id_t peer_id, pm_peer_data_bonding_t *p_data);
+uint32_t pm_peer_data_bonding_load(pm_peer_id_t peer_id, pm_peer_data_bonding_t *data);
 
 /**
  * @brief Function for reading a peer's remote DB values. (@ref PM_PEER_DATA_ID_GATT_REMOTE).
  * @details See @ref pm_peer_data_load for parameters and return values.
  */
-uint32_t pm_peer_data_remote_db_load(pm_peer_id_t peer_id, ble_gatt_db_srv_t *p_data,
-				     uint32_t *p_len);
+uint32_t pm_peer_data_remote_db_load(pm_peer_id_t peer_id, ble_gatt_db_srv_t *data,
+				     uint32_t *len);
 
 /**
  * @brief Function for reading a peer's application data. (@ref PM_PEER_DATA_ID_APPLICATION).
  * @details See @ref pm_peer_data_load for parameters and return values.
  */
-uint32_t pm_peer_data_app_data_load(pm_peer_id_t peer_id, void *p_data, uint32_t *p_len);
+uint32_t pm_peer_data_app_data_load(pm_peer_id_t peer_id, void *data, uint32_t *len);
 /** @}*/
 
 /**
@@ -602,17 +602,17 @@ uint32_t pm_peer_data_app_data_load(pm_peer_id_t peer_id, void *p_data, uint32_t
  *
  * @param[in]  peer_id  Peer ID to set data for.
  * @param[in]  data_id  Which type of data to set.
- * @param[in]  p_data   New value to set. The documentation for @ref pm_peer_data_id_t specifies
+ * @param[in]  data     New value to set. The documentation for @ref pm_peer_data_id_t specifies
  *                      what data type each data ID should be stored as.
- * @param[in]  len      The length in bytes of @p p_data.
- * @param[out] p_token  A token that identifies this particular store operation. The token can be
+ * @param[in]  len      The length in bytes of @p data.
+ * @param[out] token    A token that identifies this particular store operation. The token can be
  *                      used to identify events that pertain to this operation. This parameter can
  *                      be NULL.
  *
  * @retval NRF_SUCCESS              If the data is scheduled to be written to persistent storage.
- * @retval NRF_ERROR_NULL           If @p p_data is NULL.
+ * @retval NRF_ERROR_NULL           If @p data is NULL.
  * @retval NRF_ERROR_NOT_FOUND      If no peer was found for the peer ID.
- * @retval NRF_ERROR_INVALID_ADDR   If @p p_data is not word-aligned (4 bytes).
+ * @retval NRF_ERROR_INVALID_ADDR   If @p data is not word-aligned (4 bytes).
  * @retval NRF_ERROR_BUSY           If the underlying flash handler is busy with other flash
  *                                  operations. Try again after receiving a Peer Manager event.
  * @retval NRF_ERROR_RESOURCES   If there is not enough space in persistent storage.
@@ -621,31 +621,31 @@ uint32_t pm_peer_data_app_data_load(pm_peer_id_t peer_id, void *p_data, uint32_t
  *                                  so duplicate entries are avoided.
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  */
-uint32_t pm_peer_data_store(pm_peer_id_t peer_id, pm_peer_data_id_t data_id, void const *p_data,
-			    uint32_t len, pm_store_token_t *p_token);
+uint32_t pm_peer_data_store(pm_peer_id_t peer_id, pm_peer_data_id_t data_id, void const *data,
+			    uint32_t len, pm_store_token_t *token);
 
 /**
  * @brief Function for setting or updating a peer's bonding data (@ref PM_PEER_DATA_ID_BONDING).
  * @details See @ref pm_peer_data_store for parameters and return values.
  */
-uint32_t pm_peer_data_bonding_store(pm_peer_id_t peer_id, pm_peer_data_bonding_t const *p_data,
-				    pm_store_token_t *p_token);
+uint32_t pm_peer_data_bonding_store(pm_peer_id_t peer_id, pm_peer_data_bonding_t const *data,
+				    pm_store_token_t *token);
 
 /**
  * @brief Function for setting or updating a peer's remote DB values. (@ref
  *        PM_PEER_DATA_ID_GATT_REMOTE).
  * @details See @ref pm_peer_data_store for parameters and return values.
  */
-uint32_t pm_peer_data_remote_db_store(pm_peer_id_t peer_id, ble_gatt_db_srv_t const *p_data,
-				      uint32_t len, pm_store_token_t *p_token);
+uint32_t pm_peer_data_remote_db_store(pm_peer_id_t peer_id, ble_gatt_db_srv_t const *data,
+				      uint32_t len, pm_store_token_t *token);
 
 /**
  * @brief Function for setting or updating a peer's application data.
  *        (@ref PM_PEER_DATA_ID_APPLICATION).
  * @details See @ref pm_peer_data_store for parameters and return values.
  */
-uint32_t pm_peer_data_app_data_store(pm_peer_id_t peer_id, void const *p_data, uint32_t len,
-				     pm_store_token_t *p_token);
+uint32_t pm_peer_data_app_data_store(pm_peer_id_t peer_id, void const *data, uint32_t len,
+				     pm_store_token_t *token);
 /** @}*/
 
 /**
@@ -683,17 +683,17 @@ uint32_t pm_peer_data_delete(pm_peer_id_t peer_id, pm_peer_data_id_t data_id);
  * @details This function allocates a new peer ID and stores bonding data for the new peer. The
  *          bonding data is necessary to prevent ambiguity/inconsistency in peer data.
  *
- * @param[in]  p_bonding_data  The bonding data of the new peer (must contain a public/static
- *                             address or a non-zero IRK).
- * @param[out] p_new_peer_id   Peer ID for the new peer, or an existing peer if a match was found.
- * @param[out] p_token         A token that identifies this particular store operation (storing the
- *                             bonding data). The token can be used to identify events that pertain
- *                             to this operation. This parameter can be NULL.
+ * @param[in]  bonding_data  The bonding data of the new peer (must contain a public/static
+ *                           address or a non-zero IRK).
+ * @param[out] new_peer_id   Peer ID for the new peer, or an existing peer if a match was found.
+ * @param[out] token         A token that identifies this particular store operation (storing the
+ *                           bonding data). The token can be used to identify events that pertain
+ *                           to this operation. This parameter can be NULL.
  *
  * @retval NRF_SUCCESS              If the store operation for bonding data was initiated
  * successfully.
- * @retval NRF_ERROR_NULL           If @p p_bonding_data or @p p_new_peer_id is NULL.
- * @retval NRF_ERROR_INVALID_ADDR   If @p p_bonding_data is not word-aligned (4 bytes).
+ * @retval NRF_ERROR_NULL           If @p bonding_data or @p new_peer_id is NULL.
+ * @retval NRF_ERROR_INVALID_ADDR   If @p bonding_data is not word-aligned (4 bytes).
  * @retval NRF_ERROR_RESOURCES   If there is not enough space in persistent storage.
  * @retval NRF_ERROR_NO_MEM         If there are no more available peer IDs.
  * @retval NRF_ERROR_BUSY           If the underlying flash filesystem is busy with other flash
@@ -701,8 +701,8 @@ uint32_t pm_peer_data_delete(pm_peer_id_t peer_id, pm_peer_data_id_t data_id);
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  * @retval NRF_ERROR_INTERNAL       If an internal error occurred.
  */
-uint32_t pm_peer_new(pm_peer_id_t *p_new_peer_id, pm_peer_data_bonding_t *p_bonding_data,
-		     pm_store_token_t *p_token);
+uint32_t pm_peer_new(pm_peer_id_t *new_peer_id, pm_peer_data_bonding_t *bonding_data,
+		     pm_store_token_t *token);
 
 /**
  * @brief Function for freeing persistent storage for a peer.
@@ -762,12 +762,12 @@ uint32_t pm_peers_delete(void);
  * @note Peers with no stored rank are not considered.
  * @note Any argument that is NULL is ignored.
  *
- * @param[out] p_highest_ranked_peer  The peer ID with the highest rank of all peers, for example,
- *                                    the most recently used peer.
- * @param[out] p_highest_rank         The highest rank.
- * @param[out] p_lowest_ranked_peer   The peer ID with the lowest rank of all peers, for example,
- *                                    the least recently used peer.
- * @param[out] p_lowest_rank          The lowest rank.
+ * @param[out] highest_ranked_peer  The peer ID with the highest rank of all peers, for example,
+ *                                  the most recently used peer.
+ * @param[out] highest_rank         The highest rank.
+ * @param[out] lowest_ranked_peer   The peer ID with the lowest rank of all peers, for example,
+ *                                  the least recently used peer.
+ * @param[out] lowest_rank          The lowest rank.
  *
  * @retval NRF_SUCCESS              If the operation completed successfully.
  * @retval NRF_ERROR_NOT_FOUND      If no peer with stored peer rank was found.
@@ -776,8 +776,8 @@ uint32_t pm_peers_delete(void);
  * @retval NRF_ERROR_NOT_SUPPORTED  If peer rank functionality has been disabled via the
  *                                  @c CONFIG_PM_PEER_RANKS Kconfig option.
  */
-uint32_t pm_peer_ranks_get(pm_peer_id_t *p_highest_ranked_peer, uint32_t *p_highest_rank,
-			   pm_peer_id_t *p_lowest_ranked_peer, uint32_t *p_lowest_rank);
+uint32_t pm_peer_ranks_get(pm_peer_id_t *highest_ranked_peer, uint32_t *highest_rank,
+			   pm_peer_id_t *lowest_ranked_peer, uint32_t *lowest_rank);
 
 /**
  * @brief Function for updating the rank of a peer to be highest among all stored peers.
