@@ -115,9 +115,9 @@ uint32_t nrf_ble_lesc_request_handler(void);
  *
  * @details This function handles events from the BLE stack that are of interest to the module.
  *
- * @param[in]   p_ble_evt   Event received from the BLE stack.
+ * @param[in]   ble_evt  Event received from the BLE stack.
  */
-void nrf_ble_lesc_on_ble_evt(ble_evt_t const *p_ble_evt);
+void nrf_ble_lesc_on_ble_evt(ble_evt_t const *ble_evt);
 
 #ifdef __cplusplus
 }

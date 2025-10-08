@@ -34,9 +34,9 @@ extern "C" {
  *
  * @note In normal circumstances, this function should be called for every Peer Manager event.
  *
- * @param[in]  p_pm_evt  Peer Manager event to handle.
+ * @param[in]  pm_evt  Peer Manager event to handle.
  */
-void pm_handler_on_pm_evt(pm_evt_t const *p_pm_evt);
+void pm_handler_on_pm_evt(pm_evt_t const *pm_evt);
 
 /**
  * @brief Auxiliary standard function for logging Peer Manager events.
@@ -46,9 +46,9 @@ void pm_handler_on_pm_evt(pm_evt_t const *p_pm_evt);
  *
  * @note This function is called internally by @ref pm_handler_on_pm_evt.
  *
- * @param[in]  p_pm_evt  Peer Manager event to log.
+ * @param[in]  pm_evt  Peer Manager event to log.
  */
-void pm_handler_pm_evt_log(pm_evt_t const *p_pm_evt);
+void pm_handler_pm_evt_log(pm_evt_t const *pm_evt);
 
 /**
  * @brief Auxiliary standard function for maintaining room in flash based on Peer Manager events.
@@ -62,9 +62,9 @@ void pm_handler_pm_evt_log(pm_evt_t const *p_pm_evt);
  * @note In normal circumstances, this function should be called for every Peer Manager event.
  * @note This function is a supplement to @ref pm_handler_on_pm_evt, not its replacement.
  *
- * @param[in]  p_pm_evt  Peer Manager event to handle.
+ * @param[in]  pm_evt  Peer Manager event to handle.
  */
-void pm_handler_flash_clean(pm_evt_t const *p_pm_evt);
+void pm_handler_flash_clean(pm_evt_t const *pm_evt);
 
 /**
  * @brief Function to call when a Peer Manager function returns @ref NRF_ERROR_RESOURCES.
@@ -82,9 +82,9 @@ void pm_handler_flash_clean_on_return(void);
  * @note In normal circumstances, this function should be called for every Peer Manager event.
  * @note This function is a supplement to @ref pm_handler_on_pm_evt, not its replacement.
  *
- * @param[in]  p_pm_evt  Peer Manager event to handle.
+ * @param[in]  pm_evt  Peer Manager event to handle.
  */
-void pm_handler_disconnect_on_sec_failure(pm_evt_t const *p_pm_evt);
+void pm_handler_disconnect_on_sec_failure(pm_evt_t const *pm_evt);
 
 /**
  * @brief Auxiliary standard function for disconnecting on insufficient connection security.
@@ -96,11 +96,11 @@ void pm_handler_disconnect_on_sec_failure(pm_evt_t const *p_pm_evt);
  * @note In normal circumstances, this function should be called for every Peer Manager event.
  * @note This function is a supplement to @ref pm_handler_on_pm_evt, not its replacement.
  *
- * @param[in]  p_pm_evt        Peer Manager event to handle.
- * @param[in]  p_min_conn_sec  Minimum security status below which to disconnect the link.
+ * @param[in]  pm_evt        Peer Manager event to handle.
+ * @param[in]  min_conn_sec  Minimum security status below which to disconnect the link.
  */
-void pm_handler_disconnect_on_insufficient_sec(pm_evt_t const *p_pm_evt,
-					       pm_conn_sec_status_t *p_min_conn_sec);
+void pm_handler_disconnect_on_insufficient_sec(pm_evt_t const *pm_evt,
+					       pm_conn_sec_status_t *min_conn_sec);
 
 /**
  * @brief Function for securing a connection when it is established.
@@ -110,9 +110,9 @@ void pm_handler_disconnect_on_insufficient_sec(pm_evt_t const *p_pm_evt,
  *
  * @note In normal circumstances, this function should be called for every BLE event.
  *
- * @param[in]  p_ble_evt  BLE event to handle.
+ * @param[in]  ble_evt  BLE event to handle.
  */
-void pm_handler_secure_on_connection(ble_evt_t const *p_ble_evt);
+void pm_handler_secure_on_connection(ble_evt_t const *ble_evt);
 
 /**
  * @brief Function for securing a connection if a GATT read or write operation lacks security.
@@ -127,9 +127,9 @@ void pm_handler_secure_on_connection(ble_evt_t const *p_ble_evt);
  *       silently dropped by the server.
  * @note In normal circumstances, this function should be called for every BLE event.
  *
- * @param[in]  p_ble_evt  BLE event to handle.
+ * @param[in]  ble_evt  BLE event to handle.
  */
-void pm_handler_secure_on_error(ble_evt_t const *p_ble_evt);
+void pm_handler_secure_on_error(ble_evt_t const *ble_evt);
 
 #ifdef __cplusplus
 }
