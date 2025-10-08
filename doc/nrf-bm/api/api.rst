@@ -111,6 +111,8 @@ Peer Manager library
    :inner:
    :members:
 
+.. _api_queued_writes:
+
 Queued Writes module
 ====================
 
