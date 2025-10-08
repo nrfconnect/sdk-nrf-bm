@@ -275,9 +275,9 @@ static bool is_conn_handle_excluded(ble_evt_t const *p_ble_evt)
 		pm_conn_config_req_evt.peer_id = PM_PEER_ID_INVALID;
 		pm_conn_config_req_evt.conn_handle = conn_handle;
 
-		pm_conn_config_req_evt.params.conn_config_req.p_peer_params =
+		pm_conn_config_req_evt.params.conn_config_req.peer_params =
 			&p_ble_evt->evt.gap_evt.params.connected;
-		pm_conn_config_req_evt.params.conn_config_req.p_context = &is_excluded;
+		pm_conn_config_req_evt.params.conn_config_req.context = &is_excluded;
 
 		evt_send(&pm_conn_config_req_evt);
 		ble_conn_state_user_flag_set(conn_handle, m_flag_conn_excluded, is_excluded);
