@@ -27,42 +27,41 @@ extern "C" {
  * @brief Standard function for making Peer Manager calls based on Peer Manager events.
  *
  * This function does the following:
- *  - Logs all PM events using @ref nrf_log, at different severity levels.
+ *  - Logs PM events at different severity levels.
  *  - Starts encryption if connected to an already bonded peer. This is affected by @ref
  *    PM_HANDLER_SEC_DELAY_MS.
- *  - Calls @ref app_error on fatal errors.
  *
  * @note In normal circumstances, this function should be called for every Peer Manager event.
  *
- * @param[in]  pm_evt  Peer Manager event to handle.
+ * @param[in] pm_evt  Peer Manager event to handle.
  */
 void pm_handler_on_pm_evt(pm_evt_t const *pm_evt);
 
 /**
  * @brief Auxiliary standard function for logging Peer Manager events.
  *
- * This function logs all PM events using @ref nrf_log, at different severity levels. The
- * @ref PM_LOG_ENABLED and other @c PM_LOG_* configs control these log messages.
+ * This function logs all PM events using Zephyr's logging API, at different severity levels.
  *
  * @note This function is called internally by @ref pm_handler_on_pm_evt.
  *
- * @param[in]  pm_evt  Peer Manager event to log.
+ * @param[in] pm_evt  Peer Manager event to log.
  */
 void pm_handler_pm_evt_log(pm_evt_t const *pm_evt);
 
 /**
- * @brief Auxiliary standard function for maintaining room in flash based on Peer Manager events.
+ * @brief Auxiliary standard function for maintaining room in non-volatile storage based on Peer
+ *        Manager events.
  *
  * This function does the following:
  *  - Ranks peers by when they last connected.
- *  - Garbage collects the flash when needed.
+ *  - Garbage collects the non-volatile storage when needed.
  *  - Deletes the lowest ranked peer(s) when garbage collection is insufficient.
  *
  * @note See also @ref pm_handler_flash_clean_on_return.
  * @note In normal circumstances, this function should be called for every Peer Manager event.
  * @note This function is a supplement to @ref pm_handler_on_pm_evt, not its replacement.
  *
- * @param[in]  pm_evt  Peer Manager event to handle.
+ * @param[in] pm_evt  Peer Manager event to handle.
  */
 void pm_handler_flash_clean(pm_evt_t const *pm_evt);
 
@@ -82,7 +81,7 @@ void pm_handler_flash_clean_on_return(void);
  * @note In normal circumstances, this function should be called for every Peer Manager event.
  * @note This function is a supplement to @ref pm_handler_on_pm_evt, not its replacement.
  *
- * @param[in]  pm_evt  Peer Manager event to handle.
+ * @param[in] pm_evt  Peer Manager event to handle.
  */
 void pm_handler_disconnect_on_sec_failure(pm_evt_t const *pm_evt);
 
@@ -96,38 +95,40 @@ void pm_handler_disconnect_on_sec_failure(pm_evt_t const *pm_evt);
  * @note In normal circumstances, this function should be called for every Peer Manager event.
  * @note This function is a supplement to @ref pm_handler_on_pm_evt, not its replacement.
  *
- * @param[in]  pm_evt        Peer Manager event to handle.
- * @param[in]  min_conn_sec  Minimum security status below which to disconnect the link.
+ * @param[in] pm_evt        Peer Manager event to handle.
+ * @param[in] min_conn_sec  Minimum security status below which to disconnect the link.
  */
 void pm_handler_disconnect_on_insufficient_sec(pm_evt_t const *pm_evt,
 					       pm_conn_sec_status_t *min_conn_sec);
 
 /**
- * @brief Function for securing a connection when it is established.
+ * @brief Secure a connection when it is established.
  *
  * This function starts security when receiving a @ref BLE_GAP_EVT_CONNECTED event. This is
  * affected by @ref PM_HANDLER_SEC_DELAY_MS.
  *
  * @note In normal circumstances, this function should be called for every BLE event.
  *
- * @param[in]  ble_evt  BLE event to handle.
+ * @param[in] ble_evt  BLE event to handle.
  */
 void pm_handler_secure_on_connection(ble_evt_t const *ble_evt);
 
 /**
- * @brief Function for securing a connection if a GATT read or write operation lacks security.
+ * @brief Secure a connection if a GATT read or write operation lacks security.
  *
  * This function starts pairing if a GATTC procedure fails with insufficient encryption
  * or insufficient authentication. This is meant to delay performing pairing/bonding until
  * it is actually needed to access resources. This is affected by @ref PM_HANDLER_SEC_DELAY_MS.
  *
  * @note When using this handler, the failed GATTC operation must be retried by the user.
+ *
  * @note This does not work when using Write Without Response (@ref BLE_GATT_OP_WRITE_CMD) because
  *       the server does not send any response, even on error. Instead, the write will be
  *       silently dropped by the server.
+ *
  * @note In normal circumstances, this function should be called for every BLE event.
  *
- * @param[in]  ble_evt  BLE event to handle.
+ * @param[in] ble_evt  BLE event to handle.
  */
 void pm_handler_secure_on_error(ble_evt_t const *ble_evt);
 
