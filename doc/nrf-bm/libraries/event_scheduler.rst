@@ -7,12 +7,12 @@ Event Scheduler
    :local:
    :depth: 2
 
-The event scheduler is used for transferring execution from the interrupt context to the main context.
+The event scheduler is used for transferring execution from the interrupt context to the main application context.
 
 Overview
 ********
 
-In some applications, it is beneficial to defer the execution of certain interrupts, for example some SoftDevice interrupts, to the main application function.
+In some applications, it is beneficial to defer the execution of certain interrupts, such as those from the SoftDevice, to the main application function.
 This shortens the time spent in the interrupt service routine (ISR).
 It also allows for lower priority events to be raised before the previous event is fully processed.
 
@@ -33,6 +33,7 @@ Usage
 *****
 
 The SoftDevice event handler can call the :c:func:`event_scheduler_defer` function to schedule an event for later execution in the main thread.
+
 To process these deferred events, call the :c:func:`event_scheduler_process` function regularly in the main application function.
 
 Dependencies
