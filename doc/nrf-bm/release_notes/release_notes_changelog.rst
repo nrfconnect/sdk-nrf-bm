@@ -159,6 +159,7 @@ Documentation
 * Added documentation for the :ref:`lib_ble_queued_writes` library.
 * Added documentation for the :ref:`lib_event_scheduler` library.
 * Added documentation for the :ref:`lib_sensorsim` library.
+* Added documentation for the :ref:`lib_storage` library.
 * Added documentation for the :ref:`lib_ble_queued_writes` library.
 
 Interrupts
