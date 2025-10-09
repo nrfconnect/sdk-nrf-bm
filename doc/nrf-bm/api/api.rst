@@ -79,6 +79,8 @@ Bare Metal Storage library backend
    :inner:
    :members:
 
+.. _api_bm_timer:
+
 Bare Metal Timer library
 ========================
 
