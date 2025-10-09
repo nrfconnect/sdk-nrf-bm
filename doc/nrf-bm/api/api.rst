@@ -65,6 +65,8 @@ Bare Metal Low Power UART with EasyDMA driver
    :inner:
    :members:
 
+.. _api_storage:
+
 Bare Metal Storage library
 ==========================
 
