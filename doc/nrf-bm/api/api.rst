@@ -82,6 +82,8 @@ Bare Metal Storage library backend
 Bare Metal Timer library
 ========================
 
+.. _api_timer:
+
 .. doxygengroup:: bm_timer
    :inner:
    :members:
