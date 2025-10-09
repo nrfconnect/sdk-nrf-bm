@@ -48,6 +48,8 @@ Bluetooth LE Connection State library
    :inner:
    :members:
 
+.. _api_bm_buttons:
+
 Bare Metal Buttons library
 ==========================
 

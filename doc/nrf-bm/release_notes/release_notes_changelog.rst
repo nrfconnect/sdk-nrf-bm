@@ -132,7 +132,8 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Documentation
 =============
 
+* Added documentation for the :ref:`lib_bm_buttons` library.
 * Added documentation for the :ref:`lib_bm_timer` library.
-* Added documentation for the :ref:`lib_ble_adv`.
+* Added documentation for the :ref:`lib_ble_adv` library.
 * Added documentation for the :ref:`lib_event_scheduler` library.
 * Added documentation for the :ref:`lib_sensorsim` library.
