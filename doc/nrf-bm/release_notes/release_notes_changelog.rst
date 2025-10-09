@@ -132,4 +132,4 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Documentation
 =============
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Added documentation for the :ref:`lib_sensorsim` library.
