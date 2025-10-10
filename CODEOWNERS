@@ -19,7 +19,7 @@
 /.checkpatch.conf                         @nrfconnect/ncs-bm
 
 # Applications
-/applications/installer/                  @nrfconnect/ncs-pluto
+/applications/installer/                  @nrfconnect/ncs-eris
 
 # Boards
 /boards/                                  @nrfconnect/ncs-co-boards @nrfconnect/ncs-bm
@@ -57,12 +57,12 @@
 /lib/event_scheduler/                     @nrfconnect/ncs-bm
 /lib/peer_manager/                        @nrfconnect/ncs-bm
 /lib/sensorsim/                           @nrfconnect/ncs-bm
-/lib/zephyr_queue/                        @nrfconnect/ncs-pluto
+/lib/zephyr_queue/                        @nrfconnect/ncs-eris
 
 # Samples
 /samples/bluetooth/                       @nrfconnect/ncs-bm
-/samples/boot/                            @nrfconnect/ncs-pluto
-/samples/mcumgr/                          @nrfconnect/ncs-pluto
+/samples/boot/                            @nrfconnect/ncs-eris
+/samples/mcumgr/                          @nrfconnect/ncs-eris
 /samples/peripherals/bm_zms/              @nrfconnect/ncs-bm @rghaddab
 /samples/peripherals/                     @nrfconnect/ncs-bm
 
@@ -77,12 +77,12 @@
 
 # Subsystems
 /subsys/bluetooth/                        @nrfconnect/ncs-bm
-/subsys/bm_installs/                      @nrfconnect/ncs-pluto
+/subsys/bm_installs/                      @nrfconnect/ncs-eris
 /subsys/logging/                          @nrfconnect/ncs-bm
-/subsys/mgmt/mcumgr/                      @nrfconnect/ncs-pluto
+/subsys/mgmt/mcumgr/                      @nrfconnect/ncs-eris
 /subsys/softdevice/                       @nrfconnect/ncs-bm
 /subsys/softdevice_handler/               @nrfconnect/ncs-bm
-/subsys/storage/flash_map/                @nrfconnect/ncs-pluto
+/subsys/storage/flash_map/                @nrfconnect/ncs-eris
 
 # Sysbuild
 /sysbuild/                                @nrfconnect/ncs-co-build-system
