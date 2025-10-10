@@ -50,9 +50,6 @@ enum button_state {
 	BUTTON_RELEASE_DETECTED
 };
 
-#if defined(CONFIG_SOC_SERIES_NRF52X)
-static const nrfx_gpiote_t gpiote0_instance = NRFX_GPIOTE_INSTANCE(0);
-#elif defined(CONFIG_SOC_SERIES_NRF54LX)
 static const nrfx_gpiote_t gpiote20_instance = NRFX_GPIOTE_INSTANCE(20);
 static const nrfx_gpiote_t gpiote30_instance = NRFX_GPIOTE_INSTANCE(30);
 
@@ -67,45 +64,24 @@ static inline const nrfx_gpiote_t *gpiote_get(uint32_t port)
 		return NULL;
 	}
 }
-#endif
 
 static void gpiote_trigger_enable(nrfx_gpiote_pin_t pin, bool enable)
 {
-#if defined(CONFIG_SOC_SERIES_NRF52X)
-	nrfx_gpiote_trigger_enable(&gpiote0_instance, pin, enable);
-#elif defined(CONFIG_SOC_SERIES_NRF54LX)
 	const nrfx_gpiote_t *gpiote_inst = gpiote_get(NRF_PIN_NUMBER_TO_PORT(pin));
 
 	nrfx_gpiote_trigger_enable(gpiote_inst, pin, enable);
-#endif
 }
 
 static void gpiote_uninit(void)
 {
-#if defined(CONFIG_SOC_SERIES_NRF52X)
-	nrfx_gpiote_uninit(&gpiote0_instance);
-#elif defined(CONFIG_SOC_SERIES_NRF54LX)
 	nrfx_gpiote_uninit(&gpiote20_instance);
 	nrfx_gpiote_uninit(&gpiote30_instance);
-#endif
 }
 
 static int gpiote_init(void)
 {
 	int err;
 
-#if defined(CONFIG_SOC_SERIES_NRF52X)
-	if (!nrfx_gpiote_init_check(&gpiote0_instance)) {
-		err = nrfx_gpiote_init(&gpiote0_instance, 0);
-		if (err != NRFX_SUCCESS) {
-			LOG_ERR("Failed to initialize gpiote, err: 0x%08X", err);
-			return -EIO;
-		}
-
-		IRQ_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_GPIOTE_INST_GET(0)), IRQ_PRIO,
-			    NRFX_GPIOTE_INST_HANDLER_GET(0), 0, 0);
-	}
-#elif defined(CONFIG_SOC_SERIES_NRF54LX)
 	if (!nrfx_gpiote_init_check(&gpiote20_instance)) {
 		err = nrfx_gpiote_init(&gpiote20_instance, 0);
 		if (err != NRFX_SUCCESS) {
@@ -127,7 +103,7 @@ static int gpiote_init(void)
 		IRQ_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_GPIOTE_INST_GET(30)) + NRF_GPIOTE_IRQ_GROUP,
 			    IRQ_PRIO, NRFX_GPIOTE_INST_HANDLER_GET(30), 0, 0);
 	}
-#endif
+
 	return 0;
 }
 
@@ -136,13 +112,6 @@ static int gpiote_input_configure(nrfx_gpiote_pin_t pin,
 {
 	int err;
 
-#if defined(CONFIG_SOC_SERIES_NRF52X)
-	err = nrfx_gpiote_input_configure(&gpiote0_instance, pin, input_config);
-	if (err != NRFX_SUCCESS) {
-		LOG_ERR("nrfx_gpiote_input_configure, err: 0x%08X", err);
-		return -EIO;
-	}
-#elif defined(CONFIG_SOC_SERIES_NRF54LX)
 	const nrfx_gpiote_t *gpiote_inst = gpiote_get(NRF_PIN_NUMBER_TO_PORT(pin));
 
 	err = nrfx_gpiote_input_configure(gpiote_inst, pin, input_config);
@@ -150,7 +119,6 @@ static int gpiote_input_configure(nrfx_gpiote_pin_t pin,
 		LOG_ERR("nrfx_gpiote_input_configure, err: 0x%08X", err);
 		return -EIO;
 	}
-#endif
 
 	return 0;
 }
