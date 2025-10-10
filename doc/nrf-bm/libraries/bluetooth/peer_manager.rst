@@ -291,15 +291,15 @@ The following list shows the required security parameters for common use cases:
 
 * Disallow IRKs:
 
-.. code-block:: c
+   .. code-block:: c
 
-   ble_gap_sec_params_t sec_param = (ble_gap_sec_params_t) {
-      .bond = true,
-      .kdist_own.enc = 1,
-      .kdist_own.id = 0,
-      .kdist_peer.enc = 1,
-      .kdist_peer.id = 0,
-   };
+      ble_gap_sec_params_t sec_param = (ble_gap_sec_params_t) {
+         .bond = true,
+         .kdist_own.enc = 1,
+         .kdist_own.id = 0,
+         .kdist_peer.enc = 1,
+         .kdist_peer.id = 0,
+      };
 
 Event handling
 ==============
