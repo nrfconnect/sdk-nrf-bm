@@ -20,6 +20,12 @@ static char uarte_tx_buf[CONFIG_LOG_BACKEND_BM_UARTE_BUFFER_SIZE];
 static int log_out(uint8_t *data, size_t length, void *ctx);
 LOG_OUTPUT_DEFINE(bm_lbu_output, log_out, lbu_buffer, CONFIG_LOG_BACKEND_BM_UARTE_BUFFER_SIZE);
 
+ISR_DIRECT_DECLARE(log_backend_bm_uarte_direct_isr)
+{
+	NRFX_UARTE_INST_HANDLER_GET(BOARD_CONSOLE_UARTE_INST)();
+	return 0;
+}
+
 static int uarte_init(void)
 {
 	int err;
@@ -42,10 +48,9 @@ static int uarte_init(void)
 	uarte_config.tx_cache.length = sizeof(uarte_tx_buf);
 
 	/** We need to connect the IRQ ourselves. */
-	IRQ_CONNECT(NRFX_IRQ_NUMBER_GET(
-		NRF_UARTE_INST_GET(BOARD_CONSOLE_UARTE_INST)),
-		CONFIG_LOG_BACKEND_BM_UARTE_IRQ_PRIO,
-		NRFX_UARTE_INST_HANDLER_GET(BOARD_CONSOLE_UARTE_INST), 0, 0);
+	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(BOARD_CONSOLE_UARTE_INST)),
+			   CONFIG_LOG_BACKEND_BM_UARTE_IRQ_PRIO,
+			   log_backend_bm_uarte_direct_isr, 0);
 
 	irq_enable(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(BOARD_CONSOLE_UARTE_INST)));
 

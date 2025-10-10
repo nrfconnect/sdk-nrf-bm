@@ -27,6 +27,12 @@ static void pwm_handler(nrfx_pwm_evt_type_t event_type, void *ctx)
 	curr_loop++;
 }
 
+ISR_DIRECT_DECLARE(pwm_direct_isr)
+{
+	NRFX_PWM_INST_HANDLER_GET(20)();
+	return 0;
+}
+
 int main(void)
 {
 	nrfx_err_t err;
@@ -49,8 +55,9 @@ int main(void)
 
 	LOG_INF("PWM sample started");
 
-	IRQ_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_PWM_INST_GET(PWM_INST_IDX)),
-		    CONFIG_PWM_IRQ_PRIO, NRFX_PWM_INST_HANDLER_GET(20), 0, 0);
+	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_PWM_INST_GET(PWM_INST_IDX)),
+			   CONFIG_PWM_IRQ_PRIO,
+			   pwm_direct_isr, 0);
 
 	err = nrfx_pwm_init(&pwm_instance, &config, pwm_handler, &pwm_instance);
 	if (err != NRFX_SUCCESS) {
