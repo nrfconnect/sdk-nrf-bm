@@ -128,6 +128,8 @@ Record Access Control Point
 Sensor data simulator library
 =============================
 
+.. _api_sensorsim:
+
 .. doxygengroup:: sensorsim
    :inner:
    :members:
