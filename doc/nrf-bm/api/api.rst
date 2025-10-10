@@ -54,6 +54,8 @@ Bare Metal Buttons library
 Bare Metal Event Scheduler library
 ==================================
 
+.. _api_event_scheduler:
+
 .. doxygengroup:: event_scheduler
    :inner:
    :members:
