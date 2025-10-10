@@ -13,29 +13,7 @@
 
 LOG_MODULE_REGISTER(sdh_irq_connect, CONFIG_NRF_SDH_LOG_LEVEL);
 
-#if CONFIG_SOC_SERIES_NRF52X
-#include <zephyr/linker/linker-defs.h>
-#include <nrf_sdm.h>
-#include <nrfx_gpiote.h>
-
-void relocate_vector_table(void)
-{
-	/* Empty, but needed */
-}
-
-static int irq_init(void)
-{
-	int err;
-
-	#define VECTOR_ADDRESS ((uintptr_t)_vector_start)
-
-	err = sd_softdevice_vector_table_base_set(VECTOR_ADDRESS);
-	__ASSERT(err == NRF_SUCCESS, "Failed to set the vector table, nrf_error %#x", err);
-
-	return (err == NRF_SUCCESS) ? 0 : -EIO;
-}
-
-#elif CONFIG_SOC_SERIES_NRF54LX
+#if CONFIG_SOC_SERIES_NRF54LX
 #include "irq_connect.h"
 
 extern void CLOCK_POWER_IRQHandler(void);
@@ -141,6 +119,6 @@ __attribute__((weak)) void C_POWER_CLOCK_Handler(void)
 	__asm__("SVC 255");
 }
 
-#endif
+#endif /* CONFIG_SOC_SERIES_NRF54LX */
 
 SYS_INIT(irq_init, APPLICATION, 0);

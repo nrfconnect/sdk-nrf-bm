@@ -232,14 +232,6 @@ static int bm_uarte_init(void)
 		return err;
 	}
 
-	/* optional: enable pull-up on RX pin in case pin may become floating.
-	 * Induced noise on a floating RX input may lead to an UARTE error condition
-	 */
-#if defined(CONFIG_SOC_SERIES_NRF52X)
-	NRF_GPIO->PIN_CNF[uarte_config.rxd_pin] |=
-		(GPIO_PIN_CNF_PULL_Pullup << GPIO_PIN_CNF_PULL_Pos);
-#endif
-
 	err = nrfx_uarte_rx(&uarte_inst, uarte_rx_buf, 1);
 
 	if (err != NRFX_SUCCESS) {
