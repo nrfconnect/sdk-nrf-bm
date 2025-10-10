@@ -47,6 +47,8 @@ Bluetooth LE Connection State library
 Bare Metal Buttons library
 ==========================
 
+.. _api_bm_buttons:
+
 .. doxygengroup:: bm_buttons
    :inner:
    :members:
