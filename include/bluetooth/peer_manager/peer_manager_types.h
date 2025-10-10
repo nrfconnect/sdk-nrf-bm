@@ -29,7 +29,7 @@ extern "C" {
 /** @brief Handle to uniquely identify a peer for which we have persistently stored data. */
 typedef uint16_t pm_peer_id_t;
 
-/** @brief Type that is used to hold a reference to a stored item in flash. */
+/** @brief Type that is used to hold a reference to a stored item in non-volatile storage. */
 typedef uint32_t pm_store_token_t;
 
 /**
@@ -91,10 +91,10 @@ typedef uint16_t pm_sec_error_code_t;
 
 /**
  * @defgroup PM_PEER_ID_VERSIONS All versions of Peer IDs.
- * @brief The data ID for each iteration of the data formats in flash.
- * @details Each time the format (in flash) of a piece of peer data changes, the data ID will also
- *          be updated. This list of defines is a record of each data ID that has ever existed, and
- *          code that caters to legacy formats can find the relevant IDs here.
+ * @brief The data ID for each iteration of the data formats in non-volatile storage.
+ * @details Each time the format (in non-volatile storage) of a piece of peer data changes, the data
+ *          ID will also be updated. This list of defines is a record of each data ID that has ever
+ *          existed, and code that caters to legacy formats can find the relevant IDs here.
  * @{
  */
 /** @brief The smallest data ID. */
@@ -306,7 +306,7 @@ typedef enum {
 	 */
 	PM_EVT_CONN_SEC_PARAMS_REQ,
 	/**
-	 * @brief There is no more room for peer data in flash storage. To
+	 * @brief There is no more room for peer data in non-volatile storage. To
 	 *        solve this problem, delete data that is not needed anymore and run a
 	 *        garbage collection procedure in FDS.
 	 */
@@ -318,7 +318,7 @@ typedef enum {
 	PM_EVT_ERROR_UNEXPECTED,
 	/**
 	 * @brief A piece of peer data was stored, updated, or
-	 *        cleared in flash storage. This event is sent for all
+	 *        cleared in non-volatile storage. This event is sent for all
 	 *        successful changes to peer data, also those initiated
 	 *        internally in Peer Manager. To identify an operation,
 	 *        compare the store token in the event with the store
@@ -329,27 +329,27 @@ typedef enum {
 	PM_EVT_PEER_DATA_UPDATE_SUCCEEDED,
 	/**
 	 * @brief A piece of peer data could not be stored,
-	 *        updated, or cleared in flash storage. This event is sent
+	 *        updated, or cleared in non-volatile storage. This event is sent
 	 *        instead of @ref PM_EVT_PEER_DATA_UPDATE_SUCCEEDED for the
 	 *        failed operation.
 	 */
 	PM_EVT_PEER_DATA_UPDATE_FAILED,
 	/**
-	 * @brief A peer was cleared from flash storage, for example
+	 * @brief A peer was cleared from non-volatile storage, for example
 	 *        because a call to @ref pm_peer_delete succeeded. This event
 	 *        can also be sent as part of a call to @ref pm_peers_delete
 	 *        or internal cleanup.
 	 */
 	PM_EVT_PEER_DELETE_SUCCEEDED,
 	/**
-	 * @brief A peer could not be cleared from flash storage. This
+	 * @brief A peer could not be cleared from non-volatile storage. This
 	 *        event is sent instead of @ref PM_EVT_PEER_DELETE_SUCCEEDED for
 	 *        the failed operation.
 	 */
 	PM_EVT_PEER_DELETE_FAILED,
 	/**
 	 * @brief A call to @ref pm_peers_delete has completed
-	 *        successfully. Flash storage now contains no peer data.
+	 *        successfully. The non-volatile storage now contains no peer data.
 	 */
 	PM_EVT_PEERS_DELETE_SUCCEEDED,
 	/**
@@ -363,12 +363,12 @@ typedef enum {
 	PM_EVT_PEERS_DELETE_FAILED,
 	/**
 	 * @brief Local database values for a peer (taken from
-	 *        flash storage) have been provided to the SoftDevice.
+	 *        non-volatile storage) have been provided to the SoftDevice.
 	 */
 	PM_EVT_LOCAL_DB_CACHE_APPLIED,
 	/**
 	 * @brief Local database values for a peer (taken from
-	 *        flash storage) were rejected by the SoftDevice, which
+	 *        non-volatile storage) were rejected by the SoftDevice, which
 	 *        means that either the database has changed or the
 	 *        user has manually set the local database to an
 	 *        invalid value (using @ref pm_peer_data_store).
@@ -391,7 +391,9 @@ typedef enum {
 	PM_EVT_SERVICE_CHANGED_IND_CONFIRMED,
 	/** @brief The peer (peripheral) has requested link encryption, which has been enabled. */
 	PM_EVT_SLAVE_SECURITY_REQ,
-	/** @brief The flash has been garbage collected (By FDS), possibly freeing up space. */
+	/** @brief The non-volatile storage has been garbage collected, possibly freeing up
+	 *         space.
+	 */
 	PM_EVT_FLASH_GARBAGE_COLLECTED,
 	/** @brief Garbage collection was attempted but failed. */
 	PM_EVT_FLASH_GARBAGE_COLLECTION_FAILED,
@@ -400,12 +402,12 @@ typedef enum {
 /** @brief Parameters specific to the @ref PM_EVT_CONN_CONFIG_REQ event. */
 typedef struct {
 	/** @brief Connected Event parameters. */
-	ble_gap_evt_connected_t const *p_peer_params;
+	ble_gap_evt_connected_t const *peer_params;
 	/**
 	 * @brief This pointer must be provided in the reply if the reply function takes a
-	 *         p_context argument.
+	 *        context argument.
 	 */
-	void const *p_context;
+	void const *context;
 } pm_conn_config_req_evt_t;
 
 /** @brief Events parameters specific to the @ref PM_EVT_CONN_SEC_START event. */
@@ -440,12 +442,12 @@ typedef struct {
 /** @brief Parameters specific to the @ref PM_EVT_CONN_SEC_PARAMS_REQ event. */
 typedef struct {
 	/** @brief Peer security parameters, if role is peripheral. Otherwise, this is NULL. */
-	ble_gap_sec_params_t const *p_peer_params;
+	ble_gap_sec_params_t const *peer_params;
 	/**
 	 * @brief This pointer must be provided in the reply if the reply function takes a
-	 *        p_context argument.
+	 *        context argument.
 	 */
-	void const *p_context;
+	void const *context;
 } pm_conn_sec_params_req_evt_t;
 
 /** @brief Actions that can be performed to peer data in persistent storage. */
@@ -470,7 +472,7 @@ typedef struct {
 	 */
 	uint32_t token;
 	/**
-	 * @brief If this is false, no operation was done in flash,
+	 * @brief If this is false, no operation was done in non-volatile storage,
 	 *        because the value was already what it should be. Please note
 	 *        that in certain scenarios, this flag will be true even if the
 	 *        new value is the same as the old.
@@ -555,9 +557,9 @@ typedef struct {
  *
  * @sa pm_register
  *
- * @param[in]  p_event  The event that has occurred.
+ * @param[in]  evt  The event that has occurred.
  */
-typedef void (*pm_evt_handler_t)(pm_evt_t const *p_event);
+typedef void (*pm_evt_handler_t)(pm_evt_t const *evt);
 
 #ifdef __cplusplus
 }

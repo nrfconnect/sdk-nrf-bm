@@ -7,9 +7,9 @@
 /**
  * @file
  *
- * @defgroup ble_sdk_lib_gatt_db GATT Database Service Structure
+ * @defgroup ble_gatt_db GATT Database Service Structure
  * @{
- * @ingroup  ble_sdk_lib
+ * @ingroup peer_manager
  */
 
 #ifndef BLE_GATT_DB_H__
@@ -26,7 +26,8 @@ extern "C" {
 /** @brief The maximum number of characteristics present in a service record. */
 #define BLE_GATT_DB_MAX_CHARS 6
 
-/**@brief Structure for holding the characteristic and the handle of its CCCD present on a server.
+/**
+ * @brief Structure for holding the characteristic and the handle of its CCCD present on a server.
  */
 typedef struct {
 	/** @brief Structure containing information about the characteristic. */

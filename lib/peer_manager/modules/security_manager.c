@@ -218,8 +218,8 @@ static void params_req_send(uint16_t conn_handle, ble_gap_sec_params_t const *p_
 {
 	pm_evt_t evt = new_evt(PM_EVT_CONN_SEC_PARAMS_REQ, conn_handle);
 
-	evt.params.conn_sec_params_req.p_peer_params = p_peer_params;
-	evt.params.conn_sec_params_req.p_context = p_context;
+	evt.params.conn_sec_params_req.peer_params = p_peer_params;
+	evt.params.conn_sec_params_req.context = p_context;
 
 	evt_send(&evt);
 }
@@ -337,7 +337,7 @@ static void smd_params_reply_perform(uint16_t conn_handle,
 static __INLINE void params_req_process(pm_evt_t const *p_event)
 {
 	smd_params_reply_perform(p_event->conn_handle,
-				 p_event->params.conn_sec_params_req.p_peer_params);
+				 p_event->params.conn_sec_params_req.peer_params);
 }
 
 uint32_t sm_conn_sec_status_get(uint16_t conn_handle, pm_conn_sec_status_t *p_conn_sec_status)
