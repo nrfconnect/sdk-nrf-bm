@@ -13,6 +13,12 @@
 
 static const nrfx_uarte_t uarte_inst = NRFX_UARTE_INSTANCE(BOARD_CONSOLE_UARTE_INST);
 
+ISR_DIRECT_DECLARE(console_bm_uarte_direct_isr)
+{
+	NRFX_UARTE_INST_HANDLER_GET(BOARD_CONSOLE_UARTE_INST)();
+	return 0;
+}
+
 static int uarte_init(void)
 {
 	int err;
@@ -33,10 +39,9 @@ static int uarte_init(void)
 	uarte_config.interrupt_priority = CONFIG_BM_UARTE_CONSOLE_UARTE_IRQ_PRIO;
 
 	/** We need to connect the IRQ ourselves. */
-	IRQ_CONNECT(NRFX_IRQ_NUMBER_GET(
-		NRF_UARTE_INST_GET(BOARD_CONSOLE_UARTE_INST)),
-		CONFIG_BM_UARTE_CONSOLE_UARTE_IRQ_PRIO,
-		NRFX_UARTE_INST_HANDLER_GET(BOARD_CONSOLE_UARTE_INST), 0, 0);
+	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(BOARD_CONSOLE_UARTE_INST)),
+			   CONFIG_BM_UARTE_CONSOLE_UARTE_IRQ_PRIO,
+			   console_bm_uarte_direct_isr, 0);
 
 	irq_enable(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(BOARD_CONSOLE_UARTE_INST)));
 

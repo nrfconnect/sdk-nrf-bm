@@ -282,15 +282,15 @@ void SD_EVT_IRQHandler(void)
 
 #endif /* NRF_SDH_DISPATCH_MODEL */
 
-static void isr_handler(const void *arg)
+ISR_DIRECT_DECLARE(sd_direct_isr)
 {
-	ARG_UNUSED(arg);
 	SD_EVT_IRQHandler();
+	return 0;
 }
 
 static int sd_irq_init(void)
 {
-	IRQ_CONNECT(SD_EVT_IRQn, 4, isr_handler, NULL, 0);
+	IRQ_DIRECT_CONNECT(SD_EVT_IRQn, 4, sd_direct_isr, 0);
 	irq_enable(SD_EVT_IRQn);
 
 	return 0;
