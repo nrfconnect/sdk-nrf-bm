@@ -8,6 +8,7 @@ menu "SoftDevice"
 config SOFTDEVICE
 	bool "SoftDevice is present"
 	depends on ZERO_LATENCY_IRQS
+	imply NRF_SDH
 
 config SOFTDEVICE_PERIPHERAL
 	bool
