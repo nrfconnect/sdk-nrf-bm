@@ -22,7 +22,7 @@
 
 LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
-#define APP_ERROR_CHECK(err)
+#define APP_ERROR_CHECK(err) (void)(err)
 
 static const char *const m_roles_str[] = {
 	"Invalid Role",
@@ -166,8 +166,8 @@ union conn_secure_context {
 	void *p_void;
 };
 
-STATIC_ASSERT(sizeof(union conn_secure_context) <= sizeof(void *),
-	      "union conn_secure_context is too large.");
+BUILD_ASSERT(sizeof(union conn_secure_context) <= sizeof(void *),
+	     "union conn_secure_context is too large.");
 
 static void _conn_secure(uint16_t conn_handle, bool force);
 
@@ -195,9 +195,9 @@ static void conn_secure(uint16_t conn_handle, bool force)
 	sec_context.values.conn_handle = conn_handle;
 	sec_context.values.force = force;
 
-	err = bm_timer_start(secure_delay_timer,
-				   BM_TIMER_MS_TO_TICKS(CONFIG_PM_HANDLER_SEC_DELAY_MS),
-				   sec_context.p_void);
+	err = bm_timer_start(&secure_delay_timer,
+			     BM_TIMER_MS_TO_TICKS(CONFIG_PM_HANDLER_SEC_DELAY_MS),
+			     sec_context.p_void);
 	APP_ERROR_CHECK(err);
 }
 
