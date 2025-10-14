@@ -45,6 +45,8 @@ Boards
   * `bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot`
   * `bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot`
 
+* Removed unused peripheral nodes from Devicetree.
+
 DFU
 ===
 

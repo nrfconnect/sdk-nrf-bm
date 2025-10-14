@@ -1,0 +1,76 @@
+/*
+ * Copyright (c) 2025 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+ */
+
+/ {
+	chosen {
+		/delete-property/ zephyr,bt-hci;
+		/delete-property/ zephyr,entropy;
+	};
+};
+
+/delete-node/ &adc;
+/delete-node/ &clock;
+/delete-node/ &comp;
+/delete-node/ &cpuflpr_vpr;
+/delete-node/ &dppic00;
+/delete-node/ &dppic10;
+/delete-node/ &dppic20;
+/delete-node/ &dppic30;
+/delete-node/ &egu10;
+/delete-node/ &egu20;
+/delete-node/ &gpio0;
+/delete-node/ &gpio1;
+/delete-node/ &gpio2;
+/delete-node/ &gpiote20;
+/delete-node/ &gpiote30;
+/delete-node/ &i2c20;
+/delete-node/ &i2c21;
+/delete-node/ &i2c22;
+/delete-node/ &i2c30;
+/delete-node/ &i2s20;
+/delete-node/ &nfct;
+/delete-node/ &pdm20;
+/delete-node/ &pdm21;
+/delete-node/ &pinctrl;
+/delete-node/ &ppib00;
+/delete-node/ &ppib01;
+/delete-node/ &ppib10;
+/delete-node/ &ppib11;
+/delete-node/ &ppib20;
+/delete-node/ &ppib21;
+/delete-node/ &ppib22;
+/delete-node/ &ppib30;
+/delete-node/ &pwm20;
+/delete-node/ &pwm21;
+/delete-node/ &pwm22;
+/delete-node/ &qdec20;
+/delete-node/ &qdec21;
+/delete-node/ &regulators;
+/delete-node/ &rng_hci;
+/delete-node/ &spi00;
+/delete-node/ &spi20;
+/delete-node/ &spi21;
+/delete-node/ &spi22;
+/delete-node/ &spi30;
+/delete-node/ &temp;
+/delete-node/ &timer00;
+/delete-node/ &timer10;
+/delete-node/ &timer20;
+/delete-node/ &timer21;
+/delete-node/ &timer22;
+/delete-node/ &timer23;
+/delete-node/ &timer24;
+/delete-node/ &uart00;
+/delete-node/ &uart20;
+/delete-node/ &uart21;
+/delete-node/ &uart22;
+/delete-node/ &uart30;
+/delete-node/ &wdt30;
+/delete-node/ &wdt31;
+/delete-node/ &rng;
+/delete-node/ &radio;
+/delete-node/ &cpuapp_systick;
+/delete-node/ &psa_rng;
