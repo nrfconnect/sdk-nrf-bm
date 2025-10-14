@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-/**
+/*
  * @file
  *
  * @defgroup nrf_ble_scan Scanning Module
@@ -132,18 +132,18 @@ extern "C" {
 #define NRF_BLE_SCAN_APPEARANCE_CNT 0
 #endif
 
-/**
+/*
  * @defgroup NRF_BLE_SCAN_FILTER_MODE Filter modes
  * @{ */
-#define NRF_BLE_SCAN_NAME_FILTER       (0x01) /** Filters the device name. */
-#define NRF_BLE_SCAN_ADDR_FILTER       (0x02) /** Filters the device address. */
-#define NRF_BLE_SCAN_UUID_FILTER       (0x04) /** Filters the UUID. */
-#define NRF_BLE_SCAN_APPEARANCE_FILTER (0x08) /** Filters the appearance. */
-#define NRF_BLE_SCAN_SHORT_NAME_FILTER (0x10) /** Filters the device short name. */
-#define NRF_BLE_SCAN_ALL_FILTER	       (0x1F) /** Uses the combination of all filters. */
+#define NRF_BLE_SCAN_NAME_FILTER       (0x01) /* Filters the device name. */
+#define NRF_BLE_SCAN_ADDR_FILTER       (0x02) /* Filters the device address. */
+#define NRF_BLE_SCAN_UUID_FILTER       (0x04) /* Filters the UUID. */
+#define NRF_BLE_SCAN_APPEARANCE_FILTER (0x08) /* Filters the appearance. */
+#define NRF_BLE_SCAN_SHORT_NAME_FILTER (0x10) /* Filters the device short name. */
+#define NRF_BLE_SCAN_ALL_FILTER	       (0x1F) /* Uses the combination of all filters. */
 /* @} */
 
-/**
+/*
  * @brief Macro for defining a nrf_ble_scan instance.
  *
  * @param   _name   Name of the instance.
@@ -162,72 +162,72 @@ extern "C" {
  * 			cannot be ignored if whitelist is used.
  */
 enum nrf_ble_scan_evt {
-	/** A filter is matched or all filters are matched in the multifilter mode. */
+	/* A filter is matched or all filters are matched in the multifilter mode. */
 	NRF_BLE_SCAN_EVT_FILTER_MATCH,
-	/** Request the whitelist from the main application.
+	/* Request the whitelist from the main application.
 	 *  For whitelist scanning to work, the whitelist must be
 	 *  set when this event occurs.
 	 */
 	NRF_BLE_SCAN_EVT_WHITELIST_REQUEST,
-	/** Send notification to the main application when a
-	 *device from the whitelist is found.
+	/* Send notification to the main application when a
+	 *  device from the whitelist is found.
 	 */
 	NRF_BLE_SCAN_EVT_WHITELIST_ADV_REPORT,
-	/** The filter was not matched for the scan data. */
+	/* The filter was not matched for the scan data. */
 	NRF_BLE_SCAN_EVT_NOT_FOUND,
-	/** Scan timeout. */
+	/* Scan timeout. */
 	NRF_BLE_SCAN_EVT_SCAN_TIMEOUT,
-	/** Error occurred when establishing the connection. In
+	/* Error occurred when establishing the connection. In
 	 *this event, an error is passed from the function call
 	 *@ref sd_ble_gap_connect.
 	 */
 	NRF_BLE_SCAN_EVT_CONNECTING_ERROR,
-	/** Connected to device. */
+	/* Connected to device. */
 	NRF_BLE_SCAN_EVT_CONNECTED,
 	NRF_BLE_SCAN_EVT_ERROR,
 };
 
 /**
- *@brief Types of filters.
+ * @brief Types of filters.
  */
 enum nrf_ble_scan_filter_type {
-	/** Filter for names. */
+	/* Filter for names. */
 	SCAN_NAME_FILTER,
-	/** Filter for short names. */
+	/* Filter for short names. */
 	SCAN_SHORT_NAME_FILTER,
-	/** Filter for addresses. */
+	/* Filter for addresses. */
 	SCAN_ADDR_FILTER,
-	/** Filter for UUIDs. */
+	/* Filter for UUIDs. */
 	SCAN_UUID_FILTER,
-	/** Filter for appearances. */
+	/* Filter for appearances. */
 	SCAN_APPEARANCE_FILTER,
 };
 
 struct nrf_ble_scan_short_name {
-	/** Pointer to the short name. */
-	char const *p_short_name;
-	/** Minimum length of the short name. */
+	/* Pointer to the short name. */
+	char const *short_name;
+	/* Minimum length of the short name. */
 	uint8_t short_name_min_len;
 };
 
 /**
- *  @brief Structure for Scanning Module initialization.
+ * @brief Structure for Scanning Module initialization.
  */
 struct nrf_ble_scan_init {
-	/** BLE GAP scan parameters required to initialize the module. Can
+	/*  BLE GAP scan parameters required to initialize the module. Can
 	 *  be initialized as NULL. If NULL, the parameters required to
 	 *  initialize the module are loaded from the static configuration.
 	 */
-	ble_gap_scan_params_t const *p_scan_param;
-	/** If set to true, the module automatically connects after a filter
+	ble_gap_scan_params_t const *scan_param;
+	/*  If set to true, the module automatically connects after a filter
 	 *  match or successful identification of a device from the whitelist.
 	 */
 	bool connect_if_match;
-	/** Connection parameters. Can be initialized as NULL. If NULL, the
+	/*  Connection parameters. Can be initialized as NULL. If NULL, the
 	 *  default static configuration is used.
 	 */
-	ble_gap_conn_params_t const *p_conn_param;
-	/** Variable to keep track of what connection settings will be used
+	ble_gap_conn_params_t const *conn_param;
+	/*  Variable to keep track of what connection settings will be used
 	 *  if a filer match or a whitelist match results in a connection.
 	 */
 	uint8_t conn_cfg_tag;
@@ -239,15 +239,15 @@ struct nrf_ble_scan_init {
  * @details This structure is used for sending filter status to the main application.
  */
 struct nrf_ble_scan_filter_match {
-	/** Set to 1 if name filter is matched. */
+	/* Set to 1 if name filter is matched. */
 	uint8_t name_filter_match: 1;
-	/** Set to 1 if address filter is matched. */
+	/* Set to 1 if address filter is matched. */
 	uint8_t address_filter_match: 1;
-	/** Set to 1 if uuid filter is matched. */
+	/* Set to 1 if uuid filter is matched. */
 	uint8_t uuid_filter_match: 1;
-	/** Set to 1 if appearance filter is matched. */
+	/* Set to 1 if appearance filter is matched. */
 	uint8_t appearance_filter_match: 1;
-	/** Set to 1 if short name filter is matched. */
+	/* Set to 1 if short name filter is matched. */
 	uint8_t short_name_filter_match: 1;
 };
 
@@ -255,11 +255,11 @@ struct nrf_ble_scan_filter_match {
  * @brief Event structure for @ref NRF_BLE_SCAN_EVT_FILTER_MATCH.
  */
 struct nrf_ble_scan_evt_filter_match {
-	/** Event structure for @ref BLE_GAP_EVT_ADV_REPORT. This data
-	 *  allows the main application to establish connection.
+	/* Event structure for @ref BLE_GAP_EVT_ADV_REPORT. This data
+	 * allows the main application to establish connection.
 	 */
-	ble_gap_evt_adv_report_t const *p_adv_report;
-	/** Matching filters. Information about matched filters. */
+	ble_gap_evt_adv_report_t const *adv_report;
+	/* Matching filters. Information about matched filters. */
 	struct nrf_ble_scan_filter_match filter_match;
 };
 
@@ -267,7 +267,7 @@ struct nrf_ble_scan_evt_filter_match {
  * @brief Event structure for @ref NRF_BLE_SCAN_EVT_CONNECTING_ERROR.
  */
 struct nrf_ble_scan_evt_connecting_err {
-	/** Indicates success or failure of an API procedure. In case of
+	/*  Indicates success or failure of an API procedure. In case of
 	 *  failure, a comprehensive error code indicating the cause or reason
 	 *  for failure is provided.
 	 */
@@ -278,9 +278,9 @@ struct nrf_ble_scan_evt_connecting_err {
  * @brief Event structure for @ref NRF_BLE_SCAN_EVT_CONNECTED.
  */
 struct nrf_ble_scan_evt_connected {
-	/** Connected event parameters. */
-	ble_gap_evt_connected_t const *p_connected;
-	/** Connection handle of the device on which the event occurred. */
+	/* Connected event parameters. */
+	ble_gap_evt_connected_t const *connected;
+	/* Connection handle of the device on which the event occurred. */
 	uint16_t conn_handle;
 };
 
@@ -291,49 +291,49 @@ struct nrf_ble_scan_evt_connected {
  * occurs.
  */
 struct scan_evt {
-	/** Type of event propagated to the main application. */
+	/* Type of event propagated to the main application. */
 	enum nrf_ble_scan_evt scan_evt_id;
 	union {
-		/** Scan filter match. */
+		/* Scan filter match. */
 		struct nrf_ble_scan_evt_filter_match filter_match;
-		/** Timeout event parameters. */
+		/* Timeout event parameters. */
 		ble_gap_evt_timeout_t timeout;
-		/** Advertising report event parameters for whitelist. */
-		ble_gap_evt_adv_report_t const *p_whitelist_adv_report;
-		/** Advertising report event parameters	when filter is not found. */
-		ble_gap_evt_adv_report_t const *p_not_found;
-		/** Connected event parameters. */
+		/* Advertising report event parameters for whitelist. */
+		ble_gap_evt_adv_report_t const *whitelist_adv_report;
+		/* Advertising report event parameters	when filter is not found. */
+		ble_gap_evt_adv_report_t const *not_found;
+		/* Connected event parameters. */
 		struct nrf_ble_scan_evt_connected connected;
-		/** Error event when connecting. Propagates the error code returned by the
+		/* Error event when connecting. Propagates the error code returned by the
 		   SoftDevice API @ref sd_ble_gap_scan_start. */
 		struct nrf_ble_scan_evt_connecting_err connecting_err;
 		struct {
 			uint32_t reason;
 		} error;
 	} params;
-	/** GAP scanning parameters. These parameters
+	/*  GAP scanning parameters. These parameters
 	 *  are needed to establish connection.
 	 */
-	ble_gap_scan_params_t const *p_scan_params;
+	ble_gap_scan_params_t const *scan_params;
 };
 
 /**
  * @brief BLE scanning event handler type.
  */
-typedef void (*nrf_ble_scan_evt_handler_t)(struct scan_evt const *p_scan_evt);
+typedef void (*nrf_ble_scan_evt_handler_t)(struct scan_evt const *scan_evt);
 
 #if CONFIG_BT_SCAN_FILTER_ENABLE || 1
 
 #if (NRF_BLE_SCAN_NAME_CNT > 0)
 struct nrf_ble_scan_name_filter {
-	/** Names that the main application will scan
+	/*  Names that the main application will scan
 	 *  for, and that will be advertised by the
 	 *  peripherals.
 	 */
 	char target_name[NRF_BLE_SCAN_NAME_CNT][NRF_BLE_SCAN_NAME_MAX_LEN];
-	/** Name filter counter. */
+	/* Name filter counter. */
 	uint8_t name_cnt;
-	/** Flag to inform about enabling or disabling this filter. */
+	/* Flag to inform about enabling or disabling this filter. */
 	bool name_filter_enabled;
 };
 #endif
@@ -341,19 +341,19 @@ struct nrf_ble_scan_name_filter {
 #if (NRF_BLE_SCAN_SHORT_NAME_CNT > 0)
 typedef struct {
 	struct {
-		/** Short names that the
+		/*  Short names that the
 		 *  main application will
 		 *  scan for, and that will
 		 *  be advertised by the
 		 *  peripherals.
 		 */
 		char short_target_name[NRF_BLE_SCAN_SHORT_NAME_MAX_LEN];
-		/** Minimum length of the short name. */
+		/* Minimum length of the short name. */
 		uint8_t short_name_min_len;
 	} short_name[NRF_BLE_SCAN_SHORT_NAME_CNT];
-	/** Short name filter counter. */
+	/* Short name filter counter. */
 	uint8_t name_cnt;
-	/** Flag to inform about enabling or disabling this filter. */
+	/* Flag to inform about enabling or disabling this filter. */
 	bool short_name_filter_enabled;
 } nrf_ble_scan_short_name_filter_t;
 #endif
@@ -361,14 +361,15 @@ typedef struct {
 #if (NRF_BLE_SCAN_ADDRESS_CNT > 0)
 struct nrf_ble_scan_addr_filter {
 	struct ble_gap_addr
-		/** Addresses in the same format as the
-		format used by the SoftDevice that the
-		main application will scan for, and that
-		will be advertised by the peripherals. */
+		/* Addresses in the same format as the
+		 * format used by the SoftDevice that the
+		 * main application will scan for, and that
+		 * will be advertised by the peripherals.
+		 */
 		target_addr[NRF_BLE_SCAN_ADDRESS_CNT];
-	/** Address filter counter. */
+	/* Address filter counter. */
 	uint8_t addr_cnt;
-	/** Flag to inform about enabling or disabling this filter. */
+	/* Flag to inform about enabling or disabling this filter. */
 	bool addr_filter_enabled;
 };
 #endif
@@ -376,25 +377,25 @@ struct nrf_ble_scan_addr_filter {
 #if (NRF_BLE_SCAN_UUID_CNT > 0)
 struct nrf_ble_scan_uuid_filter {
 	struct ble_uuid
-		/** UUIDs that the main application will scan for, and
+		/* UUIDs that the main application will scan for, and
 		that will be advertised by the peripherals. */
 		uuid[NRF_BLE_SCAN_UUID_CNT];
-	/** UUID filter counter. */
+	/* UUID filter counter. */
 	uint8_t uuid_cnt;
-	/** Flag to inform about enabling or disabling this filter. */
+	/* Flag to inform about enabling or disabling this filter. */
 	bool uuid_filter_enabled;
 };
 #endif
 
 #if (NRF_BLE_SCAN_APPEARANCE_CNT > 0)
 typedef struct {
-	/** Apperances that the main application
+	/* Apperances that the main application
 	will scan for, and that will be
 	advertised by the peripherals. */
 	uint16_t appearance[NRF_BLE_SCAN_APPEARANCE_CNT];
-	/** Appearance filter counter. */
+	/* Appearance filter counter. */
 	uint8_t appearance_cnt;
-	/** Flag to inform about enabling or disabling this filter.*/
+	/* Flag to inform about enabling or disabling this filter.*/
 	bool appearance_filter_enabled;
 } nrf_ble_scan_appearance_filter_t;
 #endif
@@ -409,26 +410,26 @@ typedef struct {
  */
 struct nrf_ble_scan_filters {
 #if (NRF_BLE_SCAN_NAME_CNT > 0)
-	/** Name filter data. */
+	/* Name filter data. */
 	struct nrf_ble_scan_name_filter name_filter;
 #endif
 #if (NRF_BLE_SCAN_SHORT_NAME_CNT > 0)
-	/** Short name filter data. */
+	/* Short name filter data. */
 	struct nrf_ble_scan_short_name_filter short_name_filter;
 #endif
 #if (NRF_BLE_SCAN_ADDRESS_CNT > 0)
-	/** Address filter data. */
+	/* Address filter data. */
 	struct nrf_ble_scan_addr_filter addr_filter;
 #endif
 #if (NRF_BLE_SCAN_UUID_CNT > 0)
-	/** UUID filter data. */
+	/* UUID filter data. */
 	struct nrf_ble_scan_uuid_filter uuid_filter;
 #endif
 #if (NRF_BLE_SCAN_APPEARANCE_CNT > 0)
-	/** Appearance filter data. */
+	/* Appearance filter data. */
 	nrf_ble_scan_appearance_filter_t appearance_filter;
 #endif
-	/** Filter mode. If true, all set filters must be matched to
+	/* Filter mode. If true, all set filters must be matched to
 	generate an event.*/
 	bool all_filters_mode;
 };
@@ -447,47 +448,52 @@ struct nrf_ble_scan_filters {
  */
 struct nrf_ble_scan {
 #if CONFIG_BT_SCAN_FILTER_ENABLE || 1
-	/** Filter data. */
+	/* Filter data. */
 	struct nrf_ble_scan_filters scan_filters;
 #endif
-	/** If set to true, the module automatically connects after a filter
-	match or successful identification of a device from the whitelist.*/
+	/* If set to true, the module automatically connects after a filter
+	 * match or successful identification of a device from the whitelist.
+	 */
 	bool connect_if_match;
-	/** Connection parameters. */
+	/* Connection parameters. */
 	ble_gap_conn_params_t conn_params;
-	/** Variable to keep track of what connection settings will be used
-	if a filer match or a whitelist match results in a connection. */
+	/* Variable to keep track of what connection settings will be used
+	 * if a filer match or a whitelist match results in a connection.
+	 */
 	uint8_t conn_cfg_tag;
-	/** GAP scanning parameters. */
+	/* GAP scanning parameters. */
 	ble_gap_scan_params_t scan_params;
-	/** Handler for the scanning events. Can be initialized as NULL if no
-	handling is implemented in the main application. */
+	/* Handler for the scanning events. Can be initialized as NULL if no
+	 * handling is implemented in the main application.
+	 */
 	nrf_ble_scan_evt_handler_t evt_handler;
-	/** Buffer where advertising reports will be
-	stored by the SoftDevice. */
+	/* Buffer where advertising reports will be
+	 * stored by the SoftDevice.
+	 */
 	uint8_t scan_buffer_data[NRF_BLE_SCAN_BUFFER];
-	/** Structure-stored pointer to the buffer where advertising
-	reports will be stored by the SoftDevice. */
+	/* Structure-stored pointer to the buffer where advertising
+	 * reports will be stored by the SoftDevice.
+	 */
 	ble_data_t scan_buffer;
 };
 
 /**
  * @brief Function for indicating that the Scanning Module is using the whitelist.
  *
- * @param[in] p_scan_ctx Pointer to the Scanning Module instance.
+ * @param[in] scan_ctx Pointer to the Scanning Module instance.
  *
  * @return Whether the whitelist is used.
  */
-bool is_whitelist_used(struct nrf_ble_scan const *const p_scan_ctx);
+bool is_whitelist_used(struct nrf_ble_scan const *const scan_ctx);
 
 /**
  * @brief Function for initializing the Scanning Module.
  *
- * @param[out] p_scan_ctx   Pointer to the Scanning Module instance. This structure must be supplied
+ * @param[out] scan_ctx   Pointer to the Scanning Module instance. This structure must be supplied
  * by the application. It is initialized by this function and is later used to identify this
  * particular module instance.
  *
- * @param[in]  p_init       Can be initialized as NULL. If NULL, the parameters required to
+ * @param[in]  init       Can be initialized as NULL. If NULL, the parameters required to
  * initialize the module are loaded from static configuration. If module is to establish the
  * connection automatically, this must be initialized with the relevant data.
  * @param[in]  evt_handler  Handler for the scanning events.
@@ -497,8 +503,8 @@ bool is_whitelist_used(struct nrf_ble_scan const *const p_scan_ctx);
  * @retval NRF_SUCCESS      If initialization was successful.
  * @retval NRF_ERROR_NULL   When the NULL pointer is passed as input.
  */
-int nrf_ble_scan_init(struct nrf_ble_scan *const p_scan_ctx,
-		      struct nrf_ble_scan_init const *const p_init,
+int nrf_ble_scan_init(struct nrf_ble_scan *const scan_ctx,
+		      struct nrf_ble_scan_init const *const init,
 		      nrf_ble_scan_evt_handler_t evt_handler);
 
 /**
@@ -507,7 +513,7 @@ int nrf_ble_scan_init(struct nrf_ble_scan *const p_scan_ctx,
  * @details This function starts the scanning according to the configuration set during the
  * initialization.
  *
- * @param[in] p_scan_ctx       Pointer to the Scanning Module instance.
+ * @param[in] scan_ctx       Pointer to the Scanning Module instance.
  *
  * @retval    NRF_SUCCESS      If scanning started. Otherwise, an error code is returned.
  * @retval    NRF_ERROR_NULL   If NULL pointer is passed as input.
@@ -515,7 +521,7 @@ int nrf_ble_scan_init(struct nrf_ble_scan *const p_scan_ctx,
  * @return                     This API propagates the error code returned by the
  *                             SoftDevice API @ref sd_ble_gap_scan_start.
  */
-int nrf_ble_scan_start(struct nrf_ble_scan const *const p_scan_ctx);
+int nrf_ble_scan_start(struct nrf_ble_scan const *const scan_ctx);
 
 /**
  * @brief Function for stopping scanning.
@@ -535,15 +541,14 @@ void nrf_ble_scan_stop(void);
  * @param[in] match_all             If this flag is set, all types of enabled filters must be
  * matched before generating @ref NRF_BLE_SCAN_EVT_FILTER_MATCH to the main application. Otherwise,
  * it is enough to match one filter to trigger the filter match event.
- * @param[in] p_scan_ctx            Pointer to the Scanning Module instance.
+ * @param[in] scan_ctx            Pointer to the Scanning Module instance.
  *
  * @retval NRF_SUCCESS              If the filters are enabled successfully.
  * @retval NRF_ERROR_INVALID_PARAM  If the filter mode is incorrect. Available filter modes: @ref
  * NRF_BLE_SCAN_FILTER_MODE.
  * @retval NRF_ERROR_NULL           If a NULL pointer is passed as input.
  */
-int nrf_ble_scan_filters_enable(struct nrf_ble_scan *const p_scan_ctx, uint8_t mode,
-				bool match_all);
+int nrf_ble_scan_filters_enable(struct nrf_ble_scan *const scan_ctx, uint8_t mode, bool match_all);
 
 /**
  * @brief Function for disabling filtering.
@@ -553,26 +558,26 @@ int nrf_ble_scan_filters_enable(struct nrf_ble_scan *const p_scan_ctx, uint8_t m
  *          the connection will not be established with the first
 	    device found after this function is called.
  *
- * @param[in] p_scan_ctx            Pointer to the Scanning Module instance.
+ * @param[in] scan_ctx            Pointer to the Scanning Module instance.
  *
  * @retval NRF_SUCCESS              If filters are disabled successfully.
  * @retval NRF_ERROR_NULL           If a NULL pointer is passed as input.
  */
-int nrf_ble_scan_filters_disable(struct nrf_ble_scan *const p_scan_ctx);
+int nrf_ble_scan_filters_disable(struct nrf_ble_scan *const scan_ctx);
 
 /**
  * @brief Function for getting filter status.
  *
  * @details This function returns the filter setting and whether it is enabled or disabled.
 
- * @param[out] p_status              Filter status.
- * @param[in]  p_scan_ctx            Pointer to the Scanning Module instance.
+ * @param[out] status              Filter status.
+ * @param[in]  scan_ctx            Pointer to the Scanning Module instance.
  *
  * @retval NRF_SUCCESS               If filter status is returned.
  * @retval NRF_ERROR_NULL            If a NULL pointer is passed as input.
  */
-int nrf_ble_scan_filter_get(struct nrf_ble_scan *const p_scan_ctx,
-			    struct nrf_ble_scan_filters *p_status);
+int nrf_ble_scan_filter_get(struct nrf_ble_scan *const scan_ctx,
+			    struct nrf_ble_scan_filters *status);
 
 /**
  * @brief Function for adding any type of filter to the scanning.
@@ -584,9 +589,9 @@ int nrf_ble_scan_filter_get(struct nrf_ble_scan *const p_scan_ctx,
  * NRF_BLE_SCAN_APPEARANCE_CNT, depending on the filter type, and if the same filter has not already
  * been set.
  *
- * @param[in,out] p_scan_ctx        Pointer to the Scanning Module instance.
+ * @param[in,out] scan_ctx        Pointer to the Scanning Module instance.
  * @param[in]     type              Filter type.
- * @param[in]     p_data            The filter data to add.
+ * @param[in]     data            The filter data to add.
  *
  * @retval NRF_SUCCESS                    If the filter is added successfully.
  * @retval NRF_ERROR_NULL                 If a NULL pointer is passed as input.
@@ -597,8 +602,8 @@ int nrf_ble_scan_filter_get(struct nrf_ble_scan *const p_scan_ctx,
  * @ref nrf_ble_scan_filter_type_t.
  * @retval BLE_ERROR_GAP_INVALID_BLE_ADDR If the BLE address type is invalid.
  */
-int nrf_ble_scan_filter_set(struct nrf_ble_scan *const p_scan_ctx,
-			    enum nrf_ble_scan_filter_type type, void const *p_data);
+int nrf_ble_scan_filter_set(struct nrf_ble_scan *const scan_ctx, enum nrf_ble_scan_filter_type type,
+			    void const *data);
 
 /**
  * @brief Function for removing all set filters.
@@ -607,11 +612,11 @@ int nrf_ble_scan_filter_set(struct nrf_ble_scan *const p_scan_ctx,
  *
  * @note After using this function the filters are still enabled.
  *
- * @param[in,out] p_scan_ctx Pointer to the Scanning Module instance.
+ * @param[in,out] scan_ctx Pointer to the Scanning Module instance.
  *
  * @retval NRF_SUCCESS       If all filters are removed successfully.
  */
-int nrf_ble_scan_all_filter_remove(struct nrf_ble_scan *const p_scan_ctx);
+int nrf_ble_scan_all_filter_remove(struct nrf_ble_scan *const scan_ctx);
 
 #endif // CONFIG_BT_SCAN_FILTER_ENABLE
 
@@ -627,22 +632,22 @@ int nrf_ble_scan_all_filter_remove(struct nrf_ble_scan *const p_scan_ctx);
  *parameters, so that the whitelist is not used, and you avoid the error caused by scanning with the
  *whitelist when there are no devices on the whitelist.
  *
- * @param[in,out] p_scan_ctx     Pointer to the Scanning Module instance.
- * @param[in]     p_scan_param   GAP scanning parameters. Can be initialized as NULL.
+ * @param[in,out] scan_ctx     Pointer to the Scanning Module instance.
+ * @param[in]     scan_param   GAP scanning parameters. Can be initialized as NULL.
  *
  * @retval NRF_SUCCESS          If parameters are changed successfully.
  * @retval NRF_ERROR_NULL       If a NULL pointer is passed as input.
  */
-int nrf_ble_scan_params_set(struct nrf_ble_scan *const p_scan_ctx,
-			    ble_gap_scan_params_t const *p_scan_param);
+int nrf_ble_scan_params_set(struct nrf_ble_scan *const scan_ctx,
+			    ble_gap_scan_params_t const *scan_param);
 
 /**
  * @brief Function for handling the BLE stack events of the application.
  *
- * @param[in]     p_ble_evt     Pointer to the BLE event received.
- * @param[in,out] p_scan        Pointer to the Scanning Module instance.
+ * @param[in]     ble_evt     Pointer to the BLE event received.
+ * @param[in,out] scan        Pointer to the Scanning Module instance.
  */
-void nrf_ble_scan_on_ble_evt(ble_evt_t const *p_ble_evt, void *p_scan);
+void nrf_ble_scan_on_ble_evt(ble_evt_t const *ble_evt, void *scan);
 
 /**
  * @brief Function for converting the raw address to the SoftDevice GAP address.
@@ -653,13 +658,13 @@ void nrf_ble_scan_on_ble_evt(ble_evt_t const *p_ble_evt, void *p_scan);
  *
  * @note This function does not decode an address type.
  *
- * @param[out] p_gap_addr The Bluetooth Low Energy address.
+ * @param[out] gap_addr The Bluetooth Low Energy address.
  * @param[in]  addr       Address to be converted to the SoftDevice address.
  *
  * @retval NRF_ERROR_NULL                 If a NULL pointer is passed as input.
  * @retval NRF_SUCCESS                    If the address is copied and converted successfully.
  */
-int nrf_ble_scan_copy_addr_to_sd_gap_addr(ble_gap_addr_t *p_gap_addr,
+int nrf_ble_scan_copy_addr_to_sd_gap_addr(ble_gap_addr_t *gap_addr,
 					  uint8_t const addr[BLE_GAP_ADDR_LEN]);
 
 #ifdef __cplusplus
@@ -668,4 +673,4 @@ int nrf_ble_scan_copy_addr_to_sd_gap_addr(ble_gap_addr_t *p_gap_addr,
 
 #endif // NRF_BLE_SCAN_H__
 
-/** @} */
+/* @} */
