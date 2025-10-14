@@ -102,8 +102,8 @@ static bool find_peer_addr(ble_gap_evt_adv_report_t const *const adv_report,
 			   ble_gap_addr_t const *addr)
 {
 	/* Compare addresses.*/
-	if (memcmp(addr->addr, adv_report->peer_addr.addr,
-		   sizeof(adv_report->peer_addr.addr)) == 0) {
+	if (memcmp(addr->addr, adv_report->peer_addr.addr, sizeof(adv_report->peer_addr.addr)) ==
+	    0) {
 		return true;
 	}
 
@@ -126,8 +126,7 @@ static bool adv_addr_compare(ble_gap_evt_adv_report_t const *const adv_report,
 	return false;
 }
 
-static int nrf_ble_scan_addr_filter_add(struct nrf_ble_scan *const scan_ctx,
-					uint8_t const *addr)
+static int nrf_ble_scan_addr_filter_add(struct nrf_ble_scan *const scan_ctx, uint8_t const *addr)
 {
 	ble_gap_addr_t *addr_filter = scan_ctx->scan_filters.addr_filter.target_addr;
 	uint8_t *counter = &scan_ctx->scan_filters.addr_filter.addr_cnt;
@@ -168,8 +167,7 @@ static int nrf_ble_scan_addr_filter_add(struct nrf_ble_scan *const scan_ctx,
 static bool adv_name_compare(ble_gap_evt_adv_report_t const *adv_report,
 			     struct nrf_ble_scan const *const scan_ctx)
 {
-	struct nrf_ble_scan_name_filter const *name_filter =
-		&scan_ctx->scan_filters.name_filter;
+	struct nrf_ble_scan_name_filter const *name_filter = &scan_ctx->scan_filters.name_filter;
 	uint8_t counter = scan_ctx->scan_filters.name_filter.name_cnt;
 	uint8_t index;
 	uint16_t data_len;
@@ -211,8 +209,7 @@ static int nrf_ble_scan_name_filter_add(struct nrf_ble_scan *const scan_ctx, cha
 	}
 
 	/* Add name to filter.*/
-	memcpy(scan_ctx->scan_filters.name_filter.target_name[(*counter)++], name,
-	       strlen(name));
+	memcpy(scan_ctx->scan_filters.name_filter.target_name[(*counter)++], name, strlen(name));
 
 	LOG_DBG("Adding filter on %s name", name);
 
@@ -326,8 +323,7 @@ static bool adv_uuid_compare(ble_gap_evt_adv_report_t const *const adv_report,
 	return false;
 }
 
-static int nrf_ble_scan_uuid_filter_add(struct nrf_ble_scan *const scan_ctx,
-					ble_uuid_t const *uuid)
+static int nrf_ble_scan_uuid_filter_add(struct nrf_ble_scan *const scan_ctx, ble_uuid_t const *uuid)
 {
 	ble_uuid_t *uuid_filter = scan_ctx->scan_filters.uuid_filter.uuid;
 	uint8_t *counter = &scan_ctx->scan_filters.uuid_filter.uuid_cnt;
@@ -494,8 +490,7 @@ int nrf_ble_scan_all_filter_remove(struct nrf_ble_scan *const scan_ctx)
 
 int nrf_ble_scan_filters_enable(struct nrf_ble_scan *const scan_ctx, uint8_t mode, bool match_all)
 {
-	/* VERIFY_PARAM_NOT_NULL(scan_ctx);*/
-	if (scan_ctx == NULL) {
+	if (!scan_ctx) {
 		return NRF_ERROR_NULL;
 	}
 
@@ -759,10 +754,6 @@ bool is_whitelist_used(struct nrf_ble_scan const *const scan_ctx)
 	return false;
 }
 
-/**@brief Function for restoring the default scanning parameters.
- *
- * @param[out] scan_ctx    Pointer to the Scanning Module instance.
- */
 static void nrf_ble_scan_default_param_set(struct nrf_ble_scan *const scan_ctx)
 {
 	/* Set the default parameters.*/
@@ -779,10 +770,6 @@ static void nrf_ble_scan_default_param_set(struct nrf_ble_scan *const scan_ctx)
 	scan_ctx->scan_params.scan_phys = BLE_GAP_PHY_1MBPS;
 }
 
-/**@brief Function for setting the default connection parameters.
- *
- * @param[out] scan_ctx    Pointer to the Scanning Module instance.
- */
 static void nrf_ble_scan_default_conn_param_set(struct nrf_ble_scan *const scan_ctx)
 {
 	scan_ctx->conn_params.conn_sup_timeout = BLE_GAP_CP_CONN_SUP_TIMEOUT_MIN;
@@ -791,11 +778,6 @@ static void nrf_ble_scan_default_conn_param_set(struct nrf_ble_scan *const scan_
 	scan_ctx->conn_params.slave_latency = (uint16_t)NRF_BLE_SCAN_SLAVE_LATENCY;
 }
 
-/**@brief Function for calling the BLE_GAP_EVT_TIMEOUT event.
- *
- * @param[in] scan_ctx  Pointer to the Scanning Module instance.
- * @param[in] gap       GAP event structure.
- */
 static void nrf_ble_scan_on_timeout(struct nrf_ble_scan const *const scan_ctx,
 				    ble_gap_evt_t const *const gap)
 {
@@ -814,8 +796,6 @@ static void nrf_ble_scan_on_timeout(struct nrf_ble_scan const *const scan_ctx,
 	}
 }
 
-/**@brief Function for stopping the scanning.
- */
 void nrf_ble_scan_stop(void)
 {
 	/* It is ok to ignore the function return value here, because this function can return*/
@@ -884,7 +864,8 @@ int nrf_ble_scan_start(struct nrf_ble_scan const *const scan_ctx)
 
 	nrf_ble_scan_stop();
 
-	/* If the whitelist is used and the event handler is not NULL, send the whitelist request to*/
+	/* If the whitelist is used and the event handler is not NULL, send the whitelist request
+	 * to*/
 	/* the main application.*/
 	if (is_whitelist_used(scan_ctx)) {
 		if (scan_ctx->evt_handler != NULL) {
@@ -909,7 +890,6 @@ int nrf_ble_scan_start(struct nrf_ble_scan const *const scan_ctx)
 int nrf_ble_scan_params_set(struct nrf_ble_scan *const scan_ctx,
 			    ble_gap_scan_params_t const *const scan_param)
 {
-	/* VERIFY_PARAM_NOT_NULL(scan_ctx);*/
 	if (!scan_ctx) {
 		return NRF_ERROR_NULL;
 	}
@@ -928,11 +908,6 @@ int nrf_ble_scan_params_set(struct nrf_ble_scan *const scan_ctx,
 	return NRF_SUCCESS;
 }
 
-/**@brief Function for calling the BLE_GAP_EVT_CONNECTED event.
- *
- * @param[in] scan_ctx  Pointer to the Scanning Module instance.
- * @param[in] gap_evt   GAP event structure.
- */
 static void nrf_ble_scan_on_connected_evt(struct nrf_ble_scan const *const scan_ctx,
 					  ble_gap_evt_t const *const gap_evt)
 {
