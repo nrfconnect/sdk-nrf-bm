@@ -1,0 +1,13 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "Modules"
+
+# zephyr-keep-sorted-start
+rsource "hal_nordic/Kconfig"
+# zephyr-keep-sorted-stop
+
+endmenu
