@@ -7,65 +7,34 @@
 #include <bm/bluetooth/ble_db_discovery.h>
 #include <stdlib.h>
 #include <inttypes.h>
-#include "ble_srv_common.h"
 #include <bm/bluetooth/ble_gq.h>
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(ble_db_disc, 3);
+#include <bm/bluetooth/services/uuid.h>
 
-#define SRV_DISC_START_HANDLE 0x0001 /**< The start handle value used during service discovery. */
-#define DB_DISCOVERY_MAX_USERS                                                                     \
-	BLE_DB_DISCOVERY_MAX_SRV /**< The maximum number of users/registrations allowed by this    \
-				    module. */
-#define MODULE_INITIALIZED                                                                         \
-	(m_initialized ==                                                                          \
-	 true) /**< Macro designating whether the module has been initialized properly. */
+LOG_MODULE_REGISTER(ble_db_disc, CONFIG_BLE_DB_DISCOVERY_LOG_LEVEL);
 
-/**@brief Array of structures containing information about the registered application modules. */
-static ble_uuid_t m_registered_handlers[DB_DISCOVERY_MAX_USERS];
-static ble_db_discovery_evt_handler m_evt_handler;
-static struct ble_gq *mp_gatt_queue; /**< Pointer to BLE GATT Queue instance. */
-
-static uint32_t m_num_of_handlers_reg; /**< The number of handlers registered with the DB Discovery
-					  module. */
-static bool m_initialized =
-	false; /**< This variable Indicates if the module is initialized or not. */
-
-/**@brief     Function for fetching the event handler provided by a registered application module.
- *
- * @param[in] srv_uuid UUID of the service.
- *
- * @retval    evt_handler Event handler of the module, registered for the given service UUID.
- * @retval    NULL If no event handler is found.
- */
-static ble_db_discovery_evt_handler registered_handler_get(ble_uuid_t const *p_srv_uuid)
+static ble_db_discovery_evt_handler registered_handler_get(struct ble_db_discovery *db_discovery,
+							   ble_uuid_t const *srv_uuid)
 {
-	for (uint32_t i = 0; i < m_num_of_handlers_reg; i++) {
-		if (BLE_UUID_EQ(&(m_registered_handlers[i]), p_srv_uuid)) {
-			return (m_evt_handler);
+	for (uint32_t i = 0; i < db_discovery->num_of_handlers_reg; i++) {
+		if (BLE_UUID_EQ(&(db_discovery->registered_handlers[i]), srv_uuid)) {
+			return db_discovery->evt_handler;
 		}
 	}
 
 	return NULL;
 }
 
-/**@brief     Function for storing the event handler provided by a registered application module.
- *
- * @param[in] p_srv_uuid    The UUID of the service.
- * @param[in] p_evt_handler The event handler provided by the application.
- *
- * @retval    NRF_SUCCESS If the handler was stored or already present in the list.
- * @retval    NRF_ERROR_NO_MEM If there is no space left to store the handler.
- */
-static uint32_t registered_handler_set(ble_uuid_t const *p_srv_uuid,
-				       ble_db_discovery_evt_handler p_evt_handler)
+static uint32_t registered_handler_set(struct ble_db_discovery *db_discovery,
+				       ble_uuid_t const *srv_uuid)
 {
-	if (registered_handler_get(p_srv_uuid) != NULL) {
+	if (registered_handler_get(db_discovery, srv_uuid) != NULL) {
 		return NRF_SUCCESS;
 	}
 
-	if (m_num_of_handlers_reg < DB_DISCOVERY_MAX_USERS) {
-		m_registered_handlers[m_num_of_handlers_reg] = *p_srv_uuid;
-		m_num_of_handlers_reg++;
+	if (db_discovery->num_of_handlers_reg < CONFIG_BLE_DB_DISCOVERY_MAX_SRV) {
+		db_discovery->registered_handlers[db_discovery->num_of_handlers_reg] = *srv_uuid;
+		db_discovery->num_of_handlers_reg++;
 
 		return NRF_SUCCESS;
 	} else {
@@ -73,666 +42,547 @@ static uint32_t registered_handler_set(ble_uuid_t const *p_srv_uuid,
 	}
 }
 
-/**@brief Function for sending all pending discovery events to the corresponding user modules.
- */
-static void pending_user_evts_send(struct ble_db_discovery *p_db_discovery)
+static void pending_user_evts_send(struct ble_db_discovery *db_discovery)
 {
-	for (uint32_t i = 0; i < m_num_of_handlers_reg; i++) {
-		// Pass the event to the corresponding event handler.
-		p_db_discovery->pending_usr_evts[i].evt_handler(
-			&(p_db_discovery->pending_usr_evts[i].evt));
+	for (uint32_t i = 0; i < db_discovery->num_of_handlers_reg; i++) {
+		/* Pass the event to the corresponding event handler. */
+		db_discovery->pending_usr_evts[i].evt_handler(
+			db_discovery, &(db_discovery->pending_usr_evts[i].evt));
 	}
 
-	p_db_discovery->pending_usr_evt_index = 0;
+	db_discovery->pending_usr_evt_index = 0;
 }
 
-/**@brief     Function for indicating availability of DB discovery instance.
- *
- * @details   This function triggers an event indicating the finish of a discovery process.
- *            If the event has happened, then the application can perform the next discovery
- *            procedure on this DB discovery instance.
- *
- * @param[in] p_db_discovery Pointer to the DB discovery structure.
- * @param[in] conn_handle    Connection Handle.
- */
-static void discovery_available_evt_trigger(struct ble_db_discovery *const p_db_discovery,
+static void discovery_available_evt_trigger(struct ble_db_discovery *const db_discovery,
 					    uint16_t const conn_handle)
 {
 	struct ble_db_discovery_evt evt = {0};
 
 	evt.conn_handle = conn_handle;
 	evt.evt_type = BLE_DB_DISCOVERY_AVAILABLE;
-	evt.params.p_db_instance = (void *)p_db_discovery;
+	evt.params.db_instance = (void *)db_discovery;
 
-	if (m_evt_handler) {
-		m_evt_handler(&evt);
+	if (db_discovery->evt_handler) {
+		db_discovery->evt_handler(db_discovery, &evt);
 	}
 }
 
-/**@brief     Function for indicating error to the application.
- *
- * @details   This function will fetch the event handler based on the UUID of the service being
- *            discovered. (The event handler is registered by the application beforehand).
- *            The error code is added to the pending events together with the event handler.
- *            If no event handler was found, then this function will do nothing.
- *
- * @param[in] p_db_discovery Pointer to the DB discovery structure.
- * @param[in] err_code       Error code that should be provided to the application.
- * @param[in] conn_handle    Connection Handle.
- *
- */
-static void discovery_error_evt_trigger(struct ble_db_discovery *p_db_discovery, uint32_t err_code,
+static void discovery_error_evt_trigger(struct ble_db_discovery *db_discovery, uint32_t err_code,
 					uint16_t conn_handle)
 {
-	ble_db_discovery_evt_handler p_evt_handler;
-	struct ble_gatt_db_srv *p_srv_being_discovered;
+	ble_db_discovery_evt_handler evt_handler;
+	struct ble_gatt_db_srv *srv_being_discovered;
 
-	p_srv_being_discovered = &(p_db_discovery->services[p_db_discovery->curr_srv_ind]);
+	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
 
-	p_evt_handler = registered_handler_get(&(p_srv_being_discovered->srv_uuid));
+	evt_handler = registered_handler_get(db_discovery, &(srv_being_discovered->srv_uuid));
 
-	if (p_evt_handler != NULL) {
+	if (evt_handler != NULL) {
 		struct ble_db_discovery_evt evt = {
 			.conn_handle = conn_handle,
 			.evt_type = BLE_DB_DISCOVERY_ERROR,
-			.params.err_code = err_code,
+			.params.error.reason = err_code,
 		};
 
-		p_evt_handler(&evt);
+		db_discovery->evt_handler(db_discovery, &evt);
 	}
 }
 
-/**@brief Function for interception of GATTC and @ref nrf_ble_gq errors.
- *
- * @param[in] nrf_error   Error code.
- * @param[in] p_ctx       Parameter from the event handler.
- * @param[in] conn_handle Connection handle.
- */
-static void discovery_error_handler(uint16_t conn_handle, uint32_t nrf_error, void *p_ctx)
+static void discovery_error_handler(uint16_t conn_handle, uint32_t nrf_error, void *ctx)
 {
-	struct ble_db_discovery *p_db_discovery = (struct ble_db_discovery *)p_ctx;
-	p_db_discovery->discovery_in_progress = false;
+	struct ble_db_discovery *db_discovery = (struct ble_db_discovery *)ctx;
 
-	discovery_error_evt_trigger(p_db_discovery, nrf_error, conn_handle);
-	discovery_available_evt_trigger(p_db_discovery, conn_handle);
+	db_discovery->discovery_in_progress = false;
+
+	discovery_error_evt_trigger(db_discovery, nrf_error, conn_handle);
+	discovery_available_evt_trigger(db_discovery, conn_handle);
 }
 
-/**@brief     Function for triggering a Discovery Complete or Service Not Found event to the
- *            application.
- *
- * @details   This function will fetch the event handler based on the UUID of the service being
- *            discovered. (The event handler is registered by the application beforehand).
- *            It then triggers an event indicating the completion of the service discovery.
- *            If no event handler was found, then this function will do nothing.
- *
- * @param[in] p_db_discovery Pointer to the DB discovery structure.
- * @param[in] is_srv_found   Variable to indicate if the service was found at the peer.
- * @param[in] conn_handle    Connection Handle.
- */
-static void discovery_complete_evt_trigger(struct ble_db_discovery *p_db_discovery,
-					   bool is_srv_found, uint16_t conn_handle)
+static void discovery_complete_evt_trigger(struct ble_db_discovery *db_discovery, bool is_srv_found,
+					   uint16_t conn_handle)
 {
-	ble_db_discovery_evt_handler p_evt_handler;
-	struct ble_gatt_db_srv *p_srv_being_discovered;
+	ble_db_discovery_evt_handler evt_handler;
+	struct ble_gatt_db_srv *srv_being_discovered;
 
-	p_srv_being_discovered = &(p_db_discovery->services[p_db_discovery->curr_srv_ind]);
+	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
 
-	p_evt_handler = registered_handler_get(&(p_srv_being_discovered->srv_uuid));
+	evt_handler = registered_handler_get(db_discovery, &(srv_being_discovered->srv_uuid));
 
-	if (p_evt_handler != NULL) {
-		if (p_db_discovery->pending_usr_evt_index < DB_DISCOVERY_MAX_USERS) {
-			// Insert an event into the pending event list.
-			p_db_discovery->pending_usr_evts[p_db_discovery->pending_usr_evt_index]
+	if (evt_handler != NULL) {
+		if (db_discovery->pending_usr_evt_index < CONFIG_BLE_DB_DISCOVERY_MAX_SRV) {
+			/* Insert an event into the pending event list. */
+			db_discovery->pending_usr_evts[db_discovery->pending_usr_evt_index]
 				.evt.conn_handle = conn_handle;
-			p_db_discovery->pending_usr_evts[p_db_discovery->pending_usr_evt_index]
-				.evt.params.discovered_db = *p_srv_being_discovered;
+			db_discovery->pending_usr_evts[db_discovery->pending_usr_evt_index]
+				.evt.params.discovered_db = *srv_being_discovered;
 
 			if (is_srv_found) {
-				p_db_discovery
-					->pending_usr_evts[p_db_discovery->pending_usr_evt_index]
+				db_discovery->pending_usr_evts[db_discovery->pending_usr_evt_index]
 					.evt.evt_type = BLE_DB_DISCOVERY_COMPLETE;
 			} else {
-				p_db_discovery
-					->pending_usr_evts[p_db_discovery->pending_usr_evt_index]
+				db_discovery->pending_usr_evts[db_discovery->pending_usr_evt_index]
 					.evt.evt_type = BLE_DB_DISCOVERY_SRV_NOT_FOUND;
 			}
 
-			p_db_discovery->pending_usr_evts[p_db_discovery->pending_usr_evt_index]
-				.evt_handler = p_evt_handler;
-			p_db_discovery->pending_usr_evt_index++;
+			db_discovery->pending_usr_evts[db_discovery->pending_usr_evt_index]
+				.evt_handler = evt_handler;
+			db_discovery->pending_usr_evt_index++;
 
-			if (p_db_discovery->pending_usr_evt_index == m_num_of_handlers_reg) {
-				// All registered modules have pending events. Send all pending
-				// events to the user modules.
-				pending_user_evts_send(p_db_discovery);
+			if (db_discovery->pending_usr_evt_index ==
+			    db_discovery->num_of_handlers_reg) {
+				/* All registered modules have pending events. Send all pending
+				 * events to the user modules.
+				 */
+				pending_user_evts_send(db_discovery);
 			} else {
-				// Too many events pending. Do nothing. (Ideally this should not
-				// happen.)
+				/* Too many events pending. Do nothing. (Ideally this should not
+				 * happen.)
+				 */
 			}
 		}
 	}
 }
 
-/**@brief     Function for handling service discovery completion.
- *
- * @details   This function will be used to determine if there are more services to be discovered,
- *            and if so, initiate the discovery of the next service.
- *
- * @param[in] p_db_discovery Pointer to the DB Discovery Structure.
- * @param[in] conn_handle    Connection Handle.
- */
-static void on_srv_disc_completion(struct ble_db_discovery *p_db_discovery, uint16_t conn_handle)
+static void on_srv_disc_completion(struct ble_db_discovery *db_discovery, uint16_t conn_handle)
 {
 	struct ble_gq_req db_srv_disc_req = {0};
 
-	p_db_discovery->discoveries_count++;
+	db_discovery->discoveries_count++;
 
-	// Check if more services need to be discovered.
-	if (p_db_discovery->discoveries_count < m_num_of_handlers_reg) {
-		// Reset the current characteristic index since a new service discovery is about to
-		// start.
-		p_db_discovery->curr_char_ind = 0;
+	/* Check if more services need to be discovered. */
+	if (db_discovery->discoveries_count < db_discovery->num_of_handlers_reg) {
+		/* Reset the current characteristic index since a new service discovery is about to
+		 * start.
+		 */
+		db_discovery->curr_char_ind = 0;
 
-		// Initiate discovery of the next service.
-		p_db_discovery->curr_srv_ind++;
+		/* Initiate discovery of the next service. */
+		db_discovery->curr_srv_ind++;
 
-		struct ble_gatt_db_srv *p_srv_being_discovered;
+		struct ble_gatt_db_srv *srv_being_discovered;
 
-		p_srv_being_discovered = &(p_db_discovery->services[p_db_discovery->curr_srv_ind]);
+		srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
 
-		p_srv_being_discovered->srv_uuid =
-			m_registered_handlers[p_db_discovery->curr_srv_ind];
+		srv_being_discovered->srv_uuid =
+			db_discovery->registered_handlers[db_discovery->curr_srv_ind];
 
-		// Reset the characteristic count in the current service to zero since a new service
-		// discovery is about to start.
-		p_srv_being_discovered->char_count = 0;
+		/* Reset the characteristic count in the current service to zero since a new
+		 * service discovery is about to start.
+		 */
+		srv_being_discovered->char_count = 0;
 
 		LOG_DBG("Starting discovery of service with UUID 0x%x on connection handle 0x%x.",
-			p_srv_being_discovered->srv_uuid.uuid, conn_handle);
+			srv_being_discovered->srv_uuid.uuid, conn_handle);
 
 		uint32_t err_code;
 
 		db_srv_disc_req.type = BLE_GQ_REQ_SRV_DISCOVERY;
-		db_srv_disc_req.gattc_srv_disc.start_handle = SRV_DISC_START_HANDLE;
-		db_srv_disc_req.gattc_srv_disc.srvc_uuid = p_srv_being_discovered->srv_uuid;
-		db_srv_disc_req.error_handler.ctx = p_db_discovery;
+		db_srv_disc_req.gattc_srv_disc.start_handle = CONFIG_SRV_DISC_START_HANDLE;
+		db_srv_disc_req.gattc_srv_disc.srvc_uuid = srv_being_discovered->srv_uuid;
+		db_srv_disc_req.error_handler.ctx = db_discovery;
 		db_srv_disc_req.error_handler.cb = discovery_error_handler;
 
-		err_code = ble_gq_item_add(mp_gatt_queue, &db_srv_disc_req, conn_handle);
+		err_code = ble_gq_item_add(db_discovery->gatt_queue, &db_srv_disc_req, conn_handle);
 
 		if (err_code != NRF_SUCCESS) {
-			discovery_error_handler(conn_handle, err_code, p_db_discovery);
+			discovery_error_handler(conn_handle, err_code, db_discovery);
 
 			return;
 		}
 	} else {
-		// No more service discovery is needed.
-		p_db_discovery->discovery_in_progress = false;
+		/* No more service discovery is needed. */
+		db_discovery->discovery_in_progress = false;
 
-		discovery_available_evt_trigger(p_db_discovery, conn_handle);
+		discovery_available_evt_trigger(db_discovery, conn_handle);
 	}
 }
 
-/**@brief     Function for finding out if a characteristic discovery should be performed after the
- *            last discovered characteristic.
- *
- * @details   This function is used during the time of database discovery to find out if there is
- *            a need to do more characteristic discoveries. The value handles of the
- *            last discovered characteristic is compared with the end handle of the service.
- *            If the service handle is greater than one of the former characteristic handles,
- *            it means that a characteristic discovery is required.
- *
- * @param[in] p_db_discovery The pointer to the DB Discovery structure.
- * @param[in] p_after_char   The pointer to the last discovered characteristic.
- *
- * @retval    True if a characteristic discovery is required.
- * @retval    False if a characteristic discovery is NOT required.
- */
-static bool is_char_discovery_reqd(struct ble_db_discovery *p_db_discovery,
-				   ble_gattc_char_t *p_after_char)
+static bool is_char_discovery_reqd(struct ble_db_discovery *db_discovery,
+				   ble_gattc_char_t *after_char)
 {
-	if (p_after_char->handle_value <
-	    p_db_discovery->services[p_db_discovery->curr_srv_ind].handle_range.end_handle) {
-		// Handle value of the characteristic being discovered is less than the end handle
-		// of the service being discovered. There is a possibility of more characteristics
-		// being present. Hence a characteristic discovery is required.
+	if (after_char->handle_value <
+	    db_discovery->services[db_discovery->curr_srv_ind].handle_range.end_handle) {
+		/* Handle value of the characteristic being discovered is less than the end handle
+		 * of the service being discovered. There is a possibility of more characteristics
+		 * being present. Hence a characteristic discovery is required.
+		 */
 		return true;
 	}
 
 	return false;
 }
 
-/**@brief      Function to find out if a descriptor discovery is required.
- *
- * @details    This function finds out if there is a possibility of existence of descriptors between
- *             current characteristic and the next characteristic. If so, this function will compute
- *             the handle range on which the descriptors may be present and will return it.
- *             If the current characteristic is the last known characteristic, then this function
- *             will use the service end handle to find out if the current characteristic can have
- *             descriptors.
- *
- * @param[in]  p_db_discovery Pointer to the DB Discovery structure.
- * @param[in]  p_curr_char    Pointer to the current characteristic.
- * @param[in]  p_next_char    Pointer to the next characteristic. This should be NULL if the
- *                            caller knows that there is no characteristic after the current
- *                            characteristic at the peer.
- * @param[out] p_handle_range Pointer to the handle range in which descriptors may exist at the
- *                            the peer.
- *
- * @retval     True If a descriptor discovery is required.
- * @retval     False If a descriptor discovery is NOT required.
- */
-static bool is_desc_discovery_reqd(struct ble_db_discovery *p_db_discovery,
-				   struct ble_gatt_db_char *p_curr_char,
-				   struct ble_gatt_db_char *p_next_char,
-				   ble_gattc_handle_range_t *p_handle_range)
+static bool is_desc_discovery_reqd(struct ble_db_discovery *db_discovery,
+				   struct ble_gatt_db_char *curr_char,
+				   struct ble_gatt_db_char *next_char,
+				   ble_gattc_handle_range_t *handle_range)
 {
-	if (p_next_char == NULL) {
-		// Current characteristic is the last characteristic in the service. Check if the
-		// value handle of the current characteristic is equal to the service end handle.
-		if (p_curr_char->characteristic.handle_value ==
-		    p_db_discovery->services[p_db_discovery->curr_srv_ind]
-			    .handle_range.end_handle) {
-			// No descriptors can be present for the current characteristic. p_curr_char
-			// is the last characteristic with no descriptors.
+	if (next_char == NULL) {
+		/* Current characteristic is the last characteristic in the service. Check if the
+		 * value handle of the current characteristic is equal to the service end handle.
+		 */
+		if (curr_char->characteristic.handle_value ==
+		    db_discovery->services[db_discovery->curr_srv_ind].handle_range.end_handle) {
+			/* No descriptors can be present for the current characteristic. curr_char
+			 * is the last characteristic with no descriptors.
+			 */
 			return false;
 		}
 
-		p_handle_range->start_handle = p_curr_char->characteristic.handle_value + 1;
+		handle_range->start_handle = curr_char->characteristic.handle_value + 1;
 
-		// Since the current characteristic is the last characteristic in the service, the
-		// end handle should be the end handle of the service.
-		p_handle_range->end_handle = p_db_discovery->services[p_db_discovery->curr_srv_ind]
-						     .handle_range.end_handle;
+		/* Since the current characteristic is the last characteristic in the service, the
+		 * end handle should be the end handle of the service.
+		 */
+		handle_range->end_handle =
+			db_discovery->services[db_discovery->curr_srv_ind].handle_range.end_handle;
 
 		return true;
 	}
 
-	// p_next_char != NULL. Check for existence of descriptors between the current and the next
-	// characteristic.
-	if ((p_curr_char->characteristic.handle_value + 1) ==
-	    p_next_char->characteristic.handle_decl) {
-		// No descriptors can exist between the two characteristic.
+	/* next_char != NULL. Check for existence of descriptors between the current and the next
+	 * characteristic.
+	 */
+	if ((curr_char->characteristic.handle_value + 1) == next_char->characteristic.handle_decl) {
+		/* No descriptors can exist between the two characteristic. */
 		return false;
 	}
 
-	p_handle_range->start_handle = p_curr_char->characteristic.handle_value + 1;
-	p_handle_range->end_handle = p_next_char->characteristic.handle_decl - 1;
+	handle_range->start_handle = curr_char->characteristic.handle_value + 1;
+	handle_range->end_handle = next_char->characteristic.handle_decl - 1;
 
 	return true;
 }
 
-/**@brief     Function for performing characteristic discovery.
- *
- * @param[in] p_db_discovery Pointer to the DB Discovery structure.
- * @param[in] conn_handle    Connection Handle.
- *
- * @return    NRF_SUCCESS if the SoftDevice was successfully requested to perform the characteristic
- *            discovery. Otherwise an error code. This function returns the error code returned
- *            by the SoftDevice API @ref sd_ble_gattc_characteristics_discover.
- */
-static uint32_t characteristics_discover(struct ble_db_discovery *p_db_discovery,
+static uint32_t characteristics_discover(struct ble_db_discovery *db_discovery,
 					 uint16_t conn_handle)
 {
-	struct ble_gatt_db_srv *p_srv_being_discovered;
-	ble_gattc_handle_range_t handle_range;
-	struct ble_gq_req db_char_disc_req;
+	struct ble_gatt_db_srv *srv_being_discovered;
+	ble_gattc_handle_range_t handle_range = {0};
+	struct ble_gq_req db_char_disc_req = {0};
 
-	memset(&db_char_disc_req, 0, sizeof(struct ble_gq_req));
-	memset(&handle_range, 0, sizeof(ble_gattc_handle_range_t));
+	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
 
-	p_srv_being_discovered = &(p_db_discovery->services[p_db_discovery->curr_srv_ind]);
+	if (db_discovery->curr_char_ind != 0) {
+		/* This is not the first characteristic being discovered. Hence the 'start handle'
+		 * to be used must be computed using the handle_value of the previous
+		 * characteristic.
+		 */
+		ble_gattc_char_t *prev_char;
+		uint8_t prev_char_ind = db_discovery->curr_char_ind - 1;
 
-	if (p_db_discovery->curr_char_ind != 0) {
-		// This is not the first characteristic being discovered. Hence the 'start handle'
-		// to be used must be computed using the handle_value of the previous
-		// characteristic.
-		ble_gattc_char_t *p_prev_char;
-		uint8_t prev_char_ind = p_db_discovery->curr_char_ind - 1;
+		srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
 
-		p_srv_being_discovered = &(p_db_discovery->services[p_db_discovery->curr_srv_ind]);
+		prev_char = &(srv_being_discovered->charateristics[prev_char_ind].characteristic);
 
-		p_prev_char =
-			&(p_srv_being_discovered->charateristics[prev_char_ind].characteristic);
-
-		handle_range.start_handle = p_prev_char->handle_value + 1;
+		handle_range.start_handle = prev_char->handle_value + 1;
 	} else {
-		// This is the first characteristic of this service being discovered.
-		handle_range.start_handle = p_srv_being_discovered->handle_range.start_handle;
+		/* This is the first characteristic of this service being discovered. */
+		handle_range.start_handle = srv_being_discovered->handle_range.start_handle;
 	}
 
-	handle_range.end_handle = p_srv_being_discovered->handle_range.end_handle;
+	handle_range.end_handle = srv_being_discovered->handle_range.end_handle;
 
 	db_char_disc_req.type = BLE_GQ_REQ_CHAR_DISCOVERY;
 	db_char_disc_req.gattc_char_disc = handle_range;
-	db_char_disc_req.error_handler.ctx = p_db_discovery;
+	db_char_disc_req.error_handler.ctx = db_discovery;
 	db_char_disc_req.error_handler.cb = discovery_error_handler;
 
-	return ble_gq_item_add(mp_gatt_queue, &db_char_disc_req, conn_handle);
+	return ble_gq_item_add(db_discovery->gatt_queue, &db_char_disc_req, conn_handle);
 }
 
-/**@brief      Function for performing descriptor discovery, if required.
- *
- * @details    This function will check if descriptor discovery is required and then perform it if
- *             needed. If no more descriptor discovery is required for the service, then the output
- *             parameter p_raise_discov_complete is set to true, indicating to the caller that a
- *             discovery complete event can be triggered to the application.
- *
- * @param[in]  p_db_discovery           Pointer to the DB Discovery structure.
- * @param[out] p_raise_discov_complete  The value pointed to by this pointer will be set to true if
- *                                      the Discovery Complete event can be triggered to the
- *                                      application.
- * @param[in] conn_handle               Connection Handle.
- *
- * @return     NRF_SUCCESS if the SoftDevice was successfully requested to perform the descriptor
- *             discovery, or if no more descriptor discovery is required. Otherwise an error code.
- *             This function returns the error code returned by the SoftDevice API @ref
- *             sd_ble_gattc_descriptors_discover.
- */
-static uint32_t descriptors_discover(struct ble_db_discovery *p_db_discovery,
-				     bool *p_raise_discov_complete, uint16_t conn_handle)
+static uint32_t descriptors_discover(struct ble_db_discovery *db_discovery,
+				     bool *raise_discov_complete, uint16_t conn_handle)
 {
 	ble_gattc_handle_range_t handle_range;
-	struct ble_gatt_db_char *p_curr_char_being_discovered;
-	struct ble_gatt_db_srv *p_srv_being_discovered;
+	struct ble_gatt_db_char *curr_char_being_discovered;
+	struct ble_gatt_db_srv *srv_being_discovered;
 	struct ble_gq_req db_desc_disc_req = {0};
 	bool is_discovery_reqd = false;
 
-	p_srv_being_discovered = &(p_db_discovery->services[p_db_discovery->curr_srv_ind]);
+	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
 
-	p_curr_char_being_discovered =
-		&(p_srv_being_discovered->charateristics[p_db_discovery->curr_char_ind]);
+	curr_char_being_discovered =
+		&(srv_being_discovered->charateristics[db_discovery->curr_char_ind]);
 
-	if ((p_db_discovery->curr_char_ind + 1) == p_srv_being_discovered->char_count) {
-		// This is the last characteristic of this service.
-		is_discovery_reqd = is_desc_discovery_reqd(
-			p_db_discovery, p_curr_char_being_discovered, NULL, &handle_range);
+	if ((db_discovery->curr_char_ind + 1) == srv_being_discovered->char_count) {
+		/* This is the last characteristic of this service. */
+		is_discovery_reqd = is_desc_discovery_reqd(db_discovery, curr_char_being_discovered,
+							   NULL, &handle_range);
 	} else {
 		uint8_t i;
-		struct ble_gatt_db_char *p_next_char;
+		struct ble_gatt_db_char *next_char;
 
-		for (i = p_db_discovery->curr_char_ind; i < p_srv_being_discovered->char_count;
-		     i++) {
-			if (i == (p_srv_being_discovered->char_count - 1)) {
-				// The current characteristic is the last characteristic in the
-				// service.
-				p_next_char = NULL;
+		for (i = db_discovery->curr_char_ind; i < srv_being_discovered->char_count; i++) {
+			if (i == (srv_being_discovered->char_count - 1)) {
+				/* The current characteristic is the last characteristic in the
+				 * service.
+				 */
+				next_char = NULL;
 			} else {
-				p_next_char = &(p_srv_being_discovered->charateristics[i + 1]);
+				next_char = &(srv_being_discovered->charateristics[i + 1]);
 			}
 
-			// Check if it is possible for the current characteristic to have a
-			// descriptor.
-			if (is_desc_discovery_reqd(p_db_discovery, p_curr_char_being_discovered,
-						   p_next_char, &handle_range)) {
+			/* Check if it is possible for the current characteristic to have a
+			 * descriptor.
+			 */
+			if (is_desc_discovery_reqd(db_discovery, curr_char_being_discovered,
+						   next_char, &handle_range)) {
 				is_discovery_reqd = true;
 				break;
-			} else {
-				// No descriptors can exist.
-				p_curr_char_being_discovered = p_next_char;
-				p_db_discovery->curr_char_ind++;
 			}
+			/* No descriptors can exist. */
+			curr_char_being_discovered = next_char;
+			db_discovery->curr_char_ind++;
 		}
 	}
 
 	if (!is_discovery_reqd) {
-		// No more descriptor discovery required. Discovery is complete.
-		// This informs the caller that a discovery complete event can be triggered.
-		*p_raise_discov_complete = true;
+		/* No more descriptor discovery required. Discovery is complete.
+		 * This informs the caller that a discovery complete event can be triggered.
+		 */
+		*raise_discov_complete = true;
 
 		return NRF_SUCCESS;
 	}
 
-	*p_raise_discov_complete = false;
+	*raise_discov_complete = false;
 
 	db_desc_disc_req.type = BLE_GQ_REQ_DESC_DISCOVERY;
 	db_desc_disc_req.gattc_desc_disc = handle_range;
-	db_desc_disc_req.error_handler.ctx = p_db_discovery;
+	db_desc_disc_req.error_handler.ctx = db_discovery;
 	db_desc_disc_req.error_handler.cb = discovery_error_handler;
 
-	return ble_gq_item_add(mp_gatt_queue, &db_desc_disc_req, conn_handle);
+	return ble_gq_item_add(db_discovery->gatt_queue, &db_desc_disc_req, conn_handle);
 }
 
-/**@brief     Function for handling primary service discovery response.
- *
- * @details   This function will handle the primary service discovery response and start the
- *            discovery of characteristics within that service.
- *
- * @param[in] p_db_discovery    Pointer to the DB Discovery structure.
- * @param[in] p_ble_gattc_evt   Pointer to the GATT Client event.
- */
-static void on_primary_srv_discovery_rsp(struct ble_db_discovery *p_db_discovery,
-					 ble_gattc_evt_t const *p_ble_gattc_evt)
+static void on_primary_srv_discovery_rsp(struct ble_db_discovery *db_discovery,
+					 ble_gattc_evt_t const *ble_gattc_evt)
 {
-	struct ble_gatt_db_srv *p_srv_being_discovered;
+	struct ble_gatt_db_srv *srv_being_discovered;
 
-	p_srv_being_discovered = &(p_db_discovery->services[p_db_discovery->curr_srv_ind]);
+	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
 
-	if (p_ble_gattc_evt->conn_handle != p_db_discovery->conn_handle) {
+	if (ble_gattc_evt->conn_handle != db_discovery->conn_handle) {
 		return;
 	}
 
-	if (p_ble_gattc_evt->gatt_status == BLE_GATT_STATUS_SUCCESS) {
+	if (ble_gattc_evt->gatt_status == BLE_GATT_STATUS_SUCCESS) {
 		uint32_t err_code;
-		ble_gattc_evt_prim_srvc_disc_rsp_t const *p_prim_srvc_disc_rsp_evt;
+		ble_gattc_evt_prim_srvc_disc_rsp_t const *prim_srvc_disc_rsp_evt;
 
-		LOG_DBG("Found service UUID 0x%x.", p_srv_being_discovered->srv_uuid.uuid);
+		LOG_DBG("Found service UUID 0x%x.", srv_being_discovered->srv_uuid.uuid);
 
-		p_prim_srvc_disc_rsp_evt = &(p_ble_gattc_evt->params.prim_srvc_disc_rsp);
+		prim_srvc_disc_rsp_evt = &(ble_gattc_evt->params.prim_srvc_disc_rsp);
 
-		p_srv_being_discovered->handle_range =
-			p_prim_srvc_disc_rsp_evt->services[0].handle_range;
+		srv_being_discovered->handle_range =
+			prim_srvc_disc_rsp_evt->services[0].handle_range;
 
-		// Number of services, previously discovered.
-		uint8_t num_srv_previous_disc = p_db_discovery->srv_count;
+		/* Number of services, previously discovered. */
+		uint8_t num_srv_previous_disc = db_discovery->srv_count;
 
-		// Number of services, currently discovered.
-		uint8_t current_srv_disc = p_prim_srvc_disc_rsp_evt->count;
+		/* Number of services, currently discovered. */
+		uint8_t current_srv_disc = prim_srvc_disc_rsp_evt->count;
 
-		if ((num_srv_previous_disc + current_srv_disc) <= BLE_DB_DISCOVERY_MAX_SRV) {
-			p_db_discovery->srv_count += current_srv_disc;
+		if ((num_srv_previous_disc + current_srv_disc) <= CONFIG_BLE_DB_DISCOVERY_MAX_SRV) {
+			db_discovery->srv_count += current_srv_disc;
 		} else {
-			p_db_discovery->srv_count = BLE_DB_DISCOVERY_MAX_SRV;
+			db_discovery->srv_count = CONFIG_BLE_DB_DISCOVERY_MAX_SRV;
 
 			LOG_WRN("Not enough space for services.");
-			LOG_WRN("Increase BLE_DB_DISCOVERY_MAX_SRV to be able to store more "
+			LOG_WRN("Increase CONFIG_BLE_DB_DISCOVERY_MAX_SRV to be able to store more "
 				"services!");
 		}
 
-		err_code = characteristics_discover(p_db_discovery, p_ble_gattc_evt->conn_handle);
+		err_code = characteristics_discover(db_discovery, ble_gattc_evt->conn_handle);
 
 		if (err_code != NRF_SUCCESS) {
-			discovery_error_handler(p_ble_gattc_evt->conn_handle, err_code,
-						p_db_discovery);
+			discovery_error_handler(ble_gattc_evt->conn_handle, err_code, db_discovery);
 		}
 	} else {
-		LOG_DBG("Service UUID 0x%x not found.", p_srv_being_discovered->srv_uuid.uuid);
-		// Trigger Service Not Found event to the application.
-		discovery_complete_evt_trigger(p_db_discovery, false, p_ble_gattc_evt->conn_handle);
-		on_srv_disc_completion(p_db_discovery, p_ble_gattc_evt->conn_handle);
+		LOG_DBG("Service UUID 0x%x not found.", srv_being_discovered->srv_uuid.uuid);
+		/* Trigger Service Not Found event to the application. */
+		discovery_complete_evt_trigger(db_discovery, false, ble_gattc_evt->conn_handle);
+		on_srv_disc_completion(db_discovery, ble_gattc_evt->conn_handle);
 	}
 }
 
-/**@brief     Function for handling characteristic discovery response.
- *
- * @param[in] p_db_discovery    Pointer to the DB Discovery structure.
- * @param[in] p_ble_gattc_evt   Pointer to the GATT Client event.
- */
-static void on_characteristic_discovery_rsp(struct ble_db_discovery *p_db_discovery,
-					    ble_gattc_evt_t const *p_ble_gattc_evt)
+static void on_characteristic_discovery_rsp(struct ble_db_discovery *db_discovery,
+					    ble_gattc_evt_t const *ble_gattc_evt)
 {
 	uint32_t err_code;
-	struct ble_gatt_db_srv *p_srv_being_discovered;
+	struct ble_gatt_db_srv *srv_being_discovered;
 	bool perform_desc_discov = false;
 
-	if (p_ble_gattc_evt->conn_handle != p_db_discovery->conn_handle) {
+	if (ble_gattc_evt->conn_handle != db_discovery->conn_handle) {
 		return;
 	}
 
-	p_srv_being_discovered = &(p_db_discovery->services[p_db_discovery->curr_srv_ind]);
+	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
 
-	if (p_ble_gattc_evt->gatt_status == BLE_GATT_STATUS_SUCCESS) {
-		ble_gattc_evt_char_disc_rsp_t const *p_char_disc_rsp_evt;
+	if (ble_gattc_evt->gatt_status == BLE_GATT_STATUS_SUCCESS) {
+		ble_gattc_evt_char_disc_rsp_t const *char_disc_rsp_evt;
 
-		p_char_disc_rsp_evt = &(p_ble_gattc_evt->params.char_disc_rsp);
+		char_disc_rsp_evt = &(ble_gattc_evt->params.char_disc_rsp);
 
-		// Find out the number of characteristics that were previously discovered (in
-		// earlier characteristic discovery responses, if any).
-		uint8_t num_chars_prev_disc = p_srv_being_discovered->char_count;
+		/* Find out the number of characteristics that were previously discovered (in
+		 * earlier characteristic discovery responses, if any).
+		 */
+		uint8_t num_chars_prev_disc = srv_being_discovered->char_count;
 
-		// Find out the number of characteristics that are currently discovered (in the
-		// characteristic discovery response being handled).
-		uint8_t num_chars_curr_disc = p_char_disc_rsp_evt->count;
+		/* Find out the number of characteristics that are currently discovered (in the
+		 * characteristic discovery response being handled).
+		 */
+		uint8_t num_chars_curr_disc = char_disc_rsp_evt->count;
 
-		// Check if the total number of discovered characteristics are supported by this
-		// module.
-		if ((num_chars_prev_disc + num_chars_curr_disc) <= BLE_GATT_DB_MAX_CHARS) {
-			// Update the characteristics count.
-			p_srv_being_discovered->char_count += num_chars_curr_disc;
+		/* Check if the total number of discovered characteristics are supported by this
+		 * module.
+		 */
+		if ((num_chars_prev_disc + num_chars_curr_disc) <= CONFIG_BLE_GATT_DB_MAX_CHARS) {
+			/* Update the characteristics count. */
+			srv_being_discovered->char_count += num_chars_curr_disc;
 		} else {
-			// The number of characteristics discovered at the peer is more than the
-			// supported maximum. This module will store only the characteristics found
-			// up to this point.
-			p_srv_being_discovered->char_count = BLE_GATT_DB_MAX_CHARS;
+			/* The number of characteristics discovered at the peer is more than the
+			 * supported maximum. This module will store only the characteristics found
+			 * up to this point.
+			 */
+			srv_being_discovered->char_count = CONFIG_BLE_GATT_DB_MAX_CHARS;
 			LOG_WRN("Not enough space for characteristics associated with "
 				"service 0x%04X !",
-				p_srv_being_discovered->srv_uuid.uuid);
-			LOG_WRN("Increase BLE_GATT_DB_MAX_CHARS to be able to store more "
+				srv_being_discovered->srv_uuid.uuid);
+			LOG_WRN("Increase CONFIG_BLE_GATT_DB_MAX_CHARS to be able to store more "
 				"characteristics for each service!");
 		}
 
 		uint32_t i;
 		uint32_t j;
 
-		for (i = num_chars_prev_disc, j = 0; i < p_srv_being_discovered->char_count;
+		for (i = num_chars_prev_disc, j = 0; i < srv_being_discovered->char_count;
 		     i++, j++) {
-			p_srv_being_discovered->charateristics[i].characteristic =
-				p_char_disc_rsp_evt->chars[j];
+			srv_being_discovered->charateristics[i].characteristic =
+				char_disc_rsp_evt->chars[j];
 
-			p_srv_being_discovered->charateristics[i].cccd_handle =
+			srv_being_discovered->charateristics[i].cccd_handle =
 				BLE_GATT_HANDLE_INVALID;
-			p_srv_being_discovered->charateristics[i].ext_prop_handle =
+			srv_being_discovered->charateristics[i].ext_prop_handle =
 				BLE_GATT_HANDLE_INVALID;
-			p_srv_being_discovered->charateristics[i].user_desc_handle =
+			srv_being_discovered->charateristics[i].user_desc_handle =
 				BLE_GATT_HANDLE_INVALID;
-			p_srv_being_discovered->charateristics[i].report_ref_handle =
+			srv_being_discovered->charateristics[i].report_ref_handle =
 				BLE_GATT_HANDLE_INVALID;
 		}
 
-		ble_gattc_char_t *p_last_known_char;
+		ble_gattc_char_t *last_known_char;
 
-		p_last_known_char = &(p_srv_being_discovered->charateristics[i - 1].characteristic);
+		last_known_char = &(srv_being_discovered->charateristics[i - 1].characteristic);
 
-		// If no more characteristic discovery is required, or if the maximum number of
-		// supported characteristic per service has been reached, descriptor discovery will
-		// be performed.
-		if (!is_char_discovery_reqd(p_db_discovery, p_last_known_char) ||
-		    (p_srv_being_discovered->char_count == BLE_GATT_DB_MAX_CHARS)) {
+		/* If no more characteristic discovery is required, or if the maximum number of
+		 * supported characteristic per service has been reached, descriptor discovery will
+		 * be performed.
+		 */
+		if (!is_char_discovery_reqd(db_discovery, last_known_char) ||
+		    (srv_being_discovered->char_count == CONFIG_BLE_GATT_DB_MAX_CHARS)) {
 			perform_desc_discov = true;
 		} else {
-			// Update the current characteristic index.
-			p_db_discovery->curr_char_ind = p_srv_being_discovered->char_count;
+			/* Update the current characteristic index. */
+			db_discovery->curr_char_ind = srv_being_discovered->char_count;
 
-			// Perform another round of characteristic discovery.
-			err_code = characteristics_discover(p_db_discovery,
-							    p_ble_gattc_evt->conn_handle);
+			/* Perform another round of characteristic discovery. */
+			err_code =
+				characteristics_discover(db_discovery, ble_gattc_evt->conn_handle);
 
 			if (err_code != NRF_SUCCESS) {
-				discovery_error_handler(p_ble_gattc_evt->conn_handle, err_code,
-							p_db_discovery);
+				discovery_error_handler(ble_gattc_evt->conn_handle, err_code,
+							db_discovery);
 
 				return;
 			}
 		}
 	} else {
-		// The previous characteristic discovery resulted in no characteristics.
-		// descriptor discovery should be performed.
+		/* The previous characteristic discovery resulted in no characteristics.
+		 * descriptor discovery should be performed.
+		 */
 		perform_desc_discov = true;
 	}
 
 	if (perform_desc_discov) {
 		bool raise_discov_complete;
 
-		p_db_discovery->curr_char_ind = 0;
+		db_discovery->curr_char_ind = 0;
 
-		err_code = descriptors_discover(p_db_discovery, &raise_discov_complete,
-						p_ble_gattc_evt->conn_handle);
+		err_code = descriptors_discover(db_discovery, &raise_discov_complete,
+						ble_gattc_evt->conn_handle);
 
 		if (err_code != NRF_SUCCESS) {
-			discovery_error_handler(p_ble_gattc_evt->conn_handle, err_code,
-						p_db_discovery);
+			discovery_error_handler(ble_gattc_evt->conn_handle, err_code, db_discovery);
 
 			return;
 		}
 		if (raise_discov_complete) {
-			// No more characteristics and descriptors need to be discovered. Discovery
-			// is complete. Send a discovery complete event to the user application.
+			/* No more characteristics and descriptors need to be discovered. Discovery
+			 * is complete. Send a discovery complete event to the user application.
+			 */
 			LOG_DBG("Discovery of service with UUID 0x%x completed with success"
 				" on connection handle 0x%x.",
-				p_srv_being_discovered->srv_uuid.uuid,
-				p_ble_gattc_evt->conn_handle);
+				srv_being_discovered->srv_uuid.uuid, ble_gattc_evt->conn_handle);
 
-			discovery_complete_evt_trigger(p_db_discovery, true,
-						       p_ble_gattc_evt->conn_handle);
-			on_srv_disc_completion(p_db_discovery, p_ble_gattc_evt->conn_handle);
+			discovery_complete_evt_trigger(db_discovery, true,
+						       ble_gattc_evt->conn_handle);
+			on_srv_disc_completion(db_discovery, ble_gattc_evt->conn_handle);
 		}
 	}
 }
 
-/**@brief     Function for handling descriptor discovery response.
- *
- * @param[in] p_db_discovery    Pointer to the DB Discovery structure.
- * @param[in] p_ble_gattc_evt   Pointer to the GATT Client event.
- */
-static void on_descriptor_discovery_rsp(struct ble_db_discovery *const p_db_discovery,
-					const ble_gattc_evt_t *const p_ble_gattc_evt)
+static void on_descriptor_discovery_rsp(struct ble_db_discovery *const db_discovery,
+					const ble_gattc_evt_t *const ble_gattc_evt)
 {
-	const ble_gattc_evt_desc_disc_rsp_t *p_desc_disc_rsp_evt;
-	struct ble_gatt_db_srv *p_srv_being_discovered;
+	const ble_gattc_evt_desc_disc_rsp_t *desc_disc_rsp_evt;
+	struct ble_gatt_db_srv *srv_being_discovered;
 
-	if (p_ble_gattc_evt->conn_handle != p_db_discovery->conn_handle) {
+	if (ble_gattc_evt->conn_handle != db_discovery->conn_handle) {
 		return;
 	}
 
-	p_srv_being_discovered = &(p_db_discovery->services[p_db_discovery->curr_srv_ind]);
+	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
 
-	p_desc_disc_rsp_evt = &(p_ble_gattc_evt->params.desc_disc_rsp);
+	desc_disc_rsp_evt = &(ble_gattc_evt->params.desc_disc_rsp);
 
-	struct ble_gatt_db_char *p_char_being_discovered =
-		&(p_srv_being_discovered->charateristics[p_db_discovery->curr_char_ind]);
+	struct ble_gatt_db_char *char_being_discovered =
+		&(srv_being_discovered->charateristics[db_discovery->curr_char_ind]);
 
-	if (p_ble_gattc_evt->gatt_status == BLE_GATT_STATUS_SUCCESS) {
-		// The descriptor was found at the peer.
-		// Iterate through and collect CCCD, Extended Properties,
-		// User Description & Report Reference descriptor handles.
-		for (uint32_t i = 0; i < p_desc_disc_rsp_evt->count; i++) {
-			switch (p_desc_disc_rsp_evt->descs[i].uuid.uuid) {
+	if (ble_gattc_evt->gatt_status == BLE_GATT_STATUS_SUCCESS) {
+		/* The descriptor was found at the peer.
+		 * Iterate through and collect CCCD, Extended Properties,
+		 * User Description & Report Reference descriptor handles.
+		 */
+		for (uint32_t i = 0; i < desc_disc_rsp_evt->count; i++) {
+			switch (desc_disc_rsp_evt->descs[i].uuid.uuid) {
 			case BLE_UUID_DESCRIPTOR_CLIENT_CHAR_CONFIG:
-				p_char_being_discovered->cccd_handle =
-					p_desc_disc_rsp_evt->descs[i].handle;
+				char_being_discovered->cccd_handle =
+					desc_disc_rsp_evt->descs[i].handle;
 				break;
 
 			case BLE_UUID_DESCRIPTOR_CHAR_EXT_PROP:
-				p_char_being_discovered->ext_prop_handle =
-					p_desc_disc_rsp_evt->descs[i].handle;
+				char_being_discovered->ext_prop_handle =
+					desc_disc_rsp_evt->descs[i].handle;
 				break;
 
 			case BLE_UUID_DESCRIPTOR_CHAR_USER_DESC:
-				p_char_being_discovered->user_desc_handle =
-					p_desc_disc_rsp_evt->descs[i].handle;
+				char_being_discovered->user_desc_handle =
+					desc_disc_rsp_evt->descs[i].handle;
 				break;
 
 			case BLE_UUID_REPORT_REF_DESCR:
-				p_char_being_discovered->report_ref_handle =
-					p_desc_disc_rsp_evt->descs[i].handle;
+				char_being_discovered->report_ref_handle =
+					desc_disc_rsp_evt->descs[i].handle;
 				break;
 			}
 
 			/* Break if we've found all the descriptors we are looking for. */
-			if (p_char_being_discovered->cccd_handle != BLE_GATT_HANDLE_INVALID &&
-			    p_char_being_discovered->ext_prop_handle != BLE_GATT_HANDLE_INVALID &&
-			    p_char_being_discovered->user_desc_handle != BLE_GATT_HANDLE_INVALID &&
-			    p_char_being_discovered->report_ref_handle != BLE_GATT_HANDLE_INVALID) {
+			if (char_being_discovered->cccd_handle != BLE_GATT_HANDLE_INVALID &&
+			    char_being_discovered->ext_prop_handle != BLE_GATT_HANDLE_INVALID &&
+			    char_being_discovered->user_desc_handle != BLE_GATT_HANDLE_INVALID &&
+			    char_being_discovered->report_ref_handle != BLE_GATT_HANDLE_INVALID) {
 				break;
 			}
 		}
@@ -740,23 +590,22 @@ static void on_descriptor_discovery_rsp(struct ble_db_discovery *const p_db_disc
 
 	bool raise_discov_complete = false;
 
-	if ((p_db_discovery->curr_char_ind + 1) == p_srv_being_discovered->char_count) {
-		// No more characteristics and descriptors need to be discovered. Discovery is
-		// complete. Send a discovery complete event to the user application.
-
+	if ((db_discovery->curr_char_ind + 1) == srv_being_discovered->char_count) {
+		/* No more characteristics and descriptors need to be discovered. Discovery is
+		 * complete. Send a discovery complete event to the user application.
+		 */
 		raise_discov_complete = true;
 	} else {
-		// Begin discovery of descriptors for the next characteristic.
+		/* Begin discovery of descriptors for the next characteristic.*/
 		uint32_t err_code;
 
-		p_db_discovery->curr_char_ind++;
+		db_discovery->curr_char_ind++;
 
-		err_code = descriptors_discover(p_db_discovery, &raise_discov_complete,
-						p_ble_gattc_evt->conn_handle);
+		err_code = descriptors_discover(db_discovery, &raise_discov_complete,
+						ble_gattc_evt->conn_handle);
 
 		if (err_code != NRF_SUCCESS) {
-			discovery_error_handler(p_ble_gattc_evt->conn_handle, err_code,
-						p_db_discovery);
+			discovery_error_handler(ble_gattc_evt->conn_handle, err_code, db_discovery);
 
 			return;
 		}
@@ -765,139 +614,127 @@ static void on_descriptor_discovery_rsp(struct ble_db_discovery *const p_db_disc
 	if (raise_discov_complete) {
 		LOG_DBG("Discovery of service with UUID 0x%x completed with success"
 			" on connection handle 0x%x.",
-			p_srv_being_discovered->srv_uuid.uuid, p_ble_gattc_evt->conn_handle);
+			srv_being_discovered->srv_uuid.uuid, ble_gattc_evt->conn_handle);
 
-		discovery_complete_evt_trigger(p_db_discovery, true, p_ble_gattc_evt->conn_handle);
-		on_srv_disc_completion(p_db_discovery, p_ble_gattc_evt->conn_handle);
+		discovery_complete_evt_trigger(db_discovery, true, ble_gattc_evt->conn_handle);
+		on_srv_disc_completion(db_discovery, ble_gattc_evt->conn_handle);
 	}
 }
 
-uint32_t ble_db_discovery_init(struct ble_db_discovery_init *p_db_init)
+static uint32_t discovery_start(struct ble_db_discovery *const db_discovery, uint16_t conn_handle)
 {
-	uint32_t err_code = NRF_SUCCESS;
-	// VERIFY_PARAM_NOT_NULL(p_db_init);
-	// VERIFY_PARAM_NOT_NULL(p_db_init->evt_handler);
-	// VERIFY_PARAM_NOT_NULL(p_db_init->p_gatt_queue);
+	int err_code;
+	struct ble_gatt_db_srv *srv_being_discovered;
+	struct ble_gq_req db_srv_disc_req = {0};
 
-	m_num_of_handlers_reg = 0;
-	m_initialized = true;
-	m_evt_handler = p_db_init->evt_handler;
-	mp_gatt_queue = p_db_init->p_gatt_queue;
+	err_code = ble_gq_conn_handle_register(db_discovery->gatt_queue, conn_handle);
+	if (err_code != NRF_SUCCESS) {
+		return err_code;
+	}
+
+	db_discovery->conn_handle = conn_handle;
+
+	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
+	srv_being_discovered->srv_uuid =
+		db_discovery->registered_handlers[db_discovery->curr_srv_ind];
+
+	LOG_DBG("Starting discovery of service with UUID 0x%x on connection handle 0x%x.",
+		srv_being_discovered->srv_uuid.uuid, conn_handle);
+
+	db_srv_disc_req.type = BLE_GQ_REQ_SRV_DISCOVERY;
+	db_srv_disc_req.gattc_srv_disc.start_handle = CONFIG_SRV_DISC_START_HANDLE;
+	db_srv_disc_req.gattc_srv_disc.srvc_uuid = srv_being_discovered->srv_uuid;
+	db_srv_disc_req.error_handler.ctx = db_discovery;
+	db_srv_disc_req.error_handler.cb = discovery_error_handler;
+
+	err_code = ble_gq_item_add(db_discovery->gatt_queue, &db_srv_disc_req, conn_handle);
+
+	if (err_code == NRF_SUCCESS) {
+		db_discovery->discovery_in_progress = true;
+	}
 
 	return err_code;
 }
 
-uint32_t ble_db_discovery_close(struct ble_db_discovery *const p_db_discovery)
+uint32_t ble_db_discovery_init(struct ble_db_discovery *db_discovery,
+			       struct ble_db_discovery_config *db_config)
 {
-	m_num_of_handlers_reg = 0;
-	m_initialized = false;
-	p_db_discovery->pending_usr_evt_index = 0;
+	if (!db_discovery || !db_config || !(db_config->evt_handler) || !(db_config->gatt_queue)) {
+		return NRF_ERROR_NULL;
+	}
+
+	db_discovery->num_of_handlers_reg = 0;
+	db_discovery->evt_handler = db_config->evt_handler;
+	db_discovery->gatt_queue = db_config->gatt_queue;
 
 	return NRF_SUCCESS;
 }
 
-uint32_t ble_db_discovery_evt_register(ble_uuid_t const *p_uuid)
+uint32_t ble_db_discovery_start(struct ble_db_discovery *const db_discovery, uint16_t conn_handle)
 {
-	// VERIFY_PARAM_NOT_NULL(p_uuid);
-	// VERIFY_MODULE_INITIALIZED();
-
-	return registered_handler_set(p_uuid, m_evt_handler);
-}
-
-static uint32_t discovery_start(struct ble_db_discovery *const p_db_discovery, uint16_t conn_handle)
-{
-	int err_code;
-	struct ble_gatt_db_srv *p_srv_being_discovered;
-	struct ble_gq_req db_srv_disc_req;
-
-	memset(p_db_discovery, 0x00, sizeof(struct ble_db_discovery));
-	memset(&db_srv_disc_req, 0x00, sizeof(struct ble_gq_req));
-
-	err_code = ble_gq_conn_handle_register(mp_gatt_queue, conn_handle);
-	// VERIFY_SUCCESS(err_code);
-
-	p_db_discovery->conn_handle = conn_handle;
-
-	p_db_discovery->pending_usr_evt_index = 0;
-
-	p_db_discovery->discoveries_count = 0;
-	p_db_discovery->curr_srv_ind = 0;
-	p_db_discovery->curr_char_ind = 0;
-
-	p_srv_being_discovered = &(p_db_discovery->services[p_db_discovery->curr_srv_ind]);
-	p_srv_being_discovered->srv_uuid = m_registered_handlers[p_db_discovery->curr_srv_ind];
-
-	LOG_DBG("Starting discovery of service with UUID 0x%x on connection handle 0x%x.",
-		p_srv_being_discovered->srv_uuid.uuid, conn_handle);
-
-	db_srv_disc_req.type = BLE_GQ_REQ_SRV_DISCOVERY;
-	db_srv_disc_req.gattc_srv_disc.start_handle = SRV_DISC_START_HANDLE;
-	db_srv_disc_req.gattc_srv_disc.srvc_uuid = p_srv_being_discovered->srv_uuid;
-	db_srv_disc_req.error_handler.ctx = p_db_discovery;
-	db_srv_disc_req.error_handler.cb = discovery_error_handler;
-
-	err_code = ble_gq_item_add(mp_gatt_queue, &db_srv_disc_req, conn_handle);
-
-	if (err_code == NRF_SUCCESS) {
-		p_db_discovery->discovery_in_progress = true;
+	if (!db_discovery) {
+		return NRF_ERROR_NULL;
 	}
-
-	return err_code;
-}
-
-uint32_t ble_db_discovery_start(struct ble_db_discovery *const p_db_discovery, uint16_t conn_handle)
-{
-	// VERIFY_PARAM_NOT_NULL(p_db_discovery);
-	// VERIFY_MODULE_INITIALIZED();
-
-	if (m_num_of_handlers_reg == 0) {
-		// No user modules were registered. There are no services to discover.
+	if (!db_discovery->gatt_queue) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	if (p_db_discovery->discovery_in_progress) {
+	if (db_discovery->num_of_handlers_reg == 0) {
+		/* No user modules were registered. There are no services to discover. */
+		return NRF_ERROR_INVALID_STATE;
+	}
+
+	if (db_discovery->discovery_in_progress) {
 		return NRF_ERROR_BUSY;
 	}
 
-	return discovery_start(p_db_discovery, conn_handle);
+	return discovery_start(db_discovery, conn_handle);
 }
 
-/**@brief     Function for handling disconnected event.
- *
- * @param[in] p_db_discovery    Pointer to the DB Discovery structure.
- * @param[in] p_ble_gattc_evt   Pointer to the GAP event.
- */
-static void on_disconnected(struct ble_db_discovery *p_db_discovery, ble_gap_evt_t const *p_evt)
+uint32_t ble_db_discovery_evt_register(struct ble_db_discovery *db_discovery,
+				       ble_uuid_t const *uuid)
 {
-	if (p_evt->conn_handle == p_db_discovery->conn_handle) {
-		p_db_discovery->discovery_in_progress = false;
-		p_db_discovery->conn_handle = BLE_CONN_HANDLE_INVALID;
+	if (!db_discovery || !uuid) {
+		return NRF_ERROR_NULL;
+	}
+	if (!db_discovery->gatt_queue) {
+		return NRF_ERROR_INVALID_STATE;
+	}
+
+	return registered_handler_set(db_discovery, uuid);
+}
+
+static void on_disconnected(struct ble_db_discovery *db_discovery, ble_gap_evt_t const *evt)
+{
+	if (evt->conn_handle == db_discovery->conn_handle) {
+		db_discovery->discovery_in_progress = false;
+		db_discovery->conn_handle = BLE_CONN_HANDLE_INVALID;
 	}
 }
 
-void ble_db_discovery_on_ble_evt(ble_evt_t const *p_ble_evt, void *p_context)
+void ble_db_discovery_on_ble_evt(ble_evt_t const *ble_evt, void *context)
 {
-	// VERIFY_PARAM_NOT_NULL_VOID(p_ble_evt);
-	// VERIFY_PARAM_NOT_NULL_VOID(p_context);
-	// VERIFY_MODULE_INITIALIZED_VOID();
+	struct ble_db_discovery *db_discovery = (struct ble_db_discovery *)context;
 
-	struct ble_db_discovery *p_db_discovery = (struct ble_db_discovery *)p_context;
+	if (!ble_evt || !context || !db_discovery->gatt_queue) {
+		return;
+	}
 
-	switch (p_ble_evt->header.evt_id) {
+	switch (ble_evt->header.evt_id) {
 	case BLE_GATTC_EVT_PRIM_SRVC_DISC_RSP:
-		on_primary_srv_discovery_rsp(p_db_discovery, &(p_ble_evt->evt.gattc_evt));
+		on_primary_srv_discovery_rsp(db_discovery, &(ble_evt->evt.gattc_evt));
 		break;
 
 	case BLE_GATTC_EVT_CHAR_DISC_RSP:
-		on_characteristic_discovery_rsp(p_db_discovery, &(p_ble_evt->evt.gattc_evt));
+		on_characteristic_discovery_rsp(db_discovery, &(ble_evt->evt.gattc_evt));
 		break;
 
 	case BLE_GATTC_EVT_DESC_DISC_RSP:
-		on_descriptor_discovery_rsp(p_db_discovery, &(p_ble_evt->evt.gattc_evt));
+		on_descriptor_discovery_rsp(db_discovery, &(ble_evt->evt.gattc_evt));
 		break;
 
 	case BLE_GAP_EVT_DISCONNECTED:
-		on_disconnected(p_db_discovery, &(p_ble_evt->evt.gap_evt));
+		on_disconnected(db_discovery, &(ble_evt->evt.gap_evt));
 		break;
 
 	default:

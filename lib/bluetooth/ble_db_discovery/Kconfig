@@ -10,3 +10,32 @@ menuconfig BLE_DB_DISCOVERY
 	select EXPERIMENTAL
 	help
 	  database discovery.
+
+if BLE_DB_DISCOVERY
+
+config BLE_GATT_DB_MAX_CHARS
+	int "Database max characteristics"
+	range 1 6
+	default 6
+	help
+		The maximum number of database characteristics.
+
+config BLE_DB_DISCOVERY_MAX_SRV
+	int "Max discovered services"
+	range 1 6
+	default 6
+	help
+		The total number of services that can be discovered by this module.
+
+config SRV_DISC_START_HANDLE
+	hex "Start handle value during discovery"
+	range 0x0000 0x0EFF
+	default 0x0001
+	help
+		The start handle value used during service discovery.
+
+module=BLE_DB_DISCOVERY
+module-str=BLE DB Discovery
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endif # BLE_DB_DISCOVERY
