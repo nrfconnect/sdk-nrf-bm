@@ -1,43 +1,10 @@
-/**
- * Copyright (c) 2013 - 2021, Nordic Semiconductor ASA
+/*
+ * Copyright (c) 2013 - 2025 Nordic Semiconductor ASA
  *
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form, except as embedded into a Nordic
- *    Semiconductor ASA integrated circuit in a product or a software update for
- *    such product, must reproduce the above copyright notice, this list of
- *    conditions and the following disclaimer in the documentation and/or other
- *    materials provided with the distribution.
- *
- * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- *
- * 4. This software, with or without modification, must only be used with a
- *    Nordic Semiconductor ASA integrated circuit.
- *
- * 5. Any software provided in binary form under this license must not be reverse
- *    engineered, decompiled, modified and/or disassembled.
- *
- * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
- * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
- * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
-/**@file
+/**
+ * @file
  *
  * @defgroup ble_db_discovery Database Discovery
  * @{
@@ -71,13 +38,12 @@
 #include <zephyr/kernel.h>
 #include <ble_gattc.h>
 #include <ble_gq.h>
-#define BLE_GATT_DB_MAX_CHARS	 6
-#define BLE_DB_DISCOVERY_MAX_SRV 6
 
 #ifndef BLE_DB_DISCOVERY_H__
 #define BLE_DB_DISCOVERY_H__
 
-/**@brief Macro for defining a ble_db_discovery instance.
+/**
+ * @brief Macro for defining a ble_db_discovery instance.
  *
  * @param _name Name of the instance.
  * @hideinitializer
@@ -89,135 +55,171 @@
 			     BLE_DB_DISC_BLE_OBSERVER_PRIO)
 
 struct ble_gatt_db_char {
-	ble_gattc_char_t
-		characteristic; /**< Structure containing information about the characteristic. */
-	uint16_t cccd_handle;	/**< CCCD Handle value for this characteristic. This will be set to
-				   BLE_GATT_HANDLE_INVALID if a CCCD is not present at the server. */
-	uint16_t ext_prop_handle;   /**< Extended Properties Handle value for this characteristic.
-				       This will be set to BLE_GATT_HANDLE_INVALID if an Extended
-				       Properties descriptor is not present at the server. */
-	uint16_t user_desc_handle;  /**< User Description Handle value for this characteristic. This
-				       will be set to BLE_GATT_HANDLE_INVALID if a User Description
-				       descriptor is not present at the server. */
-	uint16_t report_ref_handle; /**< Report Reference Handle value for this characteristic. This
-				       will be set to BLE_GATT_HANDLE_INVALID if a Report Reference
-				       descriptor is not present at the server. */
+	/* Structure containing information about the characteristic. */
+	ble_gattc_char_t characteristic;
+	/* CCCD Handle value for this characteristic. This will be set to
+	 * BLE_GATT_HANDLE_INVALID if a CCCD is not present at the server.
+	 */
+	uint16_t cccd_handle;
+	/* Extended Properties Handle value for this characteristic.
+	 * This will be set to BLE_GATT_HANDLE_INVALID if an Extended
+	 * Properties descriptor is not present at the server.
+	 */
+	uint16_t ext_prop_handle;
+	/* User Description Handle value for this characteristic. This
+	 * will be set to BLE_GATT_HANDLE_INVALID if a User Description
+	 * descriptor is not present at the server.
+	 */
+	uint16_t user_desc_handle;
+	/* Report Reference Handle value for this characteristic. This
+	 * will be set to BLE_GATT_HANDLE_INVALID if a Report Reference
+	 * descriptor is not present at the server.
+	 */
+	uint16_t report_ref_handle;
 };
 
 struct ble_gatt_db_srv {
-	ble_uuid_t srv_uuid; /**< UUID of the service. */
-	uint8_t char_count;  /**< Number of characteristics present in the service. */
-	ble_gattc_handle_range_t handle_range; /**< Service Handle Range. */
-	struct ble_gatt_db_char
-		charateristics[BLE_GATT_DB_MAX_CHARS]; /**< Array of information related to the
-							  characteristics present in the service.
-							  This list can extend further than one. */
+	/* UUID of the service. */
+	ble_uuid_t srv_uuid;
+	/* Number of characteristics present in the service. */
+	uint8_t char_count;
+	/* Service Handle Range. */
+	ble_gattc_handle_range_t handle_range;
+	/* Array of information related to the
+	 * characteristics present in the service.
+	 * This list can extend further than one.
+	 */
+	struct ble_gatt_db_char charateristics[CONFIG_BLE_GATT_DB_MAX_CHARS];
 };
 
 enum ble_db_discovery_evt_type {
-	BLE_DB_DISCOVERY_COMPLETE, /**< Event indicating that the discovery of one service is
-				      complete. */
-	BLE_DB_DISCOVERY_ERROR, /**< Event indicating that an internal error has occurred in the DB
-				   Discovery module. This could typically be because of the
-				   SoftDevice API returning an error code during the DB discover.*/
-	BLE_DB_DISCOVERY_SRV_NOT_FOUND, /**< Event indicating that the service was not found at the
-					   peer.*/
-	BLE_DB_DISCOVERY_AVAILABLE	/**< Event indicating that the DB discovery instance is
-					   available.*/
+	/* Event indicating that the discovery of one service is complete. */
+	BLE_DB_DISCOVERY_COMPLETE,
+	/* Event indicating that an internal error has occurred in the DB
+	 * Discovery module. This could typically be because of the
+	 * SoftDevice API returning an error code during the DB discover.
+	 */
+	BLE_DB_DISCOVERY_ERROR,
+	/* Event indicating that the service was not found at thepeer.*/
+	BLE_DB_DISCOVERY_SRV_NOT_FOUND,
+	/* Event indicating that the DB discovery instance is available.*/
+	BLE_DB_DISCOVERY_AVAILABLE
 };
 
 struct ble_db_discovery_evt {
-	enum ble_db_discovery_evt_type evt_type; /**< Type of event. */
-	uint16_t conn_handle; /**< Handle of the connection for which this event has occurred. */
+	/* Type of event. */
+	enum ble_db_discovery_evt_type evt_type;
+	/* Handle of the connection for which this event has occurred. */
+	uint16_t conn_handle;
 	union {
-		struct ble_gatt_db_srv
-			discovered_db;	   /**< Structure containing the information about the GATT
-					      Database at the server. This will be filled when the event
-					      type is @ref BLE_DB_DISCOVERY_COMPLETE. The UUID field of
-					      this will be filled when the event type is @ref
-					      BLE_DB_DISCOVERY_SRV_NOT_FOUND. */
-		void const *p_db_instance; /**< Pointer to DB discovery instance @ref
-					      ble_db_discovery_t, indicating availability to the new
-					      discovery process. This will be filled when the event
-					      type is @ref BLE_DB_DISCOVERY_AVAILABLE. */
-		uint32_t err_code; /**< nRF Error code indicating the type of error which occurred
-				      in the DB Discovery module. This will be filled when the event
-				      type is @ref BLE_DB_DISCOVERY_ERROR. */
+		/* Structure containing the information about the GATT
+		 * Database at the server. This will be filled when the event
+		 * type is @ref BLE_DB_DISCOVERY_COMPLETE. The UUID field of
+		 * this will be filled when the event type is @ref
+		 * BLE_DB_DISCOVERY_SRV_NOT_FOUND.
+		 */
+		struct ble_gatt_db_srv discovered_db;
+		/* Pointer to DB discovery instance @ref
+		 * ble_db_discovery_t, indicating availability to the new
+		 * discovery process. This will be filled when the event
+		 * type is @ref BLE_DB_DISCOVERY_AVAILABLE.
+		 */
+		void const *db_instance;
+		/* nRF Error code indicating the type of error which occurred
+		 * in the DB Discovery module. This will be filled when the event
+		 * type is @ref BLE_DB_DISCOVERY_ERROR.
+		 */
+		uint32_t err_code;
 	} params;
 };
 
-typedef void (*ble_db_discovery_evt_handler)(struct ble_db_discovery_evt *p_evt);
+typedef void (*ble_db_discovery_evt_handler)(struct ble_db_discovery_evt *evt);
 
 struct ble_db_discovery_init {
-	ble_db_discovery_evt_handler
-		evt_handler;	     /**< Event handler to be called by the DB Discovery module. */
-	struct ble_gq *p_gatt_queue; /**< Pointer to BLE GATT Queue instance. */
+	/* Event handler to be called by the DB Discovery module. */
+	ble_db_discovery_evt_handler evt_handler;
+	/* Pointer to BLE GATT Queue instance. */
+	struct ble_gq *gatt_queue;
 };
 
 struct ble_db_discovery_user_evt {
-	struct ble_db_discovery_evt evt; /**< Pending event. */
-	ble_db_discovery_evt_handler
-		evt_handler; /**< Event handler which should be called to raise this event. */
+	/* Pending event. */
+	struct ble_db_discovery_evt evt;
+	/* Event handler which should be called to raise this event. */
+	ble_db_discovery_evt_handler evt_handler;
 };
 
 struct ble_db_discovery {
-	struct ble_gatt_db_srv
-		services[BLE_DB_DISCOVERY_MAX_SRV]; /**< Information related to the current service
-						       being discovered. This is intended for
-						       internal use during service discovery.*/
-	uint8_t srv_count;     /**< Number of services at the peer's GATT database.*/
-	uint8_t curr_char_ind; /**< Index of the current characteristic being discovered. This is
-				  intended for internal use during service discovery.*/
-	uint8_t curr_srv_ind;  /**< Index of the current service being discovered. This is intended
-				  for internal use during service discovery.*/
-	uint8_t discoveries_count;  /**< Number of service discoveries made, both successful and
-				       unsuccessful. */
-	bool discovery_in_progress; /**< Variable to indicate whether there is a service discovery
-				       in progress. */
-	uint16_t conn_handle;	    /**< Connection handle on which the discovery is started. */
-	uint32_t pending_usr_evt_index; /**< The index to the pending user event array, pointing to
-					   the last added pending user event. */
-	struct ble_db_discovery_user_evt pending_usr_evts
-		[BLE_DB_DISCOVERY_MAX_SRV]; /**< Whenever a discovery related event is to be raised
-					       to a user module, it is stored in this array first.
-					       When all expected services have been discovered, all
-					       pending events are sent to the corresponding user
-					       modules. */
+	/* Information related to the current service
+	 * being discovered. This is intended for
+	 * internal use during service discovery.
+	 */
+	struct ble_gatt_db_srv services[CONFIG_BLE_DB_DISCOVERY_MAX_SRV];
+	/* Number of services at the peer's GATT database.*/
+	uint8_t srv_count;
+	/* Index of the current characteristic being discovered. This is
+	 * intended for internal use during service discovery.
+	 */
+	uint8_t curr_char_ind;
+	/* Index of the current service being discovered. This is intended
+	 * for internal use during service discovery.
+	 */
+	uint8_t curr_srv_ind;
+	/* Number of service discoveries made, both successful and unsuccessful. */
+	uint8_t discoveries_count;
+	/* Variable to indicate whether there is a service discovery in progress. */
+	bool discovery_in_progress;
+	/* Connection handle on which the discovery is started. */
+	uint16_t conn_handle;
+	/* The index to the pending user event array, pointing to
+	 * the last added pending user event.
+	 */
+	uint32_t pending_usr_evt_index;
+	/* Whenever a discovery related event is to be raised
+	 * to a user module, it is stored in this array first.
+	 * When all expected services have been discovered, all
+	 * pending events are sent to the corresponding user
+	 * modules.
+	 */
+	struct ble_db_discovery_user_evt pending_usr_evts[CONFIG_BLE_DB_DISCOVERY_MAX_SRV];
 };
 
-/**@brief Function for initializing the DB Discovery module.
+/**
+ * @brief Function for initializing the DB Discovery module.
  *
- * @param[in] p_db_init   Pointer to DB discovery initialization structure.
+ * @param[in] db_init   Pointer to DB discovery initialization structure.
  *
  * @retval NRF_SUCCESS    On successful initialization.
  * @retval NRF_ERROR_NULL If the initialization structure was NULL or
  *                        the structure content is empty.
  */
-uint32_t ble_db_discovery_init(struct ble_db_discovery_init *p_db_init);
+uint32_t ble_db_discovery_init(struct ble_db_discovery_init *db_init);
 
-/**@brief Function for closing the DB Discovery module.
+/**
+ * @brief Function for closing the DB Discovery module.
  *
  * @details This function will clear up any internal variables and states maintained by the
  *          module. To re-use the module after calling this function, the function @ref
  *          ble_db_discovery_init must be called again. When using more than one DB Discovery
  *          instance, this function should be called for each instance.
  *
- * @param[out] p_db_discovery Pointer to the DB discovery structure.
+ * @param[out] db_discovery Pointer to the DB discovery structure.
  *
  * @retval NRF_SUCCESS Operation success.
  */
-uint32_t ble_db_discovery_close(struct ble_db_discovery *const p_db_discovery);
+uint32_t ble_db_discovery_close(struct ble_db_discovery *const db_discovery);
 
-/**@brief Function for registering with the DB Discovery module.
+/**
+ * @brief Function for registering with the DB Discovery module.
  *
  * @details The application can use this function to inform which service it is interested in
  *          discovering at the server.
  *
- * @param[in] p_uuid Pointer to the UUID of the service to be discovered at the server.
+ * @param[in] uuid Pointer to the UUID of the service to be discovered at the server.
  *
  * @note The total number of services that can be discovered by this module is @ref
- *       BLE_DB_DISCOVERY_MAX_SRV. This effectively means that the maximum number of
- *       registrations possible is equal to the @ref BLE_DB_DISCOVERY_MAX_SRV.
+ *       CONFIG_BLE_DB_DISCOVERY_MAX_SRV. This effectively means that the maximum number of
+ *       registrations possible is equal to the @ref CONFIG_BLE_DB_DISCOVERY_MAX_SRV.
  *
  * @retval NRF_SUCCESS             Operation success.
  * @retval NRF_ERROR_NULL          When a NULL pointer is passed as input.
@@ -226,11 +228,12 @@ uint32_t ble_db_discovery_close(struct ble_db_discovery *const p_db_discovery);
  * @retval NRF_ERROR_NO_MEM        The maximum number of registrations allowed by this module
  *                                 has been reached.
  */
-uint32_t ble_db_discovery_evt_register(const ble_uuid_t *const p_uuid);
+uint32_t ble_db_discovery_evt_register(const ble_uuid_t *const uuid);
 
-/**@brief Function for starting the discovery of the GATT database at the server.
+/**
+ * @brief Function for starting the discovery of the GATT database at the server.
  *
- * @param[out] p_db_discovery Pointer to the DB Discovery structure.
+ * @param[out] db_discovery Pointer to the DB Discovery structure.
  * @param[in]  conn_handle    The handle of the connection for which the discovery should be
  *                            started.
  *
@@ -240,20 +243,21 @@ uint32_t ble_db_discovery_evt_register(const ble_uuid_t *const p_uuid);
  *                                 @ref ble_db_discovery_init, or without calling
  *                                 @ref ble_db_discovery_evt_register.
  * @retval NRF_ERROR_BUSY          If a discovery is already in progress using
- *                                 @p p_db_discovery. Use a different @ref ble_db_discovery_t
+ *                                 @p db_discovery. Use a different @ref ble_db_discovery
  *                                 structure, or wait for a DB Discovery event before retrying.
  * @return                         This API propagates the error code returned by functions:
  *                                 @ref nrf_ble_gq_conn_handle_register and @ref
  * nrf_ble_gq_item_add.
  */
-uint32_t ble_db_discovery_start(struct ble_db_discovery *p_db_discovery, uint16_t conn_handle);
+uint32_t ble_db_discovery_start(struct ble_db_discovery *db_discovery, uint16_t conn_handle);
 
-/**@brief Function for handling the Application's BLE Stack events.
+/**
+ * @brief Function for handling the Application's BLE Stack events.
  *
- * @param[in]     p_ble_evt Pointer to the BLE event received.
- * @param[in,out] p_context Pointer to the DB Discovery structure.
+ * @param[in]     ble_evt Pointer to the BLE event received.
+ * @param[in,out] context Pointer to the DB Discovery structure.
  */
-void ble_db_discovery_on_ble_evt(ble_evt_t const *p_ble_evt, void *p_context);
+void ble_db_discovery_on_ble_evt(ble_evt_t const *ble_evt, void *context);
 
 #endif // BLE_DB_DISCOVERY_H__
 

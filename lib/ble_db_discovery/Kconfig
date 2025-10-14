@@ -10,3 +10,21 @@ menuconfig BLE_DB_DISCOVERY
 	select EXPERIMENTAL
 	help
 	  database discovery.
+
+if BLE_DB_DISCOVERY
+
+config BLE_GATT_DB_MAX_CHARS
+	int "database max characteristics"
+	range 1 6
+	default 6
+	help
+		The maximum number of database characteristics.
+
+config BLE_DB_DISCOVERY_MAX_SRV
+	int "max discovered services"
+	range 1 6
+	default 6
+	help
+		The total number of services that can be discovered by this module
+
+endif # BLE_DB_DISCOVERY
