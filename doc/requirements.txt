@@ -1,0 +1,7 @@
+doxmlparser
+Sphinx>=8.1,<8.2
+sphinx-copybutton
+sphinx-tabs
+sphinx-togglebutton
+sphinx-ncs-theme<1.1
+west
