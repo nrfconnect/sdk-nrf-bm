@@ -53,3 +53,11 @@ Sample usage
 ************
 
 See the :ref:`bm_lpuarte_sample` sample for the implementation of this driver.
+
+API Reference
+*************
+
+| Header file: :file:`include/bm/drivers/bm_lpuarte.h`
+| Source files: :file:`drivers/bm_lpuarte/`
+
+:ref:`Bare Metal Low Power UARTE API reference <api_bm_lpuarte>`
