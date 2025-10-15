@@ -26,9 +26,9 @@
 #include <bm/bluetooth/services/ble_cgms.h>
 #include <bm/bluetooth/services/ble_dis.h>
 #include <bm/sensorsim.h>
-#include <bm/nrf_sdh.h>
-#include <bm/nrf_sdh_soc.h>
-#include <bm/nrf_sdh_ble.h>
+#include <bm/softdevice_handler/nrf_sdh.h>
+#include <bm/softdevice_handler/nrf_sdh_soc.h>
+#include <bm/softdevice_handler/nrf_sdh_ble.h>
 #include <nrf_soc.h>
 #include <bm/bm_timer.h>
 #include <bm/bm_buttons.h>

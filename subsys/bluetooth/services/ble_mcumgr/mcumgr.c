@@ -10,8 +10,8 @@
 #include <string.h>
 #include <ble_gap.h>
 #include <nrf_soc.h>
-#include <bm/nrf_sdh.h>
-#include <bm/nrf_sdh_ble.h>
+#include <bm/softdevice_handler/nrf_sdh.h>
+#include <bm/softdevice_handler/nrf_sdh_ble.h>
 #include <bm/bluetooth/ble_conn_params.h>
 #include <bm/bluetooth/services/common.h>
 #include <bm/bluetooth/services/uuid.h>

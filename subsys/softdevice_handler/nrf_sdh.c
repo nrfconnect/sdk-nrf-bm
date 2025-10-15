@@ -5,7 +5,7 @@
  */
 #include <stdint.h>
 #include <nrf_sdm.h>
-#include <bm/nrf_sdh.h>
+#include <bm/softdevice_handler/nrf_sdh.h>
 #include <bm/event_scheduler.h>
 #include <zephyr/toolchain.h>
 #include <zephyr/logging/log.h>

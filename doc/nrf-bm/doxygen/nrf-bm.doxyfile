@@ -957,8 +957,13 @@ WARN_LOGFILE           =
 
 INPUT                  = ../../../include/ \
                          ../../../include/bm/ \
+                         ../../../include/bm/bluetooth \
                          ../../../include/bm/bluetooth/services \
                          ../../../include/bm/bluetooth/peer_manager \
+                         ../../../include/bm/drivers \
+                         ../../../include/bm/fs \
+                         ../../../include/bm/softdevice_handler \
+                         ../../../include/bm/storage \
                          mainpage.dox
 
 # This tag can be used to specify the character encoding of the source files

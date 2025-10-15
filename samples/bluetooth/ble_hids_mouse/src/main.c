@@ -20,8 +20,8 @@
 #include <bm/bluetooth/peer_manager/peer_manager.h>
 #include <bm/bluetooth/peer_manager/peer_manager_handler.h>
 
-#include <bm/nrf_sdh.h>
-#include <bm/nrf_sdh_ble.h>
+#include <bm/softdevice_handler/nrf_sdh.h>
+#include <bm/softdevice_handler/nrf_sdh_ble.h>
 #include <bm/event_scheduler.h>
 #include <bm/bm_buttons.h>
 #include <bm/bm_timer.h>

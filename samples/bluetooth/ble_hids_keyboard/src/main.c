@@ -10,8 +10,8 @@
 #include <nrf_soc.h>
 #include <ble_gap.h>
 #include <ble_types.h>
-#include <bm/nrf_sdh.h>
-#include <bm/nrf_sdh_ble.h>
+#include <bm/softdevice_handler/nrf_sdh.h>
+#include <bm/softdevice_handler/nrf_sdh_ble.h>
 #include <bm/sensorsim.h>
 #include <bm/bm_timer.h>
 #include <bm/bm_buttons.h>

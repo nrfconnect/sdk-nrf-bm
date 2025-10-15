@@ -22,7 +22,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <bm/nrf_sdh_ble.h>
+#include <bm/softdevice_handler/nrf_sdh_ble.h>
 
 #include <zephyr/kernel.h>
 #include <zephyr/sys/slist.h>

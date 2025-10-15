@@ -18,7 +18,7 @@ ${SOFTDEVICE_VARIANT}/${SOFTDEVICE_VARIANT}_API/include"
 
 cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble.h)
 cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble_gatts.h)
-cmock_handle(${ZEPHYR_NRF_BM_MODULE_DIR}/include/bm/nrf_sdh_ble.h)
+cmock_handle(${ZEPHYR_NRF_BM_MODULE_DIR}/include/bm/softdevice_handler/nrf_sdh_ble.h)
 
 target_compile_definitions(app PRIVATE
   NRF54L15_XXAA
