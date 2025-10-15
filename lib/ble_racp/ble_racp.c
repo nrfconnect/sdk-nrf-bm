@@ -3,10 +3,11 @@
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
-#include <ble_racp.h>
+
+#include <errno.h>
 #include <stdlib.h>
 #include <stddef.h>
-#include <errno.h>
+#include <bm/bluetooth/ble_racp.h>
 
 int ble_racp_decode(const uint8_t *data, size_t data_len, struct ble_racp_value *racp_val)
 {

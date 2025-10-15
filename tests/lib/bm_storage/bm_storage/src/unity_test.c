@@ -6,7 +6,7 @@
 #include <unity.h>
 #include <nrf_error.h>
 
-#include <bm_storage.h>
+#include <bm/bm_storage.h>
 
 /* Arbitrary block size. */
 #define BLOCK_SIZE 16

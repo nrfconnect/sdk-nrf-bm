@@ -17,8 +17,8 @@
 #define PEER_DATABASE_H__
 
 #include <stdint.h>
-#include <bluetooth/peer_manager/peer_manager_types.h>
-#include <nrf_sdh_ble.h>
+#include <bm/bluetooth/peer_manager/peer_manager_types.h>
+#include <bm/nrf_sdh_ble.h>
 #include "peer_manager_internal.h"
 
 #ifdef __cplusplus

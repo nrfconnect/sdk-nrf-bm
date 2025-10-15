@@ -9,8 +9,8 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include <bluetooth/services/ble_dis.h>
-#include <bluetooth/services/uuid.h>
+#include <bm/bluetooth/services/ble_dis.h>
+#include <bm/bluetooth/services/uuid.h>
 #include <nrf_error.h>
 
 #include "cmock_ble_gatts.h"

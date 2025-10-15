@@ -3,16 +3,17 @@
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
+
+#include <errno.h>
 #include <unity.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
 #include <strings.h>
-#include <errno.h>
+#include <bm/bluetooth/ble_qwr.h>
 
 #include "cmock_ble.h"
 #include "cmock_ble_gatts.h"
-#include <ble_qwr.h>
 
 static uint16_t ble_qwr_evt_handler(struct ble_qwr *qwr, const struct ble_qwr_evt *evt)
 {

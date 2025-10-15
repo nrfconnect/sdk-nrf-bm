@@ -16,8 +16,8 @@
 #include <zephyr/sys/ring_buffer.h>
 #include <zephyr/logging/log.h>
 
-#include <bm_storage.h>
-#include <bm_zms.h>
+#include <bm/bm_storage.h>
+#include <bm/bm_zms.h>
 #include "bm_zms_priv.h"
 
 #if CONFIG_HAS_NRFX

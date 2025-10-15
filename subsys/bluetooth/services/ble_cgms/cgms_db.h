@@ -20,7 +20,7 @@
 #ifndef BLE_CGMS_DB_H__
 #define BLE_CGMS_DB_H__
 
-#include <bluetooth/services/ble_cgms.h>
+#include <bm/bluetooth/services/ble_cgms.h>
 
 #ifdef __cplusplus
 extern "C" {

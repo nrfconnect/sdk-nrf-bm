@@ -58,5 +58,5 @@ Apache-2.0: |
   ^nrf-bm/subsys/mgmt/mcumgr/transport/src/bm_uart_mcumgr.c
   ^nrf-bm/subsys/mgmt/mcumgr/transport/src/smp_uart.c
   ^nrf-bm/lib/bm_zms/
-  ^nrf-bm/include/bm_zms.h
+  ^nrf-bm/include/bm/bm_zms.h
   ^nrf-bm/tests/lib/bm_zms/

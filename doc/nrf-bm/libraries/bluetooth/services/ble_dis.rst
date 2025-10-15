@@ -71,7 +71,7 @@ This library uses the following |BMshort| libraries:
 API documentation
 *****************
 
-| Header file: :file:`include/bluetooth/services/ble_dis.h`
+| Header file: :file:`include/bm/bluetooth/services/ble_dis.h`
 | Source files: :file:`subsys/bluetooth/services/ble_dis/`
 
 :ref:`Device Information Service API reference <api_dis>`

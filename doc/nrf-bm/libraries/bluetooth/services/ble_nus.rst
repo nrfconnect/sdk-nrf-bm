@@ -47,7 +47,7 @@ This library uses the following |BMshort| libraries:
 API documentation
 *****************
 
-| Header file: :file:`include/bluetooth/services/ble_nus.h`
+| Header file: :file:`include/bm/bluetooth/services/ble_nus.h`
 | Source files: :file:`subsys/bluetooth/services/ble_nus/`
 
 :ref:`Nordic UART Service (NUS) API reference <api_ble_nus>`

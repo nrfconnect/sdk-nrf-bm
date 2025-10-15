@@ -18,7 +18,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <ble_adv_data.h>
+#include <bm/bluetooth/ble_adv_data.h>
 #include <ble.h>
 #include <ble_gap.h>
 #include <ble_gattc.h>

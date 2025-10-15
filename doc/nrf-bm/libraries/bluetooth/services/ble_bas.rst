@@ -50,7 +50,7 @@ This library uses the following |BMshort| libraries:
 API documentation
 *****************
 
-| Header file: :file:`include/bluetooth/services/ble_bas.h`
+| Header file: :file:`include/bm/bluetooth/services/ble_bas.h`
 | Source files: :file:`subsys/bluetooth/services/ble_bas/`
 
 :ref:`Battery Service API reference <api_ble_bas>`

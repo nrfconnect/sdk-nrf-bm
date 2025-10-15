@@ -3,14 +3,14 @@
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
+
+#include <errno.h>
 #include <unity.h>
 #include <stdint.h>
 #include <string.h>
 #include <stddef.h>
-#include <errno.h>
-
-#include <ble_adv.h>
-#include <ble_adv_data.h>
+#include <bm/bluetooth/ble_adv.h>
+#include <bm/bluetooth/ble_adv_data.h>
 
 #include "cmock_ble.h"
 #include "cmock_ble_gap.h"

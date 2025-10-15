@@ -21,8 +21,8 @@
 #define BLE_CGMS_SST_H__
 
 #include <ble.h>
-#include <bluetooth/services/ble_date_time.h>
-#include <bluetooth/services/ble_cgms.h>
+#include <bm/bluetooth/services/ble_date_time.h>
+#include <bm/bluetooth/services/ble_cgms.h>
 
 #ifdef __cplusplus
 extern "C" {

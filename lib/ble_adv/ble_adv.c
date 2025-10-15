@@ -3,12 +3,12 @@
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
-#include "zephyr/toolchain.h"
-#include <ble_adv.h>
-#include <ble_adv_data.h>
-#include <nrf_sdh_ble.h>
-#include <zephyr/logging/log.h>
 #include <errno.h>
+#include "zephyr/toolchain.h"
+#include <bm/bluetooth/ble_adv.h>
+#include <bm/bluetooth/ble_adv_data.h>
+#include <bm/nrf_sdh_ble.h>
+#include <zephyr/logging/log.h>
 
 LOG_MODULE_REGISTER(ble_adv, CONFIG_BLE_ADV_LOG_LEVEL);
 

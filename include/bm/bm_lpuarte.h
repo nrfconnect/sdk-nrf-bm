@@ -17,7 +17,7 @@
 #include <zephyr/sys/util.h>
 #include <nrfx_gpiote.h>
 #include <nrfx_uarte.h>
-#include <bm_timer.h>
+#include <bm/bm_timer.h>
 
 #ifdef __cplusplus
 extern "C" {

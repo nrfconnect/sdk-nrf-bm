@@ -50,7 +50,7 @@ This library uses the following |BMshort| libraries:
 API documentation
 *****************
 
-| Header file: :file:`include/bluetooth/services/ble_lbs.h`
+| Header file: :file:`include/bm/bluetooth/services/ble_lbs.h`
 | Source files: :file:`subsys/bluetooth/services/ble_lbs/`
 
 :ref:`LED Button Service API reference <api_lbs>`

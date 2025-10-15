@@ -58,7 +58,7 @@ This library uses the following |BMshort| libraries:
 API documentation
 *****************
 
-| Header file: :file:`include/bluetooth/services/ble_cgms.h`
+| Header file: :file:`include/bm/bluetooth/services/ble_cgms.h`
 | Source files: :file:`subsys/bluetooth/services/ble_cgms/`
 
 :ref:`Continuous Glucose Monitoring Service API reference <api_ble_cgms>`

@@ -3,35 +3,35 @@
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
- #include <stdint.h>
+
 #include <errno.h>
+#include <stdint.h>
 #include <string.h>
-#include <bluetooth/services/common.h>
-#include <bm_timer.h>
-#include <bm_buttons.h>
-#include <ble_adv_data.h>
-#include <ble_conn_params.h>
 #include <ble_gap.h>
-#include <ble_qwr.h>
-#include <nrf_sdh.h>
-#include <nrf_sdh_ble.h>
 #include <nrf_soc.h>
+#include <bm/bluetooth/services/common.h>
+#include <bm/bm_timer.h>
+#include <bm/bm_buttons.h>
+#include <bm/bluetooth/ble_adv_data.h>
+#include <bm/bluetooth/ble_conn_params.h>
+#include <bm/bluetooth/ble_qwr.h>
+#include <bm/nrf_sdh.h>
+#include <bm/nrf_sdh_ble.h>
+
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 #include <zephyr/sys/util.h>
-#include <board-config.h>
-
 #include <zephyr/toolchain.h>
 #include <zephyr/drivers/retained_mem/nrf_retained_mem.h>
 
 #include <hal/nrf_regulators.h>
-#include <helpers/nrfx_reset_reason.h>
-
 #include <hal/nrf_gpio.h>
-
+#include <helpers/nrfx_reset_reason.h>
 #if defined(CONFIG_HAS_NORDIC_RAM_CTRL)
 #include <helpers/nrfx_ram_ctrl.h>
 #endif
+
+#include <board-config.h>
 
 LOG_MODULE_REGISTER(app, CONFIG_BLE_PWR_PROFILING_SAMPLE_LOG_LEVEL);
 

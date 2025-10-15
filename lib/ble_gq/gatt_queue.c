@@ -7,9 +7,8 @@
 #include <errno.h>
 #include <stdbool.h>
 #include <stdint.h>
-
-#include <ble_gq.h>
-#include <nrf_sdh_ble.h>
+#include <bm/bluetooth/ble_gq.h>
+#include <bm/nrf_sdh_ble.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/__assert.h>

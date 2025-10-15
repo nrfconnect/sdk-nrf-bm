@@ -6,8 +6,8 @@
 
 #include <zephyr/sys/__assert.h>
 #include <zephyr/logging/log.h>
-#include <bluetooth/services/ble_lbs.h>
-#include <bluetooth/services/uuid.h>
+#include <bm/bluetooth/services/ble_lbs.h>
+#include <bm/bluetooth/services/uuid.h>
 
 LOG_MODULE_REGISTER(ble_lbs, CONFIG_BLE_LBS_LOG_LEVEL);
 
