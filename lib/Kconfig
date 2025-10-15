@@ -5,20 +5,12 @@
 #
 menu "Libraries"
 
-rsource "ble_adv/Kconfig"
-rsource "ble_conn_params/Kconfig"
-rsource "ble_conn_state/Kconfig"
-rsource "ble_gq/Kconfig"
-rsource "ble_racp/Kconfig"
+rsource "bluetooth/Kconfig"
 rsource "event_scheduler/Kconfig"
 rsource "bm_buttons/Kconfig"
-rsource "bm_storage/Kconfig"
 rsource "bm_timer/Kconfig"
-rsource "ble_qwr/Kconfig"
 rsource "sensorsim/Kconfig"
 rsource "boot_banner/Kconfig"
 rsource "zephyr_queue/Kconfig"
-rsource "bm_zms/Kconfig"
-rsource "peer_manager/Kconfig"
 
 endmenu

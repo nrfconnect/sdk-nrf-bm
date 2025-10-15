@@ -7,8 +7,8 @@
 #include <errno.h>
 #include <string.h>
 #include <ble_gap.h>
-#include <bm/nrf_sdh.h>
-#include <bm/nrf_sdh_ble.h>
+#include <bm/softdevice_handler/nrf_sdh.h>
+#include <bm/softdevice_handler/nrf_sdh_ble.h>
 #include <bm/bluetooth/ble_adv.h>
 #include <bm/bluetooth/ble_conn_params.h>
 #include <bm/bluetooth/ble_qwr.h>
@@ -16,7 +16,7 @@
 #include <nrf_soc.h>
 #include <nrfx_uarte.h>
 #if defined(CONFIG_NUS_LPUARTE)
-#include <bm/bm_lpuarte.h>
+#include <bm/drivers/bm_lpuarte.h>
 #endif
 
 #include <zephyr/logging/log.h>

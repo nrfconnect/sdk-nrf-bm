@@ -12,11 +12,11 @@
 #define BM_ZMS_PARTITION_SIZE DT_REG_SIZE(STORAGE_NODE)
 
 #if defined(CONFIG_SOFTDEVICE)
-#include <bm/nrf_sdh.h>
+#include <bm/softdevice_handler/nrf_sdh.h>
 #include <nrf_soc.h>
 #endif
 
-#include <bm/bm_zms.h>
+#include <bm/fs/bm_zms.h>
 
 static struct bm_zms_fs fs;
 static bool nvm_is_full;

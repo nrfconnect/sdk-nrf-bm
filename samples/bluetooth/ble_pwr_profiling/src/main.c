@@ -15,8 +15,8 @@
 #include <bm/bluetooth/ble_adv_data.h>
 #include <bm/bluetooth/ble_conn_params.h>
 #include <bm/bluetooth/ble_qwr.h>
-#include <bm/nrf_sdh.h>
-#include <bm/nrf_sdh_ble.h>
+#include <bm/softdevice_handler/nrf_sdh.h>
+#include <bm/softdevice_handler/nrf_sdh_ble.h>
 
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
