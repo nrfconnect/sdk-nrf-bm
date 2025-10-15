@@ -1,0 +1,4 @@
+/* Mock values for PEER_MANAGER_NODE, PEER_MANAGER_PARTITION_OFFSET and
+ * PEER_MANAGER_PARTITION_SIZE in peer manager file peer_data_storage.c.
+ */
+peer_manager_partition: &storage_partition {};

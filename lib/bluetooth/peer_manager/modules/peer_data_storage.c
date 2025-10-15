@@ -282,7 +282,9 @@ static void bm_zms_evt_handler(const struct bm_zms_evt *evt)
 static void wait_for_init(void)
 {
 	while (!fs.init_flags.initialized) {
+#if !defined(CONFIG_UNITY)
 		k_cpu_idle();
+#endif
 	}
 }
 

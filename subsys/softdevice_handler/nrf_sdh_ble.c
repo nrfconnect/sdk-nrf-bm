@@ -62,7 +62,7 @@ const char *nrf_sdh_ble_evt_to_str(uint32_t evt)
 		return "BLE_GAP_EVT_SEC_REQUEST";
 	case BLE_GAP_EVT_CONN_PARAM_UPDATE_REQUEST:
 		return "BLE_GAP_EVT_CONN_PARAM_UPDATE_REQUEST";
-#endif
+#endif /* CONFIG_SOFTDEVICE_CENTRAL */
 	case BLE_GAP_EVT_SCAN_REQ_REPORT:
 		return "BLE_GAP_EVT_SCAN_REQ_REPORT";
 	case BLE_GAP_EVT_PHY_UPDATE_REQUEST:
@@ -175,13 +175,13 @@ static int default_cfg_set(void)
 		ble_cfg.gap_cfg.role_count_cfg.adv_set_count = BLE_GAP_ADV_SET_COUNT_DEFAULT;
 #endif
 
-#if CONFIG_SOFTDEVICE_CENTRAL
+#if defined(CONFIG_SOFTDEVICE_CENTRAL)
 		ble_cfg.gap_cfg.role_count_cfg.central_role_count =
 			CONFIG_NRF_SDH_BLE_CENTRAL_LINK_COUNT;
 		ble_cfg.gap_cfg.role_count_cfg.central_sec_count =
 			MIN(CONFIG_NRF_SDH_BLE_CENTRAL_LINK_COUNT,
 			    BLE_GAP_ROLE_COUNT_CENTRAL_SEC_DEFAULT);
-#endif
+#endif /* CONFIG_SOFTDEVICE_CENTRAL */
 
 	err = sd_ble_cfg_set(BLE_GAP_CFG_ROLE_COUNT, &ble_cfg, app_ram_start);
 	if (err) {
