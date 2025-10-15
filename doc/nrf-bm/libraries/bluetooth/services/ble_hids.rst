@@ -72,7 +72,7 @@ This library uses the following |BMshort| libraries:
 API documentation
 *****************
 
-| Header file: :file:`include/bluetooth/services/ble_hids.h`
+| Header file: :file:`include/bm/bluetooth/services/ble_hids.h`
 | Source files: :file:`subsys/bluetooth/services/ble_hids/`
 
 :ref:`Human Interface Device Service (HIDS) API reference <api_human_interface_device_service>`

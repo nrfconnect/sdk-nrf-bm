@@ -18,7 +18,7 @@
 #include <ble.h>
 #include <ble_gap.h>
 #include <ble_gatts.h>
-#include <nrf_sdh_ble.h>
+#include <bm/nrf_sdh_ble.h>
 #include "common.h"
 
 #ifdef __cplusplus

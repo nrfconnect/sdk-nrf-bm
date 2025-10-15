@@ -4,25 +4,26 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <stdint.h>
-#include <string.h>
-#include <zephyr/logging/log.h>
-#include <zephyr/sys/util.h>
 #include <nrf_error.h>
 #include <nrf_strerror.h>
+#include <stdint.h>
+#include <string.h>
 #include <ble.h>
 #include <ble_gap.h>
 #include <ble_err.h>
-#include <ble_conn_state.h>
-#include <bluetooth/peer_manager/peer_manager_types.h>
+#include <bm/bluetooth/ble_conn_state.h>
+#include <bm/bluetooth/peer_manager/peer_manager_types.h>
+
 #include <modules/peer_data_storage.h>
 #include <modules/peer_database.h>
 #include <modules/id_manager.h>
+#include <modules/security_dispatcher.h>
 #if defined(CONFIG_PM_RA_PROTECTION)
 #include <modules/auth_status_tracker.h>
 #endif /* CONFIG_PM_RA_PROTECTION */
 
-#include <modules/security_dispatcher.h>
+#include <zephyr/logging/log.h>
+#include <zephyr/sys/util.h>
 
 LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 

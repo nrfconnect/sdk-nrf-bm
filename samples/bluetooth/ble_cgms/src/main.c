@@ -19,21 +19,20 @@
 #include <string.h>
 #include <nrf.h>
 #include <ble.h>
-#include <ble_adv.h>
-#include <ble_conn_params.h>
-#include <sensorsim.h>
-#include <nrf_sdh.h>
-#include <nrf_sdh_soc.h>
-#include <nrf_sdh_ble.h>
+#include <bm/bluetooth/ble_adv.h>
+#include <bm/bluetooth/ble_conn_params.h>
+#include <bm/bluetooth/services/uuid.h>
+#include <bm/bluetooth/services/ble_bas.h>
+#include <bm/bluetooth/services/ble_cgms.h>
+#include <bm/bluetooth/services/ble_dis.h>
+#include <bm/sensorsim.h>
+#include <bm/nrf_sdh.h>
+#include <bm/nrf_sdh_soc.h>
+#include <bm/nrf_sdh_ble.h>
 #include <nrf_soc.h>
-#include <bm_timer.h>
-#include <bm_buttons.h>
-#include <ble_qwr.h>
-
-#include <bluetooth/services/uuid.h>
-#include <bluetooth/services/ble_bas.h>
-#include <bluetooth/services/ble_cgms.h>
-#include <bluetooth/services/ble_dis.h>
+#include <bm/bm_timer.h>
+#include <bm/bm_buttons.h>
+#include <bm/bluetooth/ble_qwr.h>
 
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>

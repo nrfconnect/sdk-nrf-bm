@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <string.h>
 #include <errno.h>
-#include <event_scheduler.h>
+#include <string.h>
+#include <bm/event_scheduler.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/init.h>
 #include <zephyr/sys/sys_heap.h>

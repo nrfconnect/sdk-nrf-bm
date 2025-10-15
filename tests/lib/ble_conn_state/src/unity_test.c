@@ -3,14 +3,14 @@
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
+
+#include <errno.h>
 #include <unity.h>
 #include <stdint.h>
 #include <string.h>
 #include <stddef.h>
-#include <errno.h>
+#include <bm/bluetooth/ble_conn_state.h>
 #include <zephyr/sys/util.h>
-
-#include <ble_conn_state.h>
 
 static uint16_t conn_handle1;
 static uint16_t conn_handle2 = 1;

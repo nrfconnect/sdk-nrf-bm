@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
+#include <nrf_error.h>
 #include <stdint.h>
 #include <zephyr/sys/atomic.h>
 #include <nrfx_rramc.h>
-#include <nrf_error.h>
-#include <bm_storage.h>
-#include <bm_storage_backend.h>
+#include <bm/bm_storage.h>
+#include <bm/bm_storage_backend.h>
 
 /* 128-bit word line. This is the optimal size to fully utilize RRAM 128-bit word line with ECC
  * (error correction code) and minimize ECC updates overhead, due to these updates happening

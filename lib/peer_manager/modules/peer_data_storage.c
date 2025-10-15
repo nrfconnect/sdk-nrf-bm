@@ -4,16 +4,15 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
+#include <nrf_error.h>
 #include <stdint.h>
 #include <string.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/util.h>
 #include <zephyr/sys/atomic.h>
 #include <sdk_macros.h>
-#include <nrf_error.h>
-#include <sdk_macros.h>
-#include <bluetooth/peer_manager/peer_manager_types.h>
-#include <bm_zms.h>
+#include <bm/bm_zms.h>
+#include <bm/bluetooth/peer_manager/peer_manager_types.h>
 #include <modules/peer_manager_internal.h>
 #include <modules/peer_id.h>
 #include <modules/peer_data_storage.h>

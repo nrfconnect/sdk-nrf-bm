@@ -5,8 +5,8 @@
  */
 
 #include <ble_gatts.h>
-#include <bluetooth/services/uuid.h>
-#include <bluetooth/services/common.h>
+#include <bm/bluetooth/services/uuid.h>
+#include <bm/bluetooth/services/common.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/byteorder.h>
 #include <zephyr/sys/util.h>

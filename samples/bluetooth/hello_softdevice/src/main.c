@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <nrf_sdh.h>
-#include <nrf_sdh_ble.h>
-#include <nrf_sdh_soc.h>
+#include <bm/nrf_sdh.h>
+#include <bm/nrf_sdh_ble.h>
+#include <bm/nrf_sdh_soc.h>
 #include <zephyr/kernel.h> /* k_busy_wait() */
 #include <zephyr/sys_clock.h> /* USEC_PER_SEC */
 #include <zephyr/logging/log.h>

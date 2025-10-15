@@ -20,7 +20,7 @@
 #define BLE_CGMS_SOCP_H__
 
 #include <ble.h>
-#include <bluetooth/services/ble_cgms.h>
+#include <bm/bluetooth/services/ble_cgms.h>
 
 #ifdef __cplusplus
 extern "C" {

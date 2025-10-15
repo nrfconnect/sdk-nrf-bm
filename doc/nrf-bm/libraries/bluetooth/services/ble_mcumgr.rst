@@ -37,7 +37,7 @@ This library uses the following |BMshort| libraries:
 API documentation
 *****************
 
-| Header file: :file:`include/bluetooth/services/ble_mcumgr.h`
+| Header file: :file:`include/bm/bluetooth/services/ble_mcumgr.h`
 | Source files: :file:`subsys/bluetooth/services/ble_mcumgr/`
 
 :ref:`MCU manager Service (MCUmgr) API reference <api_mcu_manager_service>`

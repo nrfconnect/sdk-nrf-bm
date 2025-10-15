@@ -4,24 +4,24 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <nrf_sdh.h>
-#include <nrf_sdh_ble.h>
-#include <ble_adv.h>
-#include <ble_conn_params.h>
 #include <ble_gap.h>
 #include <nrf_soc.h>
-#include <bluetooth/services/uuid.h>
-#include <bluetooth/services/ble_bas.h>
-#include <bluetooth/services/ble_dis.h>
-#include <bluetooth/services/ble_hrs.h>
-#include <bm_buttons.h>
-#include <bm_timer.h>
-#include <sensorsim.h>
+#include <bm/nrf_sdh.h>
+#include <bm/nrf_sdh_ble.h>
+#include <bm/bluetooth/ble_adv.h>
+#include <bm/bluetooth/ble_conn_params.h>
+#include <bm/bluetooth/peer_manager/nrf_ble_lesc.h>
+#include <bm/bluetooth/peer_manager/peer_manager.h>
+#include <bm/bluetooth/peer_manager/peer_manager_handler.h>
+#include <bm/bluetooth/services/uuid.h>
+#include <bm/bluetooth/services/ble_bas.h>
+#include <bm/bluetooth/services/ble_dis.h>
+#include <bm/bluetooth/services/ble_hrs.h>
+#include <bm/bm_buttons.h>
+#include <bm/bm_timer.h>
+#include <bm/sensorsim.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
-#include <bluetooth/peer_manager/nrf_ble_lesc.h>
-#include <bluetooth/peer_manager/peer_manager.h>
-#include <bluetooth/peer_manager/peer_manager_handler.h>
 
 #include <board-config.h>
 

@@ -14,9 +14,9 @@
 #include <zephyr/irq.h>
 #include <zephyr/sys/barrier.h>
 #include <hal/nrf_rramc.h>
-#include "nrf_soc.h"
-#include "nrf_sdh.h"
-#include "nrf_sdh_soc.h"
+#include <nrf_soc.h>
+#include <bm/nrf_sdh.h>
+#include <bm/nrf_sdh_soc.h>
 
 /* Note that it is supported to compile this driver for both secure
  * and non-secure images, but non-secure images cannot call

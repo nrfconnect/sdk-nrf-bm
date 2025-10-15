@@ -18,7 +18,7 @@
 #include <stdint.h>
 #include <ble.h>
 #include <ble_gap.h>
-#include <bluetooth/peer_manager/peer_manager_types.h>
+#include <bm/bluetooth/peer_manager/peer_manager_types.h>
 #include "peer_manager_internal.h"
 
 #ifdef __cplusplus

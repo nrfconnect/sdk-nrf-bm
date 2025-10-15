@@ -4,13 +4,13 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
+#include <errno.h>
 #include <stdint.h>
 #include <string.h>
-#include <ble_adv_data.h>
 #include <ble_gap.h>
+#include <bm/bluetooth/ble_adv_data.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/byteorder.h>
-#include <errno.h>
 
 /* Advertising Data and Scan Response format contains 1 octet for the length. */
 #define AD_LENGTH_FIELD_SIZE 1UL

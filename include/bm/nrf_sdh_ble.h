@@ -82,6 +82,11 @@ int nrf_sdh_ble_app_ram_start_get(uint32_t *app_ram_start);
  */
 int nrf_sdh_ble_enable(uint8_t conn_cfg_tag);
 
+/* This is used internally when supporting multiple connections. */
+#if (CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT != 1)
+int _nrf_sdh_ble_idx_get(uint16_t conn_handle);
+#endif
+
 /**
  * @brief Get the assigned index for a connection handle.
  *

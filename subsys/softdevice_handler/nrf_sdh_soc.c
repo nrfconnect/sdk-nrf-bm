@@ -6,8 +6,8 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <nrf_sdh.h>
-#include <nrf_sdh_soc.h>
+#include <bm/nrf_sdh.h>
+#include <bm/nrf_sdh_soc.h>
 #include <nrf_soc.h>
 #include <psa/crypto.h>
 #include <cracen_psa.h>

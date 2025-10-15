@@ -8,14 +8,14 @@
 #include <stdint.h>
 #include <ble_gap.h>
 #include <nrf_error.h>
-#include <nrf_sdh_ble.h>
+#include <bm/nrf_sdh_ble.h>
 #include <psa/crypto.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/byteorder.h>
 #include <zephyr/sys/util.h>
 #include <zephyr/sys/printk.h>
 
-#include <bluetooth/peer_manager/nrf_ble_lesc.h>
+#include <bm/bluetooth/peer_manager/nrf_ble_lesc.h>
 
 LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 

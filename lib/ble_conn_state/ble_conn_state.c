@@ -4,16 +4,16 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <ble_conn_state.h>
+#include <errno.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
 #include <ble.h>
 #include <ble_gap.h>
-#include <nrf_sdh_ble.h>
+#include <bm/bluetooth/ble_conn_state.h>
+#include <bm/nrf_sdh_ble.h>
 #include <zephyr/sys/atomic.h>
 #include <zephyr/logging/log.h>
-#include <errno.h>
 
 LOG_MODULE_REGISTER(ble_conn_state, CONFIG_BLE_CONN_STATE_LOG_LEVEL);
 

@@ -40,7 +40,8 @@
 
 # Include
 /include/*.h                              @nrfconnect/ncs-bm
-/include/bluetooth/                       @nrfconnect/ncs-bm
+/include/bm/                              @nrfconnect/ncs-bm
+/include/bm/bluetooth/                    @nrfconnect/ncs-bm
 
 # Libraries
 /lib/bm_zms/                              @nrfconnect/ncs-bm @rghaddab

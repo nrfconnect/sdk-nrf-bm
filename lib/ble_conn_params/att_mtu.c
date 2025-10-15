@@ -6,8 +6,8 @@
 #include <ble_gap.h>
 #include <ble_gatts.h>
 #include <ble_gattc.h>
-#include <ble_conn_params.h>
-#include <nrf_sdh_ble.h>
+#include <bm/bluetooth/ble_conn_params.h>
+#include <bm/nrf_sdh_ble.h>
 #include <zephyr/logging/log.h>
 
 LOG_MODULE_DECLARE(ble_conn_params, CONFIG_BLE_CONN_PARAMS_LOG_LEVEL);

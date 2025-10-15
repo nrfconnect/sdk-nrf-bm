@@ -956,8 +956,9 @@ WARN_LOGFILE           =
 # Note: If this tag is empty the current directory is searched.
 
 INPUT                  = ../../../include/ \
-                         ../../../include/bluetooth/services \
-                         ../../../include/bluetooth/peer_manager \
+                         ../../../include/bm/ \
+                         ../../../include/bm/bluetooth/services \
+                         ../../../include/bm/bluetooth/peer_manager \
                          mainpage.dox
 
 # This tag can be used to specify the character encoding of the source files

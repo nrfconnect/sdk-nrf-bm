@@ -17,7 +17,7 @@
 #define PEER_MANAGER_HANDLER_H__
 
 #include <ble.h>
-#include <bluetooth/peer_manager/peer_manager.h>
+#include <bm/bluetooth/peer_manager/peer_manager.h>
 
 #ifdef __cplusplus
 extern "C" {

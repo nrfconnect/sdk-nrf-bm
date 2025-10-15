@@ -11,11 +11,11 @@
 #include <nrf_error.h>
 
 #if defined(CONFIG_SOFTDEVICE)
-#include <nrf_sdh.h>
+#include <bm/nrf_sdh.h>
 #include <nrf_soc.h>
 #endif
 
-#include <bm_storage.h>
+#include <bm/bm_storage.h>
 
 LOG_MODULE_REGISTER(app, CONFIG_STORAGE_SAMPLE_LOG_LEVEL);
 
