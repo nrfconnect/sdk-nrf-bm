@@ -6,6 +6,8 @@
 
 if(CONFIG_NCS_BM)
   zephyr_include_directories(include)
+  zephyr_include_directories(include/bm)
+  zephyr_include_directories(include/bm/bluetooth)
 
   include(cmake/version.cmake)
 
