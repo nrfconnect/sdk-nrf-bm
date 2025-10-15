@@ -186,7 +186,7 @@ void pm_conn_sec_config_reply(uint16_t conn_handle, pm_conn_sec_config_t *conn_s
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  */
 uint32_t pm_conn_sec_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *sec_params,
-				  void const *context);
+				  const void *context);
 
 /**
  * @brief Manually inform that the local database has changed.
@@ -276,7 +276,7 @@ uint32_t pm_lesc_public_key_set(ble_gap_lesc_p256_pk_t *public_key);
  *                                         @ref BLE_GAP_WHITELIST_ADDR_MAX_COUNT.
  * @retval NRF_ERROR_INVALID_STATE         If the Peer Manager is not initialized.
  */
-uint32_t pm_whitelist_set(pm_peer_id_t const *peers, uint32_t peer_cnt);
+uint32_t pm_whitelist_set(const pm_peer_id_t *peers, uint32_t peer_cnt);
 
 /**
  * @brief Retrieve the previously set whitelist.
@@ -336,7 +336,7 @@ uint32_t pm_whitelist_get(ble_gap_addr_t *addrs, uint32_t *addr_cnt, ble_gap_irk
  * @retval NRF_ERROR_NOT_SUPPORTED                 If using a SoftDevice that does not support
  *                                                 device identities.
  */
-uint32_t pm_device_identities_list_set(pm_peer_id_t const *peers, uint32_t peer_cnt);
+uint32_t pm_device_identities_list_set(const pm_peer_id_t *peers, uint32_t peer_cnt);
 
 /**
  * @brief Set the local Bluetooth identity address.
@@ -370,7 +370,7 @@ uint32_t pm_device_identities_list_set(pm_peer_id_t const *peers, uint32_t peer_
  *                                         connected.
  * @retval NRF_ERROR_INTERNAL              If an internal error occurred.
  */
-uint32_t pm_id_addr_set(ble_gap_addr_t const *addr);
+uint32_t pm_id_addr_set(const ble_gap_addr_t *addr);
 
 /**
  * @brief Retrieve the local Bluetooth identity address.
@@ -406,7 +406,7 @@ uint32_t pm_id_addr_get(ble_gap_addr_t *addr);
  *                                  privacy are enabled.
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  */
-uint32_t pm_privacy_set(pm_privacy_params_t const *privacy_params);
+uint32_t pm_privacy_set(const pm_privacy_params_t *privacy_params);
 
 /**
  * @brief Retrieve privacy settings.
@@ -432,7 +432,7 @@ uint32_t pm_privacy_get(pm_privacy_params_t *privacy_params);
  * @retval false  If the IRK used did not match the one used to create the address, or an argument
  *                was NULL or invalid.
  */
-bool pm_address_resolve(ble_gap_addr_t const *addr, ble_gap_irk_t const *irk);
+bool pm_address_resolve(const ble_gap_addr_t *addr, const ble_gap_irk_t *irk);
 
 /**
  * @brief Get the connection handle of the connection with a bonded peer.
@@ -609,7 +609,7 @@ uint32_t pm_peer_data_app_data_load(pm_peer_id_t peer_id, void *data, uint32_t *
  *                                  so duplicate entries are avoided.
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  */
-uint32_t pm_peer_data_store(pm_peer_id_t peer_id, pm_peer_data_id_t data_id, void const *data,
+uint32_t pm_peer_data_store(pm_peer_id_t peer_id, pm_peer_data_id_t data_id, const void *data,
 			    uint32_t len, pm_store_token_t *token);
 
 /**
@@ -617,7 +617,7 @@ uint32_t pm_peer_data_store(pm_peer_id_t peer_id, pm_peer_data_id_t data_id, voi
  *
  * @details See @ref pm_peer_data_store for parameters and return values.
  */
-uint32_t pm_peer_data_bonding_store(pm_peer_id_t peer_id, pm_peer_data_bonding_t const *data,
+uint32_t pm_peer_data_bonding_store(pm_peer_id_t peer_id, const pm_peer_data_bonding_t *data,
 				    pm_store_token_t *token);
 
 /**
@@ -625,7 +625,7 @@ uint32_t pm_peer_data_bonding_store(pm_peer_id_t peer_id, pm_peer_data_bonding_t
  *
  * @details See @ref pm_peer_data_store for parameters and return values.
  */
-uint32_t pm_peer_data_remote_db_store(pm_peer_id_t peer_id, ble_gatt_db_srv_t const *data,
+uint32_t pm_peer_data_remote_db_store(pm_peer_id_t peer_id, const ble_gatt_db_srv_t *data,
 				      uint32_t len, pm_store_token_t *token);
 
 /**
@@ -633,7 +633,7 @@ uint32_t pm_peer_data_remote_db_store(pm_peer_id_t peer_id, ble_gatt_db_srv_t co
  *
  * @details See @ref pm_peer_data_store for parameters and return values.
  */
-uint32_t pm_peer_data_app_data_store(pm_peer_id_t peer_id, void const *data, uint32_t len,
+uint32_t pm_peer_data_app_data_store(pm_peer_id_t peer_id, const void *data, uint32_t len,
 				     pm_store_token_t *token);
 /** @} */
 

@@ -118,7 +118,7 @@ uint32_t nrf_ble_lesc_request_handler(void);
  *
  * @param[in] ble_evt  Event received from the BLE stack.
  */
-void nrf_ble_lesc_on_ble_evt(ble_evt_t const *ble_evt);
+void nrf_ble_lesc_on_ble_evt(const ble_evt_t *ble_evt);
 
 #ifdef __cplusplus
 }
