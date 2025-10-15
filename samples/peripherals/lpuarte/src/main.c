@@ -5,7 +5,7 @@
  */
 
 #include <nrfx_uarte.h>
-#include <bm/bm_lpuarte.h>
+#include <bm/drivers/bm_lpuarte.h>
 #include <bm/bm_timer.h>
 
 #include <zephyr/logging/log.h>

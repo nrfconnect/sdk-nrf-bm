@@ -8,7 +8,7 @@ menu "Device Drivers"
 # zephyr-keep-sorted-start
 rsource "console/Kconfig"
 rsource "flash/Kconfig"
-rsource "lpuarte/Kconfig"
+rsource "bm_lpuarte/Kconfig"
 # zephyr-keep-sorted-stop
 
 endmenu

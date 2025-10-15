@@ -36,7 +36,7 @@
 # Drivers
 /drivers/clock_control/                   @nrfconnect/ncs-bm
 /drivers/console/                         @nrfconnect/ncs-bm
-/drivers/lpuarte/                         @nrfconnect/ncs-bm
+/drivers/bm_lpuarte/                      @nrfconnect/ncs-bm
 
 # Include
 /include/*.h                              @nrfconnect/ncs-bm
@@ -44,19 +44,17 @@
 /include/bm/bluetooth/                    @nrfconnect/ncs-bm
 
 # Libraries
-/lib/bm_zms/                              @nrfconnect/ncs-bm @rghaddab
-/lib/ble_adv/                             @nrfconnect/ncs-bm
-/lib/ble_conn_params/                     @nrfconnect/ncs-bm
-/lib/ble_conn_state/                      @nrfconnect/ncs-bm
-/lib/ble_gq/                              @nrfconnect/ncs-bm
-/lib/ble_qwr/                             @nrfconnect/ncs-bm
-/lib/ble_racp/                            @nrfconnect/ncs-bm
+/lib/bluetooth/ble_adv/                   @nrfconnect/ncs-bm
+/lib/bluetooth/ble_conn_params/           @nrfconnect/ncs-bm
+/lib/bluetooth/ble_conn_state/            @nrfconnect/ncs-bm
+/lib/bluetooth/ble_gq/                    @nrfconnect/ncs-bm
+/lib/bluetooth/ble_qwr/                   @nrfconnect/ncs-bm
+/lib/bluetooth/ble_racp/                  @nrfconnect/ncs-bm
+/lib/bluetooth/peer_manager/              @nrfconnect/ncs-bm
 /lib/bm_buttons/                          @nrfconnect/ncs-bm
-/lib/bm_storage/                          @nrfconnect/ncs-bm
 /lib/bm_timer/                            @nrfconnect/ncs-bm
 /lib/boot_banner/                         @nrfconnect/ncs-bm
 /lib/event_scheduler/                     @nrfconnect/ncs-bm
-/lib/peer_manager/                        @nrfconnect/ncs-bm
 /lib/sensorsim/                           @nrfconnect/ncs-bm
 /lib/zephyr_queue/                        @nrfconnect/ncs-eris
 
@@ -79,23 +77,25 @@
 # Subsystems
 /subsys/bluetooth/                        @nrfconnect/ncs-bm
 /subsys/bm_installs/                      @nrfconnect/ncs-eris
+/subsys/fs/bm_zms/                        @nrfconnect/ncs-bm @rghaddab
 /subsys/logging/                          @nrfconnect/ncs-bm
 /subsys/mgmt/mcumgr/                      @nrfconnect/ncs-eris
 /subsys/softdevice/                       @nrfconnect/ncs-bm
 /subsys/softdevice_handler/               @nrfconnect/ncs-bm
+/subsys/storage/bm_storage/               @nrfconnect/ncs-bm
 /subsys/storage/flash_map/                @nrfconnect/ncs-eris
 
 # Sysbuild
 /sysbuild/                                @nrfconnect/ncs-co-build-system
 
 # Tests
-/tests/lib/bm_zms/                        @nrfconnect/ncs-bm @rghaddab
-/tests/lib/ble_conn_state/                @nrfconnect/ncs-bm
-/tests/lib/ble_qwr/                       @nrfconnect/ncs-bm
-/tests/lib/ble_racp/                      @nrfconnect/ncs-bm
-/tests/lib/ble_adv/                       @nrfconnect/ncs-bm-test
-/tests/lib/bm_storage/                    @nrfconnect/ncs-bm
+/tests/lib/bluetooth/ble_conn_state/      @nrfconnect/ncs-bm
+/tests/lib/bluetooth/ble_qwr/             @nrfconnect/ncs-bm
+/tests/lib/bluetooth/ble_racp/            @nrfconnect/ncs-bm
+/tests/lib/bluetooth/ble_adv/             @nrfconnect/ncs-bm-test
 /tests/subsys/bluetooth/services/         @nrfconnect/ncs-bm @nrfconnect/ncs-bm-test
+/tests/subsys/fs/bm_zms/                  @nrfconnect/ncs-bm @rghaddab
+/tests/subsys/storage/bm_storage/         @nrfconnect/ncs-bm
 
 # Zephyr module
 /zephyr/                                  @nrfconnect/ncs-co-build-system

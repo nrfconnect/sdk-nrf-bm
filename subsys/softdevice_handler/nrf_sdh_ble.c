@@ -6,8 +6,8 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <bm/nrf_sdh.h>
-#include <bm/nrf_sdh_ble.h>
+#include <bm/softdevice_handler/nrf_sdh.h>
+#include <bm/softdevice_handler/nrf_sdh_ble.h>
 #include <ble.h>
 #include <zephyr/logging/log.h>
 
