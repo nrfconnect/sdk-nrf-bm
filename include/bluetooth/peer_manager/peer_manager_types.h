@@ -383,12 +383,12 @@ typedef enum {
 /** @brief Parameters specific to the @ref PM_EVT_CONN_CONFIG_REQ event. */
 typedef struct {
 	/** @brief Connected Event parameters. */
-	ble_gap_evt_connected_t const *peer_params;
+	const ble_gap_evt_connected_t *peer_params;
 	/**
 	 * @brief This pointer must be provided in the reply if the reply function takes a
 	 *        context argument.
 	 */
-	void const *context;
+	const void *context;
 } pm_conn_config_req_evt_t;
 
 /** @brief Events parameters specific to the @ref PM_EVT_CONN_SEC_START event. */
@@ -423,12 +423,12 @@ typedef struct {
 /** @brief Parameters specific to the @ref PM_EVT_CONN_SEC_PARAMS_REQ event. */
 typedef struct {
 	/** @brief Peer security parameters, if role is peripheral. Otherwise, this is NULL. */
-	ble_gap_sec_params_t const *peer_params;
+	const ble_gap_sec_params_t *peer_params;
 	/**
 	 * @brief This pointer must be provided in the reply if the reply function takes a
 	 *        context argument.
 	 */
-	void const *context;
+	const void *context;
 } pm_conn_sec_params_req_evt_t;
 
 /** @brief Actions that can be performed to peer data in persistent storage. */
@@ -538,7 +538,7 @@ typedef struct {
  *
  * @param[in]  pm_evt  The event that has occurred.
  */
-typedef void (*pm_evt_handler_t)(pm_evt_t const *pm_evt);
+typedef void (*pm_evt_handler_t)(const pm_evt_t *pm_evt);
 
 #ifdef __cplusplus
 }

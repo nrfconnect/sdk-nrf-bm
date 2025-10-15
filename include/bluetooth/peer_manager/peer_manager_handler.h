@@ -35,7 +35,7 @@ extern "C" {
  *
  * @param[in] pm_evt  Peer Manager event to handle.
  */
-void pm_handler_on_pm_evt(pm_evt_t const *pm_evt);
+void pm_handler_on_pm_evt(const pm_evt_t *pm_evt);
 
 /**
  * @brief Auxiliary standard function for logging Peer Manager events.
@@ -46,7 +46,7 @@ void pm_handler_on_pm_evt(pm_evt_t const *pm_evt);
  *
  * @param[in] pm_evt  Peer Manager event to log.
  */
-void pm_handler_pm_evt_log(pm_evt_t const *pm_evt);
+void pm_handler_pm_evt_log(const pm_evt_t *pm_evt);
 
 /**
  * @brief Auxiliary standard function for maintaining room in non-volatile storage based on Peer
@@ -63,7 +63,7 @@ void pm_handler_pm_evt_log(pm_evt_t const *pm_evt);
  *
  * @param[in] pm_evt  Peer Manager event to handle.
  */
-void pm_handler_flash_clean(pm_evt_t const *pm_evt);
+void pm_handler_flash_clean(const pm_evt_t *pm_evt);
 
 /**
  * @brief Function to call when a Peer Manager function returns @ref NRF_ERROR_RESOURCES.
@@ -83,7 +83,7 @@ void pm_handler_flash_clean_on_return(void);
  *
  * @param[in] pm_evt  Peer Manager event to handle.
  */
-void pm_handler_disconnect_on_sec_failure(pm_evt_t const *pm_evt);
+void pm_handler_disconnect_on_sec_failure(const pm_evt_t *pm_evt);
 
 /**
  * @brief Auxiliary standard function for disconnecting on insufficient connection security.
@@ -98,7 +98,7 @@ void pm_handler_disconnect_on_sec_failure(pm_evt_t const *pm_evt);
  * @param[in] pm_evt        Peer Manager event to handle.
  * @param[in] min_conn_sec  Minimum security status below which to disconnect the link.
  */
-void pm_handler_disconnect_on_insufficient_sec(pm_evt_t const *pm_evt,
+void pm_handler_disconnect_on_insufficient_sec(const pm_evt_t *pm_evt,
 					       pm_conn_sec_status_t *min_conn_sec);
 
 /**
@@ -111,7 +111,7 @@ void pm_handler_disconnect_on_insufficient_sec(pm_evt_t const *pm_evt,
  *
  * @param[in] ble_evt  BLE event to handle.
  */
-void pm_handler_secure_on_connection(ble_evt_t const *ble_evt);
+void pm_handler_secure_on_connection(const ble_evt_t *ble_evt);
 
 /**
  * @brief Secure a connection if a GATT read or write operation lacks security.
@@ -130,7 +130,7 @@ void pm_handler_secure_on_connection(ble_evt_t const *ble_evt);
  *
  * @param[in] ble_evt  BLE event to handle.
  */
-void pm_handler_secure_on_error(ble_evt_t const *ble_evt);
+void pm_handler_secure_on_error(const ble_evt_t *ble_evt);
 
 #ifdef __cplusplus
 }
