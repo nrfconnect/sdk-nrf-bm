@@ -58,6 +58,8 @@ Bare Metal Event Scheduler library
    :inner:
    :members:
 
+.. _api_bm_lpuarte:
+
 Bare Metal Low Power UART with EasyDMA driver
 =============================================
 
