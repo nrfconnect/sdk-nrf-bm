@@ -96,7 +96,7 @@ Peripheral samples
 DFU samples
 -----------
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Moved the mcumgr samples to applications/firmware_loader.
 
 Known issues and limitations
 ============================
