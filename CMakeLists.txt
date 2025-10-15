@@ -6,6 +6,14 @@
 
 if(CONFIG_NCS_BM)
   zephyr_include_directories(include)
+  if(CONFIG_NCS_BM_INCLUDE_PATH_LEGACY)
+    zephyr_include_directories(include/bm)
+    zephyr_include_directories(include/bm/bluetooth)
+    zephyr_include_directories(include/bm/drivers)
+    zephyr_include_directories(include/bm/fs)
+    zephyr_include_directories(include/bm/softdevice_handler)
+    zephyr_include_directories(include/bm/storage)
+  endif()
 
   include(cmake/version.cmake)
 

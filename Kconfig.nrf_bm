@@ -18,4 +18,12 @@ rsource "samples/Kconfig"
 rsource "subsys/Kconfig"
 # zephyr-keep-sorted-stop
 
+config NCS_BM_INCLUDE_PATH_LEGACY
+	bool "[DEPRECATED] Allow legacy include paths"
+	default y if MCUBOOT
+	select DEPRECATED
+	help
+		This is deprecated and will be removed once paths are
+		updated to test repo and MCUboot.
+
 endif # NCS_BM
