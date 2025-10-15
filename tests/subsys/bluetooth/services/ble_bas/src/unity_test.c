@@ -14,8 +14,8 @@
 #include <ble_err.h>
 #include <ble_gatt.h>
 #include <nrf_error.h>
-#include <bluetooth/services/ble_bas.h>
-#include <bluetooth/services/uuid.h>
+#include <bm/bluetooth/services/ble_bas.h>
+#include <bm/bluetooth/services/uuid.h>
 
 #include "ble_gatts.h"
 #include "cmock_ble_gatts.h"

@@ -5,9 +5,9 @@
  */
 
 #include <string.h>
-#include <bluetooth/services/ble_bas.h>
-#include <bluetooth/services/common.h>
-#include <bluetooth/services/uuid.h>
+#include <bm/bluetooth/services/ble_bas.h>
+#include <bm/bluetooth/services/common.h>
+#include <bm/bluetooth/services/uuid.h>
 #include <zephyr/logging/log.h>
 
 LOG_MODULE_REGISTER(ble_bas, CONFIG_BLE_BAS_LOG_LEVEL);

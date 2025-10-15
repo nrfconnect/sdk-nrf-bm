@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <bm_lpuarte.h>
+#include <bm/bm_lpuarte.h>
 #include <nrfx_gpiote.h>
 #include <nrfx_uarte.h>
 #include <zephyr/logging/log.h>

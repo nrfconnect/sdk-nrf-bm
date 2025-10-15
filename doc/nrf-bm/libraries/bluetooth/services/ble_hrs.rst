@@ -62,7 +62,7 @@ This library uses the following |BMshort| libraries:
 API documentation
 *****************
 
-| Header file: :file:`include/bluetooth/services/ble_hrs.h`
+| Header file: :file:`include/bm/bluetooth/services/ble_hrs.h`
 | Source files: :file:`subsys/bluetooth/services/ble_hrs/`
 
 :ref:`Heart Rate Service API reference <api_ble_hrs>`

@@ -4,13 +4,14 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <board-config.h>
 #include <nrfx_uarte.h>
-#include <bm_lpuarte.h>
-#include <bm_timer.h>
+#include <bm/bm_lpuarte.h>
+#include <bm/bm_timer.h>
 
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
+
+#include <board-config.h>
 
 LOG_MODULE_REGISTER(app, CONFIG_LPUARTE_SAMPLE_LOG_LEVEL);
 

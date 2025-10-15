@@ -4,15 +4,17 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <nrf_sdh.h>
-#include <ble_adv.h>
+#include <bm/nrf_sdh.h>
+#include <bm/bluetooth/ble_adv.h>
+#include <bm/bluetooth/services/ble_mcumgr.h>
+
 #include <zephyr/kernel.h>
 #include <zephyr/sys/reboot.h>
 #include <zephyr/retention/bootmode.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 #include <zephyr/mgmt/mcumgr/mgmt/callbacks.h>
-#include <bluetooth/services/ble_mcumgr.h>
+
 
 LOG_MODULE_REGISTER(app, CONFIG_APP_LOG_LEVEL);
 

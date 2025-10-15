@@ -24,7 +24,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include <bm_timer.h>
+#include <bm/bm_timer.h>
 #include <nrfx_gpiote.h>
 
 #ifdef __cplusplus

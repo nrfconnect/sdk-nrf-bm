@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
+#include <nrf_error.h>
 #include <zephyr/kernel.h>
 #include <sys/types.h>
-#include <nrf_error.h>
-#include <bm_storage.h>
-#include <bm_storage_backend.h>
+#include <bm/bm_storage.h>
+#include <bm/bm_storage_backend.h>
 
 __weak uint32_t bm_storage_backend_uninit(struct bm_storage *storage)
 {

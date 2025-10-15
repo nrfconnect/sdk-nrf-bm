@@ -467,7 +467,7 @@ Enable the :kconfig:option:`CONFIG_MBEDTLS_ENABLE_HEAP` Kconfig option to use he
 API documentation
 *****************
 
-| Header files: :file:`include/bluetooth/peer_manager/`
+| Header files: :file:`include/bm/bluetooth/peer_manager/`
 | Source files: :file:`lib/peer_manager/`
 
 :ref:`Peer Manager API reference <api_peer_manager>`

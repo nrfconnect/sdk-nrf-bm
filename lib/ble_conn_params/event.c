@@ -5,7 +5,7 @@
  */
 
 #include <stddef.h>
-#include <ble_conn_params.h>
+#include <bm/bluetooth/ble_conn_params.h>
 #include <zephyr/logging/log.h>
 
 LOG_MODULE_REGISTER(ble_conn_params, CONFIG_BLE_CONN_PARAMS_LOG_LEVEL);

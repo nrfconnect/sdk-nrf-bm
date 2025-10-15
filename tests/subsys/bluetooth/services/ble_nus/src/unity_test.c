@@ -3,12 +3,13 @@
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
+
 #include <errno.h>
 #include <unity.h>
 #include <stdint.h>
 #include <string.h>
 
-#include <bluetooth/services/ble_nus.h>
+#include <bm/bluetooth/services/ble_nus.h>
 #include <nrf_error.h>
 
 #include "cmock_ble_gatts.h"

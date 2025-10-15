@@ -11,7 +11,7 @@
 #include <sys/types.h>
 #include <zephyr/sys/atomic.h>
 #include <stdbool.h>
-#include <bm_storage.h>
+#include <bm/bm_storage.h>
 
 #ifdef __cplusplus
 extern "C" {

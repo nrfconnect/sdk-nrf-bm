@@ -4,14 +4,14 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <stdbool.h>
-#include <zephyr/kernel.h>
-#include <zephyr/logging/log.h>
 #include <nrf_error.h>
 #include <nrf_strerror.h>
-#include <bm_timer.h>
+#include <stdbool.h>
+#include <bm/bm_timer.h>
 #include <modules/id_manager.h>
 #include <modules/auth_status_tracker.h>
+#include <zephyr/kernel.h>
+#include <zephyr/logging/log.h>
 
 LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 

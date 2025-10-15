@@ -5,15 +5,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
-#include <errno.h>
 #include <zephyr/sys/crc.h>
 #include <zephyr/sys/atomic.h>
 #include <zephyr/sys/crc.h>
 #include <zephyr/ztest.h>
 
-#include <bm_zms.h>
+#include <bm/bm_zms.h>
 #include <bm_zms_priv.h>
 
 /* Arbitrary block size. */

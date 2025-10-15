@@ -339,7 +339,7 @@ Cache size
 API Reference
 *************
 
-| Header file: :file:`include/bm_zms.h`
+| Header file: :file:`include/bm/bm_zms.h`
 | Source files: :file:`lib/bm_zms/`
 
 :ref:`Bare Metal Zephyr Memory Storage API reference <api_ble_bm_zms>`

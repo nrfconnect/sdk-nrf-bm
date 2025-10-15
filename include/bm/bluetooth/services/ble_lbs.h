@@ -14,7 +14,7 @@
 
 #include <stdint.h>
 #include <ble.h>
-#include <nrf_sdh_ble.h>
+#include <bm/nrf_sdh_ble.h>
 
 #ifdef __cplusplus
 extern "C" {

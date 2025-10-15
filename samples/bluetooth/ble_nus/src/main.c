@@ -6,21 +6,22 @@
 
 #include <errno.h>
 #include <string.h>
-#include <nrf_sdh.h>
-#include <nrf_sdh_ble.h>
-#include <ble_adv.h>
-#include <ble_conn_params.h>
 #include <ble_gap.h>
-#include <ble_qwr.h>
-#include <bluetooth/services/ble_nus.h>
+#include <bm/nrf_sdh.h>
+#include <bm/nrf_sdh_ble.h>
+#include <bm/bluetooth/ble_adv.h>
+#include <bm/bluetooth/ble_conn_params.h>
+#include <bm/bluetooth/ble_qwr.h>
+#include <bm/bluetooth/services/ble_nus.h>
 #include <nrf_soc.h>
 #include <nrfx_uarte.h>
+#if defined(CONFIG_NUS_LPUARTE)
+#include <bm/bm_lpuarte.h>
+#endif
+
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 #include <zephyr/sys/util.h>
-#if defined(CONFIG_NUS_LPUARTE)
-#include <bm_lpuarte.h>
-#endif
 
 #include <board-config.h>
 

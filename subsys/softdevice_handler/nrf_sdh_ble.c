@@ -6,8 +6,8 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <nrf_sdh.h>
-#include <nrf_sdh_ble.h>
+#include <bm/nrf_sdh.h>
+#include <bm/nrf_sdh_ble.h>
 #include <ble.h>
 #include <zephyr/logging/log.h>
 
@@ -213,8 +213,14 @@ static uint16_t conn_handles[CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT] = {
 	[0 ... CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT - 1] = BLE_CONN_HANDLE_INVALID,
 };
 
-int _nrf_sdh_ble_idx_get(uint16_t conn_handle)
+int nrf_sdh_ble_idx_get(uint16_t conn_handle)
 {
+	/* Code size optimization when supporting only one connection. */
+	if (CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT == 1) {
+		ARG_UNUSED(conn_handle);
+		return 0;
+	}
+
 	for (int idx = 0; idx < ARRAY_SIZE(conn_handles); idx++) {
 		if (conn_handles[idx] == conn_handle) {
 			return idx;

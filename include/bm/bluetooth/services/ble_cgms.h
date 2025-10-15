@@ -32,9 +32,9 @@
 
 #include <stdint.h>
 
-#include <ble_gq.h>
-#include <ble_racp.h>
-#include <nrf_sdh_ble.h>
+#include <bm/bluetooth/ble_gq.h>
+#include <bm/bluetooth/ble_racp.h>
+#include <bm/nrf_sdh_ble.h>
 #include <zephyr/sys/util.h>
 
 #ifdef __cplusplus
