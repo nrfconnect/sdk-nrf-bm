@@ -79,7 +79,7 @@ static const char * const m_data_action_str[] = {"Update", "Delete"};
 	}
 
 typedef struct {
-	pm_sec_error_code_t error;
+	uint16_t error;
 	const char *error_str;
 } sec_err_str_t;
 
@@ -90,7 +90,7 @@ static const sec_err_str_t m_pm_sec_error_str[] = {
 	PM_SEC_ERR_STR(PM_CONN_SEC_ERROR_SMP_TIMEOUT),
 };
 
-static const char *sec_err_string_get(pm_sec_error_code_t error)
+static const char *sec_err_string_get(uint16_t error)
 {
 	static char errstr[30];
 

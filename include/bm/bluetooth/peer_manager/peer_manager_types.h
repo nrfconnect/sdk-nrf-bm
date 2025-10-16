@@ -26,13 +26,6 @@
 extern "C" {
 #endif
 
-/**
- * @brief Errors from security procedures in Peer Manager.
- *
- * @details Possible values are defined in @ref PM_SEC_ERRORS and @ref BLE_GAP_SEC_STATUS.
- */
-typedef uint16_t pm_sec_error_code_t;
-
 /** @brief Invalid value for Peer ID. */
 #define PM_PEER_ID_INVALID 0xFFFF
 /** @brief Invalid value for store token. */
@@ -42,8 +35,7 @@ typedef uint16_t pm_sec_error_code_t;
 /** @brief The static-length part of the local GATT data struct. */
 #define PM_LOCAL_DB_LEN_OVERHEAD_BYTES offsetof(pm_peer_data_local_gatt_db_t, data)
 /**
- * @brief The base for Peer Manager defined errors. See @ref PM_SEC_ERRORS and
- * @ref pm_sec_error_code_t.
+ * @brief The base for Peer Manager defined errors. See @ref PM_SEC_ERRORS.
  */
 #define PM_CONN_SEC_ERROR_BASE 0x1000
 
@@ -408,8 +400,8 @@ typedef struct {
 typedef struct {
 	/** @brief The procedure that failed. */
 	pm_conn_sec_procedure_t procedure;
-	/** @brief An error code that describes the failure. */
-	pm_sec_error_code_t error;
+	/** @brief An error code that describes the failure. See @ref PM_SEC_ERRORS. */
+	uint16_t error;
 	/** @brief The party that raised the error, see @ref BLE_GAP_SEC_STATUS_SOURCES. */
 	uint8_t error_src;
 } pm_conn_secure_failed_evt_t;

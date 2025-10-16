@@ -130,11 +130,11 @@ static void send_storage_full_evt(uint16_t conn_handle)
  *
  * @param[in]  conn_handle  The handle of the connection the security procedure happens on.
  * @param[in]  procedure    The procedure that failed.
- * @param[in]  error        The error the procedure failed with.
+ * @param[in]  error        The error the procedure failed with. See @ref PM_SEC_ERRORS.
  * @param[in]  error_src    The party that raised the error. See @ref BLE_GAP_SEC_STATUS_SOURCES.
  */
 static void conn_sec_failure(uint16_t conn_handle, pm_conn_sec_procedure_t procedure,
-			     pm_sec_error_code_t error, uint8_t error_src)
+			     uint16_t error, uint8_t error_src)
 {
 	pm_evt_t evt = {.evt_id = PM_EVT_CONN_SEC_FAILED,
 			.conn_handle = conn_handle,
@@ -153,11 +153,11 @@ static void conn_sec_failure(uint16_t conn_handle, pm_conn_sec_procedure_t proce
  * @brief Function for cleaning up after a failed pairing procedure.
  *
  * @param[in]  conn_handle  The handle of the connection the pairing procedure happens on.
- * @param[in]  error        The error the procedure failed with.
+ * @param[in]  error        The error the procedure failed with. See @ref PM_SEC_ERRORS.
  * @param[in]  error_src    The source of the error (local or remote). See @ref
  *                          BLE_GAP_SEC_STATUS_SOURCES.
  */
-static void pairing_failure(uint16_t conn_handle, pm_sec_error_code_t error, uint8_t error_src)
+static void pairing_failure(uint16_t conn_handle, uint16_t error, uint8_t error_src)
 {
 	uint32_t err_code = NRF_SUCCESS;
 	pm_conn_sec_procedure_t procedure = bonding(conn_handle) ? PM_CONN_SEC_PROCEDURE_BONDING
@@ -184,11 +184,10 @@ static void pairing_failure(uint16_t conn_handle, pm_sec_error_code_t error, uin
  * @brief Function for cleaning up after a failed encryption procedure.
  *
  * @param[in]  conn_handle  The handle of the connection the encryption procedure happens on.
- * @param[in]  error        The error the procedure failed with.
+ * @param[in]  error        The error the procedure failed with. See @ref PM_SEC_ERRORS.
  * @param[in]  error_src    The party that raised the error. See @ref BLE_GAP_SEC_STATUS_SOURCES.
  */
-static __INLINE void encryption_failure(uint16_t conn_handle, pm_sec_error_code_t error,
-					uint8_t error_src)
+static __INLINE void encryption_failure(uint16_t conn_handle, uint16_t error, uint8_t error_src)
 {
 	conn_sec_failure(conn_handle, PM_CONN_SEC_PROCEDURE_ENCRYPTION, error, error_src);
 }
@@ -197,10 +196,10 @@ static __INLINE void encryption_failure(uint16_t conn_handle, pm_sec_error_code_
  * @brief Function for possibly cleaning up after a failed pairing or encryption procedure.
  *
  * @param[in]  conn_handle  The handle of the connection the pairing procedure happens on.
- * @param[in]  error        The error the procedure failed with.
+ * @param[in]  error        The error the procedure failed with. See @ref PM_SEC_ERRORS.
  * @param[in]  error_src    The party that raised the error. See @ref BLE_GAP_SEC_STATUS_SOURCES.
  */
-static void link_secure_failure(uint16_t conn_handle, pm_sec_error_code_t error, uint8_t error_src)
+static void link_secure_failure(uint16_t conn_handle, uint16_t error, uint8_t error_src)
 {
 	if (sec_procedure(conn_handle)) {
 		if (pairing(conn_handle)) {
@@ -450,10 +449,9 @@ void smd_conn_sec_config_reply(uint16_t conn_handle, pm_conn_sec_config_t *p_con
  */
 static void disconnect_process(ble_gap_evt_t const *p_gap_evt)
 {
-	pm_sec_error_code_t error = (p_gap_evt->params.disconnected.reason ==
-				     BLE_HCI_CONN_TERMINATED_DUE_TO_MIC_FAILURE)
-					    ? PM_CONN_SEC_ERROR_MIC_FAILURE
-					    : PM_CONN_SEC_ERROR_DISCONNECT;
+	uint16_t error = (p_gap_evt->params.disconnected.reason ==
+			  BLE_HCI_CONN_TERMINATED_DUE_TO_MIC_FAILURE)
+			  ? PM_CONN_SEC_ERROR_MIC_FAILURE : PM_CONN_SEC_ERROR_DISCONNECT;
 
 	link_secure_failure(p_gap_evt->conn_handle, error, BLE_GAP_SEC_STATUS_SOURCE_LOCAL);
 }
