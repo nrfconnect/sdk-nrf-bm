@@ -71,7 +71,7 @@ static void pds_evt_send(pm_evt_t *p_event)
  * @p peer_id is stored in the most significant 16 bits.
  * @p data_id is stored in the least significant 16 bits.
  */
-static uint32_t peer_id_peer_data_id_to_entry_id(pm_peer_id_t peer_id,
+static uint32_t peer_id_peer_data_id_to_entry_id(uint16_t peer_id,
 						 pm_peer_data_id_t data_id)
 {
 	return (peer_id << ENTRY_ID_PEER_ID_OFFSET_BITS) | (data_id & ENTRY_ID_DATA_ID_MASK);
@@ -80,7 +80,7 @@ static uint32_t peer_id_peer_data_id_to_entry_id(pm_peer_id_t peer_id,
 /**
  * @brief Unpack the given entry_id into a peer_id and data_id.
  */
-static void entry_id_to_peer_id_peer_data_id(uint32_t entry_id, pm_peer_id_t *peer_id,
+static void entry_id_to_peer_id_peer_data_id(uint32_t entry_id, uint16_t *peer_id,
 					     pm_peer_data_id_t *data_id)
 {
 	*data_id = entry_id & ENTRY_ID_DATA_ID_MASK;
@@ -104,7 +104,7 @@ static bool peer_data_id_is_valid(pm_peer_data_id_t data_id)
  * @param[in]  peer_id    The peer the event pertains to.
  * @param[in]  err_code   The unexpected error that occurred.
  */
-static void send_unexpected_error(pm_peer_id_t peer_id, uint32_t err_code)
+static void send_unexpected_error(uint16_t peer_id, uint32_t err_code)
 {
 	pm_evt_t error_evt = {.evt_id = PM_EVT_ERROR_UNEXPECTED,
 			      .peer_id = peer_id,
@@ -115,7 +115,7 @@ static void send_unexpected_error(pm_peer_id_t peer_id, uint32_t err_code)
 }
 
 /* Returns the next data entry or a negative errno. */
-static uint32_t find_next_data_entry_in_peer(pm_peer_id_t peer_id, uint32_t *next_entry_id)
+static uint32_t find_next_data_entry_in_peer(uint16_t peer_id, uint32_t *next_entry_id)
 {
 	ssize_t ret;
 	uint8_t temp_buf[PM_PEER_DATA_MAX_SIZE] = { 0 };
@@ -148,7 +148,7 @@ static uint32_t find_next_data_entry_in_peer(pm_peer_id_t peer_id, uint32_t *nex
 static void peer_data_delete_process(void)
 {
 	int err;
-	pm_peer_id_t peer_id;
+	uint16_t peer_id;
 	uint32_t entry_id;
 
 	m_peer_delete_deferred = false;
@@ -177,8 +177,8 @@ static void peer_data_delete_process(void)
 
 static void peer_ids_load(void)
 {
-	pm_peer_id_t peer_id;
-	pm_peer_id_t peer_id_iter;
+	uint16_t peer_id;
+	uint16_t peer_id_iter;
 	pm_peer_data_flash_t peer_data = { 0 };
 	uint8_t peer_data_buffer[PM_PEER_DATA_MAX_SIZE] = { 0 };
 
@@ -195,7 +195,7 @@ static void peer_ids_load(void)
 
 static void bm_zms_evt_handler(bm_zms_evt_t const *p_evt)
 {
-	pm_peer_id_t peer_id;
+	uint16_t peer_id;
 	pm_peer_data_id_t data_id;
 
 	entry_id_to_peer_id_peer_data_id(p_evt->id, &peer_id, &data_id);
@@ -296,13 +296,13 @@ static void wait_for_init(void)
 	}
 }
 
-void pds_peer_data_iterate_prepare(pm_peer_id_t *p_peer_id_iter)
+void pds_peer_data_iterate_prepare(uint16_t *p_peer_id_iter)
 {
 	*p_peer_id_iter = 0;
 }
 
-bool pds_peer_data_iterate(pm_peer_data_id_t data_id, pm_peer_id_t *const p_peer_id,
-			   pm_peer_data_flash_t *const p_data, pm_peer_id_t *p_peer_id_iter)
+bool pds_peer_data_iterate(pm_peer_data_id_t data_id, uint16_t *const p_peer_id,
+			   pm_peer_data_flash_t *const p_data, uint16_t *p_peer_id_iter)
 {
 	ssize_t ret;
 	uint8_t temp_buf[PM_PEER_DATA_MAX_SIZE] = { 0 };
@@ -377,7 +377,7 @@ uint32_t pds_init(void)
 	return NRF_SUCCESS;
 }
 
-uint32_t pds_peer_data_read(pm_peer_id_t peer_id, pm_peer_data_id_t data_id,
+uint32_t pds_peer_data_read(uint16_t peer_id, pm_peer_data_id_t data_id,
 			      pm_peer_data_t *const p_data, uint32_t const *const p_buf_len)
 {
 	ssize_t ret;
@@ -414,7 +414,7 @@ uint32_t pds_peer_data_read(pm_peer_id_t peer_id, pm_peer_data_id_t data_id,
 	return NRF_SUCCESS;
 }
 
-uint32_t pds_peer_data_store(pm_peer_id_t peer_id, pm_peer_data_const_t const *p_peer_data,
+uint32_t pds_peer_data_store(uint16_t peer_id, pm_peer_data_const_t const *p_peer_data,
 			       pm_store_token_t *p_store_token)
 {
 	ssize_t ret;
@@ -444,7 +444,7 @@ uint32_t pds_peer_data_store(pm_peer_id_t peer_id, pm_peer_data_const_t const *p
 	return NRF_SUCCESS;
 }
 
-uint32_t pds_peer_data_delete(pm_peer_id_t peer_id, pm_peer_data_id_t data_id)
+uint32_t pds_peer_data_delete(uint16_t peer_id, pm_peer_data_id_t data_id)
 {
 	int err;
 
@@ -466,13 +466,13 @@ uint32_t pds_peer_data_delete(pm_peer_id_t peer_id, pm_peer_data_id_t data_id)
 	return NRF_SUCCESS;
 }
 
-pm_peer_id_t pds_peer_id_allocate(void)
+uint16_t pds_peer_id_allocate(void)
 {
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
 	return peer_id_allocate(PM_PEER_ID_INVALID);
 }
 
-uint32_t pds_peer_id_free(pm_peer_id_t peer_id)
+uint32_t pds_peer_id_free(uint16_t peer_id)
 {
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
 	VERIFY_PEER_ID_IN_RANGE(peer_id);
@@ -490,25 +490,25 @@ uint32_t pds_peer_id_free(pm_peer_id_t peer_id)
 	return NRF_SUCCESS;
 }
 
-bool pds_peer_id_is_allocated(pm_peer_id_t peer_id)
+bool pds_peer_id_is_allocated(uint16_t peer_id)
 {
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
 	return peer_id_is_allocated(peer_id);
 }
 
-bool pds_peer_id_is_deleted(pm_peer_id_t peer_id)
+bool pds_peer_id_is_deleted(uint16_t peer_id)
 {
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
 	return peer_id_is_deleted(peer_id);
 }
 
-pm_peer_id_t pds_next_peer_id_get(pm_peer_id_t prev_peer_id)
+uint16_t pds_next_peer_id_get(uint16_t prev_peer_id)
 {
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
 	return peer_id_get_next_used(prev_peer_id);
 }
 
-pm_peer_id_t pds_next_deleted_peer_id_get(pm_peer_id_t prev_peer_id)
+uint16_t pds_next_deleted_peer_id_get(uint16_t prev_peer_id)
 {
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
 	return peer_id_get_next_deleted(prev_peer_id);

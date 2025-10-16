@@ -55,9 +55,9 @@ static uint32_t find_and_set_flag(atomic_t *p_flags, uint32_t flag_count)
 	return flag_count;
 }
 
-static pm_peer_id_t claim(pm_peer_id_t peer_id, atomic_t *p_peer_id_flags)
+static uint16_t claim(uint16_t peer_id, atomic_t *p_peer_id_flags)
 {
-	pm_peer_id_t allocated_peer_id = PM_PEER_ID_INVALID;
+	uint16_t allocated_peer_id = PM_PEER_ID_INVALID;
 
 	if (peer_id == PM_PEER_ID_INVALID) {
 		allocated_peer_id =
@@ -73,21 +73,21 @@ static pm_peer_id_t claim(pm_peer_id_t peer_id, atomic_t *p_peer_id_flags)
 	return allocated_peer_id;
 }
 
-static void release(pm_peer_id_t peer_id, atomic_t *p_peer_id_flags)
+static void release(uint16_t peer_id, atomic_t *p_peer_id_flags)
 {
 	if (peer_id < PM_PEER_ID_N_AVAILABLE_IDS) {
 		atomic_clear_bit(p_peer_id_flags, peer_id);
 	}
 }
 
-pm_peer_id_t peer_id_allocate(pm_peer_id_t peer_id)
+uint16_t peer_id_allocate(uint16_t peer_id)
 {
 	return claim(peer_id, m_pi.used_peer_ids);
 }
 
-bool peer_id_delete(pm_peer_id_t peer_id)
+bool peer_id_delete(uint16_t peer_id)
 {
-	pm_peer_id_t deleted_peer_id;
+	uint16_t deleted_peer_id;
 
 	if (peer_id == PM_PEER_ID_INVALID) {
 		return false;
@@ -98,13 +98,13 @@ bool peer_id_delete(pm_peer_id_t peer_id)
 	return (deleted_peer_id == peer_id);
 }
 
-void peer_id_free(pm_peer_id_t peer_id)
+void peer_id_free(uint16_t peer_id)
 {
 	release(peer_id, m_pi.used_peer_ids);
 	release(peer_id, m_pi.deleted_peer_ids);
 }
 
-bool peer_id_is_allocated(pm_peer_id_t peer_id)
+bool peer_id_is_allocated(uint16_t peer_id)
 {
 	if (peer_id < PM_PEER_ID_N_AVAILABLE_IDS) {
 		return atomic_test_bit(m_pi.used_peer_ids, peer_id);
@@ -112,7 +112,7 @@ bool peer_id_is_allocated(pm_peer_id_t peer_id)
 	return false;
 }
 
-bool peer_id_is_deleted(pm_peer_id_t peer_id)
+bool peer_id_is_deleted(uint16_t peer_id)
 {
 	if (peer_id < PM_PEER_ID_N_AVAILABLE_IDS) {
 		return atomic_test_bit(m_pi.deleted_peer_ids, peer_id);
@@ -120,9 +120,9 @@ bool peer_id_is_deleted(pm_peer_id_t peer_id)
 	return false;
 }
 
-pm_peer_id_t next_id_get(pm_peer_id_t prev_peer_id, atomic_t *p_peer_id_flags)
+uint16_t next_id_get(uint16_t prev_peer_id, atomic_t *p_peer_id_flags)
 {
-	pm_peer_id_t i = (prev_peer_id == PM_PEER_ID_INVALID) ? 0 : (prev_peer_id + 1);
+	uint16_t i = (prev_peer_id == PM_PEER_ID_INVALID) ? 0 : (prev_peer_id + 1);
 
 	for (; i < PM_PEER_ID_N_AVAILABLE_IDS; i++) {
 		if (atomic_test_bit(p_peer_id_flags, i)) {
@@ -133,7 +133,7 @@ pm_peer_id_t next_id_get(pm_peer_id_t prev_peer_id, atomic_t *p_peer_id_flags)
 	return PM_PEER_ID_INVALID;
 }
 
-pm_peer_id_t peer_id_get_next_used(pm_peer_id_t peer_id)
+uint16_t peer_id_get_next_used(uint16_t peer_id)
 {
 	peer_id = next_id_get(peer_id, m_pi.used_peer_ids);
 
@@ -148,7 +148,7 @@ pm_peer_id_t peer_id_get_next_used(pm_peer_id_t peer_id)
 	return peer_id;
 }
 
-pm_peer_id_t peer_id_get_next_deleted(pm_peer_id_t prev_peer_id)
+uint16_t peer_id_get_next_deleted(uint16_t prev_peer_id)
 {
 	return next_id_get(prev_peer_id, m_pi.deleted_peer_ids);
 }
@@ -157,7 +157,7 @@ uint32_t peer_id_n_ids(void)
 {
 	uint32_t n_ids = 0;
 
-	for (pm_peer_id_t i = 0; i < PM_PEER_ID_N_AVAILABLE_IDS; i++) {
+	for (uint16_t i = 0; i < PM_PEER_ID_N_AVAILABLE_IDS; i++) {
 		n_ids += atomic_test_bit(m_pi.used_peer_ids, i);
 	}
 

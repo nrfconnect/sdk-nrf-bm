@@ -382,9 +382,9 @@ The following example shows how to use the :c:func:`pm_whitelist_set` function t
    {
       /* Fetch a list of peer IDs from Peer Manager and whitelist them. */
 
-      pm_peer_id_t peer_ids[8] = {PM_PEER_ID_INVALID};
+      uint16_t peer_ids[8] = {PM_PEER_ID_INVALID};
       uint32_t n_peer_ids = 0;
-      pm_peer_id_t peer_id = pm_next_peer_id_get(PM_PEER_ID_INVALID);
+      uint16_t peer_id = pm_next_peer_id_get(PM_PEER_ID_INVALID);
 
       while((peer_id != PM_PEER_ID_INVALID) && (n_peer_ids < 8)) {
          peer_ids[n_peer_ids++] = peer_id;

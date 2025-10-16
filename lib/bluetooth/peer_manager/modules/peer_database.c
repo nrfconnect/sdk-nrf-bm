@@ -62,7 +62,7 @@ static pm_evt_handler_internal_t const m_evt_handlers[] = {
  */
 typedef struct {
 	/** @brief The peer ID this buffer belongs to. */
-	pm_peer_id_t peer_id;
+	uint16_t peer_id;
 	/** @brief The data ID this buffer belongs to. */
 	pm_peer_data_id_t data_id;
 	/**
@@ -124,7 +124,7 @@ static void write_buffer_record_invalidate(pdb_buffer_record_t *p_record)
  *
  * @return  A pointer to the matching record, or NULL if none was found.
  */
-static pdb_buffer_record_t *write_buffer_record_find_next(pm_peer_id_t peer_id, uint32_t *p_index)
+static pdb_buffer_record_t *write_buffer_record_find_next(uint16_t peer_id, uint32_t *p_index)
 {
 	for (uint32_t i = *p_index; i < CONFIG_PM_FLASH_BUFFERS; i++) {
 		if (m_write_buffer_records[i].peer_id == peer_id) {
@@ -143,8 +143,7 @@ static pdb_buffer_record_t *write_buffer_record_find_next(pm_peer_id_t peer_id, 
  *
  * @return  A pointer to the matching record, or NULL if none was found.
  */
-static pdb_buffer_record_t *write_buffer_record_find(pm_peer_id_t peer_id,
-						     pm_peer_data_id_t data_id)
+static pdb_buffer_record_t *write_buffer_record_find(uint16_t peer_id, pm_peer_data_id_t data_id)
 {
 	uint32_t index = 0;
 	pdb_buffer_record_t *p_record = write_buffer_record_find_next(peer_id, &index);
@@ -213,7 +212,7 @@ static void write_buffer_record_release(pdb_buffer_record_t *p_write_buffer_reco
  * @param[in]  data_id                 The data ID this record should have.
  */
 static void write_buffer_record_acquire(pdb_buffer_record_t **pp_write_buffer_record,
-					pm_peer_id_t peer_id, pm_peer_data_id_t data_id)
+					uint16_t peer_id, pm_peer_data_id_t data_id)
 {
 	if (pp_write_buffer_record == NULL) {
 		return;
@@ -497,7 +496,7 @@ uint32_t pdb_init(void)
 	return NRF_SUCCESS;
 }
 
-uint32_t pdb_peer_free(pm_peer_id_t peer_id)
+uint32_t pdb_peer_free(uint16_t peer_id)
 {
 	uint32_t err_code;
 
@@ -535,7 +534,7 @@ uint32_t pdb_peer_free(pm_peer_id_t peer_id)
 	return NRF_ERROR_INTERNAL;
 }
 
-uint32_t pdb_write_buf_get(pm_peer_id_t peer_id, pm_peer_data_id_t data_id, uint32_t n_bufs,
+uint32_t pdb_write_buf_get(uint16_t peer_id, pm_peer_data_id_t data_id, uint32_t n_bufs,
 			     pm_peer_data_t *p_peer_data)
 {
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
@@ -596,7 +595,7 @@ uint32_t pdb_write_buf_get(pm_peer_id_t peer_id, pm_peer_data_id_t data_id, uint
 	return NRF_SUCCESS;
 }
 
-uint32_t pdb_write_buf_release(pm_peer_id_t peer_id, pm_peer_data_id_t data_id)
+uint32_t pdb_write_buf_release(uint16_t peer_id, pm_peer_data_id_t data_id)
 {
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
 
@@ -613,8 +612,7 @@ uint32_t pdb_write_buf_release(pm_peer_id_t peer_id, pm_peer_data_id_t data_id)
 	return NRF_SUCCESS;
 }
 
-uint32_t pdb_write_buf_store(pm_peer_id_t peer_id, pm_peer_data_id_t data_id,
-			       pm_peer_id_t new_peer_id)
+uint32_t pdb_write_buf_store(uint16_t peer_id, pm_peer_data_id_t data_id, uint16_t new_peer_id)
 {
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
 

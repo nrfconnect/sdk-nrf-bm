@@ -45,7 +45,7 @@ static pm_store_token_t m_peer_rank_token;
 /** The current highest peer rank. Used by @ref pm_peer_rank_highest. */
 static uint32_t m_current_highest_peer_rank;
 /** The peer with the highest peer rank. Used by @ref pm_peer_rank_highest. */
-static pm_peer_id_t m_highest_ranked_peer;
+static uint16_t m_highest_ranked_peer;
 /** The subscribers to Peer Manager events, as registered through @ref pm_register. */
 static pm_evt_handler_t m_evt_handlers[CONFIG_PM_MAX_REGISTRANTS];
 /** The number of event handlers registered through @ref pm_register. */
@@ -502,7 +502,7 @@ bool pm_address_resolve(ble_gap_addr_t const *p_addr, ble_gap_irk_t const *p_irk
 	}
 }
 
-uint32_t pm_whitelist_set(pm_peer_id_t const *p_peers, uint32_t peer_cnt)
+uint32_t pm_whitelist_set(uint16_t const *p_peers, uint32_t peer_cnt)
 {
 	VERIFY_MODULE_INITIALIZED();
 	return im_whitelist_set(p_peers, peer_cnt);
@@ -525,7 +525,7 @@ uint32_t pm_whitelist_get(ble_gap_addr_t *p_addrs, uint32_t *p_addr_cnt, ble_gap
 	return im_whitelist_get(p_addrs, p_addr_cnt, p_irks, p_irk_cnt);
 }
 
-uint32_t pm_device_identities_list_set(pm_peer_id_t const *p_peers, uint32_t peer_cnt)
+uint32_t pm_device_identities_list_set(uint16_t const *p_peers, uint32_t peer_cnt)
 {
 	VERIFY_MODULE_INITIALIZED();
 	return im_device_identities_list_set(p_peers, peer_cnt);
@@ -549,7 +549,7 @@ uint32_t pm_lesc_public_key_set(ble_gap_lesc_p256_pk_t *p_public_key)
 	return sm_lesc_public_key_set(p_public_key);
 }
 
-uint32_t pm_conn_handle_get(pm_peer_id_t peer_id, uint16_t *p_conn_handle)
+uint32_t pm_conn_handle_get(uint16_t peer_id, uint16_t *p_conn_handle)
 {
 	VERIFY_MODULE_INITIALIZED();
 	VERIFY_PARAM_NOT_NULL(p_conn_handle);
@@ -557,7 +557,7 @@ uint32_t pm_conn_handle_get(pm_peer_id_t peer_id, uint16_t *p_conn_handle)
 	return NRF_SUCCESS;
 }
 
-uint32_t pm_peer_id_get(uint16_t conn_handle, pm_peer_id_t *p_peer_id)
+uint32_t pm_peer_id_get(uint16_t conn_handle, uint16_t *p_peer_id)
 {
 	VERIFY_MODULE_INITIALIZED();
 	VERIFY_PARAM_NOT_NULL(p_peer_id);
@@ -573,9 +573,9 @@ uint32_t pm_peer_count(void)
 	return pds_peer_count_get();
 }
 
-pm_peer_id_t pm_next_peer_id_get(pm_peer_id_t prev_peer_id)
+uint16_t pm_next_peer_id_get(uint16_t prev_peer_id)
 {
-	pm_peer_id_t next_peer_id = prev_peer_id;
+	uint16_t next_peer_id = prev_peer_id;
 
 	if (!MODULE_INITIALIZED) {
 		return PM_PEER_ID_INVALID;
@@ -604,8 +604,8 @@ static bool peer_is_irk(ble_gap_irk_t const *const p_irk)
 	return false;
 }
 
-uint32_t pm_peer_id_list(pm_peer_id_t *p_peer_list, uint32_t *const p_list_size,
-			   pm_peer_id_t first_peer_id, pm_peer_id_list_skip_t skip_id)
+uint32_t pm_peer_id_list(uint16_t *p_peer_list, uint32_t *const p_list_size,
+			 uint16_t first_peer_id, pm_peer_id_list_skip_t skip_id)
 {
 	VERIFY_MODULE_INITIALIZED();
 	VERIFY_PARAM_NOT_NULL(p_list_size);
@@ -616,7 +616,7 @@ uint32_t pm_peer_id_list(pm_peer_id_t *p_peer_list, uint32_t *const p_list_size,
 	uint32_t current_size = 0;
 	pm_peer_data_t pm_car_data;
 	pm_peer_data_t pm_bond_data;
-	pm_peer_id_t current_peer_id = first_peer_id;
+	uint16_t current_peer_id = first_peer_id;
 	ble_gap_addr_t const *p_gap_addr;
 	bool skip_no_addr = skip_id & PM_PEER_ID_LIST_SKIP_NO_ID_ADDR;
 	bool skip_no_irk = skip_id & PM_PEER_ID_LIST_SKIP_NO_IRK;
@@ -715,7 +715,7 @@ uint32_t pm_peer_id_list(pm_peer_id_t *p_peer_list, uint32_t *const p_list_size,
 	return NRF_SUCCESS;
 }
 
-uint32_t pm_peer_data_load(pm_peer_id_t peer_id, pm_peer_data_id_t data_id, void *p_data,
+uint32_t pm_peer_data_load(uint16_t peer_id, pm_peer_data_id_t data_id, void *p_data,
 			     uint32_t *p_length)
 {
 	VERIFY_MODULE_INITIALIZED();
@@ -730,25 +730,25 @@ uint32_t pm_peer_data_load(pm_peer_id_t peer_id, pm_peer_data_id_t data_id, void
 	return pds_peer_data_read(peer_id, data_id, &peer_data, p_length);
 }
 
-uint32_t pm_peer_data_bonding_load(pm_peer_id_t peer_id, pm_peer_data_bonding_t *p_data)
+uint32_t pm_peer_data_bonding_load(uint16_t peer_id, pm_peer_data_bonding_t *p_data)
 {
 	uint32_t length = sizeof(pm_peer_data_bonding_t);
 
 	return pm_peer_data_load(peer_id, PM_PEER_DATA_ID_BONDING, p_data, &length);
 }
 
-uint32_t pm_peer_data_remote_db_load(pm_peer_id_t peer_id, ble_gatt_db_srv_t *p_data,
+uint32_t pm_peer_data_remote_db_load(uint16_t peer_id, ble_gatt_db_srv_t *p_data,
 				       uint32_t *p_length)
 {
 	return pm_peer_data_load(peer_id, PM_PEER_DATA_ID_GATT_REMOTE, p_data, p_length);
 }
 
-uint32_t pm_peer_data_app_data_load(pm_peer_id_t peer_id, void *p_data, uint32_t *p_length)
+uint32_t pm_peer_data_app_data_load(uint16_t peer_id, void *p_data, uint32_t *p_length)
 {
 	return pm_peer_data_load(peer_id, PM_PEER_DATA_ID_APPLICATION, p_data, p_length);
 }
 
-uint32_t pm_peer_data_store(pm_peer_id_t peer_id, pm_peer_data_id_t data_id, void const *p_data,
+uint32_t pm_peer_data_store(uint16_t peer_id, pm_peer_data_id_t data_id, void const *p_data,
 			      uint32_t length, pm_store_token_t *p_token)
 {
 	VERIFY_MODULE_INITIALIZED();
@@ -758,7 +758,7 @@ uint32_t pm_peer_data_store(pm_peer_id_t peer_id, pm_peer_data_id_t data_id, voi
 	}
 
 	if (data_id == PM_PEER_DATA_ID_BONDING) {
-		pm_peer_id_t dupl_peer_id;
+		uint16_t dupl_peer_id;
 
 		dupl_peer_id =
 			im_find_duplicate_bonding_data((pm_peer_data_bonding_t *)p_data, peer_id);
@@ -778,26 +778,26 @@ uint32_t pm_peer_data_store(pm_peer_id_t peer_id, pm_peer_data_id_t data_id, voi
 	return pds_peer_data_store(peer_id, &peer_data, p_token);
 }
 
-uint32_t pm_peer_data_bonding_store(pm_peer_id_t peer_id, pm_peer_data_bonding_t const *p_data,
+uint32_t pm_peer_data_bonding_store(uint16_t peer_id, pm_peer_data_bonding_t const *p_data,
 				      pm_store_token_t *p_token)
 {
 	return pm_peer_data_store(peer_id, PM_PEER_DATA_ID_BONDING, p_data,
 				  ROUND_UP(sizeof(pm_peer_data_bonding_t), 4), p_token);
 }
 
-uint32_t pm_peer_data_remote_db_store(pm_peer_id_t peer_id, ble_gatt_db_srv_t const *p_data,
+uint32_t pm_peer_data_remote_db_store(uint16_t peer_id, ble_gatt_db_srv_t const *p_data,
 					uint32_t length, pm_store_token_t *p_token)
 {
 	return pm_peer_data_store(peer_id, PM_PEER_DATA_ID_GATT_REMOTE, p_data, length, p_token);
 }
 
-uint32_t pm_peer_data_app_data_store(pm_peer_id_t peer_id, void const *p_data, uint32_t length,
+uint32_t pm_peer_data_app_data_store(uint16_t peer_id, void const *p_data, uint32_t length,
 				       pm_store_token_t *p_token)
 {
 	return pm_peer_data_store(peer_id, PM_PEER_DATA_ID_APPLICATION, p_data, length, p_token);
 }
 
-uint32_t pm_peer_data_delete(pm_peer_id_t peer_id, pm_peer_data_id_t data_id)
+uint32_t pm_peer_data_delete(uint16_t peer_id, pm_peer_data_id_t data_id)
 {
 	VERIFY_MODULE_INITIALIZED();
 
@@ -808,12 +808,12 @@ uint32_t pm_peer_data_delete(pm_peer_id_t peer_id, pm_peer_data_id_t data_id)
 	return pds_peer_data_delete(peer_id, data_id);
 }
 
-uint32_t pm_peer_new(pm_peer_id_t *p_new_peer_id, pm_peer_data_bonding_t *p_bonding_data,
+uint32_t pm_peer_new(uint16_t *p_new_peer_id, pm_peer_data_bonding_t *p_bonding_data,
 		       pm_store_token_t *p_token)
 {
 	uint32_t err_code;
-	pm_peer_id_t peer_id;
-	pm_peer_id_t peer_id_iter;
+	uint16_t peer_id;
+	uint16_t peer_id_iter;
 	pm_peer_data_flash_t peer_data;
 	uint8_t peer_data_buffer[PM_PEER_DATA_MAX_SIZE] = { 0 };
 
@@ -873,7 +873,7 @@ uint32_t pm_peer_new(pm_peer_id_t *p_new_peer_id, pm_peer_data_bonding_t *p_bond
 	return NRF_SUCCESS;
 }
 
-uint32_t pm_peer_delete(pm_peer_id_t peer_id)
+uint32_t pm_peer_delete(uint16_t peer_id)
 {
 	VERIFY_MODULE_INITIALIZED();
 
@@ -886,7 +886,7 @@ uint32_t pm_peers_delete(void)
 
 	m_deleting_all = true;
 
-	pm_peer_id_t current_peer_id = pds_next_peer_id_get(PM_PEER_ID_INVALID);
+	uint16_t current_peer_id = pds_next_peer_id_get(PM_PEER_ID_INVALID);
 
 	if (current_peer_id == PM_PEER_ID_INVALID) {
 		/* No peers bonded. */
@@ -918,15 +918,15 @@ uint32_t pm_peers_delete(void)
 	return NRF_SUCCESS;
 }
 
-uint32_t pm_peer_ranks_get(pm_peer_id_t *p_highest_ranked_peer, uint32_t *p_highest_rank,
-			     pm_peer_id_t *p_lowest_ranked_peer, uint32_t *p_lowest_rank)
+uint32_t pm_peer_ranks_get(uint16_t *p_highest_ranked_peer, uint32_t *p_highest_rank,
+			   uint16_t *p_lowest_ranked_peer, uint32_t *p_lowest_rank)
 {
 #if !defined(CONFIG_PM_PEER_RANKS)
 	return NRF_ERROR_NOT_SUPPORTED;
 #else
 	VERIFY_MODULE_INITIALIZED();
 
-	pm_peer_id_t peer_id = pds_next_peer_id_get(PM_PEER_ID_INVALID);
+	uint16_t peer_id = pds_next_peer_id_get(PM_PEER_ID_INVALID);
 	uint32_t peer_rank = 0;
 	uint32_t length = sizeof(peer_rank);
 	pm_peer_data_t peer_data = {.p_peer_rank = &peer_rank};
@@ -934,8 +934,8 @@ uint32_t pm_peer_ranks_get(pm_peer_id_t *p_highest_ranked_peer, uint32_t *p_high
 		pds_peer_data_read(peer_id, PM_PEER_DATA_ID_PEER_RANK, &peer_data, &length);
 	uint32_t highest_rank = 0;
 	uint32_t lowest_rank = 0xFFFFFFFF;
-	pm_peer_id_t highest_ranked_peer = PM_PEER_ID_INVALID;
-	pm_peer_id_t lowest_ranked_peer = PM_PEER_ID_INVALID;
+	uint16_t highest_ranked_peer = PM_PEER_ID_INVALID;
+	uint16_t lowest_ranked_peer = PM_PEER_ID_INVALID;
 
 	if (err_code == NRF_ERROR_INVALID_PARAM) {
 		/* No peer IDs exist. */
@@ -994,7 +994,7 @@ static void rank_init(void)
 }
 #endif
 
-uint32_t pm_peer_rank_highest(pm_peer_id_t peer_id)
+uint32_t pm_peer_rank_highest(uint16_t peer_id)
 {
 #if !defined(CONFIG_PM_PEER_RANKS)
 	return NRF_ERROR_NOT_SUPPORTED;

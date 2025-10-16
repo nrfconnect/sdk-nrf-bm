@@ -228,7 +228,7 @@ void pm_handler_flash_clean_on_return(void)
 	pm_handler_flash_clean(&storage_full_evt);
 }
 
-static void rank_highest(pm_peer_id_t peer_id)
+static void rank_highest(uint16_t peer_id)
 {
 	/* Trigger a pm_peer_rank_highest() with internal bookkeeping. */
 	pm_evt_t connected_evt = {.evt_id = PM_EVT_BONDED_PEER_CONNECTED, .peer_id = peer_id};
@@ -251,7 +251,7 @@ void pm_handler_flash_clean(pm_evt_t const *p_pm_evt)
 #define RANK_QUEUE_INIT PM_PEER_ID_INVALID,
 
 	/* Queue of rank_highest calls that failed because of full flash. */
-	static pm_peer_id_t rank_queue[8] = {[0 ... RANK_QUEUE_SIZE - 1] = RANK_QUEUE_INIT};
+	static uint16_t rank_queue[8] = {[0 ... RANK_QUEUE_SIZE - 1] = RANK_QUEUE_INIT};
 	/* Write pointer for rank_queue. */
 	static int rank_queue_wr;
 

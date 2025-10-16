@@ -26,9 +26,6 @@
 extern "C" {
 #endif
 
-/** @brief Handle to uniquely identify a peer for which we have persistently stored data. */
-typedef uint16_t pm_peer_id_t;
-
 /** @brief Type that is used to hold a reference to a stored item in non-volatile storage. */
 typedef uint32_t pm_store_token_t;
 

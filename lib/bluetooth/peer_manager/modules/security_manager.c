@@ -150,7 +150,7 @@ static void send_unexpected_error(uint16_t conn_handle, uint32_t err_code)
  *
  * @return  Whether the key is LESC or not.
  */
-static bool key_is_lesc(pm_peer_id_t peer_id)
+static bool key_is_lesc(uint16_t peer_id)
 {
 	pm_peer_data_bonding_t bonding_data = { 0 };
 	uint32_t bonding_data_size = sizeof(pm_peer_data_bonding_t);
@@ -351,7 +351,7 @@ uint32_t sm_conn_sec_status_get(uint16_t conn_handle, pm_conn_sec_status_t *p_co
 		return BLE_ERROR_INVALID_CONN_HANDLE;
 	}
 
-	pm_peer_id_t peer_id = im_peer_id_get_by_conn_handle(conn_handle);
+	uint16_t peer_id = im_peer_id_get_by_conn_handle(conn_handle);
 
 	p_conn_sec_status->connected = (status == BLE_CONN_STATUS_CONNECTED);
 	p_conn_sec_status->bonded = (peer_id != PM_PEER_ID_INVALID);
