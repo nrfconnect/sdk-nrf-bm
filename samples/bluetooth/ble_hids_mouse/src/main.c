@@ -93,7 +93,7 @@ BLE_QWR_DEF(ble_qwr);
 /* BLE Connection handle */
 static uint16_t conn_handle = BLE_CONN_HANDLE_INVALID;
 
-static pm_peer_id_t peer_id;
+static uint16_t peer_id;
 
 static void identities_set(pm_peer_id_list_skip_t skip);
 
@@ -517,7 +517,7 @@ static void button_handler(uint8_t pin, uint8_t action)
 static void whitelist_set(pm_peer_id_list_skip_t skip)
 {
 	uint32_t err;
-	pm_peer_id_t peer_ids[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
+	uint16_t peer_ids[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
 	uint32_t peer_id_count = BLE_GAP_WHITELIST_ADDR_MAX_COUNT;
 
 	err = pm_peer_id_list(peer_ids, &peer_id_count, PM_PEER_ID_INVALID, skip);
@@ -537,7 +537,7 @@ static void whitelist_set(pm_peer_id_list_skip_t skip)
 static void identities_set(pm_peer_id_list_skip_t skip)
 {
 	uint32_t err;
-	pm_peer_id_t peer_ids[BLE_GAP_DEVICE_IDENTITIES_MAX_COUNT];
+	uint16_t peer_ids[BLE_GAP_DEVICE_IDENTITIES_MAX_COUNT];
 	uint32_t peer_id_count = BLE_GAP_DEVICE_IDENTITIES_MAX_COUNT;
 
 	err = pm_peer_id_list(peer_ids, &peer_id_count, PM_PEER_ID_INVALID, skip);

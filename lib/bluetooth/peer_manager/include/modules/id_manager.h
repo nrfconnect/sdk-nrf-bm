@@ -39,7 +39,7 @@ void im_ble_evt_handler(ble_evt_t const *p_ble_evt);
  *
  * @return The corresponding peer ID, or @ref PM_PEER_ID_INVALID if none could be resolved.
  */
-pm_peer_id_t im_peer_id_get_by_conn_handle(uint16_t conn_handle);
+uint16_t im_peer_id_get_by_conn_handle(uint16_t conn_handle);
 
 /**
  * @brief Function for getting the corresponding peer ID from a master ID (EDIV and rand).
@@ -48,7 +48,7 @@ pm_peer_id_t im_peer_id_get_by_conn_handle(uint16_t conn_handle);
  *
  * @return The corresponding peer ID, or @ref PM_PEER_ID_INVALID if none could be resolved.
  */
-pm_peer_id_t im_peer_id_get_by_master_id(ble_gap_master_id_t const *p_master_id);
+uint16_t im_peer_id_get_by_master_id(ble_gap_master_id_t const *p_master_id);
 
 /**
  * @brief Function for getting the corresponding connection handle from a peer ID.
@@ -58,7 +58,7 @@ pm_peer_id_t im_peer_id_get_by_master_id(ble_gap_master_id_t const *p_master_id)
  * @return The corresponding connection handle, or @ref BLE_CONN_HANDLE_INVALID if none could be
  *         resolved. The conn_handle can refer to a recently disconnected connection.
  */
-uint16_t im_conn_handle_get(pm_peer_id_t peer_id);
+uint16_t im_conn_handle_get(uint16_t peer_id);
 
 /**
  * @brief Function for comparing two master ids
@@ -114,8 +114,8 @@ bool im_is_duplicate_bonding_data(pm_peer_data_bonding_t const *p_bonding_data1,
  *
  * @return  An existing peer ID for the peer, or PM_PEER_ID_INVALID if none was found.
  */
-pm_peer_id_t im_find_duplicate_bonding_data(pm_peer_data_bonding_t const *p_bonding_data,
-					    pm_peer_id_t peer_id_skip);
+uint16_t im_find_duplicate_bonding_data(pm_peer_data_bonding_t const *p_bonding_data,
+					uint16_t peer_id_skip);
 
 /**
  * @brief Function for reporting that a new peer ID has been allocated for a specified connection.
@@ -123,7 +123,7 @@ pm_peer_id_t im_find_duplicate_bonding_data(pm_peer_data_bonding_t const *p_bond
  * @param[in]  conn_handle  The connection.
  * @param[in]  peer_id      The new peer ID.
  */
-void im_new_peer_id(uint16_t conn_handle, pm_peer_id_t peer_id);
+void im_new_peer_id(uint16_t conn_handle, uint16_t peer_id);
 
 /**
  * @brief Function for deleting all of a peer's data from flash and disassociating it from any
@@ -133,7 +133,7 @@ void im_new_peer_id(uint16_t conn_handle, pm_peer_id_t peer_id);
  *
  * @return Any error code returned by @ref pdb_peer_free.
  */
-uint32_t im_peer_free(pm_peer_id_t peer_id);
+uint32_t im_peer_free(uint16_t peer_id);
 
 /**
  * @brief Function to set the local Bluetooth identity address.
@@ -237,7 +237,7 @@ bool im_address_resolve(ble_gap_addr_t const *p_addr, ble_gap_irk_t const *p_irk
  * @retval NRF_ERROR_DATA_SIZE              If @p peer_cnt is greater than
  *                                          @ref BLE_GAP_WHITELIST_ADDR_MAX_COUNT.
  */
-uint32_t im_whitelist_set(pm_peer_id_t const *p_peers, uint32_t const peer_cnt);
+uint32_t im_whitelist_set(uint16_t const *p_peers, uint32_t const peer_cnt);
 
 /**
  * @brief Retrieves the current whitelist, set by a previous call to @ref im_whitelist_set.
@@ -261,7 +261,7 @@ uint32_t im_whitelist_get(ble_gap_addr_t *p_addrs, uint32_t *p_addr_cnt, ble_gap
 			    uint32_t *p_irk_cnt);
 
 /** @brief Set the device identities list. */
-uint32_t im_device_identities_list_set(pm_peer_id_t const *p_peers, uint32_t peer_cnt);
+uint32_t im_device_identities_list_set(uint16_t const *p_peers, uint32_t peer_cnt);
 
 #ifdef __cplusplus
 }

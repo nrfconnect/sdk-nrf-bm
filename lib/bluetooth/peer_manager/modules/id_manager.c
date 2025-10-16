@@ -43,13 +43,13 @@ static pm_evt_handler_internal_t const m_evt_handlers[] = {pm_im_evt_handler, gc
 
 typedef struct {
 	uint16_t conn_handle;
-	pm_peer_id_t peer_id;
+	uint16_t peer_id;
 	ble_gap_addr_t peer_address;
 } im_connection_t;
 
 static im_connection_t m_connections[IM_MAX_CONN_HANDLES];
 static uint8_t m_wlisted_peer_cnt;
-static pm_peer_id_t m_wlisted_peers[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
+static uint16_t m_wlisted_peers[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
 
 /**
  * @brief Function for sending an event to all registered event handlers.
@@ -114,7 +114,7 @@ bool addr_compare(ble_gap_addr_t const *p_addr1, ble_gap_addr_t const *p_addr2)
 void im_ble_evt_handler(ble_evt_t const *ble_evt)
 {
 	ble_gap_evt_t gap_evt;
-	pm_peer_id_t bonded_matching_peer_id;
+	uint16_t bonded_matching_peer_id;
 
 	if (ble_evt->header.evt_id != BLE_GAP_EVT_CONNECTED) {
 		/* Nothing to do. */
@@ -139,10 +139,10 @@ void im_ble_evt_handler(ble_evt_t const *ble_evt)
 		 * identification.
 		 */
 
-		pm_peer_id_t peer_id;
+		uint16_t peer_id;
 		pm_peer_data_flash_t peer_data;
 		uint8_t peer_data_buffer[PM_PEER_DATA_MAX_SIZE] = { 0 };
-		pm_peer_id_t peer_id_iter;
+		uint16_t peer_id_iter;
 
 		peer_data.p_all_data = peer_data_buffer;
 
@@ -229,13 +229,13 @@ bool im_is_duplicate_bonding_data(pm_peer_data_bonding_t const *p_bonding_data1,
 	return (duplicate_addr && id_addrs) || (duplicate_irk && !id_addrs);
 }
 
-pm_peer_id_t im_find_duplicate_bonding_data(pm_peer_data_bonding_t const *p_bonding_data,
-					    pm_peer_id_t peer_id_skip)
+uint16_t im_find_duplicate_bonding_data(pm_peer_data_bonding_t const *p_bonding_data,
+					uint16_t peer_id_skip)
 {
-	pm_peer_id_t peer_id;
+	uint16_t peer_id;
 	pm_peer_data_flash_t peer_data_duplicate;
 	uint8_t peer_data_buffer[PM_PEER_DATA_MAX_SIZE] = { 0 };
-	pm_peer_id_t peer_id_iter;
+	uint16_t peer_id_iter;
 
 	peer_data_duplicate.p_all_data = peer_data_buffer;
 
@@ -254,7 +254,7 @@ pm_peer_id_t im_find_duplicate_bonding_data(pm_peer_data_bonding_t const *p_bond
 	return PM_PEER_ID_INVALID;
 }
 
-pm_peer_id_t im_peer_id_get_by_conn_handle(uint16_t conn_handle)
+uint16_t im_peer_id_get_by_conn_handle(uint16_t conn_handle)
 {
 	const int idx = nrf_sdh_ble_idx_get(conn_handle);
 
@@ -296,12 +296,12 @@ bool im_master_ids_compare(ble_gap_master_id_t const *p_master_id1,
 	return (memcmp(p_master_id1->rand, p_master_id2->rand, BLE_GAP_SEC_RAND_LEN) == 0);
 }
 
-pm_peer_id_t im_peer_id_get_by_master_id(ble_gap_master_id_t const *p_master_id)
+uint16_t im_peer_id_get_by_master_id(ble_gap_master_id_t const *p_master_id)
 {
-	pm_peer_id_t peer_id;
+	uint16_t peer_id;
 	pm_peer_data_flash_t peer_data;
 	uint8_t peer_data_buffer[PM_PEER_DATA_MAX_SIZE] = { 0 };
-	pm_peer_id_t peer_id_iter;
+	uint16_t peer_id_iter;
 
 	NRF_PM_DEBUG_CHECK(p_master_id != NULL);
 
@@ -325,7 +325,7 @@ pm_peer_id_t im_peer_id_get_by_master_id(ble_gap_master_id_t const *p_master_id)
 	return PM_PEER_ID_INVALID;
 }
 
-uint16_t im_conn_handle_get(pm_peer_id_t peer_id)
+uint16_t im_conn_handle_get(uint16_t peer_id)
 {
 	if (peer_id == PM_PEER_ID_INVALID) {
 		return BLE_CONN_HANDLE_INVALID;
@@ -354,7 +354,7 @@ bool im_master_id_is_valid(ble_gap_master_id_t const *p_master_id)
 	return false;
 }
 
-void im_new_peer_id(uint16_t conn_handle, pm_peer_id_t peer_id)
+void im_new_peer_id(uint16_t conn_handle, uint16_t peer_id)
 {
 	const int idx = nrf_sdh_ble_idx_get(conn_handle);
 
@@ -363,7 +363,7 @@ void im_new_peer_id(uint16_t conn_handle, pm_peer_id_t peer_id)
 	}
 }
 
-uint32_t im_peer_free(pm_peer_id_t peer_id)
+uint32_t im_peer_free(uint16_t peer_id)
 {
 	const uint16_t conn_handle = im_conn_handle_get(peer_id);
 	const int idx = nrf_sdh_ble_idx_get(conn_handle);
@@ -377,7 +377,7 @@ uint32_t im_peer_free(pm_peer_id_t peer_id)
 }
 
 /** @brief Given a list of peers, loads their GAP address and IRK into the provided buffers. */
-static uint32_t peers_id_keys_get(pm_peer_id_t const *p_peers, uint32_t peer_cnt,
+static uint32_t peers_id_keys_get(uint16_t const *p_peers, uint32_t peer_cnt,
 				    ble_gap_addr_t *p_gap_addrs, uint32_t *p_addr_cnt,
 				    ble_gap_irk_t *p_gap_irks, uint32_t *p_irk_cnt)
 {
@@ -455,7 +455,7 @@ static uint32_t peers_id_keys_get(pm_peer_id_t const *p_peers, uint32_t peer_cnt
 	return NRF_SUCCESS;
 }
 
-uint32_t im_device_identities_list_set(pm_peer_id_t const *p_peers, uint32_t peer_cnt)
+uint32_t im_device_identities_list_set(uint16_t const *p_peers, uint32_t peer_cnt)
 {
 	uint32_t ret;
 	pm_peer_data_t peer_data;
@@ -565,7 +565,7 @@ uint32_t im_whitelist_get(ble_gap_addr_t *p_addrs, uint32_t *p_addr_cnt, ble_gap
  * For SoftDevices 3x, also loads the peers' GAP addresses and whitelists them using
  * sd_ble_gap_whitelist_set().
  */
-uint32_t im_whitelist_set(pm_peer_id_t const *p_peers, uint32_t peer_cnt)
+uint32_t im_whitelist_set(uint16_t const *p_peers, uint32_t peer_cnt)
 {
 	/* Clear the cache of whitelisted peers. */
 	memset(m_wlisted_peers, 0x00, sizeof(m_wlisted_peers));
@@ -582,7 +582,7 @@ uint32_t im_whitelist_set(pm_peer_id_t const *p_peers, uint32_t peer_cnt)
 
 	/* Copy the new whitelisted peers. */
 	m_wlisted_peer_cnt = peer_cnt;
-	memcpy(m_wlisted_peers, p_peers, sizeof(pm_peer_id_t) * peer_cnt);
+	memcpy(m_wlisted_peers, p_peers, sizeof(*p_peers) * peer_cnt);
 
 	uint32_t ret;
 	uint32_t wlist_addr_cnt = 0;

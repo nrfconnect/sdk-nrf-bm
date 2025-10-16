@@ -35,7 +35,7 @@ void peer_id_init(void);
  * @return  The allocated peer ID.
  * @retval  PM_PEER_ID_INVALID  If no peer ID could be allocated or module is not initialized.
  */
-pm_peer_id_t peer_id_allocate(pm_peer_id_t peer_id);
+uint16_t peer_id_allocate(uint16_t peer_id);
 
 /**
  * @brief Function for marking a peer ID for deletion.
@@ -46,7 +46,7 @@ pm_peer_id_t peer_id_allocate(pm_peer_id_t peer_id);
  * @retval  false  Peer ID already marked for deletion, peer_id was PM_PEER_ID_INVALID, or module is
  *                 not initialized.
  */
-bool peer_id_delete(pm_peer_id_t peer_id);
+bool peer_id_delete(uint16_t peer_id);
 
 /**
  * @brief Function for freeing a peer ID and clearing all data associated with it in persistent
@@ -54,7 +54,7 @@ bool peer_id_delete(pm_peer_id_t peer_id);
  *
  * @param[in]  peer_id  Peer ID to free.
  */
-void peer_id_free(pm_peer_id_t peer_id);
+void peer_id_free(uint16_t peer_id);
 
 /**
  * @brief Function for finding out whether a peer ID is marked for deletion.
@@ -64,7 +64,7 @@ void peer_id_free(pm_peer_id_t peer_id);
  * @retval  true   peer_id is in marked for deletion.
  * @retval  false  peer_id is not marked for deletion, or the module is not initialized.
  */
-bool peer_id_is_deleted(pm_peer_id_t peer_id);
+bool peer_id_is_deleted(uint16_t peer_id);
 
 /**
  * @brief Function for finding out whether a peer ID is in use.
@@ -74,7 +74,7 @@ bool peer_id_is_deleted(pm_peer_id_t peer_id);
  * @retval  true   peer_id is in use.
  * @retval  false  peer_id is free, or the module is not initialized.
  */
-bool peer_id_is_allocated(pm_peer_id_t peer_id);
+bool peer_id_is_allocated(uint16_t peer_id);
 
 /**
  * @brief Function for getting the next peer ID in the sequence of all used peer IDs. Can be
@@ -90,7 +90,7 @@ bool peer_id_is_allocated(pm_peer_id_t peer_id);
  * @retval  PM_PEER_ID_INVALID      if prev_peer_id was the last ordinary peer ID or the module is
  *                                  not initialized.
  */
-pm_peer_id_t peer_id_get_next_used(pm_peer_id_t prev_peer_id);
+uint16_t peer_id_get_next_used(uint16_t prev_peer_id);
 
 /**
  * @brief Function for getting the next peer ID in the sequence of all peer IDs marked for deletion.
@@ -106,7 +106,7 @@ pm_peer_id_t peer_id_get_next_used(pm_peer_id_t prev_peer_id);
  * @retval  PM_PEER_ID_INVALID      if prev_peer_id was the last ordinary peer ID or the module is
  *                                  not initialized.
  */
-pm_peer_id_t peer_id_get_next_deleted(pm_peer_id_t prev_peer_id);
+uint16_t peer_id_get_next_deleted(uint16_t prev_peer_id);
 
 /**
  * @brief Function for querying the number of valid peer IDs available. I.E the number of peers

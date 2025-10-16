@@ -115,7 +115,7 @@ uint32_t gscm_service_changed_ind_send(uint16_t conn_handle);
  *
  * @param[in]  peer_id  The connection to send the indication on.
  */
-void gscm_db_change_notification_done(pm_peer_id_t peer_id);
+void gscm_db_change_notification_done(uint16_t peer_id);
 
 #ifdef __cplusplus
 }

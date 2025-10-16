@@ -276,7 +276,7 @@ uint32_t pm_lesc_public_key_set(ble_gap_lesc_p256_pk_t *public_key);
  *                                         @ref BLE_GAP_WHITELIST_ADDR_MAX_COUNT.
  * @retval NRF_ERROR_INVALID_STATE         If the Peer Manager is not initialized.
  */
-uint32_t pm_whitelist_set(const pm_peer_id_t *peers, uint32_t peer_cnt);
+uint32_t pm_whitelist_set(const uint16_t *peers, uint32_t peer_cnt);
 
 /**
  * @brief Retrieve the previously set whitelist.
@@ -336,7 +336,7 @@ uint32_t pm_whitelist_get(ble_gap_addr_t *addrs, uint32_t *addr_cnt, ble_gap_irk
  * @retval NRF_ERROR_NOT_SUPPORTED                 If using a SoftDevice that does not support
  *                                                 device identities.
  */
-uint32_t pm_device_identities_list_set(const pm_peer_id_t *peers, uint32_t peer_cnt);
+uint32_t pm_device_identities_list_set(const uint16_t *peers, uint32_t peer_cnt);
 
 /**
  * @brief Set the local Bluetooth identity address.
@@ -446,7 +446,7 @@ bool pm_address_resolve(const ble_gap_addr_t *addr, const ble_gap_irk_t *irk);
  * @retval NRF_ERROR_NULL           If @p conn_handle was NULL.
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  */
-uint32_t pm_conn_handle_get(pm_peer_id_t peer_id, uint16_t *conn_handle);
+uint32_t pm_conn_handle_get(uint16_t peer_id, uint16_t *conn_handle);
 
 /**
  * @brief Retrieve the ID of a peer, given its connection handle.
@@ -459,7 +459,7 @@ uint32_t pm_conn_handle_get(pm_peer_id_t peer_id, uint16_t *conn_handle);
  * @retval NRF_ERROR_NULL           If @p peer_id was NULL.
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  */
-uint32_t pm_peer_id_get(uint16_t conn_handle, pm_peer_id_t *peer_id);
+uint32_t pm_peer_id_get(uint16_t conn_handle, uint16_t *peer_id);
 
 /**
  * @brief Retrieve a filtered list of peer IDs.
@@ -484,8 +484,8 @@ uint32_t pm_peer_id_get(uint16_t conn_handle, pm_peer_id_t *peer_id);
  * @retval NRF_ERROR_NULL           If @p peer_list or @p list_size were NULL.
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  */
-uint32_t pm_peer_id_list(pm_peer_id_t *peer_list, uint32_t *const list_size,
-			 pm_peer_id_t first_peer_id, pm_peer_id_list_skip_t skip_id);
+uint32_t pm_peer_id_list(uint16_t *peer_list, uint32_t *const list_size,
+			 uint16_t first_peer_id, pm_peer_id_list_skip_t skip_id);
 
 /**
  * @brief Get the next peer ID in the sequence of all used peer IDs.
@@ -502,7 +502,7 @@ uint32_t pm_peer_id_list(pm_peer_id_t *peer_list, uint32_t *const list_size,
  *          next peer ID is the first used peer ID. If @p prev_peer_id was the last
  *          used peer ID, the function returns @ref PM_PEER_ID_INVALID.
  */
-pm_peer_id_t pm_next_peer_id_get(pm_peer_id_t prev_peer_id);
+uint16_t pm_next_peer_id_get(uint16_t prev_peer_id);
 
 /**
  * @brief Query the number of valid peer IDs that are available.
@@ -549,27 +549,27 @@ uint32_t pm_peer_count(void);
  *                                  bytes) when storing.
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  */
-uint32_t pm_peer_data_load(pm_peer_id_t peer_id, pm_peer_data_id_t data_id, void *data,
+uint32_t pm_peer_data_load(uint16_t peer_id, pm_peer_data_id_t data_id, void *data,
 			   uint32_t *len);
 
 /**
  * @brief Read a peer's bonding data (@ref PM_PEER_DATA_ID_BONDING).
  * @details See @ref pm_peer_data_load for parameters and return values.
  */
-uint32_t pm_peer_data_bonding_load(pm_peer_id_t peer_id, pm_peer_data_bonding_t *data);
+uint32_t pm_peer_data_bonding_load(uint16_t peer_id, pm_peer_data_bonding_t *data);
 
 /**
  * @brief Read a peer's remote DB values. (@ref PM_PEER_DATA_ID_GATT_REMOTE).
  * @details See @ref pm_peer_data_load for parameters and return values.
  */
-uint32_t pm_peer_data_remote_db_load(pm_peer_id_t peer_id, ble_gatt_db_srv_t *data,
+uint32_t pm_peer_data_remote_db_load(uint16_t peer_id, ble_gatt_db_srv_t *data,
 				     uint32_t *len);
 
 /**
  * @brief Read a peer's application data. (@ref PM_PEER_DATA_ID_APPLICATION).
  * @details See @ref pm_peer_data_load for parameters and return values.
  */
-uint32_t pm_peer_data_app_data_load(pm_peer_id_t peer_id, void *data, uint32_t *len);
+uint32_t pm_peer_data_app_data_load(uint16_t peer_id, void *data, uint32_t *len);
 /** @} */
 
 /**
@@ -609,7 +609,7 @@ uint32_t pm_peer_data_app_data_load(pm_peer_id_t peer_id, void *data, uint32_t *
  *                                  so duplicate entries are avoided.
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  */
-uint32_t pm_peer_data_store(pm_peer_id_t peer_id, pm_peer_data_id_t data_id, const void *data,
+uint32_t pm_peer_data_store(uint16_t peer_id, pm_peer_data_id_t data_id, const void *data,
 			    uint32_t len, pm_store_token_t *token);
 
 /**
@@ -617,7 +617,7 @@ uint32_t pm_peer_data_store(pm_peer_id_t peer_id, pm_peer_data_id_t data_id, con
  *
  * @details See @ref pm_peer_data_store for parameters and return values.
  */
-uint32_t pm_peer_data_bonding_store(pm_peer_id_t peer_id, const pm_peer_data_bonding_t *data,
+uint32_t pm_peer_data_bonding_store(uint16_t peer_id, const pm_peer_data_bonding_t *data,
 				    pm_store_token_t *token);
 
 /**
@@ -625,7 +625,7 @@ uint32_t pm_peer_data_bonding_store(pm_peer_id_t peer_id, const pm_peer_data_bon
  *
  * @details See @ref pm_peer_data_store for parameters and return values.
  */
-uint32_t pm_peer_data_remote_db_store(pm_peer_id_t peer_id, const ble_gatt_db_srv_t *data,
+uint32_t pm_peer_data_remote_db_store(uint16_t peer_id, const ble_gatt_db_srv_t *data,
 				      uint32_t len, pm_store_token_t *token);
 
 /**
@@ -633,7 +633,7 @@ uint32_t pm_peer_data_remote_db_store(pm_peer_id_t peer_id, const ble_gatt_db_sr
  *
  * @details See @ref pm_peer_data_store for parameters and return values.
  */
-uint32_t pm_peer_data_app_data_store(pm_peer_id_t peer_id, const void *data, uint32_t len,
+uint32_t pm_peer_data_app_data_store(uint16_t peer_id, const void *data, uint32_t len,
 				     pm_store_token_t *token);
 /** @} */
 
@@ -664,7 +664,7 @@ uint32_t pm_peer_data_app_data_store(pm_peer_id_t peer_id, const void *data, uin
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  * @retval NRF_ERROR_INTERNAL       If an internal error occurred.
  */
-uint32_t pm_peer_data_delete(pm_peer_id_t peer_id, pm_peer_data_id_t data_id);
+uint32_t pm_peer_data_delete(uint16_t peer_id, pm_peer_data_id_t data_id);
 
 /**
  * @brief Manually add a peer to the non-volatile storage.
@@ -690,7 +690,7 @@ uint32_t pm_peer_data_delete(pm_peer_id_t peer_id, pm_peer_data_id_t data_id);
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  * @retval NRF_ERROR_INTERNAL       If an internal error occurred.
  */
-uint32_t pm_peer_new(pm_peer_id_t *new_peer_id, pm_peer_data_bonding_t *bonding_data,
+uint32_t pm_peer_new(uint16_t *new_peer_id, pm_peer_data_bonding_t *bonding_data,
 		     pm_store_token_t *token);
 
 /**
@@ -712,7 +712,7 @@ uint32_t pm_peer_new(pm_peer_id_t *new_peer_id, pm_peer_data_bonding_t *bonding_
  * @retval NRF_ERROR_INVALID_PARAM  If the peer ID was not valid.
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  */
-uint32_t pm_peer_delete(pm_peer_id_t peer_id);
+uint32_t pm_peer_delete(uint16_t peer_id);
 
 /**
  * @brief Delete all data stored for all peers.
@@ -767,8 +767,8 @@ uint32_t pm_peers_delete(void);
  * @retval NRF_ERROR_NOT_SUPPORTED  If the peer rank functionality has been disabled via the
  *                                  @c CONFIG_PM_PEER_RANKS Kconfig option.
  */
-uint32_t pm_peer_ranks_get(pm_peer_id_t *highest_ranked_peer, uint32_t *highest_rank,
-			   pm_peer_id_t *lowest_ranked_peer, uint32_t *lowest_rank);
+uint32_t pm_peer_ranks_get(uint16_t *highest_ranked_peer, uint32_t *highest_rank,
+			   uint16_t *lowest_ranked_peer, uint32_t *lowest_rank);
 
 /**
  * @brief Update the rank of a peer to be the highest among all stored peers.
@@ -802,7 +802,7 @@ uint32_t pm_peer_ranks_get(pm_peer_id_t *highest_ranked_peer, uint32_t *highest_
  * @retval NRF_ERROR_NOT_SUPPORTED  If peer rank functionality has been disabled via the
  *                                  @c CONFIG_PM_PEER_RANKS Kconfig option.
  */
-uint32_t pm_peer_rank_highest(pm_peer_id_t peer_id);
+uint32_t pm_peer_rank_highest(uint16_t peer_id);
 
 /** @} */
 

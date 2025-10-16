@@ -41,7 +41,7 @@ static pm_evt_handler_internal_t m_evt_handlers[] = {pm_gscm_evt_handler};
 #define SYS_ATTR_BOTH (SYS_ATTR_SYS | SYS_ATTR_USR)
 
 static bool m_module_initialized;
-static pm_peer_id_t m_current_sc_store_peer_id;
+static uint16_t m_current_sc_store_peer_id;
 
 /** @brief Function for resetting the module variable(s) of the GSCM module. */
 static void internal_state_reset(void)
@@ -138,7 +138,7 @@ uint32_t gscm_local_db_cache_update(uint16_t conn_handle)
 {
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
 
-	pm_peer_id_t peer_id = im_peer_id_get_by_conn_handle(conn_handle);
+	uint16_t peer_id = im_peer_id_get_by_conn_handle(conn_handle);
 	uint32_t err_code;
 
 	if (peer_id == PM_PEER_ID_INVALID) {
@@ -257,7 +257,7 @@ uint32_t gscm_local_db_cache_apply(uint16_t conn_handle)
 {
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
 
-	pm_peer_id_t peer_id = im_peer_id_get_by_conn_handle(conn_handle);
+	uint16_t peer_id = im_peer_id_get_by_conn_handle(conn_handle);
 	uint32_t err_code;
 	pm_peer_data_t peer_data;
 	uint8_t const *p_sys_attr_data = NULL;
@@ -335,7 +335,7 @@ bool gscm_service_changed_ind_needed(uint16_t conn_handle)
 	pm_peer_data_t peer_data;
 
 	peer_data.p_all_data = &service_changed_state;
-	pm_peer_id_t peer_id = im_peer_id_get_by_conn_handle(conn_handle);
+	uint16_t peer_id = im_peer_id_get_by_conn_handle(conn_handle);
 
 	err_code =
 		pds_peer_data_read(peer_id, PM_PEER_DATA_ID_SERVICE_CHANGED_PENDING, &peer_data,
@@ -373,7 +373,7 @@ uint32_t gscm_service_changed_ind_send(uint16_t conn_handle)
 	return err_code;
 }
 
-void gscm_db_change_notification_done(pm_peer_id_t peer_id)
+void gscm_db_change_notification_done(uint16_t peer_id)
 {
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
 
