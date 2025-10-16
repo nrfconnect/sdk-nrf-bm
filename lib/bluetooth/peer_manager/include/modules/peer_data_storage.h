@@ -116,7 +116,7 @@ bool pds_peer_data_iterate(pm_peer_data_id_t data_id, uint16_t *const p_peer_id,
  * @retval NRF_ERROR_INTERNAL       If an unexpected error occurred.
  */
 uint32_t pds_peer_data_store(uint16_t peer_id, pm_peer_data_const_t const *p_peer_data,
-			       pm_store_token_t *p_store_token);
+			     uint32_t *p_store_token);
 
 /**
  * @brief Function for deleting peer data in flash. This operation is asynchronous.

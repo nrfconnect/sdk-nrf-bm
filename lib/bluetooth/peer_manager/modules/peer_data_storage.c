@@ -415,7 +415,7 @@ uint32_t pds_peer_data_read(uint16_t peer_id, pm_peer_data_id_t data_id,
 }
 
 uint32_t pds_peer_data_store(uint16_t peer_id, pm_peer_data_const_t const *p_peer_data,
-			       pm_store_token_t *p_store_token)
+			     uint32_t *p_store_token)
 {
 	ssize_t ret;
 

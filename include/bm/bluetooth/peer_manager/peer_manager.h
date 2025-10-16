@@ -610,7 +610,7 @@ uint32_t pm_peer_data_app_data_load(uint16_t peer_id, void *data, uint32_t *len)
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  */
 uint32_t pm_peer_data_store(uint16_t peer_id, pm_peer_data_id_t data_id, const void *data,
-			    uint32_t len, pm_store_token_t *token);
+			    uint32_t len, uint32_t *token);
 
 /**
  * @brief Set or update a peer's bonding data (@ref PM_PEER_DATA_ID_BONDING).
@@ -618,7 +618,7 @@ uint32_t pm_peer_data_store(uint16_t peer_id, pm_peer_data_id_t data_id, const v
  * @details See @ref pm_peer_data_store for parameters and return values.
  */
 uint32_t pm_peer_data_bonding_store(uint16_t peer_id, const pm_peer_data_bonding_t *data,
-				    pm_store_token_t *token);
+				    uint32_t *token);
 
 /**
  * @brief Set or update a peer's remote DB values. (@ref PM_PEER_DATA_ID_GATT_REMOTE).
@@ -626,7 +626,7 @@ uint32_t pm_peer_data_bonding_store(uint16_t peer_id, const pm_peer_data_bonding
  * @details See @ref pm_peer_data_store for parameters and return values.
  */
 uint32_t pm_peer_data_remote_db_store(uint16_t peer_id, const ble_gatt_db_srv_t *data,
-				      uint32_t len, pm_store_token_t *token);
+				      uint32_t len, uint32_t *token);
 
 /**
  * @brief Set or update a peer's application data. (@ref PM_PEER_DATA_ID_APPLICATION).
@@ -634,7 +634,7 @@ uint32_t pm_peer_data_remote_db_store(uint16_t peer_id, const ble_gatt_db_srv_t 
  * @details See @ref pm_peer_data_store for parameters and return values.
  */
 uint32_t pm_peer_data_app_data_store(uint16_t peer_id, const void *data, uint32_t len,
-				     pm_store_token_t *token);
+				     uint32_t *token);
 /** @} */
 
 /**
@@ -690,8 +690,7 @@ uint32_t pm_peer_data_delete(uint16_t peer_id, pm_peer_data_id_t data_id);
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  * @retval NRF_ERROR_INTERNAL       If an internal error occurred.
  */
-uint32_t pm_peer_new(uint16_t *new_peer_id, pm_peer_data_bonding_t *bonding_data,
-		     pm_store_token_t *token);
+uint32_t pm_peer_new(uint16_t *new_peer_id, pm_peer_data_bonding_t *bonding_data, uint32_t *token);
 
 /**
  * @brief Delete all data stored for a peer and free the peer ID.

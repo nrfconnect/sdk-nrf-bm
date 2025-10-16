@@ -41,7 +41,7 @@ static bool m_deleting_all;
 /** The store token of an ongoing peer rank update via a call to @ref pm_peer_rank_highest. If @ref
  * PM_STORE_TOKEN_INVALID, there is no ongoing update.
  */
-static pm_store_token_t m_peer_rank_token;
+static uint32_t m_peer_rank_token;
 /** The current highest peer rank. Used by @ref pm_peer_rank_highest. */
 static uint32_t m_current_highest_peer_rank;
 /** The peer with the highest peer rank. Used by @ref pm_peer_rank_highest. */
@@ -749,7 +749,7 @@ uint32_t pm_peer_data_app_data_load(uint16_t peer_id, void *p_data, uint32_t *p_
 }
 
 uint32_t pm_peer_data_store(uint16_t peer_id, pm_peer_data_id_t data_id, void const *p_data,
-			      uint32_t length, pm_store_token_t *p_token)
+			      uint32_t length, uint32_t *p_token)
 {
 	VERIFY_MODULE_INITIALIZED();
 	VERIFY_PARAM_NOT_NULL(p_data);
@@ -779,20 +779,20 @@ uint32_t pm_peer_data_store(uint16_t peer_id, pm_peer_data_id_t data_id, void co
 }
 
 uint32_t pm_peer_data_bonding_store(uint16_t peer_id, pm_peer_data_bonding_t const *p_data,
-				      pm_store_token_t *p_token)
+				    uint32_t *p_token)
 {
 	return pm_peer_data_store(peer_id, PM_PEER_DATA_ID_BONDING, p_data,
 				  ROUND_UP(sizeof(pm_peer_data_bonding_t), 4), p_token);
 }
 
 uint32_t pm_peer_data_remote_db_store(uint16_t peer_id, ble_gatt_db_srv_t const *p_data,
-					uint32_t length, pm_store_token_t *p_token)
+					uint32_t length, uint32_t *p_token)
 {
 	return pm_peer_data_store(peer_id, PM_PEER_DATA_ID_GATT_REMOTE, p_data, length, p_token);
 }
 
 uint32_t pm_peer_data_app_data_store(uint16_t peer_id, void const *p_data, uint32_t length,
-				       pm_store_token_t *p_token)
+				     uint32_t *p_token)
 {
 	return pm_peer_data_store(peer_id, PM_PEER_DATA_ID_APPLICATION, p_data, length, p_token);
 }
@@ -809,7 +809,7 @@ uint32_t pm_peer_data_delete(uint16_t peer_id, pm_peer_data_id_t data_id)
 }
 
 uint32_t pm_peer_new(uint16_t *p_new_peer_id, pm_peer_data_bonding_t *p_bonding_data,
-		       pm_store_token_t *p_token)
+		     uint32_t *p_token)
 {
 	uint32_t err_code;
 	uint16_t peer_id;
