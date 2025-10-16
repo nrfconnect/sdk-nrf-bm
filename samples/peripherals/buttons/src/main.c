@@ -4,11 +4,10 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <bm_buttons.h>
-
-#include <board-config.h>
+#include <bm/bm_buttons.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
+#include <board-config.h>
 
 LOG_MODULE_REGISTER(app, CONFIG_BUTTONS_SAMPLE_LOG_LEVEL);
 

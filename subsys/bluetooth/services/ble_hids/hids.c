@@ -4,15 +4,15 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
+#include <errno.h>
 #include <stdint.h>
 #include <string.h>
 #include <ble_gap.h>
 #include <ble_types.h>
 #include <ble_gatts.h>
-#include <bluetooth/services/ble_hids.h>
-#include <bluetooth/services/uuid.h>
-#include <bluetooth/services/common.h>
-#include <errno.h>
+#include <bm/bluetooth/services/ble_hids.h>
+#include <bm/bluetooth/services/uuid.h>
+#include <bm/bluetooth/services/common.h>
 #include <zephyr/toolchain.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/util.h>

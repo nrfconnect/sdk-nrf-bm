@@ -5,15 +5,16 @@
  */
 #include <stdint.h>
 #include <string.h>
-#include <zephyr/sys/byteorder.h>
 #include <ble.h>
-#include <bluetooth/services/common.h>
-#include <bluetooth/services/uuid.h>
-#include <ble_gq.h>
+#include <bm/bluetooth/ble_gq.h>
+#include <bm/bluetooth/services/common.h>
+#include <bm/bluetooth/services/uuid.h>
+
 #include "cgms_db.h"
 #include "cgms_sst.h"
 #include "cgms_socp.h"
 
+#include <zephyr/sys/byteorder.h>
 #include <zephyr/logging/log.h>
 
 LOG_MODULE_DECLARE(ble_cgms, CONFIG_BLE_CGMS_LOG_LEVEL);

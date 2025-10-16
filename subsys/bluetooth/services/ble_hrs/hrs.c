@@ -7,10 +7,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
-#include <ble_conn_params.h>
-#include <bluetooth/services/ble_hrs.h>
-#include <bluetooth/services/common.h>
-#include <bluetooth/services/uuid.h>
+#include <bm/bluetooth/ble_conn_params.h>
+#include <bm/bluetooth/services/ble_hrs.h>
+#include <bm/bluetooth/services/common.h>
+#include <bm/bluetooth/services/uuid.h>
 #include <zephyr/sys/util.h>
 #include <zephyr/sys/__assert.h>
 #include <zephyr/logging/log.h>

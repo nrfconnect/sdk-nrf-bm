@@ -9,11 +9,12 @@ menu "Subsystems"
 # zephyr-keep-sorted-start
 rsource "bluetooth/Kconfig"
 rsource "bm_installs/Kconfig"
+rsource "fs/Kconfig"
 rsource "logging/Kconfig"
 rsource "mgmt/mcumgr/Kconfig"
 rsource "softdevice/Kconfig"
 rsource "softdevice_handler/Kconfig"
-rsource "storage/flash_map/Kconfig"
+rsource "storage/Kconfig"
 # zephyr-keep-sorted-stop
 
 endmenu

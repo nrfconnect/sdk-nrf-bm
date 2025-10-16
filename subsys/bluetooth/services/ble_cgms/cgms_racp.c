@@ -3,15 +3,17 @@
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
+
+#include <nrf_error.h>
 #include <stdint.h>
 #include <string.h>
 #include <ble.h>
-#include <ble_gq.h>
 #include <ble_gatts.h>
-#include <bluetooth/services/ble_cgms.h>
-#include <bluetooth/services/common.h>
-#include <bluetooth/services/uuid.h>
-#include <nrf_error.h>
+#include <bm/bluetooth/ble_gq.h>
+#include <bm/bluetooth/services/ble_cgms.h>
+#include <bm/bluetooth/services/common.h>
+#include <bm/bluetooth/services/uuid.h>
+
 #include "cgms_racp.h"
 #include "cgms_db.h"
 #include "cgms_meas.h"
