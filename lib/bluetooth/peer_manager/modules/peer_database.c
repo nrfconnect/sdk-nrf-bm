@@ -70,7 +70,7 @@ typedef struct {
 	 *        successfully requested. This is used as the check for whether such
 	 *        an operation has been successfully requested.
 	 */
-	pm_store_token_t store_token;
+	uint32_t store_token;
 	/** @brief The number of buffer blocks containing peer data. */
 	uint8_t n_bufs;
 	/** @brief The index of the first (or only) buffer block containing peer data. */
@@ -166,7 +166,7 @@ static pdb_buffer_record_t *write_buffer_record_find(uint16_t peer_id, pm_peer_d
  *
  * @return  A pointer to the matching record, or NULL if none was found.
  */
-static pdb_buffer_record_t *write_buffer_record_find_stored(pm_store_token_t store_token)
+static pdb_buffer_record_t *write_buffer_record_find_stored(uint32_t store_token)
 {
 	for (int i = 0; i < CONFIG_PM_FLASH_BUFFERS; i++) {
 		if (m_write_buffer_records[i].store_token == store_token) {

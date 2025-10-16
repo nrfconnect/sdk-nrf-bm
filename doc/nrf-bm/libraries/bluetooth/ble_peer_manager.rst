@@ -349,7 +349,7 @@ The store operation is finished when either the :c:enum:`PM_EVT_PEER_DATA_UPDATE
 .. code-block:: c
 
    uint32_t err;
-   pm_store_token_t store_token;
+   uint32_t store_token;
 
    err = pm_peer_data_remote_db_store(peer_id, array_of_services, number_of_services, &store_token);
    if (err != NRF_ERROR_BUSY) {
@@ -362,7 +362,7 @@ The :c:func:`pm_peer_data_store` function can also be used directly, as in the f
 .. code-block:: c
 
    uint32_t err;
-   pm_store_token_t store_token;
+   uint32_t store_token;
 
    err = pm_peer_data_store(peer_id, PM_PEER_DATA_ID_GATT_REMOTE, array_of_services, number_of_services, &store_token);
    if (err != NRF_ERROR_BUSY) {

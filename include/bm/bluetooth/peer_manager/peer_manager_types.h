@@ -26,9 +26,6 @@
 extern "C" {
 #endif
 
-/** @brief Type that is used to hold a reference to a stored item in non-volatile storage. */
-typedef uint32_t pm_store_token_t;
-
 /**
  * @brief Errors from security procedures in Peer Manager.
  *
