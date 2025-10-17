@@ -97,23 +97,18 @@
 &cpuapp_sram {
 	status = "okay";
 
-	partitions {
-		#address-cells = <1>;
-		#size-cells = <1>;
+	softdevice_static_ram: sram@0 {
+		label = "softdevice_static_ram";
+		reg = <0x0 0x1380>;
+	};
 
-		softdevice_static_ram: partition@20000080 {
-			label = "softdevice_static_ram";
-			reg = <0x20000080 0x1380>;
-		};
+	softdevice_dynamic_ram: sram@1380 {
+		label = "softdevice_dynamic_ram";
+		reg = <0x1380 DT_SIZE_K(12)>;
+	};
 
-		softdevice_dynamic_ram: partition@20001400 {
-			label = "softdevice_dynamic_ram";
-			reg = <0x20001400 DT_SIZE_K(12)>;
-		};
-
-		app_ram: partition@20004400 {
-			label = "app_ram";
-			reg = <0x20004400 DT_SIZE_K(238)>;
-		};
+	app_ram: sram@4380 {
+		label = "app_ram";
+		reg = <0x4380 DT_SIZE_K(238)>;
 	};
 };
