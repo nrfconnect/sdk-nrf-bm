@@ -51,6 +51,8 @@ Bare Metal Buttons library
    :inner:
    :members:
 
+.. _api_event_scheduler:
+
 Bare Metal Event Scheduler library
 ==================================
 
