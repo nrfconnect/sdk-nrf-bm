@@ -7,11 +7,12 @@ Storage Library
    :local:
    :depth: 2
 
+The Storage library provides abstractions for reading, writing, and erasing non-volatile memory (NVM).
+
 Overview
 ********
 
-The Storage library provides abstractions for reading, writing, and erasing non-volatile memory (NVM).
-It supports multiple storage instances, each bound to a specific memory region, and reports operation results through user-defined event handlers.
+The library supports multiple storage instances, each bound to a specific memory region, and reports operation results through user-defined event handlers.
 Depending on the backend and runtime state, operations may be synchronous or asynchronous.
 
 Configuration
@@ -35,15 +36,17 @@ Initialization
 
 Each storage instance is represented by a :c:struct:`bm_storage` structure.
 
-Initialize an instance with the :c:func:`bm_storage_init` function, providing:
+To initialize a storage instance, use the :c:func:`bm_storage_init` function, providing the following information:
 
 * :c:member:`bm_storage.evt_handler` – Event callback.
 * :c:member:`bm_storage.start_addr` and :c:member:`bm_storage.end_addr` – Accessible address range.
 
-Uninitialize with the :c:func:`bm_storage_uninit` function.
+You can uninitialize a storage instance with the :c:func:`bm_storage_uninit` function.
 
 Usage
 *****
+
+The following is a list of operations you can perform with this library.
 
 Read
 ====
@@ -61,7 +64,8 @@ Erase
 =====
 
 Use the :c:func:`bm_storage_erase` function to erase a region in NVM.
-``len`` must be a multiple of the erase unit. If not supported by the backend, the call may return ``NRF_ERROR_NOT_SUPPORTED``.
+``len`` must be a multiple of the erase unit.
+If not supported by the backend, the call may return ``NRF_ERROR_NOT_SUPPORTED``.
 This means that the backend does not require the region to be erased before another write operation.
 
 Busy state
@@ -77,7 +81,12 @@ The following events may be reported to the user callback:
 * :c:enum:`BM_STORAGE_EVT_WRITE_RESULT` – Write operation completed.
 * :c:enum:`BM_STORAGE_EVT_ERASE_RESULT` – Erase operation completed.
 
-Each event includes the result code, information about the address range of the associated operation, and if the operation is synchronous or asynchronous.
+Each event includes the result code, information about the address range of the associated operation, and whether the operation is synchronous or asynchronous.
+
+Sample
+******
+
+The usage of this library is demonstrated in the :ref:`storage_sample` sample.
 
 Dependencies
 ************
