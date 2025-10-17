@@ -1,17 +1,15 @@
-.. _lib_timer:
+.. _lib_bm_timer:
 
-Timer Library
+Timer library
 #############
 
 .. contents::
    :local:
    :depth: 2
 
-Overview
-********
+The timer library allows the application to create multiple timer instances.
 
-The timer library enables the application to create multiple timer instances.
-Start and stop requests, checking for time-outs, and invoking the user time-out handlers are performed in the GRTC interrupt handler.
+Functions such as starting and stopping timers, checking for timeouts, and invoking user-defined timeout handlers are all managed within the GRTC interrupt handler.
 
 Configuration
 *************
@@ -19,28 +17,36 @@ Configuration
 The library is enabled and configured entirely using the Kconfig system.
 Set the :kconfig:option:`CONFIG_BM_TIMER` Kconfig option to enable the library.
 
-You can set the timer IRQ priority by setting the :kconfig:option:`CONFIG_BM_TIMER_IRQ_PRIO` Kconfig option.
+You can adjust the timer IRQ priority using the :kconfig:option:`CONFIG_BM_TIMER_IRQ_PRIO` Kconfig option.
 
 Initialization
 ==============
 
-A timer instance is initialized by calling the :c:func:`bm_timer_init` function, selecting the timer mode and providing the user callback for when the timer expires.
+To initialize a timer instance, call the :c:func:`bm_timer_init` function.
+Specify the timer mode and provide a user callback function that will be called when the timer expires.
+
 The timer can be initialized in the following modes:
 
-* :c:macro:`BM_TIMER_MODE_SINGLE_SHOT` - Expire only once when started.
-* :c:macro:`BM_TIMER_MODE_REPEATED` - Restart when expired until stopped.
+* :c:macro:`BM_TIMER_MODE_SINGLE_SHOT` - The timer expires only once after it is started.
+* :c:macro:`BM_TIMER_MODE_REPEATED` - The timer automatically restarts upon expiring until it is stopped.
 
 Usage
 *****
 
-After initialization, the timer is started by calling the :c:func:`bm_timer_start` function, providing the timeout and user provided context passed to the callback.
-The timeout is given in ticks.
-The library provides macros for providing the time in standard time units:
+After initialization, start the timer by calling the :c:func:`bm_timer_start` function, providing the timeout and user-provided context passed to the callback.
+The timeout is provided in ticks.
+
+The library provides macros to convert standard time units to ticks:
 
 * :c:macro:`BM_TIMER_US_TO_TICKS` - Converts microseconds to ticks.
 * :c:macro:`BM_TIMER_MS_TO_TICKS` - Converts milliseconds to ticks.
 
-A timer is stopped by calling the :c:func:`bm_timer_stop` function.
+To stop a timer, call the :c:func:`bm_timer_stop` function.
+
+Sample
+******
+
+Usage of this library is demonstrated in the :ref:`timer_sample` sample.
 
 Dependencies
 ************
