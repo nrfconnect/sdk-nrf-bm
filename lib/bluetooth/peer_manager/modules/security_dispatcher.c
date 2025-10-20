@@ -240,12 +240,12 @@ static uint32_t link_secure_central_encryption(uint16_t conn_handle, uint16_t pe
 	uint32_t err_code;
 	ble_gap_enc_key_t const *p_existing_key = NULL;
 	bool lesc = false;
-	pm_peer_data_bonding_t bonding_data = { 0 };
+	struct pm_peer_data_bonding bonding_data = { 0 };
 
 	peer_data.p_all_data = &bonding_data;
 
 	err_code = pds_peer_data_read(peer_id, PM_PEER_DATA_ID_BONDING, &peer_data,
-				      sizeof(pm_peer_data_bonding_t));
+				      sizeof(struct pm_peer_data_bonding));
 
 	if (err_code == NRF_SUCCESS) {
 		/* Use peer's key since they are peripheral. */
@@ -370,8 +370,8 @@ static void sec_info_request_process(ble_gap_evt_t const *p_gap_evt)
 
 	sec_proc_start(p_gap_evt->conn_handle, true, PM_CONN_SEC_PROCEDURE_ENCRYPTION);
 
-	pm_peer_data_bonding_t bonding_data = { 0 };
-	uint32_t bonding_data_size = sizeof(pm_peer_data_bonding_t);
+	struct pm_peer_data_bonding bonding_data = { 0 };
+	uint32_t bonding_data_size = sizeof(struct pm_peer_data_bonding);
 
 	if (peer_id != PM_PEER_ID_INVALID) {
 		peer_data.p_all_data = &bonding_data;
@@ -754,7 +754,7 @@ static uint32_t sec_keyset_fill(uint16_t conn_handle, uint8_t role,
 			nrf_strerror_get(err_code), conn_handle);
 		err_code = NRF_ERROR_INTERNAL;
 	} else {
-		memset(peer_data.p_bonding_data, 0, sizeof(pm_peer_data_bonding_t));
+		memset(peer_data.p_bonding_data, 0, sizeof(struct pm_peer_data_bonding));
 
 		peer_data.p_bonding_data->own_role = role;
 

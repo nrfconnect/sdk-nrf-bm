@@ -204,8 +204,8 @@ void im_ble_evt_handler(ble_evt_t const *ble_evt)
  *
  * @return     True if the input matches, false if it does not.
  */
-bool im_is_duplicate_bonding_data(pm_peer_data_bonding_t const *p_bonding_data1,
-				  pm_peer_data_bonding_t const *p_bonding_data2)
+bool im_is_duplicate_bonding_data(struct pm_peer_data_bonding const *p_bonding_data1,
+				  struct pm_peer_data_bonding const *p_bonding_data2)
 {
 	NRF_PM_DEBUG_CHECK(p_bonding_data1 != NULL);
 	NRF_PM_DEBUG_CHECK(p_bonding_data2 != NULL);
@@ -229,7 +229,7 @@ bool im_is_duplicate_bonding_data(pm_peer_data_bonding_t const *p_bonding_data1,
 	return (duplicate_addr && id_addrs) || (duplicate_irk && !id_addrs);
 }
 
-uint16_t im_find_duplicate_bonding_data(pm_peer_data_bonding_t const *p_bonding_data,
+uint16_t im_find_duplicate_bonding_data(struct pm_peer_data_bonding const *p_bonding_data,
 					uint16_t peer_id_skip)
 {
 	uint16_t peer_id;
@@ -383,7 +383,7 @@ static uint32_t peers_id_keys_get(uint16_t const *p_peers, uint32_t peer_cnt,
 {
 	uint32_t ret;
 
-	pm_peer_data_bonding_t bond_data;
+	struct pm_peer_data_bonding bond_data;
 	pm_peer_data_t peer_data;
 
 	uint32_t const buf_size = sizeof(bond_data);
@@ -459,7 +459,7 @@ uint32_t im_device_identities_list_set(uint16_t const *p_peers, uint32_t peer_cn
 {
 	uint32_t ret;
 	pm_peer_data_t peer_data;
-	pm_peer_data_bonding_t bond_data;
+	struct pm_peer_data_bonding bond_data;
 
 	ble_gap_id_key_t keys[BLE_GAP_DEVICE_IDENTITIES_MAX_COUNT];
 	ble_gap_id_key_t const *key_ptrs[BLE_GAP_DEVICE_IDENTITIES_MAX_COUNT];

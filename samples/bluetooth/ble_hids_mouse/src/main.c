@@ -173,7 +173,7 @@ static void ble_adv_evt_handler(struct ble_adv *ble_adv, const struct ble_adv_ev
 {
 	uint32_t err;
 	ble_gap_addr_t *peer_addr;
-	pm_peer_data_bonding_t peer_bonding_data;
+	struct pm_peer_data_bonding peer_bonding_data;
 	ble_gap_addr_t whitelist_addrs[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
 	ble_gap_irk_t whitelist_irks[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
 	uint32_t addr_cnt = BLE_GAP_WHITELIST_ADDR_MAX_COUNT;

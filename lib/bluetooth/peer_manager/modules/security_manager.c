@@ -152,8 +152,8 @@ static void send_unexpected_error(uint16_t conn_handle, uint32_t err_code)
  */
 static bool key_is_lesc(uint16_t peer_id)
 {
-	pm_peer_data_bonding_t bonding_data = { 0 };
-	uint32_t bonding_data_size = sizeof(pm_peer_data_bonding_t);
+	struct pm_peer_data_bonding bonding_data = { 0 };
+	uint32_t bonding_data_size = sizeof(struct pm_peer_data_bonding);
 	pm_peer_data_t peer_data;
 	uint32_t err_code;
 

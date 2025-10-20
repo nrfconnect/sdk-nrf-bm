@@ -645,8 +645,8 @@ uint32_t pm_peer_id_list(uint16_t *p_peer_list, uint32_t *const p_list_size,
 
 		if (skip_no_addr || skip_no_irk) {
 			/* Get data */
-			pm_peer_data_bonding_t bonding_data = { 0 };
-			uint32_t bonding_data_size = sizeof(pm_peer_data_bonding_t);
+			struct pm_peer_data_bonding bonding_data = { 0 };
+			uint32_t bonding_data_size = sizeof(bonding_data);
 
 			pm_bond_data.p_all_data = &bonding_data;
 
@@ -730,9 +730,9 @@ uint32_t pm_peer_data_load(uint16_t peer_id, enum pm_peer_data_id data_id, void 
 	return pds_peer_data_read(peer_id, data_id, &peer_data, p_length);
 }
 
-uint32_t pm_peer_data_bonding_load(uint16_t peer_id, pm_peer_data_bonding_t *p_data)
+uint32_t pm_peer_data_bonding_load(uint16_t peer_id, struct pm_peer_data_bonding *p_data)
 {
-	uint32_t length = sizeof(pm_peer_data_bonding_t);
+	uint32_t length = sizeof(struct pm_peer_data_bonding);
 
 	return pm_peer_data_load(peer_id, PM_PEER_DATA_ID_BONDING, p_data, &length);
 }
@@ -761,7 +761,8 @@ uint32_t pm_peer_data_store(uint16_t peer_id, enum pm_peer_data_id data_id, void
 		uint16_t dupl_peer_id;
 
 		dupl_peer_id =
-			im_find_duplicate_bonding_data((pm_peer_data_bonding_t *)p_data, peer_id);
+			im_find_duplicate_bonding_data((struct pm_peer_data_bonding *)p_data,
+						       peer_id);
 
 		if (dupl_peer_id != PM_PEER_ID_INVALID) {
 			return NRF_ERROR_FORBIDDEN;
@@ -778,11 +779,11 @@ uint32_t pm_peer_data_store(uint16_t peer_id, enum pm_peer_data_id data_id, void
 	return pds_peer_data_store(peer_id, &peer_data, p_token);
 }
 
-uint32_t pm_peer_data_bonding_store(uint16_t peer_id, pm_peer_data_bonding_t const *p_data,
+uint32_t pm_peer_data_bonding_store(uint16_t peer_id, struct pm_peer_data_bonding const *p_data,
 				    uint32_t *p_token)
 {
 	return pm_peer_data_store(peer_id, PM_PEER_DATA_ID_BONDING, p_data,
-				  ROUND_UP(sizeof(pm_peer_data_bonding_t), 4), p_token);
+				  ROUND_UP(sizeof(struct pm_peer_data_bonding), 4), p_token);
 }
 
 uint32_t pm_peer_data_remote_db_store(uint16_t peer_id, struct ble_gatt_db_srv const *p_data,
@@ -808,7 +809,7 @@ uint32_t pm_peer_data_delete(uint16_t peer_id, enum pm_peer_data_id data_id)
 	return pds_peer_data_delete(peer_id, data_id);
 }
 
-uint32_t pm_peer_new(uint16_t *p_new_peer_id, pm_peer_data_bonding_t *p_bonding_data,
+uint32_t pm_peer_new(uint16_t *p_new_peer_id, struct pm_peer_data_bonding *p_bonding_data,
 		     uint32_t *p_token)
 {
 	uint32_t err_code;
@@ -848,7 +849,7 @@ uint32_t pm_peer_new(uint16_t *p_new_peer_id, pm_peer_data_bonding_t *p_bonding_
 
 	peer_data.data_id = PM_PEER_DATA_ID_BONDING;
 	peer_data.p_bonding_data = p_bonding_data;
-	peer_data.length_words = BYTES_TO_WORDS(sizeof(pm_peer_data_bonding_t));
+	peer_data.length_words = BYTES_TO_WORDS(sizeof(struct pm_peer_data_bonding));
 
 	err_code = pds_peer_data_store(*p_new_peer_id, &peer_data, p_token);
 

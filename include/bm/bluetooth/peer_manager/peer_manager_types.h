@@ -117,7 +117,7 @@ extern "C" {
 enum pm_peer_data_id {
 	/** @brief The smallest data ID. */
 	PM_PEER_DATA_ID_FIRST = PM_PEER_DATA_ID_FIRST_VX,
-	/** @brief The data ID for bonding data. Type: @ref pm_peer_data_bonding_t. */
+	/** @brief The data ID for bonding data. Type: @ref pm_peer_data_bonding. */
 	PM_PEER_DATA_ID_BONDING = PM_PEER_DATA_ID_BONDING_V2,
 	/** @brief The data ID for service changed state. Type: bool. */
 	PM_PEER_DATA_ID_SERVICE_CHANGED_PENDING = PM_PEER_DATA_ID_SERVICE_CHANGED_PENDING_V1,
@@ -167,7 +167,7 @@ struct pm_conn_sec_config {
 };
 
 /** @brief Data associated with a bond to a peer. */
-typedef struct {
+struct pm_peer_data_bonding {
 	/** @brief The BLE role of the local device during bonding. See @ref BLE_GAP_ROLES. */
 	uint8_t own_role;
 	/** @brief The peer's Bluetooth address and identity resolution key (IRK). */
@@ -179,7 +179,7 @@ typedef struct {
 	 *        the peer.
 	 */
 	ble_gap_enc_key_t own_ltk;
-} pm_peer_data_bonding_t;
+};
 
 /** @brief Data on a local GATT database. */
 typedef struct {

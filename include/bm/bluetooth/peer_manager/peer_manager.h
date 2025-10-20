@@ -556,7 +556,7 @@ uint32_t pm_peer_data_load(uint16_t peer_id, enum pm_peer_data_id data_id, void 
  * @brief Read a peer's bonding data (@ref PM_PEER_DATA_ID_BONDING).
  * @details See @ref pm_peer_data_load for parameters and return values.
  */
-uint32_t pm_peer_data_bonding_load(uint16_t peer_id, pm_peer_data_bonding_t *data);
+uint32_t pm_peer_data_bonding_load(uint16_t peer_id, struct pm_peer_data_bonding *data);
 
 /**
  * @brief Read a peer's remote DB values. (@ref PM_PEER_DATA_ID_GATT_REMOTE).
@@ -617,7 +617,7 @@ uint32_t pm_peer_data_store(uint16_t peer_id, enum pm_peer_data_id data_id, cons
  *
  * @details See @ref pm_peer_data_store for parameters and return values.
  */
-uint32_t pm_peer_data_bonding_store(uint16_t peer_id, const pm_peer_data_bonding_t *data,
+uint32_t pm_peer_data_bonding_store(uint16_t peer_id, const struct pm_peer_data_bonding *data,
 				    uint32_t *token);
 
 /**
@@ -690,7 +690,8 @@ uint32_t pm_peer_data_delete(uint16_t peer_id, enum pm_peer_data_id data_id);
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  * @retval NRF_ERROR_INTERNAL       If an internal error occurred.
  */
-uint32_t pm_peer_new(uint16_t *new_peer_id, pm_peer_data_bonding_t *bonding_data, uint32_t *token);
+uint32_t pm_peer_new(uint16_t *new_peer_id, struct pm_peer_data_bonding *bonding_data,
+		     uint32_t *token);
 
 /**
  * @brief Delete all data stored for a peer and free the peer ID.

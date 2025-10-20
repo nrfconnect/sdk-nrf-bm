@@ -45,7 +45,7 @@ typedef struct {
 	/** @brief The data. */
 	union {
 		/** @brief The exchanged bond information in addition to metadata of the bonding. */
-		pm_peer_data_bonding_t *p_bonding_data;
+		struct pm_peer_data_bonding *p_bonding_data;
 		/**
 		 * @brief A value locally assigned to this peer. Its
 		 *        interpretation is up to the user. The rank is not set
@@ -91,7 +91,7 @@ typedef struct {
 	/** @brief The data. */
 	union {
 		/** @brief Immutable @ref pm_peer_data_t::p_bonding_data. */
-		pm_peer_data_bonding_t const *p_bonding_data;
+		struct pm_peer_data_bonding const *p_bonding_data;
 		/** @brief Immutable @ref pm_peer_data_t::p_peer_rank. */
 		uint32_t const *p_peer_rank;
 		/** @brief Immutable @ref pm_peer_data_t::p_central_addr_res. */
@@ -145,7 +145,7 @@ typedef void (*pm_evt_handler_internal_t)(pm_evt_t *p_event);
  *
  * @return The number of words that the data takes in flash.
  */
-#define PM_BONDING_DATA_N_WORDS() BYTES_TO_WORDS(sizeof(pm_peer_data_bonding_t))
+#define PM_BONDING_DATA_N_WORDS() BYTES_TO_WORDS(sizeof(struct pm_peer_data_bonding))
 
 /**
  * @brief Macro for calculating the flash size of service changed pending state.

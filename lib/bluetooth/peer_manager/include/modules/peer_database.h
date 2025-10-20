@@ -29,7 +29,7 @@ extern "C" {
  * @brief The size (in bytes) of each block in the internal buffer accessible via
  *        @ref pdb_write_buf_get.
  */
-#define PDB_WRITE_BUF_SIZE (sizeof(pm_peer_data_bonding_t))
+#define PDB_WRITE_BUF_SIZE (sizeof(struct pm_peer_data_bonding))
 
 /**
  * @brief Function for creating a peer ID value from a connection handle.

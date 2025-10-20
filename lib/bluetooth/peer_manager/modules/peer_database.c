@@ -257,7 +257,7 @@ static void peer_data_point_to_buffer(pm_peer_data_t *p_peer_data, enum pm_peer_
 
 	p_peer_data->data_id = data_id;
 
-	p_peer_data->p_all_data = (pm_peer_data_bonding_t *)p_buffer_memory;
+	p_peer_data->p_all_data = (struct pm_peer_data_bonding *)p_buffer_memory;
 	p_peer_data->length_words = BYTES_TO_WORDS(n_bytes);
 }
 

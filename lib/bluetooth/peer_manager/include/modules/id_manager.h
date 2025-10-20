@@ -103,8 +103,8 @@ bool im_master_id_is_valid(ble_gap_master_id_t const *p_master_id);
  * @retval true   The bonding data correspond to the same peer.
  * @retval false  The bonding data do not correspond to the same peer.
  */
-bool im_is_duplicate_bonding_data(pm_peer_data_bonding_t const *p_bonding_data1,
-				  pm_peer_data_bonding_t const *p_bonding_data2);
+bool im_is_duplicate_bonding_data(struct pm_peer_data_bonding const *p_bonding_data1,
+				  struct pm_peer_data_bonding const *p_bonding_data2);
 
 /**
  * @brief Function for finding if we are already bonded to a peer.
@@ -114,7 +114,7 @@ bool im_is_duplicate_bonding_data(pm_peer_data_bonding_t const *p_bonding_data1,
  *
  * @return  An existing peer ID for the peer, or PM_PEER_ID_INVALID if none was found.
  */
-uint16_t im_find_duplicate_bonding_data(pm_peer_data_bonding_t const *p_bonding_data,
+uint16_t im_find_duplicate_bonding_data(struct pm_peer_data_bonding const *p_bonding_data,
 					uint16_t peer_id_skip);
 
 /**

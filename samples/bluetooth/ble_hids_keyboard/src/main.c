@@ -290,7 +290,7 @@ static void ble_adv_evt_handler(struct ble_adv *ble_adv, const struct ble_adv_ev
 		break;
 
 	case BLE_ADV_EVT_PEER_ADDR_REQUEST:
-		pm_peer_data_bonding_t peer_bonding_data;
+		struct pm_peer_data_bonding peer_bonding_data;
 
 		/* Only Give peer address if we have a handle to the bonded peer. */
 		if (peer_id != PM_PEER_ID_INVALID) {
