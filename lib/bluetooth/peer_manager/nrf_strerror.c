@@ -23,10 +23,10 @@
 /**
  * @brief Array entity element that describes an error.
  */
-typedef struct {
+struct strerror_desc {
 	uint32_t code;  /**< Error code. */
 	char const *name; /**< Descriptive name (the same as the internal error mnemonic). */
-} nrf_strerror_desc_t;
+};
 
 /**
  * @brief Unknown error code.
@@ -43,7 +43,7 @@ static char const m_unknown_str[] = "Unknown error code";
  * @note It is required for this array to have error codes placed in ascending order.
  *       This condition is checked in automatic unit test before the release.
  */
-static nrf_strerror_desc_t const nrf_strerror_array[] = {
+static struct strerror_desc const nrf_strerror_array[] = {
 	NRF_STRERROR_ENTITY(NRF_SUCCESS), NRF_STRERROR_ENTITY(NRF_ERROR_SVC_HANDLER_MISSING),
 	NRF_STRERROR_ENTITY(NRF_ERROR_SOFTDEVICE_NOT_ENABLED),
 	NRF_STRERROR_ENTITY(NRF_ERROR_INTERNAL), NRF_STRERROR_ENTITY(NRF_ERROR_NO_MEM),
@@ -71,14 +71,14 @@ char const *nrf_strerror_get(uint32_t code)
 
 char const *nrf_strerror_find(uint32_t code)
 {
-	nrf_strerror_desc_t const *p_start;
-	nrf_strerror_desc_t const *p_end;
+	struct strerror_desc const *p_start;
+	struct strerror_desc const *p_end;
 
 	p_start = nrf_strerror_array;
 	p_end = nrf_strerror_array + ARRAY_SIZE(nrf_strerror_array);
 
 	while (p_start < p_end) {
-		nrf_strerror_desc_t const *p_mid = p_start + ((p_end - p_start) / 2);
+		struct strerror_desc const *p_mid = p_start + ((p_end - p_start) / 2);
 		uint32_t mid_c = p_mid->code;
 
 		if (mid_c > code) {

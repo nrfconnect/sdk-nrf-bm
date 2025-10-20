@@ -244,7 +244,7 @@ static void sec_proc_start(uint16_t conn_handle, bool success, enum pm_conn_sec_
  */
 static uint32_t link_secure_central_encryption(uint16_t conn_handle, uint16_t peer_id)
 {
-	pm_peer_data_flash_t peer_data;
+	struct pm_peer_data_const peer_data;
 	uint32_t err_code;
 	ble_gap_enc_key_t const *p_existing_key = NULL;
 	bool lesc = false;
@@ -365,7 +365,7 @@ static void sec_info_request_process(ble_gap_evt_t const *p_gap_evt)
 {
 	uint32_t err_code;
 	ble_gap_enc_info_t const *p_enc_info = NULL;
-	pm_peer_data_t peer_data;
+	struct pm_peer_data peer_data;
 	uint16_t peer_id =
 		im_peer_id_get_by_master_id(&p_gap_evt->params.sec_info_request.master_id);
 
@@ -539,7 +539,7 @@ static void auth_status_success_process(ble_gap_evt_t const *p_gap_evt)
 	uint16_t conn_handle = p_gap_evt->conn_handle;
 	uint16_t peer_id;
 	uint16_t temp_peer_id;
-	pm_peer_data_t peer_data;
+	struct pm_peer_data peer_data;
 	bool new_peer_id = false;
 
 	ble_conn_state_user_flag_set(conn_handle, m_flag_sec_proc, false);
@@ -747,7 +747,7 @@ static uint32_t sec_keyset_fill(uint16_t conn_handle, uint8_t role,
 {
 	uint32_t err_code;
 	uint16_t temp_peer_id;
-	pm_peer_data_t peer_data;
+	struct pm_peer_data peer_data;
 
 	if (p_sec_keyset == NULL) {
 		LOG_ERR("Internal error: %s received NULL for p_sec_keyset.", __func__);

@@ -34,7 +34,7 @@ extern "C" {
  *
  * @note This type is deprecated.
  */
-typedef struct {
+struct pm_peer_data {
 	/** @brief The length of the data in words. */
 	uint16_t length_words;
 	/**
@@ -73,14 +73,14 @@ typedef struct {
 		 */
 		void *p_all_data;
 	};
-} pm_peer_data_t;
+};
 
 /**
- * @brief Immutable version of @ref pm_peer_data_t.
+ * @brief Immutable version of @ref pm_peer_data.
  *
  * @note This type is deprecated.
  */
-typedef struct {
+struct pm_peer_data_const {
 	/** @brief The length of the data in words. */
 	uint16_t length_words;
 	/**
@@ -90,31 +90,24 @@ typedef struct {
 	enum pm_peer_data_id data_id;
 	/** @brief The data. */
 	union {
-		/** @brief Immutable @ref pm_peer_data_t::p_bonding_data. */
+		/** @brief Immutable @ref pm_peer_data::p_bonding_data. */
 		struct pm_peer_data_bonding const *p_bonding_data;
-		/** @brief Immutable @ref pm_peer_data_t::p_peer_rank. */
+		/** @brief Immutable @ref pm_peer_data::p_peer_rank. */
 		uint32_t const *p_peer_rank;
-		/** @brief Immutable @ref pm_peer_data_t::p_central_addr_res. */
+		/** @brief Immutable @ref pm_peer_data::p_central_addr_res. */
 		uint32_t const *p_central_addr_res;
-		/** @brief Immutable @ref pm_peer_data_t::p_service_changed_pending. */
+		/** @brief Immutable @ref pm_peer_data::p_service_changed_pending. */
 		bool const *p_service_changed_pending;
-		/** @brief Immutable @ref pm_peer_data_t::p_local_gatt_db. */
+		/** @brief Immutable @ref pm_peer_data::p_local_gatt_db. */
 		struct pm_peer_data_local_gatt_db const *p_local_gatt_db;
-		/** @brief Immutable @ref pm_peer_data_t::p_remote_gatt_db. */
+		/** @brief Immutable @ref pm_peer_data::p_remote_gatt_db. */
 		struct ble_gatt_db_srv const *p_remote_gatt_db;
-		/** @brief Immutable @ref pm_peer_data_t::p_application_data. */
+		/** @brief Immutable @ref pm_peer_data::p_application_data. */
 		uint8_t const *p_application_data;
-		/** @brief Immutable @ref pm_peer_data_t::p_all_data. */
+		/** @brief Immutable @ref pm_peer_data::p_all_data. */
 		void const *p_all_data;
 	};
-} pm_peer_data_const_t;
-
-/**
- * @brief Version of @ref pm_peer_data_t that reflects the structure of peer data in flash.
- *
- * @note This type is deprecated.
- */
-typedef pm_peer_data_const_t pm_peer_data_flash_t;
+};
 
 /**
  * @brief Event handler for events from the @ref peer_manager module.

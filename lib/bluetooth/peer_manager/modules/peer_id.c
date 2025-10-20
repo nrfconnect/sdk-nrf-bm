@@ -13,18 +13,18 @@
 #include <bm/bluetooth/peer_manager/peer_manager_types.h>
 #include <modules/peer_id.h>
 
-typedef struct {
+struct peer_id_flags {
 	/** Bitmap designating which peer IDs are in use. */
 	ATOMIC_DEFINE(used_peer_ids, PM_PEER_ID_N_AVAILABLE_IDS);
 	/** Bitmap designating which peer IDs are marked for deletion. */
 	ATOMIC_DEFINE(deleted_peer_ids, PM_PEER_ID_N_AVAILABLE_IDS);
-} pi_t;
+};
 
-static pi_t m_pi = {{0}, {0}};
+static struct peer_id_flags m_pi = {{0}, {0}};
 
-static void internal_state_reset(pi_t *p_pi)
+static void internal_state_reset(struct peer_id_flags *p_pi)
 {
-	memset(p_pi, 0, sizeof(pi_t));
+	memset(p_pi, 0, sizeof(struct peer_id_flags));
 }
 
 void peer_id_init(void)

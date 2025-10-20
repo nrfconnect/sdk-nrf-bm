@@ -78,12 +78,12 @@ static const char * const m_data_action_str[] = {"Update", "Delete"};
 		.error = _name, .error_str = #_name                                                \
 	}
 
-typedef struct {
+struct sec_err_str {
 	uint16_t error;
 	const char *error_str;
-} sec_err_str_t;
+};
 
-static const sec_err_str_t m_pm_sec_error_str[] = {
+static const struct sec_err_str m_pm_sec_error_str[] = {
 	PM_SEC_ERR_STR(PM_CONN_SEC_ERROR_PIN_OR_KEY_MISSING),
 	PM_SEC_ERR_STR(PM_CONN_SEC_ERROR_MIC_FAILURE),
 	PM_SEC_ERR_STR(PM_CONN_SEC_ERROR_DISCONNECT),
@@ -94,7 +94,7 @@ static const char *sec_err_string_get(uint16_t error)
 {
 	static char errstr[30];
 
-	for (uint32_t i = 0; i < (sizeof(m_pm_sec_error_str) / sizeof(sec_err_str_t)); i++) {
+	for (uint32_t i = 0; i < (sizeof(m_pm_sec_error_str) / sizeof(struct sec_err_str)); i++) {
 		if (m_pm_sec_error_str[i].error == error) {
 			return m_pm_sec_error_str[i].error_str;
 		}
@@ -158,22 +158,22 @@ static void _conn_secure(uint16_t conn_handle, bool force)
 #if CONFIG_PM_HANDLER_SEC_DELAY_MS > 0
 static struct bm_timer secure_delay_timer;
 
-typedef union {
+union conn_secure_context {
 	struct {
 		uint16_t conn_handle;
 		bool force;
 	} values;
 	void *p_void;
-} conn_secure_context_t;
+};
 
-STATIC_ASSERT(sizeof(conn_secure_context_t) <= sizeof(void *),
-	      "conn_secure_context_t is too large.");
+STATIC_ASSERT(sizeof(union conn_secure_context) <= sizeof(void *),
+	      "union conn_secure_context is too large.");
 
 static void _conn_secure(uint16_t conn_handle, bool force);
 
 static void delayed_conn_secure(void *context)
 {
-	conn_secure_context_t sec_context = {.p_void = context};
+	union conn_secure_context sec_context = {.p_void = context};
 
 	_conn_secure(sec_context.values.conn_handle, sec_context.values.force);
 }
@@ -190,7 +190,7 @@ static void conn_secure(uint16_t conn_handle, bool force)
 		created = true;
 	}
 
-	conn_secure_context_t sec_context = {0};
+	union conn_secure_context sec_context = {0};
 
 	sec_context.values.conn_handle = conn_handle;
 	sec_context.values.force = force;

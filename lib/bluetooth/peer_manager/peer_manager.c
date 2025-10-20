@@ -614,8 +614,8 @@ uint32_t pm_peer_id_list(uint16_t *p_peer_list, uint32_t *const p_list_size,
 	uint32_t err_code;
 	uint32_t size = *p_list_size;
 	uint32_t current_size = 0;
-	pm_peer_data_t pm_car_data;
-	pm_peer_data_t pm_bond_data;
+	struct pm_peer_data pm_car_data;
+	struct pm_peer_data pm_bond_data;
 	uint16_t current_peer_id = first_peer_id;
 	ble_gap_addr_t const *p_gap_addr;
 	bool skip_no_addr = skip_id & PM_PEER_ID_LIST_SKIP_NO_ID_ADDR;
@@ -637,8 +637,8 @@ uint32_t pm_peer_id_list(uint16_t *p_peer_list, uint32_t *const p_list_size,
 		}
 	}
 
-	memset(&pm_car_data, 0, sizeof(pm_peer_data_t));
-	memset(&pm_bond_data, 0, sizeof(pm_peer_data_t));
+	memset(&pm_car_data, 0, sizeof(struct pm_peer_data));
+	memset(&pm_bond_data, 0, sizeof(struct pm_peer_data));
 
 	while (current_peer_id != PM_PEER_ID_INVALID) {
 		bool skip = false;
@@ -722,7 +722,7 @@ uint32_t pm_peer_data_load(uint16_t peer_id, enum pm_peer_data_id data_id, void 
 	VERIFY_PARAM_NOT_NULL(p_data);
 	VERIFY_PARAM_NOT_NULL(p_length);
 
-	pm_peer_data_t peer_data;
+	struct pm_peer_data peer_data;
 
 	memset(&peer_data, 0, sizeof(peer_data));
 	peer_data.p_all_data = p_data;
@@ -769,7 +769,7 @@ uint32_t pm_peer_data_store(uint16_t peer_id, enum pm_peer_data_id data_id, void
 		}
 	}
 
-	pm_peer_data_flash_t peer_data;
+	struct pm_peer_data_const peer_data;
 
 	memset(&peer_data, 0, sizeof(peer_data));
 	peer_data.length_words = BYTES_TO_WORDS(length);
@@ -815,14 +815,14 @@ uint32_t pm_peer_new(uint16_t *p_new_peer_id, struct pm_peer_data_bonding *p_bon
 	uint32_t err_code;
 	uint16_t peer_id;
 	uint16_t peer_id_iter;
-	pm_peer_data_flash_t peer_data;
+	struct pm_peer_data_const peer_data;
 	uint8_t peer_data_buffer[PM_PEER_DATA_MAX_SIZE] = { 0 };
 
 	VERIFY_MODULE_INITIALIZED();
 	VERIFY_PARAM_NOT_NULL(p_bonding_data);
 	VERIFY_PARAM_NOT_NULL(p_new_peer_id);
 
-	memset(&peer_data, 0, sizeof(pm_peer_data_flash_t));
+	memset(&peer_data, 0, sizeof(struct pm_peer_data_const));
 
 	peer_data.p_all_data = peer_data_buffer;
 
@@ -845,7 +845,7 @@ uint32_t pm_peer_new(uint16_t *p_new_peer_id, struct pm_peer_data_bonding *p_bon
 		return NRF_ERROR_NO_MEM;
 	}
 
-	memset(&peer_data, 0, sizeof(pm_peer_data_flash_t));
+	memset(&peer_data, 0, sizeof(struct pm_peer_data_const));
 
 	peer_data.data_id = PM_PEER_DATA_ID_BONDING;
 	peer_data.p_bonding_data = p_bonding_data;
@@ -930,7 +930,7 @@ uint32_t pm_peer_ranks_get(uint16_t *p_highest_ranked_peer, uint32_t *p_highest_
 	uint16_t peer_id = pds_next_peer_id_get(PM_PEER_ID_INVALID);
 	uint32_t peer_rank = 0;
 	uint32_t length = sizeof(peer_rank);
-	pm_peer_data_t peer_data = {.p_peer_rank = &peer_rank};
+	struct pm_peer_data peer_data = {.p_peer_rank = &peer_rank};
 	uint32_t err_code =
 		pds_peer_data_read(peer_id, PM_PEER_DATA_ID_PEER_RANK, &peer_data, &length);
 	uint32_t highest_rank = 0;
@@ -1003,7 +1003,7 @@ uint32_t pm_peer_rank_highest(uint16_t peer_id)
 	VERIFY_MODULE_INITIALIZED();
 
 	uint32_t err_code;
-	pm_peer_data_flash_t peer_data = {
+	struct pm_peer_data_const peer_data = {
 		.length_words = BYTES_TO_WORDS(sizeof(m_current_highest_peer_rank)),
 		.data_id = PM_PEER_DATA_ID_PEER_RANK,
 		.p_peer_rank = &m_current_highest_peer_rank};

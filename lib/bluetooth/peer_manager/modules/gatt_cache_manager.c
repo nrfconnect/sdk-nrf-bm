@@ -494,7 +494,7 @@ static void car_update_needed(uint16_t conn_handle)
 {
 	uint32_t central_addr_res = 0;
 	uint32_t central_addr_res_size = sizeof(uint32_t);
-	pm_peer_data_t peer_data;
+	struct pm_peer_data peer_data;
 
 	peer_data.p_all_data = &central_addr_res;
 
@@ -563,7 +563,7 @@ void gcm_pdb_evt_handler(struct pm_evt *p_event)
 			uint32_t err_code;
 			bool service_changed_pending = false;
 			uint32_t service_changed_pending_size = sizeof(bool);
-			pm_peer_data_t peer_data;
+			struct pm_peer_data peer_data;
 
 			peer_data.p_all_data = &service_changed_pending;
 
@@ -643,7 +643,7 @@ void store_car_value(uint16_t conn_handle, bool car_value)
 	static const uint32_t car_value_true = true;
 	static const uint32_t car_value_false;
 
-	pm_peer_data_const_t peer_data = {
+	struct pm_peer_data_const peer_data = {
 		.data_id = PM_PEER_DATA_ID_CENTRAL_ADDR_RES,
 		.length_words = 1,
 	};

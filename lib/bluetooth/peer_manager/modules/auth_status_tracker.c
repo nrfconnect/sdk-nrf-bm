@@ -25,7 +25,7 @@ LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 		       : (_lvl + 1)
 
 /** @brief Tracked peer state. */
-typedef struct {
+struct blacklisted_peer {
 	/** @brief BLE address, used to identify peer. */
 	ble_gap_addr_t peer_addr;
 	/**
@@ -50,10 +50,10 @@ typedef struct {
 	bool is_active;
 	/** @brief Flag indicating that this entry is valid in the peer blacklist. */
 	bool is_valid;
-} blacklisted_peer_t;
+};
 
 static struct bm_timer m_pairing_attempt_timer;
-static blacklisted_peer_t m_blacklisted_peers[CONFIG_PM_RA_PROTECTION_TRACKED_PEERS_NUM];
+static struct blacklisted_peer m_blacklisted_peers[CONFIG_PM_RA_PROTECTION_TRACKED_PEERS_NUM];
 static uint64_t m_ticks_cnt;
 
 /**
@@ -67,7 +67,7 @@ static uint32_t blacklisted_peers_state_update(uint32_t ticks_passed)
 	uint32_t minimal_ticks = UINT32_MAX;
 
 	for (uint32_t id = 0; id < ARRAY_SIZE(m_blacklisted_peers); id++) {
-		blacklisted_peer_t *p_bl_peer = &m_blacklisted_peers[id];
+		struct blacklisted_peer *p_bl_peer = &m_blacklisted_peers[id];
 
 		if (p_bl_peer->is_valid) {
 			if (p_bl_peer->is_active) {
@@ -188,7 +188,7 @@ void ast_auth_error_notify(uint16_t conn_handle)
 
 	/* Check if authorization has failed for already blacklisted peer. */
 	for (uint32_t id = 0; id < ARRAY_SIZE(m_blacklisted_peers); id++) {
-		blacklisted_peer_t *p_bl_peer = &m_blacklisted_peers[id];
+		struct blacklisted_peer *p_bl_peer = &m_blacklisted_peers[id];
 
 		if (p_bl_peer->is_valid) {
 			if (memcmp(peer_addr.addr, p_bl_peer->peer_addr.addr, BLE_GAP_ADDR_LEN) ==
@@ -219,7 +219,7 @@ void ast_auth_error_notify(uint16_t conn_handle)
 	/* Add a new peer to the blacklist. */
 	if (new_bl_entry) {
 		if (free_id < ARRAY_SIZE(m_blacklisted_peers)) {
-			blacklisted_peer_t *p_bl_peer = &m_blacklisted_peers[free_id];
+			struct blacklisted_peer *p_bl_peer = &m_blacklisted_peers[free_id];
 
 			memcpy(&p_bl_peer->peer_addr, &peer_addr, sizeof(peer_addr));
 
@@ -263,7 +263,7 @@ bool ast_peer_blacklisted(uint16_t conn_handle)
 	}
 
 	for (uint32_t id = 0; id < ARRAY_SIZE(m_blacklisted_peers); id++) {
-		blacklisted_peer_t *p_bl_peer = &m_blacklisted_peers[id];
+		struct blacklisted_peer *p_bl_peer = &m_blacklisted_peers[id];
 
 		if (p_bl_peer->is_valid) {
 			if ((memcmp(peer_addr.addr, p_bl_peer->peer_addr.addr, BLE_GAP_ADDR_LEN) ==

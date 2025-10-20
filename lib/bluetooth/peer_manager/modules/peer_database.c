@@ -60,7 +60,7 @@ static pm_evt_handler_internal_t const m_evt_handlers[] = {
  * @brief Struct for keeping track of one write buffer, from allocation, until it is fully written
  *        or cancelled.
  */
-typedef struct {
+struct pdb_buffer_record {
 	/** @brief The peer ID this buffer belongs to. */
 	uint16_t peer_id;
 	/** @brief The data ID this buffer belongs to. */
@@ -86,13 +86,13 @@ typedef struct {
 	 *        but a busy error was returned and the operation should be retried.
 	 */
 	uint8_t store_busy: 1;
-} pdb_buffer_record_t;
+};
 
 static bool m_module_initialized;
 /** @brief The internal states of the write buffer. */
-static pm_buffer_t m_write_buffer;
+static struct pm_buffer m_write_buffer;
 /** @brief The available write buffer records. */
-static pdb_buffer_record_t m_write_buffer_records[CONFIG_PM_FLASH_BUFFERS];
+static struct pdb_buffer_record m_write_buffer_records[CONFIG_PM_FLASH_BUFFERS];
 /**
  * @brief Whether there are any pending (Not yet successfully requested in Peer Data
  *        Storage) store operations. This flag is for convenience only. The real bookkeeping
@@ -105,7 +105,7 @@ static bool m_pending_store;
  *
  * @param[in]  p_record  The record to invalidate.
  */
-static void write_buffer_record_invalidate(pdb_buffer_record_t *p_record)
+static void write_buffer_record_invalidate(struct pdb_buffer_record *p_record)
 {
 	p_record->peer_id = PM_PEER_ID_INVALID;
 	p_record->data_id = PM_PEER_DATA_ID_INVALID;
@@ -124,7 +124,7 @@ static void write_buffer_record_invalidate(pdb_buffer_record_t *p_record)
  *
  * @return  A pointer to the matching record, or NULL if none was found.
  */
-static pdb_buffer_record_t *write_buffer_record_find_next(uint16_t peer_id, uint32_t *p_index)
+static struct pdb_buffer_record *write_buffer_record_find_next(uint16_t peer_id, uint32_t *p_index)
 {
 	for (uint32_t i = *p_index; i < CONFIG_PM_FLASH_BUFFERS; i++) {
 		if (m_write_buffer_records[i].peer_id == peer_id) {
@@ -143,10 +143,11 @@ static pdb_buffer_record_t *write_buffer_record_find_next(uint16_t peer_id, uint
  *
  * @return  A pointer to the matching record, or NULL if none was found.
  */
-static pdb_buffer_record_t *write_buffer_record_find(uint16_t peer_id, enum pm_peer_data_id data_id)
+static struct pdb_buffer_record *write_buffer_record_find(uint16_t peer_id,
+							  enum pm_peer_data_id data_id)
 {
 	uint32_t index = 0;
-	pdb_buffer_record_t *p_record = write_buffer_record_find_next(peer_id, &index);
+	struct pdb_buffer_record *p_record = write_buffer_record_find_next(peer_id, &index);
 
 	while ((p_record != NULL) && ((p_record->data_id != data_id) || (p_record->store_busy) ||
 				      (p_record->store_flash_full) ||
@@ -166,7 +167,7 @@ static pdb_buffer_record_t *write_buffer_record_find(uint16_t peer_id, enum pm_p
  *
  * @return  A pointer to the matching record, or NULL if none was found.
  */
-static pdb_buffer_record_t *write_buffer_record_find_stored(uint32_t store_token)
+static struct pdb_buffer_record *write_buffer_record_find_stored(uint32_t store_token)
 {
 	for (int i = 0; i < CONFIG_PM_FLASH_BUFFERS; i++) {
 		if (m_write_buffer_records[i].store_token == store_token) {
@@ -181,7 +182,7 @@ static pdb_buffer_record_t *write_buffer_record_find_stored(uint32_t store_token
  *
  * @return  A pointer to the available record, or NULL if none was found.
  */
-static pdb_buffer_record_t *write_buffer_record_find_unused(void)
+static struct pdb_buffer_record *write_buffer_record_find_unused(void)
 {
 	return write_buffer_record_find(PM_PEER_ID_INVALID, PM_PEER_DATA_ID_INVALID);
 }
@@ -195,7 +196,7 @@ static pdb_buffer_record_t *write_buffer_record_find_unused(void)
  *
  * @return  A pointer to the matching record, or NULL if none was found.
  */
-static void write_buffer_record_release(pdb_buffer_record_t *p_write_buffer_record)
+static void write_buffer_record_release(struct pdb_buffer_record *p_write_buffer_record)
 {
 	for (uint32_t i = 0; i < p_write_buffer_record->n_bufs; i++) {
 		pm_buffer_release(&m_write_buffer, p_write_buffer_record->buffer_block_id + i);
@@ -211,7 +212,7 @@ static void write_buffer_record_release(pdb_buffer_record_t *p_write_buffer_reco
  * @param[in]  peer_id                 The peer ID this record should have.
  * @param[in]  data_id                 The data ID this record should have.
  */
-static void write_buffer_record_acquire(pdb_buffer_record_t **pp_write_buffer_record,
+static void write_buffer_record_acquire(struct pdb_buffer_record **pp_write_buffer_record,
 					uint16_t peer_id, enum pm_peer_data_id data_id)
 {
 	if (pp_write_buffer_record == NULL) {
@@ -250,7 +251,8 @@ static void internal_state_reset(void)
 	}
 }
 
-static void peer_data_point_to_buffer(pm_peer_data_t *p_peer_data, enum pm_peer_data_id data_id,
+static void peer_data_point_to_buffer(struct pm_peer_data *p_peer_data,
+				      enum pm_peer_data_id data_id,
 				      uint8_t *p_buffer_memory, uint16_t n_bufs)
 {
 	uint16_t n_bytes = n_bufs * PDB_WRITE_BUF_SIZE;
@@ -261,14 +263,15 @@ static void peer_data_point_to_buffer(pm_peer_data_t *p_peer_data, enum pm_peer_
 	p_peer_data->length_words = BYTES_TO_WORDS(n_bytes);
 }
 
-static void peer_data_const_point_to_buffer(pm_peer_data_const_t *p_peer_data,
+static void peer_data_const_point_to_buffer(struct pm_peer_data_const *p_peer_data,
 					    enum pm_peer_data_id data_id, uint8_t *p_buffer_memory,
 					    uint32_t n_bufs)
 {
-	peer_data_point_to_buffer((pm_peer_data_t *)p_peer_data, data_id, p_buffer_memory, n_bufs);
+	peer_data_point_to_buffer((struct pm_peer_data *)p_peer_data, data_id, p_buffer_memory,
+				  n_bufs);
 }
 
-static void write_buf_length_words_set(pm_peer_data_const_t *p_peer_data)
+static void write_buf_length_words_set(struct pm_peer_data_const *p_peer_data)
 {
 	switch (p_peer_data->data_id) {
 	case PM_PEER_DATA_ID_BONDING:
@@ -304,10 +307,10 @@ static void write_buf_length_words_set(pm_peer_data_const_t *p_peer_data)
  * @retval NRF_ERROR_INVALID_STATE  Module is not initialized.
  * @retval NRF_ERROR_INTERNAL       Unexpected internal error.
  */
-uint32_t write_buf_store(pdb_buffer_record_t *p_write_buffer_record)
+uint32_t write_buf_store(struct pdb_buffer_record *p_write_buffer_record)
 {
 	uint32_t err_code = NRF_SUCCESS;
-	pm_peer_data_const_t peer_data = {.data_id = p_write_buffer_record->data_id};
+	struct pm_peer_data_const peer_data = {.data_id = p_write_buffer_record->data_id};
 	uint8_t *p_buffer_memory;
 
 	p_buffer_memory =
@@ -366,7 +369,7 @@ uint32_t write_buf_store(pdb_buffer_record_t *p_write_buffer_record)
  *
  * @return  Whether or not the store operation succeeded.
  */
-static bool write_buf_store_in_event(pdb_buffer_record_t *p_write_buffer_record)
+static bool write_buf_store_in_event(struct pdb_buffer_record *p_write_buffer_record)
 {
 	uint32_t err_code;
 	struct pm_evt event;
@@ -433,7 +436,7 @@ static void reattempt_previous_operations(bool retry_flash_full)
  */
 void pdb_pds_evt_handler(struct pm_evt *p_event)
 {
-	pdb_buffer_record_t *p_write_buffer_record;
+	struct pdb_buffer_record *p_write_buffer_record;
 	bool evt_send = true;
 	bool retry_flash_full = false;
 
@@ -503,7 +506,7 @@ uint32_t pdb_peer_free(uint16_t peer_id)
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
 
 	uint32_t index = 0;
-	pdb_buffer_record_t *p_record = write_buffer_record_find_next(peer_id, &index);
+	struct pdb_buffer_record *p_record = write_buffer_record_find_next(peer_id, &index);
 
 	while (p_record != NULL) {
 		err_code = pdb_write_buf_release(peer_id, p_record->data_id);
@@ -535,7 +538,7 @@ uint32_t pdb_peer_free(uint16_t peer_id)
 }
 
 uint32_t pdb_write_buf_get(uint16_t peer_id, enum pm_peer_data_id data_id, uint32_t n_bufs,
-			     pm_peer_data_t *p_peer_data)
+			   struct pm_peer_data *p_peer_data)
 {
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
 
@@ -546,7 +549,7 @@ uint32_t pdb_write_buf_get(uint16_t peer_id, enum pm_peer_data_id data_id, uint3
 		return NRF_ERROR_INVALID_PARAM;
 	}
 
-	pdb_buffer_record_t *p_write_buffer_record;
+	struct pdb_buffer_record *p_write_buffer_record;
 	uint8_t *p_buffer_memory;
 	bool new_record = false;
 
@@ -599,7 +602,7 @@ uint32_t pdb_write_buf_release(uint16_t peer_id, enum pm_peer_data_id data_id)
 {
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
 
-	pdb_buffer_record_t *p_write_buffer_record;
+	struct pdb_buffer_record *p_write_buffer_record;
 
 	p_write_buffer_record = write_buffer_record_find(peer_id, data_id);
 
@@ -622,7 +625,8 @@ uint32_t pdb_write_buf_store(uint16_t peer_id, enum pm_peer_data_id data_id, uin
 		return NRF_ERROR_INVALID_PARAM;
 	}
 
-	pdb_buffer_record_t *p_write_buffer_record = write_buffer_record_find(peer_id, data_id);
+	struct pdb_buffer_record *p_write_buffer_record =
+		write_buffer_record_find(peer_id, data_id);
 
 	if (p_write_buffer_record == NULL) {
 		return NRF_ERROR_NOT_FOUND;
