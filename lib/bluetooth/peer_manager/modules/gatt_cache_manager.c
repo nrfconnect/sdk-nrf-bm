@@ -26,57 +26,8 @@
 
 LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
-#define NRF_MTX_LOCKED      1
-#define NRF_MTX_UNLOCKED    0
-
-typedef atomic_t nrf_mtx_t;
-
-/**
- * @brief Initialize mutex.
- *
- * This function _must_ be called before nrf_mtx_trylock() and nrf_mtx_unlock() functions.
- *
- * @param[in, out] p_mtx The mutex to be initialized.
- */
-__STATIC_INLINE void nrf_mtx_init(nrf_mtx_t *p_mtx)
-{
-	__ASSERT(p_mtx != NULL, "");
-
-	atomic_set(p_mtx, NRF_MTX_UNLOCKED);
-}
-
-/**
- * @brief Try to lock a mutex.
- *
- * If the mutex is already held by another context, this function will return immediately.
- *
- * @param[in, out] p_mtx The mutex to be locked.
- * @return true if lock was acquired, false if not
- */
-__STATIC_INLINE bool nrf_mtx_trylock(nrf_mtx_t *p_mtx)
-{
-	__ASSERT(p_mtx != NULL, "");
-
-	return atomic_cas(p_mtx, NRF_MTX_UNLOCKED, NRF_MTX_LOCKED);
-}
-
-/**
- * @brief Unlock a mutex.
- *
- * This function _must_ only be called when holding the lock. Unlocking a mutex which you do not
- * hold will give undefined behavior.
- *
- * @note Unlock must happen from the same context as the one used to lock the mutex.
- *
- * @param[in, out] p_mtx The mutex to be unlocked.
- */
-__STATIC_INLINE void nrf_mtx_unlock(nrf_mtx_t *p_mtx)
-{
-	__ASSERT(p_mtx != NULL, "");
-	__ASSERT(*p_mtx == NRF_MTX_LOCKED, "");
-
-	atomic_set(p_mtx, NRF_MTX_UNLOCKED);
-}
+#define MTX_LOCKED 1
+#define MTX_UNLOCKED 0
 
 /* The number of registered event handlers. */
 #define GCM_EVENT_HANDLERS_CNT ARRAY_SIZE(m_evt_handlers)
@@ -92,7 +43,7 @@ static pm_evt_handler_internal_t m_evt_handlers[] = {pm_gcm_evt_handler};
 
 static bool m_module_initialized;
 /** @brief Mutex indicating whether a local DB write operation is ongoing. */
-static nrf_mtx_t m_db_update_in_progress_mutex;
+static atomic_t m_db_update_in_progress_mutex;
 /**
  * @brief Flag ID for flag collection to keep track of which connections need a local DB update
  *        procedure.
@@ -437,13 +388,16 @@ static __INLINE void apply_pending_flags_check(void)
 static void db_update_pending_handle(uint16_t conn_handle, void *p_context)
 {
 	ARG_UNUSED(p_context);
-	if (nrf_mtx_trylock(&m_db_update_in_progress_mutex)) {
+	if (atomic_cas(&m_db_update_in_progress_mutex, MTX_UNLOCKED, MTX_LOCKED)) {
 		if (local_db_update_in_evt(conn_handle)) {
 			/* Successfully started writing to flash. */
 			return;
 		}
 
-		nrf_mtx_unlock(&m_db_update_in_progress_mutex);
+		atomic_val_t prev_state = atomic_set(&m_db_update_in_progress_mutex, MTX_UNLOCKED);
+
+		__ASSERT(prev_state == MTX_LOCKED, "Incorrect mtx state when unlocking");
+		ARG_UNUSED(prev_state);
 	}
 }
 
@@ -588,9 +542,7 @@ void gcm_pdb_evt_handler(struct pm_evt *p_event)
 #endif
 
 		case PM_PEER_DATA_ID_GATT_LOCAL:
-			if (m_db_update_in_progress_mutex == NRF_MTX_LOCKED) {
-				nrf_mtx_unlock(&m_db_update_in_progress_mutex);
-			}
+			(void)atomic_cas(&m_db_update_in_progress_mutex, MTX_LOCKED, MTX_UNLOCKED);
 
 			/* Expecting a call to update_pending_flags_check() immediately. */
 			break;
@@ -630,7 +582,7 @@ uint32_t gcm_init(void)
 		return NRF_ERROR_INTERNAL;
 	}
 
-	nrf_mtx_init(&m_db_update_in_progress_mutex);
+	(void)atomic_set(&m_db_update_in_progress_mutex, MTX_UNLOCKED);
 
 	m_module_initialized = true;
 
