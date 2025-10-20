@@ -33,7 +33,7 @@ extern "C" {
 /** @brief The number of available peer IDs. */
 #define PM_PEER_ID_N_AVAILABLE_IDS 256
 /** @brief The static-length part of the local GATT data struct. */
-#define PM_LOCAL_DB_LEN_OVERHEAD_BYTES offsetof(pm_peer_data_local_gatt_db_t, data)
+#define PM_LOCAL_DB_LEN_OVERHEAD_BYTES offsetof(struct pm_peer_data_local_gatt_db, data)
 /**
  * @brief The base for Peer Manager defined errors. See @ref PM_SEC_ERRORS.
  */
@@ -123,7 +123,7 @@ enum pm_peer_data_id {
 	PM_PEER_DATA_ID_SERVICE_CHANGED_PENDING = PM_PEER_DATA_ID_SERVICE_CHANGED_PENDING_V1,
 	/**
 	 * @brief The data ID for local GATT data (sys attributes).
-	 * Type: @ref pm_peer_data_local_gatt_db_t.
+	 * Type: @ref pm_peer_data_local_gatt_db.
 	 */
 	PM_PEER_DATA_ID_GATT_LOCAL = PM_PEER_DATA_ID_GATT_LOCAL_V2,
 	/** @brief The data ID for remote GATT data. Type: uint8_t array. */
@@ -182,14 +182,14 @@ struct pm_peer_data_bonding {
 };
 
 /** @brief Data on a local GATT database. */
-typedef struct {
+struct pm_peer_data_local_gatt_db {
 	/** @brief Flags that describe the database attributes. */
 	uint32_t flags;
 	/** @brief Size of the attribute array. */
 	uint16_t len;
 	/** @brief Array to hold the database attributes. */
 	uint8_t data[1];
-} pm_peer_data_local_gatt_db_t;
+};
 
 /**
  * @brief Device Privacy.

@@ -25,7 +25,7 @@
 extern "C" {
 #endif
 
-/** @brief Max size for @ref pm_peer_data_local_gatt_db_t.data */
+/** @brief Max size of the data member in @ref pm_peer_data_local_gatt_db. */
 #define PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE 128
 #define PM_PEER_DATA_MAX_SIZE PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE
 
@@ -59,7 +59,7 @@ typedef struct {
 		/** @brief Whether a service changed indication should be sent to the peer. */
 		bool *p_service_changed_pending;
 		/** @brief Persistent information pertaining to a peer GATT client. */
-		pm_peer_data_local_gatt_db_t *p_local_gatt_db;
+		struct pm_peer_data_local_gatt_db *p_local_gatt_db;
 		/** @brief Persistent information pertaining to a peer GATT server. */
 		struct ble_gatt_db_srv *p_remote_gatt_db;
 		/**
@@ -99,7 +99,7 @@ typedef struct {
 		/** @brief Immutable @ref pm_peer_data_t::p_service_changed_pending. */
 		bool const *p_service_changed_pending;
 		/** @brief Immutable @ref pm_peer_data_t::p_local_gatt_db. */
-		pm_peer_data_local_gatt_db_t const *p_local_gatt_db;
+		struct pm_peer_data_local_gatt_db const *p_local_gatt_db;
 		/** @brief Immutable @ref pm_peer_data_t::p_remote_gatt_db. */
 		struct ble_gatt_db_srv const *p_remote_gatt_db;
 		/** @brief Immutable @ref pm_peer_data_t::p_application_data. */

@@ -155,7 +155,7 @@ uint32_t gscm_local_db_cache_update(uint16_t conn_handle)
 		err_code = pdb_write_buf_get(peer_id, PM_PEER_DATA_ID_GATT_LOCAL, n_bufs++,
 						&peer_data);
 		if (err_code == NRF_SUCCESS) {
-			pm_peer_data_local_gatt_db_t *p_local_gatt_db =
+			struct pm_peer_data_local_gatt_db *p_local_gatt_db =
 				peer_data.p_local_gatt_db;
 
 			p_local_gatt_db->flags = SYS_ATTR_BOTH;
@@ -169,8 +169,8 @@ uint32_t gscm_local_db_cache_update(uint16_t conn_handle)
 					0
 				};
 				uint32_t local_gatt_db_size = PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE;
-				pm_peer_data_local_gatt_db_t *curr_p_local_gatt_db =
-					(pm_peer_data_local_gatt_db_t *)local_gatt_db_buf;
+				struct pm_peer_data_local_gatt_db *curr_p_local_gatt_db =
+					(struct pm_peer_data_local_gatt_db *)local_gatt_db_buf;
 				pm_peer_data_t curr_peer_data;
 
 				curr_peer_data.p_all_data = local_gatt_db_buf;
@@ -268,13 +268,13 @@ uint32_t gscm_local_db_cache_apply(uint16_t conn_handle)
 	if (peer_id != PM_PEER_ID_INVALID) {
 		uint8_t local_gatt_db_buf[PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE] = { 0 };
 		uint32_t local_gatt_db_size = PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE;
-		pm_peer_data_local_gatt_db_t *curr_p_local_gatt_db =
-			(pm_peer_data_local_gatt_db_t *)local_gatt_db_buf;
+		struct pm_peer_data_local_gatt_db *curr_p_local_gatt_db =
+			(struct pm_peer_data_local_gatt_db *)local_gatt_db_buf;
 		peer_data.p_all_data = &local_gatt_db_buf;
 		err_code = pds_peer_data_read(peer_id, PM_PEER_DATA_ID_GATT_LOCAL, &peer_data,
 					      &local_gatt_db_size);
 		if (err_code == NRF_SUCCESS) {
-			pm_peer_data_local_gatt_db_t const *p_local_gatt_db;
+			struct pm_peer_data_local_gatt_db const *p_local_gatt_db;
 
 			p_local_gatt_db = curr_p_local_gatt_db;
 			p_sys_attr_data = p_local_gatt_db->data;
