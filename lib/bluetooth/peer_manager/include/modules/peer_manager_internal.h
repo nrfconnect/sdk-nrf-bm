@@ -61,7 +61,7 @@ typedef struct {
 		/** @brief Persistent information pertaining to a peer GATT client. */
 		pm_peer_data_local_gatt_db_t *p_local_gatt_db;
 		/** @brief Persistent information pertaining to a peer GATT server. */
-		ble_gatt_db_srv_t *p_remote_gatt_db;
+		struct ble_gatt_db_srv *p_remote_gatt_db;
 		/**
 		 * @brief Arbitrary data to associate with the peer. This data can be freely used
 		 *        by the application.
@@ -101,7 +101,7 @@ typedef struct {
 		/** @brief Immutable @ref pm_peer_data_t::p_local_gatt_db. */
 		pm_peer_data_local_gatt_db_t const *p_local_gatt_db;
 		/** @brief Immutable @ref pm_peer_data_t::p_remote_gatt_db. */
-		ble_gatt_db_srv_t const *p_remote_gatt_db;
+		struct ble_gatt_db_srv const *p_remote_gatt_db;
 		/** @brief Immutable @ref pm_peer_data_t::p_application_data. */
 		uint8_t const *p_application_data;
 		/** @brief Immutable @ref pm_peer_data_t::p_all_data. */
@@ -181,7 +181,7 @@ typedef void (*pm_evt_handler_internal_t)(pm_evt_t *p_event);
  * @return The number of words that the data takes in flash.
  */
 #define PM_REMOTE_DB_N_WORDS(service_count)                                                        \
-	BYTES_TO_WORDS(sizeof(ble_gatt_db_srv_t) * (service_count))
+	BYTES_TO_WORDS(sizeof(struct ble_gatt_db_srv) * (service_count))
 
 /**
  * @brief Macro for calculating the number of services that can be stored in a region of n words.
@@ -190,7 +190,8 @@ typedef void (*pm_evt_handler_internal_t)(pm_evt_t *p_event);
  *
  * @return The number of services that can be stored in a region of n words.
  */
-#define PM_REMOTE_DB_N_SERVICES(n_words) (((n_words)*BYTES_PER_WORD) / sizeof(ble_gatt_db_srv_t))
+#define PM_REMOTE_DB_N_SERVICES(n_words)                                                           \
+	(((n_words)*BYTES_PER_WORD) / sizeof(struct ble_gatt_db_srv))
 
 /**
  * @brief Function for calculating the flash size of the usage index.

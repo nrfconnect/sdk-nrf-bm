@@ -29,7 +29,7 @@ extern "C" {
 /**
  * @brief Structure for holding the characteristic and the handle of its CCCD present on a server.
  */
-typedef struct {
+struct ble_gatt_db_char {
 	/** @brief Structure containing information about the characteristic. */
 	ble_gattc_char_t characteristic;
 	/**
@@ -55,13 +55,13 @@ typedef struct {
 	 *        descriptor is not present at the server.
 	 */
 	uint16_t report_ref_handle;
-} ble_gatt_db_char_t;
+};
 
 /**
  * @brief Structure for holding information about the service and the characteristics present on a
  *        server.
  */
-typedef struct {
+struct ble_gatt_db_srv {
 	/** @brief UUID of the service. */
 	ble_uuid_t srv_uuid;
 	/** @brief Number of characteristics present in the service. */
@@ -72,8 +72,8 @@ typedef struct {
 	 * @brief Array of information related to the characteristics present in the service.
 	 *        This list can extend further than one.
 	 */
-	ble_gatt_db_char_t charateristics[BLE_GATT_DB_MAX_CHARS];
-} ble_gatt_db_srv_t;
+	struct ble_gatt_db_char charateristics[BLE_GATT_DB_MAX_CHARS];
+};
 
 #ifdef __cplusplus
 }
