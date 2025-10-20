@@ -737,7 +737,7 @@ uint32_t pm_peer_data_bonding_load(uint16_t peer_id, pm_peer_data_bonding_t *p_d
 	return pm_peer_data_load(peer_id, PM_PEER_DATA_ID_BONDING, p_data, &length);
 }
 
-uint32_t pm_peer_data_remote_db_load(uint16_t peer_id, ble_gatt_db_srv_t *p_data,
+uint32_t pm_peer_data_remote_db_load(uint16_t peer_id, struct ble_gatt_db_srv *p_data,
 				       uint32_t *p_length)
 {
 	return pm_peer_data_load(peer_id, PM_PEER_DATA_ID_GATT_REMOTE, p_data, p_length);
@@ -785,7 +785,7 @@ uint32_t pm_peer_data_bonding_store(uint16_t peer_id, pm_peer_data_bonding_t con
 				  ROUND_UP(sizeof(pm_peer_data_bonding_t), 4), p_token);
 }
 
-uint32_t pm_peer_data_remote_db_store(uint16_t peer_id, ble_gatt_db_srv_t const *p_data,
+uint32_t pm_peer_data_remote_db_store(uint16_t peer_id, struct ble_gatt_db_srv const *p_data,
 					uint32_t length, uint32_t *p_token)
 {
 	return pm_peer_data_store(peer_id, PM_PEER_DATA_ID_GATT_REMOTE, p_data, length, p_token);
