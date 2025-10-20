@@ -41,7 +41,7 @@ typedef struct {
 	 * @brief ID that specifies the type of data (defines which member of the union is
 	 *        used).
 	 */
-	pm_peer_data_id_t data_id;
+	enum pm_peer_data_id data_id;
 	/** @brief The data. */
 	union {
 		/** @brief The exchanged bond information in addition to metadata of the bonding. */
@@ -87,7 +87,7 @@ typedef struct {
 	 * @brief ID that specifies the type of data (defines which member of the union is
 	 *        used).
 	 */
-	pm_peer_data_id_t data_id;
+	enum pm_peer_data_id data_id;
 	/** @brief The data. */
 	union {
 		/** @brief Immutable @ref pm_peer_data_t::p_bonding_data. */

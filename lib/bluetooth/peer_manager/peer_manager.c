@@ -715,7 +715,7 @@ uint32_t pm_peer_id_list(uint16_t *p_peer_list, uint32_t *const p_list_size,
 	return NRF_SUCCESS;
 }
 
-uint32_t pm_peer_data_load(uint16_t peer_id, pm_peer_data_id_t data_id, void *p_data,
+uint32_t pm_peer_data_load(uint16_t peer_id, enum pm_peer_data_id data_id, void *p_data,
 			     uint32_t *p_length)
 {
 	VERIFY_MODULE_INITIALIZED();
@@ -748,7 +748,7 @@ uint32_t pm_peer_data_app_data_load(uint16_t peer_id, void *p_data, uint32_t *p_
 	return pm_peer_data_load(peer_id, PM_PEER_DATA_ID_APPLICATION, p_data, p_length);
 }
 
-uint32_t pm_peer_data_store(uint16_t peer_id, pm_peer_data_id_t data_id, void const *p_data,
+uint32_t pm_peer_data_store(uint16_t peer_id, enum pm_peer_data_id data_id, void const *p_data,
 			      uint32_t length, uint32_t *p_token)
 {
 	VERIFY_MODULE_INITIALIZED();
@@ -797,7 +797,7 @@ uint32_t pm_peer_data_app_data_store(uint16_t peer_id, void const *p_data, uint3
 	return pm_peer_data_store(peer_id, PM_PEER_DATA_ID_APPLICATION, p_data, length, p_token);
 }
 
-uint32_t pm_peer_data_delete(uint16_t peer_id, pm_peer_data_id_t data_id)
+uint32_t pm_peer_data_delete(uint16_t peer_id, enum pm_peer_data_id data_id)
 {
 	VERIFY_MODULE_INITIALIZED();
 

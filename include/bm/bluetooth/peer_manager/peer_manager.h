@@ -533,7 +533,7 @@ uint32_t pm_peer_count(void);
  * @param[in]  peer_id  Peer ID to get data for.
  * @param[in]  data_id  Which type of data to read.
  * @param[out] data     Where to put the retrieved data. The documentation for
- *                      @ref pm_peer_data_id_t specifies what data type each data ID is stored as.
+ *                      @ref pm_peer_data_id specifies what data type each data ID is stored as.
  * @param[in,out] len   In: The length in bytes of @p data.
  *                      Out: The length in bytes of the read data, if the read was successful.
  *
@@ -549,7 +549,7 @@ uint32_t pm_peer_count(void);
  *                                  bytes) when storing.
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  */
-uint32_t pm_peer_data_load(uint16_t peer_id, pm_peer_data_id_t data_id, void *data,
+uint32_t pm_peer_data_load(uint16_t peer_id, enum pm_peer_data_id data_id, void *data,
 			   uint32_t *len);
 
 /**
@@ -590,7 +590,7 @@ uint32_t pm_peer_data_app_data_load(uint16_t peer_id, void *data, uint32_t *len)
  *
  * @param[in]  peer_id  Peer ID to set data for.
  * @param[in]  data_id  The type of data to set.
- * @param[in]  data     New value to set. The documentation for @ref pm_peer_data_id_t specifies
+ * @param[in]  data     New value to set. The documentation for @ref pm_peer_data_id specifies
  *                      what data type each data ID should be stored as.
  * @param[in]  len      The length in bytes of @p data.
  * @param[out] token    A token that identifies this particular store operation. The token can be
@@ -609,7 +609,7 @@ uint32_t pm_peer_data_app_data_load(uint16_t peer_id, void *data, uint32_t *len)
  *                                  so duplicate entries are avoided.
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  */
-uint32_t pm_peer_data_store(uint16_t peer_id, pm_peer_data_id_t data_id, const void *data,
+uint32_t pm_peer_data_store(uint16_t peer_id, enum pm_peer_data_id data_id, const void *data,
 			    uint32_t len, uint32_t *token);
 
 /**
@@ -664,7 +664,7 @@ uint32_t pm_peer_data_app_data_store(uint16_t peer_id, const void *data, uint32_
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  * @retval NRF_ERROR_INTERNAL       If an internal error occurred.
  */
-uint32_t pm_peer_data_delete(uint16_t peer_id, pm_peer_data_id_t data_id);
+uint32_t pm_peer_data_delete(uint16_t peer_id, enum pm_peer_data_id data_id);
 
 /**
  * @brief Manually add a peer to the non-volatile storage.

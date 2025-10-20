@@ -64,7 +64,7 @@ typedef struct {
 	/** @brief The peer ID this buffer belongs to. */
 	uint16_t peer_id;
 	/** @brief The data ID this buffer belongs to. */
-	pm_peer_data_id_t data_id;
+	enum pm_peer_data_id data_id;
 	/**
 	 * @brief Token given by Peer Data Storage when a flash write has been
 	 *        successfully requested. This is used as the check for whether such
@@ -143,7 +143,7 @@ static pdb_buffer_record_t *write_buffer_record_find_next(uint16_t peer_id, uint
  *
  * @return  A pointer to the matching record, or NULL if none was found.
  */
-static pdb_buffer_record_t *write_buffer_record_find(uint16_t peer_id, pm_peer_data_id_t data_id)
+static pdb_buffer_record_t *write_buffer_record_find(uint16_t peer_id, enum pm_peer_data_id data_id)
 {
 	uint32_t index = 0;
 	pdb_buffer_record_t *p_record = write_buffer_record_find_next(peer_id, &index);
@@ -212,7 +212,7 @@ static void write_buffer_record_release(pdb_buffer_record_t *p_write_buffer_reco
  * @param[in]  data_id                 The data ID this record should have.
  */
 static void write_buffer_record_acquire(pdb_buffer_record_t **pp_write_buffer_record,
-					uint16_t peer_id, pm_peer_data_id_t data_id)
+					uint16_t peer_id, enum pm_peer_data_id data_id)
 {
 	if (pp_write_buffer_record == NULL) {
 		return;
@@ -250,7 +250,7 @@ static void internal_state_reset(void)
 	}
 }
 
-static void peer_data_point_to_buffer(pm_peer_data_t *p_peer_data, pm_peer_data_id_t data_id,
+static void peer_data_point_to_buffer(pm_peer_data_t *p_peer_data, enum pm_peer_data_id data_id,
 				      uint8_t *p_buffer_memory, uint16_t n_bufs)
 {
 	uint16_t n_bytes = n_bufs * PDB_WRITE_BUF_SIZE;
@@ -262,7 +262,7 @@ static void peer_data_point_to_buffer(pm_peer_data_t *p_peer_data, pm_peer_data_
 }
 
 static void peer_data_const_point_to_buffer(pm_peer_data_const_t *p_peer_data,
-					    pm_peer_data_id_t data_id, uint8_t *p_buffer_memory,
+					    enum pm_peer_data_id data_id, uint8_t *p_buffer_memory,
 					    uint32_t n_bufs)
 {
 	peer_data_point_to_buffer((pm_peer_data_t *)p_peer_data, data_id, p_buffer_memory, n_bufs);
@@ -534,7 +534,7 @@ uint32_t pdb_peer_free(uint16_t peer_id)
 	return NRF_ERROR_INTERNAL;
 }
 
-uint32_t pdb_write_buf_get(uint16_t peer_id, pm_peer_data_id_t data_id, uint32_t n_bufs,
+uint32_t pdb_write_buf_get(uint16_t peer_id, enum pm_peer_data_id data_id, uint32_t n_bufs,
 			     pm_peer_data_t *p_peer_data)
 {
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
@@ -595,7 +595,7 @@ uint32_t pdb_write_buf_get(uint16_t peer_id, pm_peer_data_id_t data_id, uint32_t
 	return NRF_SUCCESS;
 }
 
-uint32_t pdb_write_buf_release(uint16_t peer_id, pm_peer_data_id_t data_id)
+uint32_t pdb_write_buf_release(uint16_t peer_id, enum pm_peer_data_id data_id)
 {
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
 
@@ -612,7 +612,7 @@ uint32_t pdb_write_buf_release(uint16_t peer_id, pm_peer_data_id_t data_id)
 	return NRF_SUCCESS;
 }
 
-uint32_t pdb_write_buf_store(uint16_t peer_id, pm_peer_data_id_t data_id, uint16_t new_peer_id)
+uint32_t pdb_write_buf_store(uint16_t peer_id, enum pm_peer_data_id data_id, uint16_t new_peer_id)
 {
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
 

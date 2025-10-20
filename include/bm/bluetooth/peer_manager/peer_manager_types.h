@@ -114,7 +114,7 @@ extern "C" {
 /**
  * @brief The different types of data associated with a peer.
  */
-typedef enum {
+enum pm_peer_data_id {
 	/** @brief The smallest data ID. */
 	PM_PEER_DATA_ID_FIRST = PM_PEER_DATA_ID_FIRST_VX,
 	/** @brief The data ID for bonding data. Type: @ref pm_peer_data_bonding_t. */
@@ -141,7 +141,7 @@ typedef enum {
 	PM_PEER_DATA_ID_LAST = PM_PEER_DATA_ID_LAST_VX,
 	/** @brief A data ID guaranteed to be invalid. */
 	PM_PEER_DATA_ID_INVALID = PM_PEER_DATA_ID_INVALID_VX,
-} pm_peer_data_id_t;
+};
 
 /** @brief Different procedures that can lead to an encrypted link. */
 typedef enum {
@@ -428,7 +428,7 @@ typedef enum {
 /** @brief Parameters specific to the @ref PM_EVT_PEER_DATA_UPDATE_SUCCEEDED event. */
 typedef struct {
 	/** @brief The type of the data that was changed. */
-	pm_peer_data_id_t data_id;
+	enum pm_peer_data_id data_id;
 	/** @brief What happened to the data. */
 	pm_peer_data_op_t action;
 	/**
@@ -449,7 +449,7 @@ typedef struct {
 /** @brief Parameters specific to the @ref PM_EVT_PEER_DATA_UPDATE_FAILED event. */
 typedef struct {
 	/** @brief The type of the data that was supposed to be changed. */
-	pm_peer_data_id_t data_id;
+	enum pm_peer_data_id data_id;
 	/** @brief The action that failed. */
 	pm_peer_data_op_t action;
 	/**
