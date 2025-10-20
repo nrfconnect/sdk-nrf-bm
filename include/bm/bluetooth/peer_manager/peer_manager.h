@@ -782,8 +782,8 @@ uint32_t pm_peer_ranks_get(uint16_t *highest_ranked_peer, uint32_t *highest_rank
  *          @ref pm_peer_ranks_get.
  *
  * @note The @ref PM_EVT_PEER_DATA_UPDATE_SUCCEEDED event can arrive before the function returns if
- *       the peer is already ranked highest. In this case, the @ref
- *       pm_peer_data_update_succeeded_evt_t.flash_changed flag in the event will be false.
+ *       the peer is already ranked highest. In this case, the flash_changed flag in the
+ *       @ref pm_peer_data_update_succeeded_evt event will be false.
  *
  * @param[in] peer_id  The peer to rank highest.
  *

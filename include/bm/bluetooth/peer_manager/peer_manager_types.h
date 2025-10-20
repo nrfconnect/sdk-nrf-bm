@@ -348,7 +348,7 @@ enum pm_evt_id {
 };
 
 /** @brief Parameters specific to the @ref PM_EVT_CONN_CONFIG_REQ event. */
-typedef struct {
+struct pm_conn_config_req_evt {
 	/** @brief Connected Event parameters. */
 	const ble_gap_evt_connected_t *peer_params;
 	/**
@@ -356,16 +356,16 @@ typedef struct {
 	 *        context argument.
 	 */
 	const void *context;
-} pm_conn_config_req_evt_t;
+};
 
 /** @brief Events parameters specific to the @ref PM_EVT_CONN_SEC_START event. */
-typedef struct {
+struct pm_conn_sec_start_evt {
 	/** @brief The procedure that has started. */
 	enum pm_conn_sec_procedure procedure;
-} pm_conn_sec_start_evt_t;
+};
 
 /** @brief Parameters specific to the @ref PM_EVT_CONN_SEC_SUCCEEDED event. */
-typedef struct {
+struct pm_conn_secured_evt {
 	/** @brief The procedure that led to securing the link. */
 	enum pm_conn_sec_procedure procedure;
 	/**
@@ -375,20 +375,20 @@ typedef struct {
 	 *        @ref pm_conn_sec_config_reply.
 	 */
 	bool data_stored;
-} pm_conn_secured_evt_t;
+};
 
 /** @brief Parameters specific to the @ref PM_EVT_CONN_SEC_FAILED event. */
-typedef struct {
+struct pm_conn_secure_failed_evt {
 	/** @brief The procedure that failed. */
 	enum pm_conn_sec_procedure procedure;
 	/** @brief An error code that describes the failure. See @ref PM_SEC_ERRORS. */
 	uint16_t error;
 	/** @brief The party that raised the error, see @ref BLE_GAP_SEC_STATUS_SOURCES. */
 	uint8_t error_src;
-} pm_conn_secure_failed_evt_t;
+};
 
 /** @brief Parameters specific to the @ref PM_EVT_CONN_SEC_PARAMS_REQ event. */
-typedef struct {
+struct pm_conn_sec_params_req_evt {
 	/** @brief Peer security parameters, if role is peripheral. Otherwise, this is NULL. */
 	const ble_gap_sec_params_t *peer_params;
 	/**
@@ -396,22 +396,22 @@ typedef struct {
 	 *        context argument.
 	 */
 	const void *context;
-} pm_conn_sec_params_req_evt_t;
+};
 
 /** @brief Actions that can be performed to peer data in persistent storage. */
-typedef enum {
+enum pm_peer_data_op {
 	/** @brief Writing or overwriting the data. */
 	PM_PEER_DATA_OP_UPDATE,
 	/** @brief Removing the data. */
 	PM_PEER_DATA_OP_DELETE,
-} pm_peer_data_op_t;
+};
 
 /** @brief Parameters specific to the @ref PM_EVT_PEER_DATA_UPDATE_SUCCEEDED event. */
-typedef struct {
+struct pm_peer_data_update_succeeded_evt {
 	/** @brief The type of the data that was changed. */
 	enum pm_peer_data_id data_id;
 	/** @brief What happened to the data. */
-	pm_peer_data_op_t action;
+	enum pm_peer_data_op action;
 	/**
 	 * @brief Token that identifies the operation. For @ref PM_PEER_DATA_OP_DELETE actions,
 	 *        this token can be disregarded. For @ref PM_PEER_DATA_OP_UPDATE actions,
@@ -425,14 +425,14 @@ typedef struct {
 	 *        scenarios, this flag will be true even if the new value is the same as the old.
 	 */
 	uint8_t flash_changed: 1;
-} pm_peer_data_update_succeeded_evt_t;
+};
 
 /** @brief Parameters specific to the @ref PM_EVT_PEER_DATA_UPDATE_FAILED event. */
-typedef struct {
+struct pm_peer_data_update_failed {
 	/** @brief The type of the data that was supposed to be changed. */
 	enum pm_peer_data_id data_id;
 	/** @brief The action that failed. */
-	pm_peer_data_op_t action;
+	enum pm_peer_data_op action;
 	/**
 	 * @brief Token that identifies the operation. For @ref PM_PEER_DATA_OP_DELETE actions,
 	 *        this token can be disregarded. For @ref PM_PEER_DATA_OP_UPDATE actions, compare
@@ -442,19 +442,19 @@ typedef struct {
 	uint32_t token;
 	/** @brief An error code that describes the failure. */
 	uint32_t error;
-} pm_peer_data_update_failed_t;
+};
 
 /** @brief Standard parameters for failure events. */
-typedef struct {
+struct pm_failure_evt {
 	/** @brief The error that occurred. */
 	uint32_t error;
-} pm_failure_evt_t;
+};
 
 /**
  * @brief An event from the @ref peer_manager module.
  *
- * @details The structure contains both standard parameters and parameters that are specific to some
- * events.
+ * @details The structure contains both standard parameters and parameters that are specific to
+ *          some events.
  */
 typedef struct {
 	/** @brief The type of the event. */
@@ -465,36 +465,36 @@ typedef struct {
 	uint16_t peer_id;
 	union {
 		/** @brief Parameters specific to the @ref PM_EVT_CONN_CONFIG_REQ event. */
-		pm_conn_config_req_evt_t conn_config_req;
+		struct pm_conn_config_req_evt conn_config_req;
 		/** @brief Parameters specific to the @ref PM_EVT_CONN_SEC_START event. */
-		pm_conn_sec_start_evt_t conn_sec_start;
+		struct pm_conn_sec_start_evt conn_sec_start;
 		/** @brief Parameters specific to the @ref PM_EVT_CONN_SEC_SUCCEEDED event. */
-		pm_conn_secured_evt_t conn_sec_succeeded;
+		struct pm_conn_secured_evt conn_sec_succeeded;
 		/** @brief Parameters specific to the @ref PM_EVT_CONN_SEC_FAILED event. */
-		pm_conn_secure_failed_evt_t conn_sec_failed;
+		struct pm_conn_secure_failed_evt conn_sec_failed;
 		/** @brief Parameters specific to the @ref PM_EVT_CONN_SEC_PARAMS_REQ event. */
-		pm_conn_sec_params_req_evt_t conn_sec_params_req;
+		struct pm_conn_sec_params_req_evt conn_sec_params_req;
 		/**
 		 * @brief Parameters specific to the @ref PM_EVT_PEER_DATA_UPDATE_SUCCEEDED event.
 		 */
-		pm_peer_data_update_succeeded_evt_t peer_data_update_succeeded;
+		struct pm_peer_data_update_succeeded_evt peer_data_update_succeeded;
 		/** @brief Parameters specific to the @ref PM_EVT_PEER_DATA_UPDATE_FAILED event. */
-		pm_peer_data_update_failed_t peer_data_update_failed;
+		struct pm_peer_data_update_failed peer_data_update_failed;
 		/** @brief Parameters specific to the @ref PM_EVT_PEER_DELETE_FAILED event. */
-		pm_failure_evt_t peer_delete_failed;
+		struct pm_failure_evt peer_delete_failed;
 		/** @brief Parameters specific to the @ref PM_EVT_PEERS_DELETE_FAILED event. */
-		pm_failure_evt_t peers_delete_failed_evt;
+		struct pm_failure_evt peers_delete_failed_evt;
 		/** @brief Parameters specific to the @ref PM_EVT_ERROR_UNEXPECTED event. */
-		pm_failure_evt_t error_unexpected;
+		struct pm_failure_evt error_unexpected;
 #ifdef CONFIG_SOFTDEVICE_CENTRAL
 		/** @brief Parameters specific to the @ref PM_EVT_SLAVE_SECURITY_REQ event. */
 		ble_gap_evt_sec_request_t slave_security_req;
+#endif
 		/**
 		 * @brief Parameters specific to the @ref PM_EVT_FLASH_GARBAGE_COLLECTION_FAILED
 		 *        event.
 		 */
-#endif
-		pm_failure_evt_t garbage_collection_failed;
+		struct pm_failure_evt garbage_collection_failed;
 	} params;
 } pm_evt_t;
 

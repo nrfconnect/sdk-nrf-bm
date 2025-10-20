@@ -95,6 +95,15 @@ Libraries
      * All instances of ``pm_privacy_params_t`` to :c:type:`ble_gap_privacy_params_t` and removed the ``pm_privacy_params_t`` type.
      * All instances of ``pm_conn_sec_status_t`` to :c:struct:`pm_conn_sec_status` and removed the ``pm_conn_sec_status_t`` type.
      * All instances of ``pm_evt_id_t`` to :c:enum:`pm_evt_id` and removed the ``pm_evt_id_t`` type.
+     * All instances of ``pm_conn_config_req_evt_t`` to :c:struct:`pm_conn_config_req_evt` and removed the ``pm_conn_config_req_evt_t`` type.
+     * All instances of ``pm_conn_sec_start_evt_t`` to :c:struct:`pm_conn_sec_start_evt` and removed the ``pm_conn_sec_start_evt_t`` type.
+     * All instances of ``pm_conn_secured_evt_t`` to :c:struct:`pm_conn_secured_evt` and removed the ``pm_conn_secured_evt_t`` type.
+     * All instances of ``pm_conn_secure_failed_evt_t`` to :c:struct:`pm_conn_secure_failed_evt` and removed the ``pm_conn_secure_failed_evt_t`` type.
+     * All instances of ``pm_conn_sec_params_req_evt_t`` to :c:struct:`pm_conn_sec_params_req_evt` and removed the ``pm_conn_sec_params_req_evt_t`` type.
+     * All instances of ``pm_peer_data_op_t`` to :c:enum:`pm_peer_data_op` and removed the ``pm_peer_data_op_t`` type.
+     * All instances of ``pm_peer_data_update_succeeded_evt_t`` to :c:struct:`pm_peer_data_update_succeeded_evt` and removed the ``pm_peer_data_update_succeeded_evt_t`` type.
+     * All instances of ``pm_peer_data_update_failed_t`` to :c:struct:`pm_peer_data_update_failed` and removed the ``pm_peer_data_update_failed_t`` type.
+     * All instances of ``pm_failure_evt_t`` to :c:struct:`pm_failure_evt` and removed the ``pm_failure_evt_t`` type.
 
 Samples
 =======
