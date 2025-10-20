@@ -192,7 +192,7 @@ struct pm_peer_data_local_gatt_db {
 };
 
 /** @brief Security status of a connection. */
-typedef struct {
+struct pm_conn_sec_status {
 	/** @brief The connection is active (not disconnected). */
 	uint8_t connected: 1;
 	/** @brief The communication on this link is encrypted. */
@@ -207,7 +207,7 @@ typedef struct {
 	uint8_t lesc: 1;
 	/** @brief Reserved for future use. */
 	uint8_t reserved: 3;
-} pm_conn_sec_status_t;
+};
 
 /** @brief Types of events that can come from the @ref peer_manager module. */
 typedef enum {

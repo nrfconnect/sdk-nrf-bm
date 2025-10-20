@@ -215,7 +215,7 @@ void pm_local_database_has_changed(void);
  * @retval NRF_ERROR_NULL                 If @p conn_sec_status was NULL.
  * @retval NRF_ERROR_INVALID_STATE        If the Peer Manager is not initialized.
  */
-uint32_t pm_conn_sec_status_get(uint16_t conn_handle, pm_conn_sec_status_t *conn_sec_status);
+uint32_t pm_conn_sec_status_get(uint16_t conn_handle, struct pm_conn_sec_status *conn_sec_status);
 
 /**
  * @brief Compare the security status of a connection against a baseline.
@@ -228,7 +228,7 @@ uint32_t pm_conn_sec_status_get(uint16_t conn_handle, pm_conn_sec_status_t *conn
  * @retval false  If the security status of the connection does not fulfill the baseline, or could
  *                not be retrieved.
  */
-bool pm_sec_is_sufficient(uint16_t conn_handle, pm_conn_sec_status_t *sec_status_req);
+bool pm_sec_is_sufficient(uint16_t conn_handle, struct pm_conn_sec_status *sec_status_req);
 
 /**
  * @brief Specify the public key to use for LESC operations.

@@ -114,7 +114,7 @@ uint32_t sm_lesc_public_key_set(ble_gap_lesc_p256_pk_t *p_public_key);
  * @retval BLE_ERROR_INVALID_CONN_HANDLE  If the connection handle is invalid.
  * @retval NRF_ERROR_NULL                 If @p p_conn_sec_status was NULL.
  */
-uint32_t sm_conn_sec_status_get(uint16_t conn_handle, pm_conn_sec_status_t *p_conn_sec_status);
+uint32_t sm_conn_sec_status_get(uint16_t conn_handle, struct pm_conn_sec_status *p_conn_sec_status);
 
 /**
  * @brief Function for comparing the security status of a connection against a baseline.
@@ -127,7 +127,7 @@ uint32_t sm_conn_sec_status_get(uint16_t conn_handle, pm_conn_sec_status_t *p_co
  * @retval false  If the security status of the connection does not fulfill the baseline, or could
  *                not be retrieved.
  */
-bool sm_sec_is_sufficient(uint16_t conn_handle, pm_conn_sec_status_t *p_sec_status_req);
+bool sm_sec_is_sufficient(uint16_t conn_handle, struct pm_conn_sec_status *p_sec_status_req);
 
 /**
  * @brief Function for initiating security on the link, with the specified parameters.

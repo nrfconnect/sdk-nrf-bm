@@ -99,7 +99,7 @@ void pm_handler_disconnect_on_sec_failure(const pm_evt_t *pm_evt);
  * @param[in] min_conn_sec  Minimum security status below which to disconnect the link.
  */
 void pm_handler_disconnect_on_insufficient_sec(const pm_evt_t *pm_evt,
-					       pm_conn_sec_status_t *min_conn_sec);
+					       struct pm_conn_sec_status *min_conn_sec);
 
 /**
  * @brief Secure a connection when it is established.

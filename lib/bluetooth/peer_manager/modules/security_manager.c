@@ -341,7 +341,7 @@ static __INLINE void params_req_process(pm_evt_t const *p_event)
 				 p_event->params.conn_sec_params_req.peer_params);
 }
 
-uint32_t sm_conn_sec_status_get(uint16_t conn_handle, pm_conn_sec_status_t *p_conn_sec_status)
+uint32_t sm_conn_sec_status_get(uint16_t conn_handle, struct pm_conn_sec_status *p_conn_sec_status)
 {
 	VERIFY_PARAM_NOT_NULL(p_conn_sec_status);
 
@@ -362,13 +362,13 @@ uint32_t sm_conn_sec_status_get(uint16_t conn_handle, pm_conn_sec_status_t *p_co
 	return NRF_SUCCESS;
 }
 
-bool sm_sec_is_sufficient(uint16_t conn_handle, pm_conn_sec_status_t *p_sec_status_req)
+bool sm_sec_is_sufficient(uint16_t conn_handle, struct pm_conn_sec_status *p_sec_status_req)
 {
 	/* Set all bits in reserved to 1 so they are ignored in subsequent logic. */
-	pm_conn_sec_status_t sec_status = {.reserved = ~0};
+	struct pm_conn_sec_status sec_status = {.reserved = ~0};
 	uint32_t err_code = sm_conn_sec_status_get(conn_handle, &sec_status);
 
-	__ASSERT(sizeof(pm_conn_sec_status_t) == sizeof(uint8_t), "");
+	__ASSERT(sizeof(struct pm_conn_sec_status) == sizeof(uint8_t), "");
 
 	uint8_t unmet_reqs = (~(*((uint8_t *)&sec_status)) & *((uint8_t *)p_sec_status_req));
 
@@ -389,7 +389,7 @@ static void sec_req_process(pm_evt_t const *p_event)
 	if (mp_sec_params == NULL) {
 		null_params = true;
 	} else if (ble_conn_state_encrypted(p_event->conn_handle)) {
-		pm_conn_sec_status_t sec_status_req = {
+		struct pm_conn_sec_status sec_status_req = {
 			.bonded = p_event->params.slave_security_req.bond,
 			.mitm_protected = p_event->params.slave_security_req.mitm,
 			.lesc = p_event->params.slave_security_req.lesc,

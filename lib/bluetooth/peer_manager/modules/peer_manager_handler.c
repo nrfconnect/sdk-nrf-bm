@@ -112,7 +112,7 @@ static void _conn_secure(uint16_t conn_handle, bool force)
 	uint32_t err_code;
 
 	if (!force) {
-		pm_conn_sec_status_t status;
+		struct pm_conn_sec_status status;
 
 		err_code = pm_conn_sec_status_get(conn_handle, &status);
 		if (err_code != BLE_ERROR_INVALID_CONN_HANDLE) {
@@ -473,7 +473,7 @@ void pm_handler_disconnect_on_sec_failure(pm_evt_t const *p_pm_evt)
 }
 
 void pm_handler_disconnect_on_insufficient_sec(pm_evt_t const *p_pm_evt,
-					       pm_conn_sec_status_t *p_min_conn_sec)
+					       struct pm_conn_sec_status *p_min_conn_sec)
 {
 	if (p_pm_evt->evt_id == PM_EVT_CONN_SEC_SUCCEEDED) {
 		if (!pm_sec_is_sufficient(p_pm_evt->conn_handle, p_min_conn_sec)) {

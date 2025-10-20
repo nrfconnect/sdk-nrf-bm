@@ -531,13 +531,13 @@ uint32_t pm_device_identities_list_set(uint16_t const *p_peers, uint32_t peer_cn
 	return im_device_identities_list_set(p_peers, peer_cnt);
 }
 
-uint32_t pm_conn_sec_status_get(uint16_t conn_handle, pm_conn_sec_status_t *p_conn_sec_status)
+uint32_t pm_conn_sec_status_get(uint16_t conn_handle, struct pm_conn_sec_status *p_conn_sec_status)
 {
 	VERIFY_MODULE_INITIALIZED();
 	return sm_conn_sec_status_get(conn_handle, p_conn_sec_status);
 }
 
-bool pm_sec_is_sufficient(uint16_t conn_handle, pm_conn_sec_status_t *p_sec_status_req)
+bool pm_sec_is_sufficient(uint16_t conn_handle, struct pm_conn_sec_status *p_sec_status_req)
 {
 	VERIFY_MODULE_INITIALIZED_BOOL();
 	return sm_sec_is_sufficient(conn_handle, p_sec_status_req);
