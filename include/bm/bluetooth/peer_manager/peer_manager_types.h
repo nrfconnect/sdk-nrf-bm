@@ -191,25 +191,6 @@ struct pm_peer_data_local_gatt_db {
 	uint8_t data[1];
 };
 
-/**
- * @brief Device Privacy.
- *
- *        The privacy feature provides a way for the device to avoid being tracked over a period of
- *        time. The privacy feature, when enabled, hides the local device identity and replaces it
- *        with a private address that is automatically refreshed at a specified interval.
- *
- *        If a device still wants to be recognized by other peers, it needs to share it's Identity
- *        Resolving Key (IRK). With this key, a device can generate a random private address that
- *        can only be recognized by peers in possession of that key, and devices can establish
- *        connections without revealing their real identities.
- *
- * @note  If the device IRK is updated, the new IRK becomes the one to be distributed in all
- *        bonding procedures performed after @ref sd_ble_gap_privacy_set returns.
- *        The IRK distributed during bonding procedure is the device IRK that is active when @ref
- *        sd_ble_gap_sec_params_reply is called.
- */
-typedef ble_gap_privacy_params_t pm_privacy_params_t;
-
 /** @brief Security status of a connection. */
 typedef struct {
 	/** @brief The connection is active (not disconnected). */

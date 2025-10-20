@@ -406,7 +406,7 @@ uint32_t pm_id_addr_get(ble_gap_addr_t *addr);
  *                                  privacy are enabled.
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  */
-uint32_t pm_privacy_set(const pm_privacy_params_t *privacy_params);
+uint32_t pm_privacy_set(const ble_gap_privacy_params_t *privacy_params);
 
 /**
  * @brief Retrieve privacy settings.
@@ -420,7 +420,7 @@ uint32_t pm_privacy_set(const pm_privacy_params_t *privacy_params);
  *                                  NULL.
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  */
-uint32_t pm_privacy_get(pm_privacy_params_t *privacy_params);
+uint32_t pm_privacy_get(ble_gap_privacy_params_t *privacy_params);
 
 /**
  * @brief Resolve a resolvable address with an identity resolution key (IRK).

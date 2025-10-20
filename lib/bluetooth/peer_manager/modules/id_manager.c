@@ -526,12 +526,12 @@ uint32_t im_id_addr_get(ble_gap_addr_t *p_addr)
 	return sd_ble_gap_addr_get(p_addr);
 }
 
-uint32_t im_privacy_set(pm_privacy_params_t const *p_privacy_params)
+uint32_t im_privacy_set(ble_gap_privacy_params_t const *p_privacy_params)
 {
 	return sd_ble_gap_privacy_set(p_privacy_params);
 }
 
-uint32_t im_privacy_get(pm_privacy_params_t *p_privacy_params)
+uint32_t im_privacy_get(ble_gap_privacy_params_t *p_privacy_params)
 {
 	return sd_ble_gap_privacy_get(p_privacy_params);
 }

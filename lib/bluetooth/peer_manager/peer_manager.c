@@ -476,14 +476,14 @@ uint32_t pm_id_addr_get(ble_gap_addr_t *p_addr)
 	return im_id_addr_get(p_addr);
 }
 
-uint32_t pm_privacy_set(pm_privacy_params_t const *p_privacy_params)
+uint32_t pm_privacy_set(ble_gap_privacy_params_t const *p_privacy_params)
 {
 	VERIFY_MODULE_INITIALIZED();
 	VERIFY_PARAM_NOT_NULL(p_privacy_params);
 	return im_privacy_set(p_privacy_params);
 }
 
-uint32_t pm_privacy_get(pm_privacy_params_t *p_privacy_params)
+uint32_t pm_privacy_get(ble_gap_privacy_params_t *p_privacy_params)
 {
 	VERIFY_MODULE_INITIALIZED();
 	VERIFY_PARAM_NOT_NULL(p_privacy_params);
