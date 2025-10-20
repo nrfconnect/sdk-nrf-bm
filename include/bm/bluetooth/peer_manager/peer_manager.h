@@ -34,7 +34,7 @@ extern "C" {
 #endif
 
 /** @brief Peer list filtrations. They determine which peer ID will be added to list. */
-typedef enum {
+enum pm_peer_id_list_skip {
 	/** @brief Add all peers. */
 	PM_PEER_ID_LIST_ALL_ID,
 	/** @brief Add only peers with an ID address (static address). */
@@ -49,7 +49,7 @@ typedef enum {
 	PM_PEER_ID_LIST_SKIP_NO_CAR = 1 << 2,
 	/** @brief All above filters applied. */
 	PM_PEER_ID_LIST_SKIP_ALL = PM_PEER_ID_LIST_SKIP_NO_IRK | PM_PEER_ID_LIST_SKIP_NO_CAR
-} pm_peer_id_list_skip_t;
+};
 
 /**
  * @brief Initialize the Peer Manager.
@@ -485,7 +485,7 @@ uint32_t pm_peer_id_get(uint16_t conn_handle, uint16_t *peer_id);
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  */
 uint32_t pm_peer_id_list(uint16_t *peer_list, uint32_t *const list_size,
-			 uint16_t first_peer_id, pm_peer_id_list_skip_t skip_id);
+			 uint16_t first_peer_id, enum pm_peer_id_list_skip skip_id);
 
 /**
  * @brief Get the next peer ID in the sequence of all used peer IDs.

@@ -95,7 +95,7 @@ static uint16_t conn_handle = BLE_CONN_HANDLE_INVALID;
 
 static uint16_t peer_id;
 
-static void identities_set(pm_peer_id_list_skip_t skip);
+static void identities_set(enum pm_peer_id_list_skip skip);
 
 static bool boot_mode;
 static bool auth_key_request;
@@ -514,7 +514,7 @@ static void button_handler(uint8_t pin, uint8_t action)
 	}
 }
 
-static void whitelist_set(pm_peer_id_list_skip_t skip)
+static void whitelist_set(enum pm_peer_id_list_skip skip)
 {
 	uint32_t err;
 	uint16_t peer_ids[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
@@ -534,7 +534,7 @@ static void whitelist_set(pm_peer_id_list_skip_t skip)
 	}
 }
 
-static void identities_set(pm_peer_id_list_skip_t skip)
+static void identities_set(enum pm_peer_id_list_skip skip)
 {
 	uint32_t err;
 	uint16_t peer_ids[BLE_GAP_DEVICE_IDENTITIES_MAX_COUNT];

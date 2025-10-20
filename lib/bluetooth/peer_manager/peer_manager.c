@@ -605,7 +605,7 @@ static bool peer_is_irk(ble_gap_irk_t const *const p_irk)
 }
 
 uint32_t pm_peer_id_list(uint16_t *p_peer_list, uint32_t *const p_list_size,
-			 uint16_t first_peer_id, pm_peer_id_list_skip_t skip_id)
+			 uint16_t first_peer_id, enum pm_peer_id_list_skip skip_id)
 {
 	VERIFY_MODULE_INITIALIZED();
 	VERIFY_PARAM_NOT_NULL(p_list_size);
