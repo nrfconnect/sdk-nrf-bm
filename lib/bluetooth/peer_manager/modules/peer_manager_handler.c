@@ -24,13 +24,13 @@ LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
 #define APP_ERROR_CHECK(err)
 
-static const char * const m_roles_str[] = {
+static const char *const m_roles_str[] = {
 	"Invalid Role",
 	"Peripheral",
 	"Central",
 };
 
-static const char * const m_sec_procedure_str[] = {
+static const char *const m_sec_procedure_str[] = {
 	"Encryption",
 	"Bonding",
 	"Pairing",
@@ -38,7 +38,7 @@ static const char * const m_sec_procedure_str[] = {
 
 #define PM_EVT_STR(_name) [_name] = STRINGIFY(_name)
 
-static const char * const m_event_str[] = {
+static const char *const m_event_str[] = {
 	PM_EVT_STR(PM_EVT_BONDED_PEER_CONNECTED),
 	PM_EVT_STR(PM_EVT_CONN_CONFIG_REQ),
 	PM_EVT_STR(PM_EVT_CONN_SEC_START),
@@ -63,7 +63,7 @@ static const char * const m_event_str[] = {
 	PM_EVT_STR(PM_EVT_FLASH_GARBAGE_COLLECTION_FAILED),
 };
 
-static const char * const m_data_id_str[] = {
+static const char *const m_data_id_str[] = {
 	"Outdated (0)",	    "Service changed pending flag",
 	"Outdated (2)",	    "Outdated (3)",
 	"Application data", "Remote database",
@@ -71,7 +71,7 @@ static const char * const m_data_id_str[] = {
 	"Local database",   "Central address resolution",
 };
 
-static const char * const m_data_action_str[] = {"Update", "Delete"};
+static const char *const m_data_action_str[] = {"Update", "Delete"};
 
 #define PM_SEC_ERR_STR(_name)                                                                      \
 	{                                                                                          \
@@ -208,7 +208,7 @@ static void conn_secure(uint16_t conn_handle, bool force)
 }
 #endif
 
-void pm_handler_on_pm_evt(struct pm_evt const *p_pm_evt)
+void pm_handler_on_pm_evt(const struct pm_evt *p_pm_evt)
 {
 	pm_handler_pm_evt_log(p_pm_evt);
 
@@ -236,7 +236,7 @@ static void rank_highest(uint16_t peer_id)
 	pm_handler_flash_clean(&connected_evt);
 }
 
-void pm_handler_flash_clean(struct pm_evt const *p_pm_evt)
+void pm_handler_flash_clean(const struct pm_evt *p_pm_evt)
 {
 	uint32_t err_code;
 	/* Indicates whether a successful write happened after the last garbage
@@ -324,7 +324,7 @@ void pm_handler_flash_clean(struct pm_evt const *p_pm_evt)
 	}
 }
 
-void pm_handler_pm_evt_log(struct pm_evt const *p_pm_evt)
+void pm_handler_pm_evt_log(const struct pm_evt *p_pm_evt)
 {
 	LOG_DBG("Event %s", m_event_str[p_pm_evt->evt_id]);
 
@@ -457,7 +457,7 @@ void pm_handler_pm_evt_log(struct pm_evt const *p_pm_evt)
 	}
 }
 
-void pm_handler_disconnect_on_sec_failure(struct pm_evt const *p_pm_evt)
+void pm_handler_disconnect_on_sec_failure(const struct pm_evt *p_pm_evt)
 {
 	uint32_t err_code;
 
@@ -472,7 +472,7 @@ void pm_handler_disconnect_on_sec_failure(struct pm_evt const *p_pm_evt)
 	}
 }
 
-void pm_handler_disconnect_on_insufficient_sec(struct pm_evt const *p_pm_evt,
+void pm_handler_disconnect_on_insufficient_sec(const struct pm_evt *p_pm_evt,
 					       struct pm_conn_sec_status *p_min_conn_sec)
 {
 	if (p_pm_evt->evt_id == PM_EVT_CONN_SEC_SUCCEEDED) {
@@ -486,7 +486,7 @@ void pm_handler_disconnect_on_insufficient_sec(struct pm_evt const *p_pm_evt,
 	}
 }
 
-void pm_handler_secure_on_connection(ble_evt_t const *p_ble_evt)
+void pm_handler_secure_on_connection(const ble_evt_t *p_ble_evt)
 {
 	switch (p_ble_evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:
@@ -508,7 +508,7 @@ void pm_handler_secure_on_connection(ble_evt_t const *p_ble_evt)
 	}
 }
 
-void pm_handler_secure_on_error(ble_evt_t const *p_ble_evt)
+void pm_handler_secure_on_error(const ble_evt_t *p_ble_evt)
 {
 	if ((p_ble_evt->header.evt_id >= BLE_GATTC_EVT_BASE) &&
 	    (p_ble_evt->header.evt_id <= BLE_GATTC_EVT_LAST)) {

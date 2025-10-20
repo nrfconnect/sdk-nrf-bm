@@ -36,7 +36,7 @@ extern void sm_smd_evt_handler(struct pm_evt *p_event);
 /* Security Dispatcher events' handlers.
  * The number of elements in this array is SMD_EVENT_HANDLERS_CNT.
  */
-static pm_evt_handler_internal_t const m_evt_handlers[] = {sm_smd_evt_handler};
+static const pm_evt_handler_internal_t m_evt_handlers[] = {sm_smd_evt_handler};
 
 static bool m_module_initialized;
 
@@ -246,7 +246,7 @@ static uint32_t link_secure_central_encryption(uint16_t conn_handle, uint16_t pe
 {
 	struct pm_peer_data_const peer_data;
 	uint32_t err_code;
-	ble_gap_enc_key_t const *p_existing_key = NULL;
+	const ble_gap_enc_key_t *p_existing_key = NULL;
 	bool lesc = false;
 	struct pm_peer_data_bonding bonding_data = { 0 };
 
@@ -337,7 +337,7 @@ static uint32_t link_secure_central(uint16_t conn_handle, ble_gap_sec_params_t *
  *
  * @param[in]  p_gap_evt  The event from the SoftDevice.
  */
-static void sec_request_process(ble_gap_evt_t const *p_gap_evt)
+static void sec_request_process(const ble_gap_evt_t *p_gap_evt)
 {
 	if (sec_procedure(p_gap_evt->conn_handle)) {
 		/* Ignore request as per spec. */
@@ -361,10 +361,10 @@ static void sec_request_process(ble_gap_evt_t const *p_gap_evt)
  *
  * @param[in]  p_gap_evt  The event from the SoftDevice.
  */
-static void sec_info_request_process(ble_gap_evt_t const *p_gap_evt)
+static void sec_info_request_process(const ble_gap_evt_t *p_gap_evt)
 {
 	uint32_t err_code;
-	ble_gap_enc_info_t const *p_enc_info = NULL;
+	const ble_gap_enc_info_t *p_enc_info = NULL;
 	struct pm_peer_data peer_data;
 	uint16_t peer_id =
 		im_peer_id_get_by_master_id(&p_gap_evt->params.sec_info_request.master_id);
@@ -392,7 +392,7 @@ static void sec_info_request_process(ble_gap_evt_t const *p_gap_evt)
 
 		if (err_code == NRF_SUCCESS) {
 			/* There is stored bonding data for this peer. */
-			ble_gap_enc_key_t const *p_existing_key =
+			const ble_gap_enc_key_t *p_existing_key =
 				&bonding_data.own_ltk;
 
 			if (p_gap_evt->params.sec_info_request.enc_info &&
@@ -458,7 +458,7 @@ void smd_conn_sec_config_reply(uint16_t conn_handle, struct pm_conn_sec_config *
  *
  * @param[in]  p_gap_evt  The event from the SoftDevice.
  */
-static void disconnect_process(ble_gap_evt_t const *p_gap_evt)
+static void disconnect_process(const ble_gap_evt_t *p_gap_evt)
 {
 	uint16_t error = (p_gap_evt->params.disconnected.reason ==
 			  BLE_HCI_CONN_TERMINATED_DUE_TO_MIC_FAILURE)
@@ -474,7 +474,7 @@ static void disconnect_process(ble_gap_evt_t const *p_gap_evt)
  * @param[in]  p_peer_params  The security parameters from the peer. Can be NULL if the peer's
  * parameters are not yet available.
  */
-static void send_params_req(uint16_t conn_handle, ble_gap_sec_params_t const *p_peer_params)
+static void send_params_req(uint16_t conn_handle, const ble_gap_sec_params_t *p_peer_params)
 {
 	struct pm_evt evt = {
 		.evt_id = PM_EVT_CONN_SEC_PARAMS_REQ,
@@ -492,7 +492,7 @@ static void send_params_req(uint16_t conn_handle, ble_gap_sec_params_t const *p_
  *
  * @param[in]  p_gap_evt  The event from the SoftDevice.
  */
-static void sec_params_request_process(ble_gap_evt_t const *p_gap_evt)
+static void sec_params_request_process(const ble_gap_evt_t *p_gap_evt)
 {
 #ifdef BLE_GAP_ROLE_PERIPH
 	if (ble_conn_state_role(p_gap_evt->conn_handle) == BLE_GAP_ROLE_PERIPH) {
@@ -512,7 +512,7 @@ static void sec_params_request_process(ble_gap_evt_t const *p_gap_evt)
  * @param[in]  p_gap_evt    The AUTH_STATUS event from the SoftDevice that triggered this.
  * @param[in]  data_stored  Whether bonding data was stored.
  */
-static void pairing_success_evt_send(ble_gap_evt_t const *p_gap_evt, bool data_stored)
+static void pairing_success_evt_send(const ble_gap_evt_t *p_gap_evt, bool data_stored)
 {
 	struct pm_evt evt = {
 		.evt_id = PM_EVT_CONN_SEC_SUCCEEDED,
@@ -533,7 +533,7 @@ static void pairing_success_evt_send(ble_gap_evt_t const *p_gap_evt, bool data_s
  *
  * @param[in]  p_gap_evt  The event from the SoftDevice.
  */
-static void auth_status_success_process(ble_gap_evt_t const *p_gap_evt)
+static void auth_status_success_process(const ble_gap_evt_t *p_gap_evt)
 {
 	uint32_t err_code;
 	uint16_t conn_handle = p_gap_evt->conn_handle;
@@ -623,7 +623,7 @@ static void auth_status_success_process(ble_gap_evt_t const *p_gap_evt)
  *
  * @param[in]  p_gap_evt  The event from the SoftDevice.
  */
-static void auth_status_failure_process(ble_gap_evt_t const *p_gap_evt)
+static void auth_status_failure_process(const ble_gap_evt_t *p_gap_evt)
 {
 	link_secure_failure(p_gap_evt->conn_handle, p_gap_evt->params.auth_status.auth_status,
 			    p_gap_evt->params.auth_status.error_src);
@@ -634,7 +634,7 @@ static void auth_status_failure_process(ble_gap_evt_t const *p_gap_evt)
  *
  * @param[in]  p_gap_evt  The event from the SoftDevice.
  */
-static void auth_status_process(ble_gap_evt_t const *p_gap_evt)
+static void auth_status_process(const ble_gap_evt_t *p_gap_evt)
 {
 	switch (p_gap_evt->params.auth_status.auth_status) {
 	case BLE_GAP_SEC_STATUS_SUCCESS:
@@ -655,7 +655,7 @@ static void auth_status_process(ble_gap_evt_t const *p_gap_evt)
  *
  * @param[in]  p_gap_evt  The event from the SoftDevice.
  */
-static void conn_sec_update_process(ble_gap_evt_t const *p_gap_evt)
+static void conn_sec_update_process(const ble_gap_evt_t *p_gap_evt)
 {
 	if (!pairing(p_gap_evt->conn_handle)) {
 		/* This is an encryption procedure (not pairing), so this event marks the end of the
@@ -922,7 +922,7 @@ uint32_t smd_link_secure(uint16_t conn_handle, ble_gap_sec_params_t *p_sec_param
 	}
 }
 
-void smd_ble_evt_handler(ble_evt_t const *p_ble_evt)
+void smd_ble_evt_handler(const ble_evt_t *p_ble_evt)
 {
 	switch (p_ble_evt->header.evt_id) {
 	case BLE_GAP_EVT_DISCONNECTED:

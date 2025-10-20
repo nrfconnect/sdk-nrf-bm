@@ -47,7 +47,7 @@ extern void gcm_pdb_evt_handler(struct pm_evt *p_event);
  * @brief Peer Database events' handlers.
  *        The number of elements in this array is PDB_EVENT_HANDLERS_CNT.
  */
-static pm_evt_handler_internal_t const m_evt_handlers[] = {
+static const pm_evt_handler_internal_t m_evt_handlers[] = {
 	pm_pdb_evt_handler,
 	sm_pdb_evt_handler,
 #if defined(CONFIG_PM_SERVICE_CHANGED)

@@ -25,7 +25,7 @@
  */
 struct strerror_desc {
 	uint32_t code;  /**< Error code. */
-	char const *name; /**< Descriptive name (the same as the internal error mnemonic). */
+	const char *name; /**< Descriptive name (the same as the internal error mnemonic). */
 };
 
 /**
@@ -33,7 +33,7 @@ struct strerror_desc {
  *
  * The constant string used by @ref nrf_strerror_get when the error description was not found.
  */
-static char const m_unknown_str[] = "Unknown error code";
+static const char m_unknown_str[] = "Unknown error code";
 
 /**
  * @brief Array with error codes.
@@ -43,7 +43,7 @@ static char const m_unknown_str[] = "Unknown error code";
  * @note It is required for this array to have error codes placed in ascending order.
  *       This condition is checked in automatic unit test before the release.
  */
-static struct strerror_desc const nrf_strerror_array[] = {
+static const struct strerror_desc nrf_strerror_array[] = {
 	NRF_STRERROR_ENTITY(NRF_SUCCESS), NRF_STRERROR_ENTITY(NRF_ERROR_SVC_HANDLER_MISSING),
 	NRF_STRERROR_ENTITY(NRF_ERROR_SOFTDEVICE_NOT_ENABLED),
 	NRF_STRERROR_ENTITY(NRF_ERROR_INTERNAL), NRF_STRERROR_ENTITY(NRF_ERROR_NO_MEM),
@@ -62,23 +62,23 @@ static struct strerror_desc const nrf_strerror_array[] = {
 #endif
 };
 
-char const *nrf_strerror_get(uint32_t code)
+const char *nrf_strerror_get(uint32_t code)
 {
-	char const *p_ret = nrf_strerror_find(code);
+	const char *p_ret = nrf_strerror_find(code);
 
 	return (p_ret == NULL) ? m_unknown_str : p_ret;
 }
 
-char const *nrf_strerror_find(uint32_t code)
+const char *nrf_strerror_find(uint32_t code)
 {
-	struct strerror_desc const *p_start;
-	struct strerror_desc const *p_end;
+	const struct strerror_desc *p_start;
+	const struct strerror_desc *p_end;
 
 	p_start = nrf_strerror_array;
 	p_end = nrf_strerror_array + ARRAY_SIZE(nrf_strerror_array);
 
 	while (p_start < p_end) {
-		struct strerror_desc const *p_mid = p_start + ((p_end - p_start) / 2);
+		const struct strerror_desc *p_mid = p_start + ((p_end - p_start) / 2);
 		uint32_t mid_c = p_mid->code;
 
 		if (mid_c > code) {

@@ -59,7 +59,7 @@ static int m_flag_conn_excluded = BLE_CONN_STATE_USER_FLAG_INVALID;
  *
  * @param[in]  p_pm_evt  The event to send.
  */
-static void evt_send(struct pm_evt const *p_pm_evt)
+static void evt_send(const struct pm_evt *p_pm_evt)
 {
 	for (int i = 0; i < m_n_registrants; i++) {
 		m_evt_handlers[i](p_pm_evt);
@@ -264,7 +264,7 @@ void pm_im_evt_handler(struct pm_evt *p_im_evt)
 	evt_send(p_im_evt);
 }
 
-static bool is_conn_handle_excluded(ble_evt_t const *p_ble_evt)
+static bool is_conn_handle_excluded(const ble_evt_t *p_ble_evt)
 {
 	uint16_t conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
 
@@ -299,7 +299,7 @@ static bool is_conn_handle_excluded(ble_evt_t const *p_ble_evt)
  * @param[in]   p_ble_evt       Event received from the BLE stack.
  * @param[in]   p_context       Context.
  */
-static void ble_evt_handler(ble_evt_t const *p_ble_evt, void *p_context)
+static void ble_evt_handler(const ble_evt_t *p_ble_evt, void *p_context)
 {
 	VERIFY_MODULE_INITIALIZED_VOID();
 
@@ -428,7 +428,7 @@ uint32_t pm_conn_secure(uint16_t conn_handle, bool force_repairing)
 	return err_code;
 }
 
-uint32_t pm_conn_exclude(uint16_t conn_handle, void const *p_context)
+uint32_t pm_conn_exclude(uint16_t conn_handle, const void *p_context)
 {
 	VERIFY_PARAM_NOT_NULL(p_context);
 
@@ -447,7 +447,7 @@ void pm_conn_sec_config_reply(uint16_t conn_handle, struct pm_conn_sec_config *p
 }
 
 uint32_t pm_conn_sec_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *p_sec_params,
-				    void const *p_context)
+				  const void *p_context)
 {
 	VERIFY_MODULE_INITIALIZED();
 
@@ -463,7 +463,7 @@ void pm_local_database_has_changed(void)
 #endif
 }
 
-uint32_t pm_id_addr_set(ble_gap_addr_t const *p_addr)
+uint32_t pm_id_addr_set(const ble_gap_addr_t *p_addr)
 {
 	VERIFY_MODULE_INITIALIZED();
 	return im_id_addr_set(p_addr);
@@ -476,7 +476,7 @@ uint32_t pm_id_addr_get(ble_gap_addr_t *p_addr)
 	return im_id_addr_get(p_addr);
 }
 
-uint32_t pm_privacy_set(ble_gap_privacy_params_t const *p_privacy_params)
+uint32_t pm_privacy_set(const ble_gap_privacy_params_t *p_privacy_params)
 {
 	VERIFY_MODULE_INITIALIZED();
 	VERIFY_PARAM_NOT_NULL(p_privacy_params);
@@ -491,7 +491,7 @@ uint32_t pm_privacy_get(ble_gap_privacy_params_t *p_privacy_params)
 	return im_privacy_get(p_privacy_params);
 }
 
-bool pm_address_resolve(ble_gap_addr_t const *p_addr, ble_gap_irk_t const *p_irk)
+bool pm_address_resolve(const ble_gap_addr_t *p_addr, const ble_gap_irk_t *p_irk)
 {
 	VERIFY_MODULE_INITIALIZED();
 
@@ -502,7 +502,7 @@ bool pm_address_resolve(ble_gap_addr_t const *p_addr, ble_gap_irk_t const *p_irk
 	}
 }
 
-uint32_t pm_whitelist_set(uint16_t const *p_peers, uint32_t peer_cnt)
+uint32_t pm_whitelist_set(const uint16_t *p_peers, uint32_t peer_cnt)
 {
 	VERIFY_MODULE_INITIALIZED();
 	return im_whitelist_set(p_peers, peer_cnt);
@@ -525,7 +525,7 @@ uint32_t pm_whitelist_get(ble_gap_addr_t *p_addrs, uint32_t *p_addr_cnt, ble_gap
 	return im_whitelist_get(p_addrs, p_addr_cnt, p_irks, p_irk_cnt);
 }
 
-uint32_t pm_device_identities_list_set(uint16_t const *p_peers, uint32_t peer_cnt)
+uint32_t pm_device_identities_list_set(const uint16_t *p_peers, uint32_t peer_cnt)
 {
 	VERIFY_MODULE_INITIALIZED();
 	return im_device_identities_list_set(p_peers, peer_cnt);
@@ -593,7 +593,7 @@ uint16_t pm_next_peer_id_get(uint16_t prev_peer_id)
  *
  * @param[in] p_irk Pointer to the Identity Resolving Key.
  */
-static bool peer_is_irk(ble_gap_irk_t const *const p_irk)
+static bool peer_is_irk(const ble_gap_irk_t *const p_irk)
 {
 	for (uint32_t i = 0; i < ARRAY_SIZE(p_irk->irk); i++) {
 		if (p_irk->irk[i] != 0) {
@@ -617,7 +617,7 @@ uint32_t pm_peer_id_list(uint16_t *p_peer_list, uint32_t *const p_list_size,
 	struct pm_peer_data pm_car_data;
 	struct pm_peer_data pm_bond_data;
 	uint16_t current_peer_id = first_peer_id;
-	ble_gap_addr_t const *p_gap_addr;
+	const ble_gap_addr_t *p_gap_addr;
 	bool skip_no_addr = skip_id & PM_PEER_ID_LIST_SKIP_NO_ID_ADDR;
 	bool skip_no_irk = skip_id & PM_PEER_ID_LIST_SKIP_NO_IRK;
 	bool skip_no_car = skip_id & PM_PEER_ID_LIST_SKIP_NO_CAR;
@@ -748,7 +748,7 @@ uint32_t pm_peer_data_app_data_load(uint16_t peer_id, void *p_data, uint32_t *p_
 	return pm_peer_data_load(peer_id, PM_PEER_DATA_ID_APPLICATION, p_data, p_length);
 }
 
-uint32_t pm_peer_data_store(uint16_t peer_id, enum pm_peer_data_id data_id, void const *p_data,
+uint32_t pm_peer_data_store(uint16_t peer_id, enum pm_peer_data_id data_id, const void *p_data,
 			      uint32_t length, uint32_t *p_token)
 {
 	VERIFY_MODULE_INITIALIZED();
@@ -779,20 +779,20 @@ uint32_t pm_peer_data_store(uint16_t peer_id, enum pm_peer_data_id data_id, void
 	return pds_peer_data_store(peer_id, &peer_data, p_token);
 }
 
-uint32_t pm_peer_data_bonding_store(uint16_t peer_id, struct pm_peer_data_bonding const *p_data,
+uint32_t pm_peer_data_bonding_store(uint16_t peer_id, const struct pm_peer_data_bonding *p_data,
 				    uint32_t *p_token)
 {
 	return pm_peer_data_store(peer_id, PM_PEER_DATA_ID_BONDING, p_data,
 				  ROUND_UP(sizeof(struct pm_peer_data_bonding), 4), p_token);
 }
 
-uint32_t pm_peer_data_remote_db_store(uint16_t peer_id, struct ble_gatt_db_srv const *p_data,
+uint32_t pm_peer_data_remote_db_store(uint16_t peer_id, const struct ble_gatt_db_srv *p_data,
 					uint32_t length, uint32_t *p_token)
 {
 	return pm_peer_data_store(peer_id, PM_PEER_DATA_ID_GATT_REMOTE, p_data, length, p_token);
 }
 
-uint32_t pm_peer_data_app_data_store(uint16_t peer_id, void const *p_data, uint32_t length,
+uint32_t pm_peer_data_app_data_store(uint16_t peer_id, const void *p_data, uint32_t length,
 				     uint32_t *p_token)
 {
 	return pm_peer_data_store(peer_id, PM_PEER_DATA_ID_APPLICATION, p_data, length, p_token);

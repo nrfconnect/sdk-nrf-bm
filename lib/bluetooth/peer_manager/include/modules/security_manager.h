@@ -38,7 +38,7 @@ uint32_t sm_init(void);
  *
  * @param[in]  ble_evt    The SoftDevice event.
  */
-void sm_ble_evt_handler(ble_evt_t const *ble_evt);
+void sm_ble_evt_handler(const ble_evt_t *ble_evt);
 
 /**
  * @brief Function for providing pairing and bonding parameters to use for pairing procedures.
@@ -86,7 +86,7 @@ void sm_conn_sec_config_reply(uint16_t conn_handle, struct pm_conn_sec_config *p
  * @retval NRF_ERROR_INVALID_STATE  This module is not initialized.
  */
 uint32_t sm_sec_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *p_sec_params,
-			       void const *p_context);
+			     const void *p_context);
 
 /**
  * @brief Experimental function for specifying the public key to use for LESC operations.

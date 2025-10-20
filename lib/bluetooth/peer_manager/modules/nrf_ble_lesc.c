@@ -323,7 +323,7 @@ uint32_t nrf_ble_lesc_request_handler(void)
  *          @ref sd_ble_gap_disconnect.
  */
 static uint32_t on_dhkey_request(uint16_t conn_handle, int idx,
-				 ble_gap_evt_lesc_dhkey_request_t const *p_dhkey_request)
+				 const ble_gap_evt_lesc_dhkey_request_t *p_dhkey_request)
 {
 	uint32_t err_code = NRF_SUCCESS;
 	const uint8_t *const p_public_raw = p_dhkey_request->p_pk_peer->pk;
@@ -394,7 +394,7 @@ static uint32_t lesc_oob_data_set(uint16_t conn_handle)
 	return err_code;
 }
 
-void nrf_ble_lesc_on_ble_evt(ble_evt_t const *p_ble_evt)
+void nrf_ble_lesc_on_ble_evt(const ble_evt_t *p_ble_evt)
 {
 	uint32_t err_code = NRF_SUCCESS;
 	const uint16_t conn_handle = p_ble_evt->evt.gap_evt.conn_handle;

@@ -30,7 +30,7 @@ extern "C" {
  *
  * @param[in]  p_ble_evt  The SoftDevice event.
  */
-void im_ble_evt_handler(ble_evt_t const *p_ble_evt);
+void im_ble_evt_handler(const ble_evt_t *p_ble_evt);
 
 /**
  * @brief Function for getting the corresponding peer ID from a connection handle.
@@ -48,7 +48,7 @@ uint16_t im_peer_id_get_by_conn_handle(uint16_t conn_handle);
  *
  * @return The corresponding peer ID, or @ref PM_PEER_ID_INVALID if none could be resolved.
  */
-uint16_t im_peer_id_get_by_master_id(ble_gap_master_id_t const *p_master_id);
+uint16_t im_peer_id_get_by_master_id(const ble_gap_master_id_t *p_master_id);
 
 /**
  * @brief Function for getting the corresponding connection handle from a peer ID.
@@ -69,8 +69,8 @@ uint16_t im_conn_handle_get(uint16_t peer_id);
  *
  * @return     True if the input matches, false if it does not.
  */
-bool im_master_ids_compare(ble_gap_master_id_t const *p_master_id1,
-			   ble_gap_master_id_t const *p_master_id2);
+bool im_master_ids_compare(const ble_gap_master_id_t *p_master_id1,
+			   const ble_gap_master_id_t *p_master_id2);
 
 /**
  * @brief Function for getting the BLE address used by the peer when connecting.
@@ -92,7 +92,7 @@ uint32_t im_ble_addr_get(uint16_t conn_handle, ble_gap_addr_t *p_ble_addr);
  * @retval true   The master id is valid.
  * @retval false  The master id is invalid (i.e. all zeros).
  */
-bool im_master_id_is_valid(ble_gap_master_id_t const *p_master_id);
+bool im_master_id_is_valid(const ble_gap_master_id_t *p_master_id);
 
 /**
  * @brief Function for checking if two pieces of bonding data correspond to the same peer.
@@ -103,8 +103,8 @@ bool im_master_id_is_valid(ble_gap_master_id_t const *p_master_id);
  * @retval true   The bonding data correspond to the same peer.
  * @retval false  The bonding data do not correspond to the same peer.
  */
-bool im_is_duplicate_bonding_data(struct pm_peer_data_bonding const *p_bonding_data1,
-				  struct pm_peer_data_bonding const *p_bonding_data2);
+bool im_is_duplicate_bonding_data(const struct pm_peer_data_bonding *p_bonding_data1,
+				  const struct pm_peer_data_bonding *p_bonding_data2);
 
 /**
  * @brief Function for finding if we are already bonded to a peer.
@@ -114,7 +114,7 @@ bool im_is_duplicate_bonding_data(struct pm_peer_data_bonding const *p_bonding_d
  *
  * @return  An existing peer ID for the peer, or PM_PEER_ID_INVALID if none was found.
  */
-uint16_t im_find_duplicate_bonding_data(struct pm_peer_data_bonding const *p_bonding_data,
+uint16_t im_find_duplicate_bonding_data(const struct pm_peer_data_bonding *p_bonding_data,
 					uint16_t peer_id_skip);
 
 /**
@@ -161,7 +161,7 @@ uint32_t im_peer_free(uint16_t peer_id);
  *                                         scanning, or while in a connection.
  * @retval NRF_ERROR_INTERNAL              If an internal error occurred.
  */
-uint32_t im_id_addr_set(ble_gap_addr_t const *p_addr);
+uint32_t im_id_addr_set(const ble_gap_addr_t *p_addr);
 
 /**
  * @brief Function to get the local Bluetooth identity address.
@@ -191,7 +191,7 @@ uint32_t im_id_addr_get(ble_gap_addr_t *p_addr);
  * @retval NRF_ERROR_INVALID_STATE  Privacy settings cannot be changed while BLE roles using
  *                                  privacy are enabled.
  */
-uint32_t im_privacy_set(ble_gap_privacy_params_t const *p_privacy_params);
+uint32_t im_privacy_set(const ble_gap_privacy_params_t *p_privacy_params);
 
 /**
  * @brief Function to retrieve the current privacy settings.
@@ -221,7 +221,7 @@ uint32_t im_privacy_get(ble_gap_privacy_params_t *p_privacy_params);
  * @retval false  The irk used did not match the one used to create the address, or an argument was
  *                NULL.
  */
-bool im_address_resolve(ble_gap_addr_t const *p_addr, ble_gap_irk_t const *p_irk);
+bool im_address_resolve(const ble_gap_addr_t *p_addr, const ble_gap_irk_t *p_irk);
 
 /**
  * @brief Function for setting / clearing the whitelist.
@@ -237,7 +237,7 @@ bool im_address_resolve(ble_gap_addr_t const *p_addr, ble_gap_irk_t const *p_irk
  * @retval NRF_ERROR_DATA_SIZE              If @p peer_cnt is greater than
  *                                          @ref BLE_GAP_WHITELIST_ADDR_MAX_COUNT.
  */
-uint32_t im_whitelist_set(uint16_t const *p_peers, uint32_t const peer_cnt);
+uint32_t im_whitelist_set(const uint16_t *p_peers, const uint32_t peer_cnt);
 
 /**
  * @brief Retrieves the current whitelist, set by a previous call to @ref im_whitelist_set.
@@ -261,7 +261,7 @@ uint32_t im_whitelist_get(ble_gap_addr_t *p_addrs, uint32_t *p_addr_cnt, ble_gap
 			    uint32_t *p_irk_cnt);
 
 /** @brief Set the device identities list. */
-uint32_t im_device_identities_list_set(uint16_t const *p_peers, uint32_t peer_cnt);
+uint32_t im_device_identities_list_set(const uint16_t *p_peers, uint32_t peer_cnt);
 
 #ifdef __cplusplus
 }

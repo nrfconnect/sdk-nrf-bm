@@ -260,7 +260,7 @@ uint32_t gscm_local_db_cache_apply(uint16_t conn_handle)
 	uint16_t peer_id = im_peer_id_get_by_conn_handle(conn_handle);
 	uint32_t err_code;
 	struct pm_peer_data peer_data;
-	uint8_t const *p_sys_attr_data = NULL;
+	const uint8_t *p_sys_attr_data = NULL;
 	uint16_t sys_attr_len = 0;
 	uint32_t sys_attr_flags = (SYS_ATTR_BOTH);
 	bool all_attributes_applied = true;
@@ -274,7 +274,7 @@ uint32_t gscm_local_db_cache_apply(uint16_t conn_handle)
 		err_code = pds_peer_data_read(peer_id, PM_PEER_DATA_ID_GATT_LOCAL, &peer_data,
 					      &local_gatt_db_size);
 		if (err_code == NRF_SUCCESS) {
-			struct pm_peer_data_local_gatt_db const *p_local_gatt_db;
+			const struct pm_peer_data_local_gatt_db *p_local_gatt_db;
 
 			p_local_gatt_db = curr_p_local_gatt_db;
 			p_sys_attr_data = p_local_gatt_db->data;
