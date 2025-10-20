@@ -29,7 +29,7 @@ LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 #define SM_EVENT_HANDLERS_CNT ARRAY_SIZE(m_evt_handlers)
 
 /* Security Manager event handler in Peer Manager. */
-extern void pm_sm_evt_handler(pm_evt_t *p_sm_evt);
+extern void pm_sm_evt_handler(struct pm_evt *p_sm_evt);
 
 /* Security Manager events' handlers.
  * The number of elements in this array is SM_EVENT_HANDLERS_CNT.
@@ -85,7 +85,7 @@ static int m_flag_params_reply_pending_busy = BLE_CONN_STATE_USER_FLAG_INVALID;
  *
  * @param[in]  p_event  The event to send.
  */
-static void evt_send(pm_evt_t *p_event)
+static void evt_send(struct pm_evt *p_event)
 {
 	for (uint32_t i = 0; i < SM_EVENT_HANDLERS_CNT; i++) {
 		m_evt_handlers[i](p_event);
@@ -121,11 +121,14 @@ static void flags_set_from_err_code(uint16_t conn_handle, uint32_t err_code, boo
 	}
 }
 
-static inline pm_evt_t new_evt(pm_evt_id_t evt_id, uint16_t conn_handle)
+static inline struct pm_evt new_evt(enum pm_evt_id evt_id, uint16_t conn_handle)
 {
-	pm_evt_t evt = {.evt_id = evt_id,
-			.conn_handle = conn_handle,
-			.peer_id = im_peer_id_get_by_conn_handle(conn_handle)};
+	struct pm_evt evt = {
+		.evt_id = evt_id,
+		.conn_handle = conn_handle,
+		.peer_id = im_peer_id_get_by_conn_handle(conn_handle),
+	};
+
 	return evt;
 }
 
@@ -137,7 +140,7 @@ static inline pm_evt_t new_evt(pm_evt_id_t evt_id, uint16_t conn_handle)
  */
 static void send_unexpected_error(uint16_t conn_handle, uint32_t err_code)
 {
-	pm_evt_t error_evt = new_evt(PM_EVT_ERROR_UNEXPECTED, conn_handle);
+	struct pm_evt error_evt = new_evt(PM_EVT_ERROR_UNEXPECTED, conn_handle);
 
 	error_evt.params.error_unexpected.error = err_code;
 	evt_send(&error_evt);
@@ -152,8 +155,8 @@ static void send_unexpected_error(uint16_t conn_handle, uint32_t err_code)
  */
 static bool key_is_lesc(uint16_t peer_id)
 {
-	pm_peer_data_bonding_t bonding_data = { 0 };
-	uint32_t bonding_data_size = sizeof(pm_peer_data_bonding_t);
+	struct pm_peer_data_bonding bonding_data = { 0 };
+	uint32_t bonding_data_size = sizeof(struct pm_peer_data_bonding);
 	pm_peer_data_t peer_data;
 	uint32_t err_code;
 
@@ -188,7 +191,7 @@ static void events_send_from_err_code(uint16_t conn_handle, uint32_t err_code,
 				"NRF_ERROR_TIMEOUT. conn_handle: %d",
 				conn_handle);
 
-			pm_evt_t evt = new_evt(PM_EVT_CONN_SEC_FAILED, conn_handle);
+			struct pm_evt evt = new_evt(PM_EVT_CONN_SEC_FAILED, conn_handle);
 
 			evt.params.conn_sec_failed.procedure =
 				((p_sec_params != NULL) && p_sec_params->bond)
@@ -217,7 +220,7 @@ static void events_send_from_err_code(uint16_t conn_handle, uint32_t err_code,
 static void params_req_send(uint16_t conn_handle, ble_gap_sec_params_t const *p_peer_params,
 			    sec_params_reply_context_t *p_context)
 {
-	pm_evt_t evt = new_evt(PM_EVT_CONN_SEC_PARAMS_REQ, conn_handle);
+	struct pm_evt evt = new_evt(PM_EVT_CONN_SEC_PARAMS_REQ, conn_handle);
 
 	evt.params.conn_sec_params_req.peer_params = p_peer_params;
 	evt.params.conn_sec_params_req.context = p_context;
@@ -335,13 +338,13 @@ static void smd_params_reply_perform(uint16_t conn_handle,
  *
  * @param[in]  p_event  The @ref PM_EVT_CONN_SEC_PARAMS_REQ event.
  */
-static __INLINE void params_req_process(pm_evt_t const *p_event)
+static __INLINE void params_req_process(struct pm_evt const *p_event)
 {
 	smd_params_reply_perform(p_event->conn_handle,
 				 p_event->params.conn_sec_params_req.peer_params);
 }
 
-uint32_t sm_conn_sec_status_get(uint16_t conn_handle, pm_conn_sec_status_t *p_conn_sec_status)
+uint32_t sm_conn_sec_status_get(uint16_t conn_handle, struct pm_conn_sec_status *p_conn_sec_status)
 {
 	VERIFY_PARAM_NOT_NULL(p_conn_sec_status);
 
@@ -362,13 +365,13 @@ uint32_t sm_conn_sec_status_get(uint16_t conn_handle, pm_conn_sec_status_t *p_co
 	return NRF_SUCCESS;
 }
 
-bool sm_sec_is_sufficient(uint16_t conn_handle, pm_conn_sec_status_t *p_sec_status_req)
+bool sm_sec_is_sufficient(uint16_t conn_handle, struct pm_conn_sec_status *p_sec_status_req)
 {
 	/* Set all bits in reserved to 1 so they are ignored in subsequent logic. */
-	pm_conn_sec_status_t sec_status = {.reserved = ~0};
+	struct pm_conn_sec_status sec_status = {.reserved = ~0};
 	uint32_t err_code = sm_conn_sec_status_get(conn_handle, &sec_status);
 
-	__ASSERT(sizeof(pm_conn_sec_status_t) == sizeof(uint8_t), "");
+	__ASSERT(sizeof(struct pm_conn_sec_status) == sizeof(uint8_t), "");
 
 	uint8_t unmet_reqs = (~(*((uint8_t *)&sec_status)) & *((uint8_t *)p_sec_status_req));
 
@@ -381,7 +384,7 @@ bool sm_sec_is_sufficient(uint16_t conn_handle, pm_conn_sec_status_t *p_sec_stat
  *
  * @param[in]  p_event  The @ref PM_EVT_SLAVE_SECURITY_REQ event.
  */
-static void sec_req_process(pm_evt_t const *p_event)
+static void sec_req_process(struct pm_evt const *p_event)
 {
 	bool null_params = false;
 	bool force_repairing = false;
@@ -389,7 +392,7 @@ static void sec_req_process(pm_evt_t const *p_event)
 	if (mp_sec_params == NULL) {
 		null_params = true;
 	} else if (ble_conn_state_encrypted(p_event->conn_handle)) {
-		pm_conn_sec_status_t sec_status_req = {
+		struct pm_conn_sec_status sec_status_req = {
 			.bonded = p_event->params.slave_security_req.bond,
 			.mitm_protected = p_event->params.slave_security_req.mitm,
 			.lesc = p_event->params.slave_security_req.lesc,
@@ -409,7 +412,7 @@ static void sec_req_process(pm_evt_t const *p_event)
  *
  * @param[in]  p_event  The event to forward.
  */
-static void evt_forward(pm_evt_t *p_event)
+static void evt_forward(struct pm_evt *p_event)
 {
 	evt_send(p_event);
 }
@@ -420,7 +423,7 @@ static void evt_forward(pm_evt_t *p_event)
  *
  * @param[in]  p_event   The event that has happened.
  */
-void sm_smd_evt_handler(pm_evt_t *p_event)
+void sm_smd_evt_handler(struct pm_evt *p_event)
 {
 	switch (p_event->evt_id) {
 	case PM_EVT_CONN_SEC_PARAMS_REQ:
@@ -465,7 +468,7 @@ static void link_secure_pending_handle(uint16_t conn_handle, void *p_context)
  *
  * @param[in]  p_event   The event that has happened.
  */
-void sm_pdb_evt_handler(pm_evt_t *p_event)
+void sm_pdb_evt_handler(struct pm_evt *p_event)
 {
 	switch (p_event->evt_id) {
 	case PM_EVT_FLASH_GARBAGE_COLLECTED:
@@ -626,7 +629,7 @@ uint32_t sm_sec_params_set(ble_gap_sec_params_t *p_sec_params)
 	}
 }
 
-void sm_conn_sec_config_reply(uint16_t conn_handle, pm_conn_sec_config_t *p_conn_sec_config)
+void sm_conn_sec_config_reply(uint16_t conn_handle, struct pm_conn_sec_config *p_conn_sec_config)
 {
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
 	NRF_PM_DEBUG_CHECK(p_conn_sec_config != NULL);

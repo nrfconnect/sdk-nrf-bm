@@ -112,7 +112,7 @@ static void _conn_secure(uint16_t conn_handle, bool force)
 	uint32_t err_code;
 
 	if (!force) {
-		pm_conn_sec_status_t status;
+		struct pm_conn_sec_status status;
 
 		err_code = pm_conn_sec_status_get(conn_handle, &status);
 		if (err_code != BLE_ERROR_INVALID_CONN_HANDLE) {
@@ -208,7 +208,7 @@ static void conn_secure(uint16_t conn_handle, bool force)
 }
 #endif
 
-void pm_handler_on_pm_evt(pm_evt_t const *p_pm_evt)
+void pm_handler_on_pm_evt(struct pm_evt const *p_pm_evt)
 {
 	pm_handler_pm_evt_log(p_pm_evt);
 
@@ -223,7 +223,7 @@ void pm_handler_on_pm_evt(pm_evt_t const *p_pm_evt)
 void pm_handler_flash_clean_on_return(void)
 {
 	/* Trigger the mechanism to make more room in flash. */
-	pm_evt_t storage_full_evt = {.evt_id = PM_EVT_STORAGE_FULL};
+	struct pm_evt storage_full_evt = { .evt_id = PM_EVT_STORAGE_FULL };
 
 	pm_handler_flash_clean(&storage_full_evt);
 }
@@ -231,12 +231,12 @@ void pm_handler_flash_clean_on_return(void)
 static void rank_highest(uint16_t peer_id)
 {
 	/* Trigger a pm_peer_rank_highest() with internal bookkeeping. */
-	pm_evt_t connected_evt = {.evt_id = PM_EVT_BONDED_PEER_CONNECTED, .peer_id = peer_id};
+	struct pm_evt connected_evt = {.evt_id = PM_EVT_BONDED_PEER_CONNECTED, .peer_id = peer_id};
 
 	pm_handler_flash_clean(&connected_evt);
 }
 
-void pm_handler_flash_clean(pm_evt_t const *p_pm_evt)
+void pm_handler_flash_clean(struct pm_evt const *p_pm_evt)
 {
 	uint32_t err_code;
 	/* Indicates whether a successful write happened after the last garbage
@@ -324,7 +324,7 @@ void pm_handler_flash_clean(pm_evt_t const *p_pm_evt)
 	}
 }
 
-void pm_handler_pm_evt_log(pm_evt_t const *p_pm_evt)
+void pm_handler_pm_evt_log(struct pm_evt const *p_pm_evt)
 {
 	LOG_DBG("Event %s", m_event_str[p_pm_evt->evt_id]);
 
@@ -457,7 +457,7 @@ void pm_handler_pm_evt_log(pm_evt_t const *p_pm_evt)
 	}
 }
 
-void pm_handler_disconnect_on_sec_failure(pm_evt_t const *p_pm_evt)
+void pm_handler_disconnect_on_sec_failure(struct pm_evt const *p_pm_evt)
 {
 	uint32_t err_code;
 
@@ -472,8 +472,8 @@ void pm_handler_disconnect_on_sec_failure(pm_evt_t const *p_pm_evt)
 	}
 }
 
-void pm_handler_disconnect_on_insufficient_sec(pm_evt_t const *p_pm_evt,
-					       pm_conn_sec_status_t *p_min_conn_sec)
+void pm_handler_disconnect_on_insufficient_sec(struct pm_evt const *p_pm_evt,
+					       struct pm_conn_sec_status *p_min_conn_sec)
 {
 	if (p_pm_evt->evt_id == PM_EVT_CONN_SEC_SUCCEEDED) {
 		if (!pm_sec_is_sufficient(p_pm_evt->conn_handle, p_min_conn_sec)) {

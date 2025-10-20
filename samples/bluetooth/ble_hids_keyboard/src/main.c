@@ -100,7 +100,7 @@ static bool auth_key_request;
 static bool caps_on;
 
 /* Forward declaration */
-static void identities_set(pm_peer_id_list_skip_t skip);
+static void identities_set(enum pm_peer_id_list_skip skip);
 
 /* FIFO for keeping track of keystrokes that can not be sent immediately. */
 RING_BUF_DECLARE(report_fifo, CONFIG_BLE_HIDS_REPORT_FIFO_SIZE *
@@ -290,7 +290,7 @@ static void ble_adv_evt_handler(struct ble_adv *ble_adv, const struct ble_adv_ev
 		break;
 
 	case BLE_ADV_EVT_PEER_ADDR_REQUEST:
-		pm_peer_data_bonding_t peer_bonding_data;
+		struct pm_peer_data_bonding peer_bonding_data;
 
 		/* Only Give peer address if we have a handle to the bonded peer. */
 		if (peer_id != PM_PEER_ID_INVALID) {
@@ -663,7 +663,7 @@ static void button_handler(uint8_t pin, uint8_t action)
 	}
 }
 
-static void whitelist_set(pm_peer_id_list_skip_t skip)
+static void whitelist_set(enum pm_peer_id_list_skip skip)
 {
 	uint32_t err;
 	uint16_t peer_ids[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
@@ -683,7 +683,7 @@ static void whitelist_set(pm_peer_id_list_skip_t skip)
 	}
 }
 
-static void identities_set(pm_peer_id_list_skip_t skip)
+static void identities_set(enum pm_peer_id_list_skip skip)
 {
 	uint32_t err;
 	uint16_t peer_ids[BLE_GAP_DEVICE_IDENTITIES_MAX_COUNT];
@@ -730,7 +730,7 @@ static int advertising_start(bool erase_bonds)
 	return err;
 }
 
-static void pm_evt_handler(pm_evt_t const *evt)
+static void pm_evt_handler(struct pm_evt const *evt)
 {
 	pm_handler_on_pm_evt(evt);
 	pm_handler_disconnect_on_sec_failure(evt);

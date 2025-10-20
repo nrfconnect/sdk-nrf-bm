@@ -29,7 +29,7 @@ extern "C" {
  * @brief The size (in bytes) of each block in the internal buffer accessible via
  *        @ref pdb_write_buf_get.
  */
-#define PDB_WRITE_BUF_SIZE (sizeof(pm_peer_data_bonding_t))
+#define PDB_WRITE_BUF_SIZE (sizeof(struct pm_peer_data_bonding))
 
 /**
  * @brief Function for creating a peer ID value from a connection handle.
@@ -111,7 +111,7 @@ uint32_t pdb_peer_free(uint16_t peer_id);
  * @retval NRF_ERROR_BUSY           Not enough buffer(s) available.
  * @retval NRF_ERROR_INTERNAL       Unexpected internal error.
  */
-uint32_t pdb_write_buf_get(uint16_t peer_id, pm_peer_data_id_t data_id, uint32_t n_bufs,
+uint32_t pdb_write_buf_get(uint16_t peer_id, enum pm_peer_data_id data_id, uint32_t n_bufs,
 			     pm_peer_data_t *p_peer_data);
 
 /**
@@ -126,7 +126,7 @@ uint32_t pdb_write_buf_get(uint16_t peer_id, pm_peer_data_id_t data_id, uint32_t
  * @retval NRF_SUCCESS              Successfully released buffer.
  * @retval NRF_ERROR_NOT_FOUND      No buffer was allocated for this peer ID/data ID pair.
  */
-uint32_t pdb_write_buf_release(uint16_t peer_id, pm_peer_data_id_t data_id);
+uint32_t pdb_write_buf_release(uint16_t peer_id, enum pm_peer_data_id data_id);
 
 /**
  * @brief Function for writing data into persistent storage. Writing happens asynchronously.
@@ -147,7 +147,7 @@ uint32_t pdb_write_buf_release(uint16_t peer_id, pm_peer_data_id_t data_id);
  * @retval NRF_ERROR_NOT_FOUND      No buffer has been allocated for this peer ID/data ID pair.
  * @retval NRF_ERROR_INTERNAL       Unexpected internal error.
  */
-uint32_t pdb_write_buf_store(uint16_t peer_id, pm_peer_data_id_t data_id, uint16_t new_peer_id);
+uint32_t pdb_write_buf_store(uint16_t peer_id, enum pm_peer_data_id data_id, uint16_t new_peer_id);
 
 #ifdef __cplusplus
 }

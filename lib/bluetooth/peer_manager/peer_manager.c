@@ -59,7 +59,7 @@ static int m_flag_conn_excluded = BLE_CONN_STATE_USER_FLAG_INVALID;
  *
  * @param[in]  p_pm_evt  The event to send.
  */
-static void evt_send(pm_evt_t const *p_pm_evt)
+static void evt_send(struct pm_evt const *p_pm_evt)
 {
 	for (int i = 0; i < m_n_registrants; i++) {
 		m_evt_handlers[i](p_pm_evt);
@@ -88,7 +88,7 @@ static void rank_vars_update(void)
  *
  * @param[in]  p_pdb_evt  The incoming Peer Database event.
  */
-void pm_pdb_evt_handler(pm_evt_t *p_pdb_evt)
+void pm_pdb_evt_handler(struct pm_evt *p_pdb_evt)
 {
 	bool send_evt = true;
 
@@ -154,9 +154,9 @@ void pm_pdb_evt_handler(pm_evt_t *p_pdb_evt)
 			 */
 			m_deleting_all = false;
 
-			pm_evt_t pm_delete_all_evt;
+			struct pm_evt pm_delete_all_evt;
 
-			memset(&pm_delete_all_evt, 0, sizeof(pm_evt_t));
+			memset(&pm_delete_all_evt, 0, sizeof(struct pm_evt));
 			pm_delete_all_evt.evt_id = PM_EVT_PEERS_DELETE_SUCCEEDED;
 			pm_delete_all_evt.peer_id = PM_PEER_ID_INVALID;
 			pm_delete_all_evt.conn_handle = BLE_CONN_HANDLE_INVALID;
@@ -184,9 +184,9 @@ void pm_pdb_evt_handler(pm_evt_t *p_pdb_evt)
 
 			m_deleting_all = false;
 
-			pm_evt_t pm_delete_all_evt;
+			struct pm_evt pm_delete_all_evt;
 
-			memset(&pm_delete_all_evt, 0, sizeof(pm_evt_t));
+			memset(&pm_delete_all_evt, 0, sizeof(struct pm_evt));
 			pm_delete_all_evt.evt_id = PM_EVT_PEERS_DELETE_FAILED;
 			pm_delete_all_evt.peer_id = PM_PEER_ID_INVALID;
 			pm_delete_all_evt.conn_handle = BLE_CONN_HANDLE_INVALID;
@@ -220,7 +220,7 @@ void pm_pdb_evt_handler(pm_evt_t *p_pdb_evt)
  *
  * @param[in]  p_sm_evt  The incoming Security Manager event.
  */
-void pm_sm_evt_handler(pm_evt_t *p_sm_evt)
+void pm_sm_evt_handler(struct pm_evt *p_sm_evt)
 {
 	VERIFY_PARAM_NOT_NULL_VOID(p_sm_evt);
 
@@ -234,7 +234,7 @@ void pm_sm_evt_handler(pm_evt_t *p_sm_evt)
  *
  * @param[in]  p_gcm_evt  The incoming GATT Cache Manager event.
  */
-void pm_gcm_evt_handler(pm_evt_t *p_gcm_evt)
+void pm_gcm_evt_handler(struct pm_evt *p_gcm_evt)
 {
 	/* Forward the event to all registered Peer Manager event handlers. */
 	evt_send(p_gcm_evt);
@@ -246,7 +246,7 @@ void pm_gcm_evt_handler(pm_evt_t *p_gcm_evt)
  *
  * @param[in]  p_gscm_evt  The incoming GATTS Cache Manager event.
  */
-void pm_gscm_evt_handler(pm_evt_t *p_gscm_evt)
+void pm_gscm_evt_handler(struct pm_evt *p_gscm_evt)
 {
 	/* Forward the event to all registered Peer Manager event handlers. */
 	evt_send(p_gscm_evt);
@@ -258,7 +258,7 @@ void pm_gscm_evt_handler(pm_evt_t *p_gscm_evt)
  *
  * @param[in]  p_im_evt  The incoming ID Manager event.
  */
-void pm_im_evt_handler(pm_evt_t *p_im_evt)
+void pm_im_evt_handler(struct pm_evt *p_im_evt)
 {
 	/* Forward the event to all registered Peer Manager event handlers. */
 	evt_send(p_im_evt);
@@ -270,10 +270,10 @@ static bool is_conn_handle_excluded(ble_evt_t const *p_ble_evt)
 
 	switch (p_ble_evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED: {
-		pm_evt_t pm_conn_config_req_evt;
+		struct pm_evt pm_conn_config_req_evt;
 		bool is_excluded = false;
 
-		memset(&pm_conn_config_req_evt, 0, sizeof(pm_evt_t));
+		memset(&pm_conn_config_req_evt, 0, sizeof(struct pm_evt));
 		pm_conn_config_req_evt.evt_id = PM_EVT_CONN_CONFIG_REQ;
 		pm_conn_config_req_evt.peer_id = PM_PEER_ID_INVALID;
 		pm_conn_config_req_evt.conn_handle = conn_handle;
@@ -439,7 +439,7 @@ uint32_t pm_conn_exclude(uint16_t conn_handle, void const *p_context)
 	return NRF_SUCCESS;
 }
 
-void pm_conn_sec_config_reply(uint16_t conn_handle, pm_conn_sec_config_t *p_conn_sec_config)
+void pm_conn_sec_config_reply(uint16_t conn_handle, struct pm_conn_sec_config *p_conn_sec_config)
 {
 	if (p_conn_sec_config != NULL) {
 		sm_conn_sec_config_reply(conn_handle, p_conn_sec_config);
@@ -476,14 +476,14 @@ uint32_t pm_id_addr_get(ble_gap_addr_t *p_addr)
 	return im_id_addr_get(p_addr);
 }
 
-uint32_t pm_privacy_set(pm_privacy_params_t const *p_privacy_params)
+uint32_t pm_privacy_set(ble_gap_privacy_params_t const *p_privacy_params)
 {
 	VERIFY_MODULE_INITIALIZED();
 	VERIFY_PARAM_NOT_NULL(p_privacy_params);
 	return im_privacy_set(p_privacy_params);
 }
 
-uint32_t pm_privacy_get(pm_privacy_params_t *p_privacy_params)
+uint32_t pm_privacy_get(ble_gap_privacy_params_t *p_privacy_params)
 {
 	VERIFY_MODULE_INITIALIZED();
 	VERIFY_PARAM_NOT_NULL(p_privacy_params);
@@ -531,13 +531,13 @@ uint32_t pm_device_identities_list_set(uint16_t const *p_peers, uint32_t peer_cn
 	return im_device_identities_list_set(p_peers, peer_cnt);
 }
 
-uint32_t pm_conn_sec_status_get(uint16_t conn_handle, pm_conn_sec_status_t *p_conn_sec_status)
+uint32_t pm_conn_sec_status_get(uint16_t conn_handle, struct pm_conn_sec_status *p_conn_sec_status)
 {
 	VERIFY_MODULE_INITIALIZED();
 	return sm_conn_sec_status_get(conn_handle, p_conn_sec_status);
 }
 
-bool pm_sec_is_sufficient(uint16_t conn_handle, pm_conn_sec_status_t *p_sec_status_req)
+bool pm_sec_is_sufficient(uint16_t conn_handle, struct pm_conn_sec_status *p_sec_status_req)
 {
 	VERIFY_MODULE_INITIALIZED_BOOL();
 	return sm_sec_is_sufficient(conn_handle, p_sec_status_req);
@@ -605,7 +605,7 @@ static bool peer_is_irk(ble_gap_irk_t const *const p_irk)
 }
 
 uint32_t pm_peer_id_list(uint16_t *p_peer_list, uint32_t *const p_list_size,
-			 uint16_t first_peer_id, pm_peer_id_list_skip_t skip_id)
+			 uint16_t first_peer_id, enum pm_peer_id_list_skip skip_id)
 {
 	VERIFY_MODULE_INITIALIZED();
 	VERIFY_PARAM_NOT_NULL(p_list_size);
@@ -645,8 +645,8 @@ uint32_t pm_peer_id_list(uint16_t *p_peer_list, uint32_t *const p_list_size,
 
 		if (skip_no_addr || skip_no_irk) {
 			/* Get data */
-			pm_peer_data_bonding_t bonding_data = { 0 };
-			uint32_t bonding_data_size = sizeof(pm_peer_data_bonding_t);
+			struct pm_peer_data_bonding bonding_data = { 0 };
+			uint32_t bonding_data_size = sizeof(bonding_data);
 
 			pm_bond_data.p_all_data = &bonding_data;
 
@@ -715,7 +715,7 @@ uint32_t pm_peer_id_list(uint16_t *p_peer_list, uint32_t *const p_list_size,
 	return NRF_SUCCESS;
 }
 
-uint32_t pm_peer_data_load(uint16_t peer_id, pm_peer_data_id_t data_id, void *p_data,
+uint32_t pm_peer_data_load(uint16_t peer_id, enum pm_peer_data_id data_id, void *p_data,
 			     uint32_t *p_length)
 {
 	VERIFY_MODULE_INITIALIZED();
@@ -730,9 +730,9 @@ uint32_t pm_peer_data_load(uint16_t peer_id, pm_peer_data_id_t data_id, void *p_
 	return pds_peer_data_read(peer_id, data_id, &peer_data, p_length);
 }
 
-uint32_t pm_peer_data_bonding_load(uint16_t peer_id, pm_peer_data_bonding_t *p_data)
+uint32_t pm_peer_data_bonding_load(uint16_t peer_id, struct pm_peer_data_bonding *p_data)
 {
-	uint32_t length = sizeof(pm_peer_data_bonding_t);
+	uint32_t length = sizeof(struct pm_peer_data_bonding);
 
 	return pm_peer_data_load(peer_id, PM_PEER_DATA_ID_BONDING, p_data, &length);
 }
@@ -748,7 +748,7 @@ uint32_t pm_peer_data_app_data_load(uint16_t peer_id, void *p_data, uint32_t *p_
 	return pm_peer_data_load(peer_id, PM_PEER_DATA_ID_APPLICATION, p_data, p_length);
 }
 
-uint32_t pm_peer_data_store(uint16_t peer_id, pm_peer_data_id_t data_id, void const *p_data,
+uint32_t pm_peer_data_store(uint16_t peer_id, enum pm_peer_data_id data_id, void const *p_data,
 			      uint32_t length, uint32_t *p_token)
 {
 	VERIFY_MODULE_INITIALIZED();
@@ -761,7 +761,8 @@ uint32_t pm_peer_data_store(uint16_t peer_id, pm_peer_data_id_t data_id, void co
 		uint16_t dupl_peer_id;
 
 		dupl_peer_id =
-			im_find_duplicate_bonding_data((pm_peer_data_bonding_t *)p_data, peer_id);
+			im_find_duplicate_bonding_data((struct pm_peer_data_bonding *)p_data,
+						       peer_id);
 
 		if (dupl_peer_id != PM_PEER_ID_INVALID) {
 			return NRF_ERROR_FORBIDDEN;
@@ -778,11 +779,11 @@ uint32_t pm_peer_data_store(uint16_t peer_id, pm_peer_data_id_t data_id, void co
 	return pds_peer_data_store(peer_id, &peer_data, p_token);
 }
 
-uint32_t pm_peer_data_bonding_store(uint16_t peer_id, pm_peer_data_bonding_t const *p_data,
+uint32_t pm_peer_data_bonding_store(uint16_t peer_id, struct pm_peer_data_bonding const *p_data,
 				    uint32_t *p_token)
 {
 	return pm_peer_data_store(peer_id, PM_PEER_DATA_ID_BONDING, p_data,
-				  ROUND_UP(sizeof(pm_peer_data_bonding_t), 4), p_token);
+				  ROUND_UP(sizeof(struct pm_peer_data_bonding), 4), p_token);
 }
 
 uint32_t pm_peer_data_remote_db_store(uint16_t peer_id, struct ble_gatt_db_srv const *p_data,
@@ -797,7 +798,7 @@ uint32_t pm_peer_data_app_data_store(uint16_t peer_id, void const *p_data, uint3
 	return pm_peer_data_store(peer_id, PM_PEER_DATA_ID_APPLICATION, p_data, length, p_token);
 }
 
-uint32_t pm_peer_data_delete(uint16_t peer_id, pm_peer_data_id_t data_id)
+uint32_t pm_peer_data_delete(uint16_t peer_id, enum pm_peer_data_id data_id)
 {
 	VERIFY_MODULE_INITIALIZED();
 
@@ -808,7 +809,7 @@ uint32_t pm_peer_data_delete(uint16_t peer_id, pm_peer_data_id_t data_id)
 	return pds_peer_data_delete(peer_id, data_id);
 }
 
-uint32_t pm_peer_new(uint16_t *p_new_peer_id, pm_peer_data_bonding_t *p_bonding_data,
+uint32_t pm_peer_new(uint16_t *p_new_peer_id, struct pm_peer_data_bonding *p_bonding_data,
 		     uint32_t *p_token)
 {
 	uint32_t err_code;
@@ -848,7 +849,7 @@ uint32_t pm_peer_new(uint16_t *p_new_peer_id, pm_peer_data_bonding_t *p_bonding_
 
 	peer_data.data_id = PM_PEER_DATA_ID_BONDING;
 	peer_data.p_bonding_data = p_bonding_data;
-	peer_data.length_words = BYTES_TO_WORDS(sizeof(pm_peer_data_bonding_t));
+	peer_data.length_words = BYTES_TO_WORDS(sizeof(struct pm_peer_data_bonding));
 
 	err_code = pds_peer_data_store(*p_new_peer_id, &peer_data, p_token);
 
@@ -892,9 +893,9 @@ uint32_t pm_peers_delete(void)
 		/* No peers bonded. */
 		m_deleting_all = false;
 
-		pm_evt_t pm_delete_all_evt;
+		struct pm_evt pm_delete_all_evt;
 
-		memset(&pm_delete_all_evt, 0, sizeof(pm_evt_t));
+		memset(&pm_delete_all_evt, 0, sizeof(struct pm_evt));
 		pm_delete_all_evt.evt_id = PM_EVT_PEERS_DELETE_SUCCEEDED;
 		pm_delete_all_evt.peer_id = PM_PEER_ID_INVALID;
 		pm_delete_all_evt.conn_handle = BLE_CONN_HANDLE_INVALID;
@@ -1015,14 +1016,14 @@ uint32_t pm_peer_rank_highest(uint16_t peer_id)
 		err_code = NRF_ERROR_BUSY;
 	} else {
 		if ((peer_id == m_highest_ranked_peer) && (m_current_highest_peer_rank > 0)) {
-			pm_evt_t pm_evt;
+			struct pm_evt pm_evt;
 
 			/* The reported peer is already regarded as highest (provided it has an
 			 * index at all)
 			 */
 			err_code = NRF_SUCCESS;
 
-			memset(&pm_evt, 0, sizeof(pm_evt));
+			memset(&pm_evt, 0, sizeof(struct pm_evt));
 			pm_evt.evt_id = PM_EVT_PEER_DATA_UPDATE_SUCCEEDED;
 			pm_evt.conn_handle = im_conn_handle_get(peer_id);
 			pm_evt.peer_id = peer_id;

@@ -60,13 +60,13 @@ uint32_t sm_sec_params_set(ble_gap_sec_params_t *p_sec_params);
  *
  * @details This function is optional, and must be called in reply to a @ref
  *          PM_EVT_CONN_SEC_CONFIG_REQ event, before the Peer Manager event handler returns. If it
- *          is not called in time, a default configuration is used. See @ref pm_conn_sec_config_t
+ *          is not called in time, a default configuration is used. See @ref pm_conn_sec_config
  *          for the value of the default.
  *
  * @param[in]  conn_handle        The connection to set the configuration for.
  * @param[in]  p_conn_sec_config  The configuration.
  */
-void sm_conn_sec_config_reply(uint16_t conn_handle, pm_conn_sec_config_t *p_conn_sec_config);
+void sm_conn_sec_config_reply(uint16_t conn_handle, struct pm_conn_sec_config *p_conn_sec_config);
 
 /**
  * @brief Function for providing security parameters for a link.
@@ -74,7 +74,7 @@ void sm_conn_sec_config_reply(uint16_t conn_handle, pm_conn_sec_config_t *p_conn
  * @details This function is optional, and must be called in reply to a @ref
  *          PM_EVT_CONN_SEC_PARAMS_REQ event, before the Security Manager event handler returns. If
  *          it is not called in time, the parameters given in @ref sm_sec_params_set are used. See
- *          @ref pm_conn_sec_config_t for the value of the default.
+ *          @ref pm_conn_sec_config for the value of the default.
  *
  * @param[in]  conn_handle   The connection to set the parameters for.
  * @param[in]  p_sec_params  The parameters. If NULL, the security procedure is rejected.
@@ -114,7 +114,7 @@ uint32_t sm_lesc_public_key_set(ble_gap_lesc_p256_pk_t *p_public_key);
  * @retval BLE_ERROR_INVALID_CONN_HANDLE  If the connection handle is invalid.
  * @retval NRF_ERROR_NULL                 If @p p_conn_sec_status was NULL.
  */
-uint32_t sm_conn_sec_status_get(uint16_t conn_handle, pm_conn_sec_status_t *p_conn_sec_status);
+uint32_t sm_conn_sec_status_get(uint16_t conn_handle, struct pm_conn_sec_status *p_conn_sec_status);
 
 /**
  * @brief Function for comparing the security status of a connection against a baseline.
@@ -127,7 +127,7 @@ uint32_t sm_conn_sec_status_get(uint16_t conn_handle, pm_conn_sec_status_t *p_co
  * @retval false  If the security status of the connection does not fulfill the baseline, or could
  *                not be retrieved.
  */
-bool sm_sec_is_sufficient(uint16_t conn_handle, pm_conn_sec_status_t *p_sec_status_req);
+bool sm_sec_is_sufficient(uint16_t conn_handle, struct pm_conn_sec_status *p_sec_status_req);
 
 /**
  * @brief Function for initiating security on the link, with the specified parameters.

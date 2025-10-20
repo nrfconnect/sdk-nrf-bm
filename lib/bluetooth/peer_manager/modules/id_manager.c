@@ -33,8 +33,8 @@ LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 #define IM_EVENT_HANDLERS_CNT ARRAY_SIZE(m_evt_handlers)
 
 /* Identity Manager event handlers in Peer Manager and GATT Cache Manager. */
-extern void pm_im_evt_handler(pm_evt_t *p_event);
-extern void gcm_im_evt_handler(pm_evt_t *p_event);
+extern void pm_im_evt_handler(struct pm_evt *p_event);
+extern void gcm_im_evt_handler(struct pm_evt *p_event);
 
 /* Identity Manager events' handlers.
  * The number of elements in this array is IM_EVENT_HANDLERS_CNT.
@@ -56,7 +56,7 @@ static uint16_t m_wlisted_peers[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
  *
  * @param[in] p_event The event to distribute.
  */
-static void evt_send(pm_evt_t *p_event)
+static void evt_send(struct pm_evt *p_event)
 {
 	for (uint32_t i = 0; i < IM_EVENT_HANDLERS_CNT; i++) {
 		m_evt_handlers[i](p_event);
@@ -186,7 +186,7 @@ void im_ble_evt_handler(ble_evt_t const *ble_evt)
 
 	if (bonded_matching_peer_id != PM_PEER_ID_INVALID) {
 		/* Send a bonded peer event */
-		pm_evt_t im_evt;
+		struct pm_evt im_evt;
 
 		im_evt.conn_handle = gap_evt.conn_handle;
 		im_evt.peer_id = bonded_matching_peer_id;
@@ -204,8 +204,8 @@ void im_ble_evt_handler(ble_evt_t const *ble_evt)
  *
  * @return     True if the input matches, false if it does not.
  */
-bool im_is_duplicate_bonding_data(pm_peer_data_bonding_t const *p_bonding_data1,
-				  pm_peer_data_bonding_t const *p_bonding_data2)
+bool im_is_duplicate_bonding_data(struct pm_peer_data_bonding const *p_bonding_data1,
+				  struct pm_peer_data_bonding const *p_bonding_data2)
 {
 	NRF_PM_DEBUG_CHECK(p_bonding_data1 != NULL);
 	NRF_PM_DEBUG_CHECK(p_bonding_data2 != NULL);
@@ -229,7 +229,7 @@ bool im_is_duplicate_bonding_data(pm_peer_data_bonding_t const *p_bonding_data1,
 	return (duplicate_addr && id_addrs) || (duplicate_irk && !id_addrs);
 }
 
-uint16_t im_find_duplicate_bonding_data(pm_peer_data_bonding_t const *p_bonding_data,
+uint16_t im_find_duplicate_bonding_data(struct pm_peer_data_bonding const *p_bonding_data,
 					uint16_t peer_id_skip)
 {
 	uint16_t peer_id;
@@ -383,7 +383,7 @@ static uint32_t peers_id_keys_get(uint16_t const *p_peers, uint32_t peer_cnt,
 {
 	uint32_t ret;
 
-	pm_peer_data_bonding_t bond_data;
+	struct pm_peer_data_bonding bond_data;
 	pm_peer_data_t peer_data;
 
 	uint32_t const buf_size = sizeof(bond_data);
@@ -459,7 +459,7 @@ uint32_t im_device_identities_list_set(uint16_t const *p_peers, uint32_t peer_cn
 {
 	uint32_t ret;
 	pm_peer_data_t peer_data;
-	pm_peer_data_bonding_t bond_data;
+	struct pm_peer_data_bonding bond_data;
 
 	ble_gap_id_key_t keys[BLE_GAP_DEVICE_IDENTITIES_MAX_COUNT];
 	ble_gap_id_key_t const *key_ptrs[BLE_GAP_DEVICE_IDENTITIES_MAX_COUNT];
@@ -526,12 +526,12 @@ uint32_t im_id_addr_get(ble_gap_addr_t *p_addr)
 	return sd_ble_gap_addr_get(p_addr);
 }
 
-uint32_t im_privacy_set(pm_privacy_params_t const *p_privacy_params)
+uint32_t im_privacy_set(ble_gap_privacy_params_t const *p_privacy_params)
 {
 	return sd_ble_gap_privacy_set(p_privacy_params);
 }
 
-uint32_t im_privacy_get(pm_privacy_params_t *p_privacy_params)
+uint32_t im_privacy_get(ble_gap_privacy_params_t *p_privacy_params)
 {
 	return sd_ble_gap_privacy_get(p_privacy_params);
 }
