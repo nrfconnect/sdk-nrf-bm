@@ -94,6 +94,7 @@ Libraries
      * All instances of ``pm_peer_data_local_gatt_db_t`` to :c:struct:`pm_peer_data_local_gatt_db` and removed the ``pm_peer_data_local_gatt_db_t`` type.
      * All instances of ``pm_privacy_params_t`` to :c:type:`ble_gap_privacy_params_t` and removed the ``pm_privacy_params_t`` type.
      * All instances of ``pm_conn_sec_status_t`` to :c:struct:`pm_conn_sec_status` and removed the ``pm_conn_sec_status_t`` type.
+     * All instances of ``pm_evt_id_t`` to :c:enum:`pm_evt_id` and removed the ``pm_evt_id_t`` type.
 
 Samples
 =======

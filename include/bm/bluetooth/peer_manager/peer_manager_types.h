@@ -210,7 +210,7 @@ struct pm_conn_sec_status {
 };
 
 /** @brief Types of events that can come from the @ref peer_manager module. */
-typedef enum {
+enum pm_evt_id {
 	/**
 	 * @brief A connected peer has been identified as one with which we have a bond.
 	 *        When performing bonding with a peer for the first time, this event will not be
@@ -345,7 +345,7 @@ typedef enum {
 	PM_EVT_FLASH_GARBAGE_COLLECTED,
 	/** @brief Garbage collection was attempted but failed. */
 	PM_EVT_FLASH_GARBAGE_COLLECTION_FAILED,
-} pm_evt_id_t;
+};
 
 /** @brief Parameters specific to the @ref PM_EVT_CONN_CONFIG_REQ event. */
 typedef struct {
@@ -458,7 +458,7 @@ typedef struct {
  */
 typedef struct {
 	/** @brief The type of the event. */
-	pm_evt_id_t evt_id;
+	enum pm_evt_id evt_id;
 	/** @brief The connection that this event pertains to, or @ref BLE_CONN_HANDLE_INVALID. */
 	uint16_t conn_handle;
 	/** @brief The bonded peer that this event pertains to, or @ref PM_PEER_ID_INVALID. */

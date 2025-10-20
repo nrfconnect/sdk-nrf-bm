@@ -121,7 +121,7 @@ static void flags_set_from_err_code(uint16_t conn_handle, uint32_t err_code, boo
 	}
 }
 
-static inline pm_evt_t new_evt(pm_evt_id_t evt_id, uint16_t conn_handle)
+static inline pm_evt_t new_evt(enum pm_evt_id evt_id, uint16_t conn_handle)
 {
 	pm_evt_t evt = {.evt_id = evt_id,
 			.conn_handle = conn_handle,
