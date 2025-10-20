@@ -180,7 +180,7 @@ static void peer_ids_load(void)
 {
 	uint16_t peer_id;
 	uint16_t peer_id_iter;
-	pm_peer_data_flash_t peer_data = { 0 };
+	struct pm_peer_data_const peer_data = { 0 };
 	uint8_t peer_data_buffer[PM_PEER_DATA_MAX_SIZE] = { 0 };
 
 	peer_data.p_all_data = peer_data_buffer;
@@ -303,7 +303,7 @@ void pds_peer_data_iterate_prepare(uint16_t *p_peer_id_iter)
 }
 
 bool pds_peer_data_iterate(enum pm_peer_data_id data_id, uint16_t *const p_peer_id,
-			   pm_peer_data_flash_t *const p_data, uint16_t *p_peer_id_iter)
+			   struct pm_peer_data_const *const p_data, uint16_t *p_peer_id_iter)
 {
 	ssize_t ret;
 	uint8_t temp_buf[PM_PEER_DATA_MAX_SIZE] = { 0 };
@@ -379,7 +379,7 @@ uint32_t pds_init(void)
 }
 
 uint32_t pds_peer_data_read(uint16_t peer_id, enum pm_peer_data_id data_id,
-			      pm_peer_data_t *const p_data, uint32_t const *const p_buf_len)
+			    struct pm_peer_data *const p_data, uint32_t const *const p_buf_len)
 {
 	ssize_t ret;
 	uint8_t temp_buf[PM_PEER_DATA_MAX_SIZE] = { 0 };
@@ -415,7 +415,7 @@ uint32_t pds_peer_data_read(uint16_t peer_id, enum pm_peer_data_id data_id,
 	return NRF_SUCCESS;
 }
 
-uint32_t pds_peer_data_store(uint16_t peer_id, pm_peer_data_const_t const *p_peer_data,
+uint32_t pds_peer_data_store(uint16_t peer_id, struct pm_peer_data_const const *p_peer_data,
 			     uint32_t *p_store_token)
 {
 	ssize_t ret;

@@ -20,7 +20,7 @@
 LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
 /** @brief Descriptor of the peer public key. */
-typedef struct {
+struct lesc_peer_pub_key {
 	/** @brief Peer public key. Stored in little-endian. */
 	uint8_t value[BLE_GAP_LESC_P256_PK_LEN];
 	/** @brief Peer connection handle. */
@@ -33,7 +33,7 @@ typedef struct {
 	bool passkey_requested;
 	/** @brief Flag indicating that the passkey display event has been received. */
 	bool passkey_displayed;
-} nrf_ble_lesc_peer_pub_key_t;
+};
 
 /**
  * @brief The maximum number of peripheral and central connections combined.
@@ -54,7 +54,7 @@ static bool m_keypair_generated;
 /** ID of ECC private/public key pair. */
 static psa_key_id_t m_keypair_id;
 /** Array of pointers to peer public keys, used for LESC DH generation. */
-static nrf_ble_lesc_peer_pub_key_t m_peer_keys[NRF_BLE_LESC_LINK_COUNT];
+static struct lesc_peer_pub_key m_peer_keys[NRF_BLE_LESC_LINK_COUNT];
 
 static bool m_lesc_oobd_own_generated;
 /** LESC OOB data used in LESC OOB pairing mode. */
@@ -240,7 +240,7 @@ void nrf_ble_lesc_peer_oob_data_handler_set(nrf_ble_lesc_peer_oob_data_handler h
  * @returns Other error codes might be returned by @ref sd_ble_gap_lesc_dhkey_reply.
  * functions.
  */
-static uint32_t compute_and_give_dhkey(nrf_ble_lesc_peer_pub_key_t *p_peer_public_key)
+static uint32_t compute_and_give_dhkey(struct lesc_peer_pub_key *p_peer_public_key)
 {
 	psa_status_t status = PSA_ERROR_BAD_STATE;
 	uint8_t *p_shared_secret = m_lesc_dh_key.key;

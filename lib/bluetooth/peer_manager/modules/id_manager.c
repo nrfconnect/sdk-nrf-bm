@@ -41,13 +41,13 @@ extern void gcm_im_evt_handler(struct pm_evt *p_event);
  */
 static pm_evt_handler_internal_t const m_evt_handlers[] = {pm_im_evt_handler, gcm_im_evt_handler};
 
-typedef struct {
+struct im_connection {
 	uint16_t conn_handle;
 	uint16_t peer_id;
 	ble_gap_addr_t peer_address;
-} im_connection_t;
+};
 
-static im_connection_t m_connections[IM_MAX_CONN_HANDLES];
+static struct im_connection m_connections[IM_MAX_CONN_HANDLES];
 static uint8_t m_wlisted_peer_cnt;
 static uint16_t m_wlisted_peers[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
 
@@ -140,7 +140,7 @@ void im_ble_evt_handler(ble_evt_t const *ble_evt)
 		 */
 
 		uint16_t peer_id;
-		pm_peer_data_flash_t peer_data;
+		struct pm_peer_data_const peer_data;
 		uint8_t peer_data_buffer[PM_PEER_DATA_MAX_SIZE] = { 0 };
 		uint16_t peer_id_iter;
 
@@ -233,7 +233,7 @@ uint16_t im_find_duplicate_bonding_data(struct pm_peer_data_bonding const *p_bon
 					uint16_t peer_id_skip)
 {
 	uint16_t peer_id;
-	pm_peer_data_flash_t peer_data_duplicate;
+	struct pm_peer_data_const peer_data_duplicate;
 	uint8_t peer_data_buffer[PM_PEER_DATA_MAX_SIZE] = { 0 };
 	uint16_t peer_id_iter;
 
@@ -299,7 +299,7 @@ bool im_master_ids_compare(ble_gap_master_id_t const *p_master_id1,
 uint16_t im_peer_id_get_by_master_id(ble_gap_master_id_t const *p_master_id)
 {
 	uint16_t peer_id;
-	pm_peer_data_flash_t peer_data;
+	struct pm_peer_data_const peer_data;
 	uint8_t peer_data_buffer[PM_PEER_DATA_MAX_SIZE] = { 0 };
 	uint16_t peer_id_iter;
 
@@ -384,7 +384,7 @@ static uint32_t peers_id_keys_get(uint16_t const *p_peers, uint32_t peer_cnt,
 	uint32_t ret;
 
 	struct pm_peer_data_bonding bond_data;
-	pm_peer_data_t peer_data;
+	struct pm_peer_data peer_data;
 
 	uint32_t const buf_size = sizeof(bond_data);
 
@@ -458,7 +458,7 @@ static uint32_t peers_id_keys_get(uint16_t const *p_peers, uint32_t peer_cnt,
 uint32_t im_device_identities_list_set(uint16_t const *p_peers, uint32_t peer_cnt)
 {
 	uint32_t ret;
-	pm_peer_data_t peer_data;
+	struct pm_peer_data peer_data;
 	struct pm_peer_data_bonding bond_data;
 
 	ble_gap_id_key_t keys[BLE_GAP_DEVICE_IDENTITIES_MAX_COUNT];

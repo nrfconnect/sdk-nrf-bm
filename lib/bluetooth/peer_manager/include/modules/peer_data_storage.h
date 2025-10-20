@@ -70,7 +70,7 @@ uint32_t pds_init(void);
  *                                  filling the provided buffer.
  */
 uint32_t pds_peer_data_read(uint16_t peer_id, enum pm_peer_data_id data_id,
-			      pm_peer_data_t *const p_data, uint32_t const *const p_buf_len);
+			    struct pm_peer_data *const p_data, uint32_t const *const p_buf_len);
 
 /**
  * @brief Function to prepare iterating over peer data in flash using @ref pds_peer_data_iterate.
@@ -94,7 +94,7 @@ void pds_peer_data_iterate_prepare(uint16_t *p_peer_id_iter);
  * @retval false  If the data was not found in flash, or another error occurred.
  */
 bool pds_peer_data_iterate(enum pm_peer_data_id data_id, uint16_t *const p_peer_id,
-			   pm_peer_data_flash_t *const p_data, uint16_t *p_peer_id_iter);
+			   struct pm_peer_data_const *const p_data, uint16_t *p_peer_id_iter);
 
 /**
  * @brief Function for storing peer data in flash. If the same piece of data already exists for the
@@ -115,7 +115,7 @@ bool pds_peer_data_iterate(enum pm_peer_data_id data_id, uint16_t *const p_peer_
  * @retval NRF_ERROR_BUSY           If the flash filesystem was busy.
  * @retval NRF_ERROR_INTERNAL       If an unexpected error occurred.
  */
-uint32_t pds_peer_data_store(uint16_t peer_id, pm_peer_data_const_t const *p_peer_data,
+uint32_t pds_peer_data_store(uint16_t peer_id, struct pm_peer_data_const const *p_peer_data,
 			     uint32_t *p_store_token);
 
 /**

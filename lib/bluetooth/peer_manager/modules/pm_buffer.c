@@ -28,7 +28,7 @@ static bool mutex_lock_status_get(atomic_t *mutex, int index)
 	return atomic_test_bit(mutex, index);
 }
 
-uint32_t pm_buffer_init(pm_buffer_t *p_buffer, uint8_t *p_buffer_memory,
+uint32_t pm_buffer_init(struct pm_buffer *p_buffer, uint8_t *p_buffer_memory,
 			uint32_t buffer_memory_size, atomic_t *p_mutex_memory,
 			uint32_t n_blocks, uint32_t block_size)
 {
@@ -46,7 +46,7 @@ uint32_t pm_buffer_init(pm_buffer_t *p_buffer, uint8_t *p_buffer_memory,
 	}
 }
 
-uint8_t pm_buffer_block_acquire(pm_buffer_t *p_buffer, uint32_t n_blocks)
+uint8_t pm_buffer_block_acquire(struct pm_buffer *p_buffer, uint32_t n_blocks)
 {
 	if (!BUFFER_IS_VALID(p_buffer)) {
 		return PM_BUFFER_INVALID_ID;
@@ -73,7 +73,7 @@ uint8_t pm_buffer_block_acquire(pm_buffer_t *p_buffer, uint32_t n_blocks)
 	return (PM_BUFFER_INVALID_ID);
 }
 
-uint8_t *pm_buffer_ptr_get(pm_buffer_t *p_buffer, uint8_t id)
+uint8_t *pm_buffer_ptr_get(struct pm_buffer *p_buffer, uint8_t id)
 {
 	if (!BUFFER_IS_VALID(p_buffer)) {
 		return NULL;
@@ -86,7 +86,7 @@ uint8_t *pm_buffer_ptr_get(pm_buffer_t *p_buffer, uint8_t id)
 	}
 }
 
-void pm_buffer_release(pm_buffer_t *p_buffer, uint8_t id)
+void pm_buffer_release(struct pm_buffer *p_buffer, uint8_t id)
 {
 	if (BUFFER_IS_VALID(p_buffer) && (id != PM_BUFFER_INVALID_ID) &&
 	    mutex_lock_status_get(p_buffer->p_mutex, id)) {

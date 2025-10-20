@@ -39,7 +39,7 @@ extern "C" {
 					  mutex_memory, (n_blocks), (block_size));                 \
 	} while (0)
 
-typedef struct {
+struct pm_buffer {
 	/**
 	 * @brief The storage for all buffer entries. The size of the buffer must be
 	 *        n_blocks*block_size.
@@ -51,7 +51,7 @@ typedef struct {
 	uint32_t n_blocks;
 	/** @brief The size of each block in the buffer. */
 	uint32_t block_size;
-} pm_buffer_t;
+};
 
 /**
  * @brief Function for initializing a buffer instance.
@@ -68,9 +68,9 @@ typedef struct {
  * @retval NRF_SUCCESS              Successfully initialized buffer instance.
  * @retval NRF_ERROR_INVALID_PARAM  A parameter was 0 or NULL or a size was too small.
  */
-uint32_t pm_buffer_init(pm_buffer_t *p_buffer, uint8_t *p_buffer_memory,
-			  uint32_t buffer_memory_size, atomic_t *p_mutex_memory,
-			  uint32_t n_blocks, uint32_t block_size);
+uint32_t pm_buffer_init(struct pm_buffer *p_buffer, uint8_t *p_buffer_memory,
+			uint32_t buffer_memory_size, atomic_t *p_mutex_memory,
+			uint32_t n_blocks, uint32_t block_size);
 
 /**
  * @brief Function for acquiring a buffer block in a buffer.
@@ -81,7 +81,7 @@ uint32_t pm_buffer_init(pm_buffer_t *p_buffer, uint8_t *p_buffer_memory,
  * @return The id of the acquired block, if successful.
  * @retval PM_BUFFER_INVALID_ID  If unsuccessful.
  */
-uint8_t pm_buffer_block_acquire(pm_buffer_t *p_buffer, uint32_t n_blocks);
+uint8_t pm_buffer_block_acquire(struct pm_buffer *p_buffer, uint32_t n_blocks);
 
 /**
  * @brief Function for getting a pointer to a specific buffer block.
@@ -92,7 +92,7 @@ uint8_t pm_buffer_block_acquire(pm_buffer_t *p_buffer, uint32_t n_blocks);
  * @return A pointer to the buffer for the specified id, if the id is valid.
  * @retval NULL  If the id is invalid.
  */
-uint8_t *pm_buffer_ptr_get(pm_buffer_t *p_buffer, uint8_t id);
+uint8_t *pm_buffer_ptr_get(struct pm_buffer *p_buffer, uint8_t id);
 
 /**
  * @brief Function for releasing a buffer block.
@@ -100,7 +100,7 @@ uint8_t *pm_buffer_ptr_get(pm_buffer_t *p_buffer, uint8_t id);
  * @param[in]  p_buffer  The buffer instance containing the block to release.
  * @param[in]  id        The id of the block to release.
  */
-void pm_buffer_release(pm_buffer_t *p_buffer, uint8_t id);
+void pm_buffer_release(struct pm_buffer *p_buffer, uint8_t id);
 
 #ifdef __cplusplus
 }
