@@ -33,8 +33,8 @@ LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 #define IM_EVENT_HANDLERS_CNT ARRAY_SIZE(m_evt_handlers)
 
 /* Identity Manager event handlers in Peer Manager and GATT Cache Manager. */
-extern void pm_im_evt_handler(pm_evt_t *p_event);
-extern void gcm_im_evt_handler(pm_evt_t *p_event);
+extern void pm_im_evt_handler(struct pm_evt *p_event);
+extern void gcm_im_evt_handler(struct pm_evt *p_event);
 
 /* Identity Manager events' handlers.
  * The number of elements in this array is IM_EVENT_HANDLERS_CNT.
@@ -56,7 +56,7 @@ static uint16_t m_wlisted_peers[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
  *
  * @param[in] p_event The event to distribute.
  */
-static void evt_send(pm_evt_t *p_event)
+static void evt_send(struct pm_evt *p_event)
 {
 	for (uint32_t i = 0; i < IM_EVENT_HANDLERS_CNT; i++) {
 		m_evt_handlers[i](p_event);
@@ -186,7 +186,7 @@ void im_ble_evt_handler(ble_evt_t const *ble_evt)
 
 	if (bonded_matching_peer_id != PM_PEER_ID_INVALID) {
 		/* Send a bonded peer event */
-		pm_evt_t im_evt;
+		struct pm_evt im_evt;
 
 		im_evt.conn_handle = gap_evt.conn_handle;
 		im_evt.peer_id = bonded_matching_peer_id;

@@ -36,12 +36,12 @@ LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 #define PDB_EVENT_HANDLERS_CNT ARRAY_SIZE(m_evt_handlers)
 
 /* Peer Database event handlers in other Peer Manager submodules. */
-extern void pm_pdb_evt_handler(pm_evt_t *p_event);
-extern void sm_pdb_evt_handler(pm_evt_t *p_event);
+extern void pm_pdb_evt_handler(struct pm_evt *p_event);
+extern void sm_pdb_evt_handler(struct pm_evt *p_event);
 #if defined(CONFIG_PM_SERVICE_CHANGED)
-extern void gscm_pdb_evt_handler(pm_evt_t *p_event);
+extern void gscm_pdb_evt_handler(struct pm_evt *p_event);
 #endif
-extern void gcm_pdb_evt_handler(pm_evt_t *p_event);
+extern void gcm_pdb_evt_handler(struct pm_evt *p_event);
 
 /**
  * @brief Peer Database events' handlers.
@@ -231,7 +231,7 @@ static void write_buffer_record_acquire(pdb_buffer_record_t **pp_write_buffer_re
  *
  * @param[in]  p_event  The event to dispatch.
  */
-static void pdb_evt_send(pm_evt_t *p_event)
+static void pdb_evt_send(struct pm_evt *p_event)
 {
 	for (uint32_t i = 0; i < PDB_EVENT_HANDLERS_CNT; i++) {
 		m_evt_handlers[i](p_event);
@@ -369,7 +369,7 @@ uint32_t write_buf_store(pdb_buffer_record_t *p_write_buffer_record)
 static bool write_buf_store_in_event(pdb_buffer_record_t *p_write_buffer_record)
 {
 	uint32_t err_code;
-	pm_evt_t event;
+	struct pm_evt event;
 
 	err_code = write_buf_store(p_write_buffer_record);
 	if (err_code != NRF_SUCCESS) {
@@ -431,7 +431,7 @@ static void reattempt_previous_operations(bool retry_flash_full)
  *
  * @param[in]  p_event  The event to handle.
  */
-void pdb_pds_evt_handler(pm_evt_t *p_event)
+void pdb_pds_evt_handler(struct pm_evt *p_event)
 {
 	pdb_buffer_record_t *p_write_buffer_record;
 	bool evt_send = true;

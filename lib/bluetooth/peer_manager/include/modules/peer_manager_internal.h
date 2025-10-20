@@ -123,7 +123,7 @@ typedef pm_peer_data_const_t pm_peer_data_flash_t;
  *
  * @param[in]  p_event  The event that has occurred.
  */
-typedef void (*pm_evt_handler_internal_t)(pm_evt_t *p_event);
+typedef void (*pm_evt_handler_internal_t)(struct pm_evt *p_event);
 
 /** @brief Macro for showing that a variable is unused. */
 #define UNUSED_VARIABLE(X) ((void)(X))

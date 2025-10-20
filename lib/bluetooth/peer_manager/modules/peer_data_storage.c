@@ -35,7 +35,7 @@ LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 #define PDS_EVENT_HANDLERS_CNT ARRAY_SIZE(m_evt_handlers)
 
 /* Peer Data Storage event handler in Peer Database. */
-extern void pdb_pds_evt_handler(pm_evt_t *evt);
+extern void pdb_pds_evt_handler(struct pm_evt *evt);
 
 /* Peer Data Storage events' handlers.
  * The number of elements in this array is PDS_EVENT_HANDLERS_CNT.
@@ -53,7 +53,7 @@ static struct bm_zms_fs fs;
 static atomic_t delete_counter;
 
 /* Function for dispatching events to all registered event handlers. */
-static void pds_evt_send(pm_evt_t *p_event)
+static void pds_evt_send(struct pm_evt *p_event)
 {
 	p_event->conn_handle = BLE_CONN_HANDLE_INVALID;
 
@@ -105,11 +105,13 @@ static bool peer_data_id_is_valid(enum pm_peer_data_id data_id)
  */
 static void send_unexpected_error(uint16_t peer_id, uint32_t err_code)
 {
-	pm_evt_t error_evt = {.evt_id = PM_EVT_ERROR_UNEXPECTED,
-			      .peer_id = peer_id,
-			      .params = {.error_unexpected = {
-						 .error = err_code,
-					 }}};
+	struct pm_evt error_evt = {
+		.evt_id = PM_EVT_ERROR_UNEXPECTED,
+		.peer_id = peer_id,
+		.params.error_unexpected = {
+			.error = err_code,
+		},
+	};
 	pds_evt_send(&error_evt);
 }
 
@@ -199,7 +201,7 @@ static void bm_zms_evt_handler(bm_zms_evt_t const *p_evt)
 
 	entry_id_to_peer_id_peer_data_id(p_evt->id, &peer_id, &data_id);
 
-	pm_evt_t pds_evt = { .peer_id = peer_id };
+	struct pm_evt pds_evt = { .peer_id = peer_id };
 
 	switch (p_evt->evt_id) {
 	case BM_ZMS_EVT_INIT:

@@ -31,7 +31,7 @@ LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 #define SMD_EVENT_HANDLERS_CNT ARRAY_SIZE(m_evt_handlers)
 
 /* Security Dispacher event handlers in Security Manager and GATT Cache Manager. */
-extern void sm_smd_evt_handler(pm_evt_t *p_event);
+extern void sm_smd_evt_handler(struct pm_evt *p_event);
 
 /* Security Dispatcher events' handlers.
  * The number of elements in this array is SMD_EVENT_HANDLERS_CNT.
@@ -72,7 +72,7 @@ static __INLINE bool allow_repairing(uint16_t conn_handle)
  *
  * @param[in]  p_event  The event to pass to all event handlers.
  */
-static void evt_send(pm_evt_t *p_event)
+static void evt_send(struct pm_evt *p_event)
 {
 	p_event->peer_id = im_peer_id_get_by_conn_handle(p_event->conn_handle);
 
@@ -89,9 +89,13 @@ static void evt_send(pm_evt_t *p_event)
  */
 static void sec_start_send(uint16_t conn_handle, enum pm_conn_sec_procedure procedure)
 {
-	pm_evt_t evt = {.evt_id = PM_EVT_CONN_SEC_START,
-			.conn_handle = conn_handle,
-			.params = {.conn_sec_start = {.procedure = procedure}}};
+	struct pm_evt evt = {
+		.evt_id = PM_EVT_CONN_SEC_START,
+		.conn_handle = conn_handle,
+		.params.conn_sec_start = {
+			.procedure = procedure,
+		},
+	};
 
 	evt_send(&evt);
 }
@@ -104,11 +108,13 @@ static void sec_start_send(uint16_t conn_handle, enum pm_conn_sec_procedure proc
  */
 static void send_unexpected_error(uint16_t conn_handle, uint32_t err_code)
 {
-	pm_evt_t error_evt = {.evt_id = PM_EVT_ERROR_UNEXPECTED,
-			      .conn_handle = conn_handle,
-			      .params = {.error_unexpected = {
-						 .error = err_code,
-					 }}};
+	struct pm_evt error_evt = {
+		.evt_id = PM_EVT_ERROR_UNEXPECTED,
+		.conn_handle = conn_handle,
+		.params.error_unexpected = {
+			.error = err_code,
+		},
+	};
 
 	evt_send(&error_evt);
 }
@@ -120,7 +126,7 @@ static void send_unexpected_error(uint16_t conn_handle, uint32_t err_code)
  */
 static void send_storage_full_evt(uint16_t conn_handle)
 {
-	pm_evt_t evt = {.evt_id = PM_EVT_STORAGE_FULL, .conn_handle = conn_handle};
+	struct pm_evt evt = {.evt_id = PM_EVT_STORAGE_FULL, .conn_handle = conn_handle};
 
 	evt_send(&evt);
 }
@@ -136,13 +142,15 @@ static void send_storage_full_evt(uint16_t conn_handle)
 static void conn_sec_failure(uint16_t conn_handle, enum pm_conn_sec_procedure procedure,
 			     uint16_t error, uint8_t error_src)
 {
-	pm_evt_t evt = {.evt_id = PM_EVT_CONN_SEC_FAILED,
-			.conn_handle = conn_handle,
-			.params = {.conn_sec_failed = {
-					   .procedure = procedure,
-					   .error = error,
-					   .error_src = error_src,
-				   }}};
+	struct pm_evt evt = {
+		.evt_id = PM_EVT_CONN_SEC_FAILED,
+		.conn_handle = conn_handle,
+		.params.conn_sec_failed = {
+			.procedure = procedure,
+			.error = error,
+			.error_src = error_src,
+		},
+	};
 
 	ble_conn_state_user_flag_set(conn_handle, m_flag_sec_proc, false);
 
@@ -336,7 +344,10 @@ static void sec_request_process(ble_gap_evt_t const *p_gap_evt)
 		return;
 	}
 
-	pm_evt_t evt = {.evt_id = PM_EVT_SLAVE_SECURITY_REQ, .conn_handle = p_gap_evt->conn_handle};
+	struct pm_evt evt = {
+		.evt_id = PM_EVT_SLAVE_SECURITY_REQ,
+		.conn_handle = p_gap_evt->conn_handle
+	};
 
 	memcpy(&evt.params.slave_security_req, &p_gap_evt->params.sec_request,
 	       sizeof(ble_gap_evt_sec_request_t));
@@ -423,7 +434,7 @@ static void sec_info_request_process(ble_gap_evt_t const *p_gap_evt)
  */
 static void send_config_req(uint16_t conn_handle)
 {
-	pm_evt_t evt;
+	struct pm_evt evt;
 
 	memset(&evt, 0, sizeof(evt));
 
@@ -465,12 +476,12 @@ static void disconnect_process(ble_gap_evt_t const *p_gap_evt)
  */
 static void send_params_req(uint16_t conn_handle, ble_gap_sec_params_t const *p_peer_params)
 {
-	pm_evt_t evt = {
+	struct pm_evt evt = {
 		.evt_id = PM_EVT_CONN_SEC_PARAMS_REQ,
 		.conn_handle = conn_handle,
-		.params = {
-				.conn_sec_params_req = {.peer_params = p_peer_params},
-			},
+		.params.conn_sec_params_req = {
+			.peer_params = p_peer_params,
+		},
 	};
 
 	evt_send(&evt);
@@ -503,16 +514,17 @@ static void sec_params_request_process(ble_gap_evt_t const *p_gap_evt)
  */
 static void pairing_success_evt_send(ble_gap_evt_t const *p_gap_evt, bool data_stored)
 {
-	pm_evt_t pairing_success_evt;
+	struct pm_evt evt = {
+		.evt_id = PM_EVT_CONN_SEC_SUCCEEDED,
+		.conn_handle = p_gap_evt->conn_handle,
+		.params.conn_sec_succeeded = {
+			.procedure = p_gap_evt->params.auth_status.bonded
+				? PM_CONN_SEC_PROCEDURE_BONDING : PM_CONN_SEC_PROCEDURE_PAIRING,
+			.data_stored = data_stored,
+		},
+	};
 
-	pairing_success_evt.evt_id = PM_EVT_CONN_SEC_SUCCEEDED;
-	pairing_success_evt.conn_handle = p_gap_evt->conn_handle;
-	pairing_success_evt.params.conn_sec_succeeded.procedure =
-		p_gap_evt->params.auth_status.bonded ? PM_CONN_SEC_PROCEDURE_BONDING
-						     : PM_CONN_SEC_PROCEDURE_PAIRING;
-	pairing_success_evt.params.conn_sec_succeeded.data_stored = data_stored;
-
-	evt_send(&pairing_success_evt);
+	evt_send(&evt);
 }
 
 /**
@@ -657,12 +669,14 @@ static void conn_sec_update_process(ble_gap_evt_t const *p_gap_evt)
 			ble_conn_state_user_flag_set(p_gap_evt->conn_handle, m_flag_sec_proc,
 						     false);
 
-			pm_evt_t evt;
-
-			evt.evt_id = PM_EVT_CONN_SEC_SUCCEEDED;
-			evt.conn_handle = p_gap_evt->conn_handle;
-			evt.params.conn_sec_succeeded.procedure = PM_CONN_SEC_PROCEDURE_ENCRYPTION;
-			evt.params.conn_sec_succeeded.data_stored = false;
+			struct pm_evt evt = {
+				.evt_id = PM_EVT_CONN_SEC_SUCCEEDED,
+				.conn_handle = p_gap_evt->conn_handle,
+				.params.conn_sec_succeeded = {
+					.procedure = PM_CONN_SEC_PROCEDURE_ENCRYPTION,
+					.data_stored = false,
+				},
+			};
 
 			evt_send(&evt);
 		}

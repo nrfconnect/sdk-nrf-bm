@@ -456,7 +456,7 @@ struct pm_failure_evt {
  * @details The structure contains both standard parameters and parameters that are specific to
  *          some events.
  */
-typedef struct {
+struct pm_evt {
 	/** @brief The type of the event. */
 	enum pm_evt_id evt_id;
 	/** @brief The connection that this event pertains to, or @ref BLE_CONN_HANDLE_INVALID. */
@@ -496,7 +496,7 @@ typedef struct {
 		 */
 		struct pm_failure_evt garbage_collection_failed;
 	} params;
-} pm_evt_t;
+};
 
 /**
  * @brief Event handler for events from the @ref peer_manager module.
@@ -505,7 +505,7 @@ typedef struct {
  *
  * @param[in]  pm_evt  The event that has occurred.
  */
-typedef void (*pm_evt_handler_t)(const pm_evt_t *pm_evt);
+typedef void (*pm_evt_handler_t)(const struct pm_evt *pm_evt);
 
 #ifdef __cplusplus
 }

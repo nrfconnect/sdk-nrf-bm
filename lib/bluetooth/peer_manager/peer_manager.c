@@ -59,7 +59,7 @@ static int m_flag_conn_excluded = BLE_CONN_STATE_USER_FLAG_INVALID;
  *
  * @param[in]  p_pm_evt  The event to send.
  */
-static void evt_send(pm_evt_t const *p_pm_evt)
+static void evt_send(struct pm_evt const *p_pm_evt)
 {
 	for (int i = 0; i < m_n_registrants; i++) {
 		m_evt_handlers[i](p_pm_evt);
@@ -88,7 +88,7 @@ static void rank_vars_update(void)
  *
  * @param[in]  p_pdb_evt  The incoming Peer Database event.
  */
-void pm_pdb_evt_handler(pm_evt_t *p_pdb_evt)
+void pm_pdb_evt_handler(struct pm_evt *p_pdb_evt)
 {
 	bool send_evt = true;
 
@@ -154,9 +154,9 @@ void pm_pdb_evt_handler(pm_evt_t *p_pdb_evt)
 			 */
 			m_deleting_all = false;
 
-			pm_evt_t pm_delete_all_evt;
+			struct pm_evt pm_delete_all_evt;
 
-			memset(&pm_delete_all_evt, 0, sizeof(pm_evt_t));
+			memset(&pm_delete_all_evt, 0, sizeof(struct pm_evt));
 			pm_delete_all_evt.evt_id = PM_EVT_PEERS_DELETE_SUCCEEDED;
 			pm_delete_all_evt.peer_id = PM_PEER_ID_INVALID;
 			pm_delete_all_evt.conn_handle = BLE_CONN_HANDLE_INVALID;
@@ -184,9 +184,9 @@ void pm_pdb_evt_handler(pm_evt_t *p_pdb_evt)
 
 			m_deleting_all = false;
 
-			pm_evt_t pm_delete_all_evt;
+			struct pm_evt pm_delete_all_evt;
 
-			memset(&pm_delete_all_evt, 0, sizeof(pm_evt_t));
+			memset(&pm_delete_all_evt, 0, sizeof(struct pm_evt));
 			pm_delete_all_evt.evt_id = PM_EVT_PEERS_DELETE_FAILED;
 			pm_delete_all_evt.peer_id = PM_PEER_ID_INVALID;
 			pm_delete_all_evt.conn_handle = BLE_CONN_HANDLE_INVALID;
@@ -220,7 +220,7 @@ void pm_pdb_evt_handler(pm_evt_t *p_pdb_evt)
  *
  * @param[in]  p_sm_evt  The incoming Security Manager event.
  */
-void pm_sm_evt_handler(pm_evt_t *p_sm_evt)
+void pm_sm_evt_handler(struct pm_evt *p_sm_evt)
 {
 	VERIFY_PARAM_NOT_NULL_VOID(p_sm_evt);
 
@@ -234,7 +234,7 @@ void pm_sm_evt_handler(pm_evt_t *p_sm_evt)
  *
  * @param[in]  p_gcm_evt  The incoming GATT Cache Manager event.
  */
-void pm_gcm_evt_handler(pm_evt_t *p_gcm_evt)
+void pm_gcm_evt_handler(struct pm_evt *p_gcm_evt)
 {
 	/* Forward the event to all registered Peer Manager event handlers. */
 	evt_send(p_gcm_evt);
@@ -246,7 +246,7 @@ void pm_gcm_evt_handler(pm_evt_t *p_gcm_evt)
  *
  * @param[in]  p_gscm_evt  The incoming GATTS Cache Manager event.
  */
-void pm_gscm_evt_handler(pm_evt_t *p_gscm_evt)
+void pm_gscm_evt_handler(struct pm_evt *p_gscm_evt)
 {
 	/* Forward the event to all registered Peer Manager event handlers. */
 	evt_send(p_gscm_evt);
@@ -258,7 +258,7 @@ void pm_gscm_evt_handler(pm_evt_t *p_gscm_evt)
  *
  * @param[in]  p_im_evt  The incoming ID Manager event.
  */
-void pm_im_evt_handler(pm_evt_t *p_im_evt)
+void pm_im_evt_handler(struct pm_evt *p_im_evt)
 {
 	/* Forward the event to all registered Peer Manager event handlers. */
 	evt_send(p_im_evt);
@@ -270,10 +270,10 @@ static bool is_conn_handle_excluded(ble_evt_t const *p_ble_evt)
 
 	switch (p_ble_evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED: {
-		pm_evt_t pm_conn_config_req_evt;
+		struct pm_evt pm_conn_config_req_evt;
 		bool is_excluded = false;
 
-		memset(&pm_conn_config_req_evt, 0, sizeof(pm_evt_t));
+		memset(&pm_conn_config_req_evt, 0, sizeof(struct pm_evt));
 		pm_conn_config_req_evt.evt_id = PM_EVT_CONN_CONFIG_REQ;
 		pm_conn_config_req_evt.peer_id = PM_PEER_ID_INVALID;
 		pm_conn_config_req_evt.conn_handle = conn_handle;
@@ -893,9 +893,9 @@ uint32_t pm_peers_delete(void)
 		/* No peers bonded. */
 		m_deleting_all = false;
 
-		pm_evt_t pm_delete_all_evt;
+		struct pm_evt pm_delete_all_evt;
 
-		memset(&pm_delete_all_evt, 0, sizeof(pm_evt_t));
+		memset(&pm_delete_all_evt, 0, sizeof(struct pm_evt));
 		pm_delete_all_evt.evt_id = PM_EVT_PEERS_DELETE_SUCCEEDED;
 		pm_delete_all_evt.peer_id = PM_PEER_ID_INVALID;
 		pm_delete_all_evt.conn_handle = BLE_CONN_HANDLE_INVALID;
@@ -1016,14 +1016,14 @@ uint32_t pm_peer_rank_highest(uint16_t peer_id)
 		err_code = NRF_ERROR_BUSY;
 	} else {
 		if ((peer_id == m_highest_ranked_peer) && (m_current_highest_peer_rank > 0)) {
-			pm_evt_t pm_evt;
+			struct pm_evt pm_evt;
 
 			/* The reported peer is already regarded as highest (provided it has an
 			 * index at all)
 			 */
 			err_code = NRF_SUCCESS;
 
-			memset(&pm_evt, 0, sizeof(pm_evt));
+			memset(&pm_evt, 0, sizeof(struct pm_evt));
 			pm_evt.evt_id = PM_EVT_PEER_DATA_UPDATE_SUCCEEDED;
 			pm_evt.conn_handle = im_conn_handle_get(peer_id);
 			pm_evt.peer_id = peer_id;

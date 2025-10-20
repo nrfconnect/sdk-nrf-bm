@@ -82,7 +82,7 @@ __STATIC_INLINE void nrf_mtx_unlock(nrf_mtx_t *p_mtx)
 #define GCM_EVENT_HANDLERS_CNT ARRAY_SIZE(m_evt_handlers)
 
 /* GATT Cache Manager event handler in Peer Manager. */
-extern void pm_gcm_evt_handler(pm_evt_t *p_gcm_evt);
+extern void pm_gcm_evt_handler(struct pm_evt *p_gcm_evt);
 
 /**
  * @brief GATT Cache Manager events' handlers.
@@ -139,7 +139,7 @@ static void internal_state_reset(void)
 	m_module_initialized = false;
 }
 
-static void evt_send(pm_evt_t *p_gcm_evt)
+static void evt_send(struct pm_evt *p_gcm_evt)
 {
 	p_gcm_evt->peer_id = im_peer_id_get_by_conn_handle(p_gcm_evt->conn_handle);
 
@@ -171,9 +171,13 @@ static bool cccd_written(ble_gatts_evt_write_t const *p_write_evt)
  */
 static void send_unexpected_error(uint16_t conn_handle, uint32_t err_code)
 {
-	pm_evt_t error_evt = {.evt_id = PM_EVT_ERROR_UNEXPECTED,
-			      .conn_handle = conn_handle,
-			      .params = {.error_unexpected = {.error = err_code}}};
+	struct pm_evt error_evt = {
+		.evt_id = PM_EVT_ERROR_UNEXPECTED,
+		.conn_handle = conn_handle,
+		.params.error_unexpected = {
+			.error = err_code,
+		},
+	};
 
 	evt_send(&error_evt);
 }
@@ -191,7 +195,7 @@ static void local_db_apply_in_evt(uint16_t conn_handle)
 {
 	bool set_procedure_as_pending = false;
 	uint32_t err_code;
-	pm_evt_t event = {
+	struct pm_evt event = {
 		.conn_handle = conn_handle,
 	};
 
@@ -281,7 +285,7 @@ static bool local_db_update_in_evt(uint16_t conn_handle)
 		break;
 
 	case NRF_ERROR_RESOURCES: {
-		pm_evt_t event = {
+		struct pm_evt event = {
 			.evt_id = PM_EVT_STORAGE_FULL,
 			.conn_handle = conn_handle,
 		};
@@ -359,7 +363,7 @@ static void service_changed_send_in_evt(uint16_t conn_handle)
 
 	switch (err_code) {
 	case NRF_SUCCESS: {
-		pm_evt_t event = {
+		struct pm_evt event = {
 			.evt_id = PM_EVT_SERVICE_CHANGED_IND_SENT,
 			.conn_handle = conn_handle,
 		};
@@ -517,7 +521,7 @@ static __INLINE void update_pending_flags_check(void)
  *
  * @param[in]  p_event  The event from the ID Manager module.
  */
-void gcm_im_evt_handler(pm_evt_t *p_event)
+void gcm_im_evt_handler(struct pm_evt *p_event)
 {
 	switch (p_event->evt_id) {
 	case PM_EVT_BONDED_PEER_CONNECTED:
@@ -539,7 +543,7 @@ void gcm_im_evt_handler(pm_evt_t *p_event)
  *
  * @param[in]  p_event  The event from the Security Dispatcher module.
  */
-void gcm_pdb_evt_handler(pm_evt_t *p_event)
+void gcm_pdb_evt_handler(struct pm_evt *p_event)
 {
 	if (p_event->evt_id == PM_EVT_PEER_DATA_UPDATE_SUCCEEDED &&
 	    p_event->params.peer_data_update_succeeded.action == PM_PEER_DATA_OP_UPDATE) {
@@ -671,7 +675,7 @@ void gcm_ble_evt_handler(ble_evt_t const *p_ble_evt)
 
 #if defined(CONFIG_PM_SERVICE_CHANGED)
 	case BLE_GATTS_EVT_SC_CONFIRM: {
-		pm_evt_t event = {
+		struct pm_evt event = {
 			.evt_id = PM_EVT_SERVICE_CHANGED_IND_CONFIRMED,
 			.peer_id = im_peer_id_get_by_conn_handle(conn_handle),
 			.conn_handle = conn_handle,

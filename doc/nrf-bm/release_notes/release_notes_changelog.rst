@@ -104,6 +104,7 @@ Libraries
      * All instances of ``pm_peer_data_update_succeeded_evt_t`` to :c:struct:`pm_peer_data_update_succeeded_evt` and removed the ``pm_peer_data_update_succeeded_evt_t`` type.
      * All instances of ``pm_peer_data_update_failed_t`` to :c:struct:`pm_peer_data_update_failed` and removed the ``pm_peer_data_update_failed_t`` type.
      * All instances of ``pm_failure_evt_t`` to :c:struct:`pm_failure_evt` and removed the ``pm_failure_evt_t`` type.
+     * All instances of ``pm_evt_t`` to :c:struct:`pm_evt` and removed the ``pm_evt_t`` type.
 
 Samples
 =======
