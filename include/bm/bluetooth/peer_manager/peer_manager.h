@@ -562,7 +562,7 @@ uint32_t pm_peer_data_bonding_load(uint16_t peer_id, pm_peer_data_bonding_t *dat
  * @brief Read a peer's remote DB values. (@ref PM_PEER_DATA_ID_GATT_REMOTE).
  * @details See @ref pm_peer_data_load for parameters and return values.
  */
-uint32_t pm_peer_data_remote_db_load(uint16_t peer_id, ble_gatt_db_srv_t *data,
+uint32_t pm_peer_data_remote_db_load(uint16_t peer_id, struct ble_gatt_db_srv *data,
 				     uint32_t *len);
 
 /**
@@ -625,7 +625,7 @@ uint32_t pm_peer_data_bonding_store(uint16_t peer_id, const pm_peer_data_bonding
  *
  * @details See @ref pm_peer_data_store for parameters and return values.
  */
-uint32_t pm_peer_data_remote_db_store(uint16_t peer_id, const ble_gatt_db_srv_t *data,
+uint32_t pm_peer_data_remote_db_store(uint16_t peer_id, const struct ble_gatt_db_srv *data,
 				      uint32_t len, uint32_t *token);
 
 /**
