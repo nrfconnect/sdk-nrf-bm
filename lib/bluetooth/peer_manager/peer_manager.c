@@ -439,7 +439,7 @@ uint32_t pm_conn_exclude(uint16_t conn_handle, void const *p_context)
 	return NRF_SUCCESS;
 }
 
-void pm_conn_sec_config_reply(uint16_t conn_handle, pm_conn_sec_config_t *p_conn_sec_config)
+void pm_conn_sec_config_reply(uint16_t conn_handle, struct pm_conn_sec_config *p_conn_sec_config)
 {
 	if (p_conn_sec_config != NULL) {
 		sm_conn_sec_config_reply(conn_handle, p_conn_sec_config);

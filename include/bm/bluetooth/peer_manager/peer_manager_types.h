@@ -157,14 +157,14 @@ enum pm_conn_sec_procedure {
 };
 
 /** @brief Configuration of a security procedure. */
-typedef struct {
+struct pm_conn_sec_config {
 	/**
 	 * @brief Whether to allow the peer to pair if it wants to, but is already bonded.
 	 *        If this is false, the procedure is rejected, and no more events are sent.
 	 *        Default: false.
 	 */
 	bool allow_repairing;
-} pm_conn_sec_config_t;
+};
 
 /** @brief Data associated with a bond to a peer. */
 typedef struct {

@@ -89,6 +89,7 @@ Libraries
      * All instances of ``pm_peer_id_list_skip_t`` to :c:enum:`pm_peer_id_list_skip` and removed the ``pm_peer_id_list_skip_t`` type.
      * All instances of ``pm_peer_data_id_t`` to :c:enum:`pm_peer_data_id` and removed the ``pm_peer_data_id_t`` type.
      * All instances of ``pm_conn_sec_procedure_t`` to :c:enum:`pm_conn_sec_procedure` and removed the ``pm_conn_sec_procedure_t`` type.
+     * All instances of ``pm_conn_sec_config_t`` to :c:struct:`pm_conn_sec_config` and removed the ``pm_conn_sec_config_t`` type.
 
 Samples
 =======

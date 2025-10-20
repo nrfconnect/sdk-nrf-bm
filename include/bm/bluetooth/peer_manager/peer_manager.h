@@ -161,13 +161,13 @@ uint32_t pm_conn_exclude(uint16_t conn_handle, const void *context);
  *
  * @details This function is optional, and must be called in reply to a @ref
  *          PM_EVT_CONN_SEC_CONFIG_REQ event, before the Peer Manager event handler returns. If it
- *          is not called in time, a default configuration is used. See @ref pm_conn_sec_config_t
+ *          is not called in time, a default configuration is used. See @ref pm_conn_sec_config
  *          for the value of the default.
  *
  * @param[in] conn_handle      The connection to set the configuration for.
  * @param[in] conn_sec_config  The configuration.
  */
-void pm_conn_sec_config_reply(uint16_t conn_handle, pm_conn_sec_config_t *conn_sec_config);
+void pm_conn_sec_config_reply(uint16_t conn_handle, struct pm_conn_sec_config *conn_sec_config);
 
 /**
  * @brief Provide security parameters for a link.

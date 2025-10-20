@@ -626,7 +626,7 @@ uint32_t sm_sec_params_set(ble_gap_sec_params_t *p_sec_params)
 	}
 }
 
-void sm_conn_sec_config_reply(uint16_t conn_handle, pm_conn_sec_config_t *p_conn_sec_config)
+void sm_conn_sec_config_reply(uint16_t conn_handle, struct pm_conn_sec_config *p_conn_sec_config)
 {
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
 	NRF_PM_DEBUG_CHECK(p_conn_sec_config != NULL);

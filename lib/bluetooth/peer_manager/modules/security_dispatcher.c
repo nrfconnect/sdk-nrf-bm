@@ -433,7 +433,7 @@ static void send_config_req(uint16_t conn_handle)
 	evt_send(&evt);
 }
 
-void smd_conn_sec_config_reply(uint16_t conn_handle, pm_conn_sec_config_t *p_conn_sec_config)
+void smd_conn_sec_config_reply(uint16_t conn_handle, struct pm_conn_sec_config *p_conn_sec_config)
 {
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
 	NRF_PM_DEBUG_CHECK(p_conn_sec_config != NULL);
