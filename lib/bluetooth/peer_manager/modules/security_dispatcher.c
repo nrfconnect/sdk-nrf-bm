@@ -87,7 +87,7 @@ static void evt_send(pm_evt_t *p_event)
  * @param[in]  conn_handle  The connection handle the event pertains to.
  * @param[in]  procedure    The procedure that has started on the connection.
  */
-static void sec_start_send(uint16_t conn_handle, pm_conn_sec_procedure_t procedure)
+static void sec_start_send(uint16_t conn_handle, enum pm_conn_sec_procedure procedure)
 {
 	pm_evt_t evt = {.evt_id = PM_EVT_CONN_SEC_START,
 			.conn_handle = conn_handle,
@@ -133,7 +133,7 @@ static void send_storage_full_evt(uint16_t conn_handle)
  * @param[in]  error        The error the procedure failed with. See @ref PM_SEC_ERRORS.
  * @param[in]  error_src    The party that raised the error. See @ref BLE_GAP_SEC_STATUS_SOURCES.
  */
-static void conn_sec_failure(uint16_t conn_handle, pm_conn_sec_procedure_t procedure,
+static void conn_sec_failure(uint16_t conn_handle, enum pm_conn_sec_procedure procedure,
 			     uint16_t error, uint8_t error_src)
 {
 	pm_evt_t evt = {.evt_id = PM_EVT_CONN_SEC_FAILED,
@@ -160,8 +160,8 @@ static void conn_sec_failure(uint16_t conn_handle, pm_conn_sec_procedure_t proce
 static void pairing_failure(uint16_t conn_handle, uint16_t error, uint8_t error_src)
 {
 	uint32_t err_code = NRF_SUCCESS;
-	pm_conn_sec_procedure_t procedure = bonding(conn_handle) ? PM_CONN_SEC_PROCEDURE_BONDING
-								 : PM_CONN_SEC_PROCEDURE_PAIRING;
+	enum pm_conn_sec_procedure procedure = bonding(conn_handle) ? PM_CONN_SEC_PROCEDURE_BONDING
+								    : PM_CONN_SEC_PROCEDURE_PAIRING;
 	uint16_t temp_peer_id;
 
 	err_code = pdb_temp_peer_id_get(conn_handle, &temp_peer_id);
@@ -217,7 +217,7 @@ static void link_secure_failure(uint16_t conn_handle, uint16_t error, uint8_t er
  * @param[in]  success      Whether the procedure was started successfully.
  * @param[in]  procedure    The procedure that was started.
  */
-static void sec_proc_start(uint16_t conn_handle, bool success, pm_conn_sec_procedure_t procedure)
+static void sec_proc_start(uint16_t conn_handle, bool success, enum pm_conn_sec_procedure procedure)
 {
 	ble_conn_state_user_flag_set(conn_handle, m_flag_sec_proc, success);
 	if (success) {
@@ -315,9 +315,9 @@ static uint32_t link_secure_central(uint16_t conn_handle, ble_gap_sec_params_t *
 		 * pairing (possibly including bonding) will be performed to encrypt the link.
 		 */
 		err_code = link_secure_authenticate(conn_handle, p_sec_params);
-		pm_conn_sec_procedure_t procedure = (p_sec_params && p_sec_params->bond)
-							    ? PM_CONN_SEC_PROCEDURE_BONDING
-							    : PM_CONN_SEC_PROCEDURE_PAIRING;
+		enum pm_conn_sec_procedure procedure = (p_sec_params && p_sec_params->bond)
+								? PM_CONN_SEC_PROCEDURE_BONDING
+								: PM_CONN_SEC_PROCEDURE_PAIRING;
 		sec_proc_start(conn_handle, err_code == NRF_SUCCESS, procedure);
 	}
 

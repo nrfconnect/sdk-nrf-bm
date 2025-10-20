@@ -144,7 +144,7 @@ enum pm_peer_data_id {
 };
 
 /** @brief Different procedures that can lead to an encrypted link. */
-typedef enum {
+enum pm_conn_sec_procedure {
 	/**
 	 * @brief Using an LTK that was shared during a previous bonding procedure to encrypt the
 	 * link.
@@ -154,7 +154,7 @@ typedef enum {
 	PM_CONN_SEC_PROCEDURE_BONDING,
 	/** @brief A pairing procedure with no bonding. */
 	PM_CONN_SEC_PROCEDURE_PAIRING,
-} pm_conn_sec_procedure_t;
+};
 
 /** @brief Configuration of a security procedure. */
 typedef struct {
@@ -380,13 +380,13 @@ typedef struct {
 /** @brief Events parameters specific to the @ref PM_EVT_CONN_SEC_START event. */
 typedef struct {
 	/** @brief The procedure that has started. */
-	pm_conn_sec_procedure_t procedure;
+	enum pm_conn_sec_procedure procedure;
 } pm_conn_sec_start_evt_t;
 
 /** @brief Parameters specific to the @ref PM_EVT_CONN_SEC_SUCCEEDED event. */
 typedef struct {
 	/** @brief The procedure that led to securing the link. */
-	pm_conn_sec_procedure_t procedure;
+	enum pm_conn_sec_procedure procedure;
 	/**
 	 * @brief Whether bonding data was successfully requested to be stored.
 	 *        This is false if: No bonding happened, or an internal error occurred
@@ -399,7 +399,7 @@ typedef struct {
 /** @brief Parameters specific to the @ref PM_EVT_CONN_SEC_FAILED event. */
 typedef struct {
 	/** @brief The procedure that failed. */
-	pm_conn_sec_procedure_t procedure;
+	enum pm_conn_sec_procedure procedure;
 	/** @brief An error code that describes the failure. See @ref PM_SEC_ERRORS. */
 	uint16_t error;
 	/** @brief The party that raised the error, see @ref BLE_GAP_SEC_STATUS_SOURCES. */
