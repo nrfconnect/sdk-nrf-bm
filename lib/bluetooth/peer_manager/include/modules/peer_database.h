@@ -112,7 +112,7 @@ uint32_t pdb_peer_free(uint16_t peer_id);
  * @retval NRF_ERROR_INTERNAL       Unexpected internal error.
  */
 uint32_t pdb_write_buf_get(uint16_t peer_id, enum pm_peer_data_id data_id, uint32_t n_bufs,
-			     pm_peer_data_t *p_peer_data);
+			   struct pm_peer_data *p_peer_data);
 
 /**
  * @brief Function for freeing a write buffer allocated with @ref pdb_write_buf_get.

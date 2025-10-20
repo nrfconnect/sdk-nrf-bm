@@ -39,14 +39,14 @@ static pm_evt_handler_internal_t const m_evt_handlers[] = {pm_sm_evt_handler};
 /* The context type that is used in PM_EVT_CONN_SEC_PARAMS_REQ events and in calls to
  * sm_sec_params_reply().
  */
-typedef struct {
+struct sec_params_reply_context {
 	/* The security parameters to use in the call to the security_dispatcher */
 	ble_gap_sec_params_t *p_sec_params;
 	/* The buffer for holding the security parameters. */
 	ble_gap_sec_params_t sec_params_mem;
 	/* Whether @ref sm_sec_params_reply has been called for this context instance. */
 	bool params_reply_called;
-} sec_params_reply_context_t;
+};
 
 /* Whether the Security Manager module has been initialized. */
 static bool m_module_initialized;
@@ -157,7 +157,7 @@ static bool key_is_lesc(uint16_t peer_id)
 {
 	struct pm_peer_data_bonding bonding_data = { 0 };
 	uint32_t bonding_data_size = sizeof(struct pm_peer_data_bonding);
-	pm_peer_data_t peer_data;
+	struct pm_peer_data peer_data;
 	uint32_t err_code;
 
 	peer_data.p_all_data = &bonding_data;
@@ -218,7 +218,7 @@ static void events_send_from_err_code(uint16_t conn_handle, uint32_t err_code,
  *                            sm_sec_params_reply().
  */
 static void params_req_send(uint16_t conn_handle, ble_gap_sec_params_t const *p_peer_params,
-			    sec_params_reply_context_t *p_context)
+			    struct sec_params_reply_context *p_context)
 {
 	struct pm_evt evt = new_evt(PM_EVT_CONN_SEC_PARAMS_REQ, conn_handle);
 
@@ -229,15 +229,15 @@ static void params_req_send(uint16_t conn_handle, ble_gap_sec_params_t const *p_
 }
 
 /**
- * @brief Function for creating a new @ref sec_params_reply_context_t with the correct initial
+ * @brief Function for creating a new @ref sec_params_reply_context with the correct initial
  * values.
  *
  * @return  The new context.
  */
-static sec_params_reply_context_t new_context_get(void)
+static struct sec_params_reply_context new_context_get(void)
 {
-	sec_params_reply_context_t new_context = {.p_sec_params = mp_sec_params,
-						  .params_reply_called = false};
+	struct sec_params_reply_context new_context = {.p_sec_params = mp_sec_params,
+						       .params_reply_called = false};
 	return new_context;
 }
 
@@ -261,7 +261,7 @@ static uint32_t link_secure(uint16_t conn_handle, bool null_params, bool force_r
 	if (null_params) {
 		p_sec_params = NULL;
 	} else {
-		sec_params_reply_context_t context = new_context_get();
+		struct sec_params_reply_context context = new_context_get();
 
 		params_req_send(conn_handle, NULL, &context);
 		p_sec_params = context.p_sec_params;
@@ -318,7 +318,7 @@ static void smd_params_reply_perform(uint16_t conn_handle,
 {
 	uint32_t err_code;
 	ble_gap_lesc_p256_pk_t *p_public_key;
-	sec_params_reply_context_t context = new_context_get();
+	struct sec_params_reply_context context = new_context_get();
 
 	params_req_send(conn_handle, p_peer_params, &context);
 
@@ -643,8 +643,8 @@ uint32_t sm_sec_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *p_sec_p
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
 	VERIFY_PARAM_NOT_NULL(p_context);
 
-	sec_params_reply_context_t *p_sec_params_reply_context =
-		(sec_params_reply_context_t *)p_context;
+	struct sec_params_reply_context *p_sec_params_reply_context =
+		(struct sec_params_reply_context *)p_context;
 	if (p_sec_params == NULL) {
 		/* Set the store pointer to NULL, so that NULL is passed to the SoftDevice. */
 		p_sec_params_reply_context->p_sec_params = NULL;

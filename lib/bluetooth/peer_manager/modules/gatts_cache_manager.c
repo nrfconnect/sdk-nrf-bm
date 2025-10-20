@@ -77,7 +77,7 @@ static void service_changed_pending_set(void)
 	/* Use a uint32_t to enforce 4-byte alignment. */
 	static const uint32_t service_changed_pending = true;
 
-	pm_peer_data_const_t peer_data = {
+	struct pm_peer_data_const peer_data = {
 		.data_id = PM_PEER_DATA_ID_SERVICE_CHANGED_PENDING,
 		.length_words = PM_SC_STATE_N_WORDS(),
 		.p_service_changed_pending = (bool *)&service_changed_pending,
@@ -145,7 +145,7 @@ uint32_t gscm_local_db_cache_update(uint16_t conn_handle)
 		return BLE_ERROR_INVALID_CONN_HANDLE;
 	}
 
-	pm_peer_data_t peer_data;
+	struct pm_peer_data peer_data;
 	uint16_t n_bufs = 1;
 	bool retry_with_bigger_buffer = false;
 
@@ -171,7 +171,7 @@ uint32_t gscm_local_db_cache_update(uint16_t conn_handle)
 				uint32_t local_gatt_db_size = PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE;
 				struct pm_peer_data_local_gatt_db *curr_p_local_gatt_db =
 					(struct pm_peer_data_local_gatt_db *)local_gatt_db_buf;
-				pm_peer_data_t curr_peer_data;
+				struct pm_peer_data curr_peer_data;
 
 				curr_peer_data.p_all_data = local_gatt_db_buf;
 
@@ -259,7 +259,7 @@ uint32_t gscm_local_db_cache_apply(uint16_t conn_handle)
 
 	uint16_t peer_id = im_peer_id_get_by_conn_handle(conn_handle);
 	uint32_t err_code;
-	pm_peer_data_t peer_data;
+	struct pm_peer_data peer_data;
 	uint8_t const *p_sys_attr_data = NULL;
 	uint16_t sys_attr_len = 0;
 	uint32_t sys_attr_flags = (SYS_ATTR_BOTH);
@@ -332,7 +332,7 @@ bool gscm_service_changed_ind_needed(uint16_t conn_handle)
 	uint32_t err_code;
 	bool service_changed_state;
 	uint32_t service_changed_state_size = sizeof(bool);
-	pm_peer_data_t peer_data;
+	struct pm_peer_data peer_data;
 
 	peer_data.p_all_data = &service_changed_state;
 	uint16_t peer_id = im_peer_id_get_by_conn_handle(conn_handle);
@@ -380,7 +380,7 @@ void gscm_db_change_notification_done(uint16_t peer_id)
 	/* Use a uint32_t to enforce 4-byte alignment. */
 	static const uint32_t service_changed_pending;
 
-	pm_peer_data_const_t peer_data = {
+	struct pm_peer_data_const peer_data = {
 		.data_id = PM_PEER_DATA_ID_SERVICE_CHANGED_PENDING,
 		.length_words = PM_SC_STATE_N_WORDS(),
 		.p_service_changed_pending = (bool *)&service_changed_pending,
