@@ -154,7 +154,7 @@ uint32_t pm_conn_secure(uint16_t conn_handle, bool force_repairing);
  * @retval NRF_SUCCESS     If the reply was successful.
  * @retval NRF_ERROR_NULL  If @p context was NULL.
  */
-uint32_t pm_conn_exclude(uint16_t conn_handle, void const *context);
+uint32_t pm_conn_exclude(uint16_t conn_handle, const void *context);
 
 /**
  * @brief Provide a security configuration for a link.
