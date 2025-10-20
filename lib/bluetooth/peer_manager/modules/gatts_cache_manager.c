@@ -27,7 +27,7 @@ LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 #define GSCM_EVENT_HANDLERS_CNT ARRAY_SIZE(m_evt_handlers)
 
 /* GATTS Cache Manager event handler in Peer Manager. */
-extern void pm_gscm_evt_handler(pm_evt_t *p_gcm_evt);
+extern void pm_gscm_evt_handler(struct pm_evt *p_gcm_evt);
 
 /* GATTS Cache Manager events' handlers.
  * The number of elements in this array is GSCM_EVENT_HANDLERS_CNT.
@@ -54,7 +54,7 @@ static void internal_state_reset(void)
 }
 
 #if defined(CONFIG_PM_SERVICE_CHANGED)
-static void evt_send(pm_evt_t *p_gscm_evt)
+static void evt_send(struct pm_evt *p_gscm_evt)
 {
 	p_gscm_evt->conn_handle = im_conn_handle_get(p_gscm_evt->peer_id);
 
@@ -86,7 +86,7 @@ static void service_changed_pending_set(void)
 	while (m_current_sc_store_peer_id != PM_PEER_ID_INVALID) {
 		err_code = pds_peer_data_store(m_current_sc_store_peer_id, &peer_data, NULL);
 		if (err_code != NRF_SUCCESS) {
-			pm_evt_t evt = {.peer_id = m_current_sc_store_peer_id};
+			struct pm_evt evt = {.peer_id = m_current_sc_store_peer_id};
 
 			if (err_code == NRF_ERROR_BUSY) {
 				/* Do nothing. */
@@ -116,7 +116,7 @@ static void service_changed_pending_set(void)
  *
  * @param[in]  p_event The event that has happened with peer id and flags.
  */
-void gscm_pdb_evt_handler(pm_evt_t *p_event)
+void gscm_pdb_evt_handler(struct pm_evt *p_event)
 {
 	if (m_current_sc_store_peer_id != PM_PEER_ID_INVALID) {
 		service_changed_pending_set();
@@ -155,7 +155,7 @@ uint32_t gscm_local_db_cache_update(uint16_t conn_handle)
 		err_code = pdb_write_buf_get(peer_id, PM_PEER_DATA_ID_GATT_LOCAL, n_bufs++,
 						&peer_data);
 		if (err_code == NRF_SUCCESS) {
-			pm_peer_data_local_gatt_db_t *p_local_gatt_db =
+			struct pm_peer_data_local_gatt_db *p_local_gatt_db =
 				peer_data.p_local_gatt_db;
 
 			p_local_gatt_db->flags = SYS_ATTR_BOTH;
@@ -169,8 +169,8 @@ uint32_t gscm_local_db_cache_update(uint16_t conn_handle)
 					0
 				};
 				uint32_t local_gatt_db_size = PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE;
-				pm_peer_data_local_gatt_db_t *curr_p_local_gatt_db =
-					(pm_peer_data_local_gatt_db_t *)local_gatt_db_buf;
+				struct pm_peer_data_local_gatt_db *curr_p_local_gatt_db =
+					(struct pm_peer_data_local_gatt_db *)local_gatt_db_buf;
 				pm_peer_data_t curr_peer_data;
 
 				curr_peer_data.p_all_data = local_gatt_db_buf;
@@ -268,13 +268,13 @@ uint32_t gscm_local_db_cache_apply(uint16_t conn_handle)
 	if (peer_id != PM_PEER_ID_INVALID) {
 		uint8_t local_gatt_db_buf[PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE] = { 0 };
 		uint32_t local_gatt_db_size = PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE;
-		pm_peer_data_local_gatt_db_t *curr_p_local_gatt_db =
-			(pm_peer_data_local_gatt_db_t *)local_gatt_db_buf;
+		struct pm_peer_data_local_gatt_db *curr_p_local_gatt_db =
+			(struct pm_peer_data_local_gatt_db *)local_gatt_db_buf;
 		peer_data.p_all_data = &local_gatt_db_buf;
 		err_code = pds_peer_data_read(peer_id, PM_PEER_DATA_ID_GATT_LOCAL, &peer_data,
 					      &local_gatt_db_size);
 		if (err_code == NRF_SUCCESS) {
-			pm_peer_data_local_gatt_db_t const *p_local_gatt_db;
+			struct pm_peer_data_local_gatt_db const *p_local_gatt_db;
 
 			p_local_gatt_db = curr_p_local_gatt_db;
 			p_sys_attr_data = p_local_gatt_db->data;

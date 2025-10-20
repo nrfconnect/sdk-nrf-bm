@@ -39,9 +39,9 @@ extern "C" {
 #define PEER_ID_TO_FILE_ID (PDS_FIRST_RESERVED_FILE_ID)
 /** @brief Macro for converting an FDS file ID to a peer ID. */
 #define FILE_ID_TO_PEER_ID (-PDS_FIRST_RESERVED_FILE_ID)
-/** @brief Macro for converting a @ref pm_peer_data_id_t to an FDS record ID. */
+/** @brief Macro for converting a @ref pm_peer_data_id to an FDS record ID. */
 #define DATA_ID_TO_RECORD_KEY (PDS_FIRST_RESERVED_RECORD_KEY)
-/** @brief Macro for converting an FDS record ID to a @ref pm_peer_data_id_t. */
+/** @brief Macro for converting an FDS record ID to a @ref pm_peer_data_id. */
 #define RECORD_KEY_TO_DATA_ID (-PDS_FIRST_RESERVED_RECORD_KEY)
 
 /**
@@ -69,7 +69,7 @@ uint32_t pds_init(void);
  * @retval NRF_ERROR_DATA_SIZE      If the provided buffer is too small. The data is still copied,
  *                                  filling the provided buffer.
  */
-uint32_t pds_peer_data_read(uint16_t peer_id, pm_peer_data_id_t data_id,
+uint32_t pds_peer_data_read(uint16_t peer_id, enum pm_peer_data_id data_id,
 			      pm_peer_data_t *const p_data, uint32_t const *const p_buf_len);
 
 /**
@@ -93,7 +93,7 @@ void pds_peer_data_iterate_prepare(uint16_t *p_peer_id_iter);
  * @retval true   If the operation was successful.
  * @retval false  If the data was not found in flash, or another error occurred.
  */
-bool pds_peer_data_iterate(pm_peer_data_id_t data_id, uint16_t *const p_peer_id,
+bool pds_peer_data_iterate(enum pm_peer_data_id data_id, uint16_t *const p_peer_id,
 			   pm_peer_data_flash_t *const p_data, uint16_t *p_peer_id_iter);
 
 /**
@@ -132,7 +132,7 @@ uint32_t pds_peer_data_store(uint16_t peer_id, pm_peer_data_const_t const *p_pee
  * @retval NRF_ERROR_BUSY           If the flash filesystem was busy.
  * @retval NRF_ERROR_INTERNAL       If an unexpected error occurred.
  */
-uint32_t pds_peer_data_delete(uint16_t peer_id, pm_peer_data_id_t data_id);
+uint32_t pds_peer_data_delete(uint16_t peer_id, enum pm_peer_data_id data_id);
 
 /**
  * @brief Function for claiming an unused peer ID.

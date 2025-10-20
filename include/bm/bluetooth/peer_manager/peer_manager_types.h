@@ -33,7 +33,7 @@ extern "C" {
 /** @brief The number of available peer IDs. */
 #define PM_PEER_ID_N_AVAILABLE_IDS 256
 /** @brief The static-length part of the local GATT data struct. */
-#define PM_LOCAL_DB_LEN_OVERHEAD_BYTES offsetof(pm_peer_data_local_gatt_db_t, data)
+#define PM_LOCAL_DB_LEN_OVERHEAD_BYTES offsetof(struct pm_peer_data_local_gatt_db, data)
 /**
  * @brief The base for Peer Manager defined errors. See @ref PM_SEC_ERRORS.
  */
@@ -114,16 +114,16 @@ extern "C" {
 /**
  * @brief The different types of data associated with a peer.
  */
-typedef enum {
+enum pm_peer_data_id {
 	/** @brief The smallest data ID. */
 	PM_PEER_DATA_ID_FIRST = PM_PEER_DATA_ID_FIRST_VX,
-	/** @brief The data ID for bonding data. Type: @ref pm_peer_data_bonding_t. */
+	/** @brief The data ID for bonding data. Type: @ref pm_peer_data_bonding. */
 	PM_PEER_DATA_ID_BONDING = PM_PEER_DATA_ID_BONDING_V2,
 	/** @brief The data ID for service changed state. Type: bool. */
 	PM_PEER_DATA_ID_SERVICE_CHANGED_PENDING = PM_PEER_DATA_ID_SERVICE_CHANGED_PENDING_V1,
 	/**
 	 * @brief The data ID for local GATT data (sys attributes).
-	 * Type: @ref pm_peer_data_local_gatt_db_t.
+	 * Type: @ref pm_peer_data_local_gatt_db.
 	 */
 	PM_PEER_DATA_ID_GATT_LOCAL = PM_PEER_DATA_ID_GATT_LOCAL_V2,
 	/** @brief The data ID for remote GATT data. Type: uint8_t array. */
@@ -141,10 +141,10 @@ typedef enum {
 	PM_PEER_DATA_ID_LAST = PM_PEER_DATA_ID_LAST_VX,
 	/** @brief A data ID guaranteed to be invalid. */
 	PM_PEER_DATA_ID_INVALID = PM_PEER_DATA_ID_INVALID_VX,
-} pm_peer_data_id_t;
+};
 
 /** @brief Different procedures that can lead to an encrypted link. */
-typedef enum {
+enum pm_conn_sec_procedure {
 	/**
 	 * @brief Using an LTK that was shared during a previous bonding procedure to encrypt the
 	 * link.
@@ -154,20 +154,20 @@ typedef enum {
 	PM_CONN_SEC_PROCEDURE_BONDING,
 	/** @brief A pairing procedure with no bonding. */
 	PM_CONN_SEC_PROCEDURE_PAIRING,
-} pm_conn_sec_procedure_t;
+};
 
 /** @brief Configuration of a security procedure. */
-typedef struct {
+struct pm_conn_sec_config {
 	/**
 	 * @brief Whether to allow the peer to pair if it wants to, but is already bonded.
 	 *        If this is false, the procedure is rejected, and no more events are sent.
 	 *        Default: false.
 	 */
 	bool allow_repairing;
-} pm_conn_sec_config_t;
+};
 
 /** @brief Data associated with a bond to a peer. */
-typedef struct {
+struct pm_peer_data_bonding {
 	/** @brief The BLE role of the local device during bonding. See @ref BLE_GAP_ROLES. */
 	uint8_t own_role;
 	/** @brief The peer's Bluetooth address and identity resolution key (IRK). */
@@ -179,39 +179,20 @@ typedef struct {
 	 *        the peer.
 	 */
 	ble_gap_enc_key_t own_ltk;
-} pm_peer_data_bonding_t;
+};
 
 /** @brief Data on a local GATT database. */
-typedef struct {
+struct pm_peer_data_local_gatt_db {
 	/** @brief Flags that describe the database attributes. */
 	uint32_t flags;
 	/** @brief Size of the attribute array. */
 	uint16_t len;
 	/** @brief Array to hold the database attributes. */
 	uint8_t data[1];
-} pm_peer_data_local_gatt_db_t;
-
-/**
- * @brief Device Privacy.
- *
- *        The privacy feature provides a way for the device to avoid being tracked over a period of
- *        time. The privacy feature, when enabled, hides the local device identity and replaces it
- *        with a private address that is automatically refreshed at a specified interval.
- *
- *        If a device still wants to be recognized by other peers, it needs to share it's Identity
- *        Resolving Key (IRK). With this key, a device can generate a random private address that
- *        can only be recognized by peers in possession of that key, and devices can establish
- *        connections without revealing their real identities.
- *
- * @note  If the device IRK is updated, the new IRK becomes the one to be distributed in all
- *        bonding procedures performed after @ref sd_ble_gap_privacy_set returns.
- *        The IRK distributed during bonding procedure is the device IRK that is active when @ref
- *        sd_ble_gap_sec_params_reply is called.
- */
-typedef ble_gap_privacy_params_t pm_privacy_params_t;
+};
 
 /** @brief Security status of a connection. */
-typedef struct {
+struct pm_conn_sec_status {
 	/** @brief The connection is active (not disconnected). */
 	uint8_t connected: 1;
 	/** @brief The communication on this link is encrypted. */
@@ -226,10 +207,10 @@ typedef struct {
 	uint8_t lesc: 1;
 	/** @brief Reserved for future use. */
 	uint8_t reserved: 3;
-} pm_conn_sec_status_t;
+};
 
 /** @brief Types of events that can come from the @ref peer_manager module. */
-typedef enum {
+enum pm_evt_id {
 	/**
 	 * @brief A connected peer has been identified as one with which we have a bond.
 	 *        When performing bonding with a peer for the first time, this event will not be
@@ -364,10 +345,10 @@ typedef enum {
 	PM_EVT_FLASH_GARBAGE_COLLECTED,
 	/** @brief Garbage collection was attempted but failed. */
 	PM_EVT_FLASH_GARBAGE_COLLECTION_FAILED,
-} pm_evt_id_t;
+};
 
 /** @brief Parameters specific to the @ref PM_EVT_CONN_CONFIG_REQ event. */
-typedef struct {
+struct pm_conn_config_req_evt {
 	/** @brief Connected Event parameters. */
 	const ble_gap_evt_connected_t *peer_params;
 	/**
@@ -375,18 +356,18 @@ typedef struct {
 	 *        context argument.
 	 */
 	const void *context;
-} pm_conn_config_req_evt_t;
+};
 
 /** @brief Events parameters specific to the @ref PM_EVT_CONN_SEC_START event. */
-typedef struct {
+struct pm_conn_sec_start_evt {
 	/** @brief The procedure that has started. */
-	pm_conn_sec_procedure_t procedure;
-} pm_conn_sec_start_evt_t;
+	enum pm_conn_sec_procedure procedure;
+};
 
 /** @brief Parameters specific to the @ref PM_EVT_CONN_SEC_SUCCEEDED event. */
-typedef struct {
+struct pm_conn_secured_evt {
 	/** @brief The procedure that led to securing the link. */
-	pm_conn_sec_procedure_t procedure;
+	enum pm_conn_sec_procedure procedure;
 	/**
 	 * @brief Whether bonding data was successfully requested to be stored.
 	 *        This is false if: No bonding happened, or an internal error occurred
@@ -394,20 +375,20 @@ typedef struct {
 	 *        @ref pm_conn_sec_config_reply.
 	 */
 	bool data_stored;
-} pm_conn_secured_evt_t;
+};
 
 /** @brief Parameters specific to the @ref PM_EVT_CONN_SEC_FAILED event. */
-typedef struct {
+struct pm_conn_secure_failed_evt {
 	/** @brief The procedure that failed. */
-	pm_conn_sec_procedure_t procedure;
+	enum pm_conn_sec_procedure procedure;
 	/** @brief An error code that describes the failure. See @ref PM_SEC_ERRORS. */
 	uint16_t error;
 	/** @brief The party that raised the error, see @ref BLE_GAP_SEC_STATUS_SOURCES. */
 	uint8_t error_src;
-} pm_conn_secure_failed_evt_t;
+};
 
 /** @brief Parameters specific to the @ref PM_EVT_CONN_SEC_PARAMS_REQ event. */
-typedef struct {
+struct pm_conn_sec_params_req_evt {
 	/** @brief Peer security parameters, if role is peripheral. Otherwise, this is NULL. */
 	const ble_gap_sec_params_t *peer_params;
 	/**
@@ -415,22 +396,22 @@ typedef struct {
 	 *        context argument.
 	 */
 	const void *context;
-} pm_conn_sec_params_req_evt_t;
+};
 
 /** @brief Actions that can be performed to peer data in persistent storage. */
-typedef enum {
+enum pm_peer_data_op {
 	/** @brief Writing or overwriting the data. */
 	PM_PEER_DATA_OP_UPDATE,
 	/** @brief Removing the data. */
 	PM_PEER_DATA_OP_DELETE,
-} pm_peer_data_op_t;
+};
 
 /** @brief Parameters specific to the @ref PM_EVT_PEER_DATA_UPDATE_SUCCEEDED event. */
-typedef struct {
+struct pm_peer_data_update_succeeded_evt {
 	/** @brief The type of the data that was changed. */
-	pm_peer_data_id_t data_id;
+	enum pm_peer_data_id data_id;
 	/** @brief What happened to the data. */
-	pm_peer_data_op_t action;
+	enum pm_peer_data_op action;
 	/**
 	 * @brief Token that identifies the operation. For @ref PM_PEER_DATA_OP_DELETE actions,
 	 *        this token can be disregarded. For @ref PM_PEER_DATA_OP_UPDATE actions,
@@ -444,14 +425,14 @@ typedef struct {
 	 *        scenarios, this flag will be true even if the new value is the same as the old.
 	 */
 	uint8_t flash_changed: 1;
-} pm_peer_data_update_succeeded_evt_t;
+};
 
 /** @brief Parameters specific to the @ref PM_EVT_PEER_DATA_UPDATE_FAILED event. */
-typedef struct {
+struct pm_peer_data_update_failed_evt {
 	/** @brief The type of the data that was supposed to be changed. */
-	pm_peer_data_id_t data_id;
+	enum pm_peer_data_id data_id;
 	/** @brief The action that failed. */
-	pm_peer_data_op_t action;
+	enum pm_peer_data_op action;
 	/**
 	 * @brief Token that identifies the operation. For @ref PM_PEER_DATA_OP_DELETE actions,
 	 *        this token can be disregarded. For @ref PM_PEER_DATA_OP_UPDATE actions, compare
@@ -461,61 +442,61 @@ typedef struct {
 	uint32_t token;
 	/** @brief An error code that describes the failure. */
 	uint32_t error;
-} pm_peer_data_update_failed_t;
+};
 
 /** @brief Standard parameters for failure events. */
-typedef struct {
+struct pm_failure_evt {
 	/** @brief The error that occurred. */
 	uint32_t error;
-} pm_failure_evt_t;
+};
 
 /**
  * @brief An event from the @ref peer_manager module.
  *
- * @details The structure contains both standard parameters and parameters that are specific to some
- * events.
+ * @details The structure contains both standard parameters and parameters that are specific to
+ *          some events.
  */
-typedef struct {
+struct pm_evt {
 	/** @brief The type of the event. */
-	pm_evt_id_t evt_id;
+	enum pm_evt_id evt_id;
 	/** @brief The connection that this event pertains to, or @ref BLE_CONN_HANDLE_INVALID. */
 	uint16_t conn_handle;
 	/** @brief The bonded peer that this event pertains to, or @ref PM_PEER_ID_INVALID. */
 	uint16_t peer_id;
 	union {
 		/** @brief Parameters specific to the @ref PM_EVT_CONN_CONFIG_REQ event. */
-		pm_conn_config_req_evt_t conn_config_req;
+		struct pm_conn_config_req_evt conn_config_req;
 		/** @brief Parameters specific to the @ref PM_EVT_CONN_SEC_START event. */
-		pm_conn_sec_start_evt_t conn_sec_start;
+		struct pm_conn_sec_start_evt conn_sec_start;
 		/** @brief Parameters specific to the @ref PM_EVT_CONN_SEC_SUCCEEDED event. */
-		pm_conn_secured_evt_t conn_sec_succeeded;
+		struct pm_conn_secured_evt conn_sec_succeeded;
 		/** @brief Parameters specific to the @ref PM_EVT_CONN_SEC_FAILED event. */
-		pm_conn_secure_failed_evt_t conn_sec_failed;
+		struct pm_conn_secure_failed_evt conn_sec_failed;
 		/** @brief Parameters specific to the @ref PM_EVT_CONN_SEC_PARAMS_REQ event. */
-		pm_conn_sec_params_req_evt_t conn_sec_params_req;
+		struct pm_conn_sec_params_req_evt conn_sec_params_req;
 		/**
 		 * @brief Parameters specific to the @ref PM_EVT_PEER_DATA_UPDATE_SUCCEEDED event.
 		 */
-		pm_peer_data_update_succeeded_evt_t peer_data_update_succeeded;
+		struct pm_peer_data_update_succeeded_evt peer_data_update_succeeded;
 		/** @brief Parameters specific to the @ref PM_EVT_PEER_DATA_UPDATE_FAILED event. */
-		pm_peer_data_update_failed_t peer_data_update_failed;
+		struct pm_peer_data_update_failed_evt peer_data_update_failed;
 		/** @brief Parameters specific to the @ref PM_EVT_PEER_DELETE_FAILED event. */
-		pm_failure_evt_t peer_delete_failed;
+		struct pm_failure_evt peer_delete_failed;
 		/** @brief Parameters specific to the @ref PM_EVT_PEERS_DELETE_FAILED event. */
-		pm_failure_evt_t peers_delete_failed_evt;
+		struct pm_failure_evt peers_delete_failed_evt;
 		/** @brief Parameters specific to the @ref PM_EVT_ERROR_UNEXPECTED event. */
-		pm_failure_evt_t error_unexpected;
+		struct pm_failure_evt error_unexpected;
 #ifdef CONFIG_SOFTDEVICE_CENTRAL
 		/** @brief Parameters specific to the @ref PM_EVT_SLAVE_SECURITY_REQ event. */
 		ble_gap_evt_sec_request_t slave_security_req;
+#endif
 		/**
 		 * @brief Parameters specific to the @ref PM_EVT_FLASH_GARBAGE_COLLECTION_FAILED
 		 *        event.
 		 */
-#endif
-		pm_failure_evt_t garbage_collection_failed;
+		struct pm_failure_evt garbage_collection_failed;
 	} params;
-} pm_evt_t;
+};
 
 /**
  * @brief Event handler for events from the @ref peer_manager module.
@@ -524,7 +505,7 @@ typedef struct {
  *
  * @param[in]  pm_evt  The event that has occurred.
  */
-typedef void (*pm_evt_handler_t)(const pm_evt_t *pm_evt);
+typedef void (*pm_evt_handler_t)(const struct pm_evt *pm_evt);
 
 #ifdef __cplusplus
 }

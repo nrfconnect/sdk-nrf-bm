@@ -34,7 +34,7 @@ extern "C" {
 #endif
 
 /** @brief Peer list filtrations. They determine which peer ID will be added to list. */
-typedef enum {
+enum pm_peer_id_list_skip {
 	/** @brief Add all peers. */
 	PM_PEER_ID_LIST_ALL_ID,
 	/** @brief Add only peers with an ID address (static address). */
@@ -49,7 +49,7 @@ typedef enum {
 	PM_PEER_ID_LIST_SKIP_NO_CAR = 1 << 2,
 	/** @brief All above filters applied. */
 	PM_PEER_ID_LIST_SKIP_ALL = PM_PEER_ID_LIST_SKIP_NO_IRK | PM_PEER_ID_LIST_SKIP_NO_CAR
-} pm_peer_id_list_skip_t;
+};
 
 /**
  * @brief Initialize the Peer Manager.
@@ -161,13 +161,13 @@ uint32_t pm_conn_exclude(uint16_t conn_handle, const void *context);
  *
  * @details This function is optional, and must be called in reply to a @ref
  *          PM_EVT_CONN_SEC_CONFIG_REQ event, before the Peer Manager event handler returns. If it
- *          is not called in time, a default configuration is used. See @ref pm_conn_sec_config_t
+ *          is not called in time, a default configuration is used. See @ref pm_conn_sec_config
  *          for the value of the default.
  *
  * @param[in] conn_handle      The connection to set the configuration for.
  * @param[in] conn_sec_config  The configuration.
  */
-void pm_conn_sec_config_reply(uint16_t conn_handle, pm_conn_sec_config_t *conn_sec_config);
+void pm_conn_sec_config_reply(uint16_t conn_handle, struct pm_conn_sec_config *conn_sec_config);
 
 /**
  * @brief Provide security parameters for a link.
@@ -215,7 +215,7 @@ void pm_local_database_has_changed(void);
  * @retval NRF_ERROR_NULL                 If @p conn_sec_status was NULL.
  * @retval NRF_ERROR_INVALID_STATE        If the Peer Manager is not initialized.
  */
-uint32_t pm_conn_sec_status_get(uint16_t conn_handle, pm_conn_sec_status_t *conn_sec_status);
+uint32_t pm_conn_sec_status_get(uint16_t conn_handle, struct pm_conn_sec_status *conn_sec_status);
 
 /**
  * @brief Compare the security status of a connection against a baseline.
@@ -228,7 +228,7 @@ uint32_t pm_conn_sec_status_get(uint16_t conn_handle, pm_conn_sec_status_t *conn
  * @retval false  If the security status of the connection does not fulfill the baseline, or could
  *                not be retrieved.
  */
-bool pm_sec_is_sufficient(uint16_t conn_handle, pm_conn_sec_status_t *sec_status_req);
+bool pm_sec_is_sufficient(uint16_t conn_handle, struct pm_conn_sec_status *sec_status_req);
 
 /**
  * @brief Specify the public key to use for LESC operations.
@@ -406,7 +406,7 @@ uint32_t pm_id_addr_get(ble_gap_addr_t *addr);
  *                                  privacy are enabled.
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  */
-uint32_t pm_privacy_set(const pm_privacy_params_t *privacy_params);
+uint32_t pm_privacy_set(const ble_gap_privacy_params_t *privacy_params);
 
 /**
  * @brief Retrieve privacy settings.
@@ -420,7 +420,7 @@ uint32_t pm_privacy_set(const pm_privacy_params_t *privacy_params);
  *                                  NULL.
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  */
-uint32_t pm_privacy_get(pm_privacy_params_t *privacy_params);
+uint32_t pm_privacy_get(ble_gap_privacy_params_t *privacy_params);
 
 /**
  * @brief Resolve a resolvable address with an identity resolution key (IRK).
@@ -485,7 +485,7 @@ uint32_t pm_peer_id_get(uint16_t conn_handle, uint16_t *peer_id);
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  */
 uint32_t pm_peer_id_list(uint16_t *peer_list, uint32_t *const list_size,
-			 uint16_t first_peer_id, pm_peer_id_list_skip_t skip_id);
+			 uint16_t first_peer_id, enum pm_peer_id_list_skip skip_id);
 
 /**
  * @brief Get the next peer ID in the sequence of all used peer IDs.
@@ -533,7 +533,7 @@ uint32_t pm_peer_count(void);
  * @param[in]  peer_id  Peer ID to get data for.
  * @param[in]  data_id  Which type of data to read.
  * @param[out] data     Where to put the retrieved data. The documentation for
- *                      @ref pm_peer_data_id_t specifies what data type each data ID is stored as.
+ *                      @ref pm_peer_data_id specifies what data type each data ID is stored as.
  * @param[in,out] len   In: The length in bytes of @p data.
  *                      Out: The length in bytes of the read data, if the read was successful.
  *
@@ -549,14 +549,14 @@ uint32_t pm_peer_count(void);
  *                                  bytes) when storing.
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  */
-uint32_t pm_peer_data_load(uint16_t peer_id, pm_peer_data_id_t data_id, void *data,
+uint32_t pm_peer_data_load(uint16_t peer_id, enum pm_peer_data_id data_id, void *data,
 			   uint32_t *len);
 
 /**
  * @brief Read a peer's bonding data (@ref PM_PEER_DATA_ID_BONDING).
  * @details See @ref pm_peer_data_load for parameters and return values.
  */
-uint32_t pm_peer_data_bonding_load(uint16_t peer_id, pm_peer_data_bonding_t *data);
+uint32_t pm_peer_data_bonding_load(uint16_t peer_id, struct pm_peer_data_bonding *data);
 
 /**
  * @brief Read a peer's remote DB values. (@ref PM_PEER_DATA_ID_GATT_REMOTE).
@@ -590,7 +590,7 @@ uint32_t pm_peer_data_app_data_load(uint16_t peer_id, void *data, uint32_t *len)
  *
  * @param[in]  peer_id  Peer ID to set data for.
  * @param[in]  data_id  The type of data to set.
- * @param[in]  data     New value to set. The documentation for @ref pm_peer_data_id_t specifies
+ * @param[in]  data     New value to set. The documentation for @ref pm_peer_data_id specifies
  *                      what data type each data ID should be stored as.
  * @param[in]  len      The length in bytes of @p data.
  * @param[out] token    A token that identifies this particular store operation. The token can be
@@ -609,7 +609,7 @@ uint32_t pm_peer_data_app_data_load(uint16_t peer_id, void *data, uint32_t *len)
  *                                  so duplicate entries are avoided.
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  */
-uint32_t pm_peer_data_store(uint16_t peer_id, pm_peer_data_id_t data_id, const void *data,
+uint32_t pm_peer_data_store(uint16_t peer_id, enum pm_peer_data_id data_id, const void *data,
 			    uint32_t len, uint32_t *token);
 
 /**
@@ -617,7 +617,7 @@ uint32_t pm_peer_data_store(uint16_t peer_id, pm_peer_data_id_t data_id, const v
  *
  * @details See @ref pm_peer_data_store for parameters and return values.
  */
-uint32_t pm_peer_data_bonding_store(uint16_t peer_id, const pm_peer_data_bonding_t *data,
+uint32_t pm_peer_data_bonding_store(uint16_t peer_id, const struct pm_peer_data_bonding *data,
 				    uint32_t *token);
 
 /**
@@ -664,7 +664,7 @@ uint32_t pm_peer_data_app_data_store(uint16_t peer_id, const void *data, uint32_
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  * @retval NRF_ERROR_INTERNAL       If an internal error occurred.
  */
-uint32_t pm_peer_data_delete(uint16_t peer_id, pm_peer_data_id_t data_id);
+uint32_t pm_peer_data_delete(uint16_t peer_id, enum pm_peer_data_id data_id);
 
 /**
  * @brief Manually add a peer to the non-volatile storage.
@@ -690,7 +690,8 @@ uint32_t pm_peer_data_delete(uint16_t peer_id, pm_peer_data_id_t data_id);
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  * @retval NRF_ERROR_INTERNAL       If an internal error occurred.
  */
-uint32_t pm_peer_new(uint16_t *new_peer_id, pm_peer_data_bonding_t *bonding_data, uint32_t *token);
+uint32_t pm_peer_new(uint16_t *new_peer_id, struct pm_peer_data_bonding *bonding_data,
+		     uint32_t *token);
 
 /**
  * @brief Delete all data stored for a peer and free the peer ID.
@@ -781,8 +782,8 @@ uint32_t pm_peer_ranks_get(uint16_t *highest_ranked_peer, uint32_t *highest_rank
  *          @ref pm_peer_ranks_get.
  *
  * @note The @ref PM_EVT_PEER_DATA_UPDATE_SUCCEEDED event can arrive before the function returns if
- *       the peer is already ranked highest. In this case, the @ref
- *       pm_peer_data_update_succeeded_evt_t.flash_changed flag in the event will be false.
+ *       the peer is already ranked highest. In this case, the flash_changed flag in the
+ *       @ref pm_peer_data_update_succeeded_evt event will be false.
  *
  * @param[in] peer_id  The peer to rank highest.
  *

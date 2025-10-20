@@ -103,8 +103,8 @@ bool im_master_id_is_valid(ble_gap_master_id_t const *p_master_id);
  * @retval true   The bonding data correspond to the same peer.
  * @retval false  The bonding data do not correspond to the same peer.
  */
-bool im_is_duplicate_bonding_data(pm_peer_data_bonding_t const *p_bonding_data1,
-				  pm_peer_data_bonding_t const *p_bonding_data2);
+bool im_is_duplicate_bonding_data(struct pm_peer_data_bonding const *p_bonding_data1,
+				  struct pm_peer_data_bonding const *p_bonding_data2);
 
 /**
  * @brief Function for finding if we are already bonded to a peer.
@@ -114,7 +114,7 @@ bool im_is_duplicate_bonding_data(pm_peer_data_bonding_t const *p_bonding_data1,
  *
  * @return  An existing peer ID for the peer, or PM_PEER_ID_INVALID if none was found.
  */
-uint16_t im_find_duplicate_bonding_data(pm_peer_data_bonding_t const *p_bonding_data,
+uint16_t im_find_duplicate_bonding_data(struct pm_peer_data_bonding const *p_bonding_data,
 					uint16_t peer_id_skip);
 
 /**
@@ -191,7 +191,7 @@ uint32_t im_id_addr_get(ble_gap_addr_t *p_addr);
  * @retval NRF_ERROR_INVALID_STATE  Privacy settings cannot be changed while BLE roles using
  *                                  privacy are enabled.
  */
-uint32_t im_privacy_set(pm_privacy_params_t const *p_privacy_params);
+uint32_t im_privacy_set(ble_gap_privacy_params_t const *p_privacy_params);
 
 /**
  * @brief Function to retrieve the current privacy settings.
@@ -204,7 +204,7 @@ uint32_t im_privacy_set(pm_privacy_params_t const *p_privacy_params);
  * @retval NRF_ERROR_NULL         @c p_privacy_params is NULL.
  * @retval NRF_ERROR_INTERNAL     If an internal error occurred.
  */
-uint32_t im_privacy_get(pm_privacy_params_t *p_privacy_params);
+uint32_t im_privacy_get(ble_gap_privacy_params_t *p_privacy_params);
 
 /**
  * @brief Function for resolving a resolvable address with an identity resolution key (IRK).
