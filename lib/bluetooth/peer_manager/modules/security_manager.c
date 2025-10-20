@@ -34,7 +34,7 @@ extern void pm_sm_evt_handler(struct pm_evt *p_sm_evt);
 /* Security Manager events' handlers.
  * The number of elements in this array is SM_EVENT_HANDLERS_CNT.
  */
-static pm_evt_handler_internal_t const m_evt_handlers[] = {pm_sm_evt_handler};
+static const pm_evt_handler_internal_t m_evt_handlers[] = {pm_sm_evt_handler};
 
 /* The context type that is used in PM_EVT_CONN_SEC_PARAMS_REQ events and in calls to
  * sm_sec_params_reply().
@@ -217,7 +217,7 @@ static void events_send_from_err_code(uint16_t conn_handle, uint32_t err_code,
  * @param[in]  p_context      Pointer to a context that the user must include in the call to @ref
  *                            sm_sec_params_reply().
  */
-static void params_req_send(uint16_t conn_handle, ble_gap_sec_params_t const *p_peer_params,
+static void params_req_send(uint16_t conn_handle, const ble_gap_sec_params_t *p_peer_params,
 			    struct sec_params_reply_context *p_context)
 {
 	struct pm_evt evt = new_evt(PM_EVT_CONN_SEC_PARAMS_REQ, conn_handle);
@@ -314,7 +314,7 @@ static uint32_t link_secure(uint16_t conn_handle, bool null_params, bool force_r
  * @param[in]  p_peer_params  The peer's security parameters if present. Otherwise NULL.
  */
 static void smd_params_reply_perform(uint16_t conn_handle,
-				     ble_gap_sec_params_t const *p_peer_params)
+				     const ble_gap_sec_params_t *p_peer_params)
 {
 	uint32_t err_code;
 	ble_gap_lesc_p256_pk_t *p_public_key;
@@ -338,7 +338,7 @@ static void smd_params_reply_perform(uint16_t conn_handle,
  *
  * @param[in]  p_event  The @ref PM_EVT_CONN_SEC_PARAMS_REQ event.
  */
-static __INLINE void params_req_process(struct pm_evt const *p_event)
+static __INLINE void params_req_process(const struct pm_evt *p_event)
 {
 	smd_params_reply_perform(p_event->conn_handle,
 				 p_event->params.conn_sec_params_req.peer_params);
@@ -384,7 +384,7 @@ bool sm_sec_is_sufficient(uint16_t conn_handle, struct pm_conn_sec_status *p_sec
  *
  * @param[in]  p_event  The @ref PM_EVT_SLAVE_SECURITY_REQ event.
  */
-static void sec_req_process(struct pm_evt const *p_event)
+static void sec_req_process(const struct pm_evt *p_event)
 {
 	bool null_params = false;
 	bool force_repairing = false;
@@ -527,7 +527,7 @@ uint32_t sm_init(void)
 	return NRF_SUCCESS;
 }
 
-void sm_ble_evt_handler(ble_evt_t const *p_ble_evt)
+void sm_ble_evt_handler(const ble_evt_t *p_ble_evt)
 {
 	NRF_PM_DEBUG_CHECK(p_ble_evt != NULL);
 
@@ -638,7 +638,7 @@ void sm_conn_sec_config_reply(uint16_t conn_handle, struct pm_conn_sec_config *p
 }
 
 uint32_t sm_sec_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *p_sec_params,
-			       void const *p_context)
+			     const void *p_context)
 {
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
 	VERIFY_PARAM_NOT_NULL(p_context);

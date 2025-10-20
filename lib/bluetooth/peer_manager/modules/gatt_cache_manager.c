@@ -156,7 +156,7 @@ static void evt_send(struct pm_evt *p_gcm_evt)
  *
  * @return  Whether the write was on a CCCD.
  */
-static bool cccd_written(ble_gatts_evt_write_t const *p_write_evt)
+static bool cccd_written(const ble_gatts_evt_write_t *p_write_evt)
 {
 	return ((p_write_evt->op == BLE_GATTS_OP_WRITE_REQ) &&
 		(p_write_evt->uuid.type == BLE_UUID_TYPE_BLE) &&
@@ -480,7 +480,7 @@ static void car_update_pending_handle(uint16_t conn_handle, void *p_context)
 	car_uuid.uuid = BLE_UUID_GAP_CHARACTERISTIC_CAR;
 	car_uuid.type = BLE_UUID_TYPE_BLE;
 
-	ble_gattc_handle_range_t const car_handle_range = {1, 0xFFFF};
+	const ble_gattc_handle_range_t car_handle_range = {1, 0xFFFF};
 
 	uint32_t err_code =
 		sd_ble_gattc_char_value_by_uuid_read(conn_handle, &car_uuid, &car_handle_range);
@@ -664,7 +664,7 @@ void store_car_value(uint16_t conn_handle, bool car_value)
  *
  * @param[in]  p_ble_evt  The BLE event from the SoftDevice.
  */
-void gcm_ble_evt_handler(ble_evt_t const *p_ble_evt)
+void gcm_ble_evt_handler(const ble_evt_t *p_ble_evt)
 {
 	uint16_t conn_handle = p_ble_evt->evt.gatts_evt.conn_handle;
 

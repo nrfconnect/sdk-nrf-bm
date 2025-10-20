@@ -38,7 +38,7 @@ uint32_t smd_init(void);
  *
  * @param[in]  ble_evt    The SoftDevice event.
  */
-void smd_ble_evt_handler(ble_evt_t const *ble_evt);
+void smd_ble_evt_handler(const ble_evt_t *ble_evt);
 
 /**
  * @brief Function for providing security configuration for a link.

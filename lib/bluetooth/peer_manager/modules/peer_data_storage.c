@@ -40,7 +40,7 @@ extern void pdb_pds_evt_handler(struct pm_evt *evt);
 /* Peer Data Storage events' handlers.
  * The number of elements in this array is PDS_EVENT_HANDLERS_CNT.
  */
-static pm_evt_handler_internal_t const m_evt_handlers[] = {
+static const pm_evt_handler_internal_t m_evt_handlers[] = {
 	pdb_pds_evt_handler,
 };
 
@@ -194,7 +194,7 @@ static void peer_ids_load(void)
 	}
 }
 
-static void bm_zms_evt_handler(bm_zms_evt_t const *p_evt)
+static void bm_zms_evt_handler(const bm_zms_evt_t *p_evt)
 {
 	uint16_t peer_id;
 	enum pm_peer_data_id data_id;
@@ -379,7 +379,7 @@ uint32_t pds_init(void)
 }
 
 uint32_t pds_peer_data_read(uint16_t peer_id, enum pm_peer_data_id data_id,
-			    struct pm_peer_data *const p_data, uint32_t const *const p_buf_len)
+			    struct pm_peer_data *const p_data, const uint32_t *const p_buf_len)
 {
 	ssize_t ret;
 	uint8_t temp_buf[PM_PEER_DATA_MAX_SIZE] = { 0 };
@@ -415,7 +415,7 @@ uint32_t pds_peer_data_read(uint16_t peer_id, enum pm_peer_data_id data_id,
 	return NRF_SUCCESS;
 }
 
-uint32_t pds_peer_data_store(uint16_t peer_id, struct pm_peer_data_const const *p_peer_data,
+uint32_t pds_peer_data_store(uint16_t peer_id, const struct pm_peer_data_const *p_peer_data,
 			     uint32_t *p_store_token)
 {
 	ssize_t ret;

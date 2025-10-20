@@ -91,21 +91,21 @@ struct pm_peer_data_const {
 	/** @brief The data. */
 	union {
 		/** @brief Immutable @ref pm_peer_data::p_bonding_data. */
-		struct pm_peer_data_bonding const *p_bonding_data;
+		const struct pm_peer_data_bonding *p_bonding_data;
 		/** @brief Immutable @ref pm_peer_data::p_peer_rank. */
-		uint32_t const *p_peer_rank;
+		const uint32_t *p_peer_rank;
 		/** @brief Immutable @ref pm_peer_data::p_central_addr_res. */
-		uint32_t const *p_central_addr_res;
+		const uint32_t *p_central_addr_res;
 		/** @brief Immutable @ref pm_peer_data::p_service_changed_pending. */
-		bool const *p_service_changed_pending;
+		const bool *p_service_changed_pending;
 		/** @brief Immutable @ref pm_peer_data::p_local_gatt_db. */
-		struct pm_peer_data_local_gatt_db const *p_local_gatt_db;
+		const struct pm_peer_data_local_gatt_db *p_local_gatt_db;
 		/** @brief Immutable @ref pm_peer_data::p_remote_gatt_db. */
-		struct ble_gatt_db_srv const *p_remote_gatt_db;
+		const struct ble_gatt_db_srv *p_remote_gatt_db;
 		/** @brief Immutable @ref pm_peer_data::p_application_data. */
-		uint8_t const *p_application_data;
+		const uint8_t *p_application_data;
 		/** @brief Immutable @ref pm_peer_data::p_all_data. */
-		void const *p_all_data;
+		const void *p_all_data;
 	};
 };
 
