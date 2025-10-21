@@ -83,6 +83,18 @@ function(bm_install_setup)
         endif()
       endif()
 
+  if(SB_CONFIG_CRACEN_MICROCODE_LOAD_ONCE)
+    if(SB_CONFIG_CRACEN_MICROCODE_LOAD_MCUBOOT)
+      set_config_bool(firmware_loader CONFIG_CRACEN_LOAD_MICROCODE n)
+      set_config_bool(mcuboot CONFIG_CRACEN_LOAD_MICROCODE y)
+      set_config_bool(${DEFAULT_IMAGE} CONFIG_CRACEN_LOAD_MICROCODE n)
+    else(NOT DEFINED SB_CONFIG_BM_FIRMWARE_LOADER_NONE)
+      set_config_bool(firmware_loader CONFIG_CRACEN_LOAD_MICROCODE y)
+      set_config_bool(${DEFAULT_IMAGE} CONFIG_CRACEN_LOAD_MICROCODE n)
+    endif()
+
+  endif()
+
       ExternalZephyrProject_Add(
         APPLICATION installer
         SOURCE_DIR ${ZEPHYR_NRF_BM_MODULE_DIR}/applications/installer
