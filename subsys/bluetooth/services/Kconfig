@@ -5,6 +5,7 @@
 #
 rsource "ble_bas/Kconfig"
 rsource "ble_cgms/Kconfig"
+rsource "ble_db_discovery/Kconfig"
 rsource "ble_dis/Kconfig"
 rsource "ble_hids/Kconfig"
 rsource "ble_hrs/Kconfig"
