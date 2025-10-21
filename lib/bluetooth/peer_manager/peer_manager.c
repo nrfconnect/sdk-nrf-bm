@@ -12,7 +12,6 @@
 #include <bm/bluetooth/ble_conn_state.h>
 #include <bm/bluetooth/peer_manager/peer_manager.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
-#include <sdk_macros.h>
 
 #include <modules/security_manager.h>
 #include <modules/security_dispatcher.h>
@@ -27,10 +26,6 @@
 #include <zephyr/logging/log.h>
 
 LOG_MODULE_REGISTER(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
-
-/** Macro indicating whether the module has been initialized properly. */
-#define MODULE_INITIALIZED (m_module_initialized)
-#define VERIFY_MODULE_INITIALIZED() VERIFY_TRUE((MODULE_INITIALIZED), NRF_ERROR_INVALID_STATE)
 
 /** Whether or not @ref pm_init has been called successfully. */
 static bool m_module_initialized;
@@ -222,7 +217,9 @@ void pm_pdb_evt_handler(struct pm_evt *p_pdb_evt)
  */
 void pm_sm_evt_handler(struct pm_evt *p_sm_evt)
 {
-	VERIFY_PARAM_NOT_NULL_VOID(p_sm_evt);
+	if (p_sm_evt == NULL) {
+		return;
+	}
 
 	/* Forward the event to all registered Peer Manager event handlers. */
 	evt_send(p_sm_evt);
@@ -301,7 +298,9 @@ static bool is_conn_handle_excluded(const ble_evt_t *p_ble_evt)
  */
 static void ble_evt_handler(const ble_evt_t *p_ble_evt, void *p_context)
 {
-	VERIFY_MODULE_INITIALIZED_VOID();
+	if (!m_module_initialized) {
+		return;
+	}
 
 	if (is_conn_handle_excluded(p_ble_evt)) {
 		LOG_DBG("Filtering BLE event with ID: 0x%04X targeting 0x%04X connection handle",
@@ -387,7 +386,9 @@ uint32_t pm_init(void)
 
 uint32_t pm_register(pm_evt_handler_t event_handler)
 {
-	VERIFY_MODULE_INITIALIZED();
+	if (!m_module_initialized) {
+		return NRF_ERROR_INVALID_STATE;
+	}
 
 	if (m_n_registrants >= CONFIG_PM_MAX_REGISTRANTS) {
 		return NRF_ERROR_NO_MEM;
@@ -401,7 +402,9 @@ uint32_t pm_register(pm_evt_handler_t event_handler)
 
 uint32_t pm_sec_params_set(ble_gap_sec_params_t *p_sec_params)
 {
-	VERIFY_MODULE_INITIALIZED();
+	if (!m_module_initialized) {
+		return NRF_ERROR_INVALID_STATE;
+	}
 
 	uint32_t err_code;
 
@@ -415,7 +418,9 @@ uint32_t pm_sec_params_set(ble_gap_sec_params_t *p_sec_params)
 
 uint32_t pm_conn_secure(uint16_t conn_handle, bool force_repairing)
 {
-	VERIFY_MODULE_INITIALIZED();
+	if (!m_module_initialized) {
+		return NRF_ERROR_INVALID_STATE;
+	}
 
 	uint32_t err_code;
 
@@ -430,7 +435,9 @@ uint32_t pm_conn_secure(uint16_t conn_handle, bool force_repairing)
 
 uint32_t pm_conn_exclude(uint16_t conn_handle, const void *p_context)
 {
-	VERIFY_PARAM_NOT_NULL(p_context);
+	if (p_context == NULL) {
+		return NRF_ERROR_NULL;
+	}
 
 	bool *p_is_conn_excluded = (bool *)p_context;
 
@@ -449,7 +456,9 @@ void pm_conn_sec_config_reply(uint16_t conn_handle, struct pm_conn_sec_config *p
 uint32_t pm_conn_sec_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *p_sec_params,
 				  const void *p_context)
 {
-	VERIFY_MODULE_INITIALIZED();
+	if (!m_module_initialized) {
+		return NRF_ERROR_INVALID_STATE;
+	}
 
 	return sm_sec_params_reply(conn_handle, p_sec_params, p_context);
 }
@@ -457,7 +466,9 @@ uint32_t pm_conn_sec_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *p_
 void pm_local_database_has_changed(void)
 {
 #if defined(CONFIG_PM_SERVICE_CHANGED)
-	VERIFY_MODULE_INITIALIZED_VOID();
+	if (!m_module_initialized) {
+		return;
+	}
 
 	gcm_local_database_has_changed();
 #endif
@@ -465,35 +476,57 @@ void pm_local_database_has_changed(void)
 
 uint32_t pm_id_addr_set(const ble_gap_addr_t *p_addr)
 {
-	VERIFY_MODULE_INITIALIZED();
+	if (!m_module_initialized) {
+		return NRF_ERROR_INVALID_STATE;
+	}
+
 	return im_id_addr_set(p_addr);
 }
 
 uint32_t pm_id_addr_get(ble_gap_addr_t *p_addr)
 {
-	VERIFY_MODULE_INITIALIZED();
-	VERIFY_PARAM_NOT_NULL(p_addr);
+	if (!m_module_initialized) {
+		return NRF_ERROR_INVALID_STATE;
+	}
+
+	if (p_addr == NULL) {
+		return NRF_ERROR_NULL;
+	}
+
 	return im_id_addr_get(p_addr);
 }
 
 uint32_t pm_privacy_set(const ble_gap_privacy_params_t *p_privacy_params)
 {
-	VERIFY_MODULE_INITIALIZED();
-	VERIFY_PARAM_NOT_NULL(p_privacy_params);
+	if (!m_module_initialized) {
+		return NRF_ERROR_INVALID_STATE;
+	}
+
+	if (p_privacy_params == NULL) {
+		return NRF_ERROR_NULL;
+	}
+
 	return im_privacy_set(p_privacy_params);
 }
 
 uint32_t pm_privacy_get(ble_gap_privacy_params_t *p_privacy_params)
 {
-	VERIFY_MODULE_INITIALIZED();
-	VERIFY_PARAM_NOT_NULL(p_privacy_params);
-	VERIFY_PARAM_NOT_NULL(p_privacy_params->p_device_irk);
+	if (!m_module_initialized) {
+		return NRF_ERROR_INVALID_STATE;
+	}
+
+	if (p_privacy_params == NULL || p_privacy_params->p_device_irk == NULL) {
+		return NRF_ERROR_NULL;
+	}
+
 	return im_privacy_get(p_privacy_params);
 }
 
 bool pm_address_resolve(const ble_gap_addr_t *p_addr, const ble_gap_irk_t *p_irk)
 {
-	VERIFY_MODULE_INITIALIZED();
+	if (!m_module_initialized) {
+		return NRF_ERROR_INVALID_STATE;
+	}
 
 	if ((p_addr == NULL) || (p_irk == NULL)) {
 		return false;
@@ -504,14 +537,19 @@ bool pm_address_resolve(const ble_gap_addr_t *p_addr, const ble_gap_irk_t *p_irk
 
 uint32_t pm_whitelist_set(const uint16_t *p_peers, uint32_t peer_cnt)
 {
-	VERIFY_MODULE_INITIALIZED();
+	if (!m_module_initialized) {
+		return NRF_ERROR_INVALID_STATE;
+	}
+
 	return im_whitelist_set(p_peers, peer_cnt);
 }
 
 uint32_t pm_whitelist_get(ble_gap_addr_t *p_addrs, uint32_t *p_addr_cnt, ble_gap_irk_t *p_irks,
 			    uint32_t *p_irk_cnt)
 {
-	VERIFY_MODULE_INITIALIZED();
+	if (!m_module_initialized) {
+		return NRF_ERROR_INVALID_STATE;
+	}
 
 	if (((p_addrs == NULL) && (p_irks == NULL)) ||
 	    ((p_addrs != NULL) && (p_addr_cnt == NULL)) ||
@@ -527,47 +565,71 @@ uint32_t pm_whitelist_get(ble_gap_addr_t *p_addrs, uint32_t *p_addr_cnt, ble_gap
 
 uint32_t pm_device_identities_list_set(const uint16_t *p_peers, uint32_t peer_cnt)
 {
-	VERIFY_MODULE_INITIALIZED();
+	if (!m_module_initialized) {
+		return NRF_ERROR_INVALID_STATE;
+	}
+
 	return im_device_identities_list_set(p_peers, peer_cnt);
 }
 
 uint32_t pm_conn_sec_status_get(uint16_t conn_handle, struct pm_conn_sec_status *p_conn_sec_status)
 {
-	VERIFY_MODULE_INITIALIZED();
+	if (!m_module_initialized) {
+		return NRF_ERROR_INVALID_STATE;
+	}
+
 	return sm_conn_sec_status_get(conn_handle, p_conn_sec_status);
 }
 
 bool pm_sec_is_sufficient(uint16_t conn_handle, struct pm_conn_sec_status *p_sec_status_req)
 {
-	VERIFY_MODULE_INITIALIZED_BOOL();
+	if (!m_module_initialized) {
+		return false;
+	}
+
 	return sm_sec_is_sufficient(conn_handle, p_sec_status_req);
 }
 
 uint32_t pm_lesc_public_key_set(ble_gap_lesc_p256_pk_t *p_public_key)
 {
-	VERIFY_MODULE_INITIALIZED();
+	if (!m_module_initialized) {
+		return NRF_ERROR_INVALID_STATE;
+	}
+
 	return sm_lesc_public_key_set(p_public_key);
 }
 
 uint32_t pm_conn_handle_get(uint16_t peer_id, uint16_t *p_conn_handle)
 {
-	VERIFY_MODULE_INITIALIZED();
-	VERIFY_PARAM_NOT_NULL(p_conn_handle);
+	if (!m_module_initialized) {
+		return NRF_ERROR_INVALID_STATE;
+	}
+
+	if (p_conn_handle == NULL) {
+		return NRF_ERROR_NULL;
+	}
+
 	*p_conn_handle = im_conn_handle_get(peer_id);
 	return NRF_SUCCESS;
 }
 
 uint32_t pm_peer_id_get(uint16_t conn_handle, uint16_t *p_peer_id)
 {
-	VERIFY_MODULE_INITIALIZED();
-	VERIFY_PARAM_NOT_NULL(p_peer_id);
+	if (!m_module_initialized) {
+		return NRF_ERROR_INVALID_STATE;
+	}
+
+	if (p_peer_id == NULL) {
+		return NRF_ERROR_NULL;
+	}
+
 	*p_peer_id = im_peer_id_get_by_conn_handle(conn_handle);
 	return NRF_SUCCESS;
 }
 
 uint32_t pm_peer_count(void)
 {
-	if (!MODULE_INITIALIZED) {
+	if (!m_module_initialized) {
 		return 0;
 	}
 	return pds_peer_count_get();
@@ -577,7 +639,7 @@ uint16_t pm_next_peer_id_get(uint16_t prev_peer_id)
 {
 	uint16_t next_peer_id = prev_peer_id;
 
-	if (!MODULE_INITIALIZED) {
+	if (!m_module_initialized) {
 		return PM_PEER_ID_INVALID;
 	}
 
@@ -607,12 +669,8 @@ static bool peer_is_irk(const ble_gap_irk_t *const p_irk)
 uint32_t pm_peer_id_list(uint16_t *p_peer_list, uint32_t *const p_list_size,
 			 uint16_t first_peer_id, enum pm_peer_id_list_skip skip_id)
 {
-	VERIFY_MODULE_INITIALIZED();
-	VERIFY_PARAM_NOT_NULL(p_list_size);
-	VERIFY_PARAM_NOT_NULL(p_peer_list);
-
 	uint32_t err_code;
-	uint32_t size = *p_list_size;
+	uint32_t size;
 	uint32_t current_size = 0;
 	struct pm_peer_data pm_car_data;
 	struct pm_peer_data pm_bond_data;
@@ -621,6 +679,16 @@ uint32_t pm_peer_id_list(uint16_t *p_peer_list, uint32_t *const p_list_size,
 	bool skip_no_addr = skip_id & PM_PEER_ID_LIST_SKIP_NO_ID_ADDR;
 	bool skip_no_irk = skip_id & PM_PEER_ID_LIST_SKIP_NO_IRK;
 	bool skip_no_car = skip_id & PM_PEER_ID_LIST_SKIP_NO_CAR;
+
+	if (!m_module_initialized) {
+		return NRF_ERROR_INVALID_STATE;
+	}
+
+	if (p_peer_list == NULL || p_list_size == NULL) {
+		return NRF_ERROR_NULL;
+	}
+
+	size = *p_list_size;
 
 	if ((*p_list_size < 1) ||
 	    (skip_id > (PM_PEER_ID_LIST_SKIP_NO_ID_ADDR | PM_PEER_ID_LIST_SKIP_ALL))) {
@@ -655,8 +723,8 @@ uint32_t pm_peer_id_list(uint16_t *p_peer_list, uint32_t *const p_list_size,
 
 			if (err_code == NRF_ERROR_NOT_FOUND) {
 				skip = true;
-			} else {
-				VERIFY_SUCCESS(err_code);
+			} else if (err_code != NRF_SUCCESS) {
+				return err_code;
 			}
 
 			/* Check data */
@@ -689,8 +757,8 @@ uint32_t pm_peer_id_list(uint16_t *p_peer_list, uint32_t *const p_list_size,
 
 			if (err_code == NRF_ERROR_NOT_FOUND) {
 				skip = true;
-			} else {
-				VERIFY_SUCCESS(err_code);
+			} else if (err_code != NRF_SUCCESS) {
+				return err_code;
 			}
 
 			/* Check data */
@@ -718,11 +786,15 @@ uint32_t pm_peer_id_list(uint16_t *p_peer_list, uint32_t *const p_list_size,
 uint32_t pm_peer_data_load(uint16_t peer_id, enum pm_peer_data_id data_id, void *p_data,
 			     uint32_t *p_length)
 {
-	VERIFY_MODULE_INITIALIZED();
-	VERIFY_PARAM_NOT_NULL(p_data);
-	VERIFY_PARAM_NOT_NULL(p_length);
-
 	struct pm_peer_data peer_data;
+
+	if (!m_module_initialized) {
+		return NRF_ERROR_INVALID_STATE;
+	}
+
+	if (p_data == NULL || p_length == NULL) {
+		return NRF_ERROR_NULL;
+	}
 
 	memset(&peer_data, 0, sizeof(peer_data));
 	peer_data.p_all_data = p_data;
@@ -751,8 +823,14 @@ uint32_t pm_peer_data_app_data_load(uint16_t peer_id, void *p_data, uint32_t *p_
 uint32_t pm_peer_data_store(uint16_t peer_id, enum pm_peer_data_id data_id, const void *p_data,
 			      uint32_t length, uint32_t *p_token)
 {
-	VERIFY_MODULE_INITIALIZED();
-	VERIFY_PARAM_NOT_NULL(p_data);
+	if (!m_module_initialized) {
+		return NRF_ERROR_INVALID_STATE;
+	}
+
+	if (p_data == NULL) {
+		return NRF_ERROR_NULL;
+	}
+
 	if (!IS_ALIGNED(length, 4)) {
 		return NRF_ERROR_INVALID_PARAM;
 	}
@@ -800,7 +878,9 @@ uint32_t pm_peer_data_app_data_store(uint16_t peer_id, const void *p_data, uint3
 
 uint32_t pm_peer_data_delete(uint16_t peer_id, enum pm_peer_data_id data_id)
 {
-	VERIFY_MODULE_INITIALIZED();
+	if (!m_module_initialized) {
+		return NRF_ERROR_INVALID_STATE;
+	}
 
 	if (data_id == PM_PEER_DATA_ID_BONDING) {
 		return NRF_ERROR_INVALID_PARAM;
@@ -818,9 +898,13 @@ uint32_t pm_peer_new(uint16_t *p_new_peer_id, struct pm_peer_data_bonding *p_bon
 	struct pm_peer_data_const peer_data;
 	uint8_t peer_data_buffer[PM_PEER_DATA_MAX_SIZE] = { 0 };
 
-	VERIFY_MODULE_INITIALIZED();
-	VERIFY_PARAM_NOT_NULL(p_bonding_data);
-	VERIFY_PARAM_NOT_NULL(p_new_peer_id);
+	if (!m_module_initialized) {
+		return NRF_ERROR_INVALID_STATE;
+	}
+
+	if (p_new_peer_id == NULL || p_bonding_data == NULL) {
+		return NRF_ERROR_NULL;
+	}
 
 	memset(&peer_data, 0, sizeof(struct pm_peer_data_const));
 
@@ -876,14 +960,18 @@ uint32_t pm_peer_new(uint16_t *p_new_peer_id, struct pm_peer_data_bonding *p_bon
 
 uint32_t pm_peer_delete(uint16_t peer_id)
 {
-	VERIFY_MODULE_INITIALIZED();
+	if (!m_module_initialized) {
+		return NRF_ERROR_INVALID_STATE;
+	}
 
 	return im_peer_free(peer_id);
 }
 
 uint32_t pm_peers_delete(void)
 {
-	VERIFY_MODULE_INITIALIZED();
+	if (!m_module_initialized) {
+		return NRF_ERROR_INVALID_STATE;
+	}
 
 	m_deleting_all = true;
 
@@ -925,7 +1013,9 @@ uint32_t pm_peer_ranks_get(uint16_t *p_highest_ranked_peer, uint32_t *p_highest_
 #if !defined(CONFIG_PM_PEER_RANKS)
 	return NRF_ERROR_NOT_SUPPORTED;
 #else
-	VERIFY_MODULE_INITIALIZED();
+	if (!m_module_initialized) {
+		return NRF_ERROR_INVALID_STATE;
+	}
 
 	uint16_t peer_id = pds_next_peer_id_get(PM_PEER_ID_INVALID);
 	uint32_t peer_rank = 0;
@@ -1000,7 +1090,9 @@ uint32_t pm_peer_rank_highest(uint16_t peer_id)
 #if !defined(CONFIG_PM_PEER_RANKS)
 	return NRF_ERROR_NOT_SUPPORTED;
 #else
-	VERIFY_MODULE_INITIALIZED();
+	if (!m_module_initialized) {
+		return NRF_ERROR_INVALID_STATE;
+	}
 
 	uint32_t err_code;
 	struct pm_peer_data_const peer_data = {
