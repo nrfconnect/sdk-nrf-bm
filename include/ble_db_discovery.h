@@ -3,35 +3,12 @@
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
-/**
- * @file
+
+/** @file
  *
- * @defgroup ble_db_discovery Database Discovery
+ * @defgroup ble_db_discovery BLE Nordic database discovery library
  * @{
- * @ingroup ble_sdk_lib
- *
- * @brief Database discovery module.
- *
- * @details This module contains the APIs and types exposed by the DB Discovery module. These APIs
- *          and types can be used by the application to perform discovery of a service and its
- *          characteristics at the peer server. This module can also be used to discover the
- *          desired services in multiple remote devices.
- *
- * @warning The maximum number of characteristics per service that can be discovered by this module
- *          is determined by the number of characteristics in the service structure defined in
- *          db_disc_config.h. If the peer has more than the supported number of characteristics,
- * then the first found will be discovered and any further characteristics will be ignored. Only the
- *          following descriptors will be searched for at the peer: Client Characteristic
- * Configuration, Characteristic Extended Properties, Characteristic User Description, and Report
- * Reference.
- *
- * @note Presently only one instance of a Primary Service can be discovered by this module. If
- *       there are multiple instances of the service at the peer, only the first instance
- *       of it at the peer is fetched and returned to the application.
- *
- * @note The application must propagate BLE stack events to this module by calling
- *       ble_db_discovery_on_ble_evt().
- *
+ * @brief Library for discovery of a service and its characteristics at the peer server.
  */
 
 #include <stdint.h>
