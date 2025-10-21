@@ -585,7 +585,7 @@ uint32_t im_whitelist_set(const uint16_t *p_peers, uint32_t peer_cnt)
 	memcpy(m_wlisted_peers, p_peers, sizeof(*p_peers) * peer_cnt);
 
 	uint32_t ret;
-	uint32_t wlist_addr_cnt = 0;
+	uint32_t wlist_addr_cnt = BLE_GAP_WHITELIST_ADDR_MAX_COUNT;
 
 	const ble_gap_addr_t *addr_ptrs[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
 	ble_gap_addr_t addrs[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
