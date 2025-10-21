@@ -19,7 +19,6 @@
 #include <ble.h>
 #include <ble_gap.h>
 #include <bm/bluetooth/peer_manager/peer_manager_types.h>
-#include "security_dispatcher.h"
 
 #ifdef __cplusplus
 extern "C" {
