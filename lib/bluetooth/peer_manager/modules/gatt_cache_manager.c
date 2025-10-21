@@ -277,7 +277,7 @@ static uint32_t service_changed_cccd(uint16_t conn_handle, uint16_t *p_cccd)
 
 	uint32_t err_code = sd_ble_gatts_initial_user_handle_get(&end_handle);
 
-	__ASSERT(err_code == NRF_SUCCESS, "");
+	__ASSERT_NO_MSG(err_code == NRF_SUCCESS);
 
 	for (uint16_t handle = 1; handle < end_handle; handle++) {
 		ble_uuid_t uuid;
@@ -558,7 +558,7 @@ void gcm_pdb_evt_handler(struct pm_evt *p_event)
 
 uint32_t gcm_init(void)
 {
-	NRF_PM_DEBUG_CHECK(!m_module_initialized);
+	__ASSERT_NO_MSG(!m_module_initialized);
 
 	internal_state_reset();
 
@@ -735,7 +735,7 @@ void gcm_ble_evt_handler(const ble_evt_t *p_ble_evt)
 
 uint32_t gcm_local_db_cache_update(uint16_t conn_handle)
 {
-	NRF_PM_DEBUG_CHECK(m_module_initialized);
+	__ASSERT_NO_MSG(m_module_initialized);
 
 	local_db_update(conn_handle, true);
 	update_pending_flags_check();

@@ -20,6 +20,7 @@
 
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/util.h>
+#include <zephyr/sys/__assert.h>
 
 LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
@@ -371,7 +372,7 @@ bool sm_sec_is_sufficient(uint16_t conn_handle, struct pm_conn_sec_status *p_sec
 	struct pm_conn_sec_status sec_status = {.reserved = ~0};
 	uint32_t err_code = sm_conn_sec_status_get(conn_handle, &sec_status);
 
-	__ASSERT(sizeof(struct pm_conn_sec_status) == sizeof(uint8_t), "");
+	__ASSERT_NO_MSG(sizeof(struct pm_conn_sec_status) == sizeof(uint8_t));
 
 	uint8_t unmet_reqs = (~(*((uint8_t *)&sec_status)) & *((uint8_t *)p_sec_status_req));
 
@@ -501,7 +502,7 @@ static void flag_id_init(int *p_flag_id)
 
 uint32_t sm_init(void)
 {
-	NRF_PM_DEBUG_CHECK(!m_module_initialized);
+	__ASSERT_NO_MSG(!m_module_initialized);
 
 #if defined(CONFIG_PM_LESC)
 	uint32_t err_code = nrf_ble_lesc_init();
@@ -529,7 +530,7 @@ uint32_t sm_init(void)
 
 void sm_ble_evt_handler(const ble_evt_t *p_ble_evt)
 {
-	NRF_PM_DEBUG_CHECK(p_ble_evt != NULL);
+	__ASSERT_NO_MSG(p_ble_evt != NULL);
 
 	smd_ble_evt_handler(p_ble_evt);
 #if defined(CONFIG_PM_LESC)
@@ -613,7 +614,7 @@ static bool sec_params_verify(ble_gap_sec_params_t *p_sec_params)
 
 uint32_t sm_sec_params_set(ble_gap_sec_params_t *p_sec_params)
 {
-	NRF_PM_DEBUG_CHECK(m_module_initialized);
+	__ASSERT_NO_MSG(m_module_initialized);
 
 	if (p_sec_params == NULL) {
 		mp_sec_params = NULL;
@@ -631,8 +632,8 @@ uint32_t sm_sec_params_set(ble_gap_sec_params_t *p_sec_params)
 
 void sm_conn_sec_config_reply(uint16_t conn_handle, struct pm_conn_sec_config *p_conn_sec_config)
 {
-	NRF_PM_DEBUG_CHECK(m_module_initialized);
-	NRF_PM_DEBUG_CHECK(p_conn_sec_config != NULL);
+	__ASSERT_NO_MSG(m_module_initialized);
+	__ASSERT_NO_MSG(p_conn_sec_config != NULL);
 
 	smd_conn_sec_config_reply(conn_handle, p_conn_sec_config);
 }
@@ -640,7 +641,7 @@ void sm_conn_sec_config_reply(uint16_t conn_handle, struct pm_conn_sec_config *p
 uint32_t sm_sec_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *p_sec_params,
 			     const void *p_context)
 {
-	NRF_PM_DEBUG_CHECK(m_module_initialized);
+	__ASSERT_NO_MSG(m_module_initialized);
 
 	if (p_context == NULL) {
 		return NRF_ERROR_NULL;
@@ -666,7 +667,7 @@ uint32_t sm_sec_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *p_sec_p
 
 uint32_t sm_lesc_public_key_set(ble_gap_lesc_p256_pk_t *p_public_key)
 {
-	NRF_PM_DEBUG_CHECK(m_module_initialized);
+	__ASSERT_NO_MSG(m_module_initialized);
 
 #if defined(CONFIG_PM_LESC)
 	return NRF_ERROR_FORBIDDEN;
@@ -681,7 +682,7 @@ uint32_t sm_link_secure(uint16_t conn_handle, bool force_repairing)
 {
 	uint32_t ret;
 
-	NRF_PM_DEBUG_CHECK(m_module_initialized);
+	__ASSERT_NO_MSG(m_module_initialized);
 
 	ret = link_secure(conn_handle, false, force_repairing, false);
 	return ret;
