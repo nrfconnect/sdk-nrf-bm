@@ -10,3 +10,111 @@ menuconfig BLE_SCAN
 	select EXPERIMENTAL
 	help
 	  scan.
+
+if BLE_SCAN
+
+config BLE_SCAN_BUFFER
+	int "Scan buffer length"
+	default 31
+	help
+	  Data length for an advertising set.
+
+config BLE_SCAN_NAME_MAX_LEN
+	int "Scan name maximum length"
+	default 32
+	help
+	  Maximum size for the name to search in the advertisement report.
+
+config BLE_SCAN_SHORT_NAME_MAX_LEN
+	int "Scan short name maximum length"
+	default 32
+	help
+	  Maximum size of the short name to search for in the advertisement report
+
+config BLE_SCAN_NAME_CNT
+	int "Scan name count"
+	default 1
+	help
+	  Number of name filters.
+
+config BLE_SCAN_APPEARANCE_CNT
+	int "Scan appearance count"
+	default 0
+	help
+	  Number of appearance filters.
+
+config BLE_SCAN_ADDRESS_CNT
+	int "Scan address count"
+	default 0
+	help
+	  Number of address filters.
+
+config BLE_SCAN_SHORT_NAME_CNT
+	int "Scan short name count"
+	default 0
+	help
+	  Number of short name filters.
+
+config BLE_SCAN_UUID_CNT
+	int "Scan UUID count"
+	default 0
+	help
+	  Number of filters for UUIDs.
+
+config BLE_SCAN_SCAN_INTERVAL
+	int "Scanning interval"
+	default 160
+	help
+	  Determines the scan interval in units of 0.625 millisecond.
+
+config BLE_SCAN_SCAN_DURATION
+	hex "Scan duration"
+	default 0x0000
+	range 0x0000 0xFFFF
+	help
+	  Duration of a scanning session in units of 10 ms. If set to 0x0000, the scanning continues until it is explicitly disabled.
+
+config BLE_SCAN_SCAN_WINDOW
+	int "Scanning window"
+	default 80
+	help
+	  Determines the scanning window in units of 0.625 milliseconds.
+
+config BLE_SCAN_SLAVE_LATENCY
+	int "Scan slave latency"
+	default 0
+	help
+	  Determines the slave latency in counts of connection events
+
+config BLE_SCAN_MIN_CONNECTION_INTERVAL
+	hex "Minimum connection interval"
+	default 0x0006
+	range 0x0006 0x0C80
+	help
+	  Determines the minimum connection interval in units of 1.25 milliseconds
+
+config BLE_SCAN_MAX_CONNECTION_INTERVAL
+	hex "Maximum connection interval"
+	default 0x0018
+	range 0x0006 0x0C80
+	help
+	  Determines the maximum connection interval in units of 1.25 milliseconds
+
+config BLE_SCAN_SUPERVISION_TIMEOUT
+	hex "Scan supervision timeout"
+	default 0x0C80
+	range 0x000A 0x0C80
+	help
+	  Determines the supervision time-out in units of 10 millisecond
+
+config BLE_SCAN_FILTER_ENABLE
+	bool "Scan filter enable"
+	default y
+	help
+	  Enabling filters for the Scanning Module.
+
+module=BLE_SCAN
+module-str=BLE Scan
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endif # BLE_SCAN
