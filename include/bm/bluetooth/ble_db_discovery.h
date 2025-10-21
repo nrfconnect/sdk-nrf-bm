@@ -23,7 +23,6 @@
  * @brief Macro for defining a ble_db_discovery instance.
  *
  * @param _name Name of the instance.
- * @hideinitializer
  */
 #define BLE_DB_DISCOVERY_DEF(_name)                                                                \
 	static struct ble_db_discovery _name = {.discovery_in_progress = 0,                        \
