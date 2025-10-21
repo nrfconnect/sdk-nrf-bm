@@ -9,7 +9,6 @@
 #include <zephyr/sys/util.h>
 #include <nrf_error.h>
 #include <nrf_strerror.h>
-#include <sdk_macros.h>
 #include <bm/bluetooth/peer_manager/peer_manager_types.h>
 #include <modules/peer_manager_internal.h>
 #include <modules/peer_data_storage.h>
@@ -542,7 +541,10 @@ uint32_t pdb_write_buf_get(uint16_t peer_id, enum pm_peer_data_id data_id, uint3
 {
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
 
-	VERIFY_PARAM_NOT_NULL(p_peer_data);
+	if (p_peer_data == NULL) {
+		return NRF_ERROR_NULL;
+	}
+
 	VERIFY_DATA_ID_WRITE_BUF(data_id);
 
 	if ((n_bufs == 0) || (n_bufs > CONFIG_PM_FLASH_BUFFERS)) {

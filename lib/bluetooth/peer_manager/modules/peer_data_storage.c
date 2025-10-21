@@ -10,7 +10,6 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/util.h>
 #include <zephyr/sys/atomic.h>
-#include <sdk_macros.h>
 #include <bm/fs/bm_zms.h>
 #include <bm/bluetooth/peer_manager/peer_manager_types.h>
 #include <modules/peer_manager_internal.h>
@@ -22,14 +21,6 @@
 #define PEER_MANAGER_PARTITION_SIZE DT_REG_SIZE(PEER_MANAGER_NODE)
 
 LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
-
-/* Macro for verifying that the peer id is within a valid range. */
-#define VERIFY_PEER_ID_IN_RANGE(id)                                                                \
-	VERIFY_FALSE((id >= PM_PEER_ID_N_AVAILABLE_IDS), NRF_ERROR_INVALID_PARAM)
-
-/* Macro for verifying that the peer data id is within a valid range. */
-#define VERIFY_PEER_DATA_ID_IN_RANGE(id)                                                           \
-	VERIFY_TRUE(peer_data_id_is_valid(id), NRF_ERROR_INVALID_PARAM)
 
 /* The number of registered event handlers. */
 #define PDS_EVENT_HANDLERS_CNT ARRAY_SIZE(m_evt_handlers)
@@ -388,8 +379,9 @@ uint32_t pds_peer_data_read(uint16_t peer_id, enum pm_peer_data_id data_id,
 	NRF_PM_DEBUG_CHECK(p_data != NULL);
 	NRF_PM_DEBUG_CHECK(p_buf_len != NULL);
 
-	VERIFY_PEER_ID_IN_RANGE(peer_id);
-	VERIFY_PEER_DATA_ID_IN_RANGE(data_id);
+	if (peer_id >= PM_PEER_ID_N_AVAILABLE_IDS || !peer_data_id_is_valid(data_id)) {
+		return NRF_ERROR_INVALID_PARAM;
+	}
 
 	uint32_t entry_id = peer_id_peer_data_id_to_entry_id(peer_id, data_id);
 
@@ -423,8 +415,9 @@ uint32_t pds_peer_data_store(uint16_t peer_id, const struct pm_peer_data_const *
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
 	NRF_PM_DEBUG_CHECK(p_peer_data != NULL);
 
-	VERIFY_PEER_ID_IN_RANGE(peer_id);
-	VERIFY_PEER_DATA_ID_IN_RANGE(p_peer_data->data_id);
+	if (peer_id >= PM_PEER_ID_N_AVAILABLE_IDS || !peer_data_id_is_valid(p_peer_data->data_id)) {
+		return NRF_ERROR_INVALID_PARAM;
+	}
 
 	uint32_t entry_id = peer_id_peer_data_id_to_entry_id(peer_id, p_peer_data->data_id);
 
@@ -451,8 +444,9 @@ uint32_t pds_peer_data_delete(uint16_t peer_id, enum pm_peer_data_id data_id)
 
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
 
-	VERIFY_PEER_ID_IN_RANGE(peer_id);
-	VERIFY_PEER_DATA_ID_IN_RANGE(data_id);
+	if (peer_id >= PM_PEER_ID_N_AVAILABLE_IDS || !peer_data_id_is_valid(data_id)) {
+		return NRF_ERROR_INVALID_PARAM;
+	}
 
 	uint32_t entry_id = peer_id_peer_data_id_to_entry_id(peer_id, data_id);
 
@@ -476,7 +470,10 @@ uint16_t pds_peer_id_allocate(void)
 uint32_t pds_peer_id_free(uint16_t peer_id)
 {
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
-	VERIFY_PEER_ID_IN_RANGE(peer_id);
+
+	if (peer_id >= PM_PEER_ID_N_AVAILABLE_IDS) {
+		return NRF_ERROR_INVALID_PARAM;
+	}
 
 	(void)peer_id_delete(peer_id);
 
