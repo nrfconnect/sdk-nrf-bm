@@ -24,6 +24,7 @@
 
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/util.h>
+#include <zephyr/sys/__assert.h>
 
 LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
@@ -446,8 +447,8 @@ static void send_config_req(uint16_t conn_handle)
 
 void smd_conn_sec_config_reply(uint16_t conn_handle, struct pm_conn_sec_config *p_conn_sec_config)
 {
-	NRF_PM_DEBUG_CHECK(m_module_initialized);
-	NRF_PM_DEBUG_CHECK(p_conn_sec_config != NULL);
+	__ASSERT_NO_MSG(m_module_initialized);
+	__ASSERT_NO_MSG(p_conn_sec_config != NULL);
 
 	ble_conn_state_user_flag_set(conn_handle, m_flag_allow_repairing,
 				     p_conn_sec_config->allow_repairing);
@@ -697,7 +698,7 @@ static void flag_id_init(int *p_flag_id)
 
 uint32_t smd_init(void)
 {
-	NRF_PM_DEBUG_CHECK(!m_module_initialized);
+	__ASSERT_NO_MSG(!m_module_initialized);
 
 	flag_id_init(&m_flag_sec_proc);
 	flag_id_init(&m_flag_sec_proc_pairing);
@@ -797,7 +798,7 @@ static uint32_t sec_keyset_fill(uint16_t conn_handle, uint8_t role,
 uint32_t smd_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *p_sec_params,
 			  ble_gap_lesc_p256_pk_t *p_public_key)
 {
-	NRF_PM_DEBUG_CHECK(m_module_initialized);
+	__ASSERT_NO_MSG(m_module_initialized);
 
 	uint8_t role = ble_conn_state_role(conn_handle);
 	uint32_t err_code = NRF_SUCCESS;
@@ -907,7 +908,7 @@ static uint32_t link_secure_peripheral(uint16_t conn_handle, ble_gap_sec_params_
 uint32_t smd_link_secure(uint16_t conn_handle, ble_gap_sec_params_t *p_sec_params,
 			 bool force_repairing)
 {
-	NRF_PM_DEBUG_CHECK(m_module_initialized);
+	__ASSERT_NO_MSG(m_module_initialized);
 
 	uint8_t role = ble_conn_state_role(conn_handle);
 

@@ -21,6 +21,7 @@
 
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/util.h>
+#include <zephyr/sys/__assert.h>
 
 LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
@@ -75,7 +76,7 @@ static void evt_send(struct pm_evt *p_event)
  */
 bool is_valid_irk(const ble_gap_irk_t *p_irk)
 {
-	NRF_PM_DEBUG_CHECK(p_irk != NULL);
+	__ASSERT_NO_MSG(p_irk != NULL);
 
 	for (uint32_t i = 0; i < BLE_GAP_SEC_KEY_LEN; i++) {
 		if (p_irk->irk[i] != 0) {
@@ -175,7 +176,7 @@ void im_ble_evt_handler(const ble_evt_t *ble_evt)
 		} break;
 
 		default:
-			NRF_PM_DEBUG_CHECK(false);
+			__ASSERT_NO_MSG(false);
 			break;
 		}
 	}
@@ -207,8 +208,8 @@ void im_ble_evt_handler(const ble_evt_t *ble_evt)
 bool im_is_duplicate_bonding_data(const struct pm_peer_data_bonding *p_bonding_data1,
 				  const struct pm_peer_data_bonding *p_bonding_data2)
 {
-	NRF_PM_DEBUG_CHECK(p_bonding_data1 != NULL);
-	NRF_PM_DEBUG_CHECK(p_bonding_data2 != NULL);
+	__ASSERT_NO_MSG(p_bonding_data1 != NULL);
+	__ASSERT_NO_MSG(p_bonding_data2 != NULL);
 
 	const ble_gap_addr_t *p_addr1 = &p_bonding_data1->peer_ble_id.id_addr_info;
 	const ble_gap_addr_t *p_addr2 = &p_bonding_data2->peer_ble_id.id_addr_info;
@@ -239,7 +240,7 @@ uint16_t im_find_duplicate_bonding_data(const struct pm_peer_data_bonding *p_bon
 
 	peer_data_duplicate.p_all_data = peer_data_buffer;
 
-	NRF_PM_DEBUG_CHECK(p_bonding_data != NULL);
+	__ASSERT_NO_MSG(p_bonding_data != NULL);
 
 	pds_peer_data_iterate_prepare(&peer_id_iter);
 
@@ -267,7 +268,7 @@ uint16_t im_peer_id_get_by_conn_handle(uint16_t conn_handle)
 
 uint32_t im_ble_addr_get(uint16_t conn_handle, ble_gap_addr_t *p_ble_addr)
 {
-	NRF_PM_DEBUG_CHECK(p_ble_addr != NULL);
+	__ASSERT_NO_MSG(p_ble_addr != NULL);
 
 	const int idx = nrf_sdh_ble_idx_get(conn_handle);
 
@@ -282,8 +283,8 @@ uint32_t im_ble_addr_get(uint16_t conn_handle, ble_gap_addr_t *p_ble_addr)
 bool im_master_ids_compare(const ble_gap_master_id_t *p_master_id1,
 			   const ble_gap_master_id_t *p_master_id2)
 {
-	NRF_PM_DEBUG_CHECK(p_master_id1 != NULL);
-	NRF_PM_DEBUG_CHECK(p_master_id2 != NULL);
+	__ASSERT_NO_MSG(p_master_id1 != NULL);
+	__ASSERT_NO_MSG(p_master_id2 != NULL);
 
 	if (!im_master_id_is_valid(p_master_id1)) {
 		return false;
@@ -303,7 +304,7 @@ uint16_t im_peer_id_get_by_master_id(const ble_gap_master_id_t *p_master_id)
 	uint8_t peer_data_buffer[PM_PEER_DATA_MAX_SIZE] = { 0 };
 	uint16_t peer_id_iter;
 
-	NRF_PM_DEBUG_CHECK(p_master_id != NULL);
+	__ASSERT_NO_MSG(p_master_id != NULL);
 
 	peer_data.p_all_data = peer_data_buffer;
 
@@ -391,20 +392,20 @@ static uint32_t peers_id_keys_get(const uint16_t *p_peers, uint32_t peer_cnt,
 	bool copy_addrs = false;
 	bool copy_irks = false;
 
-	NRF_PM_DEBUG_CHECK(p_peers != NULL);
+	__ASSERT_NO_MSG(p_peers != NULL);
 
 	/* One of these two has to be provided. */
-	NRF_PM_DEBUG_CHECK((p_gap_addrs != NULL) || (p_gap_irks != NULL));
+	__ASSERT_NO_MSG((p_gap_addrs != NULL) || (p_gap_irks != NULL));
 
 	if ((p_gap_addrs != NULL) && (p_addr_cnt != NULL)) {
-		NRF_PM_DEBUG_CHECK((*p_addr_cnt) >= peer_cnt);
+		__ASSERT_NO_MSG((*p_addr_cnt) >= peer_cnt);
 
 		copy_addrs = true;
 		*p_addr_cnt = 0;
 	}
 
 	if ((p_gap_irks != NULL) && (p_irk_cnt != NULL)) {
-		NRF_PM_DEBUG_CHECK((*p_irk_cnt) >= peer_cnt);
+		__ASSERT_NO_MSG((*p_irk_cnt) >= peer_cnt);
 
 		copy_irks = true;
 		*p_irk_cnt = 0;
@@ -521,7 +522,7 @@ uint32_t im_id_addr_set(const ble_gap_addr_t *p_addr)
 
 uint32_t im_id_addr_get(ble_gap_addr_t *p_addr)
 {
-	NRF_PM_DEBUG_CHECK(p_addr != NULL);
+	__ASSERT_NO_MSG(p_addr != NULL);
 
 	return sd_ble_gap_addr_get(p_addr);
 }
@@ -543,8 +544,8 @@ uint32_t im_whitelist_get(ble_gap_addr_t *p_addrs, uint32_t *p_addr_cnt, ble_gap
 			    uint32_t *p_irk_cnt)
 {
 	/* One of the two buffers has to be provided. */
-	NRF_PM_DEBUG_CHECK((p_addrs != NULL) || (p_irks != NULL));
-	NRF_PM_DEBUG_CHECK((p_addr_cnt != NULL) || (p_irk_cnt != NULL));
+	__ASSERT_NO_MSG((p_addrs != NULL) || (p_irks != NULL));
+	__ASSERT_NO_MSG((p_addr_cnt != NULL) || (p_irk_cnt != NULL));
 
 	if (((p_addr_cnt != NULL) && (m_wlisted_peer_cnt > *p_addr_cnt)) ||
 	    ((p_irk_cnt != NULL) && (m_wlisted_peer_cnt > *p_irk_cnt))) {

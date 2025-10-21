@@ -10,6 +10,7 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/util.h>
 #include <zephyr/sys/atomic.h>
+#include <zephyr/sys/__assert.h>
 #include <bm/fs/bm_zms.h>
 #include <bm/bluetooth/peer_manager/peer_manager_types.h>
 #include <modules/peer_manager_internal.h>
@@ -342,7 +343,7 @@ uint32_t pds_init(void)
 	int err;
 
 	/* Check for re-initialization if debugging. */
-	NRF_PM_DEBUG_CHECK(!m_module_initialized);
+	__ASSERT_NO_MSG(!m_module_initialized);
 
 	err = bm_zms_register(&fs, bm_zms_evt_handler);
 	if (err) {
@@ -375,9 +376,9 @@ uint32_t pds_peer_data_read(uint16_t peer_id, enum pm_peer_data_id data_id,
 	ssize_t ret;
 	uint8_t temp_buf[PM_PEER_DATA_MAX_SIZE] = { 0 };
 
-	NRF_PM_DEBUG_CHECK(m_module_initialized);
-	NRF_PM_DEBUG_CHECK(p_data != NULL);
-	NRF_PM_DEBUG_CHECK(p_buf_len != NULL);
+	__ASSERT_NO_MSG(m_module_initialized);
+	__ASSERT_NO_MSG(p_data != NULL);
+	__ASSERT_NO_MSG(p_buf_len != NULL);
 
 	if (peer_id >= PM_PEER_ID_N_AVAILABLE_IDS || !peer_data_id_is_valid(data_id)) {
 		return NRF_ERROR_INVALID_PARAM;
@@ -412,8 +413,8 @@ uint32_t pds_peer_data_store(uint16_t peer_id, const struct pm_peer_data_const *
 {
 	ssize_t ret;
 
-	NRF_PM_DEBUG_CHECK(m_module_initialized);
-	NRF_PM_DEBUG_CHECK(p_peer_data != NULL);
+	__ASSERT_NO_MSG(m_module_initialized);
+	__ASSERT_NO_MSG(p_peer_data != NULL);
 
 	if (peer_id >= PM_PEER_ID_N_AVAILABLE_IDS || !peer_data_id_is_valid(p_peer_data->data_id)) {
 		return NRF_ERROR_INVALID_PARAM;
@@ -442,7 +443,7 @@ uint32_t pds_peer_data_delete(uint16_t peer_id, enum pm_peer_data_id data_id)
 {
 	int err;
 
-	NRF_PM_DEBUG_CHECK(m_module_initialized);
+	__ASSERT_NO_MSG(m_module_initialized);
 
 	if (peer_id >= PM_PEER_ID_N_AVAILABLE_IDS || !peer_data_id_is_valid(data_id)) {
 		return NRF_ERROR_INVALID_PARAM;
@@ -463,13 +464,13 @@ uint32_t pds_peer_data_delete(uint16_t peer_id, enum pm_peer_data_id data_id)
 
 uint16_t pds_peer_id_allocate(void)
 {
-	NRF_PM_DEBUG_CHECK(m_module_initialized);
+	__ASSERT_NO_MSG(m_module_initialized);
 	return peer_id_allocate(PM_PEER_ID_INVALID);
 }
 
 uint32_t pds_peer_id_free(uint16_t peer_id)
 {
-	NRF_PM_DEBUG_CHECK(m_module_initialized);
+	__ASSERT_NO_MSG(m_module_initialized);
 
 	if (peer_id >= PM_PEER_ID_N_AVAILABLE_IDS) {
 		return NRF_ERROR_INVALID_PARAM;
@@ -490,30 +491,30 @@ uint32_t pds_peer_id_free(uint16_t peer_id)
 
 bool pds_peer_id_is_allocated(uint16_t peer_id)
 {
-	NRF_PM_DEBUG_CHECK(m_module_initialized);
+	__ASSERT_NO_MSG(m_module_initialized);
 	return peer_id_is_allocated(peer_id);
 }
 
 bool pds_peer_id_is_deleted(uint16_t peer_id)
 {
-	NRF_PM_DEBUG_CHECK(m_module_initialized);
+	__ASSERT_NO_MSG(m_module_initialized);
 	return peer_id_is_deleted(peer_id);
 }
 
 uint16_t pds_next_peer_id_get(uint16_t prev_peer_id)
 {
-	NRF_PM_DEBUG_CHECK(m_module_initialized);
+	__ASSERT_NO_MSG(m_module_initialized);
 	return peer_id_get_next_used(prev_peer_id);
 }
 
 uint16_t pds_next_deleted_peer_id_get(uint16_t prev_peer_id)
 {
-	NRF_PM_DEBUG_CHECK(m_module_initialized);
+	__ASSERT_NO_MSG(m_module_initialized);
 	return peer_id_get_next_deleted(prev_peer_id);
 }
 
 uint32_t pds_peer_count_get(void)
 {
-	NRF_PM_DEBUG_CHECK(m_module_initialized);
+	__ASSERT_NO_MSG(m_module_initialized);
 	return peer_id_n_ids();
 }
