@@ -107,7 +107,7 @@ static const char *sec_err_string_get(uint16_t error)
 	return errstr;
 }
 
-static void _conn_secure(uint16_t conn_handle, bool force)
+static void conn_secure_impl(uint16_t conn_handle, bool force)
 {
 	uint32_t err_code;
 
@@ -163,50 +163,52 @@ union conn_secure_context {
 		uint16_t conn_handle;
 		bool force;
 	} values;
-	void *p_void;
+	void *ptr;
 };
 
 BUILD_ASSERT(sizeof(union conn_secure_context) <= sizeof(void *),
-	     "union conn_secure_context is too large.");
-
-static void _conn_secure(uint16_t conn_handle, bool force);
+	     "The size of 'union conn_secure_context' must be smaller than the size of a pointer");
 
 static void delayed_conn_secure(void *context)
 {
-	union conn_secure_context sec_context = {.p_void = context};
+	/* The context argument is data and not a valid address. Copy it. */
+	union conn_secure_context sec_context = {.ptr = context};
 
-	_conn_secure(sec_context.values.conn_handle, sec_context.values.force);
+	conn_secure_impl(sec_context.values.conn_handle, sec_context.values.force);
 }
+#endif
 
 static void conn_secure(uint16_t conn_handle, bool force)
 {
+#if CONFIG_PM_HANDLER_SEC_DELAY_MS > 0
 	int err;
 	static bool created;
+	union conn_secure_context sec_context = {
+		.values = {
+			.conn_handle = conn_handle,
+			.force = force,
+		},
+	};
 
 	if (!created) {
 		err = bm_timer_init(&secure_delay_timer, BM_TIMER_MODE_SINGLE_SHOT,
-					delayed_conn_secure);
+				    delayed_conn_secure);
 		APP_ERROR_CHECK(err);
 		created = true;
 	}
 
-	union conn_secure_context sec_context = {0};
-
-	sec_context.values.conn_handle = conn_handle;
-	sec_context.values.force = force;
-
+	/* The conn_secure_context is smaller than a pointer and is copied into the context
+	 * argument itself. The passed context pointer is not a valid address, it is data.
+	   It is fine for sec_context to go out of scope because the values are copied.
+	 */
 	err = bm_timer_start(&secure_delay_timer,
 			     BM_TIMER_MS_TO_TICKS(CONFIG_PM_HANDLER_SEC_DELAY_MS),
-			     sec_context.p_void);
+			     sec_context.ptr);
 	APP_ERROR_CHECK(err);
-}
-
 #else
-static void conn_secure(uint16_t conn_handle, bool force)
-{
-	_conn_secure(conn_handle, force);
-}
+	conn_secure_impl(conn_handle, force);
 #endif
+}
 
 void pm_handler_on_pm_evt(const struct pm_evt *p_pm_evt)
 {
