@@ -12,8 +12,6 @@
 #if defined(CONFIG_PM_LESC)
 #include <bm/bluetooth/peer_manager/nrf_ble_lesc.h>
 #endif
-#include <sdk_macros.h>
-
 #include <modules/id_manager.h>
 #include <modules/security_dispatcher.h>
 #include <modules/peer_database.h>
@@ -346,7 +344,9 @@ static __INLINE void params_req_process(const struct pm_evt *p_event)
 
 uint32_t sm_conn_sec_status_get(uint16_t conn_handle, struct pm_conn_sec_status *p_conn_sec_status)
 {
-	VERIFY_PARAM_NOT_NULL(p_conn_sec_status);
+	if (p_conn_sec_status == NULL) {
+		return NRF_ERROR_NULL;
+	}
 
 	int status = ble_conn_state_status(conn_handle);
 
@@ -641,7 +641,10 @@ uint32_t sm_sec_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *p_sec_p
 			     const void *p_context)
 {
 	NRF_PM_DEBUG_CHECK(m_module_initialized);
-	VERIFY_PARAM_NOT_NULL(p_context);
+
+	if (p_context == NULL) {
+		return NRF_ERROR_NULL;
+	}
 
 	struct sec_params_reply_context *p_sec_params_reply_context =
 		(struct sec_params_reply_context *)p_context;
