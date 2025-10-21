@@ -8,6 +8,7 @@
 #include <string.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/util.h>
+#include <zephyr/sys/__assert.h>
 #include <nrf_error.h>
 #include <nrf_strerror.h>
 #include <ble_gap.h>
@@ -71,7 +72,7 @@ static void evt_send(struct pm_evt *p_gscm_evt)
  */
 static void service_changed_pending_set(void)
 {
-	NRF_PM_DEBUG_CHECK(m_module_initialized);
+	__ASSERT_NO_MSG(m_module_initialized);
 
 	uint32_t err_code;
 	/* Use a uint32_t to enforce 4-byte alignment. */
@@ -126,7 +127,7 @@ void gscm_pdb_evt_handler(struct pm_evt *p_event)
 
 uint32_t gscm_init(void)
 {
-	NRF_PM_DEBUG_CHECK(!m_module_initialized);
+	__ASSERT_NO_MSG(!m_module_initialized);
 
 	internal_state_reset();
 	m_module_initialized = true;
@@ -136,7 +137,7 @@ uint32_t gscm_init(void)
 
 uint32_t gscm_local_db_cache_update(uint16_t conn_handle)
 {
-	NRF_PM_DEBUG_CHECK(m_module_initialized);
+	__ASSERT_NO_MSG(m_module_initialized);
 
 	uint16_t peer_id = im_peer_id_get_by_conn_handle(conn_handle);
 	uint32_t err_code;
@@ -255,7 +256,7 @@ uint32_t gscm_local_db_cache_update(uint16_t conn_handle)
 
 uint32_t gscm_local_db_cache_apply(uint16_t conn_handle)
 {
-	NRF_PM_DEBUG_CHECK(m_module_initialized);
+	__ASSERT_NO_MSG(m_module_initialized);
 
 	uint16_t peer_id = im_peer_id_get_by_conn_handle(conn_handle);
 	uint32_t err_code;
@@ -322,7 +323,7 @@ uint32_t gscm_local_db_cache_apply(uint16_t conn_handle)
 #if defined(CONFIG_PM_SERVICE_CHANGED)
 void gscm_local_database_has_changed(void)
 {
-	NRF_PM_DEBUG_CHECK(m_module_initialized);
+	__ASSERT_NO_MSG(m_module_initialized);
 	m_current_sc_store_peer_id = pds_next_peer_id_get(PM_PEER_ID_INVALID);
 	service_changed_pending_set();
 }
@@ -375,7 +376,7 @@ uint32_t gscm_service_changed_ind_send(uint16_t conn_handle)
 
 void gscm_db_change_notification_done(uint16_t peer_id)
 {
-	NRF_PM_DEBUG_CHECK(m_module_initialized);
+	__ASSERT_NO_MSG(m_module_initialized);
 
 	/* Use a uint32_t to enforce 4-byte alignment. */
 	static const uint32_t service_changed_pending;

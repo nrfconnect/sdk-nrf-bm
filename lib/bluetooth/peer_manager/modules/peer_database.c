@@ -7,6 +7,7 @@
 #include <string.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/util.h>
+#include <zephyr/sys/__assert.h>
 #include <nrf_error.h>
 #include <nrf_strerror.h>
 #include <bm/bluetooth/peer_manager/peer_manager_types.h>
@@ -482,7 +483,7 @@ uint32_t pdb_init(void)
 {
 	uint32_t err_code;
 
-	NRF_PM_DEBUG_CHECK(!m_module_initialized);
+	__ASSERT_NO_MSG(!m_module_initialized);
 
 	internal_state_reset();
 
@@ -502,7 +503,7 @@ uint32_t pdb_peer_free(uint16_t peer_id)
 {
 	uint32_t err_code;
 
-	NRF_PM_DEBUG_CHECK(m_module_initialized);
+	__ASSERT_NO_MSG(m_module_initialized);
 
 	uint32_t index = 0;
 	struct pdb_buffer_record *p_record = write_buffer_record_find_next(peer_id, &index);
@@ -539,7 +540,7 @@ uint32_t pdb_peer_free(uint16_t peer_id)
 uint32_t pdb_write_buf_get(uint16_t peer_id, enum pm_peer_data_id data_id, uint32_t n_bufs,
 			   struct pm_peer_data *p_peer_data)
 {
-	NRF_PM_DEBUG_CHECK(m_module_initialized);
+	__ASSERT_NO_MSG(m_module_initialized);
 
 	if (p_peer_data == NULL) {
 		return NRF_ERROR_NULL;
@@ -602,7 +603,7 @@ uint32_t pdb_write_buf_get(uint16_t peer_id, enum pm_peer_data_id data_id, uint3
 
 uint32_t pdb_write_buf_release(uint16_t peer_id, enum pm_peer_data_id data_id)
 {
-	NRF_PM_DEBUG_CHECK(m_module_initialized);
+	__ASSERT_NO_MSG(m_module_initialized);
 
 	struct pdb_buffer_record *p_write_buffer_record;
 
@@ -619,7 +620,7 @@ uint32_t pdb_write_buf_release(uint16_t peer_id, enum pm_peer_data_id data_id)
 
 uint32_t pdb_write_buf_store(uint16_t peer_id, enum pm_peer_data_id data_id, uint16_t new_peer_id)
 {
-	NRF_PM_DEBUG_CHECK(m_module_initialized);
+	__ASSERT_NO_MSG(m_module_initialized);
 
 	VERIFY_DATA_ID_WRITE_BUF(data_id);
 

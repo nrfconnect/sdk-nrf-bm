@@ -193,20 +193,6 @@ typedef void (*pm_evt_handler_internal_t)(struct pm_evt *p_event);
  */
 #define PM_USAGE_INDEX_N_WORDS() BYTES_TO_WORDS(sizeof(uint32_t))
 
-#ifdef NRF_PM_DEBUG
-
-#define NRF_PM_DEBUG_CHECK(condition)                                                              \
-	if (!(condition)) {                                                                        \
-		__asm("bkpt #0");                                                                  \
-	}
-
-#else
-
-/* Prevent "variable set but never used" compiler warnings. */
-#define NRF_PM_DEBUG_CHECK(condition) (void)(condition)
-
-#endif
-
 #ifdef __cplusplus
 }
 #endif
