@@ -181,9 +181,9 @@ int main(void)
 		goto idle;
 	}
 
-	err = ble_lbs_init(&ble_lbs, &lbs_cfg);
-	if (err) {
-		LOG_ERR("Failed to setup LED Button Service, err %d", err);
+	nrf_err = ble_lbs_init(&ble_lbs, &lbs_cfg);
+	if (nrf_err) {
+		LOG_ERR("Failed to setup LED Button Service, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 
