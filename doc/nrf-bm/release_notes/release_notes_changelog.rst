@@ -73,6 +73,7 @@ Libraries
   * :ref:`lib_ble_adv`.
   * :ref:`lib_ble_conn_params` library.
   * BLE Gatt Queue library.
+  * BLE QWR library.
 
 * :ref:`lib_ble_conn_params` library:
 
