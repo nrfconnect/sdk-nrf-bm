@@ -207,7 +207,7 @@ ISR_DIRECT_DECLARE(bm_uart_mcumgr_direct_isr)
  */
 static int bm_uarte_init(void)
 {
-	int err;
+	nrfx_err_t nrfx_err;
 
 	nrfx_uarte_config_t uarte_config = NRFX_UARTE_DEFAULT_CONFIG(BOARD_APP_UARTE_PIN_TX,
 								     BOARD_APP_UARTE_PIN_RX);
@@ -231,20 +231,20 @@ static int bm_uarte_init(void)
 
 	irq_enable(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(BOARD_APP_UARTE_INST)));
 
-	err = nrfx_uarte_init(&uarte_inst, &uarte_config, uarte_event_handler);
+	nrfx_err = nrfx_uarte_init(&uarte_inst, &uarte_config, uarte_event_handler);
 
-	if (err != NRFX_SUCCESS) {
-		LOG_ERR("Failed to initialize UART, nrfx err %d", err);
-		return err;
+	if (nrfx_err != NRFX_SUCCESS) {
+		LOG_ERR("Failed to initialize UART, nrfx_err %#x", nrfx_err);
+		return nrfx_err;
 	}
 
-	err = nrfx_uarte_rx(&uarte_inst, uarte_rx_buf, 1);
+	nrfx_err = nrfx_uarte_rx(&uarte_inst, uarte_rx_buf, 1);
 
-	if (err != NRFX_SUCCESS) {
-		LOG_ERR("UART RX failed, nrfx err %d", err);
+	if (nrfx_err != NRFX_SUCCESS) {
+		LOG_ERR("UART RX failed, nrfx_err %#x", nrfx_err);
 	}
 
-	return err;
+	return nrfx_err;
 }
 
 SYS_INIT(bm_uarte_init, APPLICATION, 0);

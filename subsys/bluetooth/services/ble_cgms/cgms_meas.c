@@ -69,16 +69,16 @@ static uint8_t cgms_meas_encode(struct ble_cgms *cgms,
 /* Add a characteristic for the Continuous Glucose Meter Measurement. */
 uint32_t cgms_meas_char_add(struct ble_cgms *cgms)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	uint16_t num_recs;
 	uint8_t encoded_cgms_meas[BLE_CGMS_MEAS_LEN_MAX];
 	struct ble_cgms_rec initial_cgms_rec_value = {0};
 
 	num_recs = cgms_db_num_records_get();
 	if (num_recs > 0) {
-		err = cgms_db_record_get(&initial_cgms_rec_value, num_recs - 1);
-		if (err != NRF_SUCCESS) {
-			return err;
+		nrf_err = cgms_db_record_get(&initial_cgms_rec_value, num_recs - 1);
+		if (nrf_err) {
+			return nrf_err;
 		}
 	}
 
@@ -118,7 +118,7 @@ uint32_t cgms_meas_char_add(struct ble_cgms *cgms)
 
 uint32_t cgms_meas_send(struct ble_cgms *cgms, struct ble_cgms_rec *rec, uint16_t *count)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	uint8_t encoded_meas[BLE_CGMS_MEAS_LEN_MAX + BLE_CGMS_MEAS_REC_LEN_MAX];
 	uint16_t len = 0;
 	uint16_t hvx_len = BLE_CGMS_MEAS_LEN_MAX;
@@ -144,17 +144,17 @@ uint32_t cgms_meas_send(struct ble_cgms *cgms, struct ble_cgms_rec *rec, uint16_
 	*count = i;
 	hvx_len  = len;
 
-	err = sd_ble_gatts_hvx(cgms->conn_handle, &hvx_params);
-	if (err == NRF_SUCCESS) {
+	nrf_err = sd_ble_gatts_hvx(cgms->conn_handle, &hvx_params);
+	if (nrf_err == NRF_SUCCESS) {
 		if (hvx_len != len) {
-			err = NRF_ERROR_DATA_SIZE;
+			nrf_err = NRF_ERROR_DATA_SIZE;
 		} else {
 			/* Measurement successfully sent */
 			cgms->racp_data.racp_proc_records_reported += *count;
 		}
 	}
 
-	return err;
+	return nrf_err;
 }
 
 /* Glucose measurement CCCD write event handler */

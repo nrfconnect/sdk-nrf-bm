@@ -31,7 +31,7 @@ static void uarte_rx_handler(char *data, size_t data_len)
 /* UARTE event handler */
 static void lpuarte_event_handler(nrfx_uarte_event_t const *event, void *ctx)
 {
-	uint32_t err;
+	nrfx_err_t nrfx_err;
 	struct bm_lpuarte *lpu = ctx;
 
 	switch (event->type) {
@@ -41,7 +41,7 @@ static void lpuarte_event_handler(nrfx_uarte_event_t const *event, void *ctx)
 		}
 		break;
 	case NRFX_UARTE_EVT_RX_BUF_REQUEST:
-		err = bm_lpuarte_rx_buffer_set(lpu, &uarte_rx_buf[buf_idx * 128], 128);
+		nrfx_err = bm_lpuarte_rx_buffer_set(lpu, &uarte_rx_buf[buf_idx * 128], 128);
 		buf_idx++;
 		buf_idx = (buf_idx < 2) ? buf_idx : 0;
 		break;
@@ -72,9 +72,9 @@ ISR_DIRECT_DECLARE(lpuarte_direct_isr)
 }
 
 /* Initialize UARTE driver. */
-static uint32_t uarte_init(void)
+static nrfx_err_t lpuarte_init(void)
 {
-	uint32_t err;
+	nrfx_err_t nrfx_err;
 
 	struct bm_lpuarte_config lpu_cfg = {
 		.uarte_inst = NRFX_UARTE_INSTANCE(BOARD_APP_LPUARTE_INST),
@@ -101,13 +101,13 @@ static uint32_t uarte_init(void)
 
 	irq_enable(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(BOARD_APP_LPUARTE_INST)));
 
-	err = bm_lpuarte_init(&lpu, &lpu_cfg, lpuarte_event_handler);
-	if (err != NRFX_SUCCESS) {
-		LOG_ERR("Failed to initialize UARTE, nrfx_err %d", err);
-		return err;
+	nrfx_err = bm_lpuarte_init(&lpu, &lpu_cfg, lpuarte_event_handler);
+	if (nrfx_err != NRFX_SUCCESS) {
+		LOG_ERR("Failed to initialize UARTE, nrfx_err %#x", nrfx_err);
+		return nrfx_err;
 	}
 
-	return 0;
+	return NRFX_SUCCESS;
 }
 
 static struct bm_timer tx_timer;
@@ -115,32 +115,33 @@ static uint8_t out[] = {1, 2, 3, 4, 5};
 
 static void tx_timeout(void *context)
 {
-	uint32_t err;
+	nrfx_err_t nrfx_err;
 
-	err = bm_lpuarte_tx(&lpu, out, sizeof(out), 3000);
-	if (err != NRFX_SUCCESS) {
-		LOG_ERR("UARTE TX failed, nrfx err %#x", err);
+	nrfx_err = bm_lpuarte_tx(&lpu, out, sizeof(out), 3000);
+	if (nrfx_err != NRFX_SUCCESS) {
+		LOG_ERR("UARTE TX failed, nrfx err %#x", nrfx_err);
 		return;
 	}
 }
 
 int main(void)
 {
-	uint32_t err;
+	int err;
+	nrfx_err_t nrfx_err;
 
 	LOG_INF("LPUARTE sample started");
 	LOG_INF("Disable console and logging for minimal power consumption");
 
-	err = uarte_init();
-	if (err) {
-		LOG_ERR("Failed to enable UARTE, err %#x", err);
+	nrfx_err = lpuarte_init();
+	if (nrfx_err != NRFX_SUCCESS) {
+		LOG_ERR("Failed to enable UARTE, nrfx_err %#x", nrfx_err);
 		goto idle;
 	}
 
 	/* Start reception */
-	err = bm_lpuarte_rx_enable(&lpu);
-	if (err != NRFX_SUCCESS) {
-		LOG_ERR("UARTE RX failed, nrfx_err %#x", err);
+	nrfx_err = bm_lpuarte_rx_enable(&lpu);
+	if (nrfx_err != NRFX_SUCCESS) {
+		LOG_ERR("UARTE RX failed, nrfx_err %#x", nrfx_err);
 		goto idle;
 	}
 

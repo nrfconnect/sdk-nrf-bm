@@ -85,8 +85,8 @@ static void evt_send(struct pm_evt *event)
 /**
  * @brief Function for sending a PM_EVT_CONN_SEC_START event.
  *
- * @param[in]  conn_handle  The connection handle the event pertains to.
- * @param[in]  procedure    The procedure that has started on the connection.
+ * @param[in] conn_handle The connection handle the event pertains to.
+ * @param[in] procedure   The procedure that has started on the connection.
  */
 static void sec_start_send(uint16_t conn_handle, enum pm_conn_sec_procedure procedure)
 {
@@ -104,16 +104,16 @@ static void sec_start_send(uint16_t conn_handle, enum pm_conn_sec_procedure proc
 /**
  * @brief Function for sending a PM_EVT_ERROR_UNEXPECTED event.
  *
- * @param[in]  conn_handle  The connection handle the event pertains to.
- * @param[in]  err_code     The unexpected error that occurred.
+ * @param[in] conn_handle The connection handle the event pertains to.
+ * @param[in] nrf_err     The unexpected error that occurred.
  */
-static void send_unexpected_error(uint16_t conn_handle, uint32_t err_code)
+static void send_unexpected_error(uint16_t conn_handle, uint32_t nrf_err)
 {
 	struct pm_evt error_evt = {
 		.evt_id = PM_EVT_ERROR_UNEXPECTED,
 		.conn_handle = conn_handle,
 		.params.error_unexpected = {
-			.error = err_code,
+			.error = nrf_err,
 		},
 	};
 
@@ -168,22 +168,22 @@ static void conn_sec_failure(uint16_t conn_handle, enum pm_conn_sec_procedure pr
  */
 static void pairing_failure(uint16_t conn_handle, uint16_t error, uint8_t error_src)
 {
-	uint32_t err_code = NRF_SUCCESS;
+	uint32_t nrf_err = NRF_SUCCESS;
 	enum pm_conn_sec_procedure procedure = bonding(conn_handle) ? PM_CONN_SEC_PROCEDURE_BONDING
 								    : PM_CONN_SEC_PROCEDURE_PAIRING;
 	uint16_t temp_peer_id;
 
-	err_code = pdb_temp_peer_id_get(conn_handle, &temp_peer_id);
-	if (err_code == NRF_SUCCESS) {
-		err_code = pdb_write_buf_release(temp_peer_id, PM_PEER_DATA_ID_BONDING);
+	nrf_err = pdb_temp_peer_id_get(conn_handle, &temp_peer_id);
+	if (nrf_err == NRF_SUCCESS) {
+		nrf_err = pdb_write_buf_release(temp_peer_id, PM_PEER_DATA_ID_BONDING);
 	}
 
-	if ((err_code != NRF_SUCCESS) &&
-	    (err_code != NRF_ERROR_NOT_FOUND /* No buffer was allocated */)) {
+	if ((nrf_err != NRF_SUCCESS) &&
+	    (nrf_err != NRF_ERROR_NOT_FOUND /* No buffer was allocated */)) {
 		LOG_ERR("Could not clean up after failed bonding procedure. "
 			"pdb_write_buf_release() returned %s. conn_handle: %d.",
-			nrf_strerror_get(err_code), conn_handle);
-		send_unexpected_error(conn_handle, err_code);
+			nrf_strerror_get(nrf_err), conn_handle);
+		send_unexpected_error(conn_handle, nrf_err);
 	}
 
 	conn_sec_failure(conn_handle, procedure, error, error_src);
@@ -265,7 +265,7 @@ static uint32_t link_secure_authenticate(uint16_t conn_handle, ble_gap_sec_param
 static uint32_t link_secure_central_encryption(uint16_t conn_handle, uint16_t peer_id)
 {
 	struct pm_peer_data peer_data;
-	uint32_t err_code;
+	uint32_t nrf_err;
 	const ble_gap_enc_key_t *existing_key = NULL;
 	bool lesc = false;
 	struct pm_peer_data_bonding bonding_data = { 0 };
@@ -273,9 +273,9 @@ static uint32_t link_secure_central_encryption(uint16_t conn_handle, uint16_t pe
 
 	peer_data.bonding_data = &bonding_data;
 
-	err_code = pds_peer_data_read(peer_id, PM_PEER_DATA_ID_BONDING, &peer_data, &buf_size);
+	nrf_err = pds_peer_data_read(peer_id, PM_PEER_DATA_ID_BONDING, &peer_data, &buf_size);
 
-	if (err_code == NRF_SUCCESS) {
+	if (nrf_err == NRF_SUCCESS) {
 		/* Use peer's key since they are peripheral. */
 		existing_key = &(bonding_data.peer_ltk);
 
@@ -287,37 +287,38 @@ static uint32_t link_secure_central_encryption(uint16_t conn_handle, uint16_t pe
 		}
 	}
 
-	if ((err_code != NRF_SUCCESS) && (err_code != NRF_ERROR_NOT_FOUND)) {
-		if (err_code != NRF_ERROR_BUSY) {
+	if ((nrf_err != NRF_SUCCESS) &&
+	    (nrf_err != NRF_ERROR_NOT_FOUND)) {
+		if (nrf_err != NRF_ERROR_BUSY) {
 			LOG_ERR("Could not retrieve stored bond. pds_peer_data_read() "
-				"returned %s. peer_id: %d", nrf_strerror_get(err_code), peer_id);
-			err_code = NRF_ERROR_INTERNAL;
+				"returned %s. peer_id: %d", nrf_strerror_get(nrf_err), peer_id);
+			nrf_err = NRF_ERROR_INTERNAL;
 		}
 	/* There is no bonding data stored. This means that a
 	 * bonding procedure is in ongoing, or that the records
 	 * in flash are in a bad state.
 	 */
 	} else if (existing_key == NULL) {
-		err_code = NRF_ERROR_BUSY;
+		nrf_err = NRF_ERROR_BUSY;
 	} else if (!lesc && !im_master_id_is_valid(&(existing_key->master_id))) {
 		/* No LTK to encrypt with. */
-		err_code = NRF_ERROR_INVALID_DATA;
+		nrf_err = NRF_ERROR_INVALID_DATA;
 	} else {
 		/* Encrypt with existing LTK. */
-		err_code = sd_ble_gap_encrypt(conn_handle, &(existing_key->master_id),
-					      &(existing_key->enc_info));
+		nrf_err = sd_ble_gap_encrypt(conn_handle, &(existing_key->master_id),
+					     &(existing_key->enc_info));
 	}
 
-	sec_proc_start(conn_handle, err_code == NRF_SUCCESS, PM_CONN_SEC_PROCEDURE_ENCRYPTION);
+	sec_proc_start(conn_handle, nrf_err == NRF_SUCCESS, PM_CONN_SEC_PROCEDURE_ENCRYPTION);
 
-	return err_code;
+	return nrf_err;
 }
 
 /** @brief Function for intiating security as a central. See @ref smd_link_secure for more info. */
 static uint32_t link_secure_central(uint16_t conn_handle, ble_gap_sec_params_t *sec_params,
 				      bool force_repairing)
 {
-	uint32_t err_code;
+	uint32_t nrf_err;
 	uint16_t peer_id;
 
 	if (sec_params == NULL) {
@@ -335,19 +336,19 @@ static uint32_t link_secure_central(uint16_t conn_handle, ble_gap_sec_params_t *
 		/* There is already data in flash for this peer, and repairing has not been
 		 * requested, so the link will be encrypted with the existing keys.
 		 */
-		err_code = link_secure_central_encryption(conn_handle, peer_id);
+		nrf_err = link_secure_central_encryption(conn_handle, peer_id);
 	} else {
 		/* There are no existing keys, or repairing has been explicitly requested, so
 		 * pairing (possibly including bonding) will be performed to encrypt the link.
 		 */
-		err_code = link_secure_authenticate(conn_handle, sec_params);
+		nrf_err = link_secure_authenticate(conn_handle, sec_params);
 		enum pm_conn_sec_procedure procedure = (sec_params && sec_params->bond)
 								? PM_CONN_SEC_PROCEDURE_BONDING
 								: PM_CONN_SEC_PROCEDURE_PAIRING;
-		sec_proc_start(conn_handle, err_code == NRF_SUCCESS, procedure);
+		sec_proc_start(conn_handle, nrf_err == NRF_SUCCESS, procedure);
 	}
 
-	return err_code;
+	return nrf_err;
 }
 
 /**
@@ -395,7 +396,7 @@ static uint32_t link_secure_peripheral(uint16_t conn_handle, ble_gap_sec_params_
  */
 static void sec_info_request_process(const ble_gap_evt_t *gap_evt)
 {
-	uint32_t err_code;
+	uint32_t nrf_err;
 	const ble_gap_enc_info_t *enc_info = NULL;
 	struct pm_peer_data peer_data;
 	uint16_t peer_id =
@@ -419,10 +420,10 @@ static void sec_info_request_process(const ble_gap_evt_t *gap_evt)
 	if (peer_id != PM_PEER_ID_INVALID) {
 		peer_data.all_data = &bonding_data;
 
-		err_code = pds_peer_data_read(peer_id, PM_PEER_DATA_ID_BONDING, &peer_data,
-					      &bonding_data_size);
+		nrf_err = pds_peer_data_read(peer_id, PM_PEER_DATA_ID_BONDING, &peer_data,
+					     &bonding_data_size);
 
-		if (err_code == NRF_SUCCESS) {
+		if (nrf_err == NRF_SUCCESS) {
 			/* There is stored bonding data for this peer. */
 			const ble_gap_enc_key_t *existing_key =
 				&bonding_data.own_ltk;
@@ -437,9 +438,9 @@ static void sec_info_request_process(const ble_gap_evt_t *gap_evt)
 		}
 	}
 
-	err_code = sd_ble_gap_sec_info_reply(gap_evt->conn_handle, enc_info, NULL, NULL);
+	nrf_err = sd_ble_gap_sec_info_reply(gap_evt->conn_handle, enc_info, NULL, NULL);
 
-	if (err_code == NRF_ERROR_INVALID_STATE) {
+	if (nrf_err == NRF_ERROR_INVALID_STATE) {
 		/* Do nothing. If disconnecting, it will be caught later by the handling of the
 		 * DISCONNECTED event. If there is no SEC_INFO_REQ pending, there is either a logic
 		 * error, or the user is also calling sd_ble_gap_sec_info_reply(), but there is no
@@ -447,11 +448,11 @@ static void sec_info_request_process(const ble_gap_evt_t *gap_evt)
 		 */
 		LOG_WRN("sd_ble_gap_sec_info_reply() returned NRF_ERROR_INVALID_STATE, which is an "
 			"error unless the link is disconnecting.");
-	} else if (err_code != NRF_SUCCESS) {
+	} else if (nrf_err) {
 		LOG_ERR("Could not complete encryption procedure. sd_ble_gap_sec_info_reply() "
 			"returned %s. conn_handle: %d, peer_id: %d.",
-			nrf_strerror_get(err_code), gap_evt->conn_handle, peer_id);
-		send_unexpected_error(gap_evt->conn_handle, err_code);
+			nrf_strerror_get(nrf_err), gap_evt->conn_handle, peer_id);
+		send_unexpected_error(gap_evt->conn_handle, nrf_err);
 	} else if (gap_evt->params.sec_info_request.enc_info && (enc_info == NULL)) {
 		encryption_failure(gap_evt->conn_handle, PM_CONN_SEC_ERROR_PIN_OR_KEY_MISSING,
 				   BLE_GAP_SEC_STATUS_SOURCE_LOCAL);
@@ -567,7 +568,7 @@ static void pairing_success_evt_send(const ble_gap_evt_t *gap_evt, bool data_sto
  */
 static void auth_status_success_process(const ble_gap_evt_t *gap_evt)
 {
-	uint32_t err_code;
+	uint32_t nrf_err;
 	uint16_t conn_handle = gap_evt->conn_handle;
 	uint16_t peer_id;
 	uint16_t temp_peer_id;
@@ -581,16 +582,16 @@ static void auth_status_success_process(const ble_gap_evt_t *gap_evt)
 		return;
 	}
 
-	err_code = pdb_temp_peer_id_get(conn_handle, &temp_peer_id);
-	if (err_code == NRF_SUCCESS) {
-		err_code = pdb_write_buf_get(temp_peer_id, PM_PEER_DATA_ID_BONDING, 1, &peer_data);
+	nrf_err = pdb_temp_peer_id_get(conn_handle, &temp_peer_id);
+	if (nrf_err == NRF_SUCCESS) {
+		nrf_err = pdb_write_buf_get(temp_peer_id, PM_PEER_DATA_ID_BONDING, 1, &peer_data);
 	}
 
-	if (err_code != NRF_SUCCESS) {
+	if (nrf_err) {
 		LOG_ERR("RAM buffer for new bond was unavailable. pdb_write_buf_get() "
 			"returned %s. conn_handle: %d.",
-			nrf_strerror_get(err_code), conn_handle);
-		send_unexpected_error(conn_handle, err_code);
+			nrf_strerror_get(nrf_err), conn_handle);
+		send_unexpected_error(conn_handle, nrf_err);
 		pairing_success_evt_send(gap_evt, false);
 		return;
 	}
@@ -628,19 +629,19 @@ static void auth_status_success_process(const ble_gap_evt_t *gap_evt)
 		new_peer_id = true;
 	}
 
-	err_code = pdb_write_buf_store(temp_peer_id, PM_PEER_DATA_ID_BONDING, peer_id);
+	nrf_err = pdb_write_buf_store(temp_peer_id, PM_PEER_DATA_ID_BONDING, peer_id);
 
-	if (err_code == NRF_SUCCESS) {
+	if (nrf_err == NRF_SUCCESS) {
 		pairing_success_evt_send(gap_evt, true);
-	} else if (err_code == NRF_ERROR_RESOURCES) {
+	} else if (nrf_err == NRF_ERROR_RESOURCES) {
 		send_storage_full_evt(conn_handle);
 		pairing_success_evt_send(gap_evt, true);
 	} else {
 		/* Unexpected error */
 		LOG_ERR("Could not store bond. pdb_write_buf_store() returned %s. "
 			"conn_handle: %d, peer_id: %d",
-			nrf_strerror_get(err_code), conn_handle, peer_id);
-		send_unexpected_error(conn_handle, err_code);
+			nrf_strerror_get(nrf_err), conn_handle, peer_id);
+		send_unexpected_error(conn_handle, nrf_err);
 		pairing_success_evt_send(gap_evt, false);
 		if (new_peer_id) {
 			/* Unused return value. We are already in a bad state. */
@@ -746,10 +747,10 @@ uint32_t smd_init(void)
 	}
 
 #if defined(CONFIG_PM_RA_PROTECTION)
-	uint32_t err_code = ast_init();
+	uint32_t nrf_err = ast_init();
 
-	if (err_code != NRF_SUCCESS) {
-		return err_code;
+	if (nrf_err) {
+		return nrf_err;
 	}
 #endif /* CONFIG_PM_RA_PROTECTION */
 
@@ -777,7 +778,7 @@ static uint32_t sec_keyset_fill(uint16_t conn_handle, uint8_t role,
 				ble_gap_lesc_p256_pk_t *public_key,
 				ble_gap_sec_keyset_t *sec_keyset)
 {
-	uint32_t err_code;
+	uint32_t nrf_err;
 	uint16_t temp_peer_id;
 	struct pm_peer_data peer_data;
 
@@ -786,19 +787,19 @@ static uint32_t sec_keyset_fill(uint16_t conn_handle, uint8_t role,
 		return NRF_ERROR_INTERNAL;
 	}
 
-	err_code = pdb_temp_peer_id_get(conn_handle, &temp_peer_id);
-	if (err_code == NRF_SUCCESS) {
+	nrf_err = pdb_temp_peer_id_get(conn_handle, &temp_peer_id);
+	if (nrf_err == NRF_SUCCESS) {
 		/* Acquire a memory buffer to receive bonding data into. */
-		err_code = pdb_write_buf_get(temp_peer_id, PM_PEER_DATA_ID_BONDING, 1, &peer_data);
+		nrf_err = pdb_write_buf_get(temp_peer_id, PM_PEER_DATA_ID_BONDING, 1, &peer_data);
 	}
 
-	if (err_code == NRF_ERROR_BUSY) {
+	if (nrf_err == NRF_ERROR_BUSY) {
 		/* No action. */
-	} else if (err_code != NRF_SUCCESS) {
+	} else if (nrf_err) {
 		LOG_ERR("Could not retrieve RAM buffer for incoming bond. pdb_write_buf_get() "
 			"returned %s. conn_handle: %d",
-			nrf_strerror_get(err_code), conn_handle);
-		err_code = NRF_ERROR_INTERNAL;
+			nrf_strerror_get(nrf_err), conn_handle);
+		nrf_err = NRF_ERROR_INTERNAL;
 	} else {
 		memset(peer_data.bonding_data, 0, sizeof(struct pm_peer_data_bonding));
 
@@ -813,17 +814,17 @@ static uint32_t sec_keyset_fill(uint16_t conn_handle, uint8_t role,
 		/* Retrieve the address the peer used during connection establishment.
 		 * This address will be overwritten if ID is shared. Should not fail.
 		 */
-		err_code = im_ble_addr_get(conn_handle,
-					   &peer_data.bonding_data->peer_ble_id.id_addr_info);
-		if (err_code != NRF_SUCCESS) {
+		nrf_err = im_ble_addr_get(conn_handle,
+					  &peer_data.bonding_data->peer_ble_id.id_addr_info);
+		if (nrf_err) {
 			LOG_WRN("im_ble_addr_get() returned %s. conn_handle: %d. Link was "
 				"likely disconnected.",
-				nrf_strerror_get(err_code), conn_handle);
+				nrf_strerror_get(nrf_err), conn_handle);
 			return NRF_ERROR_INVALID_STATE;
 		}
 	}
 
-	return err_code;
+	return nrf_err;
 }
 
 uint32_t smd_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *sec_params,
@@ -832,7 +833,7 @@ uint32_t smd_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *sec_params
 	__ASSERT_NO_MSG(module_initialized);
 
 	uint8_t role = ble_conn_state_role(conn_handle);
-	uint32_t err_code = NRF_SUCCESS;
+	uint32_t nrf_err = NRF_SUCCESS;
 	uint8_t sec_status = BLE_GAP_SEC_STATUS_SUCCESS;
 	ble_gap_sec_keyset_t sec_keyset;
 
@@ -880,12 +881,12 @@ uint32_t smd_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *sec_params
 				sec_keyset.keys_peer.p_pk = &peer_pk;
 			} else if (sec_status != BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP) {
 				/* Bonding is to be performed, prepare to receive bonding data. */
-				err_code = sec_keyset_fill(conn_handle, role, public_key,
-							   &sec_keyset);
+				nrf_err = sec_keyset_fill(conn_handle, role, public_key,
+							  &sec_keyset);
 			}
 		}
 
-	if (err_code == NRF_SUCCESS) {
+	if (nrf_err == NRF_SUCCESS) {
 		/* Everything OK, reply to SoftDevice. If an error happened, the user is given an
 		 * opportunity to change the parameters and retry the call.
 		 */
@@ -894,11 +895,11 @@ uint32_t smd_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *sec_params
 		aux_sec_params = (role == BLE_GAP_ROLE_PERIPH) ? sec_params : NULL;
 #endif /* CONFIG_SOFTDEVICE_PERIPHERAL */
 
-		err_code = sd_ble_gap_sec_params_reply(conn_handle, sec_status, aux_sec_params,
-						       &sec_keyset);
+		nrf_err = sd_ble_gap_sec_params_reply(conn_handle, sec_status, aux_sec_params,
+						      &sec_keyset);
 	}
 
-	return err_code;
+	return nrf_err;
 }
 
 uint32_t smd_link_secure(uint16_t conn_handle, ble_gap_sec_params_t *sec_params,

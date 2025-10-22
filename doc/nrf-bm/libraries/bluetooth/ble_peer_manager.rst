@@ -149,14 +149,14 @@ The following code example shows how the Peer Manager is initialized:
 
 .. code-block:: c
 
-   static int peer_manager_init(bool erase_bonds)
+   static uint32_t peer_manager_init(bool erase_bonds)
    {
-      uint32_t err;
+      uint32_t nrf_err;
       ble_gap_sec_params_t sec_param;
 
-      err = pm_init();
-      if (err) {
-         return -EFAULT;
+      nrf_err = pm_init();
+      if (nrf_err) {
+         return nrf_err;
       }
 
       if (erase_bonds) {
@@ -179,17 +179,19 @@ The following code example shows how the Peer Manager is initialized:
          .kdist_peer.id = 1,
       };
 
-      err = pm_sec_params_set(&sec_param);
-      if (err) {
-         LOG_ERR("pm_sec_params_set() failed, err: 0x%x", err);
-         return -EFAULT;
+      nrf_err = pm_sec_params_set(&sec_param);
+      if (nrf_err) {
+         LOG_ERR("pm_sec_params_set() failed, nrf_error 0x%x", nrf_err);
+         return nrf_err;
       }
 
-      err = pm_register(pm_evt_handler);
-      if (err) {
-         LOG_ERR("pm_register() failed, err: 0x%x", err);
-         return -EFAULT;
+      nrf_err = pm_register(pm_evt_handler);
+      if (nrf_err) {
+         LOG_ERR("pm_register() failed, nrf_error 0x%x", nrf_err);
+         return nrf_err;
       }
+
+      return NRF_SUCCESS;
    }
 
 Usage
@@ -348,12 +350,12 @@ The store operation is finished when either the :c:enum:`PM_EVT_PEER_DATA_UPDATE
 
 .. code-block:: c
 
-   uint32_t err;
+   uint32_t nrf_err;
    uint32_t store_token;
 
-   err = pm_peer_data_remote_db_store(peer_id, array_of_services, number_of_services, &store_token);
-   if (err != NRF_ERROR_BUSY) {
-      return err;
+   nrf_err = pm_peer_data_remote_db_store(peer_id, array_of_services, number_of_services, &store_token);
+   if (nrf_err != NRF_SUCCESS && nrf_err != NRF_ERROR_BUSY) {
+      return nrf_err;
    }
 
 The :c:func:`pm_peer_data_remote_db_store`, :c:func:`pm_peer_data_bonding_store`, and :c:func:`pm_peer_data_app_data_store` functions call the :c:func:`pm_peer_data_store` function.
@@ -361,12 +363,12 @@ The :c:func:`pm_peer_data_store` function can also be used directly, as in the f
 
 .. code-block:: c
 
-   uint32_t err;
+   uint32_t nrf_err;
    uint32_t store_token;
 
-   err = pm_peer_data_store(peer_id, PM_PEER_DATA_ID_GATT_REMOTE, array_of_services, number_of_services, &store_token);
-   if (err != NRF_ERROR_BUSY) {
-      return err;
+   nrf_err = pm_peer_data_store(peer_id, PM_PEER_DATA_ID_GATT_REMOTE, array_of_services, number_of_services, &store_token);
+   if (nrf_err != NRF_SUCCESS && nrf_err != NRF_ERROR_BUSY) {
+      return nrf_err;
    }
 
 Using a whitelist
@@ -392,9 +394,9 @@ The following example shows how to use the :c:func:`pm_whitelist_set` function t
       }
 
       /* Whitelist peers. */
-      err = pm_whitelist_set(peer_ids, n_peer_ids);
-      if (err != NRF_SUCCESS) {
-         return err;
+      nrf_err = pm_whitelist_set(peer_ids, n_peer_ids);
+      if (nrf_err) {
+         return nrf_err;
       }
    }
 
@@ -409,7 +411,7 @@ The following example shows how to use the :c:func:`pm_whitelist_set` function t
              * previously whitelisted using pm_whitelist_set().
              */
 
-            uint32_t err;
+            uint32_t nrf_err;
 
             /* Storage for the whitelist. */
             ble_gap_irk_t irks[8] = {0};
@@ -418,15 +420,15 @@ The following example shows how to use the :c:func:`pm_whitelist_set` function t
             uint32_t irk_cnt = 8;
             uint32_t addr_cnt = 8;
 
-            err = pm_whitelist_get(addrs, &addr_cnt, irks, &irk_cnt);
-            if (err != NRF_SUCCESS) {
-               return err;
+            nrf_err = pm_whitelist_get(addrs, &addr_cnt, irks, &irk_cnt);
+            if (nrf_err) {
+               return;
             }
 
             /* Apply the whitelist. */
-            err = ble_advertising_whitelist_reply(addrs, addr_cnt, irks, irk_cnt);
-            if (err != NRF_SUCCESS) {
-               return err;
+            nrf_err = ble_advertising_whitelist_reply(addrs, addr_cnt, irks, irk_cnt);
+            if (nrf_err) {
+               return;
             }
 
             break;

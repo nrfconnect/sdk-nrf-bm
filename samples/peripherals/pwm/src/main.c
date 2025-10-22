@@ -35,7 +35,7 @@ ISR_DIRECT_DECLARE(pwm_direct_isr)
 
 int main(void)
 {
-	nrfx_err_t err;
+	nrfx_err_t nrfx_err;
 	nrfx_pwm_t pwm_instance = NRFX_PWM_INSTANCE(PWM_INST_IDX);
 	/*
 	 * PWM signal can be exposed on GPIO pin only within the same domain.
@@ -59,9 +59,9 @@ int main(void)
 			   CONFIG_PWM_IRQ_PRIO,
 			   pwm_direct_isr, 0);
 
-	err = nrfx_pwm_init(&pwm_instance, &config, pwm_handler, &pwm_instance);
-	if (err != NRFX_SUCCESS) {
-		LOG_ERR("Failed to initialize PWM, nrfx_error %#x", err);
+	nrfx_err = nrfx_pwm_init(&pwm_instance, &config, pwm_handler, &pwm_instance);
+	if (nrfx_err != NRFX_SUCCESS) {
+		LOG_ERR("Failed to initialize PWM, nrfx_err %#x", nrfx_err);
 		goto idle;
 	}
 

@@ -184,19 +184,19 @@ uint32_t nrf_ble_lesc_keypair_generate(void)
 
 uint32_t nrf_ble_lesc_own_oob_data_generate(void)
 {
-	uint32_t err_code = NRF_ERROR_INVALID_STATE;
+	uint32_t nrf_err = NRF_ERROR_INVALID_STATE;
 
 	lesc_oobd_own_generated = false;
 
 	if (keypair_generated) {
-		err_code = sd_ble_gap_lesc_oob_data_get(BLE_CONN_HANDLE_INVALID, &lesc_public_key,
-							&ble_lesc_oobd_own);
-		if (err_code == NRF_SUCCESS) {
+		nrf_err = sd_ble_gap_lesc_oob_data_get(BLE_CONN_HANDLE_INVALID, &lesc_public_key,
+						       &ble_lesc_oobd_own);
+		if (nrf_err == NRF_SUCCESS) {
 			lesc_oobd_own_generated = true;
 		}
 	}
 
-	return err_code;
+	return nrf_err;
 }
 
 ble_gap_lesc_p256_pk_t *nrf_ble_lesc_public_key_get(void)
@@ -287,7 +287,7 @@ static uint32_t compute_and_give_dhkey(struct lesc_peer_pub_key *peer_public_key
 
 uint32_t nrf_ble_lesc_request_handler(void)
 {
-	uint32_t err_code;
+	uint32_t nrf_err;
 
 	/* If the LESC module is in an invalid state, a restart is required. */
 	if (ble_lesc_internal_error) {
@@ -296,14 +296,14 @@ uint32_t nrf_ble_lesc_request_handler(void)
 
 	for (uint16_t i = 0; i < NRF_BLE_LESC_LINK_COUNT; i++) {
 		if (peer_keys[i].is_requested) {
-			err_code = compute_and_give_dhkey(&peer_keys[i]);
+			nrf_err = compute_and_give_dhkey(&peer_keys[i]);
 			peer_keys[i].is_requested = false;
 			peer_keys[i].is_valid = false;
 			peer_keys[i].passkey_requested = false;
 			peer_keys[i].passkey_displayed = false;
 
-			if (err_code != NRF_SUCCESS) {
-				return err_code;
+			if (nrf_err) {
+				return nrf_err;
 			}
 		}
 	}
@@ -325,7 +325,7 @@ uint32_t nrf_ble_lesc_request_handler(void)
 static uint32_t on_dhkey_request(uint16_t conn_handle, int idx,
 				 const ble_gap_evt_lesc_dhkey_request_t *dhkey_request)
 {
-	uint32_t err_code = NRF_SUCCESS;
+	uint32_t nrf_err = NRF_SUCCESS;
 	const uint8_t *const public_raw = dhkey_request->p_pk_peer->pk;
 
 	/* Don't allow to pair with remote peer which uses the same public key.
@@ -341,10 +341,10 @@ static uint32_t on_dhkey_request(uint16_t conn_handle, int idx,
 		if (peer_keys[idx].passkey_requested) {
 			peer_keys[idx].passkey_requested = false;
 
-			err_code = sd_ble_gap_auth_key_reply(conn_handle,
-							     BLE_GAP_AUTH_KEY_TYPE_NONE, NULL);
+			nrf_err = sd_ble_gap_auth_key_reply(conn_handle,
+							    BLE_GAP_AUTH_KEY_TYPE_NONE, NULL);
 
-			return err_code;
+			return nrf_err;
 
 		}
 		/* In case we have gotten passkey display event then we need to disconnect a link
@@ -353,10 +353,11 @@ static uint32_t on_dhkey_request(uint16_t conn_handle, int idx,
 		else if (peer_keys[idx].passkey_displayed) {
 			peer_keys[idx].passkey_displayed = false;
 
-			err_code = sd_ble_gap_disconnect(conn_handle,
-							 BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
-			if (err_code != NRF_SUCCESS && err_code != NRF_ERROR_INVALID_STATE) {
-				return err_code;
+			nrf_err = sd_ble_gap_disconnect(conn_handle,
+							BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
+			if ((nrf_err != NRF_SUCCESS) &&
+			    (nrf_err != NRF_ERROR_INVALID_STATE)) {
+				return nrf_err;
 			}
 
 			return NRF_SUCCESS;
@@ -382,7 +383,6 @@ static uint32_t on_dhkey_request(uint16_t conn_handle, int idx,
  */
 static uint32_t lesc_oob_data_set(uint16_t conn_handle)
 {
-	uint32_t err_code;
 	ble_gap_lesc_oob_data_t *lesc_oobd_own;
 	ble_gap_lesc_oob_data_t *lesc_oobd_peer;
 
@@ -390,13 +390,12 @@ static uint32_t lesc_oob_data_set(uint16_t conn_handle)
 	lesc_oobd_peer =
 		(lesc_oobd_peer_handler != NULL) ? lesc_oobd_peer_handler(conn_handle) : NULL;
 
-	err_code = sd_ble_gap_lesc_oob_data_set(conn_handle, lesc_oobd_own, lesc_oobd_peer);
-	return err_code;
+	return sd_ble_gap_lesc_oob_data_set(conn_handle, lesc_oobd_own, lesc_oobd_peer);
 }
 
 void nrf_ble_lesc_on_ble_evt(const ble_evt_t *ble_evt)
 {
-	uint32_t err_code = NRF_SUCCESS;
+	uint32_t nrf_err = NRF_SUCCESS;
 	const uint16_t conn_handle = ble_evt->evt.gap_evt.conn_handle;
 	const int idx = nrf_sdh_ble_idx_get(conn_handle);
 
@@ -429,17 +428,17 @@ void nrf_ble_lesc_on_ble_evt(const ble_evt_t *ble_evt)
 		LOG_DBG("BLE_GAP_EVT_LESC_DHKEY_REQUEST");
 
 		if (ble_evt->evt.gap_evt.params.lesc_dhkey_request.oobd_req) {
-			err_code = lesc_oob_data_set(conn_handle);
-			if (err_code != NRF_SUCCESS) {
+			nrf_err = lesc_oob_data_set(conn_handle);
+			if (nrf_err) {
 				LOG_ERR("sd_ble_gap_lesc_oob_data_set() returned error 0x%x.",
-					      err_code);
+					nrf_err);
 				ble_lesc_internal_error = true;
 			}
 		}
 
-		err_code = on_dhkey_request(conn_handle, idx,
-					    &ble_evt->evt.gap_evt.params.lesc_dhkey_request);
-		if (err_code != NRF_SUCCESS) {
+		nrf_err = on_dhkey_request(conn_handle, idx,
+					   &ble_evt->evt.gap_evt.params.lesc_dhkey_request);
+		if (nrf_err) {
 			ble_lesc_internal_error = true;
 		}
 		break;
@@ -447,8 +446,8 @@ void nrf_ble_lesc_on_ble_evt(const ble_evt_t *ble_evt)
 #if defined(CONFIG_PM_LESC_GENERATE_NEW_KEYS)
 	case BLE_GAP_EVT_AUTH_STATUS:
 		/* Generate new pairing keys. */
-		err_code = nrf_ble_lesc_keypair_generate();
-		if (err_code != NRF_SUCCESS) {
+		nrf_err = nrf_ble_lesc_keypair_generate();
+		if (nrf_err) {
 			ble_lesc_internal_error = true;
 		}
 

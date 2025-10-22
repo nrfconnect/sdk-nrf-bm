@@ -95,16 +95,16 @@ static void evt_send(struct pm_evt *event)
  * @brief Function for setting or clearing user flags based on error codes returned from @ref
  *        smd_link_secure or @ref smd_params_reply.
  *
- * @param[in]  conn_handle   The connection the call pertained to.
- * @param[in]  err_code      The error code returned from @ref smd_link_secure or
- *                           @ref smd_params_reply.
- * @param[in]  params_reply  Whether the call was to @ref smd_params_reply.
+ * @param[in] conn_handle  The connection the call pertained to.
+ * @param[in] nrf_err      The error code returned from @ref smd_link_secure or
+ *                         @ref smd_params_reply.
+ * @param[in] params_reply Whether the call was to @ref smd_params_reply.
  */
-static void flags_set_from_err_code(uint16_t conn_handle, uint32_t err_code, bool params_reply)
+static void flags_set_from_err_code(uint16_t conn_handle, uint32_t nrf_err, bool params_reply)
 {
 	bool flag_value_busy = false;
 
-	if (err_code == NRF_ERROR_BUSY) {
+	if (nrf_err == NRF_ERROR_BUSY) {
 		flag_value_busy = true;
 	} else {
 		flag_value_busy = false;
@@ -134,21 +134,21 @@ static inline struct pm_evt new_evt(enum pm_evt_id evt_id, uint16_t conn_handle)
 /**
  * @brief Function for sending a PM_EVT_ERROR_UNEXPECTED event.
  *
- * @param[in]  conn_handle  The connection handle the event pertains to.
- * @param[in]  err_code     The unexpected error that occurred.
+ * @param[in] conn_handle The connection handle the event pertains to.
+ * @param[in] nrf_err     The unexpected error that occurred.
  */
-static void send_unexpected_error(uint16_t conn_handle, uint32_t err_code)
+static void send_unexpected_error(uint16_t conn_handle, uint32_t nrf_err)
 {
 	struct pm_evt error_evt = new_evt(PM_EVT_ERROR_UNEXPECTED, conn_handle);
 
-	error_evt.params.error_unexpected.error = err_code;
+	error_evt.params.error_unexpected.error = nrf_err;
 	evt_send(&error_evt);
 }
 
 /**
  * @brief Returns whether the LTK came from LESC bonding.
  *
- * @param[in]  peer_id  The peer to check.
+ * @param[in] peer_id The peer to check.
  *
  * @return  Whether the key is LESC or not.
  */
@@ -157,14 +157,14 @@ static bool key_is_lesc(uint16_t peer_id)
 	struct pm_peer_data_bonding bonding_data = { 0 };
 	uint32_t bonding_data_size = sizeof(struct pm_peer_data_bonding);
 	struct pm_peer_data peer_data;
-	uint32_t err_code;
+	uint32_t nrf_err;
 
 	peer_data.all_data = &bonding_data;
 
-	err_code = pds_peer_data_read(peer_id, PM_PEER_DATA_ID_BONDING, &peer_data,
-				      &bonding_data_size);
+	nrf_err = pds_peer_data_read(peer_id, PM_PEER_DATA_ID_BONDING, &peer_data,
+				     &bonding_data_size);
 
-	return (err_code == NRF_SUCCESS) && (bonding_data.own_ltk.enc_info.lesc);
+	return (nrf_err == NRF_SUCCESS) && (bonding_data.own_ltk.enc_info.lesc);
 }
 
 /**
@@ -172,17 +172,18 @@ static bool key_is_lesc(uint16_t peer_id)
  *        @ref smd_params_reply.
  *
  * @param[in]  conn_handle  The connection the event pertains to.
- * @param[in]  err_code     The error code returned from @ref smd_link_secure or
+ * @param[in]  nrf_err      The error code returned from @ref smd_link_secure or
  *                          @ref smd_params_reply.
  * @param[in]  sec_params   The security parameters attempted to pass in the call to
  *                          @ref smd_link_secure or @ref smd_params_reply.
  */
-static void events_send_from_err_code(uint16_t conn_handle, uint32_t err_code,
+static void events_send_from_err_code(uint16_t conn_handle, uint32_t nrf_err,
 				      ble_gap_sec_params_t *sec_params)
 {
-	if ((err_code != NRF_SUCCESS) && (err_code != NRF_ERROR_BUSY) &&
-	    (err_code != NRF_ERROR_INVALID_STATE)) {
-		if (err_code == NRF_ERROR_TIMEOUT) {
+	if ((nrf_err != NRF_SUCCESS) &&
+	    (nrf_err != NRF_ERROR_BUSY) &&
+	    (nrf_err != NRF_ERROR_INVALID_STATE)) {
+		if (nrf_err == NRF_ERROR_TIMEOUT) {
 			LOG_WRN("Cannot secure link because a previous security procedure "
 				"ended in timeout. "
 				"Disconnect and retry. smd_params_reply() or "
@@ -202,8 +203,8 @@ static void events_send_from_err_code(uint16_t conn_handle, uint32_t err_code,
 		} else {
 			LOG_ERR("Could not perform security procedure. smd_params_reply() or "
 				"smd_link_secure() returned %s. conn_handle: %d",
-				nrf_strerror_get(err_code), conn_handle);
-			send_unexpected_error(conn_handle, err_code);
+				nrf_strerror_get(nrf_err), conn_handle);
+			send_unexpected_error(conn_handle, nrf_err);
 		}
 	}
 }
@@ -251,10 +252,10 @@ static struct sec_params_reply_context new_context_get(void)
  * @return  Same return codes as @ref sm_link_secure.
  */
 static uint32_t link_secure(uint16_t conn_handle, bool null_params, bool force_repairing,
-			      bool send_events)
+			    bool send_events)
 {
-	uint32_t err_code;
-	uint32_t return_err_code;
+	uint32_t nrf_err;
+	uint32_t return_nrf_err;
 	ble_gap_sec_params_t *sec_params;
 
 	if (null_params) {
@@ -271,38 +272,38 @@ static uint32_t link_secure(uint16_t conn_handle, bool null_params, bool force_r
 		}
 	}
 
-	err_code = smd_link_secure(conn_handle, sec_params, force_repairing);
+	nrf_err = smd_link_secure(conn_handle, sec_params, force_repairing);
 
-	flags_set_from_err_code(conn_handle, err_code, false);
+	flags_set_from_err_code(conn_handle, nrf_err, false);
 
-	switch (err_code) {
+	switch (nrf_err) {
 	case NRF_ERROR_BUSY:
 		ble_conn_state_user_flag_set(conn_handle, flag_link_secure_null_params,
 					     null_params);
 		ble_conn_state_user_flag_set(conn_handle, flag_link_secure_force_repairing,
 					     force_repairing);
-		return_err_code = NRF_SUCCESS;
+		return_nrf_err = NRF_SUCCESS;
 		break;
 	case NRF_SUCCESS:
 	case NRF_ERROR_TIMEOUT:
 	case BLE_ERROR_INVALID_CONN_HANDLE:
 	case NRF_ERROR_INVALID_STATE:
 	case NRF_ERROR_INVALID_DATA:
-		return_err_code = err_code;
+		return_nrf_err = nrf_err;
 		break;
 	default:
 		LOG_ERR("Could not perform security procedure. smd_link_secure() returned %s. "
 			"conn_handle: %d",
-			nrf_strerror_get(err_code), conn_handle);
-		return_err_code = NRF_ERROR_INTERNAL;
+			nrf_strerror_get(nrf_err), conn_handle);
+		return_nrf_err = NRF_ERROR_INTERNAL;
 		break;
 	}
 
 	if (send_events) {
-		events_send_from_err_code(conn_handle, err_code, sec_params);
+		events_send_from_err_code(conn_handle, nrf_err, sec_params);
 	}
 
-	return return_err_code;
+	return return_nrf_err;
 }
 
 /**
@@ -315,7 +316,7 @@ static uint32_t link_secure(uint16_t conn_handle, bool null_params, bool force_r
 static void smd_params_reply_perform(uint16_t conn_handle,
 				     const ble_gap_sec_params_t *peer_params)
 {
-	uint32_t err_code;
+	uint32_t nrf_err;
 	ble_gap_lesc_p256_pk_t *public_key;
 	struct sec_params_reply_context context = new_context_get();
 
@@ -326,10 +327,10 @@ static void smd_params_reply_perform(uint16_t conn_handle,
 #else
 	public_key = lesc_public_key;
 #endif /* CONFIG_PM_LESC */
-	err_code = smd_params_reply(conn_handle, context.sec_params, public_key);
+	nrf_err = smd_params_reply(conn_handle, context.sec_params, public_key);
 
-	flags_set_from_err_code(conn_handle, err_code, true);
-	events_send_from_err_code(conn_handle, err_code, context.sec_params);
+	flags_set_from_err_code(conn_handle, nrf_err, true);
+	events_send_from_err_code(conn_handle, nrf_err, context.sec_params);
 }
 
 /**
@@ -370,13 +371,13 @@ bool sm_sec_is_sufficient(uint16_t conn_handle, struct pm_conn_sec_status *sec_s
 {
 	/* Set all bits in reserved to 1 so they are ignored in subsequent logic. */
 	struct pm_conn_sec_status sec_status = {.reserved = ~0};
-	uint32_t err_code = sm_conn_sec_status_get(conn_handle, &sec_status);
+	uint32_t nrf_err = sm_conn_sec_status_get(conn_handle, &sec_status);
 
 	__ASSERT_NO_MSG(sizeof(struct pm_conn_sec_status) == sizeof(uint8_t));
 
 	uint8_t unmet_reqs = (~(*((uint8_t *)&sec_status)) & *((uint8_t *)sec_status_req));
 
-	return (err_code == NRF_SUCCESS) && !unmet_reqs;
+	return (nrf_err == NRF_SUCCESS) && !unmet_reqs;
 }
 
 #if defined(CONFIG_SOFTDEVICE_CENTRAL)
@@ -505,10 +506,10 @@ uint32_t sm_init(void)
 	__ASSERT_NO_MSG(!module_initialized);
 
 #if defined(CONFIG_PM_LESC)
-	uint32_t err_code = nrf_ble_lesc_init();
+	uint32_t nrf_err = nrf_ble_lesc_init();
 
-	if (err_code != NRF_SUCCESS) {
-		return err_code;
+	if (nrf_err) {
+		return nrf_err;
 	}
 #endif
 
@@ -680,10 +681,7 @@ uint32_t sm_lesc_public_key_set(ble_gap_lesc_p256_pk_t *public_key)
 
 uint32_t sm_link_secure(uint16_t conn_handle, bool force_repairing)
 {
-	uint32_t ret;
-
 	__ASSERT_NO_MSG(module_initialized);
 
-	ret = link_secure(conn_handle, false, force_repairing, false);
-	return ret;
+	return link_secure(conn_handle, false, force_repairing, false);
 }

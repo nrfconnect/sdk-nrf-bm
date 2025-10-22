@@ -91,12 +91,12 @@ static uint8_t sst_encode(struct ble_cgms_sst *sst, uint8_t *sst_encoded)
 
 static uint32_t cgm_update_sst(struct ble_cgms *cgms, const ble_gatts_evt_write_t *evt_write)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	struct ble_cgms_sst sst = {0};
 	struct tm c_time_and_date;
 
-	err = sst_decode(&sst, evt_write->data, evt_write->len);
-	if (err != NRF_SUCCESS) {
+	nrf_err = sst_decode(&sst, evt_write->data, evt_write->len);
+	if (nrf_err) {
 		/* Silently drop the update */
 		return NRF_SUCCESS;
 	}
@@ -110,7 +110,7 @@ static uint32_t cgm_update_sst(struct ble_cgms *cgms, const ble_gatts_evt_write_
 /* Glucose session start time write event handler. */
 static void on_sst_value_write(struct ble_cgms *cgms, const ble_gatts_evt_write_t *evt_write)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	ble_gatts_rw_authorize_reply_params_t auth_reply = {
 		.type = BLE_GATTS_AUTHORIZE_TYPE_WRITE,
 		.params = {
@@ -124,18 +124,18 @@ static void on_sst_value_write(struct ble_cgms *cgms, const ble_gatts_evt_write_
 		.evt_type = BLE_CGMS_EVT_ERROR,
 	};
 
-	err = sd_ble_gatts_rw_authorize_reply(cgms->conn_handle, &auth_reply);
-	if (err != NRF_SUCCESS) {
+	nrf_err = sd_ble_gatts_rw_authorize_reply(cgms->conn_handle, &auth_reply);
+	if (nrf_err) {
 		if (cgms->evt_handler != NULL) {
-			cgms_evt.error.reason = err;
+			cgms_evt.error.reason = nrf_err;
 			cgms->evt_handler(cgms, &cgms_evt);
 		}
 	}
 
-	err = cgm_update_sst(cgms, evt_write);
-	if (err != NRF_SUCCESS) {
+	nrf_err = cgm_update_sst(cgms, evt_write);
+	if (nrf_err) {
 		if (cgms->evt_handler != NULL) {
-			cgms_evt.error.reason = err;
+			cgms_evt.error.reason = nrf_err;
 			cgms->evt_handler(cgms, &cgms_evt);
 		}
 	}

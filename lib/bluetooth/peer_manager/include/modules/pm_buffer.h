@@ -29,14 +29,14 @@ extern "C" {
  * @param[out] buffer      The buffer instance to initialize.
  * @param[in]  n_blocks    The desired number of blocks in the buffer.
  * @param[in]  block_size  The desired block size of the buffer.
- * @param[out] err_code    The return code from @ref pm_buffer_init.
+ * @param[out] nrf_err     The return code from @ref pm_buffer_init.
  */
-#define PM_BUFFER_INIT(buffer, n_blocks, block_size, err_code)                                     \
+#define PM_BUFFER_INIT(buffer, n_blocks, block_size, nrf_err)                                      \
 	do {                                                                                       \
 		__ALIGN(4) static uint8_t buffer_memory[(n_blocks) * (block_size)];                \
 		static atomic_t mutex_memory[(n_blocks - 1) / (sizeof(atomic_t) * 8) + 1];         \
-		err_code = pm_buffer_init((buffer), buffer_memory, (n_blocks) * (block_size),      \
-					  mutex_memory, (n_blocks), (block_size));                 \
+		nrf_err = pm_buffer_init((buffer), buffer_memory, (n_blocks) * (block_size),       \
+					 mutex_memory, (n_blocks), (block_size));                  \
 	} while (0)
 
 struct pm_buffer {

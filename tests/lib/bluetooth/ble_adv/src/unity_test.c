@@ -27,13 +27,13 @@ void test_ble_adv_conn_cfg_tag_set(void)
 {
 	struct ble_adv ble_adv;
 	uint8_t conn_cfg_tag = 1;
-	int ret;
+	uint32_t nrf_err;
 
-	ret = ble_adv_conn_cfg_tag_set(NULL, conn_cfg_tag);
-	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, ret);
+	nrf_err = ble_adv_conn_cfg_tag_set(NULL, conn_cfg_tag);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 
-	ret = ble_adv_conn_cfg_tag_set(&ble_adv, conn_cfg_tag);
-	TEST_ASSERT_EQUAL(0, ret);
+	nrf_err = ble_adv_conn_cfg_tag_set(&ble_adv, conn_cfg_tag);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	TEST_ASSERT_EQUAL(conn_cfg_tag, ble_adv.conn_cfg_tag);
 }
@@ -45,15 +45,15 @@ void test_ble_adv_init_error_null(void)
 		.conn_cfg_tag = 1,
 		.evt_handler = ble_adv_evt_handler,
 	};
-	int ret;
+	uint32_t nrf_err;
 
-	ret = ble_adv_init(NULL, &config);
-	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, ret);
-	ret = ble_adv_init(&ble_adv, NULL);
-	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, ret);
+	nrf_err = ble_adv_init(NULL, &config);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
+	nrf_err = ble_adv_init(&ble_adv, NULL);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 	config.evt_handler = NULL;
-	ret = ble_adv_init(&ble_adv, &config);
-	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, ret);
+	nrf_err = ble_adv_init(&ble_adv, &config);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 }
 
 void test_ble_adv_init_error_invalid_param(void)
@@ -66,29 +66,32 @@ void test_ble_adv_init_error_invalid_param(void)
 		.evt_handler = ble_adv_evt_handler,
 	};
 	ble_gap_conn_sec_mode_t sec_mode = {0};
-	int ret;
+	uint32_t nrf_err;
 
 	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&sec_mode);
 
 	/* Simulate an error in setting the device name */
 	__cmock_sd_ble_gap_device_name_set_ExpectAndReturn(&sec_mode, CONFIG_BLE_ADV_NAME,
-		strlen(CONFIG_BLE_ADV_NAME), NRF_ERROR_INVALID_ADDR);
-	ret = ble_adv_init(&ble_adv, &config);
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, ret);
+							   strlen(CONFIG_BLE_ADV_NAME),
+							   NRF_ERROR_INVALID_ADDR);
+	nrf_err = ble_adv_init(&ble_adv, &config);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, nrf_err);
 
 	/* Simulate an error in setting the adv config */
 	__cmock_sd_ble_gap_device_name_set_ExpectAndReturn(&sec_mode, CONFIG_BLE_ADV_NAME,
-	strlen(CONFIG_BLE_ADV_NAME), NRF_SUCCESS);
+							   strlen(CONFIG_BLE_ADV_NAME),
+							   NRF_SUCCESS);
 	__cmock_sd_ble_gap_adv_set_configure_ExpectAndReturn(&ble_adv.adv_handle,
-		NULL, &ble_adv.adv_params, NRF_ERROR_INVALID_ADDR);
-	ret = ble_adv_init(&ble_adv, &config);
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, ret);
+							     NULL, &ble_adv.adv_params,
+							     NRF_ERROR_INVALID_ADDR);
+	nrf_err = ble_adv_init(&ble_adv, &config);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, nrf_err);
 }
 
 void test_ble_adv_init(void)
 {
 	uint8_t conn_cfg_tag = 1;
-	int ret;
+	uint32_t nrf_err;
 	struct ble_adv ble_adv = {
 		.adv_handle = BLE_GAP_ADV_SET_HANDLE_NOT_SET,
 	};
@@ -101,8 +104,8 @@ void test_ble_adv_init(void)
 	__cmock_sd_ble_gap_device_name_set_IgnoreAndReturn(NRF_SUCCESS);
 	__cmock_sd_ble_gap_adv_set_configure_IgnoreAndReturn(NRF_SUCCESS);
 
-	ret = ble_adv_init(&ble_adv, &config);
-	TEST_ASSERT_EQUAL(0, ret);
+	nrf_err = ble_adv_init(&ble_adv, &config);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 	TEST_ASSERT_TRUE(ble_adv.mode_current == BLE_ADV_MODE_IDLE);
 	TEST_ASSERT_TRUE(ble_adv.conn_cfg_tag == conn_cfg_tag);
 	TEST_ASSERT_TRUE(ble_adv.conn_handle == BLE_CONN_HANDLE_INVALID);
@@ -123,16 +126,16 @@ void test_ble_adv_peer_addr_reply(void)
 		.peer_addr_reply_expected = true,
 	};
 	ble_gap_addr_t peer_addr = {0};
-	int ret;
+	uint32_t nrf_err;
 
-	ret = ble_adv_peer_addr_reply(NULL, &peer_addr);
-	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, ret);
+	nrf_err = ble_adv_peer_addr_reply(NULL, &peer_addr);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 
-	ret = ble_adv_peer_addr_reply(&ble_adv, NULL);
-	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, ret);
+	nrf_err = ble_adv_peer_addr_reply(&ble_adv, NULL);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 
-	ret = ble_adv_peer_addr_reply(&ble_adv, &peer_addr);
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, ret);
+	nrf_err = ble_adv_peer_addr_reply(&ble_adv, &peer_addr);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, nrf_err);
 
 	peer_addr = (ble_gap_addr_t){
 		.addr_id_peer = 0,
@@ -140,8 +143,8 @@ void test_ble_adv_peer_addr_reply(void)
 		.addr = {0x01, 0x02, 0x03, 0x00, 0x05, 0x06}
 	};
 
-	ret = ble_adv_peer_addr_reply(&ble_adv, &peer_addr);
-	TEST_ASSERT_EQUAL(0, ret);
+	nrf_err = ble_adv_peer_addr_reply(&ble_adv, &peer_addr);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 	TEST_ASSERT_TRUE(ble_adv.peer_addr_reply_expected == false);
 	TEST_ASSERT_TRUE(ble_adv.peer_address.addr_type == peer_addr.addr_type);
 	TEST_ASSERT_TRUE(
@@ -152,29 +155,29 @@ void test_ble_adv_peer_addr_reply(void)
 void test_ble_adv_whitelist_reply(void)
 {
 	struct ble_adv ble_adv_config = {0};
-	int ret;
+	uint32_t nrf_err;
 	const ble_gap_addr_t addrs = {0};
 	const ble_gap_irk_t irks = {0};
 
-	ret = ble_adv_whitelist_reply(NULL, &addrs, 0, &irks, 0);
-	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, ret);
+	nrf_err = ble_adv_whitelist_reply(NULL, &addrs, 0, &irks, 0);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 
-	ret = ble_adv_whitelist_reply(&ble_adv_config, &addrs, 0, &irks, 0);
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, ret);
+	nrf_err = ble_adv_whitelist_reply(&ble_adv_config, &addrs, 0, &irks, 0);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, nrf_err);
 
 	ble_adv_config.whitelist_reply_expected = NULL;
-	ret = ble_adv_whitelist_reply(&ble_adv_config, NULL, 0, NULL, 0);
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, ret);
+	nrf_err = ble_adv_whitelist_reply(&ble_adv_config, NULL, 0, NULL, 0);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, nrf_err);
 
 	ble_adv_config.whitelist_reply_expected = true;
-	ret = ble_adv_whitelist_reply(&ble_adv_config, &addrs, 0, &irks, 0);
-	TEST_ASSERT_EQUAL(0, ret);
+	nrf_err = ble_adv_whitelist_reply(&ble_adv_config, &addrs, 0, &irks, 0);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 	TEST_ASSERT_TRUE(ble_adv_config.whitelist_reply_expected == false);
 	TEST_ASSERT_TRUE(ble_adv_config.whitelist_in_use == false);
 
 	ble_adv_config.whitelist_reply_expected = true;
-	ret = ble_adv_whitelist_reply(&ble_adv_config, &addrs, 1, &irks, 0);
-	TEST_ASSERT_EQUAL(0, ret);
+	nrf_err = ble_adv_whitelist_reply(&ble_adv_config, &addrs, 1, &irks, 0);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 	TEST_ASSERT_TRUE(ble_adv_config.whitelist_reply_expected == false);
 	TEST_ASSERT_TRUE(ble_adv_config.whitelist_in_use == true);
 }
@@ -202,7 +205,7 @@ void test_ble_adv_start(void)
 		CONFIG_BLE_ADV_DIRECTED_ADVERTISING_INTERVAL,
 		CONFIG_BLE_ADV_FAST_ADVERTISING_INTERVAL,
 		CONFIG_BLE_ADV_SLOW_ADVERTISING_INTERVAL, 0};
-	int ret;
+	uint32_t nrf_err;
 
 	/* Verifying the different adv modes in the ble_adv_mode array */
 	for (int i = 0; i < MAX_ADV_MODES; i++) {
@@ -214,8 +217,8 @@ void test_ble_adv_start(void)
 		__cmock_sd_ble_gap_adv_set_configure_IgnoreAndReturn(NRF_SUCCESS);
 		__cmock_sd_ble_gap_adv_start_IgnoreAndReturn(NRF_SUCCESS);
 
-		ret = ble_adv_start(&ble_adv, mode[i]);
-		TEST_ASSERT_EQUAL(0, ret);
+		nrf_err = ble_adv_start(&ble_adv, mode[i]);
+		TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 		TEST_ASSERT_TRUE(ble_adv.mode_current == mode[i]);
 		TEST_ASSERT_TRUE(ble_adv.whitelist_in_use == false);
 		TEST_ASSERT_TRUE(ble_adv.adv_params.primary_phy == CONFIG_BLE_ADV_PRIMARY_PHY);
@@ -255,16 +258,16 @@ void test_ble_adv_start_error_invalid_param(void)
 		.evt_handler = ble_adv_evt_handler,
 		.whitelist_temporarily_disabled = false,
 	};
-	int ret;
+	uint32_t nrf_err;
 
 	__cmock_sd_ble_gap_adv_set_configure_IgnoreAndReturn(NRF_ERROR_INVALID_PARAM);
-	ret = ble_adv_start(&ble_adv, BLE_ADV_MODE_SLOW);
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, ret);
+	nrf_err = ble_adv_start(&ble_adv, BLE_ADV_MODE_SLOW);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, nrf_err);
 
 	__cmock_sd_ble_gap_adv_set_configure_IgnoreAndReturn(NRF_SUCCESS);
 	__cmock_sd_ble_gap_adv_start_IgnoreAndReturn(NRF_ERROR_INVALID_STATE);
-	ret = ble_adv_start(&ble_adv, BLE_ADV_MODE_SLOW);
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, ret);
+	nrf_err = ble_adv_start(&ble_adv, BLE_ADV_MODE_SLOW);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, nrf_err);
 }
 
 void setUp(void)

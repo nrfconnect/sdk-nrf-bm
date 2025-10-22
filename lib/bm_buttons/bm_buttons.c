@@ -91,12 +91,12 @@ ISR_DIRECT_DECLARE(gpiote_30_direct_isr)
 
 static int gpiote_init(void)
 {
-	int err;
+	nrfx_err_t nrfx_err;
 
 	if (!nrfx_gpiote_init_check(&gpiote20_instance)) {
-		err = nrfx_gpiote_init(&gpiote20_instance, 0);
-		if (err != NRFX_SUCCESS) {
-			LOG_ERR("Failed to initialize gpiote20, err: 0x%08X", err);
+		nrfx_err = nrfx_gpiote_init(&gpiote20_instance, 0);
+		if (nrfx_err != NRFX_SUCCESS) {
+			LOG_ERR("Failed to initialize gpiote20, nrfx_err: 0x%08X", nrfx_err);
 			return -EIO;
 		}
 
@@ -106,9 +106,9 @@ static int gpiote_init(void)
 	}
 
 	if (!nrfx_gpiote_init_check(&gpiote30_instance)) {
-		err = nrfx_gpiote_init(&gpiote30_instance, 0);
-		if (err != NRFX_SUCCESS) {
-			LOG_ERR("Failed to initialize gpiote30, err: 0x%08X", err);
+		nrfx_err = nrfx_gpiote_init(&gpiote30_instance, 0);
+		if (nrfx_err != NRFX_SUCCESS) {
+			LOG_ERR("Failed to initialize gpiote30, nrfx_err: 0x%08X", nrfx_err);
 			return -EIO;
 		}
 
@@ -123,13 +123,13 @@ static int gpiote_init(void)
 static int gpiote_input_configure(nrfx_gpiote_pin_t pin,
 				  const nrfx_gpiote_input_pin_config_t *input_config)
 {
-	int err;
+	nrfx_err_t nrfx_err;
 
 	const nrfx_gpiote_t *gpiote_inst = gpiote_get(NRF_PIN_NUMBER_TO_PORT(pin));
 
-	err = nrfx_gpiote_input_configure(gpiote_inst, pin, input_config);
-	if (err != NRFX_SUCCESS) {
-		LOG_ERR("nrfx_gpiote_input_configure, err: 0x%08X", err);
+	nrfx_err = nrfx_gpiote_input_configure(gpiote_inst, pin, input_config);
+	if (nrfx_err != NRFX_SUCCESS) {
+		LOG_ERR("nrfx_gpiote_input_configure, nrfx_err: 0x%08X", nrfx_err);
 		return -EIO;
 	}
 

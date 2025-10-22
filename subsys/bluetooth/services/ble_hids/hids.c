@@ -111,15 +111,15 @@ static struct ble_hids_char_id make_char_id(uint16_t uuid, uint8_t report_type,
 
 static void on_connect(struct ble_hids *hids, ble_evt_t const *ble_evt)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	ble_gatts_value_t gatts_value;
 	struct ble_hids_client_context *client = NULL;
 
-	err = link_ctx_get(hids, ble_evt->evt.gap_evt.conn_handle, (void *)&client);
-	if (err != NRF_SUCCESS) {
+	nrf_err = link_ctx_get(hids, ble_evt->evt.gap_evt.conn_handle, (void *)&client);
+	if (nrf_err) {
 		struct ble_hids_evt evt = {
 			.evt_type = BLE_HIDS_EVT_ERROR,
-			.params.error.reason = err,
+			.params.error.reason = nrf_err,
 		};
 
 		hids->evt_handler(hids, &evt);
@@ -142,13 +142,13 @@ static void on_connect(struct ble_hids *hids, ble_evt_t const *ble_evt)
 		gatts_value.offset = 0;
 		gatts_value.p_value = &client->protocol_mode;
 
-		err = sd_ble_gatts_value_set(ble_evt->evt.gap_evt.conn_handle,
-					     hids->protocol_mode_handles.value_handle,
-					     &gatts_value);
-		if (err != NRF_SUCCESS) {
+		nrf_err = sd_ble_gatts_value_set(ble_evt->evt.gap_evt.conn_handle,
+						 hids->protocol_mode_handles.value_handle,
+						 &gatts_value);
+		if (nrf_err) {
 			struct ble_hids_evt evt = {
 				.evt_type = BLE_HIDS_EVT_ERROR,
-				.params.error.reason = err,
+				.params.error.reason = nrf_err,
 			};
 
 			hids->evt_handler(hids, &evt);
@@ -158,15 +158,15 @@ static void on_connect(struct ble_hids *hids, ble_evt_t const *ble_evt)
 
 static void on_control_point_write(struct ble_hids *hids, ble_evt_t const *ble_evt)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	struct ble_hids_client_context *host;
 	ble_gatts_evt_write_t const *evt_write = &ble_evt->evt.gatts_evt.params.write;
 
-	err = link_ctx_get(hids, ble_evt->evt.gatts_evt.conn_handle, (void *)&host);
-	if (err != NRF_SUCCESS) {
+	nrf_err = link_ctx_get(hids, ble_evt->evt.gatts_evt.conn_handle, (void *)&host);
+	if (nrf_err) {
 		struct ble_hids_evt evt = {
 			.evt_type = BLE_HIDS_EVT_ERROR,
-			.params.error.reason = err,
+			.params.error.reason = nrf_err,
 		};
 
 		hids->evt_handler(hids, &evt);
@@ -206,15 +206,15 @@ static void on_control_point_write(struct ble_hids *hids, ble_evt_t const *ble_e
 
 static void on_protocol_mode_write(struct ble_hids *hids, ble_evt_t const *ble_evt)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	struct ble_hids_client_context *host;
 	ble_gatts_evt_write_t const *evt_write = &ble_evt->evt.gatts_evt.params.write;
 
-	err = link_ctx_get(hids, ble_evt->evt.gatts_evt.conn_handle, (void *)&host);
-	if (err != NRF_SUCCESS) {
+	nrf_err = link_ctx_get(hids, ble_evt->evt.gatts_evt.conn_handle, (void *)&host);
+	if (nrf_err) {
 		struct ble_hids_evt evt = {
 			.evt_type = BLE_HIDS_EVT_ERROR,
-			.params.error.reason = err,
+			.params.error.reason = nrf_err,
 		};
 
 		hids->evt_handler(hids, &evt);
@@ -254,17 +254,17 @@ static void on_protocol_mode_write(struct ble_hids *hids, ble_evt_t const *ble_e
 
 void on_protocol_mode_read_auth(struct ble_hids *hids, ble_evt_t const *ble_evt)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	ble_gatts_rw_authorize_reply_params_t auth_read_params;
 	struct ble_hids_client_context *host;
 	ble_gatts_evt_rw_authorize_request_t const *read_auth =
 		&ble_evt->evt.gatts_evt.params.authorize_request;
 
-	err = link_ctx_get(hids, ble_evt->evt.gatts_evt.conn_handle, (void *)&host);
-	if (err != NRF_SUCCESS) {
+	nrf_err = link_ctx_get(hids, ble_evt->evt.gatts_evt.conn_handle, (void *)&host);
+	if (nrf_err) {
 		struct ble_hids_evt evt = {
 			.evt_type = BLE_HIDS_EVT_ERROR,
-			.params.error.reason = err,
+			.params.error.reason = nrf_err,
 		};
 
 		hids->evt_handler(hids, &evt);
@@ -281,12 +281,12 @@ void on_protocol_mode_read_auth(struct ble_hids *hids, ble_evt_t const *ble_evt)
 		auth_read_params.params.read.p_data = &host->protocol_mode;
 		auth_read_params.params.read.update = 1;
 
-		err = sd_ble_gatts_rw_authorize_reply(ble_evt->evt.gap_evt.conn_handle,
-						      &auth_read_params);
-		if (err != NRF_SUCCESS) {
+		nrf_err = sd_ble_gatts_rw_authorize_reply(ble_evt->evt.gap_evt.conn_handle,
+							  &auth_read_params);
+		if (nrf_err) {
 			struct ble_hids_evt evt = {
 				.evt_type = BLE_HIDS_EVT_ERROR,
-				.params.error.reason = err,
+				.params.error.reason = nrf_err,
 			};
 
 			hids->evt_handler(hids, &evt);
@@ -322,16 +322,16 @@ static void on_report_value_write(struct ble_hids *hids, ble_evt_t const *ble_ev
 				  uint16_t rep_max_len)
 {
 	/* Update host's Output Report data */
-	uint32_t err;
+	uint32_t nrf_err;
 	uint8_t *report;
 	struct ble_hids_client_context *host;
 	ble_gatts_evt_write_t const *write = &ble_evt->evt.gatts_evt.params.write;
 
-	err = link_ctx_get(hids, ble_evt->evt.gatts_evt.conn_handle, (void *)&host);
-	if (err != NRF_SUCCESS) {
+	nrf_err = link_ctx_get(hids, ble_evt->evt.gatts_evt.conn_handle, (void *)&host);
+	if (nrf_err) {
 		struct ble_hids_evt evt = {
 			.evt_type = BLE_HIDS_EVT_ERROR,
-			.params.error.reason = err,
+			.params.error.reason = nrf_err,
 		};
 
 		hids->evt_handler(hids, &evt);
@@ -368,13 +368,13 @@ static void on_report_value_read_auth(struct ble_hids *hids, struct ble_hids_cha
 	struct ble_hids_client_context *host;
 	uint8_t *report;
 	uint16_t read_offset;
-	uint32_t err = NRF_SUCCESS;
+	uint32_t nrf_err = NRF_SUCCESS;
 
-	err = link_ctx_get(hids, ble_evt->evt.gatts_evt.conn_handle, (void *)&host);
-	if (err != NRF_SUCCESS) {
+	nrf_err = link_ctx_get(hids, ble_evt->evt.gatts_evt.conn_handle, (void *)&host);
+	if (nrf_err) {
 		struct ble_hids_evt evt = {
 			.evt_type = BLE_HIDS_EVT_ERROR,
-			.params.error.reason = err,
+			.params.error.reason = nrf_err,
 		};
 
 		hids->evt_handler(hids, &evt);
@@ -393,13 +393,13 @@ static void on_report_value_read_auth(struct ble_hids *hids, struct ble_hids_cha
 		auth_read_params.params.read.p_data = report + read_offset;
 		auth_read_params.params.read.update = 1;
 
-		err = sd_ble_gatts_rw_authorize_reply(ble_evt->evt.gap_evt.conn_handle,
-						      &auth_read_params);
+		nrf_err = sd_ble_gatts_rw_authorize_reply(ble_evt->evt.gap_evt.conn_handle,
+							  &auth_read_params);
 
-		if (err != NRF_SUCCESS) {
+		if (nrf_err) {
 			struct ble_hids_evt evt = {
 				.evt_type = BLE_HIDS_EVT_ERROR,
-				.params.error.reason = err,
+				.params.error.reason = nrf_err,
 			};
 
 			hids->evt_handler(hids, &evt);
@@ -633,7 +633,7 @@ static uint32_t rep_char_add(struct ble_hids *hids, ble_gatt_char_props_t *prope
 			     struct ble_hids_char_sec const *const char_sec,
 			     struct ble_hids_rep_char *rep_char)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	uint8_t encoded_rep_ref[BLE_SRV_ENCODED_REPORT_REF_LEN] = { report_id, report_type };
 
 	ble_gatts_char_md_t char_md = {
@@ -668,10 +668,10 @@ static uint32_t rep_char_add(struct ble_hids *hids, ble_gatt_char_props_t *prope
 		char_md.p_cccd_md = &cccd_md;
 	}
 
-	err = sd_ble_gatts_characteristic_add(hids->service_handle, &char_md, &attr_char_value,
-					       &rep_char->char_handles);
-	if (err != NRF_SUCCESS) {
-		return err;
+	nrf_err = sd_ble_gatts_characteristic_add(hids->service_handle, &char_md, &attr_char_value,
+						  &rep_char->char_handles);
+	if (nrf_err) {
+		return nrf_err;
 	}
 
 	ble_uuid_t desc_uuid = {
@@ -698,7 +698,7 @@ static uint32_t rep_char_add(struct ble_hids *hids, ble_gatt_char_props_t *prope
 
 static uint32_t rep_map_char_add(struct ble_hids *hids, const struct ble_hids_config *hids_cfg)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	ble_gatts_char_md_t char_md = {
 		.char_props = {
 			.read = 1,
@@ -721,10 +721,10 @@ static uint32_t rep_map_char_add(struct ble_hids *hids, const struct ble_hids_co
 		.p_value = hids_cfg->report_map.data,
 	};
 
-	err = sd_ble_gatts_characteristic_add(hids->service_handle, &char_md, &attr_char_value,
-					       &hids->rep_map_handles);
-	if (err != NRF_SUCCESS) {
-		return err;
+	nrf_err = sd_ble_gatts_characteristic_add(hids->service_handle, &char_md, &attr_char_value,
+						  &hids->rep_map_handles);
+	if (nrf_err) {
+		return nrf_err;
 	}
 
 	if (hids_cfg->report_map.ext_rep_ref_num != 0 && hids_cfg->report_map.ext_rep_ref == NULL) {
@@ -735,10 +735,10 @@ static uint32_t rep_map_char_add(struct ble_hids *hids, const struct ble_hids_co
 		uint8_t encoded_rep_ref[sizeof(ble_uuid128_t)];
 		uint8_t encoded_rep_ref_len;
 
-		err = sd_ble_uuid_encode(&hids_cfg->report_map.ext_rep_ref[i], &encoded_rep_ref_len,
-					 encoded_rep_ref);
-		if (err != NRF_SUCCESS) {
-			return err;
+		nrf_err = sd_ble_uuid_encode(&hids_cfg->report_map.ext_rep_ref[i],
+					     &encoded_rep_ref_len, encoded_rep_ref);
+		if (nrf_err) {
+			return nrf_err;
 		}
 
 		ble_uuid_t desc_uuid = {
@@ -757,10 +757,11 @@ static uint32_t rep_map_char_add(struct ble_hids *hids, const struct ble_hids_co
 			.p_value = encoded_rep_ref,
 		};
 
-		err = sd_ble_gatts_descriptor_add(hids->rep_map_handles.value_handle, &descr_params,
-						  &hids->rep_map_ext_rep_ref_handle);
-		if (err != NRF_SUCCESS) {
-			return err;
+		nrf_err = sd_ble_gatts_descriptor_add(hids->rep_map_handles.value_handle,
+						      &descr_params,
+						      &hids->rep_map_ext_rep_ref_handle);
+		if (nrf_err) {
+			return nrf_err;
 		}
 	}
 
@@ -908,7 +909,7 @@ static uint32_t hid_control_point_char_add(struct ble_hids *hids,
 static uint32_t inp_rep_characteristics_add(struct ble_hids *hids,
 					    const struct ble_hids_config *hids_cfg)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 
 	if ((hids_cfg->input_report_count != 0) && (hids_cfg->input_report != NULL)) {
 		for (uint8_t i = 0; i < hids_cfg->input_report_count; i++) {
@@ -919,11 +920,12 @@ static uint32_t inp_rep_characteristics_add(struct ble_hids *hids,
 				.notify = true,
 			};
 
-			err = rep_char_add(hids, &properties, rep_init->len, rep_init->report_id,
-					   rep_init->report_type, &rep_init->sec,
-					   &hids->inp_rep_array[i]);
-			if (err != NRF_SUCCESS) {
-				return err;
+			nrf_err = rep_char_add(hids, &properties, rep_init->len,
+					       rep_init->report_id,
+					       rep_init->report_type, &rep_init->sec,
+					       &hids->inp_rep_array[i]);
+			if (nrf_err) {
+				return nrf_err;
 			}
 		}
 	}
@@ -934,7 +936,7 @@ static uint32_t inp_rep_characteristics_add(struct ble_hids *hids,
 static uint32_t outp_rep_characteristics_add(struct ble_hids *hids,
 					     const struct ble_hids_config *hids_cfg)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 
 	if ((hids_cfg->output_report_count != 0) && (hids_cfg->output_report != NULL)) {
 		for (uint8_t i = 0; i < hids_cfg->output_report_count; i++) {
@@ -946,11 +948,12 @@ static uint32_t outp_rep_characteristics_add(struct ble_hids *hids,
 				.write_wo_resp = true,
 			};
 
-			err = rep_char_add(hids, &properties, rep_init->len, rep_init->report_id,
-					   rep_init->report_type, &rep_init->sec,
-					   &hids->outp_rep_array[i]);
-			if (err != NRF_SUCCESS) {
-				return err;
+			nrf_err = rep_char_add(hids, &properties, rep_init->len,
+					       rep_init->report_id,
+					       rep_init->report_type, &rep_init->sec,
+					       &hids->outp_rep_array[i]);
+			if (nrf_err) {
+				return nrf_err;
 			}
 		}
 	}
@@ -961,7 +964,7 @@ static uint32_t outp_rep_characteristics_add(struct ble_hids *hids,
 static uint32_t feature_rep_characteristics_add(struct ble_hids *hids,
 						const struct ble_hids_config *hids_cfg)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 
 	if ((hids_cfg->feature_report_count != 0) && (hids_cfg->feature_report != NULL)) {
 		for (uint8_t i = 0; i < hids_cfg->feature_report_count; i++) {
@@ -973,11 +976,12 @@ static uint32_t feature_rep_characteristics_add(struct ble_hids *hids,
 				.write = true,
 			};
 
-			err = rep_char_add(hids, &properties, rep_init->len, rep_init->report_id,
-					   rep_init->report_type, &rep_init->sec,
-					   &hids->feature_rep_array[i]);
-			if (err != NRF_SUCCESS) {
-				return err;
+			nrf_err = rep_char_add(hids, &properties, rep_init->len,
+					       rep_init->report_id,
+					       rep_init->report_type, &rep_init->sec,
+					       &hids->feature_rep_array[i]);
+			if (nrf_err) {
+				return nrf_err;
 			}
 		}
 	}
@@ -987,15 +991,15 @@ static uint32_t feature_rep_characteristics_add(struct ble_hids *hids,
 
 static uint32_t includes_add(struct ble_hids *hids, const struct ble_hids_config *hids_cfg)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	uint16_t unused_include_handle;
 
 	for (uint8_t i = 0; i < hids_cfg->included_services_count; i++) {
-		err = sd_ble_gatts_include_add(hids->service_handle,
-					       hids_cfg->included_services_array[i],
-					       &unused_include_handle);
-		if (err != NRF_SUCCESS) {
-			return err;
+		nrf_err = sd_ble_gatts_include_add(hids->service_handle,
+						   hids_cfg->included_services_array[i],
+						   &unused_include_handle);
+		if (nrf_err) {
+			return nrf_err;
 		}
 	}
 
@@ -1004,7 +1008,7 @@ static uint32_t includes_add(struct ble_hids *hids, const struct ble_hids_config
 
 uint32_t ble_hids_init(struct ble_hids *hids, const struct ble_hids_config *hids_cfg)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	ble_uuid_t ble_uuid;
 
 	if (!hids || !hids_cfg) {
@@ -1028,97 +1032,97 @@ uint32_t ble_hids_init(struct ble_hids *hids, const struct ble_hids_config *hids
 
 	BLE_UUID_BLE_ASSIGN(ble_uuid, BLE_UUID_HUMAN_INTERFACE_DEVICE_SERVICE);
 
-	err = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY, &ble_uuid,
-				       &hids->service_handle);
-	if (err != NRF_SUCCESS) {
-		return err;
+	nrf_err = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY, &ble_uuid,
+					   &hids->service_handle);
+	if (nrf_err) {
+		return nrf_err;
 	}
 
-	err = includes_add(hids, hids_cfg);
-	if (err != NRF_SUCCESS) {
-		return err;
+	nrf_err = includes_add(hids, hids_cfg);
+	if (nrf_err) {
+		return nrf_err;
 	}
 
 #if defined(CONFIG_BLE_HIDS_BOOT_KEYBOARD) || defined(CONFIG_BLE_HIDS_BOOT_MOUSE)
 	/* Add Protocol Mode characteristic. */
-	err = protocol_mode_char_add(hids, hids_cfg->protocol_mode_sec.read,
-				     hids_cfg->protocol_mode_sec.write);
-	if (err != NRF_SUCCESS) {
-		return err;
+	nrf_err = protocol_mode_char_add(hids, hids_cfg->protocol_mode_sec.read,
+					 hids_cfg->protocol_mode_sec.write);
+	if (nrf_err) {
+		return nrf_err;
 	}
 #endif
 
 	/* Add Input Report characteristics (if any). */
-	err = inp_rep_characteristics_add(hids, hids_cfg);
-	if (err != NRF_SUCCESS) {
-		return err;
+	nrf_err = inp_rep_characteristics_add(hids, hids_cfg);
+	if (nrf_err) {
+		return nrf_err;
 	}
 
 	/* Add Output Report characteristics (if any). */
-	err = outp_rep_characteristics_add(hids, hids_cfg);
-	if (err != NRF_SUCCESS) {
-		return err;
+	nrf_err = outp_rep_characteristics_add(hids, hids_cfg);
+	if (nrf_err) {
+		return nrf_err;
 	}
 
 	/* Add Feature Report characteristic (if any). */
-	err = feature_rep_characteristics_add(hids, hids_cfg);
-	if (err != NRF_SUCCESS) {
-		return err;
+	nrf_err = feature_rep_characteristics_add(hids, hids_cfg);
+	if (nrf_err) {
+		return nrf_err;
 	}
 
 	/* Add Report Map characteristic. */
-	err = rep_map_char_add(hids, hids_cfg);
-	if (err != NRF_SUCCESS) {
-		return err;
+	nrf_err = rep_map_char_add(hids, hids_cfg);
+	if (nrf_err) {
+		return nrf_err;
 	}
 
 #if defined(CONFIG_BLE_HIDS_BOOT_KEYBOARD)
 	/* Add Boot Keyboard Input Report characteristic. */
-	err = boot_inp_rep_char_add(hids, BLE_UUID_BOOT_KEYBOARD_INPUT_REPORT_CHAR,
-				    BLE_HIDS_BOOT_KB_INPUT_REPORT_MAX_SIZE,
-				    &hids_cfg->boot_kb_inp_rep_sec,
-				    &hids->boot_kb_inp_rep_handles);
-	if (err != NRF_SUCCESS) {
-		return err;
+	nrf_err = boot_inp_rep_char_add(hids, BLE_UUID_BOOT_KEYBOARD_INPUT_REPORT_CHAR,
+					BLE_HIDS_BOOT_KB_INPUT_REPORT_MAX_SIZE,
+					&hids_cfg->boot_kb_inp_rep_sec,
+					&hids->boot_kb_inp_rep_handles);
+	if (nrf_err) {
+		return nrf_err;
 	}
 
 	/* Add Boot Keyboard Output Report characteristic. */
-	err = boot_kb_outp_rep_char_add(hids, hids_cfg);
-	if (err != NRF_SUCCESS) {
-		return err;
+	nrf_err = boot_kb_outp_rep_char_add(hids, hids_cfg);
+	if (nrf_err) {
+		return nrf_err;
 	}
 #endif
 
 #if defined(CONFIG_BLE_HIDS_BOOT_MOUSE)
 	/* Add Boot Mouse Input Report characteristic. */
-	err = boot_inp_rep_char_add(
+	nrf_err = boot_inp_rep_char_add(
 		hids, BLE_UUID_BOOT_MOUSE_INPUT_REPORT_CHAR,
 		BLE_HIDS_BOOT_MOUSE_INPUT_REPORT_MAX_SIZE,
 		&hids_cfg->boot_mouse_inp_rep_sec, &hids->boot_mouse_inp_rep_handles);
-	if (err != NRF_SUCCESS) {
-		return err;
+	if (nrf_err) {
+		return nrf_err;
 	}
 #endif
 
 	/* Add HID Information characteristic. */
-	err = hid_information_char_add(hids, hids_cfg);
-	if (err != NRF_SUCCESS) {
-		return err;
+	nrf_err = hid_information_char_add(hids, hids_cfg);
+	if (nrf_err) {
+		return nrf_err;
 	}
 
 	/* Add HID Control Point characteristic. */
-	err = hid_control_point_char_add(hids, hids_cfg->ctrl_point_sec.write);
-	if (err != NRF_SUCCESS) {
-		return err;
+	nrf_err = hid_control_point_char_add(hids, hids_cfg->ctrl_point_sec.write);
+	if (nrf_err) {
+		return nrf_err;
 	}
 
-	return err;
+	return nrf_err;
 }
 
 uint32_t ble_hids_inp_rep_send(struct ble_hids *hids, uint16_t conn_handle,
 			       struct ble_hids_input_report *report)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 
 	if (!hids || !report || !report->data) {
 		return NRF_ERROR_NULL;
@@ -1133,10 +1137,10 @@ uint32_t ble_hids_inp_rep_send(struct ble_hids *hids, uint16_t conn_handle,
 			uint16_t hvx_len = report->len;
 			uint8_t *host_rep_data;
 
-			err = link_ctx_get(hids, conn_handle, (void *)&host_rep_data);
-			if (err != NRF_SUCCESS) {
-				LOG_ERR("Failed to get link context, nrf_err %d", err);
-				return err;
+			nrf_err = link_ctx_get(hids, conn_handle, (void *)&host_rep_data);
+			if (nrf_err) {
+				LOG_ERR("Failed to get link context, nrf_error %#x", nrf_err);
+				return nrf_err;
 			}
 
 			host_rep_data += sizeof(struct ble_hids_client_context) +
@@ -1165,19 +1169,19 @@ uint32_t ble_hids_inp_rep_send(struct ble_hids *hids, uint16_t conn_handle,
 			hvx_params.p_len = &hvx_len;
 			hvx_params.p_data = report->data;
 
-			err = sd_ble_gatts_hvx(conn_handle, &hvx_params);
-			if ((err == NRF_SUCCESS) && (*hvx_params.p_len != report->len)) {
-				LOG_ERR("Failed to update attribute value, nrf_err %d", err);
-				err = NRF_ERROR_DATA_SIZE;
+			nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx_params);
+			if ((nrf_err == NRF_SUCCESS) && (*hvx_params.p_len != report->len)) {
+				LOG_ERR("Failed to update attribute value, nrf_error %#x", nrf_err);
+				nrf_err = NRF_ERROR_DATA_SIZE;
 			}
 		} else {
-			err = NRF_ERROR_INVALID_STATE;
+			nrf_err = NRF_ERROR_INVALID_STATE;
 		}
 	} else {
-		err = NRF_ERROR_INVALID_PARAM;
+		nrf_err = NRF_ERROR_INVALID_PARAM;
 	}
 
-	return err;
+	return nrf_err;
 }
 
 uint32_t ble_hids_boot_kb_inp_rep_send(struct ble_hids *hids, uint16_t conn_handle,
@@ -1187,16 +1191,16 @@ uint32_t ble_hids_boot_kb_inp_rep_send(struct ble_hids *hids, uint16_t conn_hand
 		return NRF_ERROR_NULL;
 	}
 
-	uint32_t err;
+	uint32_t nrf_err;
 
 	if (conn_handle != BLE_CONN_HANDLE_INVALID) {
 		ble_gatts_hvx_params_t hvx_params;
 		uint16_t hvx_len = report->len;
 		uint8_t *host_rep_data;
 
-		err = link_ctx_get(hids, conn_handle, (void *)&host_rep_data);
-		if (err != NRF_SUCCESS) {
-			return err;
+		nrf_err = link_ctx_get(hids, conn_handle, (void *)&host_rep_data);
+		if (nrf_err) {
+			return nrf_err;
 		}
 
 		host_rep_data += sizeof(struct ble_hids_client_context);
@@ -1215,15 +1219,15 @@ uint32_t ble_hids_boot_kb_inp_rep_send(struct ble_hids *hids, uint16_t conn_hand
 		hvx_params.p_len = &hvx_len;
 		hvx_params.p_data = report->data;
 
-		err = sd_ble_gatts_hvx(conn_handle, &hvx_params);
-		if ((err == NRF_SUCCESS) && (*hvx_params.p_len != report->len)) {
-			err = NRF_ERROR_DATA_SIZE;
+		nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx_params);
+		if ((nrf_err == NRF_SUCCESS) && (*hvx_params.p_len != report->len)) {
+			nrf_err = NRF_ERROR_DATA_SIZE;
 		}
 	} else {
-		err = NRF_ERROR_INVALID_STATE;
+		nrf_err = NRF_ERROR_INVALID_STATE;
 	}
 
-	return err;
+	return nrf_err;
 }
 
 uint32_t ble_hids_boot_mouse_inp_rep_send(struct ble_hids *hids, uint16_t conn_handle,
@@ -1233,7 +1237,7 @@ uint32_t ble_hids_boot_mouse_inp_rep_send(struct ble_hids *hids, uint16_t conn_h
 		return NRF_ERROR_NULL;
 	}
 
-	uint32_t err;
+	uint32_t nrf_err;
 
 	if (conn_handle != BLE_CONN_HANDLE_INVALID) {
 		uint16_t hvx_len = BOOT_MOUSE_INPUT_REPORT_MIN_SIZE + report->optional_data_len;
@@ -1243,9 +1247,9 @@ uint32_t ble_hids_boot_mouse_inp_rep_send(struct ble_hids *hids, uint16_t conn_h
 			ble_gatts_hvx_params_t hvx_params;
 			uint8_t *host_rep_data;
 
-			err = link_ctx_get(hids, conn_handle, (void *)&host_rep_data);
-			if (err != NRF_SUCCESS) {
-				return err;
+			nrf_err = link_ctx_get(hids, conn_handle, (void *)&host_rep_data);
+			if (nrf_err) {
+				return nrf_err;
 			}
 
 			host_rep_data += sizeof(struct ble_hids_client_context) +
@@ -1276,20 +1280,20 @@ uint32_t ble_hids_boot_mouse_inp_rep_send(struct ble_hids *hids, uint16_t conn_h
 			hvx_params.p_len = &hvx_len;
 			hvx_params.p_data = buffer;
 
-			err = sd_ble_gatts_hvx(conn_handle, &hvx_params);
-			if ((err == NRF_SUCCESS) &&
+			nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx_params);
+			if ((nrf_err == NRF_SUCCESS) &&
 			    (*hvx_params.p_len != (BOOT_MOUSE_INPUT_REPORT_MIN_SIZE +
 						   report->optional_data_len))) {
-				err = NRF_ERROR_DATA_SIZE;
+				nrf_err = NRF_ERROR_DATA_SIZE;
 			}
 		} else {
-			err = NRF_ERROR_DATA_SIZE;
+			nrf_err = NRF_ERROR_DATA_SIZE;
 		}
 	} else {
-		err = NRF_ERROR_INVALID_STATE;
+		nrf_err = NRF_ERROR_INVALID_STATE;
 	}
 
-	return err;
+	return nrf_err;
 }
 
 uint32_t ble_hids_outp_rep_get(struct ble_hids *hids, uint8_t report_index, uint16_t len,
@@ -1299,7 +1303,7 @@ uint32_t ble_hids_outp_rep_get(struct ble_hids *hids, uint8_t report_index, uint
 		return NRF_ERROR_NULL;
 	}
 
-	uint32_t err;
+	uint32_t nrf_err;
 	uint8_t *rep_data;
 	uint8_t index;
 
@@ -1307,9 +1311,9 @@ uint32_t ble_hids_outp_rep_get(struct ble_hids *hids, uint8_t report_index, uint
 		return NRF_ERROR_INVALID_PARAM;
 	}
 
-	err = link_ctx_get(hids, conn_handle, (void *)&rep_data);
-	if (err != NRF_SUCCESS) {
-		return err;
+	nrf_err = link_ctx_get(hids, conn_handle, (void *)&rep_data);
+	if (nrf_err) {
+		return nrf_err;
 	}
 
 	rep_data += sizeof(struct ble_hids_client_context) +

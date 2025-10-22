@@ -43,7 +43,7 @@ static struct mgmt_callback os_mgmt_reboot_callback = {
  */
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {
-	int err;
+	uint32_t nrf_err;
 
 	__ASSERT(ble_evt, "BLE event is NULL");
 
@@ -56,10 +56,10 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 	{
 		LOG_INF("Peer connected");
 		conn_handle = evt->evt.gap_evt.conn_handle;
-		err = sd_ble_gatts_sys_attr_set(evt->evt.gap_evt.conn_handle, NULL, 0, 0);
+		nrf_err = sd_ble_gatts_sys_attr_set(evt->evt.gap_evt.conn_handle, NULL, 0, 0);
 
-		if (err) {
-			LOG_ERR("Failed to set system attributes, nrf_error %#x", err);
+		if (nrf_err) {
+			LOG_ERR("Failed to set system attributes, nrf_error %#x", nrf_err);
 		}
 		break;
 	}
@@ -85,11 +85,12 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 	case BLE_GAP_EVT_SEC_PARAMS_REQUEST:
 	{
 		/* Pairing not supported */
-		err = sd_ble_gap_sec_params_reply(evt->evt.gap_evt.conn_handle,
-						  BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP, NULL, NULL);
+		nrf_err = sd_ble_gap_sec_params_reply(evt->evt.gap_evt.conn_handle,
+						      BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP, NULL,
+						      NULL);
 
-		if (err) {
-			LOG_ERR("Failed to reply with Security params, nrf_error %#x", err);
+		if (nrf_err) {
+			LOG_ERR("Failed to reply with Security params, nrf_error %#x", nrf_err);
 		}
 
 		break;
@@ -99,10 +100,10 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 	{
 		LOG_INF("BLE_GATTS_EVT_SYS_ATTR_MISSING");
 		/* No system attributes have been stored */
-		err = sd_ble_gatts_sys_attr_set(evt->evt.gap_evt.conn_handle, NULL, 0, 0);
+		nrf_err = sd_ble_gatts_sys_attr_set(evt->evt.gap_evt.conn_handle, NULL, 0, 0);
 
-		if (err) {
-			LOG_ERR("Failed to set system attributes, nrf_error %#x", err);
+		if (nrf_err) {
+			LOG_ERR("Failed to set system attributes, nrf_error %#x", nrf_err);
 		}
 
 		break;
@@ -226,10 +227,10 @@ int main(void)
 	}
 
 	if (device_disconnected == false) {
-		err = sd_ble_gap_disconnect(conn_handle,
-					    BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
+		nrf_err = sd_ble_gap_disconnect(conn_handle,
+						BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
 
-		if (err != NRF_SUCCESS) {
+		if (nrf_err) {
 			device_disconnected = true;
 		}
 

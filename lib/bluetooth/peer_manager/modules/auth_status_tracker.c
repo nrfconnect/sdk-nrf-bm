@@ -149,9 +149,9 @@ static void blacklisted_peers_state_transition_handle(void *context)
 
 uint32_t ast_init(void)
 {
-	int err_code = bm_timer_init(&pairing_attempt_timer, BM_TIMER_MODE_SINGLE_SHOT,
-					blacklisted_peers_state_transition_handle);
-	if (err_code) {
+	int err = bm_timer_init(&pairing_attempt_timer, BM_TIMER_MODE_SINGLE_SHOT,
+				blacklisted_peers_state_transition_handle);
+	if (err) {
 		return NRF_ERROR_INTERNAL;
 	}
 
@@ -161,18 +161,18 @@ uint32_t ast_init(void)
 void ast_auth_error_notify(uint16_t conn_handle)
 {
 	int err;
-	uint32_t err_code;
+	uint32_t nrf_err;
 	ble_gap_addr_t peer_addr;
 	uint32_t new_timeout;
 	uint32_t free_id = ARRAY_SIZE(blacklisted_peers);
 	bool new_bl_entry = true;
 
 	/* Get the peer address associated with connection handle. */
-	err_code = im_ble_addr_get(conn_handle, &peer_addr);
-	if (err_code != NRF_SUCCESS) {
+	nrf_err = im_ble_addr_get(conn_handle, &peer_addr);
+	if (nrf_err) {
 		LOG_WRN("im_ble_addr_get() returned %s. conn_handle: %d. "
 			"Link was likely disconnected.",
-			nrf_strerror_get(err_code), conn_handle);
+			nrf_strerror_get(nrf_err), conn_handle);
 		return;
 	}
 
@@ -251,14 +251,14 @@ void ast_auth_error_notify(uint16_t conn_handle)
 
 bool ast_peer_blacklisted(uint16_t conn_handle)
 {
-	uint32_t err_code;
+	uint32_t nrf_err;
 	ble_gap_addr_t peer_addr;
 
-	err_code = im_ble_addr_get(conn_handle, &peer_addr);
-	if (err_code != NRF_SUCCESS) {
+	nrf_err = im_ble_addr_get(conn_handle, &peer_addr);
+	if (nrf_err) {
 		LOG_WRN("im_ble_addr_get() returned %s. conn_handle: %d. "
 			"Link was likely disconnected.",
-			nrf_strerror_get(err_code), conn_handle);
+			nrf_strerror_get(nrf_err), conn_handle);
 		return true;
 	}
 

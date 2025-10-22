@@ -22,7 +22,7 @@ static int buf_idx;
 /* Handle data received from UARTE. */
 static void uarte_rx_handler(char *data, size_t data_len)
 {
-	nrfx_err_t err;
+	nrfx_err_t nrfx_err;
 	uint8_t c;
 	static char rx_buf[CONFIG_UARTE_DATA_LEN_MAX];
 	static uint16_t rx_buf_idx;
@@ -47,10 +47,10 @@ static void uarte_rx_handler(char *data, size_t data_len)
 				rx_buf[rx_buf_idx++] = '\n';
 			}
 
-			err = nrfx_uarte_tx(&uarte_inst, rx_buf, rx_buf_idx,
+			nrfx_err = nrfx_uarte_tx(&uarte_inst, rx_buf, rx_buf_idx,
 					    NRFX_UARTE_TX_BLOCKING);
-			if (err != NRFX_SUCCESS) {
-				LOG_ERR("nrfx_uarte_tx failed, nrfx_err %d", err);
+			if (nrfx_err != NRFX_SUCCESS) {
+				LOG_ERR("nrfx_uarte_tx failed, nrfx_err %#x", nrfx_err);
 			}
 
 			rx_buf_idx = 0;
@@ -92,9 +92,9 @@ ISR_DIRECT_DECLARE(uarte_direct_isr)
 }
 
 /* Initialize UARTE driver. */
-static int uarte_init(void)
+static nrfx_err_t uarte_init(void)
 {
-	int err;
+	nrfx_err_t nrfx_err;
 
 	nrfx_uarte_config_t uarte_config = NRFX_UARTE_DEFAULT_CONFIG(BOARD_APP_UARTE_PIN_TX,
 								     BOARD_APP_UARTE_PIN_RX);
@@ -118,39 +118,39 @@ static int uarte_init(void)
 
 	irq_enable(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(BOARD_APP_UARTE_INST)));
 
-	err = nrfx_uarte_init(&uarte_inst, &uarte_config, uarte_event_handler);
-	if (err != NRFX_SUCCESS) {
-		LOG_ERR("Failed to initialize UARTE, nrfx err %d", err);
-		return err;
+	nrfx_err = nrfx_uarte_init(&uarte_inst, &uarte_config, uarte_event_handler);
+	if (nrfx_err != NRFX_SUCCESS) {
+		LOG_ERR("Failed to initialize UARTE, nrfx_err %#x", nrfx_err);
+		return nrfx_err;
 	}
 
-	return 0;
+	return NRFX_SUCCESS;
 }
 
 int main(void)
 {
-	int err;
+	nrfx_err_t nrfx_err;
 
 	LOG_INF("UARTE sample started");
 
-	err = uarte_init();
-	if (err) {
-		LOG_ERR("Failed to enable UARTE, err %d", err);
+	nrfx_err = uarte_init();
+	if (nrfx_err != NRFX_SUCCESS) {
+		LOG_ERR("Failed to enable UARTE, nrfx_err %#x", nrfx_err);
 		goto idle;
 	}
 
 	const uint8_t out[] = "Hello world! I will echo the lines you enter:\r\n";
 
-	err = nrfx_uarte_tx(&uarte_inst, out, sizeof(out), NRFX_UARTE_TX_BLOCKING);
-	if (err != NRFX_SUCCESS) {
-		LOG_ERR("UARTE TX failed, nrfx err %d", err);
+	nrfx_err = nrfx_uarte_tx(&uarte_inst, out, sizeof(out), NRFX_UARTE_TX_BLOCKING);
+	if (nrfx_err != NRFX_SUCCESS) {
+		LOG_ERR("UARTE TX failed, nrfx_err %#x", nrfx_err);
 		goto idle;
 	}
 
 	/* Start reception */
-	err = nrfx_uarte_rx_enable(&uarte_inst, 0);
-	if (err != NRFX_SUCCESS) {
-		LOG_ERR("UARTE RX failed, nrfx err %d", err);
+	nrfx_err = nrfx_uarte_rx_enable(&uarte_inst, 0);
+	if (nrfx_err != NRFX_SUCCESS) {
+		LOG_ERR("UARTE RX failed, nrfx_err %#x", nrfx_err);
 	}
 
 idle:
