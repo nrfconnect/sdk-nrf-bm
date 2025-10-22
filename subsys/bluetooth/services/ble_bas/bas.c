@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
+#include <nrf_error.h>
 #include <string.h>
 #include <bm/bluetooth/services/ble_bas.h>
 #include <bm/bluetooth/services/common.h>
@@ -123,13 +124,13 @@ void ble_bas_on_ble_evt(const ble_evt_t *ble_evt, void *bas_instance)
 	}
 }
 
-int ble_bas_init(struct ble_bas *bas, const struct ble_bas_config *cfg)
+uint32_t ble_bas_init(struct ble_bas *bas, const struct ble_bas_config *cfg)
 {
-	int err;
+	uint32_t nrf_err;
 	ble_uuid_t ble_uuid;
 
 	if (bas == NULL || cfg == NULL) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 
 	/* Initialize service structure */
@@ -140,42 +141,44 @@ int ble_bas_init(struct ble_bas *bas, const struct ble_bas_config *cfg)
 	BLE_UUID_BLE_ASSIGN(ble_uuid, BLE_UUID_BATTERY_SERVICE);
 
 	/* Add service */
-	err = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY, &ble_uuid,
-				       &bas->service_handle);
-	if (err) {
-		LOG_ERR("Failed to add battery service, nrf_error %#x", err);
-		return -EINVAL;
+	nrf_err = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY, &ble_uuid,
+					   &bas->service_handle);
+	if (nrf_err) {
+		LOG_ERR("Failed to add battery service, nrf_error %#x", nrf_err);
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	/* Add battery level characteristic */
-	err =  battery_level_char_add(bas, cfg);
-	if (err) {
-		LOG_ERR("Failed to add battery service characteristic, nrf_error %#x", err);
-		return -EINVAL;
+	nrf_err =  battery_level_char_add(bas, cfg);
+	if (nrf_err) {
+		LOG_ERR("Failed to add battery service characteristic, nrf_error %#x", nrf_err);
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	/* Add reference descriptor if present */
 	if (cfg->report_ref != NULL) {
-		err = report_reference_descriptor_add(bas, cfg);
-		if (err) {
-			LOG_ERR("Failed to add report reference descriptor, nrf_error %#x", err);
-			return -EINVAL;
+		nrf_err = report_reference_descriptor_add(bas, cfg);
+		if (nrf_err) {
+			LOG_ERR("Failed to add report reference descriptor, nrf_error %#x",
+				nrf_err);
+			return NRF_ERROR_INVALID_PARAM;
 		}
 	}
 
 	LOG_DBG("Battery service initialized");
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
-int ble_bas_battery_level_update(struct ble_bas *bas, uint16_t conn_handle, uint8_t battery_level)
+uint32_t ble_bas_battery_level_update(
+	struct ble_bas *bas, uint16_t conn_handle, uint8_t battery_level)
 {
-	int err;
+	uint32_t nrf_err;
 	ble_gatts_value_t gatts_value = {0};
 	ble_gatts_hvx_params_t hvx = {0};
 
 	if (!bas) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 
 	if (bas->battery_level == battery_level) {
@@ -187,11 +190,11 @@ int ble_bas_battery_level_update(struct ble_bas *bas, uint16_t conn_handle, uint
 	gatts_value.len = sizeof(uint8_t);
 	gatts_value.p_value = &battery_level;
 
-	err = sd_ble_gatts_value_set(BLE_CONN_HANDLE_INVALID,
-				     bas->battery_level_handles.value_handle, &gatts_value);
-	if (err) {
-		LOG_ERR("Failed to update battery level, nrf_error %#x", err);
-		return -EINVAL;
+	nrf_err = sd_ble_gatts_value_set(BLE_CONN_HANDLE_INVALID,
+					 bas->battery_level_handles.value_handle, &gatts_value);
+	if (nrf_err) {
+		LOG_ERR("Failed to update battery level, nrf_error %#x", nrf_err);
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	LOG_DBG("Battery level: %d%%", battery_level);
@@ -199,7 +202,7 @@ int ble_bas_battery_level_update(struct ble_bas *bas, uint16_t conn_handle, uint
 
 	if (!bas->can_notify) {
 		/* We are done */
-		return 0;
+		return NRF_SUCCESS;
 	}
 
 	/* Notify */
@@ -209,32 +212,32 @@ int ble_bas_battery_level_update(struct ble_bas *bas, uint16_t conn_handle, uint
 	hvx.p_len = &gatts_value.len;
 	hvx.p_data = gatts_value.p_value;
 
-	err = sd_ble_gatts_hvx(conn_handle, &hvx);
-	switch (err) {
+	nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx);
+	switch (nrf_err) {
 	case NRF_SUCCESS:
-		return 0;
+		return NRF_SUCCESS;
 	case BLE_ERROR_INVALID_CONN_HANDLE:
-		return -ENOTCONN;
+		return NRF_ERROR_NOT_FOUND;
 	case NRF_ERROR_INVALID_STATE:
 	case BLE_ERROR_GATTS_SYS_ATTR_MISSING:
-		return -EPIPE;
+		return NRF_ERROR_INVALID_STATE;
 	default:
-		LOG_ERR("Failed to notify battery level, nrf_error %#x", err);
-		return -EINVAL;
+		LOG_ERR("Failed to notify battery level, nrf_error %#x", nrf_err);
+		return NRF_ERROR_INVALID_PARAM;
 	}
 }
 
-int ble_bas_battery_level_notify(struct ble_bas *bas, uint16_t conn_handle)
+uint32_t ble_bas_battery_level_notify(struct ble_bas *bas, uint16_t conn_handle)
 {
-	int err;
+	uint32_t nrf_err;
 	ble_gatts_hvx_params_t hvx = {0};
 	uint16_t len = sizeof(uint8_t);
 
 	if (!bas) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 	if (!bas->can_notify) {
-		return -EINVAL;
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	hvx.handle = bas->battery_level_handles.value_handle;
@@ -243,16 +246,16 @@ int ble_bas_battery_level_notify(struct ble_bas *bas, uint16_t conn_handle)
 	hvx.p_len = &len;
 	hvx.p_data = &bas->battery_level;
 
-	err = sd_ble_gatts_hvx(conn_handle, &hvx);
-	switch (err) {
+	nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx);
+	switch (nrf_err) {
 	case NRF_SUCCESS:
-		return 0;
+		return NRF_SUCCESS;
 	case BLE_ERROR_INVALID_CONN_HANDLE:
-		return -ENOTCONN;
+		return NRF_ERROR_NOT_FOUND;
 	case NRF_ERROR_INVALID_STATE:
-		return -EPIPE;
+		return NRF_ERROR_INVALID_STATE;
 	default:
-		LOG_ERR("Failed to notify battery level, nrf_error %#x", err);
-		return -EINVAL;
+		LOG_ERR("Failed to notify battery level, nrf_error %#x", nrf_err);
+		return NRF_ERROR_INVALID_PARAM;
 	}
 }
