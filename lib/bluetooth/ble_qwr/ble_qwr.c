@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
-#include <errno.h>
+#include <nrf_error.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -27,14 +27,14 @@ static inline uint16_t uint16_decode(const uint8_t *encoded_data)
 	return sys_get_le16(encoded_data);
 }
 
-int ble_qwr_init(struct ble_qwr *qwr, struct ble_qwr_config const *qwr_config)
+uint32_t ble_qwr_init(struct ble_qwr *qwr, struct ble_qwr_config const *qwr_config)
 {
 	if (!qwr || !qwr_config) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 
 	if (qwr->initialized == BLE_QWR_INITIALIZED) {
-		return -EPERM;
+		return NRF_ERROR_INVALID_STATE;
 	}
 
 	qwr->initialized = BLE_QWR_INITIALIZED;
@@ -47,37 +47,37 @@ int ble_qwr_init(struct ble_qwr *qwr, struct ble_qwr_config const *qwr_config)
 	qwr->mem_buffer = qwr_config->mem_buffer;
 	qwr->nb_written_handles = 0;
 #endif
-	return 0;
+	return NRF_SUCCESS;
 }
 
 #if (CONFIG_BLE_QWR_MAX_ATTR > 0)
-int ble_qwr_attr_register(struct ble_qwr *qwr, uint16_t attr_handle)
+uint32_t ble_qwr_attr_register(struct ble_qwr *qwr, uint16_t attr_handle)
 {
 	if (!qwr) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 
 	if (qwr->initialized != BLE_QWR_INITIALIZED) {
-		return -EPERM;
+		return NRF_ERROR_INVALID_STATE;
 	}
 
 	if ((qwr->nb_registered_attr == CONFIG_BLE_QWR_MAX_ATTR) ||
 	    (qwr->mem_buffer.p_mem == NULL) ||
 	    (qwr->mem_buffer.len == 0))	{
-		return -ENOMEM;
+		return NRF_ERROR_NO_MEM;
 	}
 
 	if (attr_handle == BLE_GATT_HANDLE_INVALID) {
-		return -EINVAL;
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	qwr->attr_handles[qwr->nb_registered_attr] = attr_handle;
 	qwr->nb_registered_attr++;
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
-int ble_qwr_value_get(
+uint32_t ble_qwr_value_get(
 	struct ble_qwr *qwr, uint16_t attr_handle, uint8_t *mem, uint16_t *len)
 {
 	uint16_t i = 0;
@@ -87,11 +87,11 @@ int ble_qwr_value_get(
 	uint32_t cur_len = 0;
 
 	if (!qwr || !mem || !len) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 
 	if (qwr->initialized != BLE_QWR_INITIALIZED) {
-		return -EPERM;
+		return NRF_ERROR_INVALID_STATE;
 	}
 
 	do {
@@ -111,7 +111,7 @@ int ble_qwr_value_get(
 			if (cur_len <= *len) {
 				memcpy((mem + val_offset), &(qwr->mem_buffer.p_mem[i]), val_len);
 			} else {
-				return -ENOMEM;
+				return NRF_ERROR_NO_MEM;
 			}
 		}
 
@@ -119,23 +119,23 @@ int ble_qwr_value_get(
 	} while (i < qwr->mem_buffer.len);
 
 	*len = cur_len;
-	return 0;
+	return NRF_SUCCESS;
 }
 #endif
 
-int ble_qwr_conn_handle_assign(struct ble_qwr *qwr, uint16_t conn_handle)
+uint32_t ble_qwr_conn_handle_assign(struct ble_qwr *qwr, uint16_t conn_handle)
 {
 	if (!qwr) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 
 	if (qwr->initialized != BLE_QWR_INITIALIZED) {
-		return -EPERM;
+		return NRF_ERROR_INVALID_STATE;
 	}
 
 	qwr->conn_handle = conn_handle;
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
 /**

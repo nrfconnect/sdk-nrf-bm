@@ -330,10 +330,10 @@ static uint32_t services_init(void)
 		.evt_handler = qwr_evt_handler,
 	};
 
-	err = ble_qwr_init(&ble_qwr, &qwr_config);
-	if (err) {
-		LOG_ERR("Failed to initialize QWR service, err %d", err);
-		return err;
+	nrf_err = ble_qwr_init(&ble_qwr, &qwr_config);
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize QWR service, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
 	/* Initialize Glucose Service */
@@ -441,7 +441,7 @@ static void led_indication_set(enum led_indicate led_indicate)
 
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {
-	int err;
+
 	uint32_t nrf_err;
 
 	switch (evt->header.evt_id) {
@@ -450,9 +450,9 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		led_indication_set(LED_INDICATE_CONNECTED);
 
 		conn_handle = evt->evt.gap_evt.conn_handle;
-		err = ble_qwr_conn_handle_assign(&ble_qwr, conn_handle);
-		if (err) {
-			LOG_ERR("Failed to assign BLE QWR conn handle, err %d", err);
+		nrf_err = ble_qwr_conn_handle_assign(&ble_qwr, conn_handle);
+		if (nrf_err) {
+			LOG_ERR("Failed to assign BLE QWR conn handle, nrf_error %#x", nrf_err);
 		}
 
 		nrf_err = ble_cgms_conn_handle_assign(&ble_cgms, conn_handle);
