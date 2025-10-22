@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
+#include <nrf_error.h>
+#include <stdint.h>
 #include <ble_gatts.h>
 #include <bm/bluetooth/services/uuid.h>
 #include <bm/bluetooth/services/common.h>
@@ -56,9 +58,9 @@ static const uint8_t regulatory_certifications[IEEE_CERT_LEN] =
 
 LOG_MODULE_REGISTER(ble_dis, CONFIG_BLE_DIS_LOG_LEVEL);
 
-int ble_dis_init(void)
+uint32_t ble_dis_init(void)
 {
-	int err;
+	uint32_t nrf_err;
 	uint16_t service_handle;
 	ble_uuid_t ble_uuid;
 	ble_gatts_char_handles_t char_handles = {0};
@@ -102,10 +104,10 @@ int ble_dis_init(void)
 	/* Add service */
 	BLE_UUID_BLE_ASSIGN(ble_uuid, BLE_UUID_DEVICE_INFORMATION_SERVICE);
 
-	err = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY, &ble_uuid, &service_handle);
-	if (err) {
-		LOG_ERR("Failed to add device information service, nrf_error %#x", err);
-		return -EINVAL;
+	nrf_err = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY, &ble_uuid, &service_handle);
+	if (nrf_err) {
+		LOG_ERR("Failed to add device information service, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
 	for (size_t i = 0; i < ARRAY_SIZE(chars); i++) {
@@ -121,13 +123,13 @@ int ble_dis_init(void)
 
 		LOG_DBG("Added char %#x, len %d", chars[i].uuid, chars[i].len);
 
-		err = sd_ble_gatts_characteristic_add(service_handle, &char_md,
-						      &attr_char_value, &char_handles);
-		if (err) {
-			LOG_ERR("Failed to add characteristic, nrf_error %#x", err);
-			return -EINVAL;
+		nrf_err = sd_ble_gatts_characteristic_add(service_handle, &char_md,
+							  &attr_char_value, &char_handles);
+		if (nrf_err) {
+			LOG_ERR("Failed to add characteristic, nrf_error %#x", nrf_err);
+			return nrf_err;
 		}
 	}
 
-	return 0;
+	return NRF_SUCCESS;
 }
