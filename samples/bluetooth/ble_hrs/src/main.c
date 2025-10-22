@@ -352,13 +352,13 @@ static int buttons_init(bool *erase_bonds)
 
 static void delete_bonds(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 
 	LOG_INF("Erase bonds!");
 
-	err = pm_peers_delete();
-	if (err) {
-		LOG_ERR("Failed to delete peers, err %d", err);
+	nrf_err = pm_peers_delete();
+	if (nrf_err) {
+		LOG_ERR("Failed to delete peers, nrf_error %#x", nrf_err);
 	}
 }
 
@@ -396,10 +396,10 @@ static void pm_evt_handler(pm_evt_t const *p_evt)
 static int peer_manager_init(void)
 {
 	ble_gap_sec_params_t sec_param;
-	int err;
+	int nrf_err;
 
-	err = pm_init();
-	if (err) {
+	nrf_err = pm_init();
+	if (nrf_err) {
 		return -EFAULT;
 	}
 
@@ -421,15 +421,15 @@ static int peer_manager_init(void)
 		.kdist_peer.id = 1,
 	};
 
-	err = pm_sec_params_set(&sec_param);
-	if (err) {
-		LOG_ERR("pm_sec_params_set() failed, err: %d", err);
+	nrf_err = pm_sec_params_set(&sec_param);
+	if (nrf_err) {
+		LOG_ERR("pm_sec_params_set() failed, nrf_error %#x", nrf_err);
 		return -EFAULT;
 	}
 
-	err = pm_register(pm_evt_handler);
-	if (err) {
-		LOG_ERR("pm_register() failed, err: %d", err);
+	nrf_err = pm_register(pm_evt_handler);
+	if (nrf_err) {
+		LOG_ERR("pm_register() failed, nrf_error %#x", nrf_err);
 		return -EFAULT;
 	}
 

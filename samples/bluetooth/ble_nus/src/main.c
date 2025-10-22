@@ -189,15 +189,16 @@ static void uarte_evt_handler(nrfx_uarte_event_t const *event, void *ctx)
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {
 	int err;
+	uint32_t nrf_err;
 
 	switch (evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:
 		LOG_INF("Peer connected");
 		ble_nus_max_data_len = BLE_NUS_MAX_DATA_LEN_CALC(BLE_GATT_ATT_MTU_DEFAULT);
 		conn_handle = evt->evt.gap_evt.conn_handle;
-		err = sd_ble_gatts_sys_attr_set(conn_handle, NULL, 0, 0);
-		if (err) {
-			LOG_ERR("Failed to set system attributes, nrf_error %#x", err);
+		nrf_err = sd_ble_gatts_sys_attr_set(conn_handle, NULL, 0, 0);
+		if (nrf_err) {
+			LOG_ERR("Failed to set system attributes, nrf_error %#x", nrf_err);
 		}
 
 		err = ble_qwr_conn_handle_assign(&ble_qwr, conn_handle);
@@ -221,19 +222,19 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 
 	case BLE_GAP_EVT_SEC_PARAMS_REQUEST:
 		/* Pairing not supported */
-		err = sd_ble_gap_sec_params_reply(evt->evt.gap_evt.conn_handle,
+		nrf_err = sd_ble_gap_sec_params_reply(evt->evt.gap_evt.conn_handle,
 						  BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP, NULL, NULL);
-		if (err) {
-			LOG_ERR("Failed to reply with Security params, nrf_error %#x", err);
+		if (nrf_err) {
+			LOG_ERR("Failed to reply with Security params, nrf_error %#x", nrf_err);
 		}
 		break;
 
 	case BLE_GATTS_EVT_SYS_ATTR_MISSING:
 		LOG_INF("BLE_GATTS_EVT_SYS_ATTR_MISSING");
 		/* No system attributes have been stored */
-		err = sd_ble_gatts_sys_attr_set(conn_handle, NULL, 0, 0);
-		if (err) {
-			LOG_ERR("Failed to set system attributes, nrf_error %#x", err);
+		nrf_err = sd_ble_gatts_sys_attr_set(conn_handle, NULL, 0, 0);
+		if (nrf_err) {
+			LOG_ERR("Failed to set system attributes, nrf_error %#x", nrf_err);
 		}
 		break;
 	}
@@ -316,7 +317,7 @@ uint16_t ble_qwr_evt_handler(struct ble_qwr *qwr, const struct ble_qwr_evt *qwr_
 static void ble_nus_evt_handler(const struct ble_nus_evt *evt)
 {
 	const char newline = '\n';
-	uint32_t err;
+	uint32_t nrfx_err;
 
 	if (evt->type != BLE_NUS_EVT_RX_DATA) {
 		return;
@@ -327,15 +328,15 @@ static void ble_nus_evt_handler(const struct ble_nus_evt *evt)
 		evt->params.rx_data.length, evt->params.rx_data.data, evt->params.rx_data.length);
 
 #if defined(CONFIG_NUS_LPUARTE)
-	err = bm_lpuarte_tx(&lpu, evt->params.rx_data.data, evt->params.rx_data.length, 3000);
-	if (err != NRFX_SUCCESS) {
-		LOG_ERR("bm_lpuarte_tx failed, nrfx_err %#x", err);
+	nrfx_err = bm_lpuarte_tx(&lpu, evt->params.rx_data.data, evt->params.rx_data.length, 3000);
+	if (nrfx_err != NRFX_SUCCESS) {
+		LOG_ERR("bm_lpuarte_tx failed, nrfx_err %#x", nrfx_err);
 	}
 #else
-		err = nrfx_uarte_tx(&nus_uarte_inst, evt->params.rx_data.data,
+		nrfx_err = nrfx_uarte_tx(&nus_uarte_inst, evt->params.rx_data.data,
 				    evt->params.rx_data.length, NRFX_UARTE_TX_BLOCKING);
-		if (err != NRFX_SUCCESS) {
-			LOG_ERR("nrfx_uarte_tx failed, nrfx_err %#x", err);
+		if (nrfx_err != NRFX_SUCCESS) {
+			LOG_ERR("nrfx_uarte_tx failed, nrfx_err %#x", nrfx_err);
 		}
 #endif
 
@@ -352,9 +353,9 @@ static void ble_nus_evt_handler(const struct ble_nus_evt *evt)
 /**
  * @brief Initalize UARTE driver.
  */
-static int uarte_init(void)
+static uint32_t uarte_init(void)
 {
-	int err;
+	int nrfx_err;
 	nrfx_uarte_config_t *uarte_cfg;
 #if defined(CONFIG_NUS_LPUARTE)
 	struct bm_lpuarte_config lpu_cfg = {
@@ -399,16 +400,16 @@ static int uarte_init(void)
 	IRQ_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_GPIOTE_INST_GET(30)) + NRF_GPIOTE_IRQ_GROUP,
 		    CONFIG_GPIOTE_IRQ_PRIO, NRFX_GPIOTE_INST_HANDLER_GET(30), 0, 0);
 
-	err = bm_lpuarte_init(&lpu, &lpu_cfg, uarte_evt_handler);
-	if (err != NRFX_SUCCESS) {
-		LOG_ERR("Failed to initialize UART, nrfx err %d", err);
-		return err;
+	nrfx_err = bm_lpuarte_init(&lpu, &lpu_cfg, uarte_evt_handler);
+	if (nrfx_err != NRFX_SUCCESS) {
+		LOG_ERR("Failed to initialize UART, nrfx_err %d", nrfx_err);
+		return nrfx_err;
 	}
 #else
-	err = nrfx_uarte_init(&nus_uarte_inst, &uarte_config, uarte_evt_handler);
-	if (err != NRFX_SUCCESS) {
-		LOG_ERR("Failed to initialize UART, nrfx err %d", err);
-		return err;
+	nrfx_err = nrfx_uarte_init(&nus_uarte_inst, &uarte_config, uarte_evt_handler);
+	if (nrfx_err != NRFX_SUCCESS) {
+		LOG_ERR("Failed to initialize UART, nrfx_err %d", nrfx_err);
+		return nrfx_err;
 	}
 #endif /* CONFIG_NUS_LPUARTE */
 
@@ -437,9 +438,9 @@ int main(void)
 
 	LOG_INF("BLE NUS sample started");
 
-	err = uarte_init();
-	if (err) {
-		LOG_ERR("Failed to enable UARTE, err %d", err);
+	nrf_err = uarte_init();
+	if (nrf_err) {
+		LOG_ERR("Failed to enable UARTE, nrfx_err %#x", nrf_err);
 		goto idle;
 	}
 

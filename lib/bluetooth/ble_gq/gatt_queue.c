@@ -103,16 +103,17 @@ static const req_data_store_t req_data_store[BLE_GQ_REQ_NUM] = {
 	[BLE_GQ_REQ_GATTS_HVX] = gatts_hvx_store,
 };
 
-static void request_error_handle(const struct ble_gq_req *req, uint16_t conn_handle, uint32_t err)
+static void request_error_handle(const struct ble_gq_req *req, uint16_t conn_handle,
+				 uint32_t nrf_err)
 {
-	if (err == NRF_SUCCESS) {
+	if (nrf_err == NRF_SUCCESS) {
 		LOG_DBG("SD GATT procedure (%d) succeeded on connection handle: %d.", req->type,
 			conn_handle);
 	} else {
 		LOG_DBG("SD GATT procedure (%d) failed on connection handle %d with nrf_error %#x",
-			req->type, conn_handle, err);
+			req->type, conn_handle, nrf_err);
 		if (req->error_handler.cb != NULL) {
-			req->error_handler.cb(conn_handle, err, req->error_handler.ctx);
+			req->error_handler.cb(conn_handle, nrf_err, req->error_handler.ctx);
 		}
 	}
 }
@@ -120,61 +121,61 @@ static void request_error_handle(const struct ble_gq_req *req, uint16_t conn_han
 /* Process a single GATT request. */
 static bool request_process(const struct ble_gq_req *req, uint16_t conn_handle)
 {
-	uint32_t err_code;
+	uint32_t nrf_err;
 	uint16_t len;
 
 	switch (req->type) {
 	case BLE_GQ_REQ_GATTC_READ:
 		LOG_DBG("GATTC read request");
-		err_code = sd_ble_gattc_read(conn_handle, req->gattc_read.handle,
-					     req->gattc_read.offset);
+		nrf_err = sd_ble_gattc_read(conn_handle, req->gattc_read.handle,
+					    req->gattc_read.offset);
 		break;
 	case BLE_GQ_REQ_GATTC_WRITE:
 		LOG_DBG("GATTC write request");
-		err_code = sd_ble_gattc_write(conn_handle, &req->gattc_write);
+		nrf_err = sd_ble_gattc_write(conn_handle, &req->gattc_write);
 		break;
 	case BLE_GQ_REQ_SRV_DISCOVERY:
 		LOG_DBG("GATTC primary services discovery request");
-		err_code = sd_ble_gattc_primary_services_discover(conn_handle,
-								  req->gattc_srv_disc.start_handle,
-								  &req->gattc_srv_disc.srvc_uuid);
+		nrf_err = sd_ble_gattc_primary_services_discover(conn_handle,
+								 req->gattc_srv_disc.start_handle,
+								 &req->gattc_srv_disc.srvc_uuid);
 		break;
 	case BLE_GQ_REQ_CHAR_DISCOVERY:
 		LOG_DBG("GATTC characteristics discovery request");
-		err_code = sd_ble_gattc_characteristics_discover(conn_handle,
-								 &req->gattc_char_disc);
+		nrf_err = sd_ble_gattc_characteristics_discover(conn_handle,
+								&req->gattc_char_disc);
 		break;
 	case BLE_GQ_REQ_DESC_DISCOVERY:
 		LOG_DBG("GATTC characteristic descriptors discovery request");
-		err_code = sd_ble_gattc_descriptors_discover(conn_handle, &req->gattc_desc_disc);
+		nrf_err = sd_ble_gattc_descriptors_discover(conn_handle, &req->gattc_desc_disc);
 		break;
 	case BLE_GQ_REQ_GATTS_HVX:
 		LOG_DBG("GATTS notification or indication");
 		if (!req->gatts_hvx.p_len) {
 			LOG_DBG("GATTS HVX request p_len is NULL");
-			err_code =  NRF_ERROR_INVALID_PARAM;
+			nrf_err =  NRF_ERROR_INVALID_PARAM;
 			break;
 		}
 		len = *(req->gatts_hvx.p_len);
-		err_code = sd_ble_gatts_hvx(conn_handle, &req->gatts_hvx);
-		if (err_code == NRF_SUCCESS && len != *(req->gatts_hvx.p_len)) {
-			err_code = NRF_ERROR_DATA_SIZE;
+		nrf_err = sd_ble_gatts_hvx(conn_handle, &req->gatts_hvx);
+		if (nrf_err == NRF_SUCCESS && len != *(req->gatts_hvx.p_len)) {
+			nrf_err = NRF_ERROR_DATA_SIZE;
 		}
 		break;
 	default:
-		err_code = NRF_ERROR_NOT_SUPPORTED;
+		nrf_err = NRF_ERROR_NOT_SUPPORTED;
 		LOG_WRN("Unimplemented GATT request with type: %d", req->type);
 		break;
 	}
 
-	if (err_code == NRF_ERROR_BUSY) {
+	if (nrf_err == NRF_ERROR_BUSY) {
 		LOG_DBG("SD is currently busy. The GATT procedure will be attempted again later.");
 
 		/* SoftDevice was busy. */
 		return false;
 	}
 
-	request_error_handle(req, conn_handle, err_code);
+	request_error_handle(req, conn_handle, nrf_err);
 
 	/* Request was accepted by SoftDevice. */
 	return true;
