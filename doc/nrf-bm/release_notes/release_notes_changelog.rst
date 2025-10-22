@@ -76,12 +76,13 @@ Libraries
 
 * Added the :ref:`lib_ble_radio_notification` library.
 
-* Updated the following libraries to return ``nrf_errors`` instead of ``errnos``:
+* Updated the following libraries and BLE services to return ``nrf_errors`` instead of ``errnos``:
 
   * :ref:`lib_ble_adv` library.
   * :ref:`lib_ble_conn_params` library.
   * :ref:`lib_ble_gatt_queue` library.
   * :ref:`lib_ble_queued_writes` library.
+  * :ref:`lib_ble_service_bas` service.
   * BLE Record Access Control Point library.
 
 * :ref:`lib_ble_conn_params` library:

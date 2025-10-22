@@ -87,6 +87,7 @@ static uint8_t qwr_mem[CONFIG_QWR_MEM_BUFF_SIZE];
 static void battery_level_update(void)
 {
 	int err;
+	uint32_t nrf_err;
 	uint32_t battery_level;
 
 	err = (uint8_t)sensorsim_measure(&battery_sim_state, &battery_level);
@@ -94,11 +95,11 @@ static void battery_level_update(void)
 		LOG_ERR("Sensorsim measure failed, err %d", err);
 	}
 
-	err = ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level);
-	if (err) {
+	nrf_err = ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level);
+	if (nrf_err) {
 		/* Ignore if not in a connection or notifications disabled in CCCD. */
-		if (err != -ENOTCONN && err != -EPIPE) {
-			LOG_ERR("Failed to update battery level, err %d", err);
+		if (nrf_err != NRF_ERROR_NOT_FOUND && nrf_err != NRF_ERROR_INVALID_STATE) {
+			LOG_ERR("Failed to update battery level, nrf_error %#x", nrf_err);
 		}
 	}
 }
@@ -349,10 +350,10 @@ static uint32_t services_init(void)
 
 	/* Add a basic battery measurement with only mandatory fields */
 
-	err = ble_bas_init(&ble_bas, &bas_config);
-	if (err) {
-		LOG_ERR("Failed to initialize BAS service, err %d", err);
-		return err;
+	nrf_err = ble_bas_init(&ble_bas, &bas_config);
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize BAS service, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
 	/* Initialize Device Information Service. */
