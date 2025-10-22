@@ -126,7 +126,7 @@ static uint32_t mcumgr_characteristic_add(struct ble_mcumgr *service)
  */
 static void on_connect(struct ble_mcumgr *service, ble_evt_t const *ble_evt)
 {
-	int err;
+	uint32_t nrf_err;
 	uint8_t cccd_value[2];
 	ble_gatts_value_t gatts_val = {
 		.p_value = cccd_value,
@@ -145,10 +145,10 @@ static void on_connect(struct ble_mcumgr *service, ble_evt_t const *ble_evt)
 	/* Check the hosts CCCD value to inform of readiness to send data using the
 	 * RX characteristic
 	 */
-	err = sd_ble_gatts_value_get(conn_handle, service->characteristic_handle.cccd_handle,
-				     &gatts_val);
+	nrf_err = sd_ble_gatts_value_get(conn_handle, service->characteristic_handle.cccd_handle,
+					 &gatts_val);
 
-	if (err == 0 && is_notification_enabled(gatts_val.p_value)) {
+	if (nrf_err == NRF_SUCCESS && is_notification_enabled(gatts_val.p_value)) {
 		ctx->is_notification_enabled = true;
 	}
 }
@@ -198,7 +198,7 @@ static void on_write(struct ble_mcumgr *service, ble_evt_t const *ble_evt)
 		 * Collection can fail only due to failing to allocate memory or by receiving
 		 * more data than expected.
 		 */
-		if (ret == -ENOMEM) {
+		if (ret == NRF_ERROR_NO_MEM) {
 			/* Failed to collect the buffer */
 			LOG_ERR("Failed to collect buffer");
 			return;
@@ -239,9 +239,9 @@ static void on_write(struct ble_mcumgr *service, ble_evt_t const *ble_evt)
 	}
 }
 
-int ble_mcumgr_data_send(uint8_t *data, uint16_t *len, struct ble_mcumgr_client_context *ctx)
+uint32_t ble_mcumgr_data_send(uint8_t *data, uint16_t *len, struct ble_mcumgr_client_context *ctx)
 {
-	int err;
+	uint32_t nrf_err;
 	ble_gatts_hvx_params_t hvx_params = {
 		.handle = ble_mcumgr.characteristic_handle.value_handle,
 		.p_data = data,
@@ -250,47 +250,47 @@ int ble_mcumgr_data_send(uint8_t *data, uint16_t *len, struct ble_mcumgr_client_
 	};
 
 	if (!data || !len) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	} else if (*len > BLE_GATT_MAX_DATA_LEN) {
-		return -EINVAL;
+		return NRF_ERROR_INVALID_PARAM;
 	} else if (!ctx->is_notification_enabled) {
-		return -EINVAL;
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
-	err = sd_ble_gatts_hvx(conn_handle, &hvx_params);
+	nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx_params);
 
-	switch (err) {
+	switch (nrf_err) {
 	case NRF_SUCCESS:
 	{
-		return 0;
+		return NRF_SUCCESS;
 	}
 	case BLE_ERROR_INVALID_CONN_HANDLE:
 	{
-		return -ENOTCONN;
+		return NRF_ERROR_NOT_FOUND;
 	}
 	case NRF_ERROR_INVALID_STATE:
 	{
-		return -EPIPE;
+		return NRF_ERROR_INVALID_STATE;
 	}
 	case NRF_ERROR_RESOURCES:
 	{
-		return -EAGAIN;
+		return NRF_ERROR_RESOURCES;
 	}
 	case NRF_ERROR_NOT_FOUND:
 	{
-		return -EBADF;
+		return NRF_ERROR_NOT_FOUND;
 	}
 	default:
 	{
-		LOG_ERR("Failed to send MCUmgr data, nrf_error %#x", err);
-		return -EIO;
+		LOG_ERR("Failed to send MCUmgr data, nrf_error %#x", nrf_err);
+		return NRF_ERROR_INTERNAL;
 	}
 	};
 }
 
+/* Return errno! */
 static int smp_ncs_bm_bt_tx_pkt(struct net_buf *nb)
 {
-	int rc;
 	uint32_t nrf_err;
 	struct ble_mcumgr_client_context *ctx;
 	uint16_t notification_size;
@@ -316,9 +316,9 @@ static int smp_ncs_bm_bt_tx_pkt(struct net_buf *nb)
 			send_size = notification_size;
 		}
 
-		rc = ble_mcumgr_data_send(send_pos, &send_size, ctx);
+		nrf_err = ble_mcumgr_data_send(send_pos, &send_size, ctx);
 
-		if (rc) {
+		if (nrf_err) {
 			break;
 		}
 
@@ -374,9 +374,9 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 
 NRF_SDH_BLE_OBSERVER(sdh_ble, on_ble_evt, &ble_mcumgr, 0);
 
-int ble_mcumgr_init(void)
+uint32_t ble_mcumgr_init(void)
 {
-	int err;
+	uint32_t nrf_err;
 	ble_uuid_t ble_uuid;
 	ble_uuid128_t uuid_base_service = {
 		.uuid128 = BLE_MCUMGR_SERVICE_UUID
@@ -389,39 +389,40 @@ int ble_mcumgr_init(void)
 	ble_mcumgr.service_handle = BLE_CONN_HANDLE_INVALID;
 
 	/* Add MCUmgr service/characteristic UUIDs */
-	err = sd_ble_uuid_vs_add(&uuid_base_service, &ble_mcumgr.uuid_type_service);
+	nrf_err = sd_ble_uuid_vs_add(&uuid_base_service, &ble_mcumgr.uuid_type_service);
 
-	if (err) {
-		LOG_ERR("sd_ble_uuid_vs_add failed, nrf_error %#x", err);
-		return -EINVAL;
+	if (nrf_err) {
+		LOG_ERR("sd_ble_uuid_vs_add failed, nrf_error %#x", nrf_err);
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
-	err = sd_ble_uuid_vs_add(&uuid_base_characteristic, &ble_mcumgr.uuid_type_characteristic);
+	nrf_err = sd_ble_uuid_vs_add(&uuid_base_characteristic,
+				     &ble_mcumgr.uuid_type_characteristic);
 
-	if (err) {
-		LOG_ERR("sd_ble_uuid_vs_add failed, nrf_error %#x", err);
-		return -EINVAL;
+	if (nrf_err) {
+		LOG_ERR("sd_ble_uuid_vs_add failed, nrf_error %#x", nrf_err);
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	ble_uuid.type = ble_mcumgr.uuid_type_service;
 	ble_uuid.uuid = BLE_MCUMGR_SERVICE_UUID_SUB;
 
 	/* Add the service */
-	err = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY,
-				       &ble_uuid,
-				       &ble_mcumgr.service_handle);
+	nrf_err = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY,
+					   &ble_uuid,
+					   &ble_mcumgr.service_handle);
 
-	if (err) {
-		LOG_ERR("Failed to add MCUmgr service, nrf_error %#x", err);
-		return -EINVAL;
+	if (nrf_err) {
+		LOG_ERR("Failed to add MCUmgr service, nrf_error %#x", nrf_err);
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	/* Add MCUmgr characteristic */
-	err = mcumgr_characteristic_add(&ble_mcumgr);
+	nrf_err = mcumgr_characteristic_add(&ble_mcumgr);
 
-	if (err) {
-		LOG_ERR("mcumgr_characteristic_add failed, nrf_error %#x", err);
-		return -EINVAL;
+	if (nrf_err) {
+		LOG_ERR("mcumgr_characteristic_add failed, nrf_error %#x", nrf_err);
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	return 0;
