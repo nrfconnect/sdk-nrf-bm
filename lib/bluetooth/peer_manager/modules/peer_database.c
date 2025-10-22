@@ -309,7 +309,7 @@ static void write_buf_length_words_set(struct pm_peer_data_const *peer_data)
  */
 uint32_t write_buf_store(struct pdb_buffer_record *write_buffer_record)
 {
-	uint32_t err_code = NRF_SUCCESS;
+	uint32_t nrf_err = NRF_SUCCESS;
 	struct pm_peer_data_const peer_data = {.data_id = write_buffer_record->data_id};
 	uint8_t *buffer_memory;
 
@@ -325,10 +325,10 @@ uint32_t write_buf_store(struct pdb_buffer_record *write_buffer_record)
 					write_buffer_record->n_bufs);
 	write_buf_length_words_set(&peer_data);
 
-	err_code = pds_peer_data_store(write_buffer_record->peer_id, &peer_data,
-				       &write_buffer_record->store_token);
+	nrf_err = pds_peer_data_store(write_buffer_record->peer_id, &peer_data,
+				      &write_buffer_record->store_token);
 
-	switch (err_code) {
+	switch (nrf_err) {
 	case NRF_SUCCESS:
 		write_buffer_record->store_busy = false;
 		write_buffer_record->store_flash_full = false;
@@ -339,7 +339,7 @@ uint32_t write_buf_store(struct pdb_buffer_record *write_buffer_record)
 		write_buffer_record->store_flash_full = false;
 		pending_store = true;
 
-		err_code = NRF_SUCCESS;
+		nrf_err = NRF_SUCCESS;
 		break;
 
 	case NRF_ERROR_RESOURCES:
@@ -354,12 +354,12 @@ uint32_t write_buf_store(struct pdb_buffer_record *write_buffer_record)
 
 	default:
 		LOG_ERR("pds_peer_data_store() returned %s. peer_id: %d",
-			nrf_strerror_get(err_code), write_buffer_record->peer_id);
-		err_code = NRF_ERROR_INTERNAL;
+			nrf_strerror_get(nrf_err), write_buffer_record->peer_id);
+		nrf_err = NRF_ERROR_INTERNAL;
 		break;
 	}
 
-	return err_code;
+	return nrf_err;
 }
 
 /**
@@ -371,24 +371,23 @@ uint32_t write_buf_store(struct pdb_buffer_record *write_buffer_record)
  */
 static bool write_buf_store_in_event(struct pdb_buffer_record *write_buffer_record)
 {
-	uint32_t err_code;
+	uint32_t nrf_err;
 	struct pm_evt event;
 
-	err_code = write_buf_store(write_buffer_record);
-	if (err_code != NRF_SUCCESS) {
+	nrf_err = write_buf_store(write_buffer_record);
+	if (nrf_err) {
 		event.conn_handle = BLE_CONN_HANDLE_INVALID;
 		event.peer_id = write_buffer_record->peer_id;
 
-		if (err_code == NRF_ERROR_RESOURCES) {
+		if (nrf_err == NRF_ERROR_RESOURCES) {
 			event.evt_id = PM_EVT_STORAGE_FULL;
 		} else {
 			event.evt_id = PM_EVT_ERROR_UNEXPECTED;
-			event.params.error_unexpected.error = err_code;
+			event.params.error_unexpected.error = nrf_err;
 
 			LOG_ERR("Some peer data was not properly written to flash. "
-				"write_buf_store() "
-				"returned %s for peer_id: %d",
-				nrf_strerror_get(err_code), write_buffer_record->peer_id);
+				"write_buf_store() returned %s for peer_id: %d",
+				nrf_strerror_get(nrf_err), write_buffer_record->peer_id);
 		}
 
 		pdb_evt_send(&event);
@@ -481,16 +480,16 @@ void pdb_pds_evt_handler(struct pm_evt *event)
 
 uint32_t pdb_init(void)
 {
-	uint32_t err_code;
+	uint32_t nrf_err;
 
 	__ASSERT_NO_MSG(!module_initialized);
 
 	internal_state_reset();
 
-	PM_BUFFER_INIT(&write_buffer, CONFIG_PM_FLASH_BUFFERS, PDB_WRITE_BUF_SIZE, err_code);
+	PM_BUFFER_INIT(&write_buffer, CONFIG_PM_FLASH_BUFFERS, PDB_WRITE_BUF_SIZE, nrf_err);
 
-	if (err_code != NRF_SUCCESS) {
-		LOG_ERR("PM_BUFFER_INIT() returned %s.", nrf_strerror_get(err_code));
+	if (nrf_err) {
+		LOG_ERR("PM_BUFFER_INIT() returned %s.", nrf_strerror_get(nrf_err));
 		return NRF_ERROR_INTERNAL;
 	}
 
@@ -501,7 +500,7 @@ uint32_t pdb_init(void)
 
 uint32_t pdb_peer_free(uint16_t peer_id)
 {
-	uint32_t err_code;
+	uint32_t nrf_err;
 
 	__ASSERT_NO_MSG(module_initialized);
 
@@ -509,15 +508,16 @@ uint32_t pdb_peer_free(uint16_t peer_id)
 	struct pdb_buffer_record *record = write_buffer_record_find_next(peer_id, &index);
 
 	while (record != NULL) {
-		err_code = pdb_write_buf_release(peer_id, record->data_id);
+		nrf_err = pdb_write_buf_release(peer_id, record->data_id);
 		/* All return values are acceptable. */
-		UNUSED_VARIABLE(err_code);
+		UNUSED_VARIABLE(nrf_err);
 
-		if ((err_code != NRF_SUCCESS) && (err_code != NRF_ERROR_NOT_FOUND)) {
+		if ((nrf_err != NRF_SUCCESS) &&
+		    (nrf_err != NRF_ERROR_NOT_FOUND)) {
 			LOG_ERR("pdb_write_buf_release() returned %s which should not "
 				"happen. peer_id: %d, "
 				"data_id: %d",
-				nrf_strerror_get(err_code), peer_id, record->data_id);
+				nrf_strerror_get(nrf_err), peer_id, record->data_id);
 			return NRF_ERROR_INTERNAL;
 		}
 
@@ -525,14 +525,14 @@ uint32_t pdb_peer_free(uint16_t peer_id)
 		record = write_buffer_record_find_next(peer_id, &index);
 	}
 
-	err_code = pds_peer_id_free(peer_id);
+	nrf_err = pds_peer_id_free(peer_id);
 
-	if ((err_code == NRF_SUCCESS) || (err_code == NRF_ERROR_INVALID_PARAM)) {
-		return err_code;
+	if ((nrf_err == NRF_SUCCESS) || (nrf_err == NRF_ERROR_INVALID_PARAM)) {
+		return nrf_err;
 	}
 
 	LOG_ERR("Peer ID %d was not properly released. pds_peer_id_free() returned %s",
-		peer_id, nrf_strerror_get(err_code));
+		peer_id, nrf_strerror_get(nrf_err));
 
 	return NRF_ERROR_INTERNAL;
 }

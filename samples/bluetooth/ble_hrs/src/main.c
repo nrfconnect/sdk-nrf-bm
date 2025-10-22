@@ -256,14 +256,15 @@ NRF_SDH_BLE_OBSERVER(sdh_ble, on_ble_evt, NULL, 0);
 
 void on_conn_params_evt(const struct ble_conn_params_evt *evt)
 {
-	int err;
+	uint32_t nrf_err;
 
 	switch (evt->id) {
 	case BLE_CONN_PARAMS_EVT_REJECTED:
-		err = sd_ble_gap_disconnect(evt->conn_handle, BLE_HCI_CONN_INTERVAL_UNACCEPTABLE);
-		if (err) {
+		nrf_err = sd_ble_gap_disconnect(evt->conn_handle,
+						BLE_HCI_CONN_INTERVAL_UNACCEPTABLE);
+		if (nrf_err) {
 			LOG_ERR("Disconnect failed on conn params update rejection, nrf_error %#x",
-			       err);
+				nrf_err);
 		} else {
 			LOG_ERR("Disconnected from peer, unacceptable conn params");
 		}
@@ -352,19 +353,19 @@ static int buttons_init(bool *erase_bonds)
 
 static void delete_bonds(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 
 	LOG_INF("Erase bonds!");
 
-	err = pm_peers_delete();
-	if (err) {
-		LOG_ERR("Failed to delete peers, err %d", err);
+	nrf_err = pm_peers_delete();
+	if (nrf_err) {
+		LOG_ERR("Failed to delete peers, nrf_error %#x", nrf_err);
 	}
 }
 
 static void advertising_start(bool erase_bonds)
 {
-	int nrf_err;
+	uint32_t nrf_err;
 
 	if (erase_bonds) {
 		delete_bonds();
@@ -393,14 +394,14 @@ static void pm_evt_handler(struct pm_evt const *p_evt)
 	}
 }
 
-static int peer_manager_init(void)
+static uint32_t peer_manager_init(void)
 {
 	ble_gap_sec_params_t sec_param;
-	int err;
+	uint32_t nrf_err;
 
-	err = pm_init();
-	if (err) {
-		return -EFAULT;
+	nrf_err = pm_init();
+	if (nrf_err) {
+		return nrf_err;
 	}
 
 	memset(&sec_param, 0, sizeof(ble_gap_sec_params_t));
@@ -421,19 +422,19 @@ static int peer_manager_init(void)
 		.kdist_peer.id = 1,
 	};
 
-	err = pm_sec_params_set(&sec_param);
-	if (err) {
-		LOG_ERR("pm_sec_params_set() failed, err: %d", err);
-		return -EFAULT;
+	nrf_err = pm_sec_params_set(&sec_param);
+	if (nrf_err) {
+		LOG_ERR("pm_sec_params_set() failed, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
-	err = pm_register(pm_evt_handler);
-	if (err) {
-		LOG_ERR("pm_register() failed, err: %d", err);
-		return -EFAULT;
+	nrf_err = pm_register(pm_evt_handler);
+	if (nrf_err) {
+		LOG_ERR("pm_register() failed, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
 int main(void)
@@ -494,9 +495,9 @@ int main(void)
 
 	LOG_INF("Bluetooth enabled");
 
-	err = peer_manager_init();
-	if (err) {
-		LOG_ERR("Failed to initialize Peer Manager, err %d", err);
+	nrf_err = peer_manager_init();
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize Peer Manager, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 

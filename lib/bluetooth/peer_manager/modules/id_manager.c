@@ -368,13 +368,13 @@ uint32_t im_peer_free(uint16_t peer_id)
 {
 	const uint16_t conn_handle = im_conn_handle_get(peer_id);
 	const int idx = nrf_sdh_ble_idx_get(conn_handle);
-	const uint32_t ret = pdb_peer_free(peer_id);
+	const uint32_t nrf_err = pdb_peer_free(peer_id);
 
-	if ((ret == NRF_SUCCESS) && (conn_handle != BLE_CONN_HANDLE_INVALID) && (idx >= 0) &&
+	if ((nrf_err == NRF_SUCCESS) && (conn_handle != BLE_CONN_HANDLE_INVALID) && (idx >= 0) &&
 	    (idx < IM_MAX_CONN_HANDLES)) {
 		connections[idx].peer_id = PM_PEER_ID_INVALID;
 	}
-	return ret;
+	return nrf_err;
 }
 
 /** @brief Given a list of peers, loads their GAP address and IRK into the provided buffers. */
@@ -382,7 +382,7 @@ static uint32_t peers_id_keys_get(const uint16_t *peers, uint32_t peer_cnt,
 				    ble_gap_addr_t *gap_addrs, uint32_t *addr_cnt,
 				    ble_gap_irk_t *gap_irks, uint32_t *irk_cnt)
 {
-	uint32_t ret;
+	uint32_t nrf_err;
 
 	struct pm_peer_data_bonding bond_data;
 	struct pm_peer_data peer_data;
@@ -420,10 +420,10 @@ static uint32_t peers_id_keys_get(const uint16_t *peers, uint32_t peer_cnt,
 		memset(&bond_data, 0x00, sizeof(bond_data));
 
 		/* Read peer data from flash. */
-		ret = pds_peer_data_read(peers[i], PM_PEER_DATA_ID_BONDING, &peer_data,
-					 &buf_size);
+		nrf_err = pds_peer_data_read(peers[i], PM_PEER_DATA_ID_BONDING, &peer_data,
+					     &buf_size);
 
-		if ((ret == NRF_ERROR_NOT_FOUND) || (ret == NRF_ERROR_INVALID_PARAM)) {
+		if ((nrf_err == NRF_ERROR_NOT_FOUND) || (nrf_err == NRF_ERROR_INVALID_PARAM)) {
 			/* Peer data coulnd't be found in flash or peer ID is not valid. */
 			return NRF_ERROR_NOT_FOUND;
 		}
@@ -458,7 +458,7 @@ static uint32_t peers_id_keys_get(const uint16_t *peers, uint32_t peer_cnt,
 
 uint32_t im_device_identities_list_set(const uint16_t *peers, uint32_t peer_cnt)
 {
-	uint32_t ret;
+	uint32_t nrf_err;
 	struct pm_peer_data peer_data;
 	struct pm_peer_data_bonding bond_data;
 
@@ -486,10 +486,10 @@ uint32_t im_device_identities_list_set(const uint16_t *peers, uint32_t peer_cnt)
 		memset(&bond_data, 0x00, sizeof(bond_data));
 
 		/* Read peer data from flash. */
-		ret = pds_peer_data_read(peers[i], PM_PEER_DATA_ID_BONDING, &peer_data,
-					 &buf_size);
+		nrf_err = pds_peer_data_read(peers[i], PM_PEER_DATA_ID_BONDING, &peer_data,
+					     &buf_size);
 
-		if ((ret == NRF_ERROR_NOT_FOUND) || (ret == NRF_ERROR_INVALID_PARAM)) {
+		if ((nrf_err == NRF_ERROR_NOT_FOUND) || (nrf_err == NRF_ERROR_INVALID_PARAM)) {
 			LOG_WRN("peer id %d: Peer data could not be found in flash. Remove "
 				"the peer ID "
 				"from the peer list and try again.",
@@ -585,7 +585,7 @@ uint32_t im_whitelist_set(const uint16_t *peers, uint32_t peer_cnt)
 	wlisted_peer_cnt = peer_cnt;
 	memcpy(wlisted_peers, peers, sizeof(*peers) * peer_cnt);
 
-	uint32_t ret;
+	uint32_t nrf_err;
 	uint32_t wlist_addr_cnt = BLE_GAP_WHITELIST_ADDR_MAX_COUNT;
 
 	const ble_gap_addr_t *addr_ptrs[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
@@ -594,14 +594,14 @@ uint32_t im_whitelist_set(const uint16_t *peers, uint32_t peer_cnt)
 	memset(addrs, 0x00, sizeof(addrs));
 
 	/* Fetch GAP addresses for these peers, but don't fetch IRKs. */
-	ret = peers_id_keys_get(peers, peer_cnt, addrs, &wlist_addr_cnt, NULL, NULL);
+	nrf_err = peers_id_keys_get(peers, peer_cnt, addrs, &wlist_addr_cnt, NULL, NULL);
 
-	if (ret != NRF_SUCCESS) {
+	if (nrf_err) {
 		/* NRF_ERROR_NOT_FOUND,            if a peer or its data were not found.
 		 * BLE_ERROR_GAP_INVALID_BLE_ADDR, if a peer address can not be used for
 		 * whitelisting.
 		 */
-		return ret;
+		return nrf_err;
 	}
 
 	for (uint32_t i = 0; i < BLE_GAP_WHITELIST_ADDR_MAX_COUNT; i++) {

@@ -109,14 +109,14 @@ static const char *sec_err_string_get(uint16_t error)
 
 static void conn_secure_impl(uint16_t conn_handle, bool force)
 {
-	uint32_t err_code;
+	uint32_t nrf_err;
 
 	if (!force) {
 		struct pm_conn_sec_status status;
 
-		err_code = pm_conn_sec_status_get(conn_handle, &status);
-		if (err_code != BLE_ERROR_INVALID_CONN_HANDLE) {
-			APP_ERROR_CHECK(err_code);
+		nrf_err = pm_conn_sec_status_get(conn_handle, &status);
+		if (nrf_err != BLE_ERROR_INVALID_CONN_HANDLE) {
+			APP_ERROR_CHECK(nrf_err);
 		}
 
 		/* If the link is already secured, don't initiate security procedure. */
@@ -126,32 +126,32 @@ static void conn_secure_impl(uint16_t conn_handle, bool force)
 		}
 	}
 
-	err_code = pm_conn_secure(conn_handle, false);
+	nrf_err = pm_conn_secure(conn_handle, false);
 
-	if ((err_code == NRF_SUCCESS) || (err_code == NRF_ERROR_BUSY)) {
+	if ((nrf_err == NRF_SUCCESS) || (nrf_err == NRF_ERROR_BUSY)) {
 		/* Success. */
-	} else if (err_code == NRF_ERROR_TIMEOUT) {
+	} else if (nrf_err == NRF_ERROR_TIMEOUT) {
 		LOG_WRN("pm_conn_secure() failed because an SMP timeout is preventing security on "
 			"the link. Disconnecting conn_handle %d.",
 			conn_handle);
 
-		err_code = sd_ble_gap_disconnect(conn_handle,
-						 BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
-		if (err_code != NRF_SUCCESS) {
+		nrf_err = sd_ble_gap_disconnect(conn_handle,
+						BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
+		if (nrf_err) {
 			LOG_WRN("sd_ble_gap_disconnect() returned %s on conn_handle %d.",
-				nrf_strerror_get(err_code), conn_handle);
+				nrf_strerror_get(nrf_err), conn_handle);
 		}
-	} else if (err_code == NRF_ERROR_INVALID_DATA) {
+	} else if (nrf_err == NRF_ERROR_INVALID_DATA) {
 		LOG_WRN("pm_conn_secure() failed because the stored data for conn_handle %d does "
 			"not have a valid key.",
 			conn_handle);
-	} else if (err_code == BLE_ERROR_INVALID_CONN_HANDLE) {
+	} else if (nrf_err == BLE_ERROR_INVALID_CONN_HANDLE) {
 		LOG_WRN("pm_conn_secure() failed because conn_handle %d is not a valid connection.",
 			conn_handle);
 	} else {
 		LOG_ERR("Asserting. pm_conn_secure() returned %s on conn_handle %d.",
-			nrf_strerror_get(err_code), conn_handle);
-		APP_ERROR_CHECK(err_code);
+			nrf_strerror_get(nrf_err), conn_handle);
+		APP_ERROR_CHECK(nrf_err);
 	}
 }
 
@@ -240,7 +240,7 @@ static void rank_highest(uint16_t peer_id)
 
 void pm_handler_flash_clean(const struct pm_evt *pm_evt)
 {
-	uint32_t err_code;
+	uint32_t nrf_err;
 	/* Indicates whether a successful write happened after the last garbage
 	 * collection. If this is false when flash is full, it means just a
 	 * garbage collection won't work, so some data should be deleted.
@@ -259,19 +259,19 @@ void pm_handler_flash_clean(const struct pm_evt *pm_evt)
 
 	switch (pm_evt->evt_id) {
 	case PM_EVT_BONDED_PEER_CONNECTED:
-		err_code = pm_peer_rank_highest(pm_evt->peer_id);
-		if ((err_code == NRF_ERROR_RESOURCES) || (err_code == NRF_ERROR_BUSY)) {
+		nrf_err = pm_peer_rank_highest(pm_evt->peer_id);
+		if ((nrf_err == NRF_ERROR_RESOURCES) || (nrf_err == NRF_ERROR_BUSY)) {
 			/* Queue pm_peer_rank_highest() call and attempt to clean flash. */
 			rank_queue[rank_queue_wr] = pm_evt->peer_id;
 			rank_queue_wr = (rank_queue_wr + 1) % RANK_QUEUE_SIZE;
 			pm_handler_flash_clean_on_return();
-		} else if ((err_code != NRF_ERROR_NOT_SUPPORTED) &&
-			   (err_code != NRF_ERROR_INVALID_PARAM) &&
-			   (err_code != NRF_ERROR_DATA_SIZE)) {
-			APP_ERROR_CHECK(err_code);
+		} else if ((nrf_err != NRF_ERROR_NOT_SUPPORTED) &&
+			   (nrf_err != NRF_ERROR_INVALID_PARAM) &&
+			   (nrf_err != NRF_ERROR_DATA_SIZE)) {
+			APP_ERROR_CHECK(nrf_err);
 		} else {
 			LOG_DBG("pm_peer_rank_highest() returned %s for peer id %d",
-				nrf_strerror_get(err_code), pm_evt->peer_id);
+				nrf_strerror_get(nrf_err), pm_evt->peer_id);
 		}
 		break;
 
@@ -461,15 +461,15 @@ void pm_handler_pm_evt_log(const struct pm_evt *pm_evt)
 
 void pm_handler_disconnect_on_sec_failure(const struct pm_evt *pm_evt)
 {
-	uint32_t err_code;
+	uint32_t nrf_err;
 
 	if (pm_evt->evt_id == PM_EVT_CONN_SEC_FAILED) {
 		LOG_WRN("Disconnecting conn_handle %d.", pm_evt->conn_handle);
-		err_code = sd_ble_gap_disconnect(pm_evt->conn_handle,
-						 BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
-		if ((err_code != NRF_ERROR_INVALID_STATE) &&
-		    (err_code != BLE_ERROR_INVALID_CONN_HANDLE)) {
-			APP_ERROR_CHECK(err_code);
+		nrf_err = sd_ble_gap_disconnect(pm_evt->conn_handle,
+						BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
+		if ((nrf_err != NRF_ERROR_INVALID_STATE) &&
+		    (nrf_err != BLE_ERROR_INVALID_CONN_HANDLE)) {
+			APP_ERROR_CHECK(nrf_err);
 		}
 	}
 }
@@ -480,10 +480,10 @@ void pm_handler_disconnect_on_insufficient_sec(const struct pm_evt *pm_evt,
 	if (pm_evt->evt_id == PM_EVT_CONN_SEC_SUCCEEDED) {
 		if (!pm_sec_is_sufficient(pm_evt->conn_handle, min_conn_sec)) {
 			LOG_WRN("Connection security is insufficient, disconnecting.");
-			uint32_t err_code = sd_ble_gap_disconnect(
+			uint32_t nrf_err = sd_ble_gap_disconnect(
 				pm_evt->conn_handle, BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
-			APP_ERROR_CHECK(err_code);
-			LOG_ERR("sd_ble_gap_disconnect() error 0x%x", err_code);
+			APP_ERROR_CHECK(nrf_err);
+			LOG_ERR("sd_ble_gap_disconnect() error 0x%x", nrf_err);
 		}
 	}
 }

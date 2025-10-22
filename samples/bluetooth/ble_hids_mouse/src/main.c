@@ -123,7 +123,7 @@ static void battery_level_meas_timeout_handler(void *context)
 
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {
-	uint32_t err;
+	int err;
 
 	switch (evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:
@@ -456,7 +456,7 @@ static void mouse_movement_send(struct ble_hids *hids, int16_t delta_x, int16_t 
 		nrf_err = ble_hids_inp_rep_send(hids, conn_handle, &inp_rep);
 	}
 
-	if (nrf_err != NRF_SUCCESS && nrf_err != BLE_ERROR_GATTS_SYS_ATTR_MISSING) {
+	if (nrf_err && nrf_err != BLE_ERROR_GATTS_SYS_ATTR_MISSING) {
 		LOG_ERR("Failed to send input report, nrf_error %#x", nrf_err);
 	}
 }
@@ -464,7 +464,7 @@ static void mouse_movement_send(struct ble_hids *hids, int16_t delta_x, int16_t 
 static void num_comp_reply(uint16_t conn_handle, bool accept)
 {
 	uint8_t key_type;
-	uint32_t err;
+	uint32_t nrf_err;
 
 	if (accept) {
 		LOG_INF("Numeric Match. Conn handle: %d", conn_handle);
@@ -474,9 +474,9 @@ static void num_comp_reply(uint16_t conn_handle, bool accept)
 		key_type = BLE_GAP_AUTH_KEY_TYPE_NONE;
 	}
 
-	err = sd_ble_gap_auth_key_reply(conn_handle, key_type, NULL);
-	if (err != NRF_SUCCESS) {
-		LOG_ERR("Failed to reply auth request, err %d", err);
+	nrf_err = sd_ble_gap_auth_key_reply(conn_handle, key_type, NULL);
+	if (nrf_err) {
+		LOG_ERR("Failed to reply auth request, nrf_error %#x", nrf_err);
 	}
 
 	auth_key_request = false;
@@ -518,56 +518,56 @@ static void button_handler(uint8_t pin, uint8_t action)
 
 static void whitelist_set(enum pm_peer_id_list_skip skip)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	uint16_t peer_ids[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
 	uint32_t peer_id_count = BLE_GAP_WHITELIST_ADDR_MAX_COUNT;
 
-	err = pm_peer_id_list(peer_ids, &peer_id_count, PM_PEER_ID_INVALID, skip);
-	if (err) {
-		LOG_ERR("Failed to get peer id list, err %d", err);
+	nrf_err = pm_peer_id_list(peer_ids, &peer_id_count, PM_PEER_ID_INVALID, skip);
+	if (nrf_err) {
+		LOG_ERR("Failed to get peer id list, nrf_error %#x", nrf_err);
 	}
 
 	LOG_INF("whitelist_peer_cnt %d, MAX_PEERS_WLIST %d",
 		peer_id_count, BLE_GAP_WHITELIST_ADDR_MAX_COUNT);
 
-	err = pm_whitelist_set(peer_ids, peer_id_count);
-	if (err) {
-		LOG_ERR("Failed to set whitelist, err %d", err);
+	nrf_err = pm_whitelist_set(peer_ids, peer_id_count);
+	if (nrf_err) {
+		LOG_ERR("Failed to set whitelist, nrf_error %#x", nrf_err);
 	}
 }
 
 static void identities_set(enum pm_peer_id_list_skip skip)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	uint16_t peer_ids[BLE_GAP_DEVICE_IDENTITIES_MAX_COUNT];
 	uint32_t peer_id_count = BLE_GAP_DEVICE_IDENTITIES_MAX_COUNT;
 
-	err = pm_peer_id_list(peer_ids, &peer_id_count, PM_PEER_ID_INVALID, skip);
-	if (err) {
-		LOG_ERR("Failed to get peer id list, err %d", err);
+	nrf_err = pm_peer_id_list(peer_ids, &peer_id_count, PM_PEER_ID_INVALID, skip);
+	if (nrf_err) {
+		LOG_ERR("Failed to get peer id list, nrf_error %#x", nrf_err);
 	}
 
-	err = pm_device_identities_list_set(peer_ids, peer_id_count);
-	if (err) {
-		LOG_ERR("Failed to set identities list, err %d", err);
+	nrf_err = pm_device_identities_list_set(peer_ids, peer_id_count);
+	if (nrf_err) {
+		LOG_ERR("Failed to set identities list, nrf_error %#x", nrf_err);
 	}
 }
 
 static void delete_bonds(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 
 	LOG_INF("Erase bonds!");
 
-	err = pm_peers_delete();
-	if (err) {
-		LOG_ERR("Failed to delete peers, err %d", err);
+	nrf_err = pm_peers_delete();
+	if (nrf_err) {
+		LOG_ERR("Failed to delete peers, nrf_error %#x", nrf_err);
 	}
 }
 
 static uint32_t advertising_start(bool erase_bonds)
 {
-	int nrf_err = NRF_SUCCESS;
+	uint32_t nrf_err = NRF_SUCCESS;
 
 	if (erase_bonds) {
 		delete_bonds();
@@ -614,14 +614,14 @@ static void pm_evt_handler(struct pm_evt const *evt)
 	}
 }
 
-static int peer_manager_init(void)
+static uint32_t peer_manager_init(void)
 {
 	ble_gap_sec_params_t sec_param;
-	int err;
+	uint32_t nrf_err;
 
-	err = pm_init();
-	if (err) {
-		return -EFAULT;
+	nrf_err = pm_init();
+	if (nrf_err) {
+		return nrf_err;
 	}
 
 	memset(&sec_param, 0, sizeof(ble_gap_sec_params_t));
@@ -642,19 +642,19 @@ static int peer_manager_init(void)
 		.kdist_peer.id = 1,
 	};
 
-	err = pm_sec_params_set(&sec_param);
-	if (err) {
-		LOG_ERR("pm_sec_params_set() failed, err: %d", err);
-		return -EFAULT;
+	nrf_err = pm_sec_params_set(&sec_param);
+	if (nrf_err) {
+		LOG_ERR("pm_sec_params_set() failed, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
-	err = pm_register(pm_evt_handler);
-	if (err) {
-		LOG_ERR("pm_register() failed, err: %d", err);
-		return -EFAULT;
+	nrf_err = pm_register(pm_evt_handler);
+	if (nrf_err) {
+		LOG_ERR("pm_register() failed, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
 uint16_t ble_qwr_evt_handler(struct ble_qwr *qwr, const struct ble_qwr_evt *qwr_evt)
@@ -792,9 +792,9 @@ int main(void)
 
 	LOG_INF("Bluetooth enabled!");
 
-	err = peer_manager_init();
-	if (err) {
-		LOG_ERR("Failed to initialize Peer Manager, err %d", err);
+	nrf_err = peer_manager_init();
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize Peer Manager, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 
@@ -817,7 +817,7 @@ int main(void)
 	}
 
 	nrf_err = hids_init();
-	if (nrf_err != NRF_SUCCESS) {
+	if (nrf_err) {
 		LOG_ERR("Failed to initialize HIDS, nrf_error %#x", nrf_err);
 		goto idle;
 	}
@@ -837,9 +837,9 @@ int main(void)
 		goto idle;
 	}
 
-	err = advertising_start(erase_bonds);
-	if (err) {
-		LOG_ERR("Failed to start advertising, err %d", err);
+	nrf_err = advertising_start(erase_bonds);
+	if (nrf_err) {
+		LOG_ERR("Failed to start advertising, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 

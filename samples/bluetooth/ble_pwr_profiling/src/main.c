@@ -181,7 +181,7 @@ static uint32_t ble_pwr_profiling_char_add(const uint8_t uuid_type, uint16_t ser
 /* Send characteristic notification to peer if in a connected state and notification is enabled. */
 static void notification_send(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	uint16_t len = CONFIG_BLE_PWR_PROFILING_CHAR_VALUE_LEN;
 
 	/* Increase last byte of characteristic value to have different values on each update*/
@@ -197,12 +197,12 @@ static void notification_send(void)
 			.p_data = char_value,
 		};
 
-		err = sd_ble_gatts_hvx(conn_handle, &hvx_params);
-		if ((err != NRF_SUCCESS) &&
-		    (err != NRF_ERROR_INVALID_STATE) &&
-		    (err != NRF_ERROR_RESOURCES) &&
-		    (err != BLE_ERROR_GATTS_SYS_ATTR_MISSING)) {
-			LOG_ERR("sd_ble_gatts_hvx failed, nrf_error %#x", err);
+		nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx_params);
+		if ((nrf_err != NRF_SUCCESS) &&
+		    (nrf_err != NRF_ERROR_INVALID_STATE) &&
+		    (nrf_err != NRF_ERROR_RESOURCES) &&
+		    (nrf_err != BLE_ERROR_GATTS_SYS_ATTR_MISSING)) {
+			LOG_ERR("sd_ble_gatts_hvx failed, nrf_error %#x", nrf_err);
 		}
 	}
 }
@@ -227,6 +227,7 @@ static void char_notif_timeout_handler(void *ctx)
 static void connection_timeout_handler(void *ctx)
 {
 	int err;
+	uint32_t nrf_err;
 
 	ARG_UNUSED(ctx);
 
@@ -238,9 +239,9 @@ static void connection_timeout_handler(void *ctx)
 		LOG_ERR("Failed to stop timer, err %d", err);
 	}
 
-	err = sd_ble_gap_disconnect(conn_handle, BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
-	if (err != NRF_SUCCESS) {
-		LOG_ERR("Failed to disconnect, nrf_error %#x", err);
+	nrf_err = sd_ble_gap_disconnect(conn_handle, BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
+	if (nrf_err) {
+		LOG_ERR("Failed to disconnect, nrf_error %#x", nrf_err);
 	}
 }
 
@@ -260,7 +261,7 @@ static void poweroff_timeout_handler(void *ctx)
  */
 static void on_write(ble_evt_t const *ble_evt)
 {
-	uint32_t err;
+	int err;
 	bool notif_enabled;
 	ble_gatts_evt_write_t const *evt_write = &ble_evt->evt.gatts_evt.params.write;
 
@@ -299,6 +300,7 @@ static void on_write(ble_evt_t const *ble_evt)
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {
 	int err;
+	uint32_t nrf_err;
 
 	switch (evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:
@@ -325,18 +327,19 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 
 	case BLE_GAP_EVT_SEC_PARAMS_REQUEST:
 		/* Pairing not supported */
-		err = sd_ble_gap_sec_params_reply(evt->evt.gap_evt.conn_handle,
-						  BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP, NULL, NULL);
-		if (err != NRF_SUCCESS) {
-			LOG_ERR("Failed to reply with Security params, nrf_error %#x", err);
+		nrf_err = sd_ble_gap_sec_params_reply(evt->evt.gap_evt.conn_handle,
+						      BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP,
+						      NULL, NULL);
+		if (nrf_err) {
+			LOG_ERR("Failed to reply with Security params, nrf_error %#x", nrf_err);
 		}
 		break;
 
 	case BLE_GATTS_EVT_SYS_ATTR_MISSING:
 		/* No system attributes have been stored */
-		err = sd_ble_gatts_sys_attr_set(conn_handle, NULL, 0, 0);
-		if (err != NRF_SUCCESS) {
-			LOG_ERR("Failed to set system attributes, nrf_error %#x", err);
+		nrf_err = sd_ble_gatts_sys_attr_set(conn_handle, NULL, 0, 0);
+		if (nrf_err) {
+			LOG_ERR("Failed to set system attributes, nrf_error %#x", nrf_err);
 		}
 		break;
 
@@ -360,14 +363,15 @@ NRF_SDH_BLE_OBSERVER(sdh_ble, on_ble_evt, NULL, 0);
 
 static void on_conn_params_evt(const struct ble_conn_params_evt *evt)
 {
-	int err;
+	uint32_t nrf_err;
 
 	switch (evt->id) {
 	case BLE_CONN_PARAMS_EVT_REJECTED:
-		err = sd_ble_gap_disconnect(evt->conn_handle, BLE_HCI_CONN_INTERVAL_UNACCEPTABLE);
-		if (err) {
+		nrf_err = sd_ble_gap_disconnect(evt->conn_handle,
+						BLE_HCI_CONN_INTERVAL_UNACCEPTABLE);
+		if (nrf_err) {
 			LOG_ERR("Disconnect failed on conn params update rejection, nrf_error %#x",
-				err);
+				nrf_err);
 		} else {
 			LOG_INF("Disconnected from peer, unacceptable conn params");
 		}
@@ -413,7 +417,7 @@ static uint16_t on_ble_qwr_evt(struct ble_qwr *qwr, const struct ble_qwr_evt *qw
 static uint32_t ble_service_init(uint16_t *service_handle, uint8_t *uuid_type,
 				 ble_gatts_char_handles_t *char_handles)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	ble_uuid_t ble_uuid;
 	ble_uuid128_t uuid_base = {
 		.uuid128 = BLE_UUID_BASE
@@ -427,27 +431,27 @@ static uint32_t ble_service_init(uint16_t *service_handle, uint8_t *uuid_type,
 	*service_handle = BLE_CONN_HANDLE_INVALID;
 
 	/* Add a custom base UUID. */
-	err = sd_ble_uuid_vs_add(&uuid_base, uuid_type);
-	if (err != NRF_SUCCESS) {
-		LOG_ERR("Failed to add base UUID, nrf_error %#x", err);
-		return err;
+	nrf_err = sd_ble_uuid_vs_add(&uuid_base, uuid_type);
+	if (nrf_err) {
+		LOG_ERR("Failed to add base UUID, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
 	ble_uuid.type = *uuid_type;
 	ble_uuid.uuid = BLE_UUID_PWR_SERVICE;
 
 	/* Add the service. */
-	err = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY, &ble_uuid, service_handle);
-	if (err != NRF_SUCCESS) {
-		LOG_ERR("Failed to add pwr profiling service, nrf_error %#x", err);
-		return err;
+	nrf_err = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY, &ble_uuid, service_handle);
+	if (nrf_err) {
+		LOG_ERR("Failed to add pwr profiling service, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
 	/* Add characteristic. */
-	err = ble_pwr_profiling_char_add(*uuid_type, *service_handle, char_handles);
-	if (err != NRF_SUCCESS) {
-		LOG_ERR("Failed to add pwr profiling characteristic, nrf_error %#x", err);
-		return err;
+	nrf_err = ble_pwr_profiling_char_add(*uuid_type, *service_handle, char_handles);
+	if (nrf_err) {
+		LOG_ERR("Failed to add pwr profiling characteristic, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
 	return NRF_SUCCESS;
@@ -456,7 +460,8 @@ static uint32_t ble_service_init(uint16_t *service_handle, uint8_t *uuid_type,
 /* Add optional advertising data and start advertising in the given mode */
 static void adv_data_update_and_start(enum adv_mode adv_mode)
 {
-	uint32_t err;
+	int err;
+	uint32_t nrf_err;
 	ble_gap_adv_data_t new_adv_data = {0};
 
 	struct ble_adv_data adv_data = {
@@ -466,9 +471,9 @@ static void adv_data_update_and_start(enum adv_mode adv_mode)
 	struct ble_adv_data sr_data = {0};
 
 	if (adv_mode_current != ADV_MODE_IDLE) {
-		err = sd_ble_gap_adv_stop(adv_handle);
-		if (err != NRF_SUCCESS) {
-			LOG_ERR("Failed to stop advertising, nrf_error %#x", err);
+		nrf_err = sd_ble_gap_adv_stop(adv_handle);
+		if (nrf_err) {
+			LOG_ERR("Failed to stop advertising, nrf_error %#x", nrf_err);
 			return;
 		}
 
@@ -504,9 +509,9 @@ static void adv_data_update_and_start(enum adv_mode adv_mode)
 
 	new_adv_data.adv_data.len = BLE_GAP_ADV_SET_DATA_SIZE_MAX;
 
-	err = ble_adv_data_encode(&adv_data, new_adv_data.adv_data.p_data,
-				  &new_adv_data.adv_data.len);
-	if (err) {
+	nrf_err = ble_adv_data_encode(&adv_data, new_adv_data.adv_data.p_data,
+				      &new_adv_data.adv_data.len);
+	if (nrf_err) {
 		return;
 	}
 
@@ -517,23 +522,23 @@ static void adv_data_update_and_start(enum adv_mode adv_mode)
 
 	new_adv_data.scan_rsp_data.len = BLE_GAP_ADV_SET_DATA_SIZE_MAX;
 
-	err = ble_adv_data_encode(&sr_data, new_adv_data.scan_rsp_data.p_data,
-				  &new_adv_data.scan_rsp_data.len);
-	if (err) {
+	nrf_err = ble_adv_data_encode(&sr_data, new_adv_data.scan_rsp_data.p_data,
+				      &new_adv_data.scan_rsp_data.len);
+	if (nrf_err) {
 		return;
 	}
 
 	memcpy(&gap_adv_data, &new_adv_data, sizeof(gap_adv_data));
 
-	err = sd_ble_gap_adv_set_configure(&adv_handle, &gap_adv_data, &adv_params);
-	if (err) {
-		LOG_ERR("Failed to set advertising data, nrf_error %#x", err);
+	nrf_err = sd_ble_gap_adv_set_configure(&adv_handle, &gap_adv_data, &adv_params);
+	if (nrf_err) {
+		LOG_ERR("Failed to set advertising data, nrf_error %#x", nrf_err);
 		return;
 	}
 
-	err = sd_ble_gap_adv_start(adv_handle, CONFIG_NRF_SDH_BLE_CONN_TAG);
-	if (err) {
-		LOG_ERR("Failed to start advertising, nrf_error %#x", err);
+	nrf_err = sd_ble_gap_adv_start(adv_handle, CONFIG_NRF_SDH_BLE_CONN_TAG);
+	if (nrf_err) {
+		LOG_ERR("Failed to start advertising, nrf_error %#x", nrf_err);
 		return;
 	}
 
@@ -567,15 +572,15 @@ static void button_handler(uint8_t pin, uint8_t action)
 
 static uint32_t adv_init(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	ble_gap_conn_sec_mode_t sec_mode = {0};
 
 	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&sec_mode);
-	err = sd_ble_gap_device_name_set(&sec_mode, CONFIG_BLE_PWR_PROFILING_ADV_NAME,
-					 strlen(CONFIG_BLE_PWR_PROFILING_ADV_NAME));
-	if (err != NRF_SUCCESS) {
-		LOG_ERR("Failed to set advertising name, nrf_error %#x", err);
-		return err;
+	nrf_err = sd_ble_gap_device_name_set(&sec_mode, CONFIG_BLE_PWR_PROFILING_ADV_NAME,
+					     strlen(CONFIG_BLE_PWR_PROFILING_ADV_NAME));
+	if (nrf_err) {
+		LOG_ERR("Failed to set advertising name, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
 	gap_adv_data.adv_data.p_data = enc_adv_data[0];
@@ -587,10 +592,10 @@ static uint32_t adv_init(void)
 	adv_params.filter_policy = BLE_GAP_ADV_FP_ANY;
 	adv_params.primary_phy = BLE_GAP_PHY_AUTO;
 
-	err = sd_ble_gap_adv_set_configure(&adv_handle, NULL, &adv_params);
-	if (err != NRF_SUCCESS) {
-		LOG_ERR("Failed to set GAP advertising parameters, nrf_error %#x", err);
-		return err;
+	nrf_err = sd_ble_gap_adv_set_configure(&adv_handle, NULL, &adv_params);
+	if (nrf_err) {
+		LOG_ERR("Failed to set GAP advertising parameters, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
 	return NRF_SUCCESS;
@@ -678,15 +683,15 @@ int main(void)
 		goto idle;
 	}
 
-	err = adv_init();
-	if (err != NRF_SUCCESS) {
-		LOG_ERR("Failed to initialize advertising, nrf_error %#x", err);
+	nrf_err = adv_init();
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize advertising, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 
-	err = ble_service_init(&conn_handle, &uuid_type, &char_handles);
-	if (err != NRF_SUCCESS) {
-		LOG_ERR("Failed to initialize pwr profiling service, err %#x", err);
+	nrf_err = ble_service_init(&conn_handle, &uuid_type, &char_handles);
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize pwr profiling service, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 

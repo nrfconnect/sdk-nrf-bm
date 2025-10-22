@@ -45,15 +45,15 @@ static const char *tostr(uint32_t evt)
 
 static void softdevice_rng_seed(void)
 {
-	uint32_t err = NRF_ERROR_INVALID_DATA;
+	uint32_t nrf_err = NRF_ERROR_INVALID_DATA;
 	psa_status_t status;
 	uint8_t seed[SD_RAND_SEED_SIZE];
 
 	status = cracen_get_trng(seed, sizeof(seed));
 	if (status == PSA_SUCCESS) {
-		err = sd_rand_seed_set(seed);
+		nrf_err = sd_rand_seed_set(seed);
 		memset(seed, 0, sizeof(seed));
-		if (err == NRF_SUCCESS) {
+		if (nrf_err == NRF_SUCCESS) {
 			LOG_DBG("SoftDevice RNG seeded");
 			return;
 		}
@@ -61,17 +61,17 @@ static void softdevice_rng_seed(void)
 		LOG_ERR("Generate random failed, psa status %d", status);
 	}
 
-	LOG_ERR("Failed to seed SoftDevice RNG, nrf_error %#x", err);
+	LOG_ERR("Failed to seed SoftDevice RNG, nrf_error %#x", nrf_err);
 }
 
 static void soc_evt_poll(void *context)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	uint32_t evt_id;
 
 	while (true) {
-		err = sd_evt_get(&evt_id);
-		if (err != NRF_SUCCESS) {
+		nrf_err = sd_evt_get(&evt_id);
+		if (nrf_err) {
 			break;
 		}
 
@@ -92,8 +92,8 @@ static void soc_evt_poll(void *context)
 		}
 	}
 
-	__ASSERT(err == NRF_ERROR_NOT_FOUND,
-		 "Failed to receive SoftDevice event, nrf_error %#x", err);
+	__ASSERT(nrf_err == NRF_ERROR_NOT_FOUND,
+		 "Failed to receive SoftDevice event, nrf_error %#x", nrf_err);
 }
 
 /* Listen to SoftDevice events */

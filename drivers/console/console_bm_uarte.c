@@ -19,9 +19,9 @@ ISR_DIRECT_DECLARE(console_bm_uarte_direct_isr)
 	return 0;
 }
 
-static int uarte_init(void)
+static nrfx_err_t uarte_init(void)
 {
-	int err;
+	nrfx_err_t nrfx_err;
 
 	nrfx_uarte_config_t uarte_config = NRFX_UARTE_DEFAULT_CONFIG(
 		BOARD_CONSOLE_UARTE_PIN_TX, NRF_UARTE_PSEL_DISCONNECTED);
@@ -45,12 +45,12 @@ static int uarte_init(void)
 
 	irq_enable(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(BOARD_CONSOLE_UARTE_INST)));
 
-	err = nrfx_uarte_init(&uarte_inst, &uarte_config, NULL);
-	if (err != NRFX_SUCCESS) {
-		return err;
+	nrfx_err = nrfx_uarte_init(&uarte_inst, &uarte_config, NULL);
+	if (nrfx_err != NRFX_SUCCESS) {
+		return nrfx_err;
 	}
 
-	return 0;
+	return NRFX_SUCCESS;
 }
 
 static int console_out(int c)

@@ -118,15 +118,15 @@ static bool cccd_written(const ble_gatts_evt_write_t *write_evt)
  * @brief Function for sending an PM_EVT_ERROR_UNEXPECTED event.
  *
  * @param[in]  conn_handle  The connection handle the event pertains to.
- * @param[in]  err_code     The unexpected error that occurred.
+ * @param[in]  nrf_err      The unexpected error that occurred.
  */
-static void send_unexpected_error(uint16_t conn_handle, uint32_t err_code)
+static void send_unexpected_error(uint16_t conn_handle, uint32_t nrf_err)
 {
 	struct pm_evt error_evt = {
 		.evt_id = PM_EVT_ERROR_UNEXPECTED,
 		.conn_handle = conn_handle,
 		.params.error_unexpected = {
-			.error = err_code,
+			.error = nrf_err,
 		},
 	};
 
@@ -145,7 +145,7 @@ static void send_unexpected_error(uint16_t conn_handle, uint32_t err_code)
 static void local_db_apply_in_evt(uint16_t conn_handle)
 {
 	bool set_procedure_as_pending = false;
-	uint32_t err_code;
+	uint32_t nrf_err;
 	struct pm_evt event = {
 		.conn_handle = conn_handle,
 	};
@@ -154,9 +154,9 @@ static void local_db_apply_in_evt(uint16_t conn_handle)
 		return;
 	}
 
-	err_code = gscm_local_db_cache_apply(conn_handle);
+	nrf_err = gscm_local_db_cache_apply(conn_handle);
 
-	switch (err_code) {
+	switch (nrf_err) {
 	case NRF_SUCCESS:
 		event.evt_id = PM_EVT_LOCAL_DB_CACHE_APPLIED;
 
@@ -183,8 +183,8 @@ static void local_db_apply_in_evt(uint16_t conn_handle)
 	default:
 		LOG_ERR("gscm_local_db_cache_apply() returned %s which should not happen. "
 			"conn_handle: %d",
-			nrf_strerror_get(err_code), conn_handle);
-		send_unexpected_error(conn_handle, err_code);
+			nrf_strerror_get(nrf_err), conn_handle);
+		send_unexpected_error(conn_handle, nrf_err);
 		break;
 	}
 
@@ -218,9 +218,9 @@ static bool local_db_update_in_evt(uint16_t conn_handle)
 {
 	bool set_procedure_as_pending = false;
 	bool success = false;
-	uint32_t err_code = gscm_local_db_cache_update(conn_handle);
+	uint32_t nrf_err = gscm_local_db_cache_update(conn_handle);
 
-	switch (err_code) {
+	switch (nrf_err) {
 	case NRF_SUCCESS:
 		success = true;
 		break;
@@ -248,8 +248,8 @@ static bool local_db_update_in_evt(uint16_t conn_handle)
 
 	default:
 		LOG_ERR("gscm_local_db_cache_update() returned %s for conn_handle: %d",
-			nrf_strerror_get(err_code), conn_handle);
-		send_unexpected_error(conn_handle, err_code);
+			nrf_strerror_get(nrf_err), conn_handle);
+		send_unexpected_error(conn_handle, nrf_err);
 		break;
 	}
 
@@ -275,17 +275,17 @@ static uint32_t service_changed_cccd(uint16_t conn_handle, uint16_t *cccd)
 	bool sc_found = false;
 	uint16_t end_handle;
 
-	uint32_t err_code = sd_ble_gatts_initial_user_handle_get(&end_handle);
+	uint32_t nrf_err = sd_ble_gatts_initial_user_handle_get(&end_handle);
 
-	__ASSERT_NO_MSG(err_code == NRF_SUCCESS);
+	__ASSERT_NO_MSG(nrf_err == NRF_SUCCESS);
 
 	for (uint16_t handle = 1; handle < end_handle; handle++) {
 		ble_uuid_t uuid;
 		ble_gatts_value_t value = {.p_value = (uint8_t *)&uuid.uuid, .len = 2, .offset = 0};
 
-		err_code = sd_ble_gatts_attr_get(handle, &uuid, NULL);
-		if (err_code != NRF_SUCCESS) {
-			return err_code;
+		nrf_err = sd_ble_gatts_attr_get(handle, &uuid, NULL);
+		if (nrf_err) {
+			return nrf_err;
 		} else if (!sc_found &&
 			   (uuid.uuid == BLE_UUID_GATT_CHARACTERISTIC_SERVICE_CHANGED)) {
 			sc_found = true;
@@ -310,9 +310,9 @@ static void service_changed_send_in_evt(uint16_t conn_handle)
 {
 	bool sc_pending_state = true;
 	bool sc_sent_state = false;
-	uint32_t err_code = gscm_service_changed_ind_send(conn_handle);
+	uint32_t nrf_err = gscm_service_changed_ind_send(conn_handle);
 
-	switch (err_code) {
+	switch (nrf_err) {
 	case NRF_SUCCESS: {
 		struct pm_evt event = {
 			.evt_id = PM_EVT_SERVICE_CHANGED_IND_SENT,
@@ -332,16 +332,16 @@ static void service_changed_send_in_evt(uint16_t conn_handle)
 	case NRF_ERROR_INVALID_STATE: {
 		uint16_t cccd;
 
-		err_code = service_changed_cccd(conn_handle, &cccd);
-		if ((err_code == NRF_SUCCESS) && cccd) {
+		nrf_err = service_changed_cccd(conn_handle, &cccd);
+		if ((nrf_err == NRF_SUCCESS) && cccd) {
 			/* Possible ATT_MTU exchange ongoing. */
 			/* Do nothing, treat as busy. */
 			break;
 		}
-		if (err_code != NRF_SUCCESS) {
+		if (nrf_err) {
 			LOG_DBG("Unexpected error when looking for service changed "
 				"CCCD: %s",
-				nrf_strerror_get(err_code));
+				nrf_strerror_get(nrf_err));
 		}
 		/* CCCDs not enabled or an error happened. Drop indication. */
 		/* Fallthrough. */
@@ -363,8 +363,8 @@ static void service_changed_send_in_evt(uint16_t conn_handle)
 
 	default:
 		LOG_ERR("gscm_service_changed_ind_send() returned %s for conn_handle: %d",
-			nrf_strerror_get(err_code), conn_handle);
-		send_unexpected_error(conn_handle, err_code);
+			nrf_strerror_get(nrf_err), conn_handle);
+		send_unexpected_error(conn_handle, nrf_err);
 		break;
 	}
 
@@ -436,10 +436,10 @@ static void car_update_pending_handle(uint16_t conn_handle, void *context)
 
 	const ble_gattc_handle_range_t car_handle_range = {1, 0xFFFF};
 
-	uint32_t err_code =
+	uint32_t nrf_err =
 		sd_ble_gattc_char_value_by_uuid_read(conn_handle, &car_uuid, &car_handle_range);
 
-	if (err_code == NRF_SUCCESS) {
+	if (nrf_err == NRF_SUCCESS) {
 		ble_conn_state_user_flag_set(conn_handle, flag_car_handle_queried, true);
 	}
 }
@@ -514,18 +514,18 @@ void gcm_pdb_evt_handler(struct pm_evt *event)
 
 #if defined(CONFIG_PM_SERVICE_CHANGED)
 		case PM_PEER_DATA_ID_SERVICE_CHANGED_PENDING: {
-			uint32_t err_code;
+			uint32_t nrf_err;
 			bool service_changed_pending = false;
 			uint32_t service_changed_pending_size = sizeof(bool);
 			struct pm_peer_data peer_data;
 
 			peer_data.all_data = &service_changed_pending;
 
-			err_code = pds_peer_data_read(event->peer_id,
-						      PM_PEER_DATA_ID_SERVICE_CHANGED_PENDING,
-						      &peer_data, &service_changed_pending_size);
+			nrf_err = pds_peer_data_read(event->peer_id,
+						     PM_PEER_DATA_ID_SERVICE_CHANGED_PENDING,
+						     &peer_data, &service_changed_pending_size);
 
-			if (err_code == NRF_SUCCESS) {
+			if (nrf_err == NRF_SUCCESS) {
 				if (service_changed_pending) {
 					uint16_t conn_handle = im_conn_handle_get(event->peer_id);
 
@@ -602,12 +602,12 @@ void store_car_value(uint16_t conn_handle, bool car_value)
 
 	ble_conn_state_user_flag_set(conn_handle, flag_car_update_pending, false);
 	peer_data.central_addr_res = car_value ? &car_value_true : &car_value_false;
-	uint32_t err_code =
+	uint32_t nrf_err =
 		pds_peer_data_store(im_peer_id_get_by_conn_handle(conn_handle), &peer_data, NULL);
-	if (err_code != NRF_SUCCESS) {
+	if (nrf_err) {
 		LOG_WRN("CAR char value couldn't be stored (error: %s). Reattempt will "
 			"happen on the next connection.",
-			nrf_strerror_get(err_code));
+			nrf_strerror_get(nrf_err));
 	}
 }
 
@@ -680,10 +680,10 @@ void gcm_ble_evt_handler(const ble_evt_t *ble_evt)
 					val->value_len);
 				/* Store 0. */
 			} else {
-				uint32_t err_code = sd_ble_gattc_read(
+				uint32_t nrf_err = sd_ble_gattc_read(
 					conn_handle, *(uint16_t *)val->handle_value, 0);
 
-				if (err_code == NRF_SUCCESS) {
+				if (nrf_err == NRF_SUCCESS) {
 					handle_found = true;
 					ble_conn_state_user_flag_set(
 						conn_handle, flag_car_value_queried, true);

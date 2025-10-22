@@ -65,15 +65,15 @@ static void evt_send(const struct pm_evt *pm_evt)
 /** @brief Function for initializing peer rank static variables. */
 static void rank_vars_update(void)
 {
-	uint32_t err_code =
+	uint32_t nrf_err =
 		pm_peer_ranks_get(&highest_ranked_peer, &current_highest_peer_rank, NULL, NULL);
 
-	if (err_code == NRF_ERROR_NOT_FOUND) {
+	if (nrf_err == NRF_ERROR_NOT_FOUND) {
 		highest_ranked_peer = PM_PEER_ID_INVALID;
 		current_highest_peer_rank = 0;
 	}
 
-	peer_rank_initialized = ((err_code == NRF_SUCCESS) || (err_code == NRF_ERROR_NOT_FOUND));
+	peer_rank_initialized = ((nrf_err == NRF_SUCCESS) || (nrf_err == NRF_ERROR_NOT_FOUND));
 }
 #endif
 
@@ -321,47 +321,47 @@ static void internal_state_reset(void)
 
 uint32_t pm_init(void)
 {
-	uint32_t err_code;
+	uint32_t nrf_err;
 
-	err_code = pds_init();
-	if (err_code != NRF_SUCCESS) {
+	nrf_err = pds_init();
+	if (nrf_err) {
 		LOG_ERR("%s failed because pds_init() returned %s.", __func__,
-			nrf_strerror_get(err_code));
+			nrf_strerror_get(nrf_err));
 		return NRF_ERROR_INTERNAL;
 	}
 
-	err_code = pdb_init();
-	if (err_code != NRF_SUCCESS) {
+	nrf_err = pdb_init();
+	if (nrf_err) {
 		LOG_ERR("%s failed because pdb_init() returned %s.", __func__,
-			nrf_strerror_get(err_code));
+			nrf_strerror_get(nrf_err));
 		return NRF_ERROR_INTERNAL;
 	}
 
-	err_code = sm_init();
-	if (err_code != NRF_SUCCESS) {
+	nrf_err = sm_init();
+	if (nrf_err) {
 		LOG_ERR("%s failed because sm_init() returned %s.", __func__,
-			nrf_strerror_get(err_code));
+			nrf_strerror_get(nrf_err));
 		return NRF_ERROR_INTERNAL;
 	}
 
-	err_code = smd_init();
-	if (err_code != NRF_SUCCESS) {
+	nrf_err = smd_init();
+	if (nrf_err) {
 		LOG_ERR("%s failed because smd_init() returned %s.", __func__,
-			nrf_strerror_get(err_code));
+			nrf_strerror_get(nrf_err));
 		return NRF_ERROR_INTERNAL;
 	}
 
-	err_code = gcm_init();
-	if (err_code != NRF_SUCCESS) {
+	nrf_err = gcm_init();
+	if (nrf_err) {
 		LOG_ERR("%s failed because gcm_init() returned %s.", __func__,
-			nrf_strerror_get(err_code));
+			nrf_strerror_get(nrf_err));
 		return NRF_ERROR_INTERNAL;
 	}
 
-	err_code = gscm_init();
-	if (err_code != NRF_SUCCESS) {
+	nrf_err = gscm_init();
+	if (nrf_err) {
 		LOG_ERR("%s failed because gscm_init() returned %s.", __func__,
-			nrf_strerror_get(err_code));
+			nrf_strerror_get(nrf_err));
 		return NRF_ERROR_INTERNAL;
 	}
 
@@ -403,31 +403,24 @@ uint32_t pm_sec_params_set(ble_gap_sec_params_t *sec_params)
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	uint32_t err_code;
-
-	err_code = sm_sec_params_set(sec_params);
-
-	/* NRF_ERROR_INVALID_PARAM if parameters are invalid,
-	 * NRF_SUCCESS             otherwise.
-	 */
-	return err_code;
+	return sm_sec_params_set(sec_params);
 }
 
 uint32_t pm_conn_secure(uint16_t conn_handle, bool force_repairing)
 {
+	uint32_t nrf_err;
+
 	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	uint32_t err_code;
+	nrf_err = sm_link_secure(conn_handle, force_repairing);
 
-	err_code = sm_link_secure(conn_handle, force_repairing);
-
-	if (err_code == NRF_ERROR_INVALID_STATE) {
-		err_code = NRF_ERROR_BUSY;
+	if (nrf_err == NRF_ERROR_INVALID_STATE) {
+		nrf_err = NRF_ERROR_BUSY;
 	}
 
-	return err_code;
+	return nrf_err;
 }
 
 uint32_t pm_conn_exclude(uint16_t conn_handle, const void *context)
@@ -666,7 +659,7 @@ static bool peer_is_irk(const ble_gap_irk_t *const irk)
 uint32_t pm_peer_id_list(uint16_t *peer_list, uint32_t *const list_size,
 			 uint16_t first_peer_id, enum pm_peer_id_list_skip skip_id)
 {
-	uint32_t err_code;
+	uint32_t nrf_err;
 	uint32_t size;
 	uint32_t current_size = 0;
 	struct pm_peer_data pm_car_data;
@@ -715,13 +708,13 @@ uint32_t pm_peer_id_list(uint16_t *peer_list, uint32_t *const list_size,
 
 			pm_bond_data.all_data = &bonding_data;
 
-			err_code = pds_peer_data_read(current_peer_id, PM_PEER_DATA_ID_BONDING,
-						      &pm_bond_data, &bonding_data_size);
+			nrf_err = pds_peer_data_read(current_peer_id, PM_PEER_DATA_ID_BONDING,
+						     &pm_bond_data, &bonding_data_size);
 
-			if (err_code == NRF_ERROR_NOT_FOUND) {
+			if (nrf_err == NRF_ERROR_NOT_FOUND) {
 				skip = true;
-			} else if (err_code != NRF_SUCCESS) {
-				return err_code;
+			} else if (nrf_err) {
+				return nrf_err;
 			}
 
 			/* Check data */
@@ -748,14 +741,14 @@ uint32_t pm_peer_id_list(uint16_t *peer_list, uint32_t *const list_size,
 
 			pm_car_data.all_data = &central_addr_res;
 
-			err_code = pds_peer_data_read(current_peer_id,
-						      PM_PEER_DATA_ID_CENTRAL_ADDR_RES,
-						      &pm_car_data, &central_addr_res_size);
+			nrf_err = pds_peer_data_read(current_peer_id,
+						     PM_PEER_DATA_ID_CENTRAL_ADDR_RES,
+						     &pm_car_data, &central_addr_res_size);
 
-			if (err_code == NRF_ERROR_NOT_FOUND) {
+			if (nrf_err == NRF_ERROR_NOT_FOUND) {
 				skip = true;
-			} else if (err_code != NRF_SUCCESS) {
-				return err_code;
+			} else if (nrf_err) {
+				return nrf_err;
 			}
 
 			/* Check data */
@@ -889,7 +882,7 @@ uint32_t pm_peer_data_delete(uint16_t peer_id, enum pm_peer_data_id data_id)
 uint32_t pm_peer_new(uint16_t *new_peer_id, struct pm_peer_data_bonding *bonding_data,
 		     uint32_t *token)
 {
-	uint32_t err_code;
+	uint32_t nrf_err;
 	uint16_t peer_id;
 	uint16_t peer_id_iter;
 	struct pm_peer_data_const peer_data;
@@ -932,15 +925,15 @@ uint32_t pm_peer_new(uint16_t *new_peer_id, struct pm_peer_data_bonding *bonding
 	peer_data.bonding_data = bonding_data;
 	peer_data.length_words = BYTES_TO_WORDS(sizeof(struct pm_peer_data_bonding));
 
-	err_code = pds_peer_data_store(*new_peer_id, &peer_data, token);
+	nrf_err = pds_peer_data_store(*new_peer_id, &peer_data, token);
 
-	if (err_code != NRF_SUCCESS) {
-		uint32_t err_code_free = im_peer_free(*new_peer_id);
+	if (nrf_err) {
+		uint32_t nrf_err_free = im_peer_free(*new_peer_id);
 
-		if (err_code_free != NRF_SUCCESS) {
+		if (nrf_err_free) {
 			LOG_ERR("Fatal error during cleanup of a failed call to %s. im_peer_free() "
 				"returned %s. peer_id: %d",
-				__func__, nrf_strerror_get(err_code_free), *new_peer_id);
+				__func__, nrf_strerror_get(nrf_err_free), *new_peer_id);
 			return NRF_ERROR_INTERNAL;
 		}
 
@@ -949,7 +942,7 @@ uint32_t pm_peer_new(uint16_t *new_peer_id, struct pm_peer_data_bonding *bonding
 		 * NRF_ERROR_INVALID_ADDR, if bonding data is unaligned.
 		 * NRF_ERROR_INTENRAL,     on internal error.
 		 */
-		return err_code;
+		return nrf_err;
 	}
 
 	return NRF_SUCCESS;
@@ -989,12 +982,12 @@ uint32_t pm_peers_delete(void)
 	}
 
 	while (current_peer_id != PM_PEER_ID_INVALID) {
-		uint32_t err_code = pm_peer_delete(current_peer_id);
+		uint32_t nrf_err = pm_peer_delete(current_peer_id);
 
-		if (err_code != NRF_SUCCESS) {
+		if (nrf_err) {
 			LOG_ERR("%s() failed because a call to pm_peer_delete() returned %s. "
 				"peer_id: %d",
-				__func__, nrf_strerror_get(err_code), current_peer_id);
+				__func__, nrf_strerror_get(nrf_err), current_peer_id);
 			return NRF_ERROR_INTERNAL;
 		}
 
@@ -1018,7 +1011,7 @@ uint32_t pm_peer_ranks_get(uint16_t *highest_ranked_peer, uint32_t *highest_rank
 	uint32_t peer_rank = 0;
 	uint32_t length = sizeof(peer_rank);
 	struct pm_peer_data peer_data = {.peer_rank = &peer_rank};
-	uint32_t err_code =
+	uint32_t nrf_err =
 		pds_peer_data_read(peer_id, PM_PEER_DATA_ID_PEER_RANK, &peer_data, &length);
 	struct {
 		uint32_t highest;
@@ -1032,13 +1025,13 @@ uint32_t pm_peer_ranks_get(uint16_t *highest_ranked_peer, uint32_t *highest_rank
 		.lowest_peer = PM_PEER_ID_INVALID,
 	};
 
-	if (err_code == NRF_ERROR_INVALID_PARAM) {
+	if (nrf_err == NRF_ERROR_INVALID_PARAM) {
 		/* No peer IDs exist. */
 		return NRF_ERROR_NOT_FOUND;
 	}
 
-	while ((err_code == NRF_SUCCESS) || (err_code == NRF_ERROR_NOT_FOUND)) {
-		if (err_code == NRF_SUCCESS) {
+	while ((nrf_err == NRF_SUCCESS) || (nrf_err == NRF_ERROR_NOT_FOUND)) {
+		if (nrf_err == NRF_SUCCESS) {
 			if (peer_rank >= rank.highest) {
 				rank.highest = peer_rank;
 				rank.highest_peer = peer_id;
@@ -1049,15 +1042,15 @@ uint32_t pm_peer_ranks_get(uint16_t *highest_ranked_peer, uint32_t *highest_rank
 			}
 		}
 		peer_id = pds_next_peer_id_get(peer_id);
-		err_code =
+		nrf_err =
 			pds_peer_data_read(peer_id, PM_PEER_DATA_ID_PEER_RANK, &peer_data, &length);
 	}
 	if (peer_id == PM_PEER_ID_INVALID) {
 		if ((rank.highest_peer == PM_PEER_ID_INVALID) ||
 		    (rank.lowest_peer == PM_PEER_ID_INVALID)) {
-			err_code = NRF_ERROR_NOT_FOUND;
+			nrf_err = NRF_ERROR_NOT_FOUND;
 		} else {
-			err_code = NRF_SUCCESS;
+			nrf_err = NRF_SUCCESS;
 		}
 
 		if (highest_ranked_peer != NULL) {
@@ -1074,10 +1067,10 @@ uint32_t pm_peer_ranks_get(uint16_t *highest_ranked_peer, uint32_t *highest_rank
 		}
 	} else {
 		LOG_ERR("Could not retrieve ranks. pdb_peer_data_load() returned %s. peer_id: %d",
-			nrf_strerror_get(err_code), peer_id);
-		err_code = NRF_ERROR_INTERNAL;
+			nrf_strerror_get(nrf_err), peer_id);
+		nrf_err = NRF_ERROR_INTERNAL;
 	}
-	return err_code;
+	return nrf_err;
 #endif
 }
 
@@ -1098,7 +1091,7 @@ uint32_t pm_peer_rank_highest(uint16_t peer_id)
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	uint32_t err_code;
+	uint32_t nrf_err;
 	struct pm_peer_data_const peer_data = {
 		.length_words = BYTES_TO_WORDS(sizeof(current_highest_peer_rank)),
 		.data_id = PM_PEER_DATA_ID_PEER_RANK,
@@ -1109,7 +1102,7 @@ uint32_t pm_peer_rank_highest(uint16_t peer_id)
 	}
 
 	if (!peer_rank_initialized || (peer_rank_token != PM_STORE_TOKEN_INVALID)) {
-		err_code = NRF_ERROR_BUSY;
+		nrf_err = NRF_ERROR_BUSY;
 	} else {
 		if ((peer_id == highest_ranked_peer) && (current_highest_peer_rank > 0)) {
 			struct pm_evt pm_evt;
@@ -1117,7 +1110,7 @@ uint32_t pm_peer_rank_highest(uint16_t peer_id)
 			/* The reported peer is already regarded as highest (provided it has an
 			 * index at all)
 			 */
-			err_code = NRF_SUCCESS;
+			nrf_err = NRF_SUCCESS;
 
 			memset(&pm_evt, 0, sizeof(struct pm_evt));
 			pm_evt.evt_id = PM_EVT_PEER_DATA_UPDATE_SUCCEEDED;
@@ -1132,31 +1125,31 @@ uint32_t pm_peer_rank_highest(uint16_t peer_id)
 			evt_send(&pm_evt);
 		} else {
 			if (current_highest_peer_rank == UINT32_MAX) {
-				err_code = NRF_ERROR_DATA_SIZE;
+				nrf_err = NRF_ERROR_DATA_SIZE;
 			} else {
 				current_highest_peer_rank += 1;
-				err_code = pds_peer_data_store(peer_id, &peer_data,
-							       &peer_rank_token);
-				if (err_code != NRF_SUCCESS) {
+				nrf_err = pds_peer_data_store(peer_id, &peer_data,
+							      &peer_rank_token);
+				if (nrf_err) {
 					peer_rank_token = PM_STORE_TOKEN_INVALID;
 					current_highest_peer_rank -= 1;
 					/* Assume INVALID_PARAM
 					 * refers to peer_id, not
 					 * data_id.
 					 */
-					if ((err_code != NRF_ERROR_BUSY) &&
-					    (err_code != NRF_ERROR_RESOURCES) &&
-					    (err_code != NRF_ERROR_INVALID_PARAM)) {
+					if ((nrf_err != NRF_ERROR_BUSY) &&
+					    (nrf_err != NRF_ERROR_RESOURCES) &&
+					    (nrf_err != NRF_ERROR_INVALID_PARAM)) {
 						LOG_ERR("Could not update rank. "
 							"pdb_raw_store() returned %s. "
 							"peer_id: %d",
-							nrf_strerror_get(err_code), peer_id);
-						err_code = NRF_ERROR_INTERNAL;
+							nrf_strerror_get(nrf_err), peer_id);
+						nrf_err = NRF_ERROR_INTERNAL;
 					}
 				}
 			}
 		}
 	}
-	return err_code;
+	return nrf_err;
 #endif
 }

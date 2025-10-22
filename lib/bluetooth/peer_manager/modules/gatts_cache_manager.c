@@ -74,7 +74,7 @@ static void service_changed_pending_set(void)
 {
 	__ASSERT_NO_MSG(module_initialized);
 
-	uint32_t err_code;
+	uint32_t nrf_err;
 	/* Use a uint32_t to enforce 4-byte alignment. */
 	static const uint32_t service_changed_pending = true;
 
@@ -85,23 +85,23 @@ static void service_changed_pending_set(void)
 	};
 
 	while (current_sc_store_peer_id != PM_PEER_ID_INVALID) {
-		err_code = pds_peer_data_store(current_sc_store_peer_id, &peer_data, NULL);
-		if (err_code != NRF_SUCCESS) {
+		nrf_err = pds_peer_data_store(current_sc_store_peer_id, &peer_data, NULL);
+		if (nrf_err) {
 			struct pm_evt evt = {.peer_id = current_sc_store_peer_id};
 
-			if (err_code == NRF_ERROR_BUSY) {
+			if (nrf_err == NRF_ERROR_BUSY) {
 				/* Do nothing. */
-			} else if (err_code == NRF_ERROR_RESOURCES) {
+			} else if (nrf_err == NRF_ERROR_RESOURCES) {
 				evt.evt_id = PM_EVT_STORAGE_FULL;
 				evt_send(&evt);
 			} else {
 				LOG_ERR("pds_peer_data_store() returned %s while storing "
 					"service changed "
 					"state for peer id %d.",
-					nrf_strerror_get(err_code),
+					nrf_strerror_get(nrf_err),
 					current_sc_store_peer_id);
 				evt.evt_id = PM_EVT_ERROR_UNEXPECTED;
-				evt.params.error_unexpected.error = err_code;
+				evt.params.error_unexpected.error = nrf_err;
 				evt_send(&evt);
 			}
 			break;
@@ -140,7 +140,7 @@ uint32_t gscm_local_db_cache_update(uint16_t conn_handle)
 	__ASSERT_NO_MSG(module_initialized);
 
 	uint16_t peer_id = im_peer_id_get_by_conn_handle(conn_handle);
-	uint32_t err_code;
+	uint32_t nrf_err;
 
 	if (peer_id == PM_PEER_ID_INVALID) {
 		return BLE_ERROR_INVALID_CONN_HANDLE;
@@ -153,19 +153,19 @@ uint32_t gscm_local_db_cache_update(uint16_t conn_handle)
 	do {
 		retry_with_bigger_buffer = false;
 
-		err_code = pdb_write_buf_get(peer_id, PM_PEER_DATA_ID_GATT_LOCAL, n_bufs++,
-						&peer_data);
-		if (err_code == NRF_SUCCESS) {
+		nrf_err = pdb_write_buf_get(peer_id, PM_PEER_DATA_ID_GATT_LOCAL, n_bufs++,
+					    &peer_data);
+		if (nrf_err == NRF_SUCCESS) {
 			struct pm_peer_data_local_gatt_db *local_gatt_db =
 				peer_data.local_gatt_db;
 
 			local_gatt_db->flags = SYS_ATTR_BOTH;
 
-			err_code = sd_ble_gatts_sys_attr_get(
+			nrf_err = sd_ble_gatts_sys_attr_get(
 				conn_handle, &local_gatt_db->data[0],
 				&local_gatt_db->len, local_gatt_db->flags);
 
-			if (err_code == NRF_SUCCESS) {
+			if (nrf_err == NRF_SUCCESS) {
 				uint8_t local_gatt_db_buf[PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE] = {
 					0
 				};
@@ -176,35 +176,35 @@ uint32_t gscm_local_db_cache_update(uint16_t conn_handle)
 
 				curr_peer_data.all_data = local_gatt_db_buf;
 
-				err_code = pds_peer_data_read(peer_id,
-							PM_PEER_DATA_ID_GATT_LOCAL,
-							&curr_peer_data,
-							&local_gatt_db_size);
+				nrf_err = pds_peer_data_read(peer_id,
+							     PM_PEER_DATA_ID_GATT_LOCAL,
+							     &curr_peer_data,
+							     &local_gatt_db_size);
 
-				if ((err_code != NRF_SUCCESS) &&
-					(err_code != NRF_ERROR_NOT_FOUND)) {
+				if ((nrf_err != NRF_SUCCESS) &&
+				    (nrf_err != NRF_ERROR_NOT_FOUND)) {
 					LOG_ERR("pds_peer_data_read() returned %s "
 						"for conn_handle: %d",
-						nrf_strerror_get(err_code),
+						nrf_strerror_get(nrf_err),
 						conn_handle);
 					return NRF_ERROR_INTERNAL;
 				}
 
-				if ((err_code == NRF_ERROR_NOT_FOUND) ||
+				if ((nrf_err == NRF_ERROR_NOT_FOUND) ||
 				    (local_gatt_db->len != curr_local_gatt_db->len) ||
 				    (memcmp(local_gatt_db->data, curr_local_gatt_db->data,
 					    local_gatt_db->len) != 0)) {
-					err_code = pdb_write_buf_store(
-						peer_id, PM_PEER_DATA_ID_GATT_LOCAL,
-						peer_id);
+					nrf_err = pdb_write_buf_store(peer_id,
+								      PM_PEER_DATA_ID_GATT_LOCAL,
+								      peer_id);
 				} else {
 					LOG_DBG("Local db is already up to date, "
 						"skipping write.");
-					uint32_t err_code_release = pdb_write_buf_release(
+					uint32_t nrf_err_release = pdb_write_buf_release(
 						peer_id, PM_PEER_DATA_ID_GATT_LOCAL);
 
-					if (err_code_release == NRF_SUCCESS) {
-						err_code = NRF_ERROR_INVALID_DATA;
+					if (nrf_err_release == NRF_SUCCESS) {
+						nrf_err = NRF_ERROR_INVALID_DATA;
 					} else {
 						LOG_ERR("Did another thread manipulate "
 							"PM_PEER_DATA_ID_GATT_LOCAL for "
@@ -212,43 +212,43 @@ uint32_t gscm_local_db_cache_update(uint16_t conn_handle)
 							"pdb_write_buf_release() returned "
 							"%s.",
 							peer_id,
-							nrf_strerror_get(err_code_release));
-						err_code = NRF_ERROR_INTERNAL;
+							nrf_strerror_get(nrf_err_release));
+						nrf_err = NRF_ERROR_INTERNAL;
 					}
 				}
 			} else {
-				if (err_code == NRF_ERROR_DATA_SIZE) {
+				if (nrf_err == NRF_ERROR_DATA_SIZE) {
 					/* The sys attributes are bigger than the requested
 					 * write buffer.
 					 */
 					retry_with_bigger_buffer = true;
-				} else if (err_code == NRF_ERROR_NOT_FOUND) {
+				} else if (nrf_err == NRF_ERROR_NOT_FOUND) {
 					/* There are no sys attributes in the GATT db, so
 					 * nothing needs to be stored.
 					 */
-					err_code = NRF_SUCCESS;
+					nrf_err = NRF_SUCCESS;
 				}
 
-				uint32_t err_code_release = pdb_write_buf_release(
+				uint32_t nrf_err_release = pdb_write_buf_release(
 					peer_id, PM_PEER_DATA_ID_GATT_LOCAL);
 
-				if (err_code_release != NRF_SUCCESS) {
+				if (nrf_err_release) {
 					LOG_ERR("Did another thread manipulate "
 						"PM_PEER_DATA_ID_GATT_LOCAL for "
 						"peer_id %d at the same time? "
 						"pdb_write_buf_release() returned %s.",
 						peer_id,
-						nrf_strerror_get(err_code_release));
-					err_code = NRF_ERROR_INTERNAL;
+						nrf_strerror_get(nrf_err_release));
+					nrf_err = NRF_ERROR_INTERNAL;
 				}
 			}
-		} else if (err_code == NRF_ERROR_INVALID_PARAM) {
+		} else if (nrf_err == NRF_ERROR_INVALID_PARAM) {
 			/* The sys attributes are bigger than the entire write buffer. */
-			err_code = NRF_ERROR_DATA_SIZE;
+			nrf_err = NRF_ERROR_DATA_SIZE;
 		}
 	} while (retry_with_bigger_buffer);
 
-	return err_code;
+	return nrf_err;
 }
 
 uint32_t gscm_local_db_cache_apply(uint16_t conn_handle)
@@ -256,7 +256,7 @@ uint32_t gscm_local_db_cache_apply(uint16_t conn_handle)
 	__ASSERT_NO_MSG(module_initialized);
 
 	uint16_t peer_id = im_peer_id_get_by_conn_handle(conn_handle);
-	uint32_t err_code;
+	uint32_t nrf_err;
 	struct pm_peer_data peer_data;
 	const uint8_t *sys_attr_data = NULL;
 	uint16_t sys_attr_len = 0;
@@ -269,9 +269,9 @@ uint32_t gscm_local_db_cache_apply(uint16_t conn_handle)
 		struct pm_peer_data_local_gatt_db *curr_local_gatt_db =
 			(struct pm_peer_data_local_gatt_db *)local_gatt_db_buf;
 		peer_data.all_data = &local_gatt_db_buf;
-		err_code = pds_peer_data_read(peer_id, PM_PEER_DATA_ID_GATT_LOCAL, &peer_data,
-					      &local_gatt_db_size);
-		if (err_code == NRF_SUCCESS) {
+		nrf_err = pds_peer_data_read(peer_id, PM_PEER_DATA_ID_GATT_LOCAL, &peer_data,
+					     &local_gatt_db_size);
+		if (nrf_err == NRF_SUCCESS) {
 			const struct pm_peer_data_local_gatt_db *local_gatt_db;
 
 			local_gatt_db = curr_local_gatt_db;
@@ -282,14 +282,14 @@ uint32_t gscm_local_db_cache_apply(uint16_t conn_handle)
 	}
 
 	do {
-		err_code = sd_ble_gatts_sys_attr_set(conn_handle, sys_attr_data, sys_attr_len,
-						     sys_attr_flags);
+		nrf_err = sd_ble_gatts_sys_attr_set(conn_handle, sys_attr_data, sys_attr_len,
+						    sys_attr_flags);
 
-		if (err_code == NRF_ERROR_NO_MEM) {
-			err_code = NRF_ERROR_BUSY;
-		} else if (err_code == NRF_ERROR_INVALID_STATE) {
-			err_code = NRF_SUCCESS;
-		} else if (err_code == NRF_ERROR_INVALID_DATA) {
+		if (nrf_err == NRF_ERROR_NO_MEM) {
+			nrf_err = NRF_ERROR_BUSY;
+		} else if (nrf_err == NRF_ERROR_INVALID_STATE) {
+			nrf_err = NRF_SUCCESS;
+		} else if (nrf_err == NRF_ERROR_INVALID_DATA) {
 			all_attributes_applied = false;
 
 			if (sys_attr_flags & SYS_ATTR_USR) {
@@ -305,16 +305,16 @@ uint32_t gscm_local_db_cache_apply(uint16_t conn_handle)
 					"NRF_ERROR_INVALID_DATA for NULL "
 					"pointer which should never happen. conn_handle: %d",
 					conn_handle);
-				err_code = NRF_ERROR_INTERNAL;
+				nrf_err = NRF_ERROR_INTERNAL;
 			}
 		}
-	} while (err_code == NRF_ERROR_INVALID_DATA);
+	} while (nrf_err == NRF_ERROR_INVALID_DATA);
 
 	if (!all_attributes_applied) {
-		err_code = NRF_ERROR_INVALID_DATA;
+		nrf_err = NRF_ERROR_INVALID_DATA;
 	}
 
-	return err_code;
+	return nrf_err;
 }
 
 #if defined(CONFIG_PM_SERVICE_CHANGED)
@@ -327,7 +327,7 @@ void gscm_local_database_has_changed(void)
 
 bool gscm_service_changed_ind_needed(uint16_t conn_handle)
 {
-	uint32_t err_code;
+	uint32_t nrf_err;
 	bool service_changed_state;
 	uint32_t service_changed_state_size = sizeof(bool);
 	struct pm_peer_data peer_data;
@@ -335,11 +335,10 @@ bool gscm_service_changed_ind_needed(uint16_t conn_handle)
 	peer_data.all_data = &service_changed_state;
 	uint16_t peer_id = im_peer_id_get_by_conn_handle(conn_handle);
 
-	err_code =
-		pds_peer_data_read(peer_id, PM_PEER_DATA_ID_SERVICE_CHANGED_PENDING, &peer_data,
-				   &service_changed_state_size);
+	nrf_err = pds_peer_data_read(peer_id, PM_PEER_DATA_ID_SERVICE_CHANGED_PENDING, &peer_data,
+				     &service_changed_state_size);
 
-	if (err_code != NRF_SUCCESS) {
+	if (nrf_err) {
 		return false;
 	}
 
@@ -350,25 +349,25 @@ uint32_t gscm_service_changed_ind_send(uint16_t conn_handle)
 {
 	static uint16_t start_handle;
 	const uint16_t end_handle = 0xFFFF;
-	uint32_t err_code;
+	uint32_t nrf_err;
 
-	err_code = sd_ble_gatts_initial_user_handle_get(&start_handle);
+	nrf_err = sd_ble_gatts_initial_user_handle_get(&start_handle);
 
-	if (err_code != NRF_SUCCESS) {
+	if (nrf_err) {
 		LOG_ERR("sd_ble_gatts_initial_user_handle_get() returned %s which should not "
 			"happen.",
-			nrf_strerror_get(err_code));
+			nrf_strerror_get(nrf_err));
 		return NRF_ERROR_INTERNAL;
 	}
 
 	do {
-		err_code = sd_ble_gatts_service_changed(conn_handle, start_handle, end_handle);
-		if (err_code == BLE_ERROR_INVALID_ATTR_HANDLE) {
+		nrf_err = sd_ble_gatts_service_changed(conn_handle, start_handle, end_handle);
+		if (nrf_err == BLE_ERROR_INVALID_ATTR_HANDLE) {
 			start_handle += 1;
 		}
-	} while (err_code == BLE_ERROR_INVALID_ATTR_HANDLE);
+	} while (nrf_err == BLE_ERROR_INVALID_ATTR_HANDLE);
 
-	return err_code;
+	return nrf_err;
 }
 
 void gscm_db_change_notification_done(uint16_t peer_id)

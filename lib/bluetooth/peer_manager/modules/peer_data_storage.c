@@ -92,16 +92,16 @@ static bool peer_data_id_is_valid(enum pm_peer_data_id data_id)
 /**
  * @brief Function for sending a PM_EVT_ERROR_UNEXPECTED event.
  *
- * @param[in]  peer_id    The peer the event pertains to.
- * @param[in]  err_code   The unexpected error that occurred.
+ * @param[in]  peer_id   The peer the event pertains to.
+ * @param[in]  nrf_err   The unexpected error that occurred.
  */
-static void send_unexpected_error(uint16_t peer_id, uint32_t err_code)
+static void send_unexpected_error(uint16_t peer_id, uint32_t nrf_err)
 {
 	struct pm_evt error_evt = {
 		.evt_id = PM_EVT_ERROR_UNEXPECTED,
 		.peer_id = peer_id,
 		.params.error_unexpected = {
-			.error = err_code,
+			.error = nrf_err,
 		},
 	};
 	pds_evt_send(&error_evt);
@@ -247,13 +247,13 @@ static void bm_zms_evt_handler(const bm_zms_evt_t *evt)
 				pds_evt_send(&pds_evt);
 			} else {
 				uint32_t next_entry_id;
-				uint32_t ret;
+				uint32_t nrf_err;
 
-				ret = find_next_data_entry_in_peer(peer_id, &next_entry_id);
-				if (ret == NRF_SUCCESS) {
+				nrf_err = find_next_data_entry_in_peer(peer_id, &next_entry_id);
+				if (nrf_err == NRF_SUCCESS) {
 					/* Process the next entry for the peer. */
 					peer_delete_deferred = true;
-				} else if (ret == NRF_ERROR_NOT_FOUND) {
+				} else if (nrf_err == NRF_ERROR_NOT_FOUND) {
 					atomic_dec(&delete_counter);
 
 					/* Process the next deleted peers, if any are present. */
