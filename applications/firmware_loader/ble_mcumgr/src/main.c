@@ -176,6 +176,7 @@ static int ble_change_address(void)
 int main(void)
 {
 	int err;
+	uint32_t nrf_err;
 	struct ble_adv_config ble_adv_cfg = {
 		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
 		.evt_handler = ble_adv_evt_handler,
@@ -231,17 +232,15 @@ int main(void)
 	ble_adv_cfg.sr_data.uuid_lists.complete.uuid = &adv_uuid_list[0];
 	ble_adv_cfg.sr_data.uuid_lists.complete.len = ARRAY_SIZE(adv_uuid_list);
 
-	err = ble_adv_init(&ble_adv, &ble_adv_cfg);
-
-	if (err) {
-		LOG_ERR("Failed to initialize advertising, err %d", err);
+	nrf_err = ble_adv_init(&ble_adv, &ble_adv_cfg);
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize advertising, nrf_error %#x", nrf_err);
 		return 0;
 	}
 
-	err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
-
-	if (err) {
-		LOG_ERR("Failed to start advertising, err %d", err);
+	nrf_err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
+	if (nrf_err) {
+		LOG_ERR("Failed to start advertising, nrf_error %#x", nrf_err);
 		return 0;
 	}
 

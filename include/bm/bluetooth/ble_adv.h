@@ -136,7 +136,7 @@ struct ble_adv_evt {
 	union {
 		/** @ref BLE_ADV_EVT_ERROR event data. */
 		struct {
-			int reason;
+			uint32_t reason;
 		} error;
 	};
 };
@@ -256,11 +256,11 @@ void ble_adv_on_ble_evt(const ble_evt_t *ble_evt, void *ble_adv);
  * @param[in] ble_adv BLE advertising instance.
  * @param[in] ble_adv_config Initialization configuration.
  *
- * @retval 0 On success.
- * @retval -FAULT If @p ble_adv or @p ble_adv_config are @c NULL.
- * @retval -EINVAL If the configuration @p ble_adv_config is invalid.
+ * @retval NRF_SUCCESS On success.
+ * @retval NRF_ERROR_NULL If @p ble_adv or @p ble_adv_config are @c NULL.
+ * @retval NRF_ERROR_INVALID_PARAM If the configuration @p ble_adv_config is invalid.
  */
-int ble_adv_init(struct ble_adv *ble_adv, struct ble_adv_config *ble_adv_config);
+uint32_t ble_adv_init(struct ble_adv *ble_adv, struct ble_adv_config *ble_adv_config);
 
 /**
  * @brief Set the connection configuration tag used for connections.
@@ -268,7 +268,7 @@ int ble_adv_init(struct ble_adv *ble_adv, struct ble_adv_config *ble_adv_config)
  * @param[in] ble_adv BLE advertising instance.
  * @param[in] ble_cfg_tag Connection configuration tag.
  */
-int ble_adv_conn_cfg_tag_set(struct ble_adv *ble_adv, uint8_t ble_cfg_tag);
+uint32_t ble_adv_conn_cfg_tag_set(struct ble_adv *ble_adv, uint8_t ble_cfg_tag);
 
 /**
  * @brief Start advertising in given mode.
@@ -279,12 +279,12 @@ int ble_adv_conn_cfg_tag_set(struct ble_adv *ble_adv, uint8_t ble_cfg_tag);
  * @param[in] ble_adv BLE advertising instance.
  * @param[in] mode Desired advertising mode.
  *
- * @retval 0 On success.
- * @retval -EPERM  Library is not initialized.
- * @retval -EFAULT @p ble_adv is @c NULL.
- * @retval -EINVAL Invalid parameters.
+ * @retval NRF_SUCCESS On success.
+ * @retval NRF_ERROR_INVALID_STATE  Library is not initialized.
+ * @retval NRF_ERROR_NULL @p ble_adv is @c NULL.
+ * @retval NRF_ERROR_INVALID_PARAM Invalid parameters.
  */
-int ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode);
+uint32_t ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode);
 
 /**
  * @brief Set the peer address for directed advertising.
@@ -296,12 +296,12 @@ int ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode);
  * @param[in] p_advertising Advertising Module instance.
  * @param[in] p_peer_addr   Pointer to a peer address.
  *
- * @retval 0 On success.
- * @retval -EPERM  Library is not initialized.
- * @retval -EFAULT @p ble_adv is @c NULL.
- * @retval -EINVAL Invalid parameters.
+ * @retval NRF_SUCCESS On success.
+ * @retval NRF_ERROR_INVALID_STATE  Library is not initialized.
+ * @retval NRF_ERROR_NULL @p ble_adv is @c NULL.
+ * @retval NRF_ERROR_INVALID_PARAM Invalid parameters.
  */
-int ble_adv_peer_addr_reply(struct ble_adv *ble_adv, const ble_gap_addr_t *peer_addr);
+uint32_t ble_adv_peer_addr_reply(struct ble_adv *ble_adv, const ble_gap_addr_t *peer_addr);
 
 /**
  * @brief Set a whitelist for fast and slow advertising.
@@ -315,14 +315,14 @@ int ble_adv_peer_addr_reply(struct ble_adv *ble_adv, const ble_gap_addr_t *peer_
  * @param[in] gap_irks The list of peer IRK to whitelist.
  * @param[in] irk_cnt The number of peer IRK to whitelist.
  *
- * @retval 0 On success.
- * @retval -EPERM  Library is not initialized.
- * @retval -EFAULT @p ble_adv is @c NULL.
- * @retval -EINVAL Invalid parameters.
+ * @retval NRF_SUCCESS On success.
+ * @retval NRF_ERROR_INVALID_STATE  Library is not initialized.
+ * @retval NRF_ERROR_NULL @p ble_adv is @c NULL.
+ * @retval NRF_ERROR_INVALID_PARAM Invalid parameters.
  */
-int ble_adv_whitelist_reply(struct ble_adv *ble_adv,
-			    const ble_gap_addr_t *gap_addrs, uint32_t addr_cnt,
-			    const ble_gap_irk_t *gap_irks, uint32_t irk_cnt);
+uint32_t ble_adv_whitelist_reply(struct ble_adv *ble_adv,
+				 const ble_gap_addr_t *gap_addrs, uint32_t addr_cnt,
+				 const ble_gap_irk_t *gap_irks, uint32_t irk_cnt);
 
 /**
  * @brief Restart advertising without whitelist.
@@ -332,11 +332,12 @@ int ble_adv_whitelist_reply(struct ble_adv *ble_adv,
  *
  * @param[in] ble_adv Advertising Module instance.
  *
- * @retval 0 On success.
- * @retval -EPERM  Library is not initialized.
- * @retval -EFAULT @p ble_adv is @c NULL.
+ * @retval NRF_SUCCESS On success.
+ * @retval NRF_ERROR_INVALID_STATE  Library is not initialized.
+ * @retval NRF_ERROR_NULL @p ble_adv is @c NULL.
+ * @retval NRF_ERROR_INVALID_PARAM Invalid advertising parameters.
  */
-int ble_adv_restart_without_whitelist(struct ble_adv *ble_adv);
+uint32_t ble_adv_restart_without_whitelist(struct ble_adv *ble_adv);
 
 /**@brief   Function for updating advertising data.
  *
@@ -355,9 +356,9 @@ int ble_adv_restart_without_whitelist(struct ble_adv *ble_adv);
  * @retval @ref NRF_SUCCESS or any error from @ref ble_advdata_encode or
  *         @ref sd_ble_gap_adv_set_configure().
  */
-int ble_adv_data_update(struct ble_adv *ble_adv,
-			const struct ble_adv_data *adv,
-			const struct ble_adv_data *sr);
+uint32_t ble_adv_data_update(struct ble_adv *ble_adv,
+			     const struct ble_adv_data *adv,
+			     const struct ble_adv_data *sr);
 
 #ifdef __cplusplus
 }
