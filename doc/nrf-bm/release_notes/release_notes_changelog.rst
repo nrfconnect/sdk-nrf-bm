@@ -80,6 +80,7 @@ Libraries
 
   * :ref:`lib_ble_adv` library.
   * :ref:`lib_ble_conn_params` library.
+  * :ref:`lib_ble_gatt_queue` library.
 
 * :ref:`lib_ble_conn_params` library:
 
