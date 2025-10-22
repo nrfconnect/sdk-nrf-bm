@@ -148,21 +148,21 @@ uint32_t stub_sd_ble_gatts_characteristic_add(
 	return NRF_SUCCESS;
 }
 
-void test_ble_dis_init_einval(void)
+void test_ble_dis_init_error_invalid_param(void)
 {
 	int err;
 
 	__cmock_sd_ble_gatts_service_add_Stub(stub_sd_ble_gatts_service_add_invalid_param);
 
 	err = ble_dis_init();
-	TEST_ASSERT_EQUAL(-EINVAL, err);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, err);
 
 	__cmock_sd_ble_gatts_service_add_Stub(stub_sd_ble_gatts_service_add);
 	__cmock_sd_ble_gatts_characteristic_add_Stub(
 		stub_sd_ble_gatts_characteristic_add_invalid_param);
 
 	err = ble_dis_init();
-	TEST_ASSERT_EQUAL(-EINVAL, err);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, err);
 }
 
 void test_ble_dis_init(void)

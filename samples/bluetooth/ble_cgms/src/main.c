@@ -298,7 +298,6 @@ uint16_t qwr_evt_handler(struct ble_qwr *qwr, const struct ble_qwr_evt *evt)
  */
 static int services_init(void)
 {
-	int err;
 	uint32_t nrf_err;
 	struct ble_cgms_config cgms_config = {
 		.evt_handler = cgms_evt_handler,
@@ -357,9 +356,9 @@ static int services_init(void)
 	}
 
 	/* Initialize Device Information Service. */
-	err = ble_dis_init();
-	if (err) {
-		LOG_ERR("Failed to initialize DIS service, err %d", err);
+	nrf_err = ble_dis_init();
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize DIS service, nrf_error %#x", nrf_err);
 		return -1;
 	}
 
@@ -737,8 +736,8 @@ int main(void)
 	if (nrf_err) {
 		goto idle;
 	}
-	err = services_init();
-	if (err) {
+	nrf_err = services_init();
+	if (nrf_err) {
 		goto idle;
 	}
 	(void)sensor_simulator_init();
