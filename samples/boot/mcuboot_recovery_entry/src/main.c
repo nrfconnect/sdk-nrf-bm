@@ -186,10 +186,10 @@ int main(void)
 
 	LOG_INF("Bluetooth enabled");
 
-	err = ble_mcumgr_init();
+	nrf_err = ble_mcumgr_init();
 
-	if (err) {
-		LOG_ERR("Failed to initialize MCUmgr: %d", err);
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize MCUmgr, nrf_error %#x", nrf_err);
 		return 0;
 	}
 
