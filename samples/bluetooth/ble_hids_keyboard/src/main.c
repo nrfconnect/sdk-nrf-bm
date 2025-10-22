@@ -246,7 +246,7 @@ NRF_SDH_BLE_OBSERVER(sdh_ble, on_ble_evt, NULL, 0);
 
 static void ble_adv_evt_handler(struct ble_adv *ble_adv, const struct ble_adv_evt *evt)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	ble_gap_addr_t *peer_addr;
 	ble_gap_addr_t whitelist_addrs[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
 	ble_gap_irk_t whitelist_irks[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
@@ -255,7 +255,7 @@ static void ble_adv_evt_handler(struct ble_adv *ble_adv, const struct ble_adv_ev
 
 	switch (evt->evt_type) {
 	case BLE_ADV_EVT_ERROR:
-		LOG_ERR("Advertising error %d", evt->error.reason);
+		LOG_ERR("Advertising error %#x", evt->error.reason);
 		break;
 	case BLE_ADV_EVT_DIRECTED_HIGH_DUTY:
 	case BLE_ADV_EVT_DIRECTED:
@@ -269,10 +269,10 @@ static void ble_adv_evt_handler(struct ble_adv *ble_adv, const struct ble_adv_ev
 		nrf_gpio_pin_write(BOARD_PIN_LED_0, !BOARD_LED_ACTIVE_STATE);
 		break;
 	case BLE_ADV_EVT_WHITELIST_REQUEST:
-		err = pm_whitelist_get(whitelist_addrs, &addr_cnt,
+		nrf_err = pm_whitelist_get(whitelist_addrs, &addr_cnt,
 						whitelist_irks, &irk_cnt);
-		if (err) {
-			LOG_ERR("Failed to get whitelist, nrf_error %#x", err);
+		if (nrf_err) {
+			LOG_ERR("Failed to get whitelist, nrf_error %#x", nrf_err);
 		}
 		LOG_DBG("pm_whitelist_get returns %d addr in whitelist and %d irk whitelist",
 				addr_cnt, irk_cnt);
@@ -282,10 +282,10 @@ static void ble_adv_evt_handler(struct ble_adv *ble_adv, const struct ble_adv_ev
 		 */
 		identities_set(PM_PEER_ID_LIST_SKIP_NO_IRK);
 
-		err = ble_adv_whitelist_reply(ble_adv, whitelist_addrs, addr_cnt, whitelist_irks,
-					      irk_cnt);
-		if (err) {
-			LOG_ERR("Failed to set whitelist, nrf_error %#x", err);
+		nrf_err = ble_adv_whitelist_reply(ble_adv, whitelist_addrs, addr_cnt,
+						  whitelist_irks, irk_cnt);
+		if (nrf_err) {
+			LOG_ERR("Failed to set whitelist, nrf_error %#x", nrf_err);
 		}
 		break;
 
@@ -294,10 +294,11 @@ static void ble_adv_evt_handler(struct ble_adv *ble_adv, const struct ble_adv_ev
 
 		/* Only Give peer address if we have a handle to the bonded peer. */
 		if (peer_id != PM_PEER_ID_INVALID) {
-			err = pm_peer_data_bonding_load(peer_id, &peer_bonding_data);
-			if (err != NRF_ERROR_NOT_FOUND) {
-				if (err) {
-					LOG_ERR("Failed to load bonding data, nrf_error %#x", err);
+			nrf_err = pm_peer_data_bonding_load(peer_id, &peer_bonding_data);
+			if (nrf_err != NRF_ERROR_NOT_FOUND) {
+				if (nrf_err) {
+					LOG_ERR("Failed to load bonding data, nrf_error %#x",
+						nrf_err);
 				}
 
 				/* Manipulate identities to exclude peers with no
@@ -306,9 +307,10 @@ static void ble_adv_evt_handler(struct ble_adv *ble_adv, const struct ble_adv_ev
 				identities_set(PM_PEER_ID_LIST_SKIP_ALL);
 
 				peer_addr = &(peer_bonding_data.peer_ble_id.id_addr_info);
-				err = ble_adv_peer_addr_reply(ble_adv, peer_addr);
-				if (err) {
-					LOG_ERR("Failed to reply peer address, nrf_error %#x", err);
+				nrf_err = ble_adv_peer_addr_reply(ble_adv, peer_addr);
+				if (nrf_err) {
+					LOG_ERR("Failed to reply peer address, nrf_error %#x",
+						nrf_err);
 				}
 			}
 		}
@@ -714,20 +716,20 @@ static void delete_bonds(void)
 
 static int advertising_start(bool erase_bonds)
 {
-	int err = 0;
+	uint32_t nrf_err = NRF_SUCCESS;
 
 	if (erase_bonds) {
 		delete_bonds();
 	} else {
 		whitelist_set(PM_PEER_ID_LIST_SKIP_NO_ID_ADDR);
 
-		err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
-		if (err) {
-			LOG_ERR("Failed to start advertising, err %d", err);
+		nrf_err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
+		if (nrf_err) {
+			LOG_ERR("Failed to start advertising, nrf_error %#x", nrf_err);
 		}
 	}
 
-	return err;
+	return nrf_err;
 }
 
 static void pm_evt_handler(struct pm_evt const *evt)
@@ -980,9 +982,9 @@ int main(void)
 		goto idle;
 	}
 
-	err = ble_adv_init(&ble_adv, &ble_adv_cfg);
-	if (err) {
-		LOG_ERR("Failed to initialize BLE advertising, err %d", err);
+	nrf_err = ble_adv_init(&ble_adv, &ble_adv_cfg);
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize BLE advertising, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 

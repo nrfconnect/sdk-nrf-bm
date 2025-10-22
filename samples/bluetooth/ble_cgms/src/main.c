@@ -521,8 +521,8 @@ static void ble_adv_evt_handler(struct ble_adv *adv, const struct ble_adv_evt *a
 {
 	switch (adv_evt->evt_type) {
 	case BLE_ADV_EVT_ERROR:
-		LOG_ERR("BLE advertising error, %d", adv_evt->error.reason);
-		__ASSERT(false, "BLE advertising error %d", adv_evt->error.reason);
+		LOG_ERR("BLE advertising error, %#x", adv_evt->error.reason);
+		__ASSERT(false, "BLE advertising error %#x", adv_evt->error.reason);
 		break;
 	case BLE_ADV_EVT_DIRECTED_HIGH_DUTY:
 		led_indication_set(LED_INDICATE_ADVERTISING_DIRECTED);
@@ -614,9 +614,9 @@ static void button_handler(uint8_t pin, uint8_t action)
 }
 
 /** @brief Function for initializing the Advertising functionality. */
-static int advertising_init(void)
+static uint32_t advertising_init(void)
 {
-	int err;
+	uint32_t nrf_err;
 	uint8_t adv_flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
 	ble_uuid_t adv_uuid_list[] = {
 		{ .uuid = BLE_UUID_CGM_SERVICE, .type = BLE_UUID_TYPE_BLE },
@@ -636,15 +636,15 @@ static int advertising_init(void)
 		.evt_handler = ble_adv_evt_handler,
 	};
 
-	err = ble_adv_init(&ble_adv, &config);
-	if (err) {
-		LOG_ERR("BLE advertising init failed, err %d", err);
-		return err;
+	nrf_err = ble_adv_init(&ble_adv, &config);
+	if (nrf_err) {
+		LOG_ERR("BLE advertising init failed, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
 	ble_adv_conn_cfg_tag_set(&ble_adv, CONFIG_NRF_SDH_BLE_CONN_TAG);
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
 struct bm_buttons_config btn_configs[4] = {
@@ -713,6 +713,7 @@ static int buttons_leds_init(bool *erase_bonds)
 int main(void)
 {
 	int err;
+	uint32_t nrf_err;
 	bool erase_bonds;
 
 	err = timers_init();
@@ -731,8 +732,8 @@ int main(void)
 	if (err) {
 		goto idle;
 	}
-	err = advertising_init();
-	if (err) {
+	nrf_err = advertising_init();
+	if (nrf_err) {
 		goto idle;
 	}
 	err = services_init();
@@ -753,9 +754,9 @@ int main(void)
 		goto idle;
 	}
 
-	err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
-	if (err) {
-		LOG_ERR("Failed to start advertising, err %d", err);
+	nrf_err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
+	if (nrf_err) {
+		LOG_ERR("Failed to start advertising, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 
