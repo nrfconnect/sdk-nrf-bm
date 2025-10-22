@@ -20,13 +20,13 @@ void ble_conn_params_event_send(const struct ble_conn_params_evt *evt)
 	}
 }
 
-int ble_conn_params_evt_handler_set(ble_conn_params_evt_handler_t handler)
+uint32_t ble_conn_params_evt_handler_set(ble_conn_params_evt_handler_t handler)
 {
-	if (handler == NULL) {
-		return -EFAULT;
+	if (!handler) {
+		return NRF_ERROR_NULL;
 	}
 
 	evt_handler = handler;
 
-	return 0;
+	return NRF_SUCCESS;
 }

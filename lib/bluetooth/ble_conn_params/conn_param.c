@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
+#include <nrf_error.h>
 #include <ble_gap.h>
 #include <bm/bluetooth/ble_conn_params.h>
 #include <bm/softdevice_handler/nrf_sdh.h>
@@ -32,13 +33,14 @@ static struct {
 
 static void conn_params_negotiate(uint16_t conn_handle, int idx)
 {
-	int err;
+	uint32_t nrf_err;
 
 	LOG_DBG("Negotiating desired parameters with peer %#x", conn_handle);
 
-	err = sd_ble_gap_conn_param_update(conn_handle, &links[idx].ppcp);
-	if (err) {
-		LOG_ERR("Failed to request GAP connection parameters update, nrf_error %#x", err);
+	nrf_err = sd_ble_gap_conn_param_update(conn_handle, &links[idx].ppcp);
+	if (nrf_err) {
+		LOG_ERR("Failed to request GAP connection parameters update, nrf_error %#x",
+			nrf_err);
 	}
 }
 
@@ -171,15 +173,15 @@ NRF_SDH_BLE_OBSERVER(ble_observer, on_ble_evt, NULL, 0);
 
 static void on_state_evt(enum nrf_sdh_state_evt evt, void *ctx)
 {
-	int err;
+	uint32_t nrf_err;
 
 	if (evt != NRF_SDH_STATE_EVT_BLE_ENABLED) {
 		return;
 	}
 
-	err = sd_ble_gap_ppcp_set(&ppcp);
-	if (err) {
-		LOG_ERR("Failed to set preferred conn params, nrf_error %#x", err);
+	nrf_err = sd_ble_gap_ppcp_set(&ppcp);
+	if (nrf_err) {
+		LOG_ERR("Failed to set preferred conn params, nrf_error %#x", nrf_err);
 		return;
 	}
 
@@ -190,23 +192,23 @@ static void on_state_evt(enum nrf_sdh_state_evt evt, void *ctx)
 }
 NRF_SDH_STATE_EVT_OBSERVER(ble_conn_params_sdh_state_observer, on_state_evt, NULL, 0);
 
-int ble_conn_params_override(uint16_t conn_handle, const ble_gap_conn_params_t *conn_params)
+uint32_t ble_conn_params_override(uint16_t conn_handle, const ble_gap_conn_params_t *conn_params)
 {
-	int err;
+	uint32_t nrf_err;
 	const int idx = nrf_sdh_ble_idx_get(conn_handle);
 
 	if (idx < 0) {
-		return -EINVAL;
+		return BLE_ERROR_INVALID_CONN_HANDLE;
 	}
 	if (!conn_params) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 
 	links[idx].ppcp = *conn_params;
-	err = sd_ble_gap_conn_param_update(conn_handle, conn_params);
-	if (err) {
-		return -EINVAL;
+	nrf_err = sd_ble_gap_conn_param_update(conn_handle, conn_params);
+	if (nrf_err) {
+		return nrf_err;
 	}
 
-	return 0;
+	return NRF_SUCCESS;
 }

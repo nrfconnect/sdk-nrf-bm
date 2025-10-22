@@ -523,9 +523,9 @@ int main(void)
 
 	LOG_INF("Services initialized");
 
-	err = ble_conn_params_evt_handler_set(on_conn_params_evt);
-	if (err) {
-		LOG_ERR("Failed to setup conn param event handler, err %d", err);
+	nrf_err = ble_conn_params_evt_handler_set(on_conn_params_evt);
+	if (nrf_err) {
+		LOG_ERR("Failed to setup conn param event handler, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 
