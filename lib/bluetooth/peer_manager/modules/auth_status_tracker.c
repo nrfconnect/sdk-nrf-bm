@@ -52,9 +52,9 @@ struct blacklisted_peer {
 	bool is_valid;
 };
 
-static struct bm_timer m_pairing_attempt_timer;
-static struct blacklisted_peer m_blacklisted_peers[CONFIG_PM_RA_PROTECTION_TRACKED_PEERS_NUM];
-static uint64_t m_ticks_cnt;
+static struct bm_timer pairing_attempt_timer;
+static struct blacklisted_peer blacklisted_peers[CONFIG_PM_RA_PROTECTION_TRACKED_PEERS_NUM];
+static uint64_t ticks_cnt;
 
 /**
  * @brief Function for updating the state of blacklisted peers after timer has been stopped or
@@ -66,55 +66,55 @@ static uint32_t blacklisted_peers_state_update(uint32_t ticks_passed)
 {
 	uint32_t minimal_ticks = UINT32_MAX;
 
-	for (uint32_t id = 0; id < ARRAY_SIZE(m_blacklisted_peers); id++) {
-		struct blacklisted_peer *p_bl_peer = &m_blacklisted_peers[id];
+	for (uint32_t id = 0; id < ARRAY_SIZE(blacklisted_peers); id++) {
+		struct blacklisted_peer *bl_peer = &blacklisted_peers[id];
 
-		if (p_bl_peer->is_valid) {
-			if (p_bl_peer->is_active) {
-				if (p_bl_peer->penality_ticks > ticks_passed) {
-					p_bl_peer->penality_ticks -= ticks_passed;
+		if (bl_peer->is_valid) {
+			if (bl_peer->is_active) {
+				if (bl_peer->penality_ticks > ticks_passed) {
+					bl_peer->penality_ticks -= ticks_passed;
 					minimal_ticks =
-						MIN(minimal_ticks, p_bl_peer->penality_ticks);
+						MIN(minimal_ticks, bl_peer->penality_ticks);
 				} else {
-					p_bl_peer->is_active = false;
+					bl_peer->is_active = false;
 
-					if (p_bl_peer->penality_lvl == 0) {
-						p_bl_peer->is_valid = false;
+					if (bl_peer->penality_lvl == 0) {
+						bl_peer->is_valid = false;
 						LOG_DBG("Peer has been removed from the "
 							"blacklist, its address:");
-						LOG_HEXDUMP_DBG(p_bl_peer->peer_addr.addr,
-							sizeof(p_bl_peer->peer_addr.addr), "");
+						LOG_HEXDUMP_DBG(bl_peer->peer_addr.addr,
+							sizeof(bl_peer->peer_addr.addr), "");
 					} else {
 						minimal_ticks =
 							MIN(minimal_ticks, PAIR_REWARD_TICKS);
 					}
 
 					LOG_DBG("Pairing waiting interval has expired for:");
-					LOG_HEXDUMP_DBG(p_bl_peer->peer_addr.addr,
-						sizeof(p_bl_peer->peer_addr.addr), "");
+					LOG_HEXDUMP_DBG(bl_peer->peer_addr.addr,
+						sizeof(bl_peer->peer_addr.addr), "");
 				}
 			} else {
-				if (p_bl_peer->penality_lvl == 0) {
-					p_bl_peer->is_valid = false;
+				if (bl_peer->penality_lvl == 0) {
+					bl_peer->is_valid = false;
 					LOG_DBG("Peer has been removed from the blacklist, "
 						"its address:");
-					LOG_HEXDUMP_DBG(p_bl_peer->peer_addr.addr,
-						sizeof(p_bl_peer->peer_addr.addr), "");
+					LOG_HEXDUMP_DBG(bl_peer->peer_addr.addr,
+						sizeof(bl_peer->peer_addr.addr), "");
 				} else {
-					p_bl_peer->reward_ticks += ticks_passed;
-					if (p_bl_peer->reward_ticks >= PAIR_REWARD_TICKS) {
-						p_bl_peer->penality_lvl--;
-						p_bl_peer->reward_ticks -= PAIR_REWARD_TICKS;
+					bl_peer->reward_ticks += ticks_passed;
+					if (bl_peer->reward_ticks >= PAIR_REWARD_TICKS) {
+						bl_peer->penality_lvl--;
+						bl_peer->reward_ticks -= PAIR_REWARD_TICKS;
 						LOG_DBG("Peer penality level has decreased "
 							"to %d for device:",
-							p_bl_peer->penality_lvl);
-						LOG_HEXDUMP_DBG(p_bl_peer->peer_addr.addr,
-							sizeof(p_bl_peer->peer_addr.addr), "");
+							bl_peer->penality_lvl);
+						LOG_HEXDUMP_DBG(bl_peer->peer_addr.addr,
+							sizeof(bl_peer->peer_addr.addr), "");
 					}
 
 					minimal_ticks =
 						MIN(minimal_ticks,
-						    (PAIR_REWARD_TICKS - p_bl_peer->reward_ticks));
+						    (PAIR_REWARD_TICKS - bl_peer->reward_ticks));
 				}
 			}
 		}
@@ -135,10 +135,10 @@ static void blacklisted_peers_state_transition_handle(void *context)
 	uint32_t ticks_passed = (uint32_t)context;
 
 	minimal_ticks = blacklisted_peers_state_update(ticks_passed);
-	m_ticks_cnt = k_uptime_ticks();
+	ticks_cnt = k_uptime_ticks();
 
 	if (minimal_ticks != UINT32_MAX) {
-		err = bm_timer_start(&m_pairing_attempt_timer, minimal_ticks,
+		err = bm_timer_start(&pairing_attempt_timer, minimal_ticks,
 					   (void *)minimal_ticks);
 		if (err) {
 			LOG_WRN("bm_timer_start() returned %d", err);
@@ -149,7 +149,7 @@ static void blacklisted_peers_state_transition_handle(void *context)
 
 uint32_t ast_init(void)
 {
-	int err_code = bm_timer_init(&m_pairing_attempt_timer, BM_TIMER_MODE_SINGLE_SHOT,
+	int err_code = bm_timer_init(&pairing_attempt_timer, BM_TIMER_MODE_SINGLE_SHOT,
 					blacklisted_peers_state_transition_handle);
 	if (err_code) {
 		return NRF_ERROR_INTERNAL;
@@ -164,7 +164,7 @@ void ast_auth_error_notify(uint16_t conn_handle)
 	uint32_t err_code;
 	ble_gap_addr_t peer_addr;
 	uint32_t new_timeout;
-	uint32_t free_id = ARRAY_SIZE(m_blacklisted_peers);
+	uint32_t free_id = ARRAY_SIZE(blacklisted_peers);
 	bool new_bl_entry = true;
 
 	/* Get the peer address associated with connection handle. */
@@ -177,39 +177,39 @@ void ast_auth_error_notify(uint16_t conn_handle)
 	}
 
 	/* Stop the timer and update the state of all blacklisted peers. */
-	err = bm_timer_stop(&m_pairing_attempt_timer);
+	err = bm_timer_stop(&pairing_attempt_timer);
 	if (err) {
 		LOG_WRN("bm_timer_stop() returned %d", err);
 		return;
 	}
 
-	new_timeout = blacklisted_peers_state_update((uint32_t)(k_uptime_ticks() - m_ticks_cnt));
-	m_ticks_cnt = k_uptime_ticks();
+	new_timeout = blacklisted_peers_state_update((uint32_t)(k_uptime_ticks() - ticks_cnt));
+	ticks_cnt = k_uptime_ticks();
 
 	/* Check if authorization has failed for already blacklisted peer. */
-	for (uint32_t id = 0; id < ARRAY_SIZE(m_blacklisted_peers); id++) {
-		struct blacklisted_peer *p_bl_peer = &m_blacklisted_peers[id];
+	for (uint32_t id = 0; id < ARRAY_SIZE(blacklisted_peers); id++) {
+		struct blacklisted_peer *bl_peer = &blacklisted_peers[id];
 
-		if (p_bl_peer->is_valid) {
-			if (memcmp(peer_addr.addr, p_bl_peer->peer_addr.addr, BLE_GAP_ADDR_LEN) ==
+		if (bl_peer->is_valid) {
+			if (memcmp(peer_addr.addr, bl_peer->peer_addr.addr, BLE_GAP_ADDR_LEN) ==
 			    0) {
-				uint8_t lvl = p_bl_peer->penality_lvl;
+				uint8_t lvl = bl_peer->penality_lvl;
 
 				PENALITY_LVL_NEXT_SET(lvl);
-				p_bl_peer->penality_lvl = lvl;
-				p_bl_peer->reward_ticks = 0;
-				p_bl_peer->penality_ticks = PENALITY_LVL_TO_PENALITY_TICKS(lvl);
+				bl_peer->penality_lvl = lvl;
+				bl_peer->reward_ticks = 0;
+				bl_peer->penality_ticks = PENALITY_LVL_TO_PENALITY_TICKS(lvl);
 
-				new_timeout = MIN(new_timeout, p_bl_peer->penality_ticks);
+				new_timeout = MIN(new_timeout, bl_peer->penality_ticks);
 
-				p_bl_peer->is_active = true;
+				bl_peer->is_active = true;
 				new_bl_entry = false;
 
 				LOG_DBG("Pairing waiting interval has been renewed. "
 					"Penality level: %d for device:",
 					lvl);
-				LOG_HEXDUMP_DBG(p_bl_peer->peer_addr.addr,
-					sizeof(p_bl_peer->peer_addr.addr), "");
+				LOG_HEXDUMP_DBG(bl_peer->peer_addr.addr,
+					sizeof(bl_peer->peer_addr.addr), "");
 			}
 		} else {
 			free_id = id;
@@ -218,23 +218,23 @@ void ast_auth_error_notify(uint16_t conn_handle)
 
 	/* Add a new peer to the blacklist. */
 	if (new_bl_entry) {
-		if (free_id < ARRAY_SIZE(m_blacklisted_peers)) {
-			struct blacklisted_peer *p_bl_peer = &m_blacklisted_peers[free_id];
+		if (free_id < ARRAY_SIZE(blacklisted_peers)) {
+			struct blacklisted_peer *bl_peer = &blacklisted_peers[free_id];
 
-			memcpy(&p_bl_peer->peer_addr, &peer_addr, sizeof(peer_addr));
+			memcpy(&bl_peer->peer_addr, &peer_addr, sizeof(peer_addr));
 
-			p_bl_peer->penality_lvl = 0;
-			p_bl_peer->reward_ticks = 0;
-			p_bl_peer->penality_ticks =
-				PENALITY_LVL_TO_PENALITY_TICKS(p_bl_peer->penality_lvl);
+			bl_peer->penality_lvl = 0;
+			bl_peer->reward_ticks = 0;
+			bl_peer->penality_ticks =
+				PENALITY_LVL_TO_PENALITY_TICKS(bl_peer->penality_lvl);
 
-			new_timeout = MIN(new_timeout, p_bl_peer->penality_ticks);
+			new_timeout = MIN(new_timeout, bl_peer->penality_ticks);
 
-			p_bl_peer->is_active = true;
-			p_bl_peer->is_valid = true;
+			bl_peer->is_active = true;
+			bl_peer->is_valid = true;
 			LOG_DBG("New peer has been added to the blacklist:");
-			LOG_HEXDUMP_DBG(p_bl_peer->peer_addr.addr,
-				sizeof(p_bl_peer->peer_addr.addr), "");
+			LOG_HEXDUMP_DBG(bl_peer->peer_addr.addr,
+				sizeof(bl_peer->peer_addr.addr), "");
 		} else {
 			LOG_WRN("No space to blacklist another peer ID");
 		}
@@ -242,7 +242,7 @@ void ast_auth_error_notify(uint16_t conn_handle)
 
 	/* Restart the timer. */
 	if (new_timeout != UINT32_MAX) {
-		err = bm_timer_start(&m_pairing_attempt_timer, new_timeout, (void *)new_timeout);
+		err = bm_timer_start(&pairing_attempt_timer, new_timeout, (void *)new_timeout);
 		if (err) {
 			LOG_WRN("bm_timer_start() returned %d", err);
 		}
@@ -262,13 +262,12 @@ bool ast_peer_blacklisted(uint16_t conn_handle)
 		return true;
 	}
 
-	for (uint32_t id = 0; id < ARRAY_SIZE(m_blacklisted_peers); id++) {
-		struct blacklisted_peer *p_bl_peer = &m_blacklisted_peers[id];
+	for (uint32_t id = 0; id < ARRAY_SIZE(blacklisted_peers); id++) {
+		struct blacklisted_peer *bl_peer = &blacklisted_peers[id];
 
-		if (p_bl_peer->is_valid) {
-			if ((memcmp(peer_addr.addr, p_bl_peer->peer_addr.addr, BLE_GAP_ADDR_LEN) ==
-			     0) &&
-			    (p_bl_peer->is_active)) {
+		if (bl_peer->is_valid) {
+			if ((memcmp(peer_addr.addr, bl_peer->peer_addr.addr, BLE_GAP_ADDR_LEN) == 0)
+			    && (bl_peer->is_active)) {
 				return true;
 			}
 		}

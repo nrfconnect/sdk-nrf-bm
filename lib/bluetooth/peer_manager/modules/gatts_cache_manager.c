@@ -25,15 +25,15 @@ LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 #if defined(CONFIG_PM_SERVICE_CHANGED)
 
 /* The number of registered event handlers. */
-#define GSCM_EVENT_HANDLERS_CNT ARRAY_SIZE(m_evt_handlers)
+#define GSCM_EVENT_HANDLERS_CNT ARRAY_SIZE(evt_handlers)
 
 /* GATTS Cache Manager event handler in Peer Manager. */
-extern void pm_gscm_evt_handler(struct pm_evt *p_gcm_evt);
+extern void pm_gscm_evt_handler(struct pm_evt *gcm_evt);
 
 /* GATTS Cache Manager events' handlers.
  * The number of elements in this array is GSCM_EVENT_HANDLERS_CNT.
  */
-static pm_evt_handler_internal_t m_evt_handlers[] = {pm_gscm_evt_handler};
+static pm_evt_handler_internal_t evt_handlers[] = {pm_gscm_evt_handler};
 #endif
 
 /* Syntactic sugar, two spoons. */
@@ -41,26 +41,26 @@ static pm_evt_handler_internal_t m_evt_handlers[] = {pm_gscm_evt_handler};
 #define SYS_ATTR_USR  (BLE_GATTS_SYS_ATTR_FLAG_USR_SRVCS)
 #define SYS_ATTR_BOTH (SYS_ATTR_SYS | SYS_ATTR_USR)
 
-static bool m_module_initialized;
-static uint16_t m_current_sc_store_peer_id;
+static bool module_initialized;
+static uint16_t current_sc_store_peer_id;
 
 /** @brief Function for resetting the module variable(s) of the GSCM module. */
 static void internal_state_reset(void)
 {
-	m_module_initialized = false;
-	m_current_sc_store_peer_id = PM_PEER_ID_INVALID;
+	module_initialized = false;
+	current_sc_store_peer_id = PM_PEER_ID_INVALID;
 
 	/* If CONFIG_PM_SERVICE_CHANGED is 0, this variable is unused. */
-	UNUSED_VARIABLE(m_current_sc_store_peer_id);
+	UNUSED_VARIABLE(current_sc_store_peer_id);
 }
 
 #if defined(CONFIG_PM_SERVICE_CHANGED)
-static void evt_send(struct pm_evt *p_gscm_evt)
+static void evt_send(struct pm_evt *gscm_evt)
 {
-	p_gscm_evt->conn_handle = im_conn_handle_get(p_gscm_evt->peer_id);
+	gscm_evt->conn_handle = im_conn_handle_get(gscm_evt->peer_id);
 
 	for (uint32_t i = 0; i < GSCM_EVENT_HANDLERS_CNT; i++) {
-		m_evt_handlers[i](p_gscm_evt);
+		evt_handlers[i](gscm_evt);
 	}
 }
 
@@ -72,7 +72,7 @@ static void evt_send(struct pm_evt *p_gscm_evt)
  */
 static void service_changed_pending_set(void)
 {
-	__ASSERT_NO_MSG(m_module_initialized);
+	__ASSERT_NO_MSG(module_initialized);
 
 	uint32_t err_code;
 	/* Use a uint32_t to enforce 4-byte alignment. */
@@ -81,13 +81,13 @@ static void service_changed_pending_set(void)
 	struct pm_peer_data_const peer_data = {
 		.data_id = PM_PEER_DATA_ID_SERVICE_CHANGED_PENDING,
 		.length_words = PM_SC_STATE_N_WORDS(),
-		.p_service_changed_pending = (bool *)&service_changed_pending,
+		.service_changed_pending = (bool *)&service_changed_pending,
 	};
 
-	while (m_current_sc_store_peer_id != PM_PEER_ID_INVALID) {
-		err_code = pds_peer_data_store(m_current_sc_store_peer_id, &peer_data, NULL);
+	while (current_sc_store_peer_id != PM_PEER_ID_INVALID) {
+		err_code = pds_peer_data_store(current_sc_store_peer_id, &peer_data, NULL);
 		if (err_code != NRF_SUCCESS) {
-			struct pm_evt evt = {.peer_id = m_current_sc_store_peer_id};
+			struct pm_evt evt = {.peer_id = current_sc_store_peer_id};
 
 			if (err_code == NRF_ERROR_BUSY) {
 				/* Do nothing. */
@@ -99,7 +99,7 @@ static void service_changed_pending_set(void)
 					"service changed "
 					"state for peer id %d.",
 					nrf_strerror_get(err_code),
-					m_current_sc_store_peer_id);
+					current_sc_store_peer_id);
 				evt.evt_id = PM_EVT_ERROR_UNEXPECTED;
 				evt.params.error_unexpected.error = err_code;
 				evt_send(&evt);
@@ -107,7 +107,7 @@ static void service_changed_pending_set(void)
 			break;
 		}
 
-		m_current_sc_store_peer_id = pds_next_peer_id_get(m_current_sc_store_peer_id);
+		current_sc_store_peer_id = pds_next_peer_id_get(current_sc_store_peer_id);
 	}
 }
 
@@ -115,11 +115,11 @@ static void service_changed_pending_set(void)
  * @brief Event handler for events from the Peer Database module.
  *        This function is extern in Peer Database.
  *
- * @param[in]  p_event The event that has happened with peer id and flags.
+ * @param[in]  event The event that has happened with peer id and flags.
  */
-void gscm_pdb_evt_handler(struct pm_evt *p_event)
+void gscm_pdb_evt_handler(struct pm_evt *event)
 {
-	if (m_current_sc_store_peer_id != PM_PEER_ID_INVALID) {
+	if (current_sc_store_peer_id != PM_PEER_ID_INVALID) {
 		service_changed_pending_set();
 	}
 }
@@ -127,17 +127,17 @@ void gscm_pdb_evt_handler(struct pm_evt *p_event)
 
 uint32_t gscm_init(void)
 {
-	__ASSERT_NO_MSG(!m_module_initialized);
+	__ASSERT_NO_MSG(!module_initialized);
 
 	internal_state_reset();
-	m_module_initialized = true;
+	module_initialized = true;
 
 	return NRF_SUCCESS;
 }
 
 uint32_t gscm_local_db_cache_update(uint16_t conn_handle)
 {
-	__ASSERT_NO_MSG(m_module_initialized);
+	__ASSERT_NO_MSG(module_initialized);
 
 	uint16_t peer_id = im_peer_id_get_by_conn_handle(conn_handle);
 	uint32_t err_code;
@@ -156,25 +156,25 @@ uint32_t gscm_local_db_cache_update(uint16_t conn_handle)
 		err_code = pdb_write_buf_get(peer_id, PM_PEER_DATA_ID_GATT_LOCAL, n_bufs++,
 						&peer_data);
 		if (err_code == NRF_SUCCESS) {
-			struct pm_peer_data_local_gatt_db *p_local_gatt_db =
-				peer_data.p_local_gatt_db;
+			struct pm_peer_data_local_gatt_db *local_gatt_db =
+				peer_data.local_gatt_db;
 
-			p_local_gatt_db->flags = SYS_ATTR_BOTH;
+			local_gatt_db->flags = SYS_ATTR_BOTH;
 
 			err_code = sd_ble_gatts_sys_attr_get(
-				conn_handle, &p_local_gatt_db->data[0],
-				&p_local_gatt_db->len, p_local_gatt_db->flags);
+				conn_handle, &local_gatt_db->data[0],
+				&local_gatt_db->len, local_gatt_db->flags);
 
 			if (err_code == NRF_SUCCESS) {
 				uint8_t local_gatt_db_buf[PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE] = {
 					0
 				};
 				uint32_t local_gatt_db_size = PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE;
-				struct pm_peer_data_local_gatt_db *curr_p_local_gatt_db =
+				struct pm_peer_data_local_gatt_db *curr_local_gatt_db =
 					(struct pm_peer_data_local_gatt_db *)local_gatt_db_buf;
 				struct pm_peer_data curr_peer_data;
 
-				curr_peer_data.p_all_data = local_gatt_db_buf;
+				curr_peer_data.all_data = local_gatt_db_buf;
 
 				err_code = pds_peer_data_read(peer_id,
 							PM_PEER_DATA_ID_GATT_LOCAL,
@@ -190,13 +190,10 @@ uint32_t gscm_local_db_cache_update(uint16_t conn_handle)
 					return NRF_ERROR_INTERNAL;
 				}
 
-
 				if ((err_code == NRF_ERROR_NOT_FOUND) ||
-					(p_local_gatt_db->len !=
-					curr_p_local_gatt_db->len) ||
-					(memcmp(p_local_gatt_db->data,
-						curr_p_local_gatt_db->data,
-						p_local_gatt_db->len) != 0)) {
+				    (local_gatt_db->len != curr_local_gatt_db->len) ||
+				    (memcmp(local_gatt_db->data, curr_local_gatt_db->data,
+					    local_gatt_db->len) != 0)) {
 					err_code = pdb_write_buf_store(
 						peer_id, PM_PEER_DATA_ID_GATT_LOCAL,
 						peer_id);
@@ -256,12 +253,12 @@ uint32_t gscm_local_db_cache_update(uint16_t conn_handle)
 
 uint32_t gscm_local_db_cache_apply(uint16_t conn_handle)
 {
-	__ASSERT_NO_MSG(m_module_initialized);
+	__ASSERT_NO_MSG(module_initialized);
 
 	uint16_t peer_id = im_peer_id_get_by_conn_handle(conn_handle);
 	uint32_t err_code;
 	struct pm_peer_data peer_data;
-	const uint8_t *p_sys_attr_data = NULL;
+	const uint8_t *sys_attr_data = NULL;
 	uint16_t sys_attr_len = 0;
 	uint32_t sys_attr_flags = (SYS_ATTR_BOTH);
 	bool all_attributes_applied = true;
@@ -269,23 +266,23 @@ uint32_t gscm_local_db_cache_apply(uint16_t conn_handle)
 	if (peer_id != PM_PEER_ID_INVALID) {
 		uint8_t local_gatt_db_buf[PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE] = { 0 };
 		uint32_t local_gatt_db_size = PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE;
-		struct pm_peer_data_local_gatt_db *curr_p_local_gatt_db =
+		struct pm_peer_data_local_gatt_db *curr_local_gatt_db =
 			(struct pm_peer_data_local_gatt_db *)local_gatt_db_buf;
-		peer_data.p_all_data = &local_gatt_db_buf;
+		peer_data.all_data = &local_gatt_db_buf;
 		err_code = pds_peer_data_read(peer_id, PM_PEER_DATA_ID_GATT_LOCAL, &peer_data,
 					      &local_gatt_db_size);
 		if (err_code == NRF_SUCCESS) {
-			const struct pm_peer_data_local_gatt_db *p_local_gatt_db;
+			const struct pm_peer_data_local_gatt_db *local_gatt_db;
 
-			p_local_gatt_db = curr_p_local_gatt_db;
-			p_sys_attr_data = p_local_gatt_db->data;
-			sys_attr_len = p_local_gatt_db->len;
-			sys_attr_flags = p_local_gatt_db->flags;
+			local_gatt_db = curr_local_gatt_db;
+			sys_attr_data = local_gatt_db->data;
+			sys_attr_len = local_gatt_db->len;
+			sys_attr_flags = local_gatt_db->flags;
 		}
 	}
 
 	do {
-		err_code = sd_ble_gatts_sys_attr_set(conn_handle, p_sys_attr_data, sys_attr_len,
+		err_code = sd_ble_gatts_sys_attr_set(conn_handle, sys_attr_data, sys_attr_len,
 						     sys_attr_flags);
 
 		if (err_code == NRF_ERROR_NO_MEM) {
@@ -298,9 +295,9 @@ uint32_t gscm_local_db_cache_apply(uint16_t conn_handle)
 			if (sys_attr_flags & SYS_ATTR_USR) {
 				/* Try setting only system attributes. */
 				sys_attr_flags = SYS_ATTR_SYS;
-			} else if (p_sys_attr_data || sys_attr_len) {
+			} else if (sys_attr_data || sys_attr_len) {
 				/* Try reporting that none exist. */
-				p_sys_attr_data = NULL;
+				sys_attr_data = NULL;
 				sys_attr_len = 0;
 				sys_attr_flags = SYS_ATTR_BOTH;
 			} else {
@@ -323,8 +320,8 @@ uint32_t gscm_local_db_cache_apply(uint16_t conn_handle)
 #if defined(CONFIG_PM_SERVICE_CHANGED)
 void gscm_local_database_has_changed(void)
 {
-	__ASSERT_NO_MSG(m_module_initialized);
-	m_current_sc_store_peer_id = pds_next_peer_id_get(PM_PEER_ID_INVALID);
+	__ASSERT_NO_MSG(module_initialized);
+	current_sc_store_peer_id = pds_next_peer_id_get(PM_PEER_ID_INVALID);
 	service_changed_pending_set();
 }
 
@@ -335,7 +332,7 @@ bool gscm_service_changed_ind_needed(uint16_t conn_handle)
 	uint32_t service_changed_state_size = sizeof(bool);
 	struct pm_peer_data peer_data;
 
-	peer_data.p_all_data = &service_changed_state;
+	peer_data.all_data = &service_changed_state;
 	uint16_t peer_id = im_peer_id_get_by_conn_handle(conn_handle);
 
 	err_code =
@@ -376,7 +373,7 @@ uint32_t gscm_service_changed_ind_send(uint16_t conn_handle)
 
 void gscm_db_change_notification_done(uint16_t peer_id)
 {
-	__ASSERT_NO_MSG(m_module_initialized);
+	__ASSERT_NO_MSG(module_initialized);
 
 	/* Use a uint32_t to enforce 4-byte alignment. */
 	static const uint32_t service_changed_pending;
@@ -384,7 +381,7 @@ void gscm_db_change_notification_done(uint16_t peer_id)
 	struct pm_peer_data_const peer_data = {
 		.data_id = PM_PEER_DATA_ID_SERVICE_CHANGED_PENDING,
 		.length_words = PM_SC_STATE_N_WORDS(),
-		.p_service_changed_pending = (bool *)&service_changed_pending,
+		.service_changed_pending = (bool *)&service_changed_pending,
 	};
 
 	/* Don't need to check return code, because all error conditions can be ignored. */

@@ -24,7 +24,7 @@
 LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
 /* The number of registered event handlers. */
-#define PDS_EVENT_HANDLERS_CNT ARRAY_SIZE(m_evt_handlers)
+#define PDS_EVENT_HANDLERS_CNT ARRAY_SIZE(evt_handlers)
 
 /* Peer Data Storage event handler in Peer Database. */
 extern void pdb_pds_evt_handler(struct pm_evt *evt);
@@ -32,12 +32,12 @@ extern void pdb_pds_evt_handler(struct pm_evt *evt);
 /* Peer Data Storage events' handlers.
  * The number of elements in this array is PDS_EVENT_HANDLERS_CNT.
  */
-static const pm_evt_handler_internal_t m_evt_handlers[] = {
+static const pm_evt_handler_internal_t evt_handlers[] = {
 	pdb_pds_evt_handler,
 };
 
-static bool m_module_initialized;
-static volatile bool m_peer_delete_deferred;
+static bool module_initialized;
+static volatile bool peer_delete_deferred;
 
 static struct bm_zms_fs fs;
 
@@ -45,12 +45,12 @@ static struct bm_zms_fs fs;
 static atomic_t delete_counter;
 
 /* Function for dispatching events to all registered event handlers. */
-static void pds_evt_send(struct pm_evt *p_event)
+static void pds_evt_send(struct pm_evt *event)
 {
-	p_event->conn_handle = BLE_CONN_HANDLE_INVALID;
+	event->conn_handle = BLE_CONN_HANDLE_INVALID;
 
 	for (uint32_t i = 0; i < PDS_EVENT_HANDLERS_CNT; i++) {
-		m_evt_handlers[i](p_event);
+		evt_handlers[i](event);
 	}
 }
 
@@ -144,7 +144,7 @@ static void peer_data_delete_process(void)
 	uint16_t peer_id;
 	uint32_t entry_id;
 
-	m_peer_delete_deferred = false;
+	peer_delete_deferred = false;
 
 	peer_id = peer_id_get_next_deleted(PM_PEER_ID_INVALID);
 
@@ -158,7 +158,7 @@ static void peer_data_delete_process(void)
 	if (peer_id != PM_PEER_ID_INVALID) {
 		err = bm_zms_delete(&fs, entry_id);
 		if (err == -ENOMEM) {
-			m_peer_delete_deferred = true;
+			peer_delete_deferred = true;
 		} else if (err < 0) {
 			LOG_ERR("Could not delete peer data. bm_zms_delete() returned %d "
 				"for peer_id: %d", err, peer_id);
@@ -175,7 +175,7 @@ static void peer_ids_load(void)
 	struct pm_peer_data_const peer_data = { 0 };
 	uint8_t peer_data_buffer[PM_PEER_DATA_MAX_SIZE] = { 0 };
 
-	peer_data.p_all_data = peer_data_buffer;
+	peer_data.all_data = peer_data_buffer;
 
 	/* Search through existing bonds to look for a duplicate. */
 	pds_peer_data_iterate_prepare(&peer_id_iter);
@@ -186,31 +186,31 @@ static void peer_ids_load(void)
 	}
 }
 
-static void bm_zms_evt_handler(const bm_zms_evt_t *p_evt)
+static void bm_zms_evt_handler(const bm_zms_evt_t *evt)
 {
 	uint16_t peer_id;
 	enum pm_peer_data_id data_id;
 
-	entry_id_to_peer_id_peer_data_id(p_evt->id, &peer_id, &data_id);
+	entry_id_to_peer_id_peer_data_id(evt->id, &peer_id, &data_id);
 
 	struct pm_evt pds_evt = { .peer_id = peer_id };
 
-	switch (p_evt->evt_id) {
+	switch (evt->evt_id) {
 	case BM_ZMS_EVT_INIT:
-		if (p_evt->result) {
-			LOG_ERR("BM_ZMS initialization failed with error %d", p_evt->result);
+		if (evt->result) {
+			LOG_ERR("BM_ZMS initialization failed with error %d", evt->result);
 		}
 		break;
 	case BM_ZMS_EVT_WRITE:
 		pds_evt.params.peer_data_update_succeeded.data_id = data_id;
 		pds_evt.params.peer_data_update_succeeded.action = PM_PEER_DATA_OP_UPDATE;
-		pds_evt.params.peer_data_update_succeeded.token = p_evt->id;
+		pds_evt.params.peer_data_update_succeeded.token = evt->id;
 
-		if (p_evt->result == 0) {
+		if (evt->result == 0) {
 			pds_evt.evt_id = PM_EVT_PEER_DATA_UPDATE_SUCCEEDED;
 			pds_evt.params.peer_data_update_succeeded.flash_changed = true;
 		} else {
-			LOG_ERR("BM_ZMS write failed with error %d", p_evt->result);
+			LOG_ERR("BM_ZMS write failed with error %d", evt->result);
 			pds_evt.evt_id = PM_EVT_PEER_DATA_UPDATE_FAILED;
 			pds_evt.params.peer_data_update_failed.error = NRF_ERROR_INTERNAL;
 		}
@@ -221,24 +221,24 @@ static void bm_zms_evt_handler(const bm_zms_evt_t *p_evt)
 		if (!peer_id_is_deleted(peer_id)) {
 			pds_evt.params.peer_data_update_succeeded.data_id = data_id;
 			pds_evt.params.peer_data_update_succeeded.action = PM_PEER_DATA_OP_DELETE;
-			pds_evt.params.peer_data_update_succeeded.token = p_evt->id;
+			pds_evt.params.peer_data_update_succeeded.token = evt->id;
 
-			if (p_evt->result == 0) {
+			if (evt->result == 0) {
 				pds_evt.evt_id = PM_EVT_PEER_DATA_UPDATE_SUCCEEDED;
 				pds_evt.params.peer_data_update_succeeded.flash_changed = true;
 			} else {
-				LOG_ERR("BM_ZMS delete failed with error %d", p_evt->result);
+				LOG_ERR("BM_ZMS delete failed with error %d", evt->result);
 				pds_evt.evt_id = PM_EVT_PEER_DATA_UPDATE_FAILED;
 				pds_evt.params.peer_data_update_failed.error = NRF_ERROR_INTERNAL;
 			}
 
 			pds_evt_send(&pds_evt);
 		} else {
-			if (p_evt->result == -ENOMEM) {
-				m_peer_delete_deferred = true;
-			} else if (p_evt->result < 0) {
+			if (evt->result == -ENOMEM) {
+				peer_delete_deferred = true;
+			} else if (evt->result < 0) {
 				/* Unrecoverable error. */
-				LOG_ERR("BM_ZMS delete failed with error %d", p_evt->result);
+				LOG_ERR("BM_ZMS delete failed with error %d", evt->result);
 
 				atomic_dec(&delete_counter);
 
@@ -252,12 +252,12 @@ static void bm_zms_evt_handler(const bm_zms_evt_t *p_evt)
 				ret = find_next_data_entry_in_peer(peer_id, &next_entry_id);
 				if (ret == NRF_SUCCESS) {
 					/* Process the next entry for the peer. */
-					m_peer_delete_deferred = true;
+					peer_delete_deferred = true;
 				} else if (ret == NRF_ERROR_NOT_FOUND) {
 					atomic_dec(&delete_counter);
 
 					/* Process the next deleted peers, if any are present. */
-					m_peer_delete_deferred = true;
+					peer_delete_deferred = true;
 
 					pds_evt.evt_id = PM_EVT_PEER_DELETE_SUCCEEDED;
 					peer_id_free(pds_evt.peer_id);
@@ -272,7 +272,7 @@ static void bm_zms_evt_handler(const bm_zms_evt_t *p_evt)
 		break;
 	}
 
-	if (m_peer_delete_deferred) {
+	if (peer_delete_deferred) {
 		peer_data_delete_process();
 	}
 }
@@ -289,18 +289,18 @@ static void wait_for_init(void)
 	}
 }
 
-void pds_peer_data_iterate_prepare(uint16_t *p_peer_id_iter)
+void pds_peer_data_iterate_prepare(uint16_t *peer_id_iter)
 {
-	*p_peer_id_iter = 0;
+	*peer_id_iter = 0;
 }
 
-bool pds_peer_data_iterate(enum pm_peer_data_id data_id, uint16_t *const p_peer_id,
-			   struct pm_peer_data_const *const p_data, uint16_t *p_peer_id_iter)
+bool pds_peer_data_iterate(enum pm_peer_data_id data_id, uint16_t *const peer_id,
+			   struct pm_peer_data_const *const data, uint16_t *peer_id_iter)
 {
 	ssize_t ret;
 	uint8_t temp_buf[PM_PEER_DATA_MAX_SIZE] = { 0 };
 
-	if (*p_peer_id_iter >= PM_PEER_ID_N_AVAILABLE_IDS) {
+	if (*peer_id_iter >= PM_PEER_ID_N_AVAILABLE_IDS) {
 		return false;
 	}
 
@@ -308,32 +308,32 @@ bool pds_peer_data_iterate(enum pm_peer_data_id data_id, uint16_t *const p_peer_
 	 * or the read had a catastrophical failure.
 	 */
 	do {
-		uint32_t entry_id = peer_id_peer_data_id_to_entry_id(*p_peer_id_iter, data_id);
+		uint32_t entry_id = peer_id_peer_data_id_to_entry_id(*peer_id_iter, data_id);
 
 		ret = bm_zms_read(&fs, entry_id, temp_buf, sizeof(temp_buf));
 		if (ret < 0 && ret != -ENOENT) {
 			LOG_ERR("Could not read data from NVM. bm_zms_read() returned %d. "
 				"peer_id: %d",
-				ret, *p_peer_id_iter);
+				ret, *peer_id_iter);
 			return false;
 		}
 
-		(*p_peer_id_iter)++;
-	} while ((ret == -ENOENT) && (*p_peer_id_iter < PM_PEER_ID_N_AVAILABLE_IDS));
+		(*peer_id_iter)++;
+	} while ((ret == -ENOENT) && (*peer_id_iter < PM_PEER_ID_N_AVAILABLE_IDS));
 
-	if ((ret == -ENOENT) && (*p_peer_id_iter == PM_PEER_ID_N_AVAILABLE_IDS)) {
+	if ((ret == -ENOENT) && (*peer_id_iter == PM_PEER_ID_N_AVAILABLE_IDS)) {
 		return false;
 	}
 
 	/* We found a suitable Peer ID. */
 
 	/* `p_peer_id_iter` counts the iterations, so the Peer ID is iterations minus one. */
-	*p_peer_id = (*p_peer_id_iter) - 1;
+	*peer_id = (*peer_id_iter) - 1;
 
 	/* `ret` is equal the exact amount of data contained in the entry, so copy that amount
 	 * safely.
 	 */
-	memcpy((void *)p_data->p_all_data, temp_buf, ret);
+	memcpy((void *)data->all_data, temp_buf, ret);
 
 	return true;
 }
@@ -343,7 +343,7 @@ uint32_t pds_init(void)
 	int err;
 
 	/* Check for re-initialization if debugging. */
-	__ASSERT_NO_MSG(!m_module_initialized);
+	__ASSERT_NO_MSG(!module_initialized);
 
 	err = bm_zms_register(&fs, bm_zms_evt_handler);
 	if (err) {
@@ -365,20 +365,20 @@ uint32_t pds_init(void)
 	peer_id_init();
 	peer_ids_load();
 
-	m_module_initialized = true;
+	module_initialized = true;
 
 	return NRF_SUCCESS;
 }
 
 uint32_t pds_peer_data_read(uint16_t peer_id, enum pm_peer_data_id data_id,
-			    struct pm_peer_data *const p_data, const uint32_t *const p_buf_len)
+			    struct pm_peer_data *const data, const uint32_t *const buf_len)
 {
 	ssize_t ret;
 	uint8_t temp_buf[PM_PEER_DATA_MAX_SIZE] = { 0 };
 
-	__ASSERT_NO_MSG(m_module_initialized);
-	__ASSERT_NO_MSG(p_data != NULL);
-	__ASSERT_NO_MSG(p_buf_len != NULL);
+	__ASSERT_NO_MSG(module_initialized);
+	__ASSERT_NO_MSG(data != NULL);
+	__ASSERT_NO_MSG(buf_len != NULL);
 
 	if (peer_id >= PM_PEER_ID_N_AVAILABLE_IDS || !peer_data_id_is_valid(data_id)) {
 		return NRF_ERROR_INVALID_PARAM;
@@ -399,31 +399,31 @@ uint32_t pds_peer_data_read(uint16_t peer_id, enum pm_peer_data_id data_id,
 		return NRF_ERROR_INTERNAL;
 	}
 
-	memcpy(p_data->p_all_data, temp_buf, MIN(*p_buf_len, ret));
+	memcpy(data->all_data, temp_buf, MIN(*buf_len, ret));
 
-	if (*p_buf_len < ret) {
+	if (*buf_len < ret) {
 		return NRF_ERROR_DATA_SIZE;
 	}
 
 	return NRF_SUCCESS;
 }
 
-uint32_t pds_peer_data_store(uint16_t peer_id, const struct pm_peer_data_const *p_peer_data,
-			     uint32_t *p_store_token)
+uint32_t pds_peer_data_store(uint16_t peer_id, const struct pm_peer_data_const *peer_data,
+			     uint32_t *store_token)
 {
 	ssize_t ret;
 
-	__ASSERT_NO_MSG(m_module_initialized);
-	__ASSERT_NO_MSG(p_peer_data != NULL);
+	__ASSERT_NO_MSG(module_initialized);
+	__ASSERT_NO_MSG(peer_data != NULL);
 
-	if (peer_id >= PM_PEER_ID_N_AVAILABLE_IDS || !peer_data_id_is_valid(p_peer_data->data_id)) {
+	if (peer_id >= PM_PEER_ID_N_AVAILABLE_IDS || !peer_data_id_is_valid(peer_data->data_id)) {
 		return NRF_ERROR_INVALID_PARAM;
 	}
 
-	uint32_t entry_id = peer_id_peer_data_id_to_entry_id(peer_id, p_peer_data->data_id);
+	uint32_t entry_id = peer_id_peer_data_id_to_entry_id(peer_id, peer_data->data_id);
 
-	ret = bm_zms_write(&fs, entry_id, p_peer_data->p_all_data,
-			   p_peer_data->length_words * BYTES_PER_WORD);
+	ret = bm_zms_write(&fs, entry_id, peer_data->all_data,
+			   peer_data->length_words * BYTES_PER_WORD);
 	if (ret < 0) {
 		LOG_ERR("Could not write data to NVM. bm_zms_write() returned %d. "
 			"peer_id: %d",
@@ -431,9 +431,9 @@ uint32_t pds_peer_data_store(uint16_t peer_id, const struct pm_peer_data_const *
 		return NRF_ERROR_INTERNAL;
 	}
 
-	if (p_store_token != NULL) {
+	if (store_token != NULL) {
 		/* Update the store token. */
-		*p_store_token = entry_id;
+		*store_token = entry_id;
 	}
 
 	return NRF_SUCCESS;
@@ -443,7 +443,7 @@ uint32_t pds_peer_data_delete(uint16_t peer_id, enum pm_peer_data_id data_id)
 {
 	int err;
 
-	__ASSERT_NO_MSG(m_module_initialized);
+	__ASSERT_NO_MSG(module_initialized);
 
 	if (peer_id >= PM_PEER_ID_N_AVAILABLE_IDS || !peer_data_id_is_valid(data_id)) {
 		return NRF_ERROR_INVALID_PARAM;
@@ -464,13 +464,13 @@ uint32_t pds_peer_data_delete(uint16_t peer_id, enum pm_peer_data_id data_id)
 
 uint16_t pds_peer_id_allocate(void)
 {
-	__ASSERT_NO_MSG(m_module_initialized);
+	__ASSERT_NO_MSG(module_initialized);
 	return peer_id_allocate(PM_PEER_ID_INVALID);
 }
 
 uint32_t pds_peer_id_free(uint16_t peer_id)
 {
-	__ASSERT_NO_MSG(m_module_initialized);
+	__ASSERT_NO_MSG(module_initialized);
 
 	if (peer_id >= PM_PEER_ID_N_AVAILABLE_IDS) {
 		return NRF_ERROR_INVALID_PARAM;
@@ -491,30 +491,30 @@ uint32_t pds_peer_id_free(uint16_t peer_id)
 
 bool pds_peer_id_is_allocated(uint16_t peer_id)
 {
-	__ASSERT_NO_MSG(m_module_initialized);
+	__ASSERT_NO_MSG(module_initialized);
 	return peer_id_is_allocated(peer_id);
 }
 
 bool pds_peer_id_is_deleted(uint16_t peer_id)
 {
-	__ASSERT_NO_MSG(m_module_initialized);
+	__ASSERT_NO_MSG(module_initialized);
 	return peer_id_is_deleted(peer_id);
 }
 
 uint16_t pds_next_peer_id_get(uint16_t prev_peer_id)
 {
-	__ASSERT_NO_MSG(m_module_initialized);
+	__ASSERT_NO_MSG(module_initialized);
 	return peer_id_get_next_used(prev_peer_id);
 }
 
 uint16_t pds_next_deleted_peer_id_get(uint16_t prev_peer_id)
 {
-	__ASSERT_NO_MSG(m_module_initialized);
+	__ASSERT_NO_MSG(module_initialized);
 	return peer_id_get_next_deleted(prev_peer_id);
 }
 
 uint32_t pds_peer_count_get(void)
 {
-	__ASSERT_NO_MSG(m_module_initialized);
+	__ASSERT_NO_MSG(module_initialized);
 	return peer_id_n_ids();
 }

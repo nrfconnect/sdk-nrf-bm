@@ -93,13 +93,14 @@ uint32_t pdb_peer_free(uint16_t peer_id);
  *       will be copied. If n_bufs was increased since last time, this function might return @ref
  *       NRF_ERROR_BUSY. In that case, the buffer is automatically released.
  *
- * @param[in]  peer_id      ID of the peer to get a write buffer for. If @p peer_id is larger than
- *                          @ref PM_PEER_ID_N_AVAILABLE_IDS, it is interpreted as pertaining to
- *                          the connection that have been assigned idx (peer_id -
- * PM_PEER_ID_N_AVAILABLE_IDS) using @ref nrf_sdh_ble_idx_get. See @ref pdb_temp_peer_id_get.
- * @param[in]  data_id      The piece of data to get.
- * @param[in]  n_bufs       Number of contiguous buffers needed.
- * @param[out] p_peer_data  Pointers to mutable peer data.
+ * @param[in]  peer_id    ID of the peer to get a write buffer for. If @p peer_id is larger than
+ *                        @ref PM_PEER_ID_N_AVAILABLE_IDS, it is interpreted as pertaining to
+ *                        the connection that have been assigned idx
+ *                        (peer_id - PM_PEER_ID_N_AVAILABLE_IDS) using @ref nrf_sdh_ble_idx_get.
+ *                        See @ref pdb_temp_peer_id_get.
+ * @param[in]  data_id    The piece of data to get.
+ * @param[in]  n_bufs     Number of contiguous buffers needed.
+ * @param[out] peer_data  Pointers to mutable peer data.
  *
  * @retval NRF_SUCCESS              Data retrieved successfully.
  * @retval NRF_ERROR_INVALID_PARAM  @p data_id was invalid, or @p n_bufs was 0 or more than the
@@ -107,12 +108,12 @@ uint32_t pdb_peer_free(uint16_t peer_id);
  * @retval NRF_ERROR_FORBIDDEN      n_bufs was higher or lower than the existing buffer. If needed,
  *                                  release the existing buffer with @ref pdb_write_buf_release, and
  *                                  call this function again.
- * @retval NRF_ERROR_NULL           p_peer_data was NULL.
+ * @retval NRF_ERROR_NULL           @p peer_data was NULL.
  * @retval NRF_ERROR_BUSY           Not enough buffer(s) available.
  * @retval NRF_ERROR_INTERNAL       Unexpected internal error.
  */
 uint32_t pdb_write_buf_get(uint16_t peer_id, enum pm_peer_data_id data_id, uint32_t n_bufs,
-			   struct pm_peer_data *p_peer_data);
+			   struct pm_peer_data *peer_data);
 
 /**
  * @brief Function for freeing a write buffer allocated with @ref pdb_write_buf_get.

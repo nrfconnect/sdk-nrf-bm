@@ -56,12 +56,12 @@ uint32_t pds_init(void);
 /**
  * @brief Function for reading peer data in flash.
  *
- * @param[in]  peer_id     The peer the data belongs to.
- * @param[in]  data_id     The data to retrieve.
- * @param[out] p_data      The peer data. May not be @c NULL. p_data.length_words and p_data.data_id
- *                         are ignored. p_data.p_all_data is ignored if @p p_buf_len is @c NULL.
- * @param[in]  p_buf_len   Length of the provided buffer, in bytes. Pass @c NULL to only copy
- *                         a pointer to the data in flash.
+ * @param[in]  peer_id   The peer the data belongs to.
+ * @param[in]  data_id   The data to retrieve.
+ * @param[out] data      The peer data. May not be @c NULL. data.length_words and data.data_id
+ *                       are ignored. data.all_data is ignored if @p buf_len is @c NULL.
+ * @param[in]  buf_len   Length of the provided buffer, in bytes. Pass @c NULL to only copy
+ *                       a pointer to the data in flash.
  *
  * @retval NRF_SUCCESS              If the operation was successful.
  * @retval NRF_ERROR_INVALID_PARAM  If @p peer_id or @p data_id are invalid.
@@ -70,31 +70,31 @@ uint32_t pds_init(void);
  *                                  filling the provided buffer.
  */
 uint32_t pds_peer_data_read(uint16_t peer_id, enum pm_peer_data_id data_id,
-			    struct pm_peer_data *const p_data, const uint32_t *const p_buf_len);
+			    struct pm_peer_data *const data, const uint32_t *const buf_len);
 
 /**
  * @brief Function to prepare iterating over peer data in flash using @ref pds_peer_data_iterate.
  *        Call this function once each time before iterating using @ref pds_peer_data_iterate.
  *
- * @param[in]  p_peer_id_iter The peer ID used for keeping track of the iteration.
+ * @param[in]  peer_id_iter  The peer ID used for keeping track of the iteration.
  */
-void pds_peer_data_iterate_prepare(uint16_t *p_peer_id_iter);
+void pds_peer_data_iterate_prepare(uint16_t *peer_id_iter);
 
 /**
  * @brief Function for iterating peers' data in flash.
  *        Always call @ref pds_peer_data_iterate_prepare before starting iterating.
  *
- * @param[in]  data_id        The peer data to iterate over.
- * @param[out] p_peer_id      The peer the data belongs to.
- * @param[out] p_data         The peer data in flash. @ref p_data.p_all_data must point to a buffer
- *                            of size @ref PM_PEER_DATA_MAX_SIZE.
- * @param[in]  p_peer_id_iter The peer ID used for keeping track of the iteration.
+ * @param[in]  data_id      The peer data to iterate over.
+ * @param[out] peer_id      The peer the data belongs to.
+ * @param[out] data         The peer data in flash. @ref data.all_data must point to a buffer
+ *                          of size @ref PM_PEER_DATA_MAX_SIZE.
+ * @param[in]  peer_id_iter The peer ID used for keeping track of the iteration.
  *
  * @retval true   If the operation was successful.
  * @retval false  If the data was not found in flash, or another error occurred.
  */
-bool pds_peer_data_iterate(enum pm_peer_data_id data_id, uint16_t *const p_peer_id,
-			   struct pm_peer_data_const *const p_data, uint16_t *p_peer_id_iter);
+bool pds_peer_data_iterate(enum pm_peer_data_id data_id, uint16_t *const peer_id,
+			   struct pm_peer_data_const *const data, uint16_t *peer_id_iter);
 
 /**
  * @brief Function for storing peer data in flash. If the same piece of data already exists for the
@@ -102,21 +102,21 @@ bool pds_peer_data_iterate(enum pm_peer_data_id data_id, uint16_t *const p_peer_
  *        Expect a @ref PM_EVT_PEER_DATA_UPDATE_SUCCEEDED or @ref PM_EVT_PEER_DATA_UPDATE_FAILED
  *        event.
  *
- * @param[in]  peer_id        The peer the data belongs to.
- * @param[in]  p_peer_data    The peer data. May not be @c NULL.
- * @param[out] p_store_token  A token identifying this particular store operation. The token can be
- *                            used to identify events pertaining to this operation. Pass @p NULL
- *                            if not used.
+ * @param[in]  peer_id      The peer the data belongs to.
+ * @param[in]  peer_data    The peer data. May not be @c NULL.
+ * @param[out] store_token  A token identifying this particular store operation. The token can be
+ *                          used to identify events pertaining to this operation. Pass @p NULL
+ *                          if not used.
  *
  * @retval NRF_SUCCESS              If the operation was initiated successfully.
- * @retval NRF_ERROR_INVALID_PARAM  If @p peer_id or the data ID in @p_peer_data are invalid.
- * @retval NRF_ERROR_INVALID_ADDR   If @p p_peer_data is not word-aligned.
+ * @retval NRF_ERROR_INVALID_PARAM  If @p peer_id or the data ID in @p peer_data are invalid.
+ * @retval NRF_ERROR_INVALID_ADDR   If @p peer_data is not word-aligned.
  * @retval NRF_ERROR_RESOURCES   If no space is available in flash.
  * @retval NRF_ERROR_BUSY           If the flash filesystem was busy.
  * @retval NRF_ERROR_INTERNAL       If an unexpected error occurred.
  */
-uint32_t pds_peer_data_store(uint16_t peer_id, const struct pm_peer_data_const *p_peer_data,
-			     uint32_t *p_store_token);
+uint32_t pds_peer_data_store(uint16_t peer_id, const struct pm_peer_data_const *peer_data,
+			     uint32_t *store_token);
 
 /**
  * @brief Function for deleting peer data in flash. This operation is asynchronous.

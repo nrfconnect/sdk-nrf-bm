@@ -28,36 +28,36 @@
 LOG_MODULE_REGISTER(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
 /** Whether or not @ref pm_init has been called successfully. */
-static bool m_module_initialized;
+static bool module_initialized;
 /** Whether or not @ref rank_init has been called successfully. */
-static bool m_peer_rank_initialized;
+static bool peer_rank_initialized;
 /** True from when @ref pm_peers_delete is called until all peers have been deleted. */
-static bool m_deleting_all;
+static bool deleting_all;
 /** The store token of an ongoing peer rank update via a call to @ref pm_peer_rank_highest. If @ref
  * PM_STORE_TOKEN_INVALID, there is no ongoing update.
  */
-static uint32_t m_peer_rank_token;
+static uint32_t peer_rank_token;
 /** The current highest peer rank. Used by @ref pm_peer_rank_highest. */
-static uint32_t m_current_highest_peer_rank;
+static uint32_t current_highest_peer_rank;
 /** The peer with the highest peer rank. Used by @ref pm_peer_rank_highest. */
-static uint16_t m_highest_ranked_peer;
+static uint16_t highest_ranked_peer;
 /** The subscribers to Peer Manager events, as registered through @ref pm_register. */
-static pm_evt_handler_t m_evt_handlers[CONFIG_PM_MAX_REGISTRANTS];
+static pm_evt_handler_t evt_handlers[CONFIG_PM_MAX_REGISTRANTS];
 /** The number of event handlers registered through @ref pm_register. */
-static uint8_t m_n_registrants;
+static uint8_t n_registrants;
 
 /** User flag indicating whether a connection is excluded from being handled by the Peer Manager. */
-static int m_flag_conn_excluded = BLE_CONN_STATE_USER_FLAG_INVALID;
+static int flag_conn_excluded = BLE_CONN_STATE_USER_FLAG_INVALID;
 
 /**
  * @brief Function for sending a Peer Manager event to all subscribers.
  *
- * @param[in]  p_pm_evt  The event to send.
+ * @param[in]  pm_evt  The event to send.
  */
-static void evt_send(const struct pm_evt *p_pm_evt)
+static void evt_send(const struct pm_evt *pm_evt)
 {
-	for (int i = 0; i < m_n_registrants; i++) {
-		m_evt_handlers[i](p_pm_evt);
+	for (int i = 0; i < n_registrants; i++) {
+		evt_handlers[i](pm_evt);
 	}
 }
 
@@ -66,14 +66,14 @@ static void evt_send(const struct pm_evt *p_pm_evt)
 static void rank_vars_update(void)
 {
 	uint32_t err_code =
-		pm_peer_ranks_get(&m_highest_ranked_peer, &m_current_highest_peer_rank, NULL, NULL);
+		pm_peer_ranks_get(&highest_ranked_peer, &current_highest_peer_rank, NULL, NULL);
 
 	if (err_code == NRF_ERROR_NOT_FOUND) {
-		m_highest_ranked_peer = PM_PEER_ID_INVALID;
-		m_current_highest_peer_rank = 0;
+		highest_ranked_peer = PM_PEER_ID_INVALID;
+		current_highest_peer_rank = 0;
 	}
 
-	m_peer_rank_initialized = ((err_code == NRF_SUCCESS) || (err_code == NRF_ERROR_NOT_FOUND));
+	peer_rank_initialized = ((err_code == NRF_SUCCESS) || (err_code == NRF_ERROR_NOT_FOUND));
 }
 #endif
 
@@ -81,40 +81,38 @@ static void rank_vars_update(void)
  * @brief Event handler for events from the Peer Database module.
  *        This handler is extern in the Peer Database module.
  *
- * @param[in]  p_pdb_evt  The incoming Peer Database event.
+ * @param[in]  pdb_evt  The incoming Peer Database event.
  */
-void pm_pdb_evt_handler(struct pm_evt *p_pdb_evt)
+void pm_pdb_evt_handler(struct pm_evt *pdb_evt)
 {
 	bool send_evt = true;
 
-	p_pdb_evt->conn_handle = im_conn_handle_get(p_pdb_evt->peer_id);
+	pdb_evt->conn_handle = im_conn_handle_get(pdb_evt->peer_id);
 
-	switch (p_pdb_evt->evt_id) {
+	switch (pdb_evt->evt_id) {
 #if defined(CONFIG_PM_PEER_RANKS)
 	case PM_EVT_PEER_DATA_UPDATE_SUCCEEDED:
-		if (p_pdb_evt->params.peer_data_update_succeeded.action == PM_PEER_DATA_OP_UPDATE) {
-			if ((m_peer_rank_token != PM_STORE_TOKEN_INVALID) &&
-			    (m_peer_rank_token ==
-			     p_pdb_evt->params.peer_data_update_succeeded.token)) {
-				m_peer_rank_token = PM_STORE_TOKEN_INVALID;
-				m_highest_ranked_peer = p_pdb_evt->peer_id;
+		if (pdb_evt->params.peer_data_update_succeeded.action == PM_PEER_DATA_OP_UPDATE) {
+			if ((peer_rank_token != PM_STORE_TOKEN_INVALID) &&
+			    (peer_rank_token == pdb_evt->params.peer_data_update_succeeded.token)) {
+				peer_rank_token = PM_STORE_TOKEN_INVALID;
+				highest_ranked_peer = pdb_evt->peer_id;
 
-				p_pdb_evt->params.peer_data_update_succeeded.token =
+				pdb_evt->params.peer_data_update_succeeded.token =
 					PM_STORE_TOKEN_INVALID;
-			} else if (m_peer_rank_initialized &&
-				   (p_pdb_evt->peer_id == m_highest_ranked_peer) &&
-				   (p_pdb_evt->params.peer_data_update_succeeded.data_id ==
+			} else if (peer_rank_initialized &&
+				   (pdb_evt->peer_id == highest_ranked_peer) &&
+				   (pdb_evt->params.peer_data_update_succeeded.data_id ==
 				    PM_PEER_DATA_ID_PEER_RANK)) {
 				/* Update peer rank variable if highest ranked peer has changed its
 				 * rank.
 				 */
 				rank_vars_update();
 			}
-		} else if (p_pdb_evt->params.peer_data_update_succeeded.action ==
+		} else if (pdb_evt->params.peer_data_update_succeeded.action ==
 			   PM_PEER_DATA_OP_DELETE) {
-			if (m_peer_rank_initialized &&
-			    (p_pdb_evt->peer_id == m_highest_ranked_peer) &&
-			    (p_pdb_evt->params.peer_data_update_succeeded.data_id ==
+			if (peer_rank_initialized && (pdb_evt->peer_id == highest_ranked_peer) &&
+			    (pdb_evt->params.peer_data_update_succeeded.data_id ==
 			     PM_PEER_DATA_ID_PEER_RANK)) {
 				/* Update peer rank variable if highest ranked peer has deleted its
 				 * rank.
@@ -125,14 +123,13 @@ void pm_pdb_evt_handler(struct pm_evt *p_pdb_evt)
 		break;
 
 	case PM_EVT_PEER_DATA_UPDATE_FAILED:
-		if (p_pdb_evt->params.peer_data_update_succeeded.action == PM_PEER_DATA_OP_UPDATE) {
-			if ((m_peer_rank_token != PM_STORE_TOKEN_INVALID) &&
-			    (m_peer_rank_token ==
-			     p_pdb_evt->params.peer_data_update_failed.token)) {
-				m_peer_rank_token = PM_STORE_TOKEN_INVALID;
-				m_current_highest_peer_rank -= 1;
+		if (pdb_evt->params.peer_data_update_succeeded.action == PM_PEER_DATA_OP_UPDATE) {
+			if ((peer_rank_token != PM_STORE_TOKEN_INVALID) &&
+			    (peer_rank_token == pdb_evt->params.peer_data_update_failed.token)) {
+				peer_rank_token = PM_STORE_TOKEN_INVALID;
+				current_highest_peer_rank -= 1;
 
-				p_pdb_evt->params.peer_data_update_succeeded.token =
+				pdb_evt->params.peer_data_update_succeeded.token =
 					PM_STORE_TOKEN_INVALID;
 			}
 		}
@@ -141,13 +138,13 @@ void pm_pdb_evt_handler(struct pm_evt *p_pdb_evt)
 
 	case PM_EVT_PEER_DELETE_SUCCEEDED:
 		/* Check that no peers marked for deletion are left. */
-		if (m_deleting_all &&
+		if (deleting_all &&
 		    (pds_next_peer_id_get(PM_PEER_ID_INVALID) == PM_PEER_ID_INVALID) &&
 		    (pds_next_deleted_peer_id_get(PM_PEER_ID_INVALID) == PM_PEER_ID_INVALID)) {
 			/* pm_peers_delete() has been called and this is the last peer to be
 			 * deleted.
 			 */
-			m_deleting_all = false;
+			deleting_all = false;
 
 			struct pm_evt pm_delete_all_evt;
 
@@ -161,12 +158,12 @@ void pm_pdb_evt_handler(struct pm_evt *p_pdb_evt)
 			/* Forward the event to all registered Peer Manager event handlers.
 			 * Ensure that PEER_DELETE_SUCCEEDED arrives before PEERS_DELETE_SUCCEEDED.
 			 */
-			evt_send(p_pdb_evt);
+			evt_send(pdb_evt);
 			evt_send(&pm_delete_all_evt);
 		}
 
 #if defined(CONFIG_PM_PEER_RANKS)
-		if (m_peer_rank_initialized && (p_pdb_evt->peer_id == m_highest_ranked_peer)) {
+		if (peer_rank_initialized && (pdb_evt->peer_id == highest_ranked_peer)) {
 			/* Update peer rank variable if highest ranked peer has been deleted. */
 			rank_vars_update();
 		}
@@ -174,10 +171,10 @@ void pm_pdb_evt_handler(struct pm_evt *p_pdb_evt)
 		break;
 
 	case PM_EVT_PEER_DELETE_FAILED:
-		if (m_deleting_all) {
+		if (deleting_all) {
 			/* pm_peers_delete() was called and has thus failed. */
 
-			m_deleting_all = false;
+			deleting_all = false;
 
 			struct pm_evt pm_delete_all_evt;
 
@@ -186,14 +183,14 @@ void pm_pdb_evt_handler(struct pm_evt *p_pdb_evt)
 			pm_delete_all_evt.peer_id = PM_PEER_ID_INVALID;
 			pm_delete_all_evt.conn_handle = BLE_CONN_HANDLE_INVALID;
 			pm_delete_all_evt.params.peers_delete_failed_evt.error =
-				p_pdb_evt->params.peer_delete_failed.error;
+				pdb_evt->params.peer_delete_failed.error;
 
 			send_evt = false;
 
 			/* Forward the event to all registered Peer Manager event handlers.
 			 * Ensure that PEER_DELETE_FAILED arrives before PEERS_DELETE_FAILED.
 			 */
-			evt_send(p_pdb_evt);
+			evt_send(pdb_evt);
 			evt_send(&pm_delete_all_evt);
 		}
 		break;
@@ -205,7 +202,7 @@ void pm_pdb_evt_handler(struct pm_evt *p_pdb_evt)
 
 	if (send_evt) {
 		/* Forward the event to all registered Peer Manager event handlers. */
-		evt_send(p_pdb_evt);
+		evt_send(pdb_evt);
 	}
 }
 
@@ -213,59 +210,59 @@ void pm_pdb_evt_handler(struct pm_evt *p_pdb_evt)
  * @brief Event handler for events from the Security Manager module.
  *        This handler is extern in the Security Manager module.
  *
- * @param[in]  p_sm_evt  The incoming Security Manager event.
+ * @param[in]  sm_evt  The incoming Security Manager event.
  */
-void pm_sm_evt_handler(struct pm_evt *p_sm_evt)
+void pm_sm_evt_handler(struct pm_evt *sm_evt)
 {
-	if (p_sm_evt == NULL) {
+	if (sm_evt == NULL) {
 		return;
 	}
 
 	/* Forward the event to all registered Peer Manager event handlers. */
-	evt_send(p_sm_evt);
+	evt_send(sm_evt);
 }
 
 /**
  * @brief Event handler for events from the GATT Cache Manager module.
  *        This handler is extern in GATT Cache Manager.
  *
- * @param[in]  p_gcm_evt  The incoming GATT Cache Manager event.
+ * @param[in]  gcm_evt  The incoming GATT Cache Manager event.
  */
-void pm_gcm_evt_handler(struct pm_evt *p_gcm_evt)
+void pm_gcm_evt_handler(struct pm_evt *gcm_evt)
 {
 	/* Forward the event to all registered Peer Manager event handlers. */
-	evt_send(p_gcm_evt);
+	evt_send(gcm_evt);
 }
 
 /**
  * @brief Event handler for events from the GATTS Cache Manager module.
  *        This handler is extern in GATTS Cache Manager.
  *
- * @param[in]  p_gscm_evt  The incoming GATTS Cache Manager event.
+ * @param[in]  gscm_evt  The incoming GATTS Cache Manager event.
  */
-void pm_gscm_evt_handler(struct pm_evt *p_gscm_evt)
+void pm_gscm_evt_handler(struct pm_evt *gscm_evt)
 {
 	/* Forward the event to all registered Peer Manager event handlers. */
-	evt_send(p_gscm_evt);
+	evt_send(gscm_evt);
 }
 
 /**
  * @brief Event handler for events from the ID Manager module.
  *        This function is registered in the ID Manager.
  *
- * @param[in]  p_im_evt  The incoming ID Manager event.
+ * @param[in]  im_evt  The incoming ID Manager event.
  */
-void pm_im_evt_handler(struct pm_evt *p_im_evt)
+void pm_im_evt_handler(struct pm_evt *im_evt)
 {
 	/* Forward the event to all registered Peer Manager event handlers. */
-	evt_send(p_im_evt);
+	evt_send(im_evt);
 }
 
-static bool is_conn_handle_excluded(const ble_evt_t *p_ble_evt)
+static bool is_conn_handle_excluded(const ble_evt_t *ble_evt)
 {
-	uint16_t conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
+	uint16_t conn_handle = ble_evt->evt.gap_evt.conn_handle;
 
-	switch (p_ble_evt->header.evt_id) {
+	switch (ble_evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED: {
 		struct pm_evt pm_conn_config_req_evt;
 		bool is_excluded = false;
@@ -276,50 +273,50 @@ static bool is_conn_handle_excluded(const ble_evt_t *p_ble_evt)
 		pm_conn_config_req_evt.conn_handle = conn_handle;
 
 		pm_conn_config_req_evt.params.conn_config_req.peer_params =
-			&p_ble_evt->evt.gap_evt.params.connected;
+			&ble_evt->evt.gap_evt.params.connected;
 		pm_conn_config_req_evt.params.conn_config_req.context = &is_excluded;
 
 		evt_send(&pm_conn_config_req_evt);
-		ble_conn_state_user_flag_set(conn_handle, m_flag_conn_excluded, is_excluded);
+		ble_conn_state_user_flag_set(conn_handle, flag_conn_excluded, is_excluded);
 
 		return is_excluded;
 	}
 
 	default:
-		return ble_conn_state_user_flag_get(conn_handle, m_flag_conn_excluded);
+		return ble_conn_state_user_flag_get(conn_handle, flag_conn_excluded);
 	}
 }
 
 /**
  * @brief Function for handling BLE events.
  *
- * @param[in]   p_ble_evt       Event received from the BLE stack.
- * @param[in]   p_context       Context.
+ * @param[in]   ble_evt       Event received from the BLE stack.
+ * @param[in]   context       Context.
  */
-static void ble_evt_handler(const ble_evt_t *p_ble_evt, void *p_context)
+static void ble_evt_handler(const ble_evt_t *ble_evt, void *context)
 {
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return;
 	}
 
-	if (is_conn_handle_excluded(p_ble_evt)) {
+	if (is_conn_handle_excluded(ble_evt)) {
 		LOG_DBG("Filtering BLE event with ID: 0x%04X targeting 0x%04X connection handle",
-			p_ble_evt->header.evt_id, p_ble_evt->evt.gap_evt.conn_handle);
+			ble_evt->header.evt_id, ble_evt->evt.gap_evt.conn_handle);
 		return;
 	}
 
-	im_ble_evt_handler(p_ble_evt);
-	sm_ble_evt_handler(p_ble_evt);
-	gcm_ble_evt_handler(p_ble_evt);
+	im_ble_evt_handler(ble_evt);
+	sm_ble_evt_handler(ble_evt);
+	gcm_ble_evt_handler(ble_evt);
 }
 
-NRF_SDH_BLE_OBSERVER(m_ble_evt_observer, ble_evt_handler, NULL, CONFIG_PM_BLE_OBSERVER_PRIO);
+NRF_SDH_BLE_OBSERVER(ble_evt_observer, ble_evt_handler, NULL, CONFIG_PM_BLE_OBSERVER_PRIO);
 
 /** @brief Function for resetting the internal state of this module. */
 static void internal_state_reset(void)
 {
-	m_highest_ranked_peer = PM_PEER_ID_INVALID;
-	m_peer_rank_token = PM_STORE_TOKEN_INVALID;
+	highest_ranked_peer = PM_PEER_ID_INVALID;
+	peer_rank_token = PM_STORE_TOKEN_INVALID;
 }
 
 uint32_t pm_init(void)
@@ -370,45 +367,45 @@ uint32_t pm_init(void)
 
 	internal_state_reset();
 
-	m_peer_rank_initialized = false;
-	m_module_initialized = true;
+	peer_rank_initialized = false;
+	module_initialized = true;
 
-	m_flag_conn_excluded = ble_conn_state_user_flag_acquire();
+	flag_conn_excluded = ble_conn_state_user_flag_acquire();
 
 	/* If CONFIG_PM_PEER_RANKS is 0, these variables are unused. */
-	UNUSED_VARIABLE(m_peer_rank_initialized);
-	UNUSED_VARIABLE(m_peer_rank_token);
-	UNUSED_VARIABLE(m_current_highest_peer_rank);
-	UNUSED_VARIABLE(m_highest_ranked_peer);
+	UNUSED_VARIABLE(peer_rank_initialized);
+	UNUSED_VARIABLE(peer_rank_token);
+	UNUSED_VARIABLE(current_highest_peer_rank);
+	UNUSED_VARIABLE(highest_ranked_peer);
 
 	return NRF_SUCCESS;
 }
 
 uint32_t pm_register(pm_evt_handler_t event_handler)
 {
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	if (m_n_registrants >= CONFIG_PM_MAX_REGISTRANTS) {
+	if (n_registrants >= CONFIG_PM_MAX_REGISTRANTS) {
 		return NRF_ERROR_NO_MEM;
 	}
 
-	m_evt_handlers[m_n_registrants] = event_handler;
-	m_n_registrants += 1;
+	evt_handlers[n_registrants] = event_handler;
+	n_registrants += 1;
 
 	return NRF_SUCCESS;
 }
 
-uint32_t pm_sec_params_set(ble_gap_sec_params_t *p_sec_params)
+uint32_t pm_sec_params_set(ble_gap_sec_params_t *sec_params)
 {
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
 	uint32_t err_code;
 
-	err_code = sm_sec_params_set(p_sec_params);
+	err_code = sm_sec_params_set(sec_params);
 
 	/* NRF_ERROR_INVALID_PARAM if parameters are invalid,
 	 * NRF_SUCCESS             otherwise.
@@ -418,7 +415,7 @@ uint32_t pm_sec_params_set(ble_gap_sec_params_t *p_sec_params)
 
 uint32_t pm_conn_secure(uint16_t conn_handle, bool force_repairing)
 {
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
@@ -433,40 +430,40 @@ uint32_t pm_conn_secure(uint16_t conn_handle, bool force_repairing)
 	return err_code;
 }
 
-uint32_t pm_conn_exclude(uint16_t conn_handle, const void *p_context)
+uint32_t pm_conn_exclude(uint16_t conn_handle, const void *context)
 {
-	if (p_context == NULL) {
+	if (context == NULL) {
 		return NRF_ERROR_NULL;
 	}
 
-	bool *p_is_conn_excluded = (bool *)p_context;
+	bool *is_conn_excluded = (bool *)context;
 
-	*p_is_conn_excluded = true;
+	*is_conn_excluded = true;
 
 	return NRF_SUCCESS;
 }
 
-void pm_conn_sec_config_reply(uint16_t conn_handle, struct pm_conn_sec_config *p_conn_sec_config)
+void pm_conn_sec_config_reply(uint16_t conn_handle, struct pm_conn_sec_config *conn_sec_config)
 {
-	if (p_conn_sec_config != NULL) {
-		sm_conn_sec_config_reply(conn_handle, p_conn_sec_config);
+	if (conn_sec_config != NULL) {
+		sm_conn_sec_config_reply(conn_handle, conn_sec_config);
 	}
 }
 
-uint32_t pm_conn_sec_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *p_sec_params,
-				  const void *p_context)
+uint32_t pm_conn_sec_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *sec_params,
+				  const void *context)
 {
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	return sm_sec_params_reply(conn_handle, p_sec_params, p_context);
+	return sm_sec_params_reply(conn_handle, sec_params, context);
 }
 
 void pm_local_database_has_changed(void)
 {
 #if defined(CONFIG_PM_SERVICE_CHANGED)
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return;
 	}
 
@@ -474,162 +471,162 @@ void pm_local_database_has_changed(void)
 #endif
 }
 
-uint32_t pm_id_addr_set(const ble_gap_addr_t *p_addr)
+uint32_t pm_id_addr_set(const ble_gap_addr_t *addr)
 {
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	return im_id_addr_set(p_addr);
+	return im_id_addr_set(addr);
 }
 
-uint32_t pm_id_addr_get(ble_gap_addr_t *p_addr)
+uint32_t pm_id_addr_get(ble_gap_addr_t *addr)
 {
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	if (p_addr == NULL) {
+	if (addr == NULL) {
 		return NRF_ERROR_NULL;
 	}
 
-	return im_id_addr_get(p_addr);
+	return im_id_addr_get(addr);
 }
 
-uint32_t pm_privacy_set(const ble_gap_privacy_params_t *p_privacy_params)
+uint32_t pm_privacy_set(const ble_gap_privacy_params_t *privacy_params)
 {
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	if (p_privacy_params == NULL) {
+	if (privacy_params == NULL) {
 		return NRF_ERROR_NULL;
 	}
 
-	return im_privacy_set(p_privacy_params);
+	return im_privacy_set(privacy_params);
 }
 
-uint32_t pm_privacy_get(ble_gap_privacy_params_t *p_privacy_params)
+uint32_t pm_privacy_get(ble_gap_privacy_params_t *privacy_params)
 {
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	if (p_privacy_params == NULL || p_privacy_params->p_device_irk == NULL) {
+	if (privacy_params == NULL || privacy_params->p_device_irk == NULL) {
 		return NRF_ERROR_NULL;
 	}
 
-	return im_privacy_get(p_privacy_params);
+	return im_privacy_get(privacy_params);
 }
 
-bool pm_address_resolve(const ble_gap_addr_t *p_addr, const ble_gap_irk_t *p_irk)
+bool pm_address_resolve(const ble_gap_addr_t *addr, const ble_gap_irk_t *irk)
 {
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	if ((p_addr == NULL) || (p_irk == NULL)) {
+	if ((addr == NULL) || (irk == NULL)) {
 		return false;
 	} else {
-		return im_address_resolve(p_addr, p_irk);
+		return im_address_resolve(addr, irk);
 	}
 }
 
-uint32_t pm_whitelist_set(const uint16_t *p_peers, uint32_t peer_cnt)
+uint32_t pm_whitelist_set(const uint16_t *peers, uint32_t peer_cnt)
 {
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	return im_whitelist_set(p_peers, peer_cnt);
+	return im_whitelist_set(peers, peer_cnt);
 }
 
-uint32_t pm_whitelist_get(ble_gap_addr_t *p_addrs, uint32_t *p_addr_cnt, ble_gap_irk_t *p_irks,
-			    uint32_t *p_irk_cnt)
+uint32_t pm_whitelist_get(ble_gap_addr_t *addrs, uint32_t *addr_cnt, ble_gap_irk_t *irks,
+			    uint32_t *irk_cnt)
 {
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	if (((p_addrs == NULL) && (p_irks == NULL)) ||
-	    ((p_addrs != NULL) && (p_addr_cnt == NULL)) ||
-	    ((p_irks != NULL) && (p_irk_cnt == NULL))) {
+	if (((addrs == NULL) && (irks == NULL)) ||
+	    ((addrs != NULL) && (addr_cnt == NULL)) ||
+	    ((irks != NULL) && (irk_cnt == NULL))) {
 		/* The buffers can't be both NULL, and if a buffer is provided its size must be
 		 * specified.
 		 */
 		return NRF_ERROR_NULL;
 	}
 
-	return im_whitelist_get(p_addrs, p_addr_cnt, p_irks, p_irk_cnt);
+	return im_whitelist_get(addrs, addr_cnt, irks, irk_cnt);
 }
 
-uint32_t pm_device_identities_list_set(const uint16_t *p_peers, uint32_t peer_cnt)
+uint32_t pm_device_identities_list_set(const uint16_t *peers, uint32_t peer_cnt)
 {
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	return im_device_identities_list_set(p_peers, peer_cnt);
+	return im_device_identities_list_set(peers, peer_cnt);
 }
 
-uint32_t pm_conn_sec_status_get(uint16_t conn_handle, struct pm_conn_sec_status *p_conn_sec_status)
+uint32_t pm_conn_sec_status_get(uint16_t conn_handle, struct pm_conn_sec_status *conn_sec_status)
 {
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	return sm_conn_sec_status_get(conn_handle, p_conn_sec_status);
+	return sm_conn_sec_status_get(conn_handle, conn_sec_status);
 }
 
-bool pm_sec_is_sufficient(uint16_t conn_handle, struct pm_conn_sec_status *p_sec_status_req)
+bool pm_sec_is_sufficient(uint16_t conn_handle, struct pm_conn_sec_status *sec_status_req)
 {
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return false;
 	}
 
-	return sm_sec_is_sufficient(conn_handle, p_sec_status_req);
+	return sm_sec_is_sufficient(conn_handle, sec_status_req);
 }
 
-uint32_t pm_lesc_public_key_set(ble_gap_lesc_p256_pk_t *p_public_key)
+uint32_t pm_lesc_public_key_set(ble_gap_lesc_p256_pk_t *public_key)
 {
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	return sm_lesc_public_key_set(p_public_key);
+	return sm_lesc_public_key_set(public_key);
 }
 
-uint32_t pm_conn_handle_get(uint16_t peer_id, uint16_t *p_conn_handle)
+uint32_t pm_conn_handle_get(uint16_t peer_id, uint16_t *conn_handle)
 {
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	if (p_conn_handle == NULL) {
+	if (conn_handle == NULL) {
 		return NRF_ERROR_NULL;
 	}
 
-	*p_conn_handle = im_conn_handle_get(peer_id);
+	*conn_handle = im_conn_handle_get(peer_id);
 	return NRF_SUCCESS;
 }
 
-uint32_t pm_peer_id_get(uint16_t conn_handle, uint16_t *p_peer_id)
+uint32_t pm_peer_id_get(uint16_t conn_handle, uint16_t *peer_id)
 {
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	if (p_peer_id == NULL) {
+	if (peer_id == NULL) {
 		return NRF_ERROR_NULL;
 	}
 
-	*p_peer_id = im_peer_id_get_by_conn_handle(conn_handle);
+	*peer_id = im_peer_id_get_by_conn_handle(conn_handle);
 	return NRF_SUCCESS;
 }
 
 uint32_t pm_peer_count(void)
 {
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return 0;
 	}
 	return pds_peer_count_get();
@@ -639,7 +636,7 @@ uint16_t pm_next_peer_id_get(uint16_t prev_peer_id)
 {
 	uint16_t next_peer_id = prev_peer_id;
 
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return PM_PEER_ID_INVALID;
 	}
 
@@ -653,12 +650,12 @@ uint16_t pm_next_peer_id_get(uint16_t prev_peer_id)
 /**
  * @brief Function for checking if the peer has a valid Identity Resolving Key.
  *
- * @param[in] p_irk Pointer to the Identity Resolving Key.
+ * @param[in] irk Pointer to the Identity Resolving Key.
  */
-static bool peer_is_irk(const ble_gap_irk_t *const p_irk)
+static bool peer_is_irk(const ble_gap_irk_t *const irk)
 {
-	for (uint32_t i = 0; i < ARRAY_SIZE(p_irk->irk); i++) {
-		if (p_irk->irk[i] != 0) {
+	for (uint32_t i = 0; i < ARRAY_SIZE(irk->irk); i++) {
+		if (irk->irk[i] != 0) {
 			return true;
 		}
 	}
@@ -666,7 +663,7 @@ static bool peer_is_irk(const ble_gap_irk_t *const p_irk)
 	return false;
 }
 
-uint32_t pm_peer_id_list(uint16_t *p_peer_list, uint32_t *const p_list_size,
+uint32_t pm_peer_id_list(uint16_t *peer_list, uint32_t *const list_size,
 			 uint16_t first_peer_id, enum pm_peer_id_list_skip skip_id)
 {
 	uint32_t err_code;
@@ -675,27 +672,27 @@ uint32_t pm_peer_id_list(uint16_t *p_peer_list, uint32_t *const p_list_size,
 	struct pm_peer_data pm_car_data;
 	struct pm_peer_data pm_bond_data;
 	uint16_t current_peer_id = first_peer_id;
-	const ble_gap_addr_t *p_gap_addr;
+	const ble_gap_addr_t *gap_addr;
 	bool skip_no_addr = skip_id & PM_PEER_ID_LIST_SKIP_NO_ID_ADDR;
 	bool skip_no_irk = skip_id & PM_PEER_ID_LIST_SKIP_NO_IRK;
 	bool skip_no_car = skip_id & PM_PEER_ID_LIST_SKIP_NO_CAR;
 
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	if (p_peer_list == NULL || p_list_size == NULL) {
+	if (peer_list == NULL || list_size == NULL) {
 		return NRF_ERROR_NULL;
 	}
 
-	size = *p_list_size;
+	size = *list_size;
 
-	if ((*p_list_size < 1) ||
+	if ((*list_size < 1) ||
 	    (skip_id > (PM_PEER_ID_LIST_SKIP_NO_ID_ADDR | PM_PEER_ID_LIST_SKIP_ALL))) {
 		return NRF_ERROR_INVALID_PARAM;
 	}
 
-	*p_list_size = 0;
+	*list_size = 0;
 
 	if (current_peer_id == PM_PEER_ID_INVALID) {
 		current_peer_id = pm_next_peer_id_get(current_peer_id);
@@ -716,7 +713,7 @@ uint32_t pm_peer_id_list(uint16_t *p_peer_list, uint32_t *const p_list_size,
 			struct pm_peer_data_bonding bonding_data = { 0 };
 			uint32_t bonding_data_size = sizeof(bonding_data);
 
-			pm_bond_data.p_all_data = &bonding_data;
+			pm_bond_data.all_data = &bonding_data;
 
 			err_code = pds_peer_data_read(current_peer_id, PM_PEER_DATA_ID_BONDING,
 						      &pm_bond_data, &bonding_data_size);
@@ -729,10 +726,10 @@ uint32_t pm_peer_id_list(uint16_t *p_peer_list, uint32_t *const p_list_size,
 
 			/* Check data */
 			if (skip_no_addr) {
-				p_gap_addr = &bonding_data.peer_ble_id.id_addr_info;
+				gap_addr = &bonding_data.peer_ble_id.id_addr_info;
 
-				if ((p_gap_addr->addr_type != BLE_GAP_ADDR_TYPE_PUBLIC) &&
-				    (p_gap_addr->addr_type != BLE_GAP_ADDR_TYPE_RANDOM_STATIC)) {
+				if ((gap_addr->addr_type != BLE_GAP_ADDR_TYPE_PUBLIC) &&
+				    (gap_addr->addr_type != BLE_GAP_ADDR_TYPE_RANDOM_STATIC)) {
 					skip = true;
 				}
 			}
@@ -749,7 +746,7 @@ uint32_t pm_peer_id_list(uint16_t *p_peer_list, uint32_t *const p_list_size,
 			uint32_t central_addr_res = 0;
 			uint32_t central_addr_res_size = sizeof(uint32_t);
 
-			pm_car_data.p_all_data = &central_addr_res;
+			pm_car_data.all_data = &central_addr_res;
 
 			err_code = pds_peer_data_read(current_peer_id,
 						      PM_PEER_DATA_ID_CENTRAL_ADDR_RES,
@@ -768,7 +765,7 @@ uint32_t pm_peer_id_list(uint16_t *p_peer_list, uint32_t *const p_list_size,
 		}
 
 		if (!skip) {
-			p_peer_list[current_size++] = current_peer_id;
+			peer_list[current_size++] = current_peer_id;
 
 			if (current_size >= size) {
 				break;
@@ -778,56 +775,56 @@ uint32_t pm_peer_id_list(uint16_t *p_peer_list, uint32_t *const p_list_size,
 		current_peer_id = pm_next_peer_id_get(current_peer_id);
 	}
 
-	*p_list_size = current_size;
+	*list_size = current_size;
 
 	return NRF_SUCCESS;
 }
 
-uint32_t pm_peer_data_load(uint16_t peer_id, enum pm_peer_data_id data_id, void *p_data,
-			     uint32_t *p_length)
+uint32_t pm_peer_data_load(uint16_t peer_id, enum pm_peer_data_id data_id, void *data,
+			   uint32_t *length)
 {
 	struct pm_peer_data peer_data;
 
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	if (p_data == NULL || p_length == NULL) {
+	if (data == NULL || length == NULL) {
 		return NRF_ERROR_NULL;
 	}
 
 	memset(&peer_data, 0, sizeof(peer_data));
-	peer_data.p_all_data = p_data;
+	peer_data.all_data = data;
 
-	return pds_peer_data_read(peer_id, data_id, &peer_data, p_length);
+	return pds_peer_data_read(peer_id, data_id, &peer_data, length);
 }
 
-uint32_t pm_peer_data_bonding_load(uint16_t peer_id, struct pm_peer_data_bonding *p_data)
+uint32_t pm_peer_data_bonding_load(uint16_t peer_id, struct pm_peer_data_bonding *data)
 {
 	uint32_t length = sizeof(struct pm_peer_data_bonding);
 
-	return pm_peer_data_load(peer_id, PM_PEER_DATA_ID_BONDING, p_data, &length);
+	return pm_peer_data_load(peer_id, PM_PEER_DATA_ID_BONDING, data, &length);
 }
 
-uint32_t pm_peer_data_remote_db_load(uint16_t peer_id, struct ble_gatt_db_srv *p_data,
-				       uint32_t *p_length)
+uint32_t pm_peer_data_remote_db_load(uint16_t peer_id, struct ble_gatt_db_srv *data,
+				     uint32_t *length)
 {
-	return pm_peer_data_load(peer_id, PM_PEER_DATA_ID_GATT_REMOTE, p_data, p_length);
+	return pm_peer_data_load(peer_id, PM_PEER_DATA_ID_GATT_REMOTE, data, length);
 }
 
-uint32_t pm_peer_data_app_data_load(uint16_t peer_id, void *p_data, uint32_t *p_length)
+uint32_t pm_peer_data_app_data_load(uint16_t peer_id, void *data, uint32_t *length)
 {
-	return pm_peer_data_load(peer_id, PM_PEER_DATA_ID_APPLICATION, p_data, p_length);
+	return pm_peer_data_load(peer_id, PM_PEER_DATA_ID_APPLICATION, data, length);
 }
 
-uint32_t pm_peer_data_store(uint16_t peer_id, enum pm_peer_data_id data_id, const void *p_data,
-			      uint32_t length, uint32_t *p_token)
+uint32_t pm_peer_data_store(uint16_t peer_id, enum pm_peer_data_id data_id, const void *data,
+			      uint32_t length, uint32_t *token)
 {
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	if (p_data == NULL) {
+	if (data == NULL) {
 		return NRF_ERROR_NULL;
 	}
 
@@ -839,7 +836,7 @@ uint32_t pm_peer_data_store(uint16_t peer_id, enum pm_peer_data_id data_id, cons
 		uint16_t dupl_peer_id;
 
 		dupl_peer_id =
-			im_find_duplicate_bonding_data((struct pm_peer_data_bonding *)p_data,
+			im_find_duplicate_bonding_data((struct pm_peer_data_bonding *)data,
 						       peer_id);
 
 		if (dupl_peer_id != PM_PEER_ID_INVALID) {
@@ -852,33 +849,33 @@ uint32_t pm_peer_data_store(uint16_t peer_id, enum pm_peer_data_id data_id, cons
 	memset(&peer_data, 0, sizeof(peer_data));
 	peer_data.length_words = BYTES_TO_WORDS(length);
 	peer_data.data_id = data_id;
-	peer_data.p_all_data = p_data;
+	peer_data.all_data = data;
 
-	return pds_peer_data_store(peer_id, &peer_data, p_token);
+	return pds_peer_data_store(peer_id, &peer_data, token);
 }
 
-uint32_t pm_peer_data_bonding_store(uint16_t peer_id, const struct pm_peer_data_bonding *p_data,
-				    uint32_t *p_token)
+uint32_t pm_peer_data_bonding_store(uint16_t peer_id, const struct pm_peer_data_bonding *data,
+				    uint32_t *token)
 {
-	return pm_peer_data_store(peer_id, PM_PEER_DATA_ID_BONDING, p_data,
-				  ROUND_UP(sizeof(struct pm_peer_data_bonding), 4), p_token);
+	return pm_peer_data_store(peer_id, PM_PEER_DATA_ID_BONDING, data,
+				  ROUND_UP(sizeof(struct pm_peer_data_bonding), 4), token);
 }
 
-uint32_t pm_peer_data_remote_db_store(uint16_t peer_id, const struct ble_gatt_db_srv *p_data,
-					uint32_t length, uint32_t *p_token)
+uint32_t pm_peer_data_remote_db_store(uint16_t peer_id, const struct ble_gatt_db_srv *data,
+					uint32_t length, uint32_t *token)
 {
-	return pm_peer_data_store(peer_id, PM_PEER_DATA_ID_GATT_REMOTE, p_data, length, p_token);
+	return pm_peer_data_store(peer_id, PM_PEER_DATA_ID_GATT_REMOTE, data, length, token);
 }
 
-uint32_t pm_peer_data_app_data_store(uint16_t peer_id, const void *p_data, uint32_t length,
-				     uint32_t *p_token)
+uint32_t pm_peer_data_app_data_store(uint16_t peer_id, const void *data, uint32_t length,
+				     uint32_t *token)
 {
-	return pm_peer_data_store(peer_id, PM_PEER_DATA_ID_APPLICATION, p_data, length, p_token);
+	return pm_peer_data_store(peer_id, PM_PEER_DATA_ID_APPLICATION, data, length, token);
 }
 
 uint32_t pm_peer_data_delete(uint16_t peer_id, enum pm_peer_data_id data_id)
 {
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
@@ -889,8 +886,8 @@ uint32_t pm_peer_data_delete(uint16_t peer_id, enum pm_peer_data_id data_id)
 	return pds_peer_data_delete(peer_id, data_id);
 }
 
-uint32_t pm_peer_new(uint16_t *p_new_peer_id, struct pm_peer_data_bonding *p_bonding_data,
-		     uint32_t *p_token)
+uint32_t pm_peer_new(uint16_t *new_peer_id, struct pm_peer_data_bonding *bonding_data,
+		     uint32_t *token)
 {
 	uint32_t err_code;
 	uint16_t peer_id;
@@ -898,52 +895,52 @@ uint32_t pm_peer_new(uint16_t *p_new_peer_id, struct pm_peer_data_bonding *p_bon
 	struct pm_peer_data_const peer_data;
 	uint8_t peer_data_buffer[PM_PEER_DATA_MAX_SIZE] = { 0 };
 
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	if (p_new_peer_id == NULL || p_bonding_data == NULL) {
+	if (new_peer_id == NULL || bonding_data == NULL) {
 		return NRF_ERROR_NULL;
 	}
 
 	memset(&peer_data, 0, sizeof(struct pm_peer_data_const));
 
-	peer_data.p_all_data = peer_data_buffer;
+	peer_data.all_data = peer_data_buffer;
 
 	/* Search through existing bonds to look for a duplicate. */
 	pds_peer_data_iterate_prepare(&peer_id_iter);
 
 	while (pds_peer_data_iterate(PM_PEER_DATA_ID_BONDING, &peer_id, &peer_data,
 		&peer_id_iter)) {
-		if (im_is_duplicate_bonding_data(p_bonding_data, peer_data.p_bonding_data)) {
-			*p_new_peer_id = peer_id;
+		if (im_is_duplicate_bonding_data(bonding_data, peer_data.bonding_data)) {
+			*new_peer_id = peer_id;
 			return NRF_SUCCESS;
 		}
 	}
 
 	/* If no duplicate data is found, prepare to write a new bond to flash. */
 
-	*p_new_peer_id = pds_peer_id_allocate();
+	*new_peer_id = pds_peer_id_allocate();
 
-	if (*p_new_peer_id == PM_PEER_ID_INVALID) {
+	if (*new_peer_id == PM_PEER_ID_INVALID) {
 		return NRF_ERROR_NO_MEM;
 	}
 
 	memset(&peer_data, 0, sizeof(struct pm_peer_data_const));
 
 	peer_data.data_id = PM_PEER_DATA_ID_BONDING;
-	peer_data.p_bonding_data = p_bonding_data;
+	peer_data.bonding_data = bonding_data;
 	peer_data.length_words = BYTES_TO_WORDS(sizeof(struct pm_peer_data_bonding));
 
-	err_code = pds_peer_data_store(*p_new_peer_id, &peer_data, p_token);
+	err_code = pds_peer_data_store(*new_peer_id, &peer_data, token);
 
 	if (err_code != NRF_SUCCESS) {
-		uint32_t err_code_free = im_peer_free(*p_new_peer_id);
+		uint32_t err_code_free = im_peer_free(*new_peer_id);
 
 		if (err_code_free != NRF_SUCCESS) {
 			LOG_ERR("Fatal error during cleanup of a failed call to %s. im_peer_free() "
 				"returned %s. peer_id: %d",
-				__func__, nrf_strerror_get(err_code_free), *p_new_peer_id);
+				__func__, nrf_strerror_get(err_code_free), *new_peer_id);
 			return NRF_ERROR_INTERNAL;
 		}
 
@@ -960,7 +957,7 @@ uint32_t pm_peer_new(uint16_t *p_new_peer_id, struct pm_peer_data_bonding *p_bon
 
 uint32_t pm_peer_delete(uint16_t peer_id)
 {
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
@@ -969,17 +966,17 @@ uint32_t pm_peer_delete(uint16_t peer_id)
 
 uint32_t pm_peers_delete(void)
 {
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	m_deleting_all = true;
+	deleting_all = true;
 
 	uint16_t current_peer_id = pds_next_peer_id_get(PM_PEER_ID_INVALID);
 
 	if (current_peer_id == PM_PEER_ID_INVALID) {
 		/* No peers bonded. */
-		m_deleting_all = false;
+		deleting_all = false;
 
 		struct pm_evt pm_delete_all_evt;
 
@@ -1007,26 +1004,33 @@ uint32_t pm_peers_delete(void)
 	return NRF_SUCCESS;
 }
 
-uint32_t pm_peer_ranks_get(uint16_t *p_highest_ranked_peer, uint32_t *p_highest_rank,
-			   uint16_t *p_lowest_ranked_peer, uint32_t *p_lowest_rank)
+uint32_t pm_peer_ranks_get(uint16_t *highest_ranked_peer, uint32_t *highest_rank,
+			   uint16_t *lowest_ranked_peer, uint32_t *lowest_rank)
 {
 #if !defined(CONFIG_PM_PEER_RANKS)
 	return NRF_ERROR_NOT_SUPPORTED;
 #else
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
 	uint16_t peer_id = pds_next_peer_id_get(PM_PEER_ID_INVALID);
 	uint32_t peer_rank = 0;
 	uint32_t length = sizeof(peer_rank);
-	struct pm_peer_data peer_data = {.p_peer_rank = &peer_rank};
+	struct pm_peer_data peer_data = {.peer_rank = &peer_rank};
 	uint32_t err_code =
 		pds_peer_data_read(peer_id, PM_PEER_DATA_ID_PEER_RANK, &peer_data, &length);
-	uint32_t highest_rank = 0;
-	uint32_t lowest_rank = 0xFFFFFFFF;
-	uint16_t highest_ranked_peer = PM_PEER_ID_INVALID;
-	uint16_t lowest_ranked_peer = PM_PEER_ID_INVALID;
+	struct {
+		uint32_t highest;
+		uint32_t lowest;
+		uint16_t highest_peer;
+		uint16_t lowest_peer;
+	} rank = {
+		.highest = 0,
+		.lowest = 0xFFFFFFFF,
+		.highest_peer = PM_PEER_ID_INVALID,
+		.lowest_peer = PM_PEER_ID_INVALID,
+	};
 
 	if (err_code == NRF_ERROR_INVALID_PARAM) {
 		/* No peer IDs exist. */
@@ -1035,13 +1039,13 @@ uint32_t pm_peer_ranks_get(uint16_t *p_highest_ranked_peer, uint32_t *p_highest_
 
 	while ((err_code == NRF_SUCCESS) || (err_code == NRF_ERROR_NOT_FOUND)) {
 		if (err_code == NRF_SUCCESS) {
-			if (peer_rank >= highest_rank) {
-				highest_rank = peer_rank;
-				highest_ranked_peer = peer_id;
+			if (peer_rank >= rank.highest) {
+				rank.highest = peer_rank;
+				rank.highest_peer = peer_id;
 			}
-			if (peer_rank < lowest_rank) {
-				lowest_rank = peer_rank;
-				lowest_ranked_peer = peer_id;
+			if (peer_rank < rank.lowest) {
+				rank.lowest = peer_rank;
+				rank.lowest_peer = peer_id;
 			}
 		}
 		peer_id = pds_next_peer_id_get(peer_id);
@@ -1049,24 +1053,24 @@ uint32_t pm_peer_ranks_get(uint16_t *p_highest_ranked_peer, uint32_t *p_highest_
 			pds_peer_data_read(peer_id, PM_PEER_DATA_ID_PEER_RANK, &peer_data, &length);
 	}
 	if (peer_id == PM_PEER_ID_INVALID) {
-		if ((highest_ranked_peer == PM_PEER_ID_INVALID) ||
-		    (lowest_ranked_peer == PM_PEER_ID_INVALID)) {
+		if ((rank.highest_peer == PM_PEER_ID_INVALID) ||
+		    (rank.lowest_peer == PM_PEER_ID_INVALID)) {
 			err_code = NRF_ERROR_NOT_FOUND;
 		} else {
 			err_code = NRF_SUCCESS;
 		}
 
-		if (p_highest_ranked_peer != NULL) {
-			*p_highest_ranked_peer = highest_ranked_peer;
+		if (highest_ranked_peer != NULL) {
+			*highest_ranked_peer = rank.highest_peer;
 		}
-		if (p_highest_rank != NULL) {
-			*p_highest_rank = highest_rank;
+		if (highest_rank != NULL) {
+			*highest_rank = rank.highest;
 		}
-		if (p_lowest_ranked_peer != NULL) {
-			*p_lowest_ranked_peer = lowest_ranked_peer;
+		if (lowest_ranked_peer != NULL) {
+			*lowest_ranked_peer = rank.lowest_peer;
 		}
-		if (p_lowest_rank != NULL) {
-			*p_lowest_rank = lowest_rank;
+		if (lowest_rank != NULL) {
+			*lowest_rank = rank.lowest;
 		}
 	} else {
 		LOG_ERR("Could not retrieve ranks. pdb_peer_data_load() returned %s. peer_id: %d",
@@ -1090,24 +1094,24 @@ uint32_t pm_peer_rank_highest(uint16_t peer_id)
 #if !defined(CONFIG_PM_PEER_RANKS)
 	return NRF_ERROR_NOT_SUPPORTED;
 #else
-	if (!m_module_initialized) {
+	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
 	uint32_t err_code;
 	struct pm_peer_data_const peer_data = {
-		.length_words = BYTES_TO_WORDS(sizeof(m_current_highest_peer_rank)),
+		.length_words = BYTES_TO_WORDS(sizeof(current_highest_peer_rank)),
 		.data_id = PM_PEER_DATA_ID_PEER_RANK,
-		.p_peer_rank = &m_current_highest_peer_rank};
+		.peer_rank = &current_highest_peer_rank};
 
-	if (!m_peer_rank_initialized) {
+	if (!peer_rank_initialized) {
 		rank_init();
 	}
 
-	if (!m_peer_rank_initialized || (m_peer_rank_token != PM_STORE_TOKEN_INVALID)) {
+	if (!peer_rank_initialized || (peer_rank_token != PM_STORE_TOKEN_INVALID)) {
 		err_code = NRF_ERROR_BUSY;
 	} else {
-		if ((peer_id == m_highest_ranked_peer) && (m_current_highest_peer_rank > 0)) {
+		if ((peer_id == highest_ranked_peer) && (current_highest_peer_rank > 0)) {
 			struct pm_evt pm_evt;
 
 			/* The reported peer is already regarded as highest (provided it has an
@@ -1127,15 +1131,15 @@ uint32_t pm_peer_rank_highest(uint16_t peer_id)
 
 			evt_send(&pm_evt);
 		} else {
-			if (m_current_highest_peer_rank == UINT32_MAX) {
+			if (current_highest_peer_rank == UINT32_MAX) {
 				err_code = NRF_ERROR_DATA_SIZE;
 			} else {
-				m_current_highest_peer_rank += 1;
+				current_highest_peer_rank += 1;
 				err_code = pds_peer_data_store(peer_id, &peer_data,
-							       &m_peer_rank_token);
+							       &peer_rank_token);
 				if (err_code != NRF_SUCCESS) {
-					m_peer_rank_token = PM_STORE_TOKEN_INVALID;
-					m_current_highest_peer_rank -= 1;
+					peer_rank_token = PM_STORE_TOKEN_INVALID;
+					current_highest_peer_rank -= 1;
 					/* Assume INVALID_PARAM
 					 * refers to peer_id, not
 					 * data_id.
