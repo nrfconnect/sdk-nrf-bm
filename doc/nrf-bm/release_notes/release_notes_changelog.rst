@@ -71,6 +71,7 @@ Libraries
 * Updated the following libraries to return ``nrf_errors`` instead of ``errnos``:
 
   * :ref:`lib_ble_adv`.
+  * :ref:`lib_ble_conn_params` library.
 
 * :ref:`lib_ble_conn_params` library:
 
