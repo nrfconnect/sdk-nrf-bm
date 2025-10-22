@@ -83,6 +83,7 @@ Libraries
   * :ref:`lib_ble_gatt_queue` library.
   * :ref:`lib_ble_queued_writes` library.
   * :ref:`lib_ble_service_bas` service.
+  * :ref:`lib_ble_service_dis` service.
   * BLE Record Access Control Point library.
 
 * :ref:`lib_ble_conn_params` library:

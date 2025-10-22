@@ -516,9 +516,9 @@ int main(void)
 		goto idle;
 	}
 
-	err = ble_dis_init();
-	if (err) {
-		LOG_ERR("Failed to initialize device information service, err %d", err);
+	nrf_err = ble_dis_init();
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize device information service, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 
