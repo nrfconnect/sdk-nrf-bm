@@ -74,6 +74,7 @@ Libraries
   * :ref:`lib_ble_conn_params` library.
   * BLE Gatt Queue library.
   * BLE QWR library.
+  * BLE Record Access Control Point library.
 
 * :ref:`lib_ble_conn_params` library:
 
