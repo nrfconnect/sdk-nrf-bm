@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
+#include <nrf_error.h>
 #include <zephyr/sys/__assert.h>
 #include <zephyr/logging/log.h>
 #include <bm/bluetooth/services/ble_lbs.h>
@@ -50,14 +51,14 @@ void ble_lbs_on_ble_evt(const ble_evt_t *ble_evt, void *lbs_instance)
 	}
 }
 
-int ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg)
+uint32_t ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg)
 {
 	uint32_t nrf_err;
 	ble_uuid_t ble_uuid;
 	uint8_t initial_value = 0;
 
 	if (!lbs || !cfg) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 
 	/* Initialize service structure. */
@@ -68,7 +69,7 @@ int ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg)
 	nrf_err = sd_ble_uuid_vs_add(&base_uuid, &lbs->uuid_type);
 	if (nrf_err) {
 		LOG_ERR("Failed to add vendor UUID, nrf_error %#x", nrf_err);
-		return -EINVAL;
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	ble_uuid = (ble_uuid_t) {
@@ -78,10 +79,10 @@ int ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg)
 
 	/* Add service. */
 	nrf_err = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY, &ble_uuid,
-				       &lbs->service_handle);
+					   &lbs->service_handle);
 	if (nrf_err) {
 		LOG_ERR("Failed to add GATT service, nrf_error %#x", nrf_err);
-		return -EINVAL;
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	/* Add Button characteristic. */
@@ -114,10 +115,10 @@ int ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg)
 	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.write_perm);
 
 	nrf_err = sd_ble_gatts_characteristic_add(lbs->service_handle, &char_md, &attr_char_value,
-					      &lbs->button_char_handles);
+						  &lbs->button_char_handles);
 	if (nrf_err) {
 		LOG_ERR("Failed to add button GATT characteristic, nrf_error %#x", nrf_err);
-		return -EINVAL;
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	/* Add LED characteristic. */
@@ -146,23 +147,23 @@ int ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg)
 	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.write_perm);
 
 	nrf_err = sd_ble_gatts_characteristic_add(lbs->service_handle, &char_md, &attr_char_value,
-					      &lbs->led_char_handles);
+						  &lbs->led_char_handles);
 	if (nrf_err) {
 		LOG_ERR("Failed to add LED GATT characteristic, nrf_error %#x", nrf_err);
-		return -EINVAL;
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
-int ble_lbs_on_button_change(struct ble_lbs *lbs, uint16_t conn_handle, uint8_t button_state)
+uint32_t ble_lbs_on_button_change(struct ble_lbs *lbs, uint16_t conn_handle, uint8_t button_state)
 {
-	int err;
+	uint32_t nrf_err;
 
 	uint16_t len = sizeof(button_state);
 
 	if (!lbs) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 
 	ble_gatts_hvx_params_t hvx = {
@@ -172,11 +173,11 @@ int ble_lbs_on_button_change(struct ble_lbs *lbs, uint16_t conn_handle, uint8_t 
 		.p_len = &len,
 	};
 
-	err = sd_ble_gatts_hvx(conn_handle, &hvx);
-	if (err) {
-		LOG_ERR("Failed to notify button change, nrf_error %#x", err);
-		return -EINVAL;
+	nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx);
+	if (nrf_err) {
+		LOG_ERR("Failed to notify button change, nrf_error %#x", nrf_err);
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
-	return 0;
+	return NRF_SUCCESS;
 }

@@ -85,6 +85,7 @@ Libraries
   * :ref:`lib_ble_service_bas` service.
   * :ref:`lib_ble_service_dis` service.
   * :ref:`lib_ble_service_hrs` service.
+  * :ref:`lib_ble_service_lbs` service.
   * BLE Record Access Control Point library.
 
 * :ref:`lib_ble_conn_params` library:
