@@ -344,7 +344,7 @@ uint32_t cgms_socp_char_add(struct ble_cgms *cgms)
 /* Send a Specific Ops Control Point response. */
 static void socp_send(struct ble_cgms *cgms)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	uint8_t encoded_resp[BLE_CGMS_SOCP_LEN];
 	uint16_t len;
 	struct ble_cgms_evt cgms_evt = {
@@ -365,13 +365,13 @@ static void socp_send(struct ble_cgms *cgms)
 		.gatts_hvx.p_len = &len,
 	};
 
-	err = ble_gq_item_add(cgms->gatt_queue, &cgms_req, cgms->conn_handle);
+	nrf_err = ble_gq_item_add(cgms->gatt_queue, &cgms_req, cgms->conn_handle);
 
 	/* Report error to application. */
 	if ((cgms->evt_handler != NULL) &&
-	    (err != NRF_SUCCESS) &&
-	    (err != NRF_ERROR_INVALID_STATE)) {
-		cgms_evt.error.reason = err;
+	    (nrf_err) &&
+	    (nrf_err != NRF_ERROR_INVALID_STATE)) {
+		cgms_evt.error.reason = nrf_err;
 		cgms->evt_handler(cgms, &cgms_evt);
 	}
 }

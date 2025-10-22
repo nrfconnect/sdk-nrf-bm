@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <errno.h>
+#include <nrf_error.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <bm/bluetooth/ble_gq.h>
@@ -28,15 +28,15 @@ LOG_MODULE_REGISTER(ble_gatt_queue, CONFIG_BLE_GQ_LOG_LEVEL);
  * req_buf    Request storage buffer.
  *
  * Should return:
- *   0        if successful.
- *   -ENOMEM  if there are no room in the data pool for a new allocation.
+ * NRF_SUCCESS if successful.
+ * NRF_ERROR_NO_MEM if there are no room in the data pool for a new allocation.
  */
-typedef int (*req_data_store_t)(struct k_heap *data_pool, const struct ble_gq_req *req,
-				struct ble_gq_req *req_buf);
+typedef uint32_t (*req_data_store_t)(struct k_heap *data_pool, const struct ble_gq_req *req,
+				     struct ble_gq_req *req_buf);
 
 /* Prepare a GATTC write request for storage. */
-static int gattc_write_store(struct k_heap *data_pool, const struct ble_gq_req *req,
-			     struct ble_gq_req *req_buf)
+static uint32_t gattc_write_store(struct k_heap *data_pool, const struct ble_gq_req *req,
+				  struct ble_gq_req *req_buf)
 {
 	const ble_gattc_write_params_t *const gattc_write = &req->gattc_write;
 	uint8_t *data;
@@ -44,7 +44,7 @@ static int gattc_write_store(struct k_heap *data_pool, const struct ble_gq_req *
 	/* Allocate additional memory for GATTC write request data. */
 	data = k_heap_aligned_alloc(data_pool, sizeof(void *), gattc_write->len, K_NO_WAIT);
 	if (data == NULL) {
-		return -ENOMEM;
+		return NRF_ERROR_NO_MEM;
 	}
 
 	LOG_DBG("Allocated heap memory with addr: %#lx", (uintptr_t)data);
@@ -59,12 +59,12 @@ static int gattc_write_store(struct k_heap *data_pool, const struct ble_gq_req *
 	req_buf->data = data;
 	req_buf->gattc_write.p_value = data;
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
 /* Prepare a GATTS notification or indication request for storage. */
-static int gatts_hvx_store(struct k_heap *data_pool, const struct ble_gq_req *req,
-			   struct ble_gq_req *req_buf)
+static uint32_t gatts_hvx_store(struct k_heap *data_pool, const struct ble_gq_req *req,
+				struct ble_gq_req *req_buf)
 {
 	const ble_gatts_hvx_params_t *const gatts_hvx = &req->gatts_hvx;
 	uint8_t *data;
@@ -73,7 +73,7 @@ static int gatts_hvx_store(struct k_heap *data_pool, const struct ble_gq_req *re
 	data = k_heap_aligned_alloc(data_pool, sizeof(void *), *gatts_hvx->p_len + sizeof(uint16_t),
 				    K_NO_WAIT);
 	if (data == NULL) {
-		return -ENOMEM;
+		return NRF_ERROR_NO_MEM;
 	}
 
 	LOG_DBG("Allocated heap memory with addr: %#lx", (uintptr_t)data);
@@ -90,7 +90,7 @@ static int gatts_hvx_store(struct k_heap *data_pool, const struct ble_gq_req *re
 	req_buf->gatts_hvx.p_len = (uint16_t *)&data[0];
 	req_buf->gatts_hvx.p_data = &data[sizeof(uint16_t)];
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
 /* Array of memory store functions for different GATT request types. */
@@ -151,9 +151,9 @@ static bool request_process(const struct ble_gq_req *req, uint16_t conn_handle)
 		break;
 	case BLE_GQ_REQ_GATTS_HVX:
 		LOG_DBG("GATTS notification or indication");
-		if (!req->gatts_hvx.p_len) {
+		if (req->gatts_hvx.p_len == NULL) {
 			LOG_DBG("GATTS HVX request p_len is NULL");
-			nrf_err =  NRF_ERROR_INVALID_PARAM;
+			nrf_err = NRF_ERROR_INVALID_PARAM;
 			break;
 		}
 		len = *(req->gatts_hvx.p_len);
@@ -298,13 +298,13 @@ static uint16_t conn_handle_id_find(const struct ble_gq *gq, uint16_t conn_handl
 }
 
 /* Register the provided connection handle within the GATT queue instance registery. */
-static int conn_handle_register(const struct ble_gq *gq, uint16_t conn_handle)
+static uint32_t conn_handle_register(const struct ble_gq *gq, uint16_t conn_handle)
 {
 	uint16_t unused_id = gq->max_conns;
 
 	for (uint16_t id = 0; id < gq->max_conns; id++) {
 		if (gq->conn_handles[id] == conn_handle) {
-			return 0;
+			return NRF_SUCCESS;
 		}
 		if (gq->conn_handles[id] == BLE_CONN_HANDLE_INVALID && unused_id == gq->max_conns) {
 			unused_id = id;
@@ -312,21 +312,22 @@ static int conn_handle_register(const struct ble_gq *gq, uint16_t conn_handle)
 	}
 
 	if (unused_id == gq->max_conns) {
-		return -ENOMEM;
+		return NRF_ERROR_NO_MEM;
 	}
 
 	gq->conn_handles[unused_id] = conn_handle;
-	return 0;
+	return NRF_SUCCESS;
 }
 
-int ble_gq_item_add(const struct ble_gq *gq, struct ble_gq_req *req, uint16_t conn_handle)
+uint32_t ble_gq_item_add(const struct ble_gq *gq, struct ble_gq_req *req, uint16_t conn_handle)
 {
 	int err;
+	uint32_t nrf_err;
 	uint16_t conn_id;
 	struct ble_gq_req *buffered_req;
 
 	if (gq == NULL || req == NULL) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 
 	/* Purge queues that are no longer used by any connection. */
@@ -335,7 +336,7 @@ int ble_gq_item_add(const struct ble_gq *gq, struct ble_gq_req *req, uint16_t co
 	/* Check if connection handle is registered and if GATT request is valid. */
 	conn_id = conn_handle_id_find(gq, conn_handle);
 	if (req->type >= BLE_GQ_REQ_NUM || conn_id >= gq->max_conns) {
-		return -EINVAL;
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	/* Try processing a request without buffering. */
@@ -343,7 +344,7 @@ int ble_gq_item_add(const struct ble_gq *gq, struct ble_gq_req *req, uint16_t co
 		const bool req_processed = request_process(req, conn_handle);
 
 		if (req_processed) {
-			return 0;
+			return NRF_SUCCESS;
 		}
 	}
 
@@ -353,16 +354,16 @@ int ble_gq_item_add(const struct ble_gq *gq, struct ble_gq_req *req, uint16_t co
 	__ASSERT_NO_MSG(gq->req_blocks != NULL);
 	err = k_mem_slab_alloc(gq->req_blocks, (void **)&buffered_req, K_NO_WAIT);
 	if (err) {
-		return err;
+		return NRF_ERROR_NO_MEM;
 	}
 
 	/* Allocate extra memory if required by the request type. */
 	if (req_data_store[req->type] != NULL) {
 		__ASSERT_NO_MSG(gq->data_pool != NULL);
-		err = req_data_store[req->type](gq->data_pool, req, buffered_req);
-		if (err) {
+		nrf_err = req_data_store[req->type](gq->data_pool, req, buffered_req);
+		if (nrf_err) {
 			k_mem_slab_free(gq->req_blocks, buffered_req);
-			return err;
+			return nrf_err;
 		}
 	} else {
 		/* Copy request. No extra memory needed. */
@@ -374,29 +375,29 @@ int ble_gq_item_add(const struct ble_gq *gq, struct ble_gq_req *req, uint16_t co
 
 	/* Check if SoftDevice is still busy. */
 	queue_process(gq, conn_handle, conn_id);
-	return 0;
+	return NRF_SUCCESS;
 }
 
-int ble_gq_conn_handle_register(const struct ble_gq *gq, uint16_t conn_handle)
+uint32_t ble_gq_conn_handle_register(const struct ble_gq *gq, uint16_t conn_handle)
 {
-	int err;
+	uint32_t nrf_err;
 
 	if (gq == NULL) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 
 	/* Purge the queues that are no longer used by any connection. */
 	req_queues_purge(gq);
 
 	/* Find a free spot in the connection handle registery and register the connection. */
-	err = conn_handle_register(gq, conn_handle);
-	if (err) {
+	nrf_err = conn_handle_register(gq, conn_handle);
+	if (nrf_err) {
 		LOG_DBG("Failed to register connection handle 0x%04x", conn_handle);
-		return err;
+		return nrf_err;
 	}
 
 	LOG_DBG("Registered connection handle 0x%04x", conn_handle);
-	return 0;
+	return NRF_SUCCESS;
 }
 
 void ble_gq_on_ble_evt(const ble_evt_t *ble_evt, void *gatt_queue)

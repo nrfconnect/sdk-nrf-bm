@@ -254,12 +254,14 @@ struct ble_gq {
  * @param[in] req          Pointer to the request.
  * @param[in] conn_handle  Connection handle associated with the request.
  *
- * @retval 0        Request was added successfully.
- * @retval -EFAULT  Any parameter was NULL.
- * @retval -EINVAL  If @p conn_handle is not registered or type of request @p req is not valid.
- * @retval -ENOMEM  There was no room in the queue or in the data pool.
+ * @retval NRF_SUCCESS Request was added successfully.
+ * @retval NRF_ERROR_NULL Any parameter was NULL.
+ * @retval NRF_ERROR_INVALID_PARAM If @p conn_handle is not registered or type of request
+ *                                 @p req is not valid.
+ * @retval NRF_ERROR_NO_MEM There was no room in the queue or in the data pool.
  */
-int ble_gq_item_add(const struct ble_gq *gatt_queue, struct ble_gq_req *req, uint16_t conn_handle);
+uint32_t ble_gq_item_add(const struct ble_gq *gatt_queue, struct ble_gq_req *req,
+			 uint16_t conn_handle);
 
 /**
  * @brief Register connection handle in the GATT queue instance.
@@ -271,11 +273,11 @@ int ble_gq_item_add(const struct ble_gq *gatt_queue, struct ble_gq_req *req, uin
  * @param[in] gatt_queue   Pointer to the @ref ble_gq instance.
  * @param[in] conn_handle  Connection handle.
  *
- * @retval 0        Connection handle was successful registered.
- * @retval -EFAULT  If @p gatt_queue was NULL.
- * @retval -ENOMEM  No space for another connection handle.
+ * @retval NRF_SUCCESS Connection handle was successful registered.
+ * @retval NRF_ERROR_NULL If @p gatt_queue was NULL.
+ * @retval NRF_ERROR_NO_MEM No space for another connection handle.
  */
-int ble_gq_conn_handle_register(const struct ble_gq *gatt_queue, uint16_t conn_handle);
+uint32_t ble_gq_conn_handle_register(const struct ble_gq *gatt_queue, uint16_t conn_handle);
 
 /**
  * @brief Handle BLE events from the SoftDevice.
