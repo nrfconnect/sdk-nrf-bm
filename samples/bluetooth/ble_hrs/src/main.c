@@ -95,6 +95,7 @@ static void heart_rate_meas_timeout_handler(void *context)
 {
 	static uint32_t cnt;
 	int err;
+	uint32_t nrf_err;
 	uint32_t heart_rate;
 
 	ARG_UNUSED(context);
@@ -105,11 +106,11 @@ static void heart_rate_meas_timeout_handler(void *context)
 		return;
 	}
 
-	err = ble_hrs_heart_rate_measurement_send(&ble_hrs, (uint16_t)heart_rate);
-	if (err) {
+	nrf_err = ble_hrs_heart_rate_measurement_send(&ble_hrs, (uint16_t)heart_rate);
+	if (nrf_err) {
 		/* Ignore if not in a connection or notifications disabled in CCCD. */
-		if (err != -ENOTCONN && err != -EPIPE) {
-			LOG_ERR("Failed to update heart rate measurement, err %d", err);
+		if (nrf_err != NRF_ERROR_NOT_FOUND && nrf_err != NRF_ERROR_INVALID_STATE) {
+			LOG_ERR("Failed to update heart rate measurement, nrf_error %#x", nrf_err);
 		}
 	}
 
@@ -123,6 +124,7 @@ static void heart_rate_meas_timeout_handler(void *context)
 static void rr_interval_timeout_handler(void *context)
 {
 	int err;
+	uint32_t nrf_err;
 	uint32_t rr_interval;
 
 	ARG_UNUSED(context);
@@ -138,9 +140,9 @@ static void rr_interval_timeout_handler(void *context)
 			break;
 		}
 
-		err = ble_hrs_rr_interval_add(&ble_hrs, (uint16_t)rr_interval);
-		if (err) {
-			LOG_ERR("Failed to add RR interval, err %d", err);
+		nrf_err = ble_hrs_rr_interval_add(&ble_hrs, (uint16_t)rr_interval);
+		if (nrf_err) {
+			LOG_ERR("Failed to add RR interval, nrf_error %#x", nrf_err);
 		}
 	}
 }
@@ -148,14 +150,14 @@ static void rr_interval_timeout_handler(void *context)
 static void sensor_contact_detected_timeout_handler(void *context)
 {
 	static bool sim_sensor_contact_detected;
-	int err;
+	uint32_t nrf_err;
 
 	ARG_UNUSED(context);
 
 	sim_sensor_contact_detected = !sim_sensor_contact_detected;
-	err = ble_hrs_sensor_contact_detected_update(&ble_hrs, sim_sensor_contact_detected);
-	if (err) {
-		LOG_ERR("Failed to update sensor contact detected state, err %d", err);
+	nrf_err = ble_hrs_sensor_contact_detected_update(&ble_hrs, sim_sensor_contact_detected);
+	if (nrf_err) {
+		LOG_ERR("Failed to update sensor contact detected state, nrf_error %#x", nrf_err);
 	}
 }
 
@@ -504,9 +506,9 @@ int main(void)
 
 	LOG_INF("Peer Manager initialized");
 
-	err = ble_hrs_init(&ble_hrs, &hrs_cfg);
-	if (err) {
-		LOG_ERR("Failed to initialize heart rate service, err %d", err);
+	nrf_err = ble_hrs_init(&ble_hrs, &hrs_cfg);
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize heart rate service, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 

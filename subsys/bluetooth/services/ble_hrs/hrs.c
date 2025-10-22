@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
+#include <nrf_error.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
@@ -211,13 +212,13 @@ void ble_hrs_on_ble_evt(const ble_evt_t *ble_evt, void *hrs_instance)
 	}
 }
 
-int ble_hrs_init(struct ble_hrs *hrs, const struct ble_hrs_config *cfg)
+uint32_t ble_hrs_init(struct ble_hrs *hrs, const struct ble_hrs_config *cfg)
 {
-	int err;
+	uint32_t nrf_err;
 	ble_uuid_t ble_uuid;
 
 	if (hrs == NULL || cfg == NULL) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 
 	/* Initialize service structure. */
@@ -231,39 +232,41 @@ int ble_hrs_init(struct ble_hrs *hrs, const struct ble_hrs_config *cfg)
 	BLE_UUID_BLE_ASSIGN(ble_uuid, BLE_UUID_HEART_RATE_SERVICE);
 
 	/* Add Heart rate service declaration. */
-	err = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY, &ble_uuid,
-				       &hrs->service_handle);
-	if (err) {
-		LOG_ERR("Failed to add heart rate service, nrf_error %#x", err);
-		return -EINVAL;
+	nrf_err = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY, &ble_uuid,
+					   &hrs->service_handle);
+	if (nrf_err) {
+		LOG_ERR("Failed to add heart rate service, nrf_error %#x", nrf_err);
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	/* Add Heart rate measurement characteristic. */
-	err = heart_rate_measurement_char_add(hrs, cfg);
-	if (err) {
-		LOG_ERR("Failed to add heart rate measurement characteristic, nrf_error %#x", err);
-		return -EINVAL;
+	nrf_err = heart_rate_measurement_char_add(hrs, cfg);
+	if (nrf_err) {
+		LOG_ERR("Failed to add heart rate measurement characteristic, nrf_error %#x",
+			nrf_err);
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	/* Add Body sensor location characteristic. */
-	err = body_sensor_location_char_add(hrs, cfg);
-	if (err) {
-		LOG_ERR("Failed to add body sensor location characteristic, nrf_error %#x", err);
-		return -EINVAL;
+	nrf_err = body_sensor_location_char_add(hrs, cfg);
+	if (nrf_err) {
+		LOG_ERR("Failed to add body sensor location characteristic, nrf_error %#x",
+			nrf_err);
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
-int ble_hrs_heart_rate_measurement_send(struct ble_hrs *hrs, uint16_t heart_rate)
+uint32_t ble_hrs_heart_rate_measurement_send(struct ble_hrs *hrs, uint16_t heart_rate)
 {
-	int err;
+	uint32_t nrf_err;
 	uint8_t encoded_hrm[MAX_HRM_LEN_CALC(CONFIG_NRF_SDH_BLE_GATT_MAX_MTU_SIZE)];
 	uint16_t len;
 	uint16_t hvx_len;
 
 	if (!hrs) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 
 	LOG_INF("Heart rate: %d bpm", heart_rate);
@@ -281,29 +284,29 @@ int ble_hrs_heart_rate_measurement_send(struct ble_hrs *hrs, uint16_t heart_rate
 		.p_data = encoded_hrm,
 	};
 
-	err = sd_ble_gatts_hvx(hrs->conn_handle, &hvx);
-	switch (err) {
+	nrf_err = sd_ble_gatts_hvx(hrs->conn_handle, &hvx);
+	switch (nrf_err) {
 	case NRF_SUCCESS:
 		if (hvx_len != len) {
 			LOG_ERR("Notified %d of %d bytes", hvx_len, len);
-			return -EINVAL;
+			return NRF_ERROR_INVALID_PARAM;
 		}
-		return 0;
+		return NRF_SUCCESS;
 	case BLE_ERROR_INVALID_CONN_HANDLE:
-		return -ENOTCONN;
+		return NRF_ERROR_NOT_FOUND;
 	case NRF_ERROR_INVALID_STATE:
 	case BLE_ERROR_GATTS_SYS_ATTR_MISSING:
-		return -EPIPE;
+		return NRF_ERROR_INVALID_STATE;
 	default:
-		LOG_ERR("Failed to notify heart rate measurement, nrf_error %#x", err);
-		return -EINVAL;
+		LOG_ERR("Failed to notify heart rate measurement, nrf_error %#x", nrf_err);
+		return NRF_ERROR_INVALID_PARAM;
 	}
 }
 
-int ble_hrs_rr_interval_add(struct ble_hrs *hrs, uint16_t rr_interval)
+uint32_t ble_hrs_rr_interval_add(struct ble_hrs *hrs, uint16_t rr_interval)
 {
 	if (!hrs) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 
 	if (hrs->rr_interval_count == CONFIG_BLE_HRS_MAX_BUFFERED_RR_INTERVALS) {
@@ -313,7 +316,7 @@ int ble_hrs_rr_interval_add(struct ble_hrs *hrs, uint16_t rr_interval)
 	}
 
 	hrs->rr_interval[hrs->rr_interval_count++] = rr_interval;
-	return 0;
+	return NRF_SUCCESS;
 }
 
 bool ble_hrs_rr_interval_buffer_is_full(struct ble_hrs *hrs)
@@ -323,34 +326,35 @@ bool ble_hrs_rr_interval_buffer_is_full(struct ble_hrs *hrs)
 	return (hrs->rr_interval_count == CONFIG_BLE_HRS_MAX_BUFFERED_RR_INTERVALS);
 }
 
-int ble_hrs_sensor_contact_supported_set(struct ble_hrs *hrs, bool is_sensor_contact_supported)
+uint32_t ble_hrs_sensor_contact_supported_set(struct ble_hrs *hrs, bool is_sensor_contact_supported)
 {
 	if (!hrs) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 
 	/* Check if we are connected to peer. */
 	if (hrs->conn_handle != BLE_CONN_HANDLE_INVALID) {
-		return -EISCONN;
+		return NRF_ERROR_INVALID_STATE;
 	}
 
 	hrs->is_sensor_contact_supported = is_sensor_contact_supported;
-	return 0;
+	return NRF_SUCCESS;
 }
 
-int ble_hrs_sensor_contact_detected_update(struct ble_hrs *hrs, bool is_sensor_contact_detected)
+uint32_t ble_hrs_sensor_contact_detected_update(struct ble_hrs *hrs,
+						bool is_sensor_contact_detected)
 {
 	if (!hrs) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 
 	hrs->is_sensor_contact_detected = is_sensor_contact_detected;
-	return 0;
+	return NRF_SUCCESS;
 }
 
-int ble_hrs_body_sensor_location_set(struct ble_hrs *hrs, uint8_t body_sensor_location)
+uint32_t ble_hrs_body_sensor_location_set(struct ble_hrs *hrs, uint8_t body_sensor_location)
 {
-	int err;
+	uint32_t nrf_err;
 	ble_gatts_value_t gatts_value = {
 		.len = sizeof(uint8_t),
 		.offset = 0,
@@ -358,16 +362,17 @@ int ble_hrs_body_sensor_location_set(struct ble_hrs *hrs, uint8_t body_sensor_lo
 	};
 
 	if (!hrs) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 
-	err = sd_ble_gatts_value_set(hrs->conn_handle, hrs->bsl_handles.value_handle, &gatts_value);
-	if (err) {
-		LOG_ERR("Failed to update body sensor location, nrf_error %#x", err);
-		return -EINVAL;
+	nrf_err = sd_ble_gatts_value_set(hrs->conn_handle, hrs->bsl_handles.value_handle,
+					 &gatts_value);
+	if (nrf_err) {
+		LOG_ERR("Failed to update body sensor location, nrf_error %#x", nrf_err);
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
 void ble_hrs_conn_params_evt(struct ble_hrs *hrs, const struct ble_conn_params_evt *conn_params_evt)
