@@ -123,16 +123,16 @@ static void battery_level_meas_timeout_handler(void *context)
 
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {
-	int err;
+	uint32_t nrf_err;
 
 	switch (evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:
 		LOG_INF("Peer connected");
 		conn_handle = evt->evt.gap_evt.conn_handle;
 
-		err = ble_qwr_conn_handle_assign(&ble_qwr, conn_handle);
-		if (err) {
-			LOG_ERR("Failed to assign qwr handle, nrf_error %#x", err);
+		nrf_err = ble_qwr_conn_handle_assign(&ble_qwr, conn_handle);
+		if (nrf_err) {
+			LOG_ERR("Failed to assign qwr handle, nrf_error %#x", nrf_err);
 			return;
 		}
 
@@ -798,9 +798,9 @@ int main(void)
 		goto idle;
 	}
 
-	err = ble_qwr_init(&ble_qwr, &qwr_config);
-	if (err) {
-		LOG_ERR("ble_qwr_init failed, err %d", err);
+	nrf_err = ble_qwr_init(&ble_qwr, &qwr_config);
+	if (nrf_err) {
+		LOG_ERR("ble_qwr_init failed, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 

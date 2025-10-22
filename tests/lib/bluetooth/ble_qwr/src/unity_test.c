@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <errno.h>
+#include <nrf_error.h>
 #include <unity.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -20,36 +20,36 @@ static uint16_t ble_qwr_evt_handler(struct ble_qwr *qwr, const struct ble_qwr_ev
 	return 0;
 }
 
-void test_ble_qwr_init_efault(void)
+void test_ble_qwr_init_error_null(void)
 {
-	int err;
+	uint32_t nrf_err;
 	struct ble_qwr qwr;
 	struct ble_qwr_config qwr_config = {0};
 
-	err = ble_qwr_init(&qwr, NULL);
-	TEST_ASSERT_EQUAL(-EFAULT, err);
+	nrf_err = ble_qwr_init(&qwr, NULL);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 
-	err = ble_qwr_init(NULL, &qwr_config);
-	TEST_ASSERT_EQUAL(-EFAULT, err);
+	nrf_err = ble_qwr_init(NULL, &qwr_config);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 }
 
-void test_ble_qwr_init_eperm(void)
+void test_ble_qwr_init_error_invalid_state(void)
 {
-	int err;
+	uint32_t nrf_err;
 	struct ble_qwr qwr;
 	struct ble_qwr_config qwr_config = {0};
 
-	err = ble_qwr_init(&qwr, &qwr_config);
-	TEST_ASSERT_EQUAL(0, err);
+	nrf_err = ble_qwr_init(&qwr, &qwr_config);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	/* Second attempt should fail */
-	err = ble_qwr_init(&qwr, &qwr_config);
-	TEST_ASSERT_EQUAL(-EPERM, err);
+	nrf_err = ble_qwr_init(&qwr, &qwr_config);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, nrf_err);
 }
 
 void test_ble_qwr_init(void)
 {
-	int err;
+	uint32_t nrf_err;
 	uint8_t mem[10];
 	struct ble_qwr qwr;
 	struct ble_qwr_config qwr_config = {
@@ -60,8 +60,8 @@ void test_ble_qwr_init(void)
 		.evt_handler = ble_qwr_evt_handler,
 	};
 
-	err = ble_qwr_init(&qwr, &qwr_config);
-	TEST_ASSERT_EQUAL(0, err);
+	nrf_err = ble_qwr_init(&qwr, &qwr_config);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	TEST_ASSERT_EQUAL(BLE_CONN_HANDLE_INVALID, qwr.conn_handle);
 	TEST_ASSERT_EQUAL(0, qwr.nb_registered_attr);
@@ -74,26 +74,26 @@ void test_ble_qwr_init(void)
 	TEST_ASSERT_EQUAL_PTR(ble_qwr_evt_handler, qwr.evt_handler);
 }
 
-void test_ble_qwr_attr_register_efault(void)
+void test_ble_qwr_attr_register_error_null(void)
 {
-	int err;
+	uint32_t nrf_err;
 
-	err = ble_qwr_attr_register(NULL, 1);
-	TEST_ASSERT_EQUAL(-EFAULT, err);
+	nrf_err = ble_qwr_attr_register(NULL, 1);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 }
 
-void test_ble_qwr_attr_register_eperm(void)
+void test_ble_qwr_attr_register_error_invalid_state(void)
 {
-	int err;
+	uint32_t nrf_err;
 	struct ble_qwr qwr = {0};
 
-	err = ble_qwr_attr_register(&qwr, 1);
-	TEST_ASSERT_EQUAL(-EPERM, err);
+	nrf_err = ble_qwr_attr_register(&qwr, 1);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, nrf_err);
 }
 
-void test_ble_qwr_attr_register_einval(void)
+void test_ble_qwr_attr_register_error_invalid_param(void)
 {
-	int err;
+	uint32_t nrf_err;
 	uint8_t mem[10];
 	struct ble_qwr qwr;
 	struct ble_qwr_config qwr_config = {
@@ -104,16 +104,16 @@ void test_ble_qwr_attr_register_einval(void)
 		.evt_handler = ble_qwr_evt_handler,
 	};
 
-	err = ble_qwr_init(&qwr, &qwr_config);
-	TEST_ASSERT_EQUAL(0, err);
+	nrf_err = ble_qwr_init(&qwr, &qwr_config);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	err = ble_qwr_attr_register(&qwr, BLE_GATT_HANDLE_INVALID);
-	TEST_ASSERT_EQUAL(-EINVAL, err);
+	nrf_err = ble_qwr_attr_register(&qwr, BLE_GATT_HANDLE_INVALID);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, nrf_err);
 }
 
-void test_ble_qwr_attr_register_enomem(void)
+void test_ble_qwr_attr_register_error_no_mem(void)
 {
-	int err;
+	uint32_t nrf_err;
 	uint8_t mem[10];
 	struct ble_qwr qwr;
 	struct ble_qwr_config qwr_config = {
@@ -127,11 +127,11 @@ void test_ble_qwr_attr_register_enomem(void)
 	qwr_config.mem_buffer.p_mem = NULL;
 	qwr_config.mem_buffer.len = sizeof(mem);
 
-	err = ble_qwr_init(&qwr, &qwr_config);
-	TEST_ASSERT_EQUAL(0, err);
+	nrf_err = ble_qwr_init(&qwr, &qwr_config);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	err = ble_qwr_attr_register(&qwr, 1);
-	TEST_ASSERT_EQUAL(-ENOMEM, err);
+	nrf_err = ble_qwr_attr_register(&qwr, 1);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NO_MEM, nrf_err);
 
 	/* Reset qwr so it can be initialized again */
 	qwr.initialized = 0;
@@ -139,11 +139,11 @@ void test_ble_qwr_attr_register_enomem(void)
 	qwr_config.mem_buffer.p_mem = mem;
 	qwr_config.mem_buffer.len = 0;
 
-	err = ble_qwr_init(&qwr, &qwr_config);
-	TEST_ASSERT_EQUAL(0, err);
+	nrf_err = ble_qwr_init(&qwr, &qwr_config);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	err = ble_qwr_attr_register(&qwr, 1);
-	TEST_ASSERT_EQUAL(-ENOMEM, err);
+	nrf_err = ble_qwr_attr_register(&qwr, 1);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NO_MEM, nrf_err);
 
 	/* Reset qwr so it can be initialized again */
 	qwr.initialized = 0;
@@ -151,22 +151,22 @@ void test_ble_qwr_attr_register_enomem(void)
 	qwr_config.mem_buffer.p_mem = mem;
 	qwr_config.mem_buffer.len = sizeof(mem);
 
-	err = ble_qwr_init(&qwr, &qwr_config);
-	TEST_ASSERT_EQUAL(0, err);
+	nrf_err = ble_qwr_init(&qwr, &qwr_config);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	err = ble_qwr_attr_register(&qwr, 1);
-	TEST_ASSERT_EQUAL(0, err);
+	nrf_err = ble_qwr_attr_register(&qwr, 1);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	err = ble_qwr_attr_register(&qwr, 2);
-	TEST_ASSERT_EQUAL(0, err);
+	nrf_err = ble_qwr_attr_register(&qwr, 2);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	err = ble_qwr_attr_register(&qwr, 3);
-	TEST_ASSERT_EQUAL(-ENOMEM, err);
+	nrf_err = ble_qwr_attr_register(&qwr, 3);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NO_MEM, nrf_err);
 }
 
 void test_ble_qwr_attr_register(void)
 {
-	int err;
+	uint32_t nrf_err;
 	uint8_t mem[10];
 	struct ble_qwr qwr;
 	struct ble_qwr_config qwr_config = {
@@ -177,51 +177,51 @@ void test_ble_qwr_attr_register(void)
 		.evt_handler = ble_qwr_evt_handler,
 	};
 
-	err = ble_qwr_init(&qwr, &qwr_config);
-	TEST_ASSERT_EQUAL(0, err);
+	nrf_err = ble_qwr_init(&qwr, &qwr_config);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	err = ble_qwr_attr_register(&qwr, 0xa1);
-	TEST_ASSERT_EQUAL(0, err);
+	nrf_err = ble_qwr_attr_register(&qwr, 0xa1);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 	TEST_ASSERT_EQUAL(1, qwr.nb_registered_attr);
 	TEST_ASSERT_EQUAL(0xa1, qwr.attr_handles[0]);
 
-	err = ble_qwr_attr_register(&qwr, 0xa2);
-	TEST_ASSERT_EQUAL(0, err);
+	nrf_err = ble_qwr_attr_register(&qwr, 0xa2);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 	TEST_ASSERT_EQUAL(2, qwr.nb_registered_attr);
 	TEST_ASSERT_EQUAL(0xa2, qwr.attr_handles[1]);
 }
 
-void test_ble_qwr_value_get_efault(void)
+void test_ble_qwr_value_get_error_null(void)
 {
-	int err;
+	uint32_t nrf_err;
 	struct ble_qwr qwr;
 	uint8_t mem[1];
 	uint16_t len = sizeof(mem);
 
-	err = ble_qwr_value_get(NULL, 1, mem, &len);
-	TEST_ASSERT_EQUAL(-EFAULT, err);
+	nrf_err = ble_qwr_value_get(NULL, 1, mem, &len);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 
-	err = ble_qwr_value_get(&qwr, 1, NULL, &len);
-	TEST_ASSERT_EQUAL(-EFAULT, err);
+	nrf_err = ble_qwr_value_get(&qwr, 1, NULL, &len);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 
-	err = ble_qwr_value_get(&qwr, 1, mem, NULL);
-	TEST_ASSERT_EQUAL(-EFAULT, err);
+	nrf_err = ble_qwr_value_get(&qwr, 1, mem, NULL);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 }
 
-void test_ble_qwr_value_get_eperm(void)
+void test_ble_qwr_value_get_error_invalid_state(void)
 {
-	int err;
+	uint32_t nrf_err;
 	struct ble_qwr qwr = {0};
 	uint8_t mem[1];
 	uint16_t len = sizeof(mem);
 
-	err = ble_qwr_value_get(&qwr, 1, mem, &len);
-	TEST_ASSERT_EQUAL(-EPERM, err);
+	nrf_err = ble_qwr_value_get(&qwr, 1, mem, &len);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, nrf_err);
 }
 
 void test_ble_qwr_value_get(void)
 {
-	int err;
+	uint32_t nrf_err;
 	struct ble_qwr qwr = {0};
 	/* mem is filled by softdevice, we do it here */
 	uint8_t mem[] = {
@@ -256,44 +256,44 @@ void test_ble_qwr_value_get(void)
 		0x15, 0x16,
 	};
 
-	err = ble_qwr_init(&qwr, &qwr_config);
-	TEST_ASSERT_EQUAL(0, err);
+	nrf_err = ble_qwr_init(&qwr, &qwr_config);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	err = ble_qwr_value_get(&qwr, 0xa1, buf, &buf_len);
-	TEST_ASSERT_EQUAL(0, err);
+	nrf_err = ble_qwr_value_get(&qwr, 0xa1, buf, &buf_len);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 	TEST_ASSERT_EQUAL(12, buf_len);
 	TEST_ASSERT_EQUAL_MEMORY(attr1_expected_val, buf, sizeof(attr1_expected_val));
 
-	err = ble_qwr_value_get(&qwr, 0xa2, buf, &buf_len);
-	TEST_ASSERT_EQUAL(0, err);
+	nrf_err = ble_qwr_value_get(&qwr, 0xa2, buf, &buf_len);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 	TEST_ASSERT_EQUAL(6, buf_len);
 	TEST_ASSERT_EQUAL_MEMORY(attr2_expected_val, buf, sizeof(attr2_expected_val));
 
-	err = ble_qwr_value_get(&qwr, 0xa3, buf, &buf_len);
-	TEST_ASSERT_EQUAL(0, err);
+	nrf_err = ble_qwr_value_get(&qwr, 0xa3, buf, &buf_len);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 	TEST_ASSERT_EQUAL(0, buf_len);
 }
 
-void test_ble_qwr_conn_handle_assign_efault(void)
+void test_ble_qwr_conn_handle_assign_error_null(void)
 {
-	int err;
+	uint32_t nrf_err;
 
-	err = ble_qwr_conn_handle_assign(NULL, 1);
-	TEST_ASSERT_EQUAL(-EFAULT, err);
+	nrf_err = ble_qwr_conn_handle_assign(NULL, 1);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 }
 
-void test_ble_qwr_conn_handle_assign_eperm(void)
+void test_ble_qwr_conn_handle_assign_error_invalid_state(void)
 {
-	int err;
+	uint32_t nrf_err;
 	struct ble_qwr qwr = {0};
 
-	err = ble_qwr_conn_handle_assign(&qwr, 1);
-	TEST_ASSERT_EQUAL(-EPERM, err);
+	nrf_err = ble_qwr_conn_handle_assign(&qwr, 1);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, nrf_err);
 }
 
 void test_ble_qwr_conn_handle_assign(void)
 {
-	int err;
+	uint32_t nrf_err;
 	struct ble_qwr qwr = {0};
 	uint8_t mem[1];
 	struct ble_qwr_config qwr_config = {
@@ -304,11 +304,11 @@ void test_ble_qwr_conn_handle_assign(void)
 		.evt_handler = ble_qwr_evt_handler,
 	};
 
-	err = ble_qwr_init(&qwr, &qwr_config);
-	TEST_ASSERT_EQUAL(0, err);
+	nrf_err = ble_qwr_init(&qwr, &qwr_config);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	err = ble_qwr_conn_handle_assign(&qwr, 0xC044);
-	TEST_ASSERT_EQUAL(0, err);
+	nrf_err = ble_qwr_conn_handle_assign(&qwr, 0xC044);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	TEST_ASSERT_EQUAL(0xC044, qwr.conn_handle);
 }
@@ -326,7 +326,7 @@ void test_ble_qwr_on_ble_evt_do_nothing(void)
 
 void test_ble_qwr_on_ble_evt_mem_req_sd_busy(void)
 {
-	int err;
+	uint32_t nrf_err;
 	struct ble_qwr qwr = {0};
 	uint8_t mem[16];
 	struct ble_qwr_config qwr_config = {
@@ -362,11 +362,11 @@ void test_ble_qwr_on_ble_evt_mem_req_sd_busy(void)
 	};
 
 	/* Initialize qwr */
-	err = ble_qwr_init(&qwr, &qwr_config);
-	TEST_ASSERT_EQUAL(0, err);
+	nrf_err = ble_qwr_init(&qwr, &qwr_config);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	err = ble_qwr_conn_handle_assign(&qwr, 0xC044);
-	TEST_ASSERT_EQUAL(0, err);
+	nrf_err = ble_qwr_conn_handle_assign(&qwr, 0xC044);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	__cmock_sd_ble_user_mem_reply_ExpectAndReturn(0xC044, &qwr.mem_buffer, NRF_ERROR_BUSY);
 	ble_qwr_on_ble_evt(&ble_evt_mem_req, &qwr);
@@ -378,7 +378,7 @@ void test_ble_qwr_on_ble_evt_mem_req_sd_busy(void)
 
 void test_ble_qwr_on_ble_evt_mem_req(void)
 {
-	int err;
+	uint32_t nrf_err;
 	struct ble_qwr qwr = {0};
 	uint8_t mem[16];
 	struct ble_qwr_config qwr_config = {
@@ -414,11 +414,11 @@ void test_ble_qwr_on_ble_evt_mem_req(void)
 	};
 
 	/* Initialize qwr */
-	err = ble_qwr_init(&qwr, &qwr_config);
-	TEST_ASSERT_EQUAL(0, err);
+	nrf_err = ble_qwr_init(&qwr, &qwr_config);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	err = ble_qwr_conn_handle_assign(&qwr, 0xC044);
-	TEST_ASSERT_EQUAL(0, err);
+	nrf_err = ble_qwr_conn_handle_assign(&qwr, 0xC044);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	__cmock_sd_ble_user_mem_reply_ExpectAndReturn(0xC044, &qwr.mem_buffer, NRF_SUCCESS);
 	ble_qwr_on_ble_evt(&ble_evt_mem_req, &qwr);

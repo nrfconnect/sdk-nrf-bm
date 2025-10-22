@@ -604,6 +604,7 @@ static uint32_t adv_init(void)
 int main(void)
 {
 	int err;
+	uint32_t nrf_err;
 	uint8_t uuid_type;
 	struct ble_qwr_config qwr_config = {
 		.evt_handler = on_ble_qwr_evt,
@@ -677,9 +678,9 @@ int main(void)
 
 	LOG_INF("Bluetooth enabled");
 
-	err = ble_qwr_init(&ble_qwr, &qwr_config);
-	if (err) {
-		LOG_ERR("Failed to initialize QWR, err %d", err);
+	nrf_err = ble_qwr_init(&ble_qwr, &qwr_config);
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize QWR, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 

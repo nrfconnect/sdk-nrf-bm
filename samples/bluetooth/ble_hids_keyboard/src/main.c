@@ -949,9 +949,9 @@ int main(void)
 		goto idle;
 	}
 
-	err = ble_qwr_init(&ble_qwr, &qwr_config);
-	if (err) {
-		LOG_ERR("ble_qwr_init failed, err %d", err);
+	nrf_err = ble_qwr_init(&ble_qwr, &qwr_config);
+	if (nrf_err) {
+		LOG_ERR("ble_qwr_init failed, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 

@@ -67,7 +67,7 @@ struct ble_qwr_evt {
 	union {
 		/** @ref BLE_QWR_EVT_ERROR event data. */
 		struct {
-			int reason;
+			uint32_t reason;
 		} error;
 		/** @ref BLE_QWR_EVT_EXECUTE_WRITE event data. */
 		struct {
@@ -159,11 +159,11 @@ struct ble_qwr_config {
  *                 Queued Writes instance.
  * @param[in] qwr_init Initialization structure.
  *
- * @retval 0 If the Queued Writes module was initialized successfully.
- * @retval -EFAULT If @p qwr or @p qwr_init is @c NULL.
- * @retval -EPERM If the given @p qwr instance has already been initialized.
+ * @retval NRF_SUCCESS If the Queued Writes module was initialized successfully.
+ * @retval NRF_ERROR_NULL If @p qwr or @p qwr_init is @c NULL.
+ * @retval NRF_ERROR_INVALID_STATE If the given @p qwr instance has already been initialized.
  */
-int ble_qwr_init(struct ble_qwr *qwr, struct ble_qwr_config const *qwr_config);
+uint32_t ble_qwr_init(struct ble_qwr *qwr, struct ble_qwr_config const *qwr_config);
 
 /**
  * @brief Function for assigning a connection handle to an instance of the Queued Writes module.
@@ -175,11 +175,11 @@ int ble_qwr_init(struct ble_qwr *qwr, struct ble_qwr_config const *qwr_config);
  * @param[in] qwr Queued Writes structure.
  * @param[in] conn_handle Connection handle to be associated with the given Queued Writes instance.
  *
- * @retval 0 If the assignment was successful.
- * @retval -EFAULT If @p qwr is @c NULL.
- * @retval -EPERM If the given @p qwr instance has not been initialized.
+ * @retval NRF_SUCCESS If the assignment was successful.
+ * @retval NRF_ERROR_NULL If @p qwr is @c NULL.
+ * @retval NRF_ERROR_INVALID_STATE If the given @p qwr instance has not been initialized.
  */
-int ble_qwr_conn_handle_assign(struct ble_qwr *qwr, uint16_t conn_handle);
+uint32_t ble_qwr_conn_handle_assign(struct ble_qwr *qwr, uint16_t conn_handle);
 
 /**
  * @brief Function for handling BLE stack events.
@@ -201,12 +201,12 @@ void ble_qwr_on_ble_evt(ble_evt_t const *ble_evt, void *context);
  * @param[in] qwr Queued Writes structure.
  * @param[in] attr_handle Handle of the attribute to register.
  *
- * @retval 0 If the registration was successful.
- * @retval -ENOMEM If no more memory is available to add this registration.
- * @retval -EFAULT If @p qwr is @c NULL.
- * @retval -EPERM If the given @p qwr instance has not been initialized.
+ * @retval NRF_SUCCESS If the registration was successful.
+ * @retval NRF_ERROR_NO_MEM If no more memory is available to add this registration.
+ * @retval NRF_ERROR_NULL If @p qwr is @c NULL.
+ * @retval NRF_ERROR_INVALID_STATE If the given @p qwr instance has not been initialized.
  */
-int ble_qwr_attr_register(struct ble_qwr *qwr, uint16_t attr_handle);
+uint32_t ble_qwr_attr_register(struct ble_qwr *qwr, uint16_t attr_handle);
 
 /**
  * @brief Function for retrieving the received data for a given attribute.
@@ -219,12 +219,12 @@ int ble_qwr_attr_register(struct ble_qwr *qwr, uint16_t attr_handle);
  * @param[out] mem Pointer to the application buffer where the received data will be copied.
  * @param[in,out] len Input: length of the input buffer. Output: length of the received data.
  *
- * @retval 0 If the data was retrieved and stored successfully.
- * @retval -ENOMEM If the provided buffer was smaller than the received data.
- * @retval -EFAULT If @p qwr, @p mem or @p len is @c NULL.
- * @retval -EPERM If the given @p qwr instance has not been initialized.
+ * @retval NRF_SUCCESS If the data was retrieved and stored successfully.
+ * @retval NRF_ERROR_NO_MEM If the provided buffer was smaller than the received data.
+ * @retval NRF_ERROR_NULL If @p qwr, @p mem or @p len is @c NULL.
+ * @retval NRF_ERROR_INVALID_STATE If the given @p qwr instance has not been initialized.
  */
-int ble_qwr_value_get(
+uint32_t ble_qwr_value_get(
 	struct ble_qwr *qwr, uint16_t attr_handle, uint8_t *mem, uint16_t *len);
 #endif /* (CONFIG_BLE_QWR_MAX_ATTR > 0) */
 

@@ -188,7 +188,6 @@ static void uarte_evt_handler(nrfx_uarte_event_t const *event, void *ctx)
  */
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {
-	int err;
 	uint32_t nrf_err;
 
 	switch (evt->header.evt_id) {
@@ -201,9 +200,9 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 			LOG_ERR("Failed to set system attributes, nrf_error %#x", nrf_err);
 		}
 
-		err = ble_qwr_conn_handle_assign(&ble_qwr, conn_handle);
-		if (err) {
-			LOG_ERR("Failed to assign qwr handle, err %d", err);
+		nrf_err = ble_qwr_conn_handle_assign(&ble_qwr, conn_handle);
+		if (nrf_err) {
+			LOG_ERR("Failed to assign qwr handle, nrf_error %#x", nrf_err);
 			return;
 		}
 		break;
@@ -483,9 +482,9 @@ int main(void)
 
 	LOG_INF("Bluetooth enabled");
 
-	err = ble_qwr_init(&ble_qwr, &qwr_config);
-	if (err) {
-		LOG_ERR("ble_qwr_init failed, err %d", err);
+	nrf_err = ble_qwr_init(&ble_qwr, &qwr_config);
+	if (nrf_err) {
+		LOG_ERR("ble_qwr_init failed, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 
