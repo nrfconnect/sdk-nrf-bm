@@ -291,6 +291,7 @@ int ble_mcumgr_data_send(uint8_t *data, uint16_t *len, struct ble_mcumgr_client_
 static int smp_ncs_bm_bt_tx_pkt(struct net_buf *nb)
 {
 	int rc;
+	uint32_t nrf_err;
 	struct ble_mcumgr_client_context *ctx;
 	uint16_t notification_size;
 	uint8_t *send_pos = nb->data;
@@ -301,9 +302,8 @@ static int smp_ncs_bm_bt_tx_pkt(struct net_buf *nb)
 	}
 
 	ctx = &contexts[0];
-	rc = ble_conn_params_att_mtu_get(conn_handle, &notification_size);
-
-	if (rc) {
+	nrf_err = ble_conn_params_att_mtu_get(conn_handle, &notification_size);
+	if (nrf_err) {
 		goto finish;
 	}
 
