@@ -68,13 +68,14 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Libraries
 =========
 
-* Updated the following libraries to return ``nrf_errors`` instead of ``errnos``:
+* Updated the following libraries and BLE services to return ``nrf_errors`` instead of ``errnos``:
 
   * :ref:`lib_ble_adv`.
   * :ref:`lib_ble_conn_params` library.
   * BLE Gatt Queue library.
   * BLE QWR library.
   * BLE Record Access Control Point library.
+  * :ref:`lib_ble_service_bas` service.
 
 * :ref:`lib_ble_conn_params` library:
 

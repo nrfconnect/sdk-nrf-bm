@@ -152,11 +152,11 @@ struct ble_bas {
  * @param bas Battery service.
  * @param bas_config Battery service configuration.
  *
- * @retval 0 On success.
- * @retval -EFAULT If @p bas or @p bas_config are @c NULL.
- * @retval -EINVAL Invalid parameters.
+ * @retval NRF_SUCCESS On success.
+ * @retval NRF_ERROR_NULL If @p bas or @p bas_config are @c NULL.
+ * @retval NRF_ERROR_INVALID_PARAM Invalid parameters.
  */
-int ble_bas_init(struct ble_bas *bas, const struct ble_bas_config *bas_config);
+uint32_t ble_bas_init(struct ble_bas *bas, const struct ble_bas_config *bas_config);
 
 /**
  * @brief Update battery level.
@@ -168,13 +168,14 @@ int ble_bas_init(struct ble_bas *bas, const struct ble_bas_config *bas_config);
  * @param conn_handle Connection handle.
  * @param battery_level Battery level (in percent of full capacity).
  *
- * @retval 0 On success.
- * @retval -EFAULT If @p bas is @c NULL.
- * @retval -EINVAL Invalid parameters.
- * @retval -ENOTCONN Invalid connection handle.
- * @retval -EPIPE Notifications not enabled in the CCCD.
+ * @retval NRF_SUCCESS On success.
+ * @retval NRF_ERROR_NULL If @p bas is @c NULL.
+ * @retval NRF_ERROR_INVALID_PARAM Invalid parameters.
+ * @retval NRF_ERROR_NOT_FOUND Invalid connection handle.
+ * @retval NRF_ERROR_INVALID_STATE Notifications not enabled in the CCCD.
  */
-int ble_bas_battery_level_update(struct ble_bas *bas, uint16_t conn_handle, uint8_t battery_level);
+uint32_t ble_bas_battery_level_update(struct ble_bas *bas, uint16_t conn_handle,
+				      uint8_t battery_level);
 
 /**
  * @brief Notify battery level.
@@ -186,13 +187,13 @@ int ble_bas_battery_level_update(struct ble_bas *bas, uint16_t conn_handle, uint
  * @param bas Battery service.
  * @param conn_handle Connection handle.
  *
- * @retval 0 On success.
- * @retval -EFAULT If @p bas is @c NULL.
- * @retval -EINVAL Invalid parameters.
- * @retval -ENOTCONN Invalid connection handle.
- * @retval -EPIPE Notifications not enabled in the CCCD.
+ * @retval NRF_SUCCESS On success.
+ * @retval NRF_ERROR_NULL If @p bas is @c NULL.
+ * @retval NRF_ERROR_INVALID_PARAM Invalid parameters.
+ * @retval NRF_ERROR_NOT_FOUND Invalid connection handle.
+ * @retval NRF_ERROR_INVALID_STATE Notifications not enabled in the CCCD.
  */
-int ble_bas_battery_level_notify(struct ble_bas *bas, uint16_t conn_handle);
+uint32_t ble_bas_battery_level_notify(struct ble_bas *bas, uint16_t conn_handle);
 
 #ifdef __cplusplus
 }

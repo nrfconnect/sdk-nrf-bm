@@ -173,6 +173,7 @@ void report_fifo_clear(void)
 static void battery_level_meas_timeout_handler(void *context)
 {
 	int err;
+	uint32_t nrf_err;
 	uint32_t battery_level;
 
 	ARG_UNUSED(context);
@@ -182,11 +183,11 @@ static void battery_level_meas_timeout_handler(void *context)
 		LOG_ERR("Sensorsim measure failed, err %d", err);
 	}
 
-	err = ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level);
-	if (err) {
+	nrf_err = ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level);
+	if (nrf_err) {
 		/* Ignore if not in a connection or notifications disabled in CCCD. */
-		if (err != -ENOTCONN && err != -EPIPE) {
-			LOG_ERR("Failed to update battery level, err %d", err);
+		if (nrf_err != NRF_ERROR_NOT_FOUND && nrf_err != NRF_ERROR_INVALID_STATE) {
+			LOG_ERR("Failed to update battery level, nrf_error %#x", nrf_err);
 		}
 	}
 }
@@ -961,9 +962,9 @@ int main(void)
 		goto idle;
 	}
 
-	err = ble_bas_init(&ble_bas, &bas_config);
-	if (err) {
-		LOG_ERR("Failed to initialize BAS service, err %d", err);
+	nrf_err = ble_bas_init(&ble_bas, &bas_config);
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize BAS service, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 
