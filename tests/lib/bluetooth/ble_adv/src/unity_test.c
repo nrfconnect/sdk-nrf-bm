@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <errno.h>
+#include <nrf_error.h>
 #include <unity.h>
 #include <stdint.h>
 #include <string.h>
@@ -30,7 +30,7 @@ void test_ble_adv_conn_cfg_tag_set(void)
 	int ret;
 
 	ret = ble_adv_conn_cfg_tag_set(NULL, conn_cfg_tag);
-	TEST_ASSERT_EQUAL(-EFAULT, ret);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, ret);
 
 	ret = ble_adv_conn_cfg_tag_set(&ble_adv, conn_cfg_tag);
 	TEST_ASSERT_EQUAL(0, ret);
@@ -38,7 +38,7 @@ void test_ble_adv_conn_cfg_tag_set(void)
 	TEST_ASSERT_EQUAL(conn_cfg_tag, ble_adv.conn_cfg_tag);
 }
 
-void test_ble_adv_init_efault(void)
+void test_ble_adv_init_error_null(void)
 {
 	struct ble_adv ble_adv;
 	struct ble_adv_config config = {
@@ -48,15 +48,15 @@ void test_ble_adv_init_efault(void)
 	int ret;
 
 	ret = ble_adv_init(NULL, &config);
-	TEST_ASSERT_EQUAL(-EFAULT, ret);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, ret);
 	ret = ble_adv_init(&ble_adv, NULL);
-	TEST_ASSERT_EQUAL(-EFAULT, ret);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, ret);
 	config.evt_handler = NULL;
 	ret = ble_adv_init(&ble_adv, &config);
-	TEST_ASSERT_EQUAL(-EFAULT, ret);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, ret);
 }
 
-void test_ble_adv_init_einval(void)
+void test_ble_adv_init_error_invalid_param(void)
 {
 	struct ble_adv ble_adv = {
 		.adv_handle = BLE_GAP_ADV_SET_HANDLE_NOT_SET,
@@ -74,7 +74,7 @@ void test_ble_adv_init_einval(void)
 	__cmock_sd_ble_gap_device_name_set_ExpectAndReturn(&sec_mode, CONFIG_BLE_ADV_NAME,
 		strlen(CONFIG_BLE_ADV_NAME), NRF_ERROR_INVALID_ADDR);
 	ret = ble_adv_init(&ble_adv, &config);
-	TEST_ASSERT_EQUAL(-EINVAL, ret);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, ret);
 
 	/* Simulate an error in setting the adv config */
 	__cmock_sd_ble_gap_device_name_set_ExpectAndReturn(&sec_mode, CONFIG_BLE_ADV_NAME,
@@ -82,7 +82,7 @@ void test_ble_adv_init_einval(void)
 	__cmock_sd_ble_gap_adv_set_configure_ExpectAndReturn(&ble_adv.adv_handle,
 		NULL, &ble_adv.adv_params, NRF_ERROR_INVALID_ADDR);
 	ret = ble_adv_init(&ble_adv, &config);
-	TEST_ASSERT_EQUAL(-EINVAL, ret);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, ret);
 }
 
 void test_ble_adv_init(void)
@@ -126,13 +126,13 @@ void test_ble_adv_peer_addr_reply(void)
 	int ret;
 
 	ret = ble_adv_peer_addr_reply(NULL, &peer_addr);
-	TEST_ASSERT_EQUAL(-EFAULT, ret);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, ret);
 
 	ret = ble_adv_peer_addr_reply(&ble_adv, NULL);
-	TEST_ASSERT_EQUAL(-EFAULT, ret);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, ret);
 
 	ret = ble_adv_peer_addr_reply(&ble_adv, &peer_addr);
-	TEST_ASSERT_EQUAL(-EINVAL, ret);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, ret);
 
 	peer_addr = (ble_gap_addr_t){
 		.addr_id_peer = 0,
@@ -157,14 +157,14 @@ void test_ble_adv_whitelist_reply(void)
 	const ble_gap_irk_t irks = {0};
 
 	ret = ble_adv_whitelist_reply(NULL, &addrs, 0, &irks, 0);
-	TEST_ASSERT_EQUAL(-EFAULT, ret);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, ret);
 
 	ret = ble_adv_whitelist_reply(&ble_adv_config, &addrs, 0, &irks, 0);
-	TEST_ASSERT_EQUAL(-EPERM, ret);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, ret);
 
 	ble_adv_config.whitelist_reply_expected = NULL;
 	ret = ble_adv_whitelist_reply(&ble_adv_config, NULL, 0, NULL, 0);
-	TEST_ASSERT_EQUAL(-EPERM, ret);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, ret);
 
 	ble_adv_config.whitelist_reply_expected = true;
 	ret = ble_adv_whitelist_reply(&ble_adv_config, &addrs, 0, &irks, 0);
@@ -248,7 +248,7 @@ void test_ble_adv_start(void)
 	}
 }
 
-void test_ble_adv_start_einval(void)
+void test_ble_adv_start_error_invalid_param(void)
 {
 	struct ble_adv ble_adv = {
 		.is_initialized = true,
@@ -259,12 +259,12 @@ void test_ble_adv_start_einval(void)
 
 	__cmock_sd_ble_gap_adv_set_configure_IgnoreAndReturn(NRF_ERROR_INVALID_PARAM);
 	ret = ble_adv_start(&ble_adv, BLE_ADV_MODE_SLOW);
-	TEST_ASSERT_EQUAL(-EINVAL, ret);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, ret);
 
 	__cmock_sd_ble_gap_adv_set_configure_IgnoreAndReturn(NRF_SUCCESS);
 	__cmock_sd_ble_gap_adv_start_IgnoreAndReturn(NRF_ERROR_INVALID_STATE);
 	ret = ble_adv_start(&ble_adv, BLE_ADV_MODE_SLOW);
-	TEST_ASSERT_EQUAL(-EINVAL, ret);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, ret);
 }
 
 void setUp(void)
