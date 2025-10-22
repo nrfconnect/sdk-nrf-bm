@@ -28,9 +28,9 @@ extern "C" {
 /**
  * @brief Function for dispatching SoftDevice events to the ID Manager module.
  *
- * @param[in]  p_ble_evt  The SoftDevice event.
+ * @param[in]  ble_evt  The SoftDevice event.
  */
-void im_ble_evt_handler(const ble_evt_t *p_ble_evt);
+void im_ble_evt_handler(const ble_evt_t *ble_evt);
 
 /**
  * @brief Function for getting the corresponding peer ID from a connection handle.
@@ -44,11 +44,11 @@ uint16_t im_peer_id_get_by_conn_handle(uint16_t conn_handle);
 /**
  * @brief Function for getting the corresponding peer ID from a master ID (EDIV and rand).
  *
- * @param[in]  p_master_id  The master ID.
+ * @param[in]  master_id  The master ID.
  *
  * @return The corresponding peer ID, or @ref PM_PEER_ID_INVALID if none could be resolved.
  */
-uint16_t im_peer_id_get_by_master_id(const ble_gap_master_id_t *p_master_id);
+uint16_t im_peer_id_get_by_master_id(const ble_gap_master_id_t *master_id);
 
 /**
  * @brief Function for getting the corresponding connection handle from a peer ID.
@@ -64,57 +64,57 @@ uint16_t im_conn_handle_get(uint16_t peer_id);
  * @brief Function for comparing two master ids
  * @note  Two invalid master IDs will not match.
  *
- * @param[in]  p_master_id1 First master id for comparison
- * @param[in]  p_master_id2 Second master id for comparison
+ * @param[in]  master_id1  First master id for comparison
+ * @param[in]  master_id2  Second master id for comparison
  *
  * @return     True if the input matches, false if it does not.
  */
-bool im_master_ids_compare(const ble_gap_master_id_t *p_master_id1,
-			   const ble_gap_master_id_t *p_master_id2);
+bool im_master_ids_compare(const ble_gap_master_id_t *master_id1,
+			   const ble_gap_master_id_t *master_id2);
 
 /**
  * @brief Function for getting the BLE address used by the peer when connecting.
  *
  * @param[in]  conn_handle  The connection handle.
- * @param[out] p_ble_addr   The BLE address used by the peer when the connection specified by
+ * @param[out] ble_addr     The BLE address used by the peer when the connection specified by
  *                          conn_handle was established. Cannot be NULL.
  *
  * @retval NRF_SUCCESS                   The address was found and copied.
  * @retval BLE_ERROR_INVALID_CONN_HANDLE conn_handle does not refer to an active connection.
  */
-uint32_t im_ble_addr_get(uint16_t conn_handle, ble_gap_addr_t *p_ble_addr);
+uint32_t im_ble_addr_get(uint16_t conn_handle, ble_gap_addr_t *ble_addr);
 
 /**
  * @brief Function for checking if a master ID is valid or invalid
  *
- * @param[in]  p_master_id  The master ID.
+ * @param[in]  master_id  The master ID.
  *
  * @retval true   The master id is valid.
  * @retval false  The master id is invalid (i.e. all zeros).
  */
-bool im_master_id_is_valid(const ble_gap_master_id_t *p_master_id);
+bool im_master_id_is_valid(const ble_gap_master_id_t *master_id);
 
 /**
  * @brief Function for checking if two pieces of bonding data correspond to the same peer.
  *
- * @param[in]  p_bonding_data1  The first piece of bonding data to check.
- * @param[in]  p_bonding_data2  The second piece of bonding data to check.
+ * @param[in]  bonding_data1  The first piece of bonding data to check.
+ * @param[in]  bonding_data2  The second piece of bonding data to check.
  *
  * @retval true   The bonding data correspond to the same peer.
  * @retval false  The bonding data do not correspond to the same peer.
  */
-bool im_is_duplicate_bonding_data(const struct pm_peer_data_bonding *p_bonding_data1,
-				  const struct pm_peer_data_bonding *p_bonding_data2);
+bool im_is_duplicate_bonding_data(const struct pm_peer_data_bonding *bonding_data1,
+				  const struct pm_peer_data_bonding *bonding_data2);
 
 /**
  * @brief Function for finding if we are already bonded to a peer.
  *
- * @param[in]  p_bonding_data  The bonding data to check.
- * @param[in]  peer_id_skip    Optional peer to ignore when searching for duplicates.
+ * @param[in]  bonding_data  The bonding data to check.
+ * @param[in]  peer_id_skip  Optional peer to ignore when searching for duplicates.
  *
  * @return  An existing peer ID for the peer, or PM_PEER_ID_INVALID if none was found.
  */
-uint16_t im_find_duplicate_bonding_data(const struct pm_peer_data_bonding *p_bonding_data,
+uint16_t im_find_duplicate_bonding_data(const struct pm_peer_data_bonding *bonding_data,
 					uint16_t peer_id_skip);
 
 /**
@@ -151,7 +151,7 @@ uint32_t im_peer_free(uint16_t peer_id);
  *       upon being enabled. The address is a random number populated during the IC manufacturing
  *       process and remains unchanged for the lifetime of each IC.
  *
- * @param[in] p_addr Pointer to address structure.
+ * @param[in] addr  Pointer to address structure.
  *
  * @retval NRF_SUCCESS                     Address successfully set.
  * @retval BLE_ERROR_GAP_INVALID_BLE_ADDR  If the GAP address is invalid.
@@ -161,7 +161,7 @@ uint32_t im_peer_free(uint16_t peer_id);
  *                                         scanning, or while in a connection.
  * @retval NRF_ERROR_INTERNAL              If an internal error occurred.
  */
-uint32_t im_id_addr_set(const ble_gap_addr_t *p_addr);
+uint32_t im_id_addr_set(const ble_gap_addr_t *addr);
 
 /**
  * @brief Function to get the local Bluetooth identity address.
@@ -170,41 +170,41 @@ uint32_t im_id_addr_set(const ble_gap_addr_t *p_addr);
  *       i.e. the address type will always be either @ref BLE_GAP_ADDR_TYPE_PUBLIC or @ref
  *       BLE_GAP_ADDR_TYPE_RANDOM_STATIC.
  *
- * @param[out] p_addr Pointer to address structure to be filled in.
+ * @param[out] addr  Pointer to address structure to be filled in.
  *
  * @retval NRF_SUCCESS  If the address was successfully retrieved.
  */
-uint32_t im_id_addr_get(ble_gap_addr_t *p_addr);
+uint32_t im_id_addr_get(ble_gap_addr_t *addr);
 
 /**
  * @brief Function to set privacy settings.
  *
  * @details Privacy settings cannot be set while advertising, scanning, or while in a connection.
  *
- * @param[in] p_privacy_params Privacy settings.
+ * @param[in] privacy_params  Privacy settings.
  *
  * @retval NRF_SUCCESS              If privacy options were set successfully.
- * @retval NRF_ERROR_NULL           If @p p_privacy_params is NULL.
+ * @retval NRF_ERROR_NULL           If @p privacy_params is NULL.
  * @retval NRF_ERROR_INVALID_PARAM  If the address type is not valid.
  * @retval NRF_ERROR_BUSY           If the request could not be processed at this time.
  *                                  Process SoftDevice events and retry.
  * @retval NRF_ERROR_INVALID_STATE  Privacy settings cannot be changed while BLE roles using
  *                                  privacy are enabled.
  */
-uint32_t im_privacy_set(const ble_gap_privacy_params_t *p_privacy_params);
+uint32_t im_privacy_set(const ble_gap_privacy_params_t *privacy_params);
 
 /**
  * @brief Function to retrieve the current privacy settings.
  *
  * @details The privacy settings returned include the current device irk as well.
  *
- * @param[in] p_privacy_params Privacy settings.
+ * @param[in] privacy_params  Privacy settings.
  *
  * @retval NRF_SUCCESS            Successfully retrieved privacy settings.
- * @retval NRF_ERROR_NULL         @c p_privacy_params is NULL.
+ * @retval NRF_ERROR_NULL         @c privacy_params is NULL.
  * @retval NRF_ERROR_INTERNAL     If an internal error occurred.
  */
-uint32_t im_privacy_get(ble_gap_privacy_params_t *p_privacy_params);
+uint32_t im_privacy_get(ble_gap_privacy_params_t *privacy_params);
 
 /**
  * @brief Function for resolving a resolvable address with an identity resolution key (IRK).
@@ -214,19 +214,19 @@ uint32_t im_privacy_get(ble_gap_privacy_params_t *p_privacy_params);
  *          resolvable address based on any IRKs you have received earlier. If an address is
  *          resolved by an IRK, the device distributing the address must also know the IRK.
  *
- * @param[in] p_addr  A random resolvable address.
- * @param[in] p_irk   An identity resolution key (IRK).
+ * @param[in] addr  A random resolvable address.
+ * @param[in] irk   An identity resolution key (IRK).
  *
  * @retval true   The irk used matched the one used to create the address.
  * @retval false  The irk used did not match the one used to create the address, or an argument was
  *                NULL.
  */
-bool im_address_resolve(const ble_gap_addr_t *p_addr, const ble_gap_irk_t *p_irk);
+bool im_address_resolve(const ble_gap_addr_t *addr, const ble_gap_irk_t *irk);
 
 /**
  * @brief Function for setting / clearing the whitelist.
  *
- * @param p_peers   The peers to whitelist. Pass NULL to clear the whitelist.
+ * @param peers     The peers to whitelist. Pass NULL to clear the whitelist.
  * @param peer_cnt  The number of peers to whitelist. Pass zero to clear the whitelist.
  *
  * @retval NRF_SUCCESS                      If the whitelist was successfully set or cleared.
@@ -237,17 +237,17 @@ bool im_address_resolve(const ble_gap_addr_t *p_addr, const ble_gap_irk_t *p_irk
  * @retval NRF_ERROR_DATA_SIZE              If @p peer_cnt is greater than
  *                                          @ref BLE_GAP_WHITELIST_ADDR_MAX_COUNT.
  */
-uint32_t im_whitelist_set(const uint16_t *p_peers, const uint32_t peer_cnt);
+uint32_t im_whitelist_set(const uint16_t *peers, const uint32_t peer_cnt);
 
 /**
  * @brief Retrieves the current whitelist, set by a previous call to @ref im_whitelist_set.
  *
- * @param[out]   A buffer where to copy the GAP addresses.
- * @param[inout] In: the size of the @p p_addrs buffer.
- *               Out: the number of address copied into the buffer.
- * @param[out]   A buffer where to copy the IRKs.
- * @param[inout] In: the size of the @p p_irks buffer.
- *               Out: the number of IRKs copied into the buffer.
+ * @param[out]   addrs     A buffer where to copy the GAP addresses.
+ * @param[inout] addr_cnt  In: the size of the @p addrs buffer.
+ *                         Out: the number of addresses copied into the buffer.
+ * @param[out]   irks      A buffer where to copy the IRKs.
+ * @param[inout] irk_cnt   In: the size of the @p irks buffer.
+ *                         Out: the number of IRKs copied into the buffer.
  *
  * @retval NRF_SUCCESS                      If the whitelist was successfully retrieved.
  * @retval BLE_ERROR_GAP_INVALID_BLE_ADDR   If any peer has an address which can not be used for
@@ -257,11 +257,11 @@ uint32_t im_whitelist_set(const uint16_t *p_peers, const uint32_t peer_cnt);
  *                                          the meanwhile.
  * @retval NRF_ERROR_NO_MEM                 If the provided buffers are too small.
  */
-uint32_t im_whitelist_get(ble_gap_addr_t *p_addrs, uint32_t *p_addr_cnt, ble_gap_irk_t *p_irks,
-			    uint32_t *p_irk_cnt);
+uint32_t im_whitelist_get(ble_gap_addr_t *addrs, uint32_t *addr_cnt, ble_gap_irk_t *irks,
+			  uint32_t *irk_cnt);
 
 /** @brief Set the device identities list. */
-uint32_t im_device_identities_list_set(const uint16_t *p_peers, uint32_t peer_cnt);
+uint32_t im_device_identities_list_set(const uint16_t *peers, uint32_t peer_cnt);
 
 #ifdef __cplusplus
 }

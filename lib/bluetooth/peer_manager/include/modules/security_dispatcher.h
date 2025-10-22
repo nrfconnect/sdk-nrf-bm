@@ -48,10 +48,10 @@ void smd_ble_evt_handler(const ble_evt_t *ble_evt);
  *          is not called in time, a default configuration is used. See @ref pm_conn_sec_config
  *          for the value of the default.
  *
- * @param[in]  conn_handle        The connection to set the configuration for.
- * @param[in]  p_conn_sec_config  The configuration.
+ * @param[in]  conn_handle      The connection to set the configuration for.
+ * @param[in]  conn_sec_config  The configuration.
  */
-void smd_conn_sec_config_reply(uint16_t conn_handle, struct pm_conn_sec_config *p_conn_sec_config);
+void smd_conn_sec_config_reply(uint16_t conn_handle, struct pm_conn_sec_config *conn_sec_config);
 
 /**
  * @brief Function for providing pairing and bonding parameters to use for the current pairing
@@ -61,11 +61,11 @@ void smd_conn_sec_config_reply(uint16_t conn_handle, struct pm_conn_sec_config *
  *       BLE_ERROR_INVALID_CONN_HANDLE, or @ref NRF_ERROR_RESOURCES, this function can be called
  *       again after corrective action.
  *
- * @note To reject a request, call this function with NULL p_sec_params.
+ * @note To reject a request, call this function with NULL sec_params.
  *
  * @param[in]  conn_handle   The connection handle of the connection the pairing is happening on.
- * @param[in]  p_sec_params  The security parameters to use for this link.
- * @param[in]  p_public_key  A pointer to the public key to use if using LESC, or NULL.
+ * @param[in]  sec_params    The security parameters to use for this link.
+ * @param[in]  public_key    A pointer to the public key to use if using LESC, or NULL.
  *
  * @retval NRF_SUCCESS                    Success.
  * @retval NRF_ERROR_INVALID_STATE        No parameters have been requested on that conn_handle, or
@@ -78,8 +78,8 @@ void smd_conn_sec_config_reply(uint16_t conn_handle, struct pm_conn_sec_config *
  * @retval NRF_ERROR_BUSY                 No write buffer. Reattempt later.
  * @retval NRF_ERROR_INTERNAL             A fatal error occurred.
  */
-uint32_t smd_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *p_sec_params,
-			    ble_gap_lesc_p256_pk_t *p_public_key);
+uint32_t smd_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *sec_params,
+			    ble_gap_lesc_p256_pk_t *public_key);
 
 /**
  * @brief Function for initiating security on the link, with the specified parameters.
@@ -91,14 +91,14 @@ uint32_t smd_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *p_sec_para
  *       available, pairing will be started.
  *
  * @param[in]  conn_handle      Handle of the connection to initiate pairing on.
- * @param[in]  p_sec_params     The security parameters to use for this link. As a central, this can
+ * @param[in]  sec_params       The security parameters to use for this link. As a central, this can
  *                              be NULL to reject a slave security request.
  * @param[in]  force_repairing  Whether to force a pairing procedure to happen regardless of whether
  *                              an encryption key already exists. This argument is only relevant for
  *                              the central role. Recommended value: false
  *
  * @retval NRF_SUCCESS                    Success.
- * @retval NRF_ERROR_NULL                 p_sec_params was NULL (peripheral only).
+ * @retval NRF_ERROR_NULL                 @p sec_params was NULL (peripheral only).
  * @retval NRF_ERROR_INVALID_STATE        A security procedure is already in progress on the link,
  *                                        or the link is disconnecting.
  * @retval NRF_ERROR_INVALID_PARAM        Invalid combination of parameters (not including
@@ -111,7 +111,7 @@ uint32_t smd_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *p_sec_para
  * @retval BLE_ERROR_INVALID_CONN_HANDLE  Invalid connection handle.
  * @retval NRF_ERROR_INTERNAL             No more available peer IDs.
  */
-uint32_t smd_link_secure(uint16_t conn_handle, ble_gap_sec_params_t *p_sec_params,
+uint32_t smd_link_secure(uint16_t conn_handle, ble_gap_sec_params_t *sec_params,
 			   bool force_repairing);
 
 #ifdef __cplusplus

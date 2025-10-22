@@ -31,16 +31,16 @@ LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 #define IM_ADDR_CIPHERTEXT_LENGTH  (3)
 
 /* The number of registered event handlers. */
-#define IM_EVENT_HANDLERS_CNT ARRAY_SIZE(m_evt_handlers)
+#define IM_EVENT_HANDLERS_CNT ARRAY_SIZE(evt_handlers)
 
 /* Identity Manager event handlers in Peer Manager and GATT Cache Manager. */
-extern void pm_im_evt_handler(struct pm_evt *p_event);
-extern void gcm_im_evt_handler(struct pm_evt *p_event);
+extern void pm_im_evt_handler(struct pm_evt *event);
+extern void gcm_im_evt_handler(struct pm_evt *event);
 
 /* Identity Manager events' handlers.
  * The number of elements in this array is IM_EVENT_HANDLERS_CNT.
  */
-static const pm_evt_handler_internal_t m_evt_handlers[] = {pm_im_evt_handler, gcm_im_evt_handler};
+static const pm_evt_handler_internal_t evt_handlers[] = {pm_im_evt_handler, gcm_im_evt_handler};
 
 struct im_connection {
 	uint16_t conn_handle;
@@ -48,19 +48,19 @@ struct im_connection {
 	ble_gap_addr_t peer_address;
 };
 
-static struct im_connection m_connections[IM_MAX_CONN_HANDLES];
-static uint8_t m_wlisted_peer_cnt;
-static uint16_t m_wlisted_peers[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
+static struct im_connection connections[IM_MAX_CONN_HANDLES];
+static uint8_t wlisted_peer_cnt;
+static uint16_t wlisted_peers[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
 
 /**
  * @brief Function for sending an event to all registered event handlers.
  *
- * @param[in] p_event The event to distribute.
+ * @param[in] event The event to distribute.
  */
-static void evt_send(struct pm_evt *p_event)
+static void evt_send(struct pm_evt *event)
 {
 	for (uint32_t i = 0; i < IM_EVENT_HANDLERS_CNT; i++) {
-		m_evt_handlers[i](p_event);
+		evt_handlers[i](event);
 	}
 }
 
@@ -69,17 +69,17 @@ static void evt_send(struct pm_evt *p_event)
  *
  * @detail An all-zero IRK is not valid. This function will check if a given IRK is valid.
  *
- * @param[in] p_irk The IRK for which the validity is going to be checked.
+ * @param[in] irk The IRK for which the validity is going to be checked.
  *
  * @retval true  The IRK is valid.
  * @retval false The IRK is invalid.
  */
-bool is_valid_irk(const ble_gap_irk_t *p_irk)
+bool is_valid_irk(const ble_gap_irk_t *irk)
 {
-	__ASSERT_NO_MSG(p_irk != NULL);
+	__ASSERT_NO_MSG(irk != NULL);
 
 	for (uint32_t i = 0; i < BLE_GAP_SEC_KEY_LEN; i++) {
-		if (p_irk->irk[i] != 0) {
+		if (irk->irk[i] != 0) {
 			return true;
 		}
 	}
@@ -91,25 +91,25 @@ bool is_valid_irk(const ble_gap_irk_t *p_irk)
  *
  * @note The address type need to be identical, as well as every bit in the address itself.
  *
- * @param[in] p_addr1 The first address to be compared.
- * @param[in] p_addr2 The second address to be compared.
+ * @param[in] addr1 The first address to be compared.
+ * @param[in] addr2 The second address to be compared.
  *
  * @retval true  The addresses are identical.
  * @retval false The addresses are not identical.
  */
-bool addr_compare(const ble_gap_addr_t *p_addr1, const ble_gap_addr_t *p_addr2)
+bool addr_compare(const ble_gap_addr_t *addr1, const ble_gap_addr_t *addr2)
 {
-	if ((p_addr1 == NULL) || (p_addr2 == NULL)) {
+	if ((addr1 == NULL) || (addr2 == NULL)) {
 		return false;
 	}
 
 	/* Check that the addr type is identical, return false if it is not */
-	if (p_addr1->addr_type != p_addr2->addr_type) {
+	if (addr1->addr_type != addr2->addr_type) {
 		return false;
 	}
 
 	/* Check if the addr bytes are is identical */
-	return (memcmp(p_addr1->addr, p_addr2->addr, BLE_GAP_ADDR_LEN) == 0);
+	return (memcmp(addr1->addr, addr2->addr, BLE_GAP_ADDR_LEN) == 0);
 }
 
 void im_ble_evt_handler(const ble_evt_t *ble_evt)
@@ -145,7 +145,7 @@ void im_ble_evt_handler(const ble_evt_t *ble_evt)
 		uint8_t peer_data_buffer[PM_PEER_DATA_MAX_SIZE] = { 0 };
 		uint16_t peer_id_iter;
 
-		peer_data.p_all_data = peer_data_buffer;
+		peer_data.all_data = peer_data_buffer;
 
 		pds_peer_data_iterate_prepare(&peer_id_iter);
 
@@ -156,7 +156,7 @@ void im_ble_evt_handler(const ble_evt_t *ble_evt)
 						     &peer_data, &peer_id_iter)) {
 				if (addr_compare(
 					    &gap_evt.params.connected.peer_addr,
-					    &peer_data.p_bonding_data->peer_ble_id.id_addr_info)) {
+					    &peer_data.bonding_data->peer_ble_id.id_addr_info)) {
 					bonded_matching_peer_id = peer_id;
 					break;
 				}
@@ -168,7 +168,7 @@ void im_ble_evt_handler(const ble_evt_t *ble_evt)
 						     &peer_data, &peer_id_iter)) {
 				if (im_address_resolve(
 					    &gap_evt.params.connected.peer_addr,
-					    &peer_data.p_bonding_data->peer_ble_id.id_info)) {
+					    &peer_data.bonding_data->peer_ble_id.id_info)) {
 					bonded_matching_peer_id = peer_id;
 					break;
 				}
@@ -181,9 +181,9 @@ void im_ble_evt_handler(const ble_evt_t *ble_evt)
 		}
 	}
 
-	m_connections[idx].conn_handle = gap_evt.conn_handle;
-	m_connections[idx].peer_id = bonded_matching_peer_id;
-	m_connections[idx].peer_address = gap_evt.params.connected.peer_addr;
+	connections[idx].conn_handle = gap_evt.conn_handle;
+	connections[idx].peer_id = bonded_matching_peer_id;
+	connections[idx].peer_address = gap_evt.params.connected.peer_addr;
 
 	if (bonded_matching_peer_id != PM_PEER_ID_INVALID) {
 		/* Send a bonded peer event */
@@ -200,37 +200,37 @@ void im_ble_evt_handler(const ble_evt_t *ble_evt)
  * @brief Function to compare two sets of bonding data to check if they belong to the same device.
  * @note  Invalid irks will never match even though they are identical.
  *
- * @param[in]  p_bonding_data1 First bonding data for comparison
- * @param[in]  p_bonding_data2 Second bonding data for comparison
+ * @param[in]  bonding_data1  First bonding data for comparison
+ * @param[in]  bonding_data2  Second bonding data for comparison
  *
  * @return     True if the input matches, false if it does not.
  */
-bool im_is_duplicate_bonding_data(const struct pm_peer_data_bonding *p_bonding_data1,
-				  const struct pm_peer_data_bonding *p_bonding_data2)
+bool im_is_duplicate_bonding_data(const struct pm_peer_data_bonding *bonding_data1,
+				  const struct pm_peer_data_bonding *bonding_data2)
 {
-	__ASSERT_NO_MSG(p_bonding_data1 != NULL);
-	__ASSERT_NO_MSG(p_bonding_data2 != NULL);
+	__ASSERT_NO_MSG(bonding_data1 != NULL);
+	__ASSERT_NO_MSG(bonding_data2 != NULL);
 
-	const ble_gap_addr_t *p_addr1 = &p_bonding_data1->peer_ble_id.id_addr_info;
-	const ble_gap_addr_t *p_addr2 = &p_bonding_data2->peer_ble_id.id_addr_info;
+	const ble_gap_addr_t *addr1 = &bonding_data1->peer_ble_id.id_addr_info;
+	const ble_gap_addr_t *addr2 = &bonding_data2->peer_ble_id.id_addr_info;
 
 	bool duplicate_irk =
-		((memcmp(p_bonding_data1->peer_ble_id.id_info.irk,
-			 p_bonding_data2->peer_ble_id.id_info.irk, BLE_GAP_SEC_KEY_LEN) == 0) &&
-		 is_valid_irk(&p_bonding_data1->peer_ble_id.id_info) &&
-		 is_valid_irk(&p_bonding_data2->peer_ble_id.id_info));
+		((memcmp(bonding_data1->peer_ble_id.id_info.irk,
+			 bonding_data2->peer_ble_id.id_info.irk, BLE_GAP_SEC_KEY_LEN) == 0) &&
+		 is_valid_irk(&bonding_data1->peer_ble_id.id_info) &&
+		 is_valid_irk(&bonding_data2->peer_ble_id.id_info));
 
-	bool duplicate_addr = addr_compare(p_addr1, p_addr2);
+	bool duplicate_addr = addr_compare(addr1, addr2);
 
-	bool id_addrs = ((p_addr1->addr_type != BLE_GAP_ADDR_TYPE_RANDOM_PRIVATE_RESOLVABLE) &&
-			 (p_addr1->addr_type != BLE_GAP_ADDR_TYPE_RANDOM_PRIVATE_NON_RESOLVABLE) &&
-			 (p_addr2->addr_type != BLE_GAP_ADDR_TYPE_RANDOM_PRIVATE_RESOLVABLE) &&
-			 (p_addr2->addr_type != BLE_GAP_ADDR_TYPE_RANDOM_PRIVATE_NON_RESOLVABLE));
+	bool id_addrs = ((addr1->addr_type != BLE_GAP_ADDR_TYPE_RANDOM_PRIVATE_RESOLVABLE) &&
+			 (addr1->addr_type != BLE_GAP_ADDR_TYPE_RANDOM_PRIVATE_NON_RESOLVABLE) &&
+			 (addr2->addr_type != BLE_GAP_ADDR_TYPE_RANDOM_PRIVATE_RESOLVABLE) &&
+			 (addr2->addr_type != BLE_GAP_ADDR_TYPE_RANDOM_PRIVATE_NON_RESOLVABLE));
 
 	return (duplicate_addr && id_addrs) || (duplicate_irk && !id_addrs);
 }
 
-uint16_t im_find_duplicate_bonding_data(const struct pm_peer_data_bonding *p_bonding_data,
+uint16_t im_find_duplicate_bonding_data(const struct pm_peer_data_bonding *bonding_data,
 					uint16_t peer_id_skip)
 {
 	uint16_t peer_id;
@@ -238,17 +238,17 @@ uint16_t im_find_duplicate_bonding_data(const struct pm_peer_data_bonding *p_bon
 	uint8_t peer_data_buffer[PM_PEER_DATA_MAX_SIZE] = { 0 };
 	uint16_t peer_id_iter;
 
-	peer_data_duplicate.p_all_data = peer_data_buffer;
+	peer_data_duplicate.all_data = peer_data_buffer;
 
-	__ASSERT_NO_MSG(p_bonding_data != NULL);
+	__ASSERT_NO_MSG(bonding_data != NULL);
 
 	pds_peer_data_iterate_prepare(&peer_id_iter);
 
 	while (pds_peer_data_iterate(PM_PEER_DATA_ID_BONDING, &peer_id, &peer_data_duplicate,
 		&peer_id_iter)) {
 		if ((peer_id != peer_id_skip) &&
-		    im_is_duplicate_bonding_data(p_bonding_data,
-						 peer_data_duplicate.p_bonding_data)) {
+		    im_is_duplicate_bonding_data(bonding_data,
+						 peer_data_duplicate.bonding_data)) {
 			return peer_id;
 		}
 	}
@@ -263,12 +263,12 @@ uint16_t im_peer_id_get_by_conn_handle(uint16_t conn_handle)
 		return PM_PEER_ID_INVALID;
 	}
 
-	return m_connections[idx].peer_id;
+	return connections[idx].peer_id;
 }
 
-uint32_t im_ble_addr_get(uint16_t conn_handle, ble_gap_addr_t *p_ble_addr)
+uint32_t im_ble_addr_get(uint16_t conn_handle, ble_gap_addr_t *ble_addr)
 {
-	__ASSERT_NO_MSG(p_ble_addr != NULL);
+	__ASSERT_NO_MSG(ble_addr != NULL);
 
 	const int idx = nrf_sdh_ble_idx_get(conn_handle);
 
@@ -276,47 +276,47 @@ uint32_t im_ble_addr_get(uint16_t conn_handle, ble_gap_addr_t *p_ble_addr)
 		return BLE_ERROR_INVALID_CONN_HANDLE;
 	}
 
-	*p_ble_addr = m_connections[idx].peer_address;
+	*ble_addr = connections[idx].peer_address;
 	return NRF_SUCCESS;
 }
 
-bool im_master_ids_compare(const ble_gap_master_id_t *p_master_id1,
-			   const ble_gap_master_id_t *p_master_id2)
+bool im_master_ids_compare(const ble_gap_master_id_t *master_id1,
+			   const ble_gap_master_id_t *master_id2)
 {
-	__ASSERT_NO_MSG(p_master_id1 != NULL);
-	__ASSERT_NO_MSG(p_master_id2 != NULL);
+	__ASSERT_NO_MSG(master_id1 != NULL);
+	__ASSERT_NO_MSG(master_id2 != NULL);
 
-	if (!im_master_id_is_valid(p_master_id1)) {
+	if (!im_master_id_is_valid(master_id1)) {
 		return false;
 	}
 
-	if (p_master_id1->ediv != p_master_id2->ediv) {
+	if (master_id1->ediv != master_id2->ediv) {
 		return false;
 	}
 
-	return (memcmp(p_master_id1->rand, p_master_id2->rand, BLE_GAP_SEC_RAND_LEN) == 0);
+	return (memcmp(master_id1->rand, master_id2->rand, BLE_GAP_SEC_RAND_LEN) == 0);
 }
 
-uint16_t im_peer_id_get_by_master_id(const ble_gap_master_id_t *p_master_id)
+uint16_t im_peer_id_get_by_master_id(const ble_gap_master_id_t *master_id)
 {
 	uint16_t peer_id;
 	struct pm_peer_data_const peer_data;
 	uint8_t peer_data_buffer[PM_PEER_DATA_MAX_SIZE] = { 0 };
 	uint16_t peer_id_iter;
 
-	__ASSERT_NO_MSG(p_master_id != NULL);
+	__ASSERT_NO_MSG(master_id != NULL);
 
-	peer_data.p_all_data = peer_data_buffer;
+	peer_data.all_data = peer_data_buffer;
 
 	pds_peer_data_iterate_prepare(&peer_id_iter);
 
-	/* For each stored peer, check if the master_id matches p_master_id */
+	/* For each stored peer, check if the master_id matches master_id */
 	while (pds_peer_data_iterate(PM_PEER_DATA_ID_BONDING, &peer_id, &peer_data,
 		&peer_id_iter)) {
-		if (im_master_ids_compare(p_master_id,
-					  &peer_data.p_bonding_data->own_ltk.master_id) ||
-		    im_master_ids_compare(p_master_id,
-					  &peer_data.p_bonding_data->peer_ltk.master_id)) {
+		if (im_master_ids_compare(master_id,
+					  &peer_data.bonding_data->own_ltk.master_id) ||
+		    im_master_ids_compare(master_id,
+					  &peer_data.bonding_data->peer_ltk.master_id)) {
 			/* If a matching master ID is found then return the peer ID. */
 			return peer_id;
 		}
@@ -333,22 +333,22 @@ uint16_t im_conn_handle_get(uint16_t peer_id)
 	}
 
 	for (uint16_t idx = 0; idx < IM_MAX_CONN_HANDLES; idx++) {
-		if ((m_connections[idx].peer_id == peer_id) &&
-		    ble_conn_state_valid(m_connections[idx].conn_handle)) {
-			return m_connections[idx].conn_handle;
+		if ((connections[idx].peer_id == peer_id) &&
+		    ble_conn_state_valid(connections[idx].conn_handle)) {
+			return connections[idx].conn_handle;
 		}
 	}
 	return BLE_CONN_HANDLE_INVALID;
 }
 
-bool im_master_id_is_valid(const ble_gap_master_id_t *p_master_id)
+bool im_master_id_is_valid(const ble_gap_master_id_t *master_id)
 {
-	if (p_master_id->ediv != 0) {
+	if (master_id->ediv != 0) {
 		return true;
 	}
 
 	for (uint32_t i = 0; i < BLE_GAP_SEC_RAND_LEN; i++) {
-		if (p_master_id->rand[i] != 0) {
+		if (master_id->rand[i] != 0) {
 			return true;
 		}
 	}
@@ -360,7 +360,7 @@ void im_new_peer_id(uint16_t conn_handle, uint16_t peer_id)
 	const int idx = nrf_sdh_ble_idx_get(conn_handle);
 
 	if (idx >= 0 && idx < IM_MAX_CONN_HANDLES) {
-		m_connections[idx].peer_id = peer_id;
+		connections[idx].peer_id = peer_id;
 	}
 }
 
@@ -372,15 +372,15 @@ uint32_t im_peer_free(uint16_t peer_id)
 
 	if ((ret == NRF_SUCCESS) && (conn_handle != BLE_CONN_HANDLE_INVALID) && (idx >= 0) &&
 	    (idx < IM_MAX_CONN_HANDLES)) {
-		m_connections[idx].peer_id = PM_PEER_ID_INVALID;
+		connections[idx].peer_id = PM_PEER_ID_INVALID;
 	}
 	return ret;
 }
 
 /** @brief Given a list of peers, loads their GAP address and IRK into the provided buffers. */
-static uint32_t peers_id_keys_get(const uint16_t *p_peers, uint32_t peer_cnt,
-				    ble_gap_addr_t *p_gap_addrs, uint32_t *p_addr_cnt,
-				    ble_gap_irk_t *p_gap_irks, uint32_t *p_irk_cnt)
+static uint32_t peers_id_keys_get(const uint16_t *peers, uint32_t peer_cnt,
+				    ble_gap_addr_t *gap_addrs, uint32_t *addr_cnt,
+				    ble_gap_irk_t *gap_irks, uint32_t *irk_cnt)
 {
 	uint32_t ret;
 
@@ -392,27 +392,27 @@ static uint32_t peers_id_keys_get(const uint16_t *p_peers, uint32_t peer_cnt,
 	bool copy_addrs = false;
 	bool copy_irks = false;
 
-	__ASSERT_NO_MSG(p_peers != NULL);
+	__ASSERT_NO_MSG(peers != NULL);
 
 	/* One of these two has to be provided. */
-	__ASSERT_NO_MSG((p_gap_addrs != NULL) || (p_gap_irks != NULL));
+	__ASSERT_NO_MSG((gap_addrs != NULL) || (gap_irks != NULL));
 
-	if ((p_gap_addrs != NULL) && (p_addr_cnt != NULL)) {
-		__ASSERT_NO_MSG((*p_addr_cnt) >= peer_cnt);
+	if ((gap_addrs != NULL) && (addr_cnt != NULL)) {
+		__ASSERT_NO_MSG((*addr_cnt) >= peer_cnt);
 
 		copy_addrs = true;
-		*p_addr_cnt = 0;
+		*addr_cnt = 0;
 	}
 
-	if ((p_gap_irks != NULL) && (p_irk_cnt != NULL)) {
-		__ASSERT_NO_MSG((*p_irk_cnt) >= peer_cnt);
+	if ((gap_irks != NULL) && (irk_cnt != NULL)) {
+		__ASSERT_NO_MSG((*irk_cnt) >= peer_cnt);
 
 		copy_irks = true;
-		*p_irk_cnt = 0;
+		*irk_cnt = 0;
 	}
 
 	memset(&peer_data, 0x00, sizeof(peer_data));
-	peer_data.p_bonding_data = &bond_data;
+	peer_data.bonding_data = &bond_data;
 
 	/* Read through flash memory and look for peers ID keys. */
 
@@ -420,7 +420,7 @@ static uint32_t peers_id_keys_get(const uint16_t *p_peers, uint32_t peer_cnt,
 		memset(&bond_data, 0x00, sizeof(bond_data));
 
 		/* Read peer data from flash. */
-		ret = pds_peer_data_read(p_peers[i], PM_PEER_DATA_ID_BONDING, &peer_data,
+		ret = pds_peer_data_read(peers[i], PM_PEER_DATA_ID_BONDING, &peer_data,
 					 &buf_size);
 
 		if ((ret == NRF_ERROR_NOT_FOUND) || (ret == NRF_ERROR_INVALID_PARAM)) {
@@ -440,23 +440,23 @@ static uint32_t peers_id_keys_get(const uint16_t *p_peers, uint32_t peer_cnt,
 
 		/* Copy the GAP address. */
 		if (copy_addrs) {
-			memcpy(&p_gap_addrs[i], &bond_data.peer_ble_id.id_addr_info,
+			memcpy(&gap_addrs[i], &bond_data.peer_ble_id.id_addr_info,
 			       sizeof(ble_gap_addr_t));
-			(*p_addr_cnt)++;
+			(*addr_cnt)++;
 		}
 
 		/* Copy the IRK. */
 		if (copy_irks) {
-			memcpy(&p_gap_irks[i], bond_data.peer_ble_id.id_info.irk,
+			memcpy(&gap_irks[i], bond_data.peer_ble_id.id_info.irk,
 			       BLE_GAP_SEC_KEY_LEN);
-			(*p_irk_cnt)++;
+			(*irk_cnt)++;
 		}
 	}
 
 	return NRF_SUCCESS;
 }
 
-uint32_t im_device_identities_list_set(const uint16_t *p_peers, uint32_t peer_cnt)
+uint32_t im_device_identities_list_set(const uint16_t *peers, uint32_t peer_cnt)
 {
 	uint32_t ret;
 	struct pm_peer_data peer_data;
@@ -469,12 +469,12 @@ uint32_t im_device_identities_list_set(const uint16_t *p_peers, uint32_t peer_cn
 		return NRF_ERROR_INVALID_PARAM;
 	}
 
-	if ((p_peers == NULL) || (peer_cnt == 0)) {
+	if ((peers == NULL) || (peer_cnt == 0)) {
 		/* Clear the device identities list. */
 		return sd_ble_gap_device_identities_set(NULL, NULL, 0);
 	}
 
-	peer_data.p_bonding_data = &bond_data;
+	peer_data.bonding_data = &bond_data;
 	const uint32_t buf_size = sizeof(bond_data);
 
 	memset(keys, 0x00, sizeof(keys));
@@ -486,14 +486,14 @@ uint32_t im_device_identities_list_set(const uint16_t *p_peers, uint32_t peer_cn
 		memset(&bond_data, 0x00, sizeof(bond_data));
 
 		/* Read peer data from flash. */
-		ret = pds_peer_data_read(p_peers[i], PM_PEER_DATA_ID_BONDING, &peer_data,
+		ret = pds_peer_data_read(peers[i], PM_PEER_DATA_ID_BONDING, &peer_data,
 					 &buf_size);
 
 		if ((ret == NRF_ERROR_NOT_FOUND) || (ret == NRF_ERROR_INVALID_PARAM)) {
 			LOG_WRN("peer id %d: Peer data could not be found in flash. Remove "
 				"the peer ID "
 				"from the peer list and try again.",
-				p_peers[i]);
+				peers[i]);
 			return NRF_ERROR_NOT_FOUND;
 		}
 
@@ -504,7 +504,7 @@ uint32_t im_device_identities_list_set(const uint16_t *p_peers, uint32_t peer_cn
 			LOG_WRN("peer id %d: The address shared by the peer during bonding cannot "
 				"be "
 				"whitelisted. Remove the peer ID from the peer list and try again.",
-				p_peers[i]);
+				peers[i]);
 			return BLE_ERROR_GAP_INVALID_BLE_ADDR;
 		}
 
@@ -515,40 +515,40 @@ uint32_t im_device_identities_list_set(const uint16_t *p_peers, uint32_t peer_cn
 	return sd_ble_gap_device_identities_set(key_ptrs, NULL, peer_cnt);
 }
 
-uint32_t im_id_addr_set(const ble_gap_addr_t *p_addr)
+uint32_t im_id_addr_set(const ble_gap_addr_t *addr)
 {
-	return sd_ble_gap_addr_set(p_addr);
+	return sd_ble_gap_addr_set(addr);
 }
 
-uint32_t im_id_addr_get(ble_gap_addr_t *p_addr)
+uint32_t im_id_addr_get(ble_gap_addr_t *addr)
 {
-	__ASSERT_NO_MSG(p_addr != NULL);
+	__ASSERT_NO_MSG(addr != NULL);
 
-	return sd_ble_gap_addr_get(p_addr);
+	return sd_ble_gap_addr_get(addr);
 }
 
-uint32_t im_privacy_set(const ble_gap_privacy_params_t *p_privacy_params)
+uint32_t im_privacy_set(const ble_gap_privacy_params_t *privacy_params)
 {
-	return sd_ble_gap_privacy_set(p_privacy_params);
+	return sd_ble_gap_privacy_set(privacy_params);
 }
 
-uint32_t im_privacy_get(ble_gap_privacy_params_t *p_privacy_params)
+uint32_t im_privacy_get(ble_gap_privacy_params_t *privacy_params)
 {
-	return sd_ble_gap_privacy_get(p_privacy_params);
+	return sd_ble_gap_privacy_get(privacy_params);
 }
 
 /* Create a whitelist for the user using the cached list of peers.
  * This whitelist is meant to be provided by the application to the Advertising module.
  */
-uint32_t im_whitelist_get(ble_gap_addr_t *p_addrs, uint32_t *p_addr_cnt, ble_gap_irk_t *p_irks,
-			    uint32_t *p_irk_cnt)
+uint32_t im_whitelist_get(ble_gap_addr_t *addrs, uint32_t *addr_cnt, ble_gap_irk_t *irks,
+			    uint32_t *irk_cnt)
 {
 	/* One of the two buffers has to be provided. */
-	__ASSERT_NO_MSG((p_addrs != NULL) || (p_irks != NULL));
-	__ASSERT_NO_MSG((p_addr_cnt != NULL) || (p_irk_cnt != NULL));
+	__ASSERT_NO_MSG((addrs != NULL) || (irks != NULL));
+	__ASSERT_NO_MSG((addr_cnt != NULL) || (irk_cnt != NULL));
 
-	if (((p_addr_cnt != NULL) && (m_wlisted_peer_cnt > *p_addr_cnt)) ||
-	    ((p_irk_cnt != NULL) && (m_wlisted_peer_cnt > *p_irk_cnt))) {
+	if (((addr_cnt != NULL) && (wlisted_peer_cnt > *addr_cnt)) ||
+	    ((irk_cnt != NULL) && (wlisted_peer_cnt > *irk_cnt))) {
 		/* The size of the cached list of peers is larger than the provided buffers. */
 		return NRF_ERROR_NO_MEM;
 	}
@@ -557,8 +557,8 @@ uint32_t im_whitelist_get(ble_gap_addr_t *p_addrs, uint32_t *p_addr_cnt, ble_gap
 	 * NRF_ERROR_NOT_FOUND,            if a peer or its data were not found.
 	 * BLE_ERROR_GAP_INVALID_BLE_ADDR, if a peer address can not be used for whitelisting.
 	 */
-	return peers_id_keys_get(m_wlisted_peers, m_wlisted_peer_cnt, p_addrs, p_addr_cnt, p_irks,
-				 p_irk_cnt);
+	return peers_id_keys_get(wlisted_peers, wlisted_peer_cnt, addrs, addr_cnt, irks,
+				 irk_cnt);
 }
 
 /* Copies the peers to whitelist into a local cache.
@@ -566,14 +566,14 @@ uint32_t im_whitelist_get(ble_gap_addr_t *p_addrs, uint32_t *p_addr_cnt, ble_gap
  * For SoftDevices 3x, also loads the peers' GAP addresses and whitelists them using
  * sd_ble_gap_whitelist_set().
  */
-uint32_t im_whitelist_set(const uint16_t *p_peers, uint32_t peer_cnt)
+uint32_t im_whitelist_set(const uint16_t *peers, uint32_t peer_cnt)
 {
 	/* Clear the cache of whitelisted peers. */
-	memset(m_wlisted_peers, 0x00, sizeof(m_wlisted_peers));
+	memset(wlisted_peers, 0x00, sizeof(wlisted_peers));
 
-	if ((p_peers == NULL) || (peer_cnt == 0)) {
+	if ((peers == NULL) || (peer_cnt == 0)) {
 		/* Clear the current whitelist. */
-		m_wlisted_peer_cnt = 0;
+		wlisted_peer_cnt = 0;
 
 		/* NRF_SUCCESS, or
 		 * BLE_GAP_ERROR_WHITELIST_IN_USE
@@ -582,8 +582,8 @@ uint32_t im_whitelist_set(const uint16_t *p_peers, uint32_t peer_cnt)
 	}
 
 	/* Copy the new whitelisted peers. */
-	m_wlisted_peer_cnt = peer_cnt;
-	memcpy(m_wlisted_peers, p_peers, sizeof(*p_peers) * peer_cnt);
+	wlisted_peer_cnt = peer_cnt;
+	memcpy(wlisted_peers, peers, sizeof(*peers) * peer_cnt);
 
 	uint32_t ret;
 	uint32_t wlist_addr_cnt = BLE_GAP_WHITELIST_ADDR_MAX_COUNT;
@@ -594,7 +594,7 @@ uint32_t im_whitelist_set(const uint16_t *p_peers, uint32_t peer_cnt)
 	memset(addrs, 0x00, sizeof(addrs));
 
 	/* Fetch GAP addresses for these peers, but don't fetch IRKs. */
-	ret = peers_id_keys_get(p_peers, peer_cnt, addrs, &wlist_addr_cnt, NULL, NULL);
+	ret = peers_id_keys_get(peers, peer_cnt, addrs, &wlist_addr_cnt, NULL, NULL);
 
 	if (ret != NRF_SUCCESS) {
 		/* NRF_ERROR_NOT_FOUND,            if a peer or its data were not found.
@@ -625,54 +625,54 @@ uint32_t im_whitelist_set(const uint16_t *p_peers, uint32_t peer_cnt)
  * @note The ECB expect little endian input and output.
  *       This function expect big endian and will reverse the data as necessary.
  *
- * @param[in]  p_k          The key used in the hash function.
- *                          For address resolution this is should be the irk.
- *                          The array must have a length of 16.
- * @param[in]  p_r          The rand used in the hash function. For generating a new address
- *                          this would be a random number. For resolving a resolvable address
- *                          this would be the last half of the address being resolved.
- *                          The array must have a length of 3.
- * @param[out] p_local_hash The result of the hash operation. For address resolution this
- *                          will match the first half of the address being resolved if and only
- *                          if the irk used in the hash function is the same one used to generate
- *                          the address.
- *                          The array must have a length of 16.
+ * @param[in]  key         The key used in the hash function.
+ *                         For address resolution this is should be the irk.
+ *                         The array must have a length of 16.
+ * @param[in]  rand        The rand used in the hash function. For generating a new address
+ *                         this would be a random number. For resolving a resolvable address
+ *                         this would be the last half of the address being resolved.
+ *                         The array must have a length of 3.
+ * @param[out] local_hash  The result of the hash operation. For address resolution this
+ *                         will match the first half of the address being resolved if and only
+ *                         if the irk used in the hash function is the same one used to generate
+ *                         the address.
+ *                         The array must have a length of 16.
  */
-void ah(const uint8_t *p_k, const uint8_t *p_r, uint8_t *p_local_hash)
+void ah(const uint8_t *key, const uint8_t *rand, uint8_t *local_hash)
 {
 	nrf_ecb_hal_data_t ecb_hal_data;
 
 	for (uint32_t i = 0; i < SOC_ECB_KEY_LENGTH; i++) {
-		ecb_hal_data.key[i] = p_k[SOC_ECB_KEY_LENGTH - 1 - i];
+		ecb_hal_data.key[i] = key[SOC_ECB_KEY_LENGTH - 1 - i];
 	}
 
 	memset(ecb_hal_data.cleartext, 0, SOC_ECB_KEY_LENGTH - IM_ADDR_CLEARTEXT_LENGTH);
 
 	for (uint32_t i = 0; i < IM_ADDR_CLEARTEXT_LENGTH; i++) {
-		ecb_hal_data.cleartext[SOC_ECB_KEY_LENGTH - 1 - i] = p_r[i];
+		ecb_hal_data.cleartext[SOC_ECB_KEY_LENGTH - 1 - i] = rand[i];
 	}
 
 	/* Can only return NRF_SUCCESS. */
 	(void)sd_ecb_block_encrypt(&ecb_hal_data);
 
 	for (uint32_t i = 0; i < IM_ADDR_CIPHERTEXT_LENGTH; i++) {
-		p_local_hash[i] = ecb_hal_data.ciphertext[SOC_ECB_KEY_LENGTH - 1 - i];
+		local_hash[i] = ecb_hal_data.ciphertext[SOC_ECB_KEY_LENGTH - 1 - i];
 	}
 }
 
-bool im_address_resolve(const ble_gap_addr_t *p_addr, const ble_gap_irk_t *p_irk)
+bool im_address_resolve(const ble_gap_addr_t *addr, const ble_gap_irk_t *irk)
 {
 	uint8_t hash[IM_ADDR_CIPHERTEXT_LENGTH];
 	uint8_t local_hash[IM_ADDR_CIPHERTEXT_LENGTH];
 	uint8_t prand[IM_ADDR_CLEARTEXT_LENGTH];
 
-	if (p_addr->addr_type != BLE_GAP_ADDR_TYPE_RANDOM_PRIVATE_RESOLVABLE) {
+	if (addr->addr_type != BLE_GAP_ADDR_TYPE_RANDOM_PRIVATE_RESOLVABLE) {
 		return false;
 	}
 
-	memcpy(hash, p_addr->addr, IM_ADDR_CIPHERTEXT_LENGTH);
-	memcpy(prand, &p_addr->addr[IM_ADDR_CIPHERTEXT_LENGTH], IM_ADDR_CLEARTEXT_LENGTH);
-	ah(p_irk->irk, prand, local_hash);
+	memcpy(hash, addr->addr, IM_ADDR_CIPHERTEXT_LENGTH);
+	memcpy(prand, &addr->addr[IM_ADDR_CIPHERTEXT_LENGTH], IM_ADDR_CLEARTEXT_LENGTH);
+	ah(irk->irk, prand, local_hash);
 
 	return (memcmp(hash, local_hash, IM_ADDR_CIPHERTEXT_LENGTH) == 0);
 }

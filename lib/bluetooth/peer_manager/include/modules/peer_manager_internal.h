@@ -45,7 +45,7 @@ struct pm_peer_data {
 	/** @brief The data. */
 	union {
 		/** @brief The exchanged bond information in addition to metadata of the bonding. */
-		struct pm_peer_data_bonding *p_bonding_data;
+		struct pm_peer_data_bonding *bonding_data;
 		/**
 		 * @brief A value locally assigned to this peer. Its
 		 *        interpretation is up to the user. The rank is not set
@@ -53,25 +53,25 @@ struct pm_peer_data {
 		 *        the user using either @ref pm_peer_rank_highest or a @ref
 		 *        PM_PEER_DATA_FUNCTIONS function.
 		 */
-		uint32_t *p_peer_rank;
+		uint32_t *peer_rank;
 		/** @brief Value of peer's Central Address Resolution characteristic. */
-		uint32_t *p_central_addr_res;
+		uint32_t *central_addr_res;
 		/** @brief Whether a service changed indication should be sent to the peer. */
-		bool *p_service_changed_pending;
+		bool *service_changed_pending;
 		/** @brief Persistent information pertaining to a peer GATT client. */
-		struct pm_peer_data_local_gatt_db *p_local_gatt_db;
+		struct pm_peer_data_local_gatt_db *local_gatt_db;
 		/** @brief Persistent information pertaining to a peer GATT server. */
-		struct ble_gatt_db_srv *p_remote_gatt_db;
+		struct ble_gatt_db_srv *remote_gatt_db;
 		/**
 		 * @brief Arbitrary data to associate with the peer. This data can be freely used
 		 *        by the application.
 		 */
-		uint8_t *p_application_data;
+		uint8_t *application_data;
 		/**
 		 * @brief Generic access pointer to the data. It is used only to
 		 *        handle the data without regard to type.
 		 */
-		void *p_all_data;
+		void *all_data;
 	};
 };
 
@@ -90,22 +90,22 @@ struct pm_peer_data_const {
 	enum pm_peer_data_id data_id;
 	/** @brief The data. */
 	union {
-		/** @brief Immutable @ref pm_peer_data::p_bonding_data. */
-		const struct pm_peer_data_bonding *p_bonding_data;
-		/** @brief Immutable @ref pm_peer_data::p_peer_rank. */
-		const uint32_t *p_peer_rank;
-		/** @brief Immutable @ref pm_peer_data::p_central_addr_res. */
-		const uint32_t *p_central_addr_res;
-		/** @brief Immutable @ref pm_peer_data::p_service_changed_pending. */
-		const bool *p_service_changed_pending;
-		/** @brief Immutable @ref pm_peer_data::p_local_gatt_db. */
-		const struct pm_peer_data_local_gatt_db *p_local_gatt_db;
-		/** @brief Immutable @ref pm_peer_data::p_remote_gatt_db. */
-		const struct ble_gatt_db_srv *p_remote_gatt_db;
-		/** @brief Immutable @ref pm_peer_data::p_application_data. */
-		const uint8_t *p_application_data;
-		/** @brief Immutable @ref pm_peer_data::p_all_data. */
-		const void *p_all_data;
+		/** @brief Immutable @ref pm_peer_data::bonding_data. */
+		const struct pm_peer_data_bonding *bonding_data;
+		/** @brief Immutable @ref pm_peer_data::peer_rank. */
+		const uint32_t *peer_rank;
+		/** @brief Immutable @ref pm_peer_data::central_addr_res. */
+		const uint32_t *central_addr_res;
+		/** @brief Immutable @ref pm_peer_data::service_changed_pending. */
+		const bool *service_changed_pending;
+		/** @brief Immutable @ref pm_peer_data::local_gatt_db. */
+		const struct pm_peer_data_local_gatt_db *local_gatt_db;
+		/** @brief Immutable @ref pm_peer_data::remote_gatt_db. */
+		const struct ble_gatt_db_srv *remote_gatt_db;
+		/** @brief Immutable @ref pm_peer_data::application_data. */
+		const uint8_t *application_data;
+		/** @brief Immutable @ref pm_peer_data::all_data. */
+		const void *all_data;
 	};
 };
 
@@ -114,9 +114,9 @@ struct pm_peer_data_const {
  *
  * @sa pm_register
  *
- * @param[in]  p_event  The event that has occurred.
+ * @param[in]  event  The event that has occurred.
  */
-typedef void (*pm_evt_handler_internal_t)(struct pm_evt *p_event);
+typedef void (*pm_evt_handler_internal_t)(struct pm_evt *event);
 
 /** @brief Macro for showing that a variable is unused. */
 #define UNUSED_VARIABLE(X) ((void)(X))

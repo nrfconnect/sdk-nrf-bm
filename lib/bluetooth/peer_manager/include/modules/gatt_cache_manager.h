@@ -35,9 +35,9 @@ uint32_t gcm_init(void);
 /**
  * @brief Function for dispatching SoftDevice events to the GATT Cache Manager module.
  *
- * @param[in]  p_ble_evt  The SoftDevice event.
+ * @param[in]  ble_evt  The SoftDevice event.
  */
-void gcm_ble_evt_handler(const ble_evt_t *p_ble_evt);
+void gcm_ble_evt_handler(const ble_evt_t *ble_evt);
 
 /**
  * @brief Function for triggering local GATT database data to be stored persistently.
