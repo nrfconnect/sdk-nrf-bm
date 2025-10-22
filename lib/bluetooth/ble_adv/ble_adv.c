@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
-#include <errno.h>
+#include <nrf_error.h>
 #include "zephyr/toolchain.h"
 #include <bm/bluetooth/ble_adv.h>
 #include <bm/bluetooth/ble_adv_data.h>
@@ -72,17 +72,17 @@ static void on_connected(struct ble_adv *ble_adv, ble_evt_t const *ble_evt)
 
 static void on_disconnected(struct ble_adv *ble_adv, ble_evt_t const *ble_evt)
 {
-	int err;
+	uint32_t nrf_err;
 	struct ble_adv_evt adv_evt;
 
 	ble_adv->whitelist_temporarily_disabled = false;
 
 	if (IS_ENABLED(CONFIG_BLE_ADV_RESTART_ON_DISCONNECT)) {
 		if (ble_evt->evt.gap_evt.conn_handle == ble_adv->conn_handle) {
-			err = ble_adv_start(ble_adv, BLE_ADV_MODE_DIRECTED_HIGH_DUTY);
-			if (err) {
+			nrf_err = ble_adv_start(ble_adv, BLE_ADV_MODE_DIRECTED_HIGH_DUTY);
+			if (nrf_err) {
 				adv_evt.evt_type = BLE_ADV_EVT_ERROR;
-				adv_evt.error.reason = err;
+				adv_evt.error.reason = nrf_err;
 				ble_adv->evt_handler(ble_adv, &adv_evt);
 			}
 		}
@@ -91,7 +91,7 @@ static void on_disconnected(struct ble_adv *ble_adv, ble_evt_t const *ble_evt)
 
 static void on_terminated(struct ble_adv *ble_adv, ble_evt_t const *ble_evt)
 {
-	int err;
+	uint32_t nrf_err;
 	const uint8_t reason = ble_evt->evt.gap_evt.params.adv_set_terminated.reason;
 	struct ble_adv_evt adv_evt;
 
@@ -99,18 +99,18 @@ static void on_terminated(struct ble_adv *ble_adv, ble_evt_t const *ble_evt)
 	if (reason == BLE_GAP_EVT_ADV_SET_TERMINATED_REASON_TIMEOUT ||
 	    reason == BLE_GAP_EVT_ADV_SET_TERMINATED_REASON_LIMIT_REACHED) {
 		LOG_DBG("Advertising timeout");
-		err = ble_adv_start(ble_adv, adv_mode_next(ble_adv->mode_current));
-		if (err) {
-			adv_evt.error.reason = err;
+		nrf_err = ble_adv_start(ble_adv, adv_mode_next(ble_adv->mode_current));
+		if (nrf_err) {
+			adv_evt.error.reason = nrf_err;
 			adv_evt.evt_type = BLE_ADV_EVT_ERROR;
 			ble_adv->evt_handler(ble_adv, &adv_evt);
 		}
 	}
 }
 
-static int flags_set(struct ble_adv *ble_adv, uint8_t flags)
+static uint32_t flags_set(struct ble_adv *ble_adv, uint8_t flags)
 {
-	int err;
+	uint32_t nrf_err;
 	uint8_t *parsed_flags;
 
 	parsed_flags = ble_adv_data_parse(ble_adv->adv_data.adv_data.p_data,
@@ -118,22 +118,22 @@ static int flags_set(struct ble_adv *ble_adv, uint8_t flags)
 
 	if (!parsed_flags) {
 		LOG_WRN("Unable to find flags in current advertising data");
-		return -EINVAL;
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	*parsed_flags = flags;
 
-	err = sd_ble_gap_adv_set_configure(&ble_adv->adv_handle, &ble_adv->adv_data,
-					   &ble_adv->adv_params);
-	if (err) {
-		LOG_ERR("Failed to set advertising flags, nrf_error %#x", err);
-		return -EINVAL;
+	nrf_err = sd_ble_gap_adv_set_configure(&ble_adv->adv_handle, &ble_adv->adv_data,
+					       &ble_adv->adv_params);
+	if (nrf_err) {
+		LOG_ERR("Failed to set advertising flags, nrf_error %#x", nrf_err);
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
-static int set_adv_mode_directed_high_duty(struct ble_adv *ble_adv,
+static uint32_t set_adv_mode_directed_high_duty(struct ble_adv *ble_adv,
 					   ble_gap_adv_params_t *adv_params)
 {
 #if CONFIG_BLE_ADV_DIRECTED_ADVERTISING_HIGH_DUTY
@@ -143,10 +143,10 @@ static int set_adv_mode_directed_high_duty(struct ble_adv *ble_adv,
 	adv_params->duration = BLE_GAP_ADV_TIMEOUT_HIGH_DUTY_MAX;
 	adv_params->interval = 0;
 #endif
-	return 0;
+	return NRF_SUCCESS;
 }
 
-static int set_adv_mode_directed(struct ble_adv *ble_adv, ble_gap_adv_params_t *adv_params)
+static uint32_t set_adv_mode_directed(struct ble_adv *ble_adv, ble_gap_adv_params_t *adv_params)
 {
 #if CONFIG_BLE_ADV_DIRECTED_ADVERTISING
 #if defined(BLE_GAP_ADV_TYPE_EXTENDED_CONNECTABLE_NONSCANNABLE_DIRECTED)
@@ -163,13 +163,13 @@ static int set_adv_mode_directed(struct ble_adv *ble_adv, ble_gap_adv_params_t *
 	adv_params->duration = CONFIG_BLE_ADV_DIRECTED_ADVERTISING_TIMEOUT;
 	adv_params->interval = CONFIG_BLE_ADV_DIRECTED_ADVERTISING_INTERVAL;
 #endif
-	return 0;
+	return NRF_SUCCESS;
 }
 
-static int set_adv_mode_fast(struct ble_adv *ble_adv, ble_gap_adv_params_t *adv_params)
+static uint32_t set_adv_mode_fast(struct ble_adv *ble_adv, ble_gap_adv_params_t *adv_params)
 {
 #if CONFIG_BLE_ADV_FAST_ADVERTISING
-	int err;
+	uint32_t nrf_err;
 
 #if defined(BLE_GAP_ADV_TYPE_EXTENDED_CONNECTABLE_NONSCANNABLE_UNDIRECTED)
 	if (IS_ENABLED(CONFIG_BLE_ADV_EXTENDED_ADVERTISING)) {
@@ -188,19 +188,19 @@ static int set_adv_mode_fast(struct ble_adv *ble_adv, ble_gap_adv_params_t *adv_
 	if (use_whitelist(ble_adv)) {
 		/* Set filter policy and advertising flags */
 		adv_params->filter_policy = BLE_GAP_ADV_FP_FILTER_CONNREQ;
-		err = flags_set(ble_adv, BLE_GAP_ADV_FLAG_BR_EDR_NOT_SUPPORTED);
-		if (err) {
-			return err;
+		nrf_err = flags_set(ble_adv, BLE_GAP_ADV_FLAG_BR_EDR_NOT_SUPPORTED);
+		if (nrf_err) {
+			return nrf_err;
 		}
 	}
 #endif
-	return 0;
+	return NRF_SUCCESS;
 }
 
-static int set_adv_mode_slow(struct ble_adv *ble_adv, ble_gap_adv_params_t *adv_params)
+static uint32_t set_adv_mode_slow(struct ble_adv *ble_adv, ble_gap_adv_params_t *adv_params)
 {
 #if CONFIG_BLE_ADV_SLOW_ADVERTISING
-	int err;
+	uint32_t nrf_err;
 
 #if defined(BLE_GAP_ADV_TYPE_EXTENDED_CONNECTABLE_NONSCANNABLE_UNDIRECTED)
 	if (IS_ENABLED(CONFIG_BLE_ADV_EXTENDED_ADVERTISING)) {
@@ -220,13 +220,13 @@ static int set_adv_mode_slow(struct ble_adv *ble_adv, ble_gap_adv_params_t *adv_
 	if (use_whitelist(ble_adv)) {
 		/* Set filter policy and advertising flags */
 		adv_params->filter_policy = BLE_GAP_ADV_FP_FILTER_CONNREQ;
-		err = flags_set(ble_adv, BLE_GAP_ADV_FLAG_BR_EDR_NOT_SUPPORTED);
-		if (err) {
-			return err;
+		nrf_err = flags_set(ble_adv, BLE_GAP_ADV_FLAG_BR_EDR_NOT_SUPPORTED);
+		if (nrf_err) {
+			return nrf_err;
 		}
 	}
 #endif
-	return 0;
+	return NRF_SUCCESS;
 }
 
 static uint16_t adv_data_size_max_get(void)
@@ -242,27 +242,24 @@ static uint16_t adv_data_size_max_get(void)
 #endif
 }
 
-int ble_adv_conn_cfg_tag_set(struct ble_adv *ble_adv, uint8_t ble_cfg_tag)
+uint32_t ble_adv_conn_cfg_tag_set(struct ble_adv *ble_adv, uint8_t ble_cfg_tag)
 {
 	if (!ble_adv) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 
 	ble_adv->conn_cfg_tag = ble_cfg_tag;
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
-int ble_adv_init(struct ble_adv *ble_adv, struct ble_adv_config *ble_adv_config)
+uint32_t ble_adv_init(struct ble_adv *ble_adv, struct ble_adv_config *ble_adv_config)
 {
-	int err;
+	uint32_t nrf_err;
 	ble_gap_conn_sec_mode_t sec_mode = {0};
 
-	if (!ble_adv || !ble_adv_config) {
-		return -EFAULT;
-	}
-	if (!ble_adv_config->evt_handler) {
-		return -EFAULT;
+	if (!ble_adv || !ble_adv_config || !ble_adv_config->evt_handler) {
+		return NRF_ERROR_NULL;
 	}
 
 	ble_adv->mode_current = BLE_ADV_MODE_IDLE;
@@ -274,29 +271,30 @@ int ble_adv_init(struct ble_adv *ble_adv, struct ble_adv_config *ble_adv_config)
 	memset(&ble_adv->peer_address, 0x00, sizeof(ble_adv->peer_address));
 
 	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&sec_mode);
-	err = sd_ble_gap_device_name_set(&sec_mode, CONFIG_BLE_ADV_NAME,
-					 strlen(CONFIG_BLE_ADV_NAME));
-	if (err) {
-		LOG_ERR("Failed to set advertising name, nrf_error %#x", err);
-		return -EINVAL;
+	nrf_err = sd_ble_gap_device_name_set(&sec_mode, CONFIG_BLE_ADV_NAME,
+					     strlen(CONFIG_BLE_ADV_NAME));
+	if (nrf_err) {
+		LOG_ERR("Failed to set advertising name, nrf_error %#x", nrf_err);
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	ble_adv->adv_data.adv_data.p_data = ble_adv->enc_adv_data[0];
 	ble_adv->adv_data.adv_data.len = adv_data_size_max_get();
 
-	err = ble_adv_data_encode(&ble_adv_config->adv_data, ble_adv->enc_adv_data[0],
-				  &ble_adv->adv_data.adv_data.len);
-	if (err) {
-		return err;
+	nrf_err = ble_adv_data_encode(&ble_adv_config->adv_data, ble_adv->enc_adv_data[0],
+				      &ble_adv->adv_data.adv_data.len);
+	if (nrf_err) {
+		return nrf_err;
 	}
 
 	ble_adv->adv_data.scan_rsp_data.p_data = ble_adv->enc_scan_rsp_data[0];
 	ble_adv->adv_data.scan_rsp_data.len = adv_data_size_max_get();
 
-	err = ble_adv_data_encode(&ble_adv_config->sr_data, ble_adv->adv_data.scan_rsp_data.p_data,
-				  &ble_adv->adv_data.scan_rsp_data.len);
-	if (err) {
-		return err;
+	nrf_err = ble_adv_data_encode(&ble_adv_config->sr_data,
+				      ble_adv->adv_data.scan_rsp_data.p_data,
+				      &ble_adv->adv_data.scan_rsp_data.len);
+	if (nrf_err) {
+		return nrf_err;
 	}
 
 	/* Configure a initial advertising configuration. The advertising data and parameters
@@ -309,26 +307,26 @@ int ble_adv_init(struct ble_adv *ble_adv, struct ble_adv_config *ble_adv_config)
 	ble_adv->adv_params.filter_policy = BLE_GAP_ADV_FP_ANY;
 	ble_adv->adv_params.primary_phy = BLE_GAP_PHY_AUTO;
 
-	err = sd_ble_gap_adv_set_configure(&ble_adv->adv_handle, NULL, &ble_adv->adv_params);
-	if (err) {
-		LOG_ERR("Failed to set GAP advertising parameters, nrf_error %#x", err);
-		return -EINVAL;
+	nrf_err = sd_ble_gap_adv_set_configure(&ble_adv->adv_handle, NULL, &ble_adv->adv_params);
+	if (nrf_err) {
+		LOG_ERR("Failed to set GAP advertising parameters, nrf_error %#x", nrf_err);
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	ble_adv->is_initialized = true;
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
-int ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
+uint32_t ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 {
-	int err;
+	uint32_t nrf_err;
 	struct ble_adv_evt adv_evt;
 	if (!ble_adv) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 	if (!ble_adv->is_initialized) {
-		return -EPERM;
+		return NRF_ERROR_INVALID_STATE;
 	}
 
 	ble_adv->whitelist_in_use = false;
@@ -373,7 +371,7 @@ int ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 			LOG_INF("Directed advertising (high duty)");
 			mode = BLE_ADV_MODE_DIRECTED_HIGH_DUTY;
 			adv_evt.evt_type = BLE_ADV_EVT_DIRECTED_HIGH_DUTY;
-			err = set_adv_mode_directed_high_duty(ble_adv, &ble_adv->adv_params);
+			nrf_err = set_adv_mode_directed_high_duty(ble_adv, &ble_adv->adv_params);
 			break;
 		} __fallthrough;
 
@@ -382,7 +380,7 @@ int ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 			LOG_INF("Directed advertising");
 			mode = BLE_ADV_MODE_DIRECTED;
 			adv_evt.evt_type = BLE_ADV_EVT_DIRECTED;
-			err = set_adv_mode_directed(ble_adv, &ble_adv->adv_params);
+			nrf_err = set_adv_mode_directed(ble_adv, &ble_adv->adv_params);
 			break;
 		} __fallthrough;
 
@@ -391,10 +389,11 @@ int ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 			LOG_INF("Fast advertising");
 			mode = BLE_ADV_MODE_FAST;
 			adv_evt.evt_type = BLE_ADV_EVT_FAST;
-			err = set_adv_mode_fast(ble_adv, &ble_adv->adv_params);
-			if (err) {
-				LOG_ERR("Failed to set fast advertising params, error: %d", err);
-				return -EINVAL;
+			nrf_err = set_adv_mode_fast(ble_adv, &ble_adv->adv_params);
+			if (nrf_err) {
+				LOG_ERR("Failed to set fast advertising params, error: %d",
+					nrf_err);
+				return NRF_ERROR_INVALID_PARAM;
 			}
 			break;
 		} __fallthrough;
@@ -404,10 +403,11 @@ int ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 			LOG_INF("Slow advertising");
 			mode = BLE_ADV_MODE_SLOW;
 			adv_evt.evt_type = BLE_ADV_EVT_SLOW;
-			err = set_adv_mode_slow(ble_adv, &ble_adv->adv_params);
-			if (err) {
-				LOG_ERR("Failed to set slow advertising params, error: %d", err);
-				return -EINVAL;
+			nrf_err = set_adv_mode_slow(ble_adv, &ble_adv->adv_params);
+			if (nrf_err) {
+				LOG_ERR("Failed to set slow advertising params, error: %d",
+					nrf_err);
+				return NRF_ERROR_INVALID_PARAM;
 			}
 			break;
 		} __fallthrough;
@@ -421,23 +421,23 @@ int ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 	}
 
 	if (mode != BLE_ADV_MODE_IDLE) {
-		err = sd_ble_gap_adv_set_configure(&ble_adv->adv_handle, &ble_adv->adv_data,
-						   &ble_adv->adv_params);
-		if (err) {
-			LOG_ERR("Failed to set advertising data, nrf_error %#x", err);
-			return -EINVAL;
+		nrf_err = sd_ble_gap_adv_set_configure(&ble_adv->adv_handle, &ble_adv->adv_data,
+						       &ble_adv->adv_params);
+		if (nrf_err) {
+			LOG_ERR("Failed to set advertising data, nrf_error %#x", nrf_err);
+			return NRF_ERROR_INVALID_PARAM;
 		}
 
-		err = sd_ble_gap_adv_start(ble_adv->adv_handle, ble_adv->conn_cfg_tag);
-		if (err) {
-			LOG_ERR("Failed to start advertising, nrf_error %#x", err);
-			return -EINVAL;
+		nrf_err = sd_ble_gap_adv_start(ble_adv->adv_handle, ble_adv->conn_cfg_tag);
+		if (nrf_err) {
+			LOG_ERR("Failed to start advertising, nrf_error %#x", nrf_err);
+			return NRF_ERROR_INVALID_PARAM;
 		}
 	}
 	ble_adv->mode_current = mode;
 	ble_adv->evt_handler(ble_adv, &adv_evt);
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
 void ble_adv_on_ble_evt(const ble_evt_t *ble_evt, void *instance)
@@ -462,44 +462,44 @@ void ble_adv_on_ble_evt(const ble_evt_t *ble_evt, void *instance)
 	}
 }
 
-int ble_adv_peer_addr_reply(struct ble_adv *ble_adv, const ble_gap_addr_t *peer_addr)
+uint32_t ble_adv_peer_addr_reply(struct ble_adv *ble_adv, const ble_gap_addr_t *peer_addr)
 {
 	if (!ble_adv || !peer_addr) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 	if (!ble_adv->peer_addr_reply_expected) {
-		return -EPERM;
+		return NRF_ERROR_INVALID_STATE;
 	}
 	if (!peer_addr_is_valid(peer_addr)) {
-		return -EINVAL;
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	ble_adv->peer_addr_reply_expected = false;
 	memcpy(&ble_adv->peer_address, peer_addr, sizeof(ble_adv->peer_address));
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
-int ble_adv_whitelist_reply(struct ble_adv *ble_adv,
-			    const ble_gap_addr_t *addrs, uint32_t addr_cnt,
-			    const ble_gap_irk_t *irks, uint32_t irk_cnt)
+uint32_t ble_adv_whitelist_reply(struct ble_adv *ble_adv,
+				 const ble_gap_addr_t *addrs, uint32_t addr_cnt,
+				 const ble_gap_irk_t *irks, uint32_t irk_cnt)
 {
 	if (!ble_adv) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 	if (!ble_adv->whitelist_reply_expected) {
-		return -EPERM;
+		return NRF_ERROR_INVALID_STATE;
 	}
 
 	ble_adv->whitelist_reply_expected = false;
 	ble_adv->whitelist_in_use = (addr_cnt > 0 || irk_cnt > 0);
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
-int ble_adv_restart_without_whitelist(struct ble_adv *ble_adv)
+uint32_t ble_adv_restart_without_whitelist(struct ble_adv *ble_adv)
 {
-	int err;
+	uint32_t nrf_err;
 
 	(void)sd_ble_gap_adv_stop(ble_adv->adv_handle);
 
@@ -507,30 +507,30 @@ int ble_adv_restart_without_whitelist(struct ble_adv *ble_adv)
 	ble_adv->adv_params.filter_policy = BLE_GAP_ADV_FP_ANY;
 
 	/* Set correct flags */
-	err = flags_set(ble_adv, BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE);
-	if (err) {
-		return err;
+	nrf_err = flags_set(ble_adv, BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE);
+	if (nrf_err) {
+		return nrf_err;
 	}
 
-	err = ble_adv_start(ble_adv, ble_adv->mode_current);
-	if (err) {
-		return err;
+	nrf_err = ble_adv_start(ble_adv, ble_adv->mode_current);
+	if (nrf_err) {
+		return nrf_err;
 	}
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
-int ble_adv_data_update(struct ble_adv *ble_adv, const struct ble_adv_data *adv_data,
+uint32_t ble_adv_data_update(struct ble_adv *ble_adv, const struct ble_adv_data *adv_data,
 			const struct ble_adv_data *sr_data)
 {
-	int err;
+	uint32_t nrf_err;
 	ble_gap_adv_data_t new_adv_data = {0};
 
 	if (!ble_adv || (adv_data == NULL && sr_data == NULL)) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 	if (!ble_adv->is_initialized) {
-		return -EPERM;
+		return NRF_ERROR_INVALID_STATE;
 	}
 
 	if (adv_data) {
@@ -541,10 +541,10 @@ int ble_adv_data_update(struct ble_adv *ble_adv, const struct ble_adv_data *adv_
 
 		new_adv_data.adv_data.len = adv_data_size_max_get();
 
-		err = ble_adv_data_encode(adv_data, new_adv_data.adv_data.p_data,
-					  &new_adv_data.adv_data.len);
-		if (err) {
-			return err;
+		nrf_err = ble_adv_data_encode(adv_data, new_adv_data.adv_data.p_data,
+					      &new_adv_data.adv_data.len);
+		if (nrf_err) {
+			return nrf_err;
 		}
 	}
 
@@ -556,20 +556,20 @@ int ble_adv_data_update(struct ble_adv *ble_adv, const struct ble_adv_data *adv_
 
 		new_adv_data.scan_rsp_data.len = adv_data_size_max_get();
 
-		err = ble_adv_data_encode(sr_data, new_adv_data.scan_rsp_data.p_data,
-					  &new_adv_data.scan_rsp_data.len);
-		if (err) {
-			return err;
+		nrf_err = ble_adv_data_encode(sr_data, new_adv_data.scan_rsp_data.p_data,
+					      &new_adv_data.scan_rsp_data.len);
+		if (nrf_err) {
+			return nrf_err;
 		}
 	}
 
 	memcpy(&ble_adv->adv_data, &new_adv_data, sizeof(ble_adv->adv_data));
 
-	err = sd_ble_gap_adv_set_configure(&ble_adv->adv_handle, &ble_adv->adv_data, NULL);
-	if (err) {
-		LOG_ERR("Failed to set GAP advertising data, nrf_error %#x", err);
-		return -EINVAL;
+	nrf_err = sd_ble_gap_adv_set_configure(&ble_adv->adv_handle, &ble_adv->adv_data, NULL);
+	if (nrf_err) {
+		LOG_ERR("Failed to set GAP advertising data, nrf_error %#x", nrf_err);
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
-	return 0;
+	return NRF_SUCCESS;
 }

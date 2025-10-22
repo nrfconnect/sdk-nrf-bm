@@ -185,9 +185,11 @@ struct ble_adv_data {
  * @param[out] buf  Output buffer.
  * @param[in,out] len Size of @p buf on input, length of encoded data on output.
  *
- * @retval 0 If the operation was successful.
- * @retval -EINVAL Invalid parameter.
- * @retval -E2BIG  Buffer is too small to encode all data.
+ * @retval NRF_SUCCESS If the operation was successful.
+ * @retval NRF_ERROR_INVALID_ADDR Invalid address.
+ * @retval NRF_ERROR_INVALID_PARAM Invalid parameter provided in the advertising data context.
+ * @retval NRF_ERROR_NULL @p ble_adv_data, @p buf or @p len is NULL.
+ * @retval NRF_ERROR_DATA_SIZE  Buffer is too small to encode all data.
  *
  * @warning This API may override the application's request to use the long name and use a short
  * name instead. This truncation will occur in case the long name does not fit the provided buffer
@@ -199,7 +201,7 @@ struct ble_adv_data {
  * application can specify, and if the preference is too large to fit in the provided buffer, the
  * name can be truncated further.
  */
-int ble_adv_data_encode(const struct ble_adv_data *ble_adv_data, uint8_t *buf, uint16_t *len);
+uint32_t ble_adv_data_encode(const struct ble_adv_data *ble_adv_data, uint8_t *buf, uint16_t *len);
 
 /**
  * @brief Search Advertising or Scan Response data for specific data types.

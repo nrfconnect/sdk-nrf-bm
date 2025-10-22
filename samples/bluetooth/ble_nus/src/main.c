@@ -284,7 +284,7 @@ static void ble_adv_evt_handler(struct ble_adv *adv, const struct ble_adv_evt *a
 {
 	switch (adv_evt->evt_type) {
 	case BLE_ADV_EVT_ERROR:
-		LOG_ERR("Advertising error %d", adv_evt->error.reason);
+		LOG_ERR("Advertising error %#x", adv_evt->error.reason);
 		break;
 	default:
 		break;
@@ -418,6 +418,7 @@ static int uarte_init(void)
 int main(void)
 {
 	int err;
+	uint32_t nrf_err;
 	struct ble_adv_config ble_adv_cfg = {
 		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
 		.evt_handler = ble_adv_evt_handler,
@@ -486,9 +487,9 @@ int main(void)
 		goto idle;
 	}
 
-	err = ble_adv_init(&ble_adv, &ble_adv_cfg);
-	if (err) {
-		LOG_ERR("Failed to initialize advertising, err %d", err);
+	nrf_err = ble_adv_init(&ble_adv, &ble_adv_cfg);
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize advertising, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 
@@ -512,9 +513,9 @@ int main(void)
 	}
 #endif
 
-	err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
-	if (err) {
-		LOG_ERR("Failed to start advertising, err %d", err);
+	nrf_err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
+	if (nrf_err) {
+		LOG_ERR("Failed to start advertising, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 

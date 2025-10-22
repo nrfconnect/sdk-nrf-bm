@@ -282,7 +282,7 @@ static void ble_adv_evt_handler(struct ble_adv *adv, const struct ble_adv_evt *a
 {
 	switch (adv_evt->evt_type) {
 	case BLE_ADV_EVT_ERROR:
-		LOG_ERR("Advertising error %d", adv_evt->error.reason);
+		LOG_ERR("Advertising error %#x", adv_evt->error.reason);
 		break;
 	default:
 		break;
@@ -364,14 +364,14 @@ static void delete_bonds(void)
 
 static void advertising_start(bool erase_bonds)
 {
-	int err;
+	int nrf_err;
 
 	if (erase_bonds) {
 		delete_bonds();
 	} else {
-		err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
-		if (err) {
-			LOG_ERR("Failed to start advertising, err %d", err);
+		nrf_err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
+		if (nrf_err) {
+			LOG_ERR("Failed to start advertising, nrf_error %#x", nrf_err);
 		} else {
 			LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
 		}
@@ -439,6 +439,7 @@ static int peer_manager_init(void)
 int main(void)
 {
 	int err;
+	uint32_t nrf_err;
 	bool erase_bonds = false;
 	uint8_t body_sensor_location = BLE_HRS_BODY_SENSOR_LOCATION_FINGER;
 	ble_uuid_t adv_uuid_list[] = {
@@ -533,9 +534,9 @@ int main(void)
 		goto idle;
 	}
 
-	err = ble_adv_init(&ble_adv, &ble_adv_cfg);
-	if (err) {
-		LOG_ERR("Failed to initialize advertising, err %d", err);
+	nrf_err = ble_adv_init(&ble_adv, &ble_adv_cfg);
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize advertising, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 
