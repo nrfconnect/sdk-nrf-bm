@@ -52,7 +52,7 @@ void ble_lbs_on_ble_evt(const ble_evt_t *ble_evt, void *lbs_instance)
 
 int ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg)
 {
-	int err;
+	uint32_t nrf_err;
 	ble_uuid_t ble_uuid;
 	uint8_t initial_value = 0;
 
@@ -65,9 +65,9 @@ int ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg)
 
 	ble_uuid128_t base_uuid = { .uuid128 = BLE_UUID_LBS_BASE };
 
-	err = sd_ble_uuid_vs_add(&base_uuid, &lbs->uuid_type);
-	if (err != NRF_SUCCESS) {
-		LOG_ERR("Failed to add vendor UUID, nrf_error %#x", err);
+	nrf_err = sd_ble_uuid_vs_add(&base_uuid, &lbs->uuid_type);
+	if (nrf_err) {
+		LOG_ERR("Failed to add vendor UUID, nrf_error %#x", nrf_err);
 		return -EINVAL;
 	}
 
@@ -77,10 +77,10 @@ int ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg)
 	};
 
 	/* Add service. */
-	err = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY, &ble_uuid,
+	nrf_err = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY, &ble_uuid,
 				       &lbs->service_handle);
-	if (err != NRF_SUCCESS) {
-		LOG_ERR("Failed to add GATT service, nrf_error %#x", err);
+	if (nrf_err) {
+		LOG_ERR("Failed to add GATT service, nrf_error %#x", nrf_err);
 		return -EINVAL;
 	}
 
@@ -113,10 +113,10 @@ int ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg)
 	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.read_perm);
 	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.write_perm);
 
-	err = sd_ble_gatts_characteristic_add(lbs->service_handle, &char_md, &attr_char_value,
+	nrf_err = sd_ble_gatts_characteristic_add(lbs->service_handle, &char_md, &attr_char_value,
 					      &lbs->button_char_handles);
-	if (err) {
-		LOG_ERR("Failed to add button GATT characteristic, nrf_error %#x", err);
+	if (nrf_err) {
+		LOG_ERR("Failed to add button GATT characteristic, nrf_error %#x", nrf_err);
 		return -EINVAL;
 	}
 
@@ -145,10 +145,10 @@ int ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg)
 	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.read_perm);
 	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.write_perm);
 
-	err = sd_ble_gatts_characteristic_add(lbs->service_handle, &char_md, &attr_char_value,
+	nrf_err = sd_ble_gatts_characteristic_add(lbs->service_handle, &char_md, &attr_char_value,
 					      &lbs->led_char_handles);
-	if (err) {
-		LOG_ERR("Failed to add LED GATT characteristic, nrf_error %#x", err);
+	if (nrf_err) {
+		LOG_ERR("Failed to add LED GATT characteristic, nrf_error %#x", nrf_err);
 		return -EINVAL;
 	}
 

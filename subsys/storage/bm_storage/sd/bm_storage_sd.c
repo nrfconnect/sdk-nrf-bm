@@ -115,9 +115,9 @@ static uint32_t write_execute(const struct bm_storage_sd_op *op)
 	uint32_t *dest = (uint32_t *)(op->dest + op->offset);
 	const uint32_t *src  = (const uint32_t *)((uint32_t)op->src + op->offset);
 
-	uint32_t err = sd_flash_write(dest, src, chunk_len_words);
+	uint32_t nrf_err = sd_flash_write(dest, src, chunk_len_words);
 
-	return err;
+	return nrf_err;
 }
 
 static void queue_process(void)

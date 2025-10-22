@@ -229,7 +229,7 @@ int main(void)
 		err = sd_ble_gap_disconnect(conn_handle,
 					    BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
 
-		if (err != NRF_SUCCESS) {
+		if (err) {
 			device_disconnected = true;
 		}
 
