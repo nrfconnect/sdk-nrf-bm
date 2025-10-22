@@ -10,8 +10,8 @@
 #include <nrf_error.h>
 #include <modules/pm_buffer.h>
 
-#define BUFFER_IS_VALID(p_buffer)                                                                  \
-	((p_buffer != NULL) && (p_buffer->p_memory != NULL) && (p_buffer->p_mutex != NULL))
+#define BUFFER_IS_VALID(buffer)                                                                    \
+	((buffer != NULL) && (buffer->memory != NULL) && (buffer->mutex != NULL))
 
 static bool mutex_lock(atomic_t *mutex, int index)
 {
@@ -28,17 +28,17 @@ static bool mutex_lock_status_get(atomic_t *mutex, int index)
 	return atomic_test_bit(mutex, index);
 }
 
-uint32_t pm_buffer_init(struct pm_buffer *p_buffer, uint8_t *p_buffer_memory,
-			uint32_t buffer_memory_size, atomic_t *p_mutex_memory,
+uint32_t pm_buffer_init(struct pm_buffer *buffer, uint8_t *buffer_memory,
+			uint32_t buffer_memory_size, atomic_t *mutex_memory,
 			uint32_t n_blocks, uint32_t block_size)
 {
-	if ((p_buffer != NULL) && (p_buffer_memory != NULL) && (p_mutex_memory != NULL) &&
+	if ((buffer != NULL) && (buffer_memory != NULL) && (mutex_memory != NULL) &&
 	    (buffer_memory_size >= (n_blocks * block_size)) && (n_blocks != 0) &&
 	    (block_size != 0)) {
-		p_buffer->p_memory = p_buffer_memory;
-		p_buffer->p_mutex = p_mutex_memory;
-		p_buffer->n_blocks = n_blocks;
-		p_buffer->block_size = block_size;
+		buffer->memory = buffer_memory;
+		buffer->mutex = mutex_memory;
+		buffer->n_blocks = n_blocks;
+		buffer->block_size = block_size;
 
 		return NRF_SUCCESS;
 	} else {
@@ -46,16 +46,16 @@ uint32_t pm_buffer_init(struct pm_buffer *p_buffer, uint8_t *p_buffer_memory,
 	}
 }
 
-uint8_t pm_buffer_block_acquire(struct pm_buffer *p_buffer, uint32_t n_blocks)
+uint8_t pm_buffer_block_acquire(struct pm_buffer *buffer, uint32_t n_blocks)
 {
-	if (!BUFFER_IS_VALID(p_buffer)) {
+	if (!BUFFER_IS_VALID(buffer)) {
 		return PM_BUFFER_INVALID_ID;
 	}
 
 	uint8_t first_locked_mutex = PM_BUFFER_INVALID_ID;
 
-	for (uint8_t i = 0; i < p_buffer->n_blocks; i++) {
-		if (mutex_lock(p_buffer->p_mutex, i)) {
+	for (uint8_t i = 0; i < buffer->n_blocks; i++) {
+		if (mutex_lock(buffer->mutex, i)) {
 			if (first_locked_mutex == PM_BUFFER_INVALID_ID) {
 				first_locked_mutex = i;
 			}
@@ -64,7 +64,7 @@ uint8_t pm_buffer_block_acquire(struct pm_buffer *p_buffer, uint32_t n_blocks)
 			}
 		} else if (first_locked_mutex != PM_BUFFER_INVALID_ID) {
 			for (uint8_t j = first_locked_mutex; j < i; j++) {
-				pm_buffer_release(p_buffer, j);
+				pm_buffer_release(buffer, j);
 			}
 			first_locked_mutex = PM_BUFFER_INVALID_ID;
 		}
@@ -73,23 +73,23 @@ uint8_t pm_buffer_block_acquire(struct pm_buffer *p_buffer, uint32_t n_blocks)
 	return (PM_BUFFER_INVALID_ID);
 }
 
-uint8_t *pm_buffer_ptr_get(struct pm_buffer *p_buffer, uint8_t id)
+uint8_t *pm_buffer_ptr_get(struct pm_buffer *buffer, uint8_t id)
 {
-	if (!BUFFER_IS_VALID(p_buffer)) {
+	if (!BUFFER_IS_VALID(buffer)) {
 		return NULL;
 	}
 
-	if ((id != PM_BUFFER_INVALID_ID) && mutex_lock_status_get(p_buffer->p_mutex, id)) {
-		return &p_buffer->p_memory[id * p_buffer->block_size];
+	if ((id != PM_BUFFER_INVALID_ID) && mutex_lock_status_get(buffer->mutex, id)) {
+		return &buffer->memory[id * buffer->block_size];
 	} else {
 		return NULL;
 	}
 }
 
-void pm_buffer_release(struct pm_buffer *p_buffer, uint8_t id)
+void pm_buffer_release(struct pm_buffer *buffer, uint8_t id)
 {
-	if (BUFFER_IS_VALID(p_buffer) && (id != PM_BUFFER_INVALID_ID) &&
-	    mutex_lock_status_get(p_buffer->p_mutex, id)) {
-		mutex_unlock(p_buffer->p_mutex, id);
+	if (BUFFER_IS_VALID(buffer) && (id != PM_BUFFER_INVALID_ID) &&
+	    mutex_lock_status_get(buffer->mutex, id)) {
+		mutex_unlock(buffer->mutex, id);
 	}
 }

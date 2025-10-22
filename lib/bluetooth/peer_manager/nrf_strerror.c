@@ -33,7 +33,7 @@ struct strerror_desc {
  *
  * The constant string used by @ref nrf_strerror_get when the error description was not found.
  */
-static const char m_unknown_str[] = "Unknown error code";
+static const char unknown_str[] = "Unknown error code";
 
 /**
  * @brief Array with error codes.
@@ -64,29 +64,29 @@ static const struct strerror_desc nrf_strerror_array[] = {
 
 const char *nrf_strerror_get(uint32_t code)
 {
-	const char *p_ret = nrf_strerror_find(code);
+	const char *ret = nrf_strerror_find(code);
 
-	return (p_ret == NULL) ? m_unknown_str : p_ret;
+	return (ret == NULL) ? unknown_str : ret;
 }
 
 const char *nrf_strerror_find(uint32_t code)
 {
-	const struct strerror_desc *p_start;
-	const struct strerror_desc *p_end;
+	const struct strerror_desc *start;
+	const struct strerror_desc *end;
 
-	p_start = nrf_strerror_array;
-	p_end = nrf_strerror_array + ARRAY_SIZE(nrf_strerror_array);
+	start = nrf_strerror_array;
+	end = nrf_strerror_array + ARRAY_SIZE(nrf_strerror_array);
 
-	while (p_start < p_end) {
-		const struct strerror_desc *p_mid = p_start + ((p_end - p_start) / 2);
-		uint32_t mid_c = p_mid->code;
+	while (start < end) {
+		const struct strerror_desc *mid = start + ((end - start) / 2);
+		uint32_t mid_c = mid->code;
 
 		if (mid_c > code) {
-			p_end = p_mid;
+			end = mid;
 		} else if (mid_c < code) {
-			p_start = p_mid + 1;
+			start = mid + 1;
 		} else {
-			return p_mid->name;
+			return mid->name;
 		}
 	}
 	return NULL;
