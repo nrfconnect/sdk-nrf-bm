@@ -127,6 +127,8 @@ Record Access Control Point
    :inner:
    :members:
 
+.. _api_sensorsim:
+
 Sensor data simulator library
 =============================
 
