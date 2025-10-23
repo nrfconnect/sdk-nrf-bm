@@ -114,7 +114,8 @@ int nrf_sdh_enable_request(void)
 		.source = CONFIG_NRF_SDH_CLOCK_LF_SRC,
 		.rc_ctiv = CONFIG_NRF_SDH_CLOCK_LF_RC_CTIV,
 		.rc_temp_ctiv = CONFIG_NRF_SDH_CLOCK_LF_RC_TEMP_CTIV,
-		.accuracy = CONFIG_NRF_SDH_CLOCK_LF_ACCURACY
+		.accuracy = CONFIG_NRF_SDH_CLOCK_LF_ACCURACY,
+		.hfint_ctiv = CONFIG_NRF_SDH_CLOCK_HFINT_CALIBRATION_INTERVAL,
 	};
 
 	if (sdh_enabled) {

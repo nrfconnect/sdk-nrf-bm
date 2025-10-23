@@ -62,6 +62,11 @@ config NRF_SDH_CLOCK_LF_ACCURACY
 	int "Accuracy"
 	default 0
 
+config NRF_SDH_CLOCK_HFINT_CALIBRATION_INTERVAL
+	int "HFINT calibration interval in seconds"
+	range 1 255
+	default 60
+
 if NRF_SDH_BLE
 
 config NRF_SDH_BLE_CONN_TAG
