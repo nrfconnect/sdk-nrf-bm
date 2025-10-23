@@ -311,7 +311,7 @@ The handlers can be provided to the :c:func:`pm_register` function directly, or 
 
 .. code-block:: c
 
-   static void pm_evt_handler(pm_evt_t const *p_evt)
+   static void pm_evt_handler(const struct pm_evt *p_evt)
    {
       pm_handler_on_pm_evt(p_evt);
       pm_handler_disconnect_on_sec_failure(p_evt);
@@ -349,7 +349,7 @@ The store operation is finished when either the :c:enum:`PM_EVT_PEER_DATA_UPDATE
 .. code-block:: c
 
    uint32_t err;
-   pm_store_token_t store_token;
+   uint32_t store_token;
 
    err = pm_peer_data_remote_db_store(peer_id, array_of_services, number_of_services, &store_token);
    if (err != NRF_ERROR_BUSY) {
@@ -362,7 +362,7 @@ The :c:func:`pm_peer_data_store` function can also be used directly, as in the f
 .. code-block:: c
 
    uint32_t err;
-   pm_store_token_t store_token;
+   uint32_t store_token;
 
    err = pm_peer_data_store(peer_id, PM_PEER_DATA_ID_GATT_REMOTE, array_of_services, number_of_services, &store_token);
    if (err != NRF_ERROR_BUSY) {
@@ -382,9 +382,9 @@ The following example shows how to use the :c:func:`pm_whitelist_set` function t
    {
       /* Fetch a list of peer IDs from Peer Manager and whitelist them. */
 
-      pm_peer_id_t peer_ids[8] = {PM_PEER_ID_INVALID};
+      uint16_t peer_ids[8] = {PM_PEER_ID_INVALID};
       uint32_t n_peer_ids = 0;
-      pm_peer_id_t peer_id = pm_next_peer_id_get(PM_PEER_ID_INVALID);
+      uint16_t peer_id = pm_next_peer_id_get(PM_PEER_ID_INVALID);
 
       while((peer_id != PM_PEER_ID_INVALID) && (n_peer_ids < 8)) {
          peer_ids[n_peer_ids++] = peer_id;

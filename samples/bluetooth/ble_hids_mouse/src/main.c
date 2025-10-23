@@ -93,9 +93,9 @@ BLE_QWR_DEF(ble_qwr);
 /* BLE Connection handle */
 static uint16_t conn_handle = BLE_CONN_HANDLE_INVALID;
 
-static pm_peer_id_t peer_id;
+static uint16_t peer_id;
 
-static void identities_set(pm_peer_id_list_skip_t skip);
+static void identities_set(enum pm_peer_id_list_skip skip);
 
 static bool boot_mode;
 static bool auth_key_request;
@@ -173,7 +173,7 @@ static void ble_adv_evt_handler(struct ble_adv *ble_adv, const struct ble_adv_ev
 {
 	uint32_t err;
 	ble_gap_addr_t *peer_addr;
-	pm_peer_data_bonding_t peer_bonding_data;
+	struct pm_peer_data_bonding peer_bonding_data;
 	ble_gap_addr_t whitelist_addrs[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
 	ble_gap_irk_t whitelist_irks[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
 	uint32_t addr_cnt = BLE_GAP_WHITELIST_ADDR_MAX_COUNT;
@@ -514,10 +514,10 @@ static void button_handler(uint8_t pin, uint8_t action)
 	}
 }
 
-static void whitelist_set(pm_peer_id_list_skip_t skip)
+static void whitelist_set(enum pm_peer_id_list_skip skip)
 {
 	uint32_t err;
-	pm_peer_id_t peer_ids[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
+	uint16_t peer_ids[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
 	uint32_t peer_id_count = BLE_GAP_WHITELIST_ADDR_MAX_COUNT;
 
 	err = pm_peer_id_list(peer_ids, &peer_id_count, PM_PEER_ID_INVALID, skip);
@@ -534,10 +534,10 @@ static void whitelist_set(pm_peer_id_list_skip_t skip)
 	}
 }
 
-static void identities_set(pm_peer_id_list_skip_t skip)
+static void identities_set(enum pm_peer_id_list_skip skip)
 {
 	uint32_t err;
-	pm_peer_id_t peer_ids[BLE_GAP_DEVICE_IDENTITIES_MAX_COUNT];
+	uint16_t peer_ids[BLE_GAP_DEVICE_IDENTITIES_MAX_COUNT];
 	uint32_t peer_id_count = BLE_GAP_DEVICE_IDENTITIES_MAX_COUNT;
 
 	err = pm_peer_id_list(peer_ids, &peer_id_count, PM_PEER_ID_INVALID, skip);
@@ -581,7 +581,7 @@ static uint32_t advertising_start(bool erase_bonds)
 	return err;
 }
 
-static void pm_evt_handler(pm_evt_t const *evt)
+static void pm_evt_handler(struct pm_evt const *evt)
 {
 	pm_handler_on_pm_evt(evt);
 	pm_handler_disconnect_on_sec_failure(evt);

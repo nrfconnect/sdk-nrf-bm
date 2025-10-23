@@ -25,7 +25,7 @@
 extern "C" {
 #endif
 
-/** @brief Max size for @ref pm_peer_data_local_gatt_db_t.data */
+/** @brief Max size of the data member in @ref pm_peer_data_local_gatt_db. */
 #define PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE 128
 #define PM_PEER_DATA_MAX_SIZE PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE
 
@@ -34,18 +34,18 @@ extern "C" {
  *
  * @note This type is deprecated.
  */
-typedef struct {
+struct pm_peer_data {
 	/** @brief The length of the data in words. */
 	uint16_t length_words;
 	/**
 	 * @brief ID that specifies the type of data (defines which member of the union is
 	 *        used).
 	 */
-	pm_peer_data_id_t data_id;
+	enum pm_peer_data_id data_id;
 	/** @brief The data. */
 	union {
 		/** @brief The exchanged bond information in addition to metadata of the bonding. */
-		pm_peer_data_bonding_t *p_bonding_data;
+		struct pm_peer_data_bonding *bonding_data;
 		/**
 		 * @brief A value locally assigned to this peer. Its
 		 *        interpretation is up to the user. The rank is not set
@@ -53,77 +53,70 @@ typedef struct {
 		 *        the user using either @ref pm_peer_rank_highest or a @ref
 		 *        PM_PEER_DATA_FUNCTIONS function.
 		 */
-		uint32_t *p_peer_rank;
+		uint32_t *peer_rank;
 		/** @brief Value of peer's Central Address Resolution characteristic. */
-		uint32_t *p_central_addr_res;
+		uint32_t *central_addr_res;
 		/** @brief Whether a service changed indication should be sent to the peer. */
-		bool *p_service_changed_pending;
+		bool *service_changed_pending;
 		/** @brief Persistent information pertaining to a peer GATT client. */
-		pm_peer_data_local_gatt_db_t *p_local_gatt_db;
+		struct pm_peer_data_local_gatt_db *local_gatt_db;
 		/** @brief Persistent information pertaining to a peer GATT server. */
-		ble_gatt_db_srv_t *p_remote_gatt_db;
+		struct ble_gatt_db_srv *remote_gatt_db;
 		/**
 		 * @brief Arbitrary data to associate with the peer. This data can be freely used
 		 *        by the application.
 		 */
-		uint8_t *p_application_data;
+		uint8_t *application_data;
 		/**
 		 * @brief Generic access pointer to the data. It is used only to
 		 *        handle the data without regard to type.
 		 */
-		void *p_all_data;
+		void *all_data;
 	};
-} pm_peer_data_t;
+};
 
 /**
- * @brief Immutable version of @ref pm_peer_data_t.
+ * @brief Immutable version of @ref pm_peer_data.
  *
  * @note This type is deprecated.
  */
-typedef struct {
+struct pm_peer_data_const {
 	/** @brief The length of the data in words. */
 	uint16_t length_words;
 	/**
 	 * @brief ID that specifies the type of data (defines which member of the union is
 	 *        used).
 	 */
-	pm_peer_data_id_t data_id;
+	enum pm_peer_data_id data_id;
 	/** @brief The data. */
 	union {
-		/** @brief Immutable @ref pm_peer_data_t::p_bonding_data. */
-		pm_peer_data_bonding_t const *p_bonding_data;
-		/** @brief Immutable @ref pm_peer_data_t::p_peer_rank. */
-		uint32_t const *p_peer_rank;
-		/** @brief Immutable @ref pm_peer_data_t::p_central_addr_res. */
-		uint32_t const *p_central_addr_res;
-		/** @brief Immutable @ref pm_peer_data_t::p_service_changed_pending. */
-		bool const *p_service_changed_pending;
-		/** @brief Immutable @ref pm_peer_data_t::p_local_gatt_db. */
-		pm_peer_data_local_gatt_db_t const *p_local_gatt_db;
-		/** @brief Immutable @ref pm_peer_data_t::p_remote_gatt_db. */
-		ble_gatt_db_srv_t const *p_remote_gatt_db;
-		/** @brief Immutable @ref pm_peer_data_t::p_application_data. */
-		uint8_t const *p_application_data;
-		/** @brief Immutable @ref pm_peer_data_t::p_all_data. */
-		void const *p_all_data;
+		/** @brief Immutable @ref pm_peer_data::bonding_data. */
+		const struct pm_peer_data_bonding *bonding_data;
+		/** @brief Immutable @ref pm_peer_data::peer_rank. */
+		const uint32_t *peer_rank;
+		/** @brief Immutable @ref pm_peer_data::central_addr_res. */
+		const uint32_t *central_addr_res;
+		/** @brief Immutable @ref pm_peer_data::service_changed_pending. */
+		const bool *service_changed_pending;
+		/** @brief Immutable @ref pm_peer_data::local_gatt_db. */
+		const struct pm_peer_data_local_gatt_db *local_gatt_db;
+		/** @brief Immutable @ref pm_peer_data::remote_gatt_db. */
+		const struct ble_gatt_db_srv *remote_gatt_db;
+		/** @brief Immutable @ref pm_peer_data::application_data. */
+		const uint8_t *application_data;
+		/** @brief Immutable @ref pm_peer_data::all_data. */
+		const void *all_data;
 	};
-} pm_peer_data_const_t;
-
-/**
- * @brief Version of @ref pm_peer_data_t that reflects the structure of peer data in flash.
- *
- * @note This type is deprecated.
- */
-typedef pm_peer_data_const_t pm_peer_data_flash_t;
+};
 
 /**
  * @brief Event handler for events from the @ref peer_manager module.
  *
  * @sa pm_register
  *
- * @param[in]  p_event  The event that has occurred.
+ * @param[in]  event  The event that has occurred.
  */
-typedef void (*pm_evt_handler_internal_t)(pm_evt_t *p_event);
+typedef void (*pm_evt_handler_internal_t)(struct pm_evt *event);
 
 /** @brief Macro for showing that a variable is unused. */
 #define UNUSED_VARIABLE(X) ((void)(X))
@@ -145,7 +138,7 @@ typedef void (*pm_evt_handler_internal_t)(pm_evt_t *p_event);
  *
  * @return The number of words that the data takes in flash.
  */
-#define PM_BONDING_DATA_N_WORDS() BYTES_TO_WORDS(sizeof(pm_peer_data_bonding_t))
+#define PM_BONDING_DATA_N_WORDS() BYTES_TO_WORDS(sizeof(struct pm_peer_data_bonding))
 
 /**
  * @brief Macro for calculating the flash size of service changed pending state.
@@ -181,7 +174,7 @@ typedef void (*pm_evt_handler_internal_t)(pm_evt_t *p_event);
  * @return The number of words that the data takes in flash.
  */
 #define PM_REMOTE_DB_N_WORDS(service_count)                                                        \
-	BYTES_TO_WORDS(sizeof(ble_gatt_db_srv_t) * (service_count))
+	BYTES_TO_WORDS(sizeof(struct ble_gatt_db_srv) * (service_count))
 
 /**
  * @brief Macro for calculating the number of services that can be stored in a region of n words.
@@ -190,7 +183,8 @@ typedef void (*pm_evt_handler_internal_t)(pm_evt_t *p_event);
  *
  * @return The number of services that can be stored in a region of n words.
  */
-#define PM_REMOTE_DB_N_SERVICES(n_words) (((n_words)*BYTES_PER_WORD) / sizeof(ble_gatt_db_srv_t))
+#define PM_REMOTE_DB_N_SERVICES(n_words)                                                           \
+	(((n_words)*BYTES_PER_WORD) / sizeof(struct ble_gatt_db_srv))
 
 /**
  * @brief Function for calculating the flash size of the usage index.
@@ -198,20 +192,6 @@ typedef void (*pm_evt_handler_internal_t)(pm_evt_t *p_event);
  * @return The number of words that the data takes in flash.
  */
 #define PM_USAGE_INDEX_N_WORDS() BYTES_TO_WORDS(sizeof(uint32_t))
-
-#ifdef NRF_PM_DEBUG
-
-#define NRF_PM_DEBUG_CHECK(condition)                                                              \
-	if (!(condition)) {                                                                        \
-		__asm("bkpt #0");                                                                  \
-	}
-
-#else
-
-/* Prevent "variable set but never used" compiler warnings. */
-#define NRF_PM_DEBUG_CHECK(condition) (void)(condition)
-
-#endif
 
 #ifdef __cplusplus
 }

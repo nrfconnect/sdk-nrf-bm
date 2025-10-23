@@ -19,7 +19,6 @@
 #include <ble.h>
 #include <ble_gap.h>
 #include <bm/bluetooth/peer_manager/peer_manager_types.h>
-#include "security_dispatcher.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,35 +37,35 @@ uint32_t sm_init(void);
  *
  * @param[in]  ble_evt    The SoftDevice event.
  */
-void sm_ble_evt_handler(ble_evt_t const *ble_evt);
+void sm_ble_evt_handler(const ble_evt_t *ble_evt);
 
 /**
  * @brief Function for providing pairing and bonding parameters to use for pairing procedures.
  *
  * @details Until this is called, all bonding procedures initiated by the peer will be rejected.
- *          This function can be called multiple times, even with NULL p_sec_params, in which case
+ *          This function can be called multiple times, even with NULL sec_params, in which case
  *          it will go back to rejecting all procedures.
  *
- * @param[in]  p_sec_params  The security parameters to use for this link. Can be NULL to reject
- *                           all pairing procedures.
+ * @param[in]  sec_params  The security parameters to use for this link. Can be NULL to reject
+ *                         all pairing procedures.
  *
  * @retval NRF_SUCCESS                    Success.
  * @retval NRF_ERROR_INVALID_PARAM        Invalid combination of parameters.
  */
-uint32_t sm_sec_params_set(ble_gap_sec_params_t *p_sec_params);
+uint32_t sm_sec_params_set(ble_gap_sec_params_t *sec_params);
 
 /**
  * @brief Function for providing security configuration for a link.
  *
  * @details This function is optional, and must be called in reply to a @ref
  *          PM_EVT_CONN_SEC_CONFIG_REQ event, before the Peer Manager event handler returns. If it
- *          is not called in time, a default configuration is used. See @ref pm_conn_sec_config_t
+ *          is not called in time, a default configuration is used. See @ref pm_conn_sec_config
  *          for the value of the default.
  *
- * @param[in]  conn_handle        The connection to set the configuration for.
- * @param[in]  p_conn_sec_config  The configuration.
+ * @param[in]  conn_handle      The connection to set the configuration for.
+ * @param[in]  conn_sec_config  The configuration.
  */
-void sm_conn_sec_config_reply(uint16_t conn_handle, pm_conn_sec_config_t *p_conn_sec_config);
+void sm_conn_sec_config_reply(uint16_t conn_handle, struct pm_conn_sec_config *conn_sec_config);
 
 /**
  * @brief Function for providing security parameters for a link.
@@ -74,19 +73,19 @@ void sm_conn_sec_config_reply(uint16_t conn_handle, pm_conn_sec_config_t *p_conn
  * @details This function is optional, and must be called in reply to a @ref
  *          PM_EVT_CONN_SEC_PARAMS_REQ event, before the Security Manager event handler returns. If
  *          it is not called in time, the parameters given in @ref sm_sec_params_set are used. See
- *          @ref pm_conn_sec_config_t for the value of the default.
+ *          @ref pm_conn_sec_config for the value of the default.
  *
  * @param[in]  conn_handle   The connection to set the parameters for.
- * @param[in]  p_sec_params  The parameters. If NULL, the security procedure is rejected.
- * @param[in]  p_context     The context found in the request event that this function replies to.
+ * @param[in]  sec_params    The parameters. If NULL, the security procedure is rejected.
+ * @param[in]  context       The context found in the request event that this function replies to.
  *
  * @retval NRF_SUCCESS              Successful reply.
- * @retval NRF_ERROR_NULL           p_context was null.
- * @retval NRF_ERROR_INVALID_PARAM  Value of p_sec_params was invalid.
+ * @retval NRF_ERROR_NULL           @p context was null.
+ * @retval NRF_ERROR_INVALID_PARAM  Value of @p sec_params was invalid.
  * @retval NRF_ERROR_INVALID_STATE  This module is not initialized.
  */
-uint32_t sm_sec_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *p_sec_params,
-			       void const *p_context);
+uint32_t sm_sec_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *sec_params,
+			     const void *context);
 
 /**
  * @brief Experimental function for specifying the public key to use for LESC operations.
@@ -97,37 +96,37 @@ uint32_t sm_sec_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *p_sec_p
  *
  * @note The key must continue to reside in application memory as it is not copied by Peer Manager.
  *
- * @param[in]  p_public_key  The public key to use for all subsequent LESC operations.
+ * @param[in]  public_key  The public key to use for all subsequent LESC operations.
  *
  * @retval NRF_SUCCESS                    Pairing initiated successfully.
  * @retval NRF_ERROR_INVALID_STATE        This module is not initialized.
  */
-uint32_t sm_lesc_public_key_set(ble_gap_lesc_p256_pk_t *p_public_key);
+uint32_t sm_lesc_public_key_set(ble_gap_lesc_p256_pk_t *public_key);
 
 /**
  * @brief Function for getting the security status of a connection.
  *
- * @param[in]  conn_handle        Connection handle of the link as provided by the SoftDevice.
- * @param[out] p_conn_sec_status  Security status of the link.
+ * @param[in]  conn_handle      Connection handle of the link as provided by the SoftDevice.
+ * @param[out] conn_sec_status  Security status of the link.
  *
  * @retval NRF_SUCCESS                    If pairing was initiated successfully.
  * @retval BLE_ERROR_INVALID_CONN_HANDLE  If the connection handle is invalid.
- * @retval NRF_ERROR_NULL                 If @p p_conn_sec_status was NULL.
+ * @retval NRF_ERROR_NULL                 If @p conn_sec_status was NULL.
  */
-uint32_t sm_conn_sec_status_get(uint16_t conn_handle, pm_conn_sec_status_t *p_conn_sec_status);
+uint32_t sm_conn_sec_status_get(uint16_t conn_handle, struct pm_conn_sec_status *conn_sec_status);
 
 /**
  * @brief Function for comparing the security status of a connection against a baseline.
  *
- * @param[in]  conn_handle       Connection handle of the link as provided by the SoftDevice.
- * @param[out] p_sec_status_req  Target baseline security status to compare against.
+ * @param[in]  conn_handle     Connection handle of the link as provided by the SoftDevice.
+ * @param[out] sec_status_req  Target baseline security status to compare against.
  *
  * @retval true   If the security status of the connection matches or exceeds the baseline on all
  *                points.
  * @retval false  If the security status of the connection does not fulfill the baseline, or could
  *                not be retrieved.
  */
-bool sm_sec_is_sufficient(uint16_t conn_handle, pm_conn_sec_status_t *p_sec_status_req);
+bool sm_sec_is_sufficient(uint16_t conn_handle, struct pm_conn_sec_status *sec_status_req);
 
 /**
  * @brief Function for initiating security on the link, with the specified parameters.

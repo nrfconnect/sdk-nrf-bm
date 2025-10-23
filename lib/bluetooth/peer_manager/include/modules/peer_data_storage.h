@@ -20,7 +20,7 @@
 #include <stdint.h>
 #include <ble_gap.h>
 #include <bm/bluetooth/peer_manager/peer_manager_types.h>
-#include "peer_manager_internal.h"
+#include <modules/peer_manager_internal.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,13 +35,13 @@ extern "C" {
 /** @brief The end of the range of record keys reserved for Peer Manager. */
 #define PDS_LAST_RESERVED_RECORD_KEY (0xFFFE)
 
-/** @brief Macro for converting a @ref pm_peer_id_t to an FDS file ID. */
+/** @brief Macro for converting a peer ID to an FDS file ID. */
 #define PEER_ID_TO_FILE_ID (PDS_FIRST_RESERVED_FILE_ID)
-/** @brief Macro for converting an FDS file ID to a @ref pm_peer_id_t. */
+/** @brief Macro for converting an FDS file ID to a peer ID. */
 #define FILE_ID_TO_PEER_ID (-PDS_FIRST_RESERVED_FILE_ID)
-/** @brief Macro for converting a @ref pm_peer_data_id_t to an FDS record ID. */
+/** @brief Macro for converting a @ref pm_peer_data_id to an FDS record ID. */
 #define DATA_ID_TO_RECORD_KEY (PDS_FIRST_RESERVED_RECORD_KEY)
-/** @brief Macro for converting an FDS record ID to a @ref pm_peer_data_id_t. */
+/** @brief Macro for converting an FDS record ID to a @ref pm_peer_data_id. */
 #define RECORD_KEY_TO_DATA_ID (-PDS_FIRST_RESERVED_RECORD_KEY)
 
 /**
@@ -56,12 +56,12 @@ uint32_t pds_init(void);
 /**
  * @brief Function for reading peer data in flash.
  *
- * @param[in]  peer_id     The peer the data belongs to.
- * @param[in]  data_id     The data to retrieve.
- * @param[out] p_data      The peer data. May not be @c NULL. p_data.length_words and p_data.data_id
- *                         are ignored. p_data.p_all_data is ignored if @p p_buf_len is @c NULL.
- * @param[in]  p_buf_len   Length of the provided buffer, in bytes. Pass @c NULL to only copy
- *                         a pointer to the data in flash.
+ * @param[in]  peer_id   The peer the data belongs to.
+ * @param[in]  data_id   The data to retrieve.
+ * @param[out] data      The peer data. May not be @c NULL. data.length_words and data.data_id
+ *                       are ignored. data.all_data is ignored if @p buf_len is @c NULL.
+ * @param[in]  buf_len   Length of the provided buffer, in bytes. Pass @c NULL to only copy
+ *                       a pointer to the data in flash.
  *
  * @retval NRF_SUCCESS              If the operation was successful.
  * @retval NRF_ERROR_INVALID_PARAM  If @p peer_id or @p data_id are invalid.
@@ -69,32 +69,32 @@ uint32_t pds_init(void);
  * @retval NRF_ERROR_DATA_SIZE      If the provided buffer is too small. The data is still copied,
  *                                  filling the provided buffer.
  */
-uint32_t pds_peer_data_read(pm_peer_id_t peer_id, pm_peer_data_id_t data_id,
-			      pm_peer_data_t *const p_data, uint32_t const *const p_buf_len);
+uint32_t pds_peer_data_read(uint16_t peer_id, enum pm_peer_data_id data_id,
+			    struct pm_peer_data *const data, const uint32_t *const buf_len);
 
 /**
  * @brief Function to prepare iterating over peer data in flash using @ref pds_peer_data_iterate.
  *        Call this function once each time before iterating using @ref pds_peer_data_iterate.
  *
- * @param[in]  p_peer_id_iter The peer ID used for keeping track of the iteration.
+ * @param[in]  peer_id_iter  The peer ID used for keeping track of the iteration.
  */
-void pds_peer_data_iterate_prepare(pm_peer_id_t *p_peer_id_iter);
+void pds_peer_data_iterate_prepare(uint16_t *peer_id_iter);
 
 /**
  * @brief Function for iterating peers' data in flash.
  *        Always call @ref pds_peer_data_iterate_prepare before starting iterating.
  *
- * @param[in]  data_id        The peer data to iterate over.
- * @param[out] p_peer_id      The peer the data belongs to.
- * @param[out] p_data         The peer data in flash. @ref p_data.p_all_data must point to a buffer
- *                            of size @ref PM_PEER_DATA_MAX_SIZE.
- * @param[in]  p_peer_id_iter The peer ID used for keeping track of the iteration.
+ * @param[in]  data_id      The peer data to iterate over.
+ * @param[out] peer_id      The peer the data belongs to.
+ * @param[out] data         The peer data in flash. @ref data.all_data must point to a buffer
+ *                          of size @ref PM_PEER_DATA_MAX_SIZE.
+ * @param[in]  peer_id_iter The peer ID used for keeping track of the iteration.
  *
  * @retval true   If the operation was successful.
  * @retval false  If the data was not found in flash, or another error occurred.
  */
-bool pds_peer_data_iterate(pm_peer_data_id_t data_id, pm_peer_id_t *const p_peer_id,
-			   pm_peer_data_flash_t *const p_data, pm_peer_id_t *p_peer_id_iter);
+bool pds_peer_data_iterate(enum pm_peer_data_id data_id, uint16_t *const peer_id,
+			   struct pm_peer_data_const *const data, uint16_t *peer_id_iter);
 
 /**
  * @brief Function for storing peer data in flash. If the same piece of data already exists for the
@@ -102,21 +102,21 @@ bool pds_peer_data_iterate(pm_peer_data_id_t data_id, pm_peer_id_t *const p_peer
  *        Expect a @ref PM_EVT_PEER_DATA_UPDATE_SUCCEEDED or @ref PM_EVT_PEER_DATA_UPDATE_FAILED
  *        event.
  *
- * @param[in]  peer_id        The peer the data belongs to.
- * @param[in]  p_peer_data    The peer data. May not be @c NULL.
- * @param[out] p_store_token  A token identifying this particular store operation. The token can be
- *                            used to identify events pertaining to this operation. Pass @p NULL
- *                            if not used.
+ * @param[in]  peer_id      The peer the data belongs to.
+ * @param[in]  peer_data    The peer data. May not be @c NULL.
+ * @param[out] store_token  A token identifying this particular store operation. The token can be
+ *                          used to identify events pertaining to this operation. Pass @p NULL
+ *                          if not used.
  *
  * @retval NRF_SUCCESS              If the operation was initiated successfully.
- * @retval NRF_ERROR_INVALID_PARAM  If @p peer_id or the data ID in @p_peer_data are invalid.
- * @retval NRF_ERROR_INVALID_ADDR   If @p p_peer_data is not word-aligned.
+ * @retval NRF_ERROR_INVALID_PARAM  If @p peer_id or the data ID in @p peer_data are invalid.
+ * @retval NRF_ERROR_INVALID_ADDR   If @p peer_data is not word-aligned.
  * @retval NRF_ERROR_RESOURCES   If no space is available in flash.
  * @retval NRF_ERROR_BUSY           If the flash filesystem was busy.
  * @retval NRF_ERROR_INTERNAL       If an unexpected error occurred.
  */
-uint32_t pds_peer_data_store(pm_peer_id_t peer_id, pm_peer_data_const_t const *p_peer_data,
-			       pm_store_token_t *p_store_token);
+uint32_t pds_peer_data_store(uint16_t peer_id, const struct pm_peer_data_const *peer_data,
+			     uint32_t *store_token);
 
 /**
  * @brief Function for deleting peer data in flash. This operation is asynchronous.
@@ -132,14 +132,14 @@ uint32_t pds_peer_data_store(pm_peer_id_t peer_id, pm_peer_data_const_t const *p
  * @retval NRF_ERROR_BUSY           If the flash filesystem was busy.
  * @retval NRF_ERROR_INTERNAL       If an unexpected error occurred.
  */
-uint32_t pds_peer_data_delete(pm_peer_id_t peer_id, pm_peer_data_id_t data_id);
+uint32_t pds_peer_data_delete(uint16_t peer_id, enum pm_peer_data_id data_id);
 
 /**
  * @brief Function for claiming an unused peer ID.
  *
  * @retval  PM_PEER_ID_INVALID  If no peer ID was available.
  */
-pm_peer_id_t pds_peer_id_allocate(void);
+uint16_t pds_peer_id_allocate(void);
 
 /**
  * @brief Function for freeing a peer ID and deleting all data associated with it in flash.
@@ -149,7 +149,7 @@ pm_peer_id_t pds_peer_id_allocate(void);
  * @retval NRF_SUCCESS             The operation was initiated successfully.
  * @retval NRF_ERROR_INVALID_PARAM If @p peer_id is invalid.
  */
-uint32_t pds_peer_id_free(pm_peer_id_t peer_id);
+uint32_t pds_peer_id_free(uint16_t peer_id);
 
 /**
  * @brief Function for finding out whether a peer ID is in use.
@@ -159,7 +159,7 @@ uint32_t pds_peer_id_free(pm_peer_id_t peer_id);
  * @retval  true   @p peer_id is in use.
  * @retval  false  @p peer_id is free.
  */
-bool pds_peer_id_is_allocated(pm_peer_id_t peer_id);
+bool pds_peer_id_is_allocated(uint16_t peer_id);
 
 /**
  * @brief Function for finding out whether a peer ID is marked for deletion.
@@ -169,7 +169,7 @@ bool pds_peer_id_is_allocated(pm_peer_id_t peer_id);
  * @retval  true   @p peer_id is marked for deletion.
  * @retval  false  @p peer_id is not marked for deletion.
  */
-bool pds_peer_id_is_deleted(pm_peer_id_t peer_id);
+bool pds_peer_id_is_deleted(uint16_t peer_id);
 
 /**
  * @brief Function for getting the next peer ID in the sequence of all used peer IDs. Can be
@@ -184,7 +184,7 @@ bool pds_peer_id_is_deleted(pm_peer_id_t peer_id);
  * @retval  PM_PEER_ID_INVALID          If @p prev_peer_id is the last ordinary peer ID or the
  * module is not initialized.
  */
-pm_peer_id_t pds_next_peer_id_get(pm_peer_id_t prev_peer_id);
+uint16_t pds_next_peer_id_get(uint16_t prev_peer_id);
 
 /**
  * @brief Function for getting the next peer ID in the sequence of all peer IDs pending deletion.
@@ -200,7 +200,7 @@ pm_peer_id_t pds_next_peer_id_get(pm_peer_id_t prev_peer_id);
  * @retval  PM_PEER_ID_INVALID          if prev_peer_id was the last ordinary peer ID or the module
  *                                      is not initialized.
  */
-pm_peer_id_t pds_next_deleted_peer_id_get(pm_peer_id_t prev_peer_id);
+uint16_t pds_next_deleted_peer_id_get(uint16_t prev_peer_id);
 
 /**
  * @brief Function for querying the number of valid peer IDs available. I.E the number of peers

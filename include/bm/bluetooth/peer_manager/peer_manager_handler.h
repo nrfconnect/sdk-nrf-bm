@@ -35,7 +35,7 @@ extern "C" {
  *
  * @param[in] pm_evt  Peer Manager event to handle.
  */
-void pm_handler_on_pm_evt(const pm_evt_t *pm_evt);
+void pm_handler_on_pm_evt(const struct pm_evt *pm_evt);
 
 /**
  * @brief Auxiliary standard function for logging Peer Manager events.
@@ -46,7 +46,7 @@ void pm_handler_on_pm_evt(const pm_evt_t *pm_evt);
  *
  * @param[in] pm_evt  Peer Manager event to log.
  */
-void pm_handler_pm_evt_log(const pm_evt_t *pm_evt);
+void pm_handler_pm_evt_log(const struct pm_evt *pm_evt);
 
 /**
  * @brief Auxiliary standard function for maintaining room in non-volatile storage based on Peer
@@ -63,7 +63,7 @@ void pm_handler_pm_evt_log(const pm_evt_t *pm_evt);
  *
  * @param[in] pm_evt  Peer Manager event to handle.
  */
-void pm_handler_flash_clean(const pm_evt_t *pm_evt);
+void pm_handler_flash_clean(const struct pm_evt *pm_evt);
 
 /**
  * @brief Function to call when a Peer Manager function returns @ref NRF_ERROR_RESOURCES.
@@ -83,7 +83,7 @@ void pm_handler_flash_clean_on_return(void);
  *
  * @param[in] pm_evt  Peer Manager event to handle.
  */
-void pm_handler_disconnect_on_sec_failure(const pm_evt_t *pm_evt);
+void pm_handler_disconnect_on_sec_failure(const struct pm_evt *pm_evt);
 
 /**
  * @brief Auxiliary standard function for disconnecting on insufficient connection security.
@@ -98,8 +98,8 @@ void pm_handler_disconnect_on_sec_failure(const pm_evt_t *pm_evt);
  * @param[in] pm_evt        Peer Manager event to handle.
  * @param[in] min_conn_sec  Minimum security status below which to disconnect the link.
  */
-void pm_handler_disconnect_on_insufficient_sec(const pm_evt_t *pm_evt,
-					       pm_conn_sec_status_t *min_conn_sec);
+void pm_handler_disconnect_on_insufficient_sec(const struct pm_evt *pm_evt,
+					       struct pm_conn_sec_status *min_conn_sec);
 
 /**
  * @brief Secure a connection when it is established.
