@@ -68,6 +68,10 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Libraries
 =========
 
+* Updated the following libraries to return ``nrf_errors`` instead of ``errnos``:
+
+  * BLE Advertising library.
+
 * :ref:`lib_ble_conn_params` library:
 
    * Added missing Kconfig dependencies.
