@@ -163,10 +163,10 @@ struct ble_nus {
  * @param[in] nus_init Information needed to initialize the service.
  *
  * @retval 0 On success.
- * @retval -EFAULT If @p nus or @p nus_config is @c NULL.
- * @retval -EINVAL Invalid parameters.
+ * @retval NRF_ERROR_NULL If @p nus or @p nus_config is @c NULL.
+ * @retval NRF_ERROR_INVALID_PARAM Invalid parameters.
  */
-int ble_nus_init(struct ble_nus *nus, struct ble_nus_config const *nus_config);
+uint32_t ble_nus_init(struct ble_nus *nus, struct ble_nus_config const *nus_config);
 
 /**
  * @brief Function for handling the Nordic UART Service's BLE events.
@@ -193,16 +193,10 @@ void ble_nus_on_ble_evt(ble_evt_t const *ble_evt, void *context);
  * @param[in] conn_handle Connection handle of the destination client.
  *
  * @retval 0 On success.
- * @retval -EFAULT If @p nus, @p data or @p length is @c NULL.
- * @retval -EINVAL Invalid parameters.
- * @retval -ENOENT Invalid @p conn_handle.
- * @retval -EIO Failed to send notification.
- * @retval -ENOTCONN Connection handle unknown to the softdevice.
- * @retval -EPIPE Notifications not enabled in the CCCD.
- * @retval -EBADF Not found.
- * @retval -EAGAIN Not enough resources for operation.
+ * @return nrf_error on failure.
  */
-int ble_nus_data_send(struct ble_nus *nus, uint8_t *data, uint16_t *length, uint16_t conn_handle);
+uint32_t ble_nus_data_send(
+	struct ble_nus *nus, uint8_t *data, uint16_t *length, uint16_t conn_handle);
 
 #ifdef __cplusplus
 }

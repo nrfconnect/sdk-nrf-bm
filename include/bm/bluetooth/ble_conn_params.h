@@ -114,10 +114,10 @@ typedef void (*ble_conn_params_evt_handler_t)(const struct ble_conn_params_evt *
  *
  * @param handler Handler.
  *
- * @retval 0 On success.
- * @retval -EFAULT If @p handler is @c NULL.
+ * @retval NRF_SUCCESS On success.
+ * @retval NRF_ERROR_NULL If @p handler is @c NULL.
  */
-int ble_conn_params_evt_handler_set(ble_conn_params_evt_handler_t handler);
+uint32_t ble_conn_params_evt_handler_set(ble_conn_params_evt_handler_t handler);
 
 /**
  * @brief Override GAP connection parameters for given peer.
@@ -129,11 +129,11 @@ int ble_conn_params_evt_handler_set(ble_conn_params_evt_handler_t handler);
  * @param conn_handle Connection handle.
  * @param conn_params Connection parameters.
  *
- * @retval 0 Connection parameter update initiated successfully.
- * @retval -EINVAL If @p conn_handle is invalid.
- * @retval -EFAULT If @p conn_params is @c NULL.
+ * @retval NRF_SUCCESS Connection parameter update initiated successfully.
+ * @retval NRF_ERROR_INVALID_PARAM If @p conn_handle is invalid.
+ * @retval NRF_ERROR_NULL If @p conn_params is @c NULL.
  */
-int ble_conn_params_override(uint16_t conn_handle, const ble_gap_conn_params_t *conn_params);
+uint32_t ble_conn_params_override(uint16_t conn_handle, const ble_gap_conn_params_t *conn_params);
 
 /**
  * @brief Initiate an ATT MTU exchange procedure for a given connection.
@@ -152,10 +152,10 @@ int ble_conn_params_override(uint16_t conn_handle, const ble_gap_conn_params_t *
  * @param conn_handle Handle to the connection.
  * @param att_mtu Desired ATT MTU.
  *
- * @retval 0 On success.
- * @retval -EINVAL Invalid ATT MTU or connection handle.
+ * @retval NRF_SUCCESS On success.
+ * @retval NRF_ERROR_INVALID_PARAM Invalid ATT MTU or connection handle.
  */
-int ble_conn_params_att_mtu_set(uint16_t conn_handle, uint16_t att_mtu);
+uint32_t ble_conn_params_att_mtu_set(uint16_t conn_handle, uint16_t att_mtu);
 
 /**
  * @brief Retrieve the current ATT MTU for a given connection.
@@ -163,11 +163,11 @@ int ble_conn_params_att_mtu_set(uint16_t conn_handle, uint16_t att_mtu);
  * @param conn_handle Handle to the connection.
  * @param[out] att_mtu The ATT MTU value.
  *
- * @retval 0 On success.
- * @retval -EINVAL Invalid connection handle.
- * @retval -EFAULT @p att_mtu is @c NULL.
+ * @retval NRF_SUCCESS On success.
+ * @retval NRF_ERROR_INVALID_PARAM Invalid connection handle.
+ * @retval NRF_ERROR_NULL @p att_mtu is @c NULL.
  */
-int ble_conn_params_att_mtu_get(uint16_t conn_handle, uint16_t *att_mtu);
+uint32_t ble_conn_params_att_mtu_get(uint16_t conn_handle, uint16_t *att_mtu);
 
 /**
  * @brief Initiate a GAP data length update procedure for a given connection.
@@ -178,10 +178,11 @@ int ble_conn_params_att_mtu_get(uint16_t conn_handle, uint16_t *att_mtu);
  * @param conn_handle Handle to the connection.
  * @param data_length Desired GAP data length.
  *
- * @retval 0 On success.
- * @retval -EINVAL Invalid data length or connection handle.
+ * @retval NRF_SUCCESS On success.
+ * @retval NRF_ERROR_INVALID_PARAM Invalid data length or connection handle.
  */
-int ble_conn_params_data_length_set(uint16_t conn_handle, struct ble_conn_params_data_length dl);
+uint32_t ble_conn_params_data_length_set(uint16_t conn_handle,
+					 struct ble_conn_params_data_length dl);
 
 /**
  * @brief Retrieve the current GAP data length for a given connection.
@@ -189,11 +190,12 @@ int ble_conn_params_data_length_set(uint16_t conn_handle, struct ble_conn_params
  * @param conn_handle Handle to the connection.
  * @param[out] data_length The data length value.
  *
- * @retval 0 On success.
- * @retval -EINVAL Invalid connection handle.
- * @retval -EFAULT @p data_length is @c NULL.
+ * @retval NRF_SUCCESS On success.
+ * @retval NRF_ERROR_INVALID_PARAM Invalid connection handle.
+ * @retval NRF_ERROR_NULL @p data_length is @c NULL.
  */
-int ble_conn_params_data_length_get(uint16_t conn_handle, struct ble_conn_params_data_length *dl);
+uint32_t ble_conn_params_data_length_get(uint16_t conn_handle,
+					 struct ble_conn_params_data_length *dl);
 
 /**
  * @brief Initiate a GAP radio PHY mode update procedure for a given connection.
@@ -204,10 +206,10 @@ int ble_conn_params_data_length_get(uint16_t conn_handle, struct ble_conn_params
  * @param conn_handle Handle to the connection.
  * @param phy_pref Desired GAP radio PHY mode.
  *
- * @retval 0 On success.
- * @retval -EINVAL Invalid data length or connection handle.
+ * @retval NRF_SUCCESS On success.
+ * @retval NRF_ERROR_INVALID_PARAM Invalid data length or connection handle.
  */
-int ble_conn_params_phy_radio_mode_set(uint16_t conn_handle, ble_gap_phys_t phy_pref);
+uint32_t ble_conn_params_phy_radio_mode_set(uint16_t conn_handle, ble_gap_phys_t phy_pref);
 
 /**
  * @brief Retrieve the current GAP radio PHY mode for a given connection.
@@ -215,11 +217,11 @@ int ble_conn_params_phy_radio_mode_set(uint16_t conn_handle, ble_gap_phys_t phy_
  * @param conn_handle Handle to the connection.
  * @param[out] phy_pref The radio PHY mode.
  *
- * @retval 0 On success.
- * @retval -EINVAL Invalid connection handle.
- * @retval -EFAULT @p phy_pref is @c NULL.
+ * @retval NRF_SUCCESS On success.
+ * @retval NRF_ERROR_INVALID_PARAM Invalid connection handle.
+ * @retval NRF_ERROR_NULL @p phy_pref is @c NULL.
  */
-int ble_conn_params_phy_radio_mode_get(uint16_t conn_handle, ble_gap_phys_t *phy_pref);
+uint32_t ble_conn_params_phy_radio_mode_get(uint16_t conn_handle, ble_gap_phys_t *phy_pref);
 
 #ifdef __cplusplus
 }

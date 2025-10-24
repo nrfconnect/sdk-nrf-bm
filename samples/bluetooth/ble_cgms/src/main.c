@@ -87,6 +87,7 @@ static uint8_t qwr_mem[CONFIG_QWR_MEM_BUFF_SIZE];
 static void battery_level_update(void)
 {
 	int err;
+	uint32_t nrf_err;
 	uint32_t battery_level;
 
 	err = (uint8_t)sensorsim_measure(&battery_sim_state, &battery_level);
@@ -94,11 +95,11 @@ static void battery_level_update(void)
 		LOG_ERR("Sensorsim measure failed, err %d", err);
 	}
 
-	err = ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level);
-	if (err) {
+	nrf_err = ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level);
+	if (nrf_err) {
 		/* Ignore if not in a connection or notifications disabled in CCCD. */
-		if (err != -ENOTCONN && err != -EPIPE) {
-			LOG_ERR("Failed to update battery level, err %d", err);
+		if (nrf_err != -ENOTCONN && nrf_err != -EPIPE) {
+			LOG_ERR("Failed to update battery level, nrf_error %#x", nrf_err);
 		}
 	}
 }
@@ -165,7 +166,7 @@ static void glucose_meas_timeout_handler(void *context)
 
 	ble_cgms.sensor_status.time_offset = current_time_offset;
 	nrf_err = ble_cgms_update_status(&ble_cgms, &ble_cgms.sensor_status);
-	if (nrf_err != NRF_SUCCESS) {
+	if (nrf_err) {
 		LOG_ERR("Failed to update BLE CGMS status, nrf_error %d", nrf_err);
 	}
 }
@@ -207,7 +208,7 @@ static int gap_params_init(void)
 	uint32_t nrf_err;
 
 	nrf_err = sd_ble_gap_appearance_set(BLE_APPEARANCE_GENERIC_GLUCOSE_METER);
-	if (nrf_err != NRF_SUCCESS) {
+	if (nrf_err) {
 		LOG_ERR("Failed to set GAP appearance, nrf_error %d", nrf_err);
 		return -1;
 	}
@@ -297,7 +298,6 @@ uint16_t qwr_evt_handler(struct ble_qwr *qwr, const struct ble_qwr_evt *evt)
  */
 static int services_init(void)
 {
-	int err;
 	uint32_t nrf_err;
 	struct ble_cgms_config cgms_config = {
 		.evt_handler = cgms_evt_handler,
@@ -330,17 +330,17 @@ static int services_init(void)
 		.evt_handler = qwr_evt_handler,
 	};
 
-	err = ble_qwr_init(&ble_qwr, &qwr_config);
-	if (err) {
-		LOG_ERR("Failed to initialize QWR service, err %d", err);
-		return err;
+	nrf_err = ble_qwr_init(&ble_qwr, &qwr_config);
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize QWR service, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
 	/* Initialize Glucose Service */
 	ble_cgms.comm_interval = CONFIG_GLUCOSE_MEAS_INTERVAL;
 
 	nrf_err = ble_cgms_init(&ble_cgms, &cgms_config);
-	if (nrf_err != NRF_SUCCESS) {
+	if (nrf_err) {
 		LOG_ERR("Failed to initialize CGMS service, nrf_error %d", nrf_err);
 		return -EIO;
 	}
@@ -349,16 +349,16 @@ static int services_init(void)
 
 	/* Add a basic battery measurement with only mandatory fields */
 
-	err = ble_bas_init(&ble_bas, &bas_config);
-	if (err) {
-		LOG_ERR("Failed to initialize BAS service, err %d", err);
-		return err;
+	nrf_err = ble_bas_init(&ble_bas, &bas_config);
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize BAS service, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
 	/* Initialize Device Information Service. */
-	err = ble_dis_init();
-	if (err) {
-		LOG_ERR("Failed to initialize DIS service, err %d", err);
+	nrf_err = ble_dis_init();
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize DIS service, nrf_error %#x", nrf_err);
 		return -1;
 	}
 
@@ -421,7 +421,7 @@ void on_conn_params_evt(const struct ble_conn_params_evt *evt)
 	switch (evt->id) {
 	case BLE_CONN_PARAMS_EVT_REJECTED:
 		nrf_err = sd_ble_gap_disconnect(conn_handle, BLE_HCI_CONN_INTERVAL_UNACCEPTABLE);
-		if (nrf_err != NRF_SUCCESS) {
+		if (nrf_err) {
 			LOG_ERR("Failed to disconnect BLE GAP, nrf_error %d", nrf_err);
 		}
 		LOG_ERR("Disconnected from peer, unacceptable conn params");
@@ -441,7 +441,7 @@ static void led_indication_set(enum led_indicate led_indicate)
 
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {
-	int err;
+
 	uint32_t nrf_err;
 
 	switch (evt->header.evt_id) {
@@ -450,18 +450,18 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		led_indication_set(LED_INDICATE_CONNECTED);
 
 		conn_handle = evt->evt.gap_evt.conn_handle;
-		err = ble_qwr_conn_handle_assign(&ble_qwr, conn_handle);
-		if (err) {
-			LOG_ERR("Failed to assign BLE QWR conn handle, err %d", err);
+		nrf_err = ble_qwr_conn_handle_assign(&ble_qwr, conn_handle);
+		if (nrf_err) {
+			LOG_ERR("Failed to assign BLE QWR conn handle, nrf_error %#x", nrf_err);
 		}
 
 		nrf_err = ble_cgms_conn_handle_assign(&ble_cgms, conn_handle);
-		if (nrf_err != NRF_SUCCESS) {
+		if (nrf_err) {
 			LOG_ERR("Failed to assign BLE CGMS conn handle, nrf_error %d", nrf_err);
 		}
 
 		nrf_err = sd_ble_gatts_sys_attr_set(conn_handle, NULL, 0, 0);
-		if (nrf_err != NRF_SUCCESS) {
+		if (nrf_err) {
 			LOG_ERR("Failed to set system attributes, nrf_error %d", nrf_err);
 		}
 
@@ -478,7 +478,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		LOG_DBG("GATT Client Timeout.");
 		nrf_err = sd_ble_gap_disconnect(evt->evt.gattc_evt.conn_handle,
 						BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
-		if (nrf_err != NRF_SUCCESS) {
+		if (nrf_err) {
 			LOG_ERR("Failed to disconnect GAP, nrf_error %d", nrf_err);
 		}
 		break;
@@ -492,7 +492,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		LOG_INF("BLE_GATTS_EVT_SYS_ATTR_MISSING");
 		/* No system attributes have been stored */
 		nrf_err = sd_ble_gatts_sys_attr_set(conn_handle, NULL, 0, 0);
-		if (nrf_err != NRF_SUCCESS) {
+		if (nrf_err) {
 			LOG_ERR("Failed to set system attributes, nrf_error %d", nrf_err);
 		}
 		break;
@@ -501,7 +501,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		LOG_DBG("GATT Server Timeout.");
 		nrf_err = sd_ble_gap_disconnect(evt->evt.gatts_evt.conn_handle,
 						BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
-		if (nrf_err != NRF_SUCCESS) {
+		if (nrf_err) {
 			LOG_ERR("Failed to disconnect GAP, nrf_error %d", nrf_err);
 		}
 		break;
@@ -521,8 +521,8 @@ static void ble_adv_evt_handler(struct ble_adv *adv, const struct ble_adv_evt *a
 {
 	switch (adv_evt->evt_type) {
 	case BLE_ADV_EVT_ERROR:
-		LOG_ERR("BLE advertising error, %d", adv_evt->error.reason);
-		__ASSERT(false, "BLE advertising error %d", adv_evt->error.reason);
+		LOG_ERR("BLE advertising error, %#x", adv_evt->error.reason);
+		__ASSERT(false, "BLE advertising error %#x", adv_evt->error.reason);
 		break;
 	case BLE_ADV_EVT_DIRECTED_HIGH_DUTY:
 		led_indication_set(LED_INDICATE_ADVERTISING_DIRECTED);
@@ -614,7 +614,7 @@ static void button_handler(uint8_t pin, uint8_t action)
 }
 
 /** @brief Function for initializing the Advertising functionality. */
-static int advertising_init(void)
+static uint32_t advertising_init(void)
 {
 	int err;
 	uint8_t adv_flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
@@ -637,8 +637,8 @@ static int advertising_init(void)
 	};
 
 	err = ble_adv_init(&ble_adv, &config);
-	if (err) {
-		LOG_ERR("BLE advertising init failed, err %d", err);
+	if (err != NRF_SUCCESS) {
+		LOG_ERR("BLE advertising init failed, nrf_error %#x", err);
 		return err;
 	}
 
@@ -713,6 +713,7 @@ static int buttons_leds_init(bool *erase_bonds)
 int main(void)
 {
 	int err;
+	uint32_t nrf_err;
 	bool erase_bonds;
 
 	err = timers_init();
@@ -731,19 +732,19 @@ int main(void)
 	if (err) {
 		goto idle;
 	}
-	err = advertising_init();
-	if (err) {
+	nrf_err = advertising_init();
+	if (nrf_err) {
 		goto idle;
 	}
-	err = services_init();
-	if (err) {
+	nrf_err = services_init();
+	if (nrf_err) {
 		goto idle;
 	}
 	(void)sensor_simulator_init();
 
-	err = ble_conn_params_evt_handler_set(on_conn_params_evt);
-	if (err) {
-		LOG_ERR("Failed to setup conn param event handler, err %d", err);
+	nrf_err = ble_conn_params_evt_handler_set(on_conn_params_evt);
+	if (nrf_err) {
+		LOG_ERR("Failed to setup conn param event handler, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 
@@ -753,9 +754,9 @@ int main(void)
 		goto idle;
 	}
 
-	err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
-	if (err) {
-		LOG_ERR("Failed to start advertising, err %d", err);
+	nrf_err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
+	if (nrf_err) {
+		LOG_ERR("Failed to start advertising, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 

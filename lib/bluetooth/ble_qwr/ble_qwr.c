@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
-#include <errno.h>
+#include <nrf_error.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -27,14 +27,14 @@ static inline uint16_t uint16_decode(const uint8_t *encoded_data)
 	return sys_get_le16(encoded_data);
 }
 
-int ble_qwr_init(struct ble_qwr *qwr, struct ble_qwr_config const *qwr_config)
+uint32_t ble_qwr_init(struct ble_qwr *qwr, struct ble_qwr_config const *qwr_config)
 {
 	if (!qwr || !qwr_config) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 
 	if (qwr->initialized == BLE_QWR_INITIALIZED) {
-		return -EPERM;
+		return NRF_ERROR_INVALID_STATE;
 	}
 
 	qwr->initialized = BLE_QWR_INITIALIZED;
@@ -47,37 +47,37 @@ int ble_qwr_init(struct ble_qwr *qwr, struct ble_qwr_config const *qwr_config)
 	qwr->mem_buffer = qwr_config->mem_buffer;
 	qwr->nb_written_handles = 0;
 #endif
-	return 0;
+	return NRF_SUCCESS;
 }
 
 #if (CONFIG_BLE_QWR_MAX_ATTR > 0)
-int ble_qwr_attr_register(struct ble_qwr *qwr, uint16_t attr_handle)
+uint32_t ble_qwr_attr_register(struct ble_qwr *qwr, uint16_t attr_handle)
 {
 	if (!qwr) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 
 	if (qwr->initialized != BLE_QWR_INITIALIZED) {
-		return -EPERM;
+		return NRF_ERROR_INVALID_STATE;
 	}
 
 	if ((qwr->nb_registered_attr == CONFIG_BLE_QWR_MAX_ATTR) ||
 	    (qwr->mem_buffer.p_mem == NULL) ||
 	    (qwr->mem_buffer.len == 0))	{
-		return -ENOMEM;
+		return NRF_ERROR_NO_MEM;
 	}
 
 	if (attr_handle == BLE_GATT_HANDLE_INVALID) {
-		return -EINVAL;
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	qwr->attr_handles[qwr->nb_registered_attr] = attr_handle;
 	qwr->nb_registered_attr++;
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
-int ble_qwr_value_get(
+uint32_t ble_qwr_value_get(
 	struct ble_qwr *qwr, uint16_t attr_handle, uint8_t *mem, uint16_t *len)
 {
 	uint16_t i = 0;
@@ -87,11 +87,11 @@ int ble_qwr_value_get(
 	uint32_t cur_len = 0;
 
 	if (!qwr || !mem || !len) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 
 	if (qwr->initialized != BLE_QWR_INITIALIZED) {
-		return -EPERM;
+		return NRF_ERROR_INVALID_STATE;
 	}
 
 	do {
@@ -111,7 +111,7 @@ int ble_qwr_value_get(
 			if (cur_len <= *len) {
 				memcpy((mem + val_offset), &(qwr->mem_buffer.p_mem[i]), val_len);
 			} else {
-				return -ENOMEM;
+				return NRF_ERROR_NO_MEM;
 			}
 		}
 
@@ -119,23 +119,23 @@ int ble_qwr_value_get(
 	} while (i < qwr->mem_buffer.len);
 
 	*len = cur_len;
-	return 0;
+	return NRF_SUCCESS;
 }
 #endif
 
-int ble_qwr_conn_handle_assign(struct ble_qwr *qwr, uint16_t conn_handle)
+uint32_t ble_qwr_conn_handle_assign(struct ble_qwr *qwr, uint16_t conn_handle)
 {
 	if (!qwr) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 
 	if (qwr->initialized != BLE_QWR_INITIALIZED) {
-		return -EPERM;
+		return NRF_ERROR_INVALID_STATE;
 	}
 
 	qwr->conn_handle = conn_handle;
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
 /**
@@ -145,23 +145,23 @@ int ble_qwr_conn_handle_assign(struct ble_qwr *qwr, uint16_t conn_handle)
  */
 static void user_mem_reply(struct ble_qwr *qwr)
 {
-	int err;
+	uint32_t nrf_err;
 	struct ble_qwr_evt evt;
 
 	if (qwr->is_user_mem_reply_pending) {
 #if (CONFIG_BLE_QWR_MAX_ATTR == 0)
-		err = sd_ble_user_mem_reply(qwr->conn_handle, NULL);
+		nrf_err = sd_ble_user_mem_reply(qwr->conn_handle, NULL);
 #else
-		err = sd_ble_user_mem_reply(qwr->conn_handle,
-					    (ble_user_mem_block_t const *)&qwr->mem_buffer);
+		nrf_err = sd_ble_user_mem_reply(
+			qwr->conn_handle, (ble_user_mem_block_t const *)&qwr->mem_buffer);
 #endif
-		if (err == NRF_SUCCESS) {
+		if (nrf_err == NRF_SUCCESS) {
 			qwr->is_user_mem_reply_pending = false;
-		} else if (err == NRF_ERROR_BUSY) {
+		} else if (nrf_err == NRF_ERROR_BUSY) {
 			qwr->is_user_mem_reply_pending = true;
 		} else {
 			evt.evt_type = BLE_QWR_EVT_ERROR;
-			evt.error.reason = err;
+			evt.error.reason = nrf_err;
 			/* Report error to application. */
 			(void)qwr->evt_handler(qwr, &evt);
 		}
@@ -209,7 +209,7 @@ static void on_user_mem_release(struct ble_qwr *qwr, ble_common_evt_t const *evt
  */
 static void on_prepare_write(struct ble_qwr *qwr, ble_gatts_evt_write_t const *write_evt)
 {
-	int err;
+	uint32_t nrf_err;
 	ble_gatts_rw_authorize_reply_params_t auth_reply = {};
 	struct ble_qwr_evt evt = {};
 
@@ -236,13 +236,13 @@ static void on_prepare_write(struct ble_qwr *qwr, ble_gatts_evt_write_t const *w
 		}
 	}
 
-	err = sd_ble_gatts_rw_authorize_reply(qwr->conn_handle, &auth_reply);
-	if (err != NRF_SUCCESS) {
+	nrf_err = sd_ble_gatts_rw_authorize_reply(qwr->conn_handle, &auth_reply);
+	if (nrf_err) {
 		/* Cancel the current operation. */
 		qwr->nb_written_handles = 0;
 
 		evt.evt_type = BLE_QWR_EVT_ERROR;
-		evt.error.reason = err;
+		evt.error.reason = nrf_err;
 		/* Report error to application. */
 		(void)qwr->evt_handler(qwr, &evt);
 	}
@@ -256,7 +256,7 @@ static void on_prepare_write(struct ble_qwr *qwr, ble_gatts_evt_write_t const *w
  */
 static void on_execute_write(struct ble_qwr *qwr, ble_gatts_evt_write_t const *write_evt)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	uint16_t ret_val;
 	ble_gatts_rw_authorize_reply_params_t auth_reply = {};
 	struct ble_qwr_evt evt;
@@ -266,10 +266,10 @@ static void on_execute_write(struct ble_qwr *qwr, ble_gatts_evt_write_t const *w
 
 	if (qwr->nb_written_handles == 0) {
 		auth_reply.params.write.gatt_status = BLE_QWR_REJ_REQUEST_ERR_CODE;
-		err = sd_ble_gatts_rw_authorize_reply(qwr->conn_handle, &auth_reply);
-		if (err != NRF_SUCCESS) {
+		nrf_err = sd_ble_gatts_rw_authorize_reply(qwr->conn_handle, &auth_reply);
+		if (nrf_err) {
 			evt.evt_type = BLE_QWR_EVT_ERROR;
-			evt.error.reason = err;
+			evt.error.reason = nrf_err;
 			/* Report error to application. */
 			(void)qwr->evt_handler(qwr, &evt);
 		}
@@ -286,10 +286,10 @@ static void on_execute_write(struct ble_qwr *qwr, ble_gatts_evt_write_t const *w
 		}
 	}
 
-	err = sd_ble_gatts_rw_authorize_reply(qwr->conn_handle, &auth_reply);
-	if (err != NRF_SUCCESS) {
+	nrf_err = sd_ble_gatts_rw_authorize_reply(qwr->conn_handle, &auth_reply);
+	if (nrf_err) {
 		evt.evt_type = BLE_QWR_EVT_ERROR;
-		evt.error.reason = err;
+		evt.error.reason = nrf_err;
 		/* Report error to application. */
 		(void)qwr->evt_handler(qwr, &evt);
 	}
@@ -318,17 +318,17 @@ static void on_execute_write(struct ble_qwr *qwr, ble_gatts_evt_write_t const *w
  */
 static void on_cancel_write(struct ble_qwr *qwr, ble_gatts_evt_write_t const *write_evt)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	ble_gatts_rw_authorize_reply_params_t auth_reply = {};
 	struct ble_qwr_evt evt;
 
 	auth_reply.type = BLE_GATTS_AUTHORIZE_TYPE_WRITE;
 	auth_reply.params.write.gatt_status = BLE_GATT_STATUS_SUCCESS;
 
-	err = sd_ble_gatts_rw_authorize_reply(qwr->conn_handle, &auth_reply);
-	if (err != NRF_SUCCESS) {
+	nrf_err = sd_ble_gatts_rw_authorize_reply(qwr->conn_handle, &auth_reply);
+	if (nrf_err) {
 		evt.evt_type = BLE_QWR_EVT_ERROR;
-		evt.error.reason = err;
+		evt.error.reason = nrf_err;
 		/* Report error to application. */
 		(void)qwr->evt_handler(qwr, &evt);
 	}
@@ -345,7 +345,7 @@ static void on_cancel_write(struct ble_qwr *qwr, ble_gatts_evt_write_t const *wr
 static void on_rw_authorize_request(struct ble_qwr *qwr, ble_gatts_evt_t const *evt)
 {
 #if (CONFIG_BLE_QWR_MAX_ATTR == 0)
-	uint32_t err;
+	uint32_t nrf_err;
 	ble_gatts_rw_authorize_reply_params_t auth_reply = {0};
 	struct ble_qwr_evt qwr_evt = {};
 #endif
@@ -376,10 +376,10 @@ static void on_rw_authorize_request(struct ble_qwr *qwr, ble_gatts_evt_t const *
 		auth_reply.params.write.gatt_status = BLE_GATT_STATUS_SUCCESS;
 	}
 
-	err = sd_ble_gatts_rw_authorize_reply(evt->conn_handle, &auth_reply);
-	if (err != NRF_SUCCESS) {
+	nrf_err = sd_ble_gatts_rw_authorize_reply(evt->conn_handle, &auth_reply);
+	if (nrf_err) {
 		qwr_evt.evt_type = BLE_QWR_EVT_ERROR;
-		qwr_evt.error.reason = err;
+		qwr_evt.error.reason = nrf_err;
 		/* Report error to application. */
 		(void)qwr->evt_handler(qwr, &qwr_evt);
 	}

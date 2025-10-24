@@ -101,18 +101,18 @@ static void wait_for_outstanding_writes(void)
 
 static uint32_t storage_inits(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 
-	err = bm_storage_init(&storage_a);
-	if (err != NRF_SUCCESS) {
-		LOG_ERR("bm_storage_init() failed, err %#x", err);
-		return err;
+	nrf_err = bm_storage_init(&storage_a);
+	if (nrf_err) {
+		LOG_ERR("bm_storage_init() failed, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
-	err = bm_storage_init(&storage_b);
-	if (err != NRF_SUCCESS) {
-		LOG_ERR("bm_storage_init() failed, err %#x", err);
-		return err;
+	nrf_err = bm_storage_init(&storage_b);
+	if (nrf_err) {
+		LOG_ERR("bm_storage_init() failed, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
 	return NRF_SUCCESS;
@@ -120,18 +120,18 @@ static uint32_t storage_inits(void)
 
 static uint32_t storage_uninits(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 
-	err = bm_storage_uninit(&storage_a);
-	if (err != NRF_SUCCESS && err != NRF_ERROR_NOT_SUPPORTED) {
-		LOG_ERR("bm_storage_uninit() failed, err %#x", err);
-		return err;
+	nrf_err = bm_storage_uninit(&storage_a);
+	if (nrf_err && nrf_err != NRF_ERROR_NOT_SUPPORTED) {
+		LOG_ERR("bm_storage_uninit() failed, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
-	err = bm_storage_uninit(&storage_b);
-	if (err != NRF_SUCCESS && err != NRF_ERROR_NOT_SUPPORTED) {
-		LOG_ERR("bm_storage_uninit() failed, err %#x", err);
-		return err;
+	nrf_err = bm_storage_uninit(&storage_b);
+	if (nrf_err && nrf_err != NRF_ERROR_NOT_SUPPORTED) {
+		LOG_ERR("bm_storage_uninit() failed, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
 	return NRF_SUCCESS;
@@ -139,7 +139,7 @@ static uint32_t storage_uninits(void)
 
 static uint32_t storage_writes(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	char input_a[BUFFER_BLOCK_SIZE] = "Hello";
 	char input_b[BUFFER_BLOCK_SIZE] = "World!";
 
@@ -149,20 +149,21 @@ static uint32_t storage_writes(void)
 	LOG_INF("Writing in Partition A, addr: 0x%08X, size: %d", storage_a.start_addr,
 		sizeof(input_a));
 
-	err = bm_storage_write(&storage_a, storage_a.start_addr, input_a, sizeof(input_a), NULL);
-	if (err != NRF_SUCCESS) {
-		LOG_ERR("bm_storage_write() failed, err %#x", err);
-		return err;
+	nrf_err = bm_storage_write(&storage_a, storage_a.start_addr, input_a, sizeof(input_a),
+				   NULL);
+	if (nrf_err) {
+		LOG_ERR("bm_storage_write() failed, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
 	LOG_INF("Writing in Partition B, addr: 0x%08X, size: %d", storage_b.start_addr,
 		sizeof(input_b));
 
-	err = bm_storage_write(&storage_b, storage_b.start_addr, input_b, sizeof(input_b),
-			       NULL);
-	if (err != NRF_SUCCESS) {
-		LOG_ERR("bm_storage_write() failed, err %#x", err);
-		return err;
+	nrf_err = bm_storage_write(&storage_b, storage_b.start_addr, input_b, sizeof(input_b),
+				   NULL);
+	if (nrf_err) {
+		LOG_ERR("bm_storage_write() failed, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
 	return NRF_SUCCESS;
@@ -170,7 +171,7 @@ static uint32_t storage_writes(void)
 
 static uint32_t storage_erases(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	char erase[BUFFER_BLOCK_SIZE] = { 0 };
 
 	/* Prepare writes. */
@@ -179,19 +180,19 @@ static uint32_t storage_erases(void)
 	LOG_INF("Erasing in Partition A, addr: 0x%08X, size: %d", storage_a.start_addr,
 		sizeof(erase));
 
-	err = bm_storage_write(&storage_a, storage_a.start_addr, erase, sizeof(erase), NULL);
-	if (err != NRF_SUCCESS) {
-		LOG_ERR("bm_storage_write() failed, err %#x", err);
-		return err;
+	nrf_err = bm_storage_write(&storage_a, storage_a.start_addr, erase, sizeof(erase), NULL);
+	if (nrf_err) {
+		LOG_ERR("bm_storage_write() failed, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
 	LOG_INF("Erasing in Partition B, addr: 0x%08X, size: %d", storage_b.start_addr,
 		sizeof(erase));
 
-	err = bm_storage_write(&storage_b, storage_b.start_addr, erase, sizeof(erase), NULL);
-	if (err != NRF_SUCCESS) {
-		LOG_ERR("bm_storage_write() failed, err %#x", err);
-		return err;
+	nrf_err = bm_storage_write(&storage_b, storage_b.start_addr, erase, sizeof(erase), NULL);
+	if (nrf_err) {
+		LOG_ERR("bm_storage_write() failed, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
 	return NRF_SUCCESS;
@@ -199,23 +200,23 @@ static uint32_t storage_erases(void)
 
 static uint32_t storage_reads(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	char output[BUFFER_BLOCK_SIZE] = { 0 };
 
-	err = bm_storage_read(&storage_a, storage_a.start_addr, output, sizeof(output));
-	if (err != NRF_SUCCESS) {
-		LOG_ERR("bm_storage_read() failed, err %#x", err);
-		return err;
+	nrf_err = bm_storage_read(&storage_a, storage_a.start_addr, output, sizeof(output));
+	if (nrf_err) {
+		LOG_ERR("bm_storage_read() failed, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
 	LOG_HEXDUMP_INF(output, sizeof(output), "output A:");
 
 	memset(output, 0, sizeof(output));
 
-	err = bm_storage_read(&storage_b, storage_b.start_addr, output, sizeof(output));
-	if (err != NRF_SUCCESS) {
-		LOG_ERR("bm_storage_read() failed, err %#x", err);
-		return err;
+	nrf_err = bm_storage_read(&storage_b, storage_b.start_addr, output, sizeof(output));
+	if (nrf_err) {
+		LOG_ERR("bm_storage_read() failed, nrf_err %#x", nrf_err);
+		return nrf_err;
 	}
 
 	LOG_HEXDUMP_INF(output, sizeof(output), "output B:");
@@ -225,7 +226,10 @@ static uint32_t storage_reads(void)
 
 int main(void)
 {
-	uint32_t err;
+#if defined(CONFIG_SOFTDEVICE)
+	int err;
+#endif
+	uint32_t nrf_err;
 
 	LOG_INF("Storage sample started");
 
@@ -237,27 +241,27 @@ int main(void)
 	}
 #endif
 
-	err = storage_inits();
-	if (err) {
+	nrf_err = storage_inits();
+	if (nrf_err) {
 		goto idle;
 	}
 
 	LOG_INF("Reading persisted data");
 
-	err = storage_reads();
-	if (err) {
+	nrf_err = storage_reads();
+	if (nrf_err) {
 		goto idle;
 	}
 
-	err = storage_erases();
-	if (err) {
+	nrf_err = storage_erases();
+	if (nrf_err) {
 		goto idle;
 	}
 
 	wait_for_outstanding_writes();
 
-	err = storage_reads();
-	if (err) {
+	nrf_err = storage_reads();
+	if (nrf_err) {
 		goto idle;
 	}
 
@@ -268,25 +272,25 @@ int main(void)
 	 */
 	err = nrf_sdh_disable_request();
 	if (err) {
-		LOG_ERR("Failed to disable SoftDevice, err %#x", err);
+		LOG_ERR("Failed to disable SoftDevice, err %d", err);
 		goto idle;
 	}
 #endif
 
-	err = storage_writes();
-	if (err) {
+	nrf_err = storage_writes();
+	if (nrf_err) {
 		goto idle;
 	}
 
 	wait_for_outstanding_writes();
 
-	err = storage_reads();
-	if (err) {
+	nrf_err = storage_reads();
+	if (nrf_err) {
 		goto idle;
 	}
 
-	err = storage_uninits();
-	if (err) {
+	nrf_err = storage_uninits();
+	if (nrf_err) {
 		goto idle;
 	}
 

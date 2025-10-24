@@ -69,15 +69,15 @@ static void bm_storage_evt_handler(struct bm_storage_evt *evt)
 
 void test_bm_storage_init_error_null(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 
-	err = bm_storage_init(NULL);
-	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, err);
+	nrf_err = bm_storage_init(NULL);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 }
 
 void test_bm_storage_init(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 
 	struct bm_storage storage = {
 		.evt_handler = bm_storage_evt_handler,
@@ -85,13 +85,13 @@ void test_bm_storage_init(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	err = bm_storage_init(&storage);
-	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
+	nrf_err = bm_storage_init(&storage);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
 void test_bm_storage_uninit_error_null(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 
 	struct bm_storage storage = {
 		.evt_handler = bm_storage_evt_handler,
@@ -99,16 +99,16 @@ void test_bm_storage_uninit_error_null(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	err = bm_storage_init(&storage);
-	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
+	nrf_err = bm_storage_init(&storage);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	err = bm_storage_uninit(NULL);
-	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, err);
+	nrf_err = bm_storage_uninit(NULL);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 }
 
 void test_bm_storage_uninit_error_invalid_state(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 
 	struct bm_storage storage = {
 		.evt_handler = bm_storage_evt_handler,
@@ -116,13 +116,13 @@ void test_bm_storage_uninit_error_invalid_state(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	err = bm_storage_uninit(&storage);
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, err);
+	nrf_err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, nrf_err);
 }
 
 void test_bm_storage_uninit(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 
 	struct bm_storage storage = {
 		.evt_handler = bm_storage_evt_handler,
@@ -130,16 +130,16 @@ void test_bm_storage_uninit(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	err = bm_storage_init(&storage);
-	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
+	nrf_err = bm_storage_init(&storage);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	err = bm_storage_uninit(&storage);
-	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
+	nrf_err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
 void test_bm_storage_write_error_null(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	char input[BLOCK_SIZE] = "Ciao";
 
 	struct bm_storage storage = {
@@ -148,16 +148,16 @@ void test_bm_storage_write_error_null(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	err = bm_storage_write(NULL, PARTITION_START, input, sizeof(input), NULL);
-	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, err);
+	nrf_err = bm_storage_write(NULL, PARTITION_START, input, sizeof(input), NULL);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 
-	err = bm_storage_write(&storage, PARTITION_START, NULL, sizeof(input), NULL);
-	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, err);
+	nrf_err = bm_storage_write(&storage, PARTITION_START, NULL, sizeof(input), NULL);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 }
 
 void test_bm_storage_write_error_invalid_state(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	char input[BLOCK_SIZE] = "Ciao";
 
 	struct bm_storage storage = {
@@ -167,13 +167,13 @@ void test_bm_storage_write_error_invalid_state(void)
 	};
 
 	/* Storage is uninitialized. */
-	err = bm_storage_write(&storage, PARTITION_START, input, sizeof(input), NULL);
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, err);
+	nrf_err = bm_storage_write(&storage, PARTITION_START, input, sizeof(input), NULL);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, nrf_err);
 }
 
 void test_bm_storage_write_error_invalid_length(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	/* Write buffer size must be a multiple of the program unit.
 	 * This will cause an error.
 	 */
@@ -185,16 +185,16 @@ void test_bm_storage_write_error_invalid_length(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	err = bm_storage_init(&storage);
-	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
+	nrf_err = bm_storage_init(&storage);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	err = bm_storage_write(&storage, PARTITION_START, input, sizeof(input), NULL);
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_LENGTH, err);
+	nrf_err = bm_storage_write(&storage, PARTITION_START, input, sizeof(input), NULL);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_LENGTH, nrf_err);
 }
 
 void test_bm_storage_write_error_invalid_addr(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	char input[BLOCK_SIZE] = "Ciao";
 	char input_large[BLOCK_SIZE * 4] = "Ciao";
 
@@ -204,21 +204,22 @@ void test_bm_storage_write_error_invalid_addr(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	err = bm_storage_init(&storage);
-	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
+	nrf_err = bm_storage_init(&storage);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	/* Operation is out of bounds. */
-	err = bm_storage_write(&storage, PARTITION_START - 1, input, sizeof(input), NULL);
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_ADDR, err);
+	nrf_err = bm_storage_write(&storage, PARTITION_START - 1, input, sizeof(input), NULL);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_ADDR, nrf_err);
 
 	/* Operation is out of bounds. */
-	err = bm_storage_write(&storage, PARTITION_START, input_large, sizeof(input_large), NULL);
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_ADDR, err);
+	nrf_err = bm_storage_write(
+		&storage, PARTITION_START, input_large, sizeof(input_large), NULL);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_ADDR, nrf_err);
 }
 
 void test_bm_storage_write(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	/* Write buffer size must be a multiple of the program unit. */
 	char input[BLOCK_SIZE] = "Ciao";
 
@@ -228,16 +229,16 @@ void test_bm_storage_write(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	err = bm_storage_init(&storage);
-	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
+	nrf_err = bm_storage_init(&storage);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	err = bm_storage_write(&storage, PARTITION_START, input, sizeof(input), NULL);
-	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
+	nrf_err = bm_storage_write(&storage, PARTITION_START, input, sizeof(input), NULL);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
 void test_bm_storage_read_error_null(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	char output[BLOCK_SIZE] = { 0 };
 
 	struct bm_storage storage = {
@@ -246,19 +247,19 @@ void test_bm_storage_read_error_null(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	err = bm_storage_init(&storage);
-	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
+	nrf_err = bm_storage_init(&storage);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	err = bm_storage_read(NULL, PARTITION_START, output, sizeof(output));
-	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, err);
+	nrf_err = bm_storage_read(NULL, PARTITION_START, output, sizeof(output));
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 
-	err = bm_storage_read(&storage, PARTITION_START, NULL, sizeof(output));
-	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, err);
+	nrf_err = bm_storage_read(&storage, PARTITION_START, NULL, sizeof(output));
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 }
 
 void test_bm_storage_read_error_invalid_state(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	char output[BLOCK_SIZE] = { 0 };
 
 	struct bm_storage storage = {
@@ -268,13 +269,13 @@ void test_bm_storage_read_error_invalid_state(void)
 	};
 
 	/* Storage is uninitialized. */
-	err = bm_storage_read(&storage, PARTITION_START, output, sizeof(output));
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, err);
+	nrf_err = bm_storage_read(&storage, PARTITION_START, output, sizeof(output));
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, nrf_err);
 }
 
 void test_bm_storage_read_error_invalid_length(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	char output[BLOCK_SIZE] = { 0 };
 
 	struct bm_storage storage = {
@@ -283,16 +284,16 @@ void test_bm_storage_read_error_invalid_length(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	err = bm_storage_init(&storage);
-	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
+	nrf_err = bm_storage_init(&storage);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	err = bm_storage_read(&storage, PARTITION_START, output, 0);
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_LENGTH, err);
+	nrf_err = bm_storage_read(&storage, PARTITION_START, output, 0);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_LENGTH, nrf_err);
 }
 
 void test_bm_storage_read_error_invalid_addr(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	char output[BLOCK_SIZE] = { 0 };
 	char output_large[BLOCK_SIZE * 4] = { 0 };
 
@@ -302,21 +303,21 @@ void test_bm_storage_read_error_invalid_addr(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	err = bm_storage_init(&storage);
-	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
+	nrf_err = bm_storage_init(&storage);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	/* Operation is out of bounds. */
-	err = bm_storage_read(&storage, PARTITION_START - 1, output, sizeof(output));
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_ADDR, err);
+	nrf_err = bm_storage_read(&storage, PARTITION_START - 1, output, sizeof(output));
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_ADDR, nrf_err);
 
 	/* Operation is out of bounds. */
-	err = bm_storage_read(&storage, PARTITION_START, output_large, sizeof(output_large));
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_ADDR, err);
+	nrf_err = bm_storage_read(&storage, PARTITION_START, output_large, sizeof(output_large));
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_ADDR, nrf_err);
 }
 
 void test_bm_storage_read(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	char output[BLOCK_SIZE] = { 0 };
 
 	struct bm_storage storage = {
@@ -325,24 +326,24 @@ void test_bm_storage_read(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	err = bm_storage_init(&storage);
-	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
+	nrf_err = bm_storage_init(&storage);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	err = bm_storage_read(&storage, PARTITION_START, output, sizeof(output));
-	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
+	nrf_err = bm_storage_read(&storage, PARTITION_START, output, sizeof(output));
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
 void test_bm_storage_erase_error_null(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 
-	err = bm_storage_erase(NULL, PARTITION_START, BLOCK_SIZE, NULL);
-	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, err);
+	nrf_err = bm_storage_erase(NULL, PARTITION_START, BLOCK_SIZE, NULL);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 }
 
 void test_bm_storage_erase_error_invalid_state(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 
 	struct bm_storage storage = {
 		.evt_handler = bm_storage_evt_handler,
@@ -351,13 +352,13 @@ void test_bm_storage_erase_error_invalid_state(void)
 	};
 
 	/* Storage is uninitialized. */
-	err = bm_storage_erase(&storage, PARTITION_START, BLOCK_SIZE, NULL);
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, err);
+	nrf_err = bm_storage_erase(&storage, PARTITION_START, BLOCK_SIZE, NULL);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, nrf_err);
 }
 
 void test_bm_storage_erase_error_invalid_length(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 
 	struct bm_storage storage = {
 		.evt_handler = bm_storage_evt_handler,
@@ -365,16 +366,16 @@ void test_bm_storage_erase_error_invalid_length(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	err = bm_storage_init(&storage);
-	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
+	nrf_err = bm_storage_init(&storage);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	err = bm_storage_erase(&storage, PARTITION_START, BLOCK_SIZE + 1, NULL);
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_LENGTH, err);
+	nrf_err = bm_storage_erase(&storage, PARTITION_START, BLOCK_SIZE + 1, NULL);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_LENGTH, nrf_err);
 }
 
 void test_bm_storage_erase_error_invalid_addr(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 
 	struct bm_storage storage = {
 		.evt_handler = bm_storage_evt_handler,
@@ -382,21 +383,21 @@ void test_bm_storage_erase_error_invalid_addr(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	err = bm_storage_init(&storage);
-	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
+	nrf_err = bm_storage_init(&storage);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	/* Operation is out of bounds. */
-	err = bm_storage_erase(&storage, PARTITION_START - 1, BLOCK_SIZE, NULL);
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_ADDR, err);
+	nrf_err = bm_storage_erase(&storage, PARTITION_START - 1, BLOCK_SIZE, NULL);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_ADDR, nrf_err);
 
 	/* Operation is out of bounds. */
-	err = bm_storage_erase(&storage, PARTITION_START, BLOCK_SIZE * 4, NULL);
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_ADDR, err);
+	nrf_err = bm_storage_erase(&storage, PARTITION_START, BLOCK_SIZE * 4, NULL);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_ADDR, nrf_err);
 }
 
 void test_bm_storage_erase(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 
 	struct bm_storage storage = {
 		.evt_handler = bm_storage_evt_handler,
@@ -404,16 +405,16 @@ void test_bm_storage_erase(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	err = bm_storage_init(&storage);
-	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
+	nrf_err = bm_storage_init(&storage);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	err = bm_storage_erase(&storage, PARTITION_START, BLOCK_SIZE, NULL);
-	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
+	nrf_err = bm_storage_erase(&storage, PARTITION_START, BLOCK_SIZE, NULL);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
 void test_bm_storage_is_busy(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	bool is_busy = false;
 
 	struct bm_storage storage = {
@@ -426,8 +427,8 @@ void test_bm_storage_is_busy(void)
 	is_busy = bm_storage_is_busy(NULL);
 	TEST_ASSERT_EQUAL(true, is_busy);
 
-	err = bm_storage_init(&storage);
-	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
+	nrf_err = bm_storage_init(&storage);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	is_busy = bm_storage_is_busy(&storage);
 	TEST_ASSERT_EQUAL(false, is_busy);

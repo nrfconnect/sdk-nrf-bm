@@ -179,7 +179,7 @@ uint32_t ble_cgms_init(struct ble_cgms *cgms, const struct ble_cgms_config *cgms
 		return NRF_ERROR_NULL;
 	}
 
-	uint32_t err;
+	uint32_t nrf_err;
 	ble_uuid_t ble_uuid;
 	const uint8_t init_calib_val[] = {
 		0x3E, 0x00, 0x07, 0x00,
@@ -188,9 +188,9 @@ uint32_t ble_cgms_init(struct ble_cgms *cgms, const struct ble_cgms_config *cgms
 	};
 
 	/* Initialize data base. */
-	err = cgms_db_init();
-	if (err != NRF_SUCCESS) {
-		return err;
+	nrf_err = cgms_db_init();
+	if (nrf_err) {
+		return nrf_err;
 	}
 
 	/* Initialize service structure. */
@@ -209,59 +209,59 @@ uint32_t ble_cgms_init(struct ble_cgms *cgms, const struct ble_cgms_config *cgms
 	/* Add service. */
 	BLE_UUID_BLE_ASSIGN(ble_uuid, BLE_UUID_CGM_SERVICE);
 
-	err = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY,
-				       &ble_uuid, &cgms->service_handle);
-	if (err != NRF_SUCCESS) {
-		return err;
+	nrf_err = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY,
+					   &ble_uuid, &cgms->service_handle);
+	if (nrf_err) {
+		return nrf_err;
 	}
 
 	/* Add CGM Measurement characteristic. */
-	err = cgms_meas_char_add(cgms);
-	if (err != NRF_SUCCESS) {
-		LOG_ERR("Failed to add CGMS measurement characteristic, nrf_error %#x", err);
-		return err;
+	nrf_err = cgms_meas_char_add(cgms);
+	if (nrf_err) {
+		LOG_ERR("Failed to add CGMS measurement characteristic, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
 	/* Add CGM Feature characteristic. */
-	err = feature_char_add(cgms);
-	if (err != NRF_SUCCESS) {
-		LOG_ERR("Failed to add CGMS feature characteristic, nrf_error %#x", err);
-		return err;
+	nrf_err = feature_char_add(cgms);
+	if (nrf_err) {
+		LOG_ERR("Failed to add CGMS feature characteristic, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
 	/* Add CGM Status characteristic. */
-	err = status_char_add(cgms);
-	if (err != NRF_SUCCESS) {
-		LOG_ERR("Failed to add CGMS status characteristic, nrf_error %#x", err);
-		return err;
+	nrf_err = status_char_add(cgms);
+	if (nrf_err) {
+		LOG_ERR("Failed to add CGMS status characteristic, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
 	/* Add CGM Session Start Time characteristic. */
-	err = cgms_sst_char_add(cgms);
-	if (err != NRF_SUCCESS) {
-		LOG_ERR("Failed to add CGMS SST characteristic, nrf_error %#x", err);
-		return err;
+	nrf_err = cgms_sst_char_add(cgms);
+	if (nrf_err) {
+		LOG_ERR("Failed to add CGMS SST characteristic, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
 	/* Add CGM Session Run Time characteristic. */
-	err = srt_char_add(cgms);
-	if (err != NRF_SUCCESS) {
-		LOG_ERR("Failed to add CGMS SRT characteristic, nrf_error %#x", err);
-		return err;
+	nrf_err = srt_char_add(cgms);
+	if (nrf_err) {
+		LOG_ERR("Failed to add CGMS SRT characteristic, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
 	/* Add CGM Record Access Control Point characteristic. */
-	err = cgms_racp_char_add(cgms);
-	if (err != NRF_SUCCESS) {
-		LOG_ERR("Failed to add CGMS RACP characteristic, nrf_error %#x", err);
-		return err;
+	nrf_err = cgms_racp_char_add(cgms);
+	if (nrf_err) {
+		LOG_ERR("Failed to add CGMS RACP characteristic, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
 	/* Add CGM Specific Ops Control Point characteristic. */
-	err = cgms_socp_char_add(cgms);
-	if (err != NRF_SUCCESS) {
-		LOG_ERR("Failed to add CGMS SOCP characteristic, nrf_error %#x", err);
-		return err;
+	nrf_err = cgms_socp_char_add(cgms);
+	if (nrf_err) {
+		LOG_ERR("Failed to add CGMS SOCP characteristic, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
 	return 0;
@@ -330,19 +330,19 @@ void ble_cgms_on_ble_evt(const ble_evt_t *ble_evt, void *context)
 
 uint32_t ble_cgms_meas_create(struct ble_cgms *cgms, struct ble_cgms_rec *rec)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	uint16_t nb_rec_to_send = 1;
 
-	err = cgms_db_record_add(rec);
-	if (err != NRF_SUCCESS) {
-		return err;
+	nrf_err = cgms_db_record_add(rec);
+	if (nrf_err) {
+		return nrf_err;
 	}
 
 	if ((cgms->conn_handle != BLE_CONN_HANDLE_INVALID) && (cgms->comm_interval != 0)) {
-		err = cgms_meas_send(cgms, rec, &nb_rec_to_send);
+		nrf_err = cgms_meas_send(cgms, rec, &nb_rec_to_send);
 	}
 
-	return err;
+	return nrf_err;
 }
 
 uint32_t ble_cgms_update_status(struct ble_cgms *cgms, struct ble_cgms_status *status)

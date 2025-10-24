@@ -78,7 +78,7 @@ static void ble_adv_evt_handler(struct ble_adv *adv, const struct ble_adv_evt *a
 {
 	switch (adv_evt->evt_type) {
 	case BLE_ADV_EVT_ERROR:
-		LOG_ERR("Advertising error %d", adv_evt->error.reason);
+		LOG_ERR("Advertising error %#x", adv_evt->error.reason);
 		break;
 	default:
 		break;
@@ -127,6 +127,7 @@ static void lbs_evt_handler(struct ble_lbs *lbs, const struct ble_lbs_evt *lbs_e
 int main(void)
 {
 	int err;
+	uint32_t nrf_err;
 	struct ble_adv_config ble_adv_config = {
 		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
 		.evt_handler = ble_adv_evt_handler,
@@ -179,15 +180,15 @@ int main(void)
 		goto idle;
 	}
 
-	err = ble_lbs_init(&ble_lbs, &lbs_cfg);
-	if (err) {
-		LOG_ERR("Failed to setup LED Button Service, err %d", err);
+	nrf_err = ble_lbs_init(&ble_lbs, &lbs_cfg);
+	if (nrf_err) {
+		LOG_ERR("Failed to setup LED Button Service, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 
-	err = ble_dis_init();
-	if (err) {
-		LOG_ERR("Failed to initialize device information service, err %d", err);
+	nrf_err = ble_dis_init();
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize device information service, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 
@@ -200,15 +201,15 @@ int main(void)
 
 	LOG_INF("Services initialized");
 
-	err = ble_adv_init(&ble_adv, &ble_adv_config);
-	if (err) {
-		LOG_ERR("Failed to initialize BLE advertising, err %d", err);
+	nrf_err = ble_adv_init(&ble_adv, &ble_adv_config);
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize BLE advertising, nrf_err %#x", nrf_err);
 		goto idle;
 	}
 
-	err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
-	if (err) {
-		LOG_ERR("Failed to start advertising, err %d", err);
+	nrf_err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
+	if (nrf_err) {
+		LOG_ERR("Failed to start advertising, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 
