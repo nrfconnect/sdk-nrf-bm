@@ -73,6 +73,7 @@
 
 # Scripts
 /scripts/                                 @nrfconnect/ncs-bm
+/scripts/pytest_plugins/                  @nrfconnect/ncs-eris
 /scripts/requirements-*.txt               @nrfconnect/ncs-co-build-system
 
 # Subsystems
@@ -96,6 +97,7 @@
 /tests/lib/bluetooth/ble_adv/             @nrfconnect/ncs-bm-test
 /tests/subsys/bluetooth/services/         @nrfconnect/ncs-bm @nrfconnect/ncs-bm-test
 /tests/subsys/fs/bm_zms/                  @nrfconnect/ncs-bm @rghaddab
+/tests/subsys/kmu/                        @nrfconnect/ncs-eris
 /tests/subsys/storage/bm_storage/         @nrfconnect/ncs-bm
 
 # Zephyr module
