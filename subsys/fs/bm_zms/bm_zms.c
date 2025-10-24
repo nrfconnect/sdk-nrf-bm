@@ -39,10 +39,10 @@ static inline size_t zms_lookup_cache_pos(uint32_t id);
 #endif
 static void zms_event_handler(struct bm_storage_evt *evt);
 static int zms_init(void);
-static uint32_t zms_flash_al_wrt(struct bm_zms_fs *fs);
+static int zms_flash_al_wrt(struct bm_zms_fs *fs);
 static int zms_write_execute(void);
 static inline size_t zms_al_size(struct bm_zms_fs *fs, size_t len);
-static uint32_t zms_flash_block_move(struct bm_zms_fs *fs);
+static int zms_flash_block_move(struct bm_zms_fs *fs);
 static void zms_verify_space(zms_op_t *op);
 static int bm_zms_clear_execute(void);
 
@@ -115,7 +115,8 @@ static bool queue_has_next(void)
 static void queue_process(void)
 {
 	int result = 0, prev_result = 0;
-	int err, evt_result = 0;
+	int evt_result = 0;
+	uint32_t rc;
 
 	while (true) {
 		if (queue_process_start) {
@@ -135,9 +136,9 @@ static void queue_process(void)
 		if (p_cur_op == NULL) {
 			/* Load the next from the queue if no operation is being executed.*/
 			NRFX_CRITICAL_SECTION_ENTER();
-			err = ring_buf_get(&zms_fifo, (uint8_t *)&cur_op, sizeof(zms_op_t));
+			rc = ring_buf_get(&zms_fifo, (uint8_t *)&cur_op, sizeof(zms_op_t));
 			NRFX_CRITICAL_SECTION_EXIT();
-			if (err < 0) {
+			if (rc < 0) {
 				result = -EIO;
 				goto completed;
 			}
@@ -722,10 +723,10 @@ static void zms_al_wrt_next_op(struct bm_zms_fs *fs)
 }
 
 /* Aligned memory write */
-static uint32_t zms_flash_al_wrt(struct bm_zms_fs *fs)
+static int zms_flash_al_wrt(struct bm_zms_fs *fs)
 {
 	const uint8_t *data8;
-	uint32_t rc = 0;
+	int rc = 0;
 	off_t offset;
 	size_t blen = 0;
 
@@ -782,7 +783,7 @@ static int zms_flash_rd(struct bm_zms_fs *fs, uint64_t addr, void *data, size_t 
 }
 
 /* allocation entry write */
-static uint32_t zms_flash_ate_wrt(struct bm_zms_fs *fs)
+static int zms_flash_ate_wrt(struct bm_zms_fs *fs)
 {
 	if (cur_op.sub_step == ZMS_OP_WRITE_SUB_STEP_NONE) {
 		cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_ATE1;
@@ -871,7 +872,7 @@ static int zms_flash_cmp_const(struct bm_zms_fs *fs, uint64_t addr, uint8_t valu
 /* flash block move: move a block at addr to the current data write location
  * and updates the data write location.
  */
-static uint32_t zms_flash_block_move(struct bm_zms_fs *fs)
+static int zms_flash_block_move(struct bm_zms_fs *fs)
 {
 	int rc;
 	size_t bytes_to_copy;
@@ -903,7 +904,7 @@ static uint32_t zms_flash_block_move(struct bm_zms_fs *fs)
  */
 static int zms_flash_erase_sector(struct bm_zms_fs *fs, uint64_t addr)
 {
-	uint32_t rc;
+	int rc;
 	off_t offset;
 	bool ebw_required = !fs->zms_bm_storage.nvm_info->no_explicit_erase;
 
@@ -928,7 +929,6 @@ static int zms_flash_erase_sector(struct bm_zms_fs *fs, uint64_t addr)
 	zms_lookup_cache_invalidate(fs, SECTOR_NUM(addr));
 #endif
 	rc = bm_storage_erase(&fs->zms_bm_storage, offset, fs->sector_size, &cur_op);
-
 	if (rc) {
 		return rc;
 	}
@@ -1304,7 +1304,7 @@ static int zms_gc_prepare(struct bm_zms_fs *fs)
 	return 0;
 }
 
-static uint32_t zms_add_gc_done_ate(struct bm_zms_fs *fs)
+static int zms_add_gc_done_ate(struct bm_zms_fs *fs)
 {
 	LOG_DBG("Adding gc done ate at %llx", fs->ate_wra);
 	/* Initialize all members to 0 */
@@ -1356,10 +1356,10 @@ static inline int zms_verify_and_increment_cycle_cnt(struct bm_zms_fs *fs, uint6
 	return 0;
 }
 
-static uint32_t zms_add_empty_ate(struct bm_zms_fs *fs, uint64_t addr)
+static int zms_add_empty_ate(struct bm_zms_fs *fs, uint64_t addr)
 {
 	uint8_t cycle_cnt;
-	uint32_t rc = 0;
+	int rc = 0;
 
 	addr &= ADDR_SECT_MASK;
 
@@ -1683,7 +1683,7 @@ int bm_zms_clear_execute(void)
 
 int bm_zms_clear(struct bm_zms_fs *fs)
 {
-	uint32_t rc = 0;
+	uint32_t rc;
 	zms_op_t cur_clear_op;
 
 	if (!fs->init_flags.initialized) {
@@ -2008,7 +2008,8 @@ end:
 
 int bm_zms_mount(struct bm_zms_fs *fs)
 {
-	int rc;
+	int ret;
+	uint32_t rc;
 	size_t write_block_size;
 	zms_op_t cur_init_op;
 
@@ -2016,9 +2017,9 @@ int bm_zms_mount(struct bm_zms_fs *fs)
 	fs->zms_bm_storage.start_addr = fs->offset;
 	fs->zms_bm_storage.end_addr = fs->offset + fs->sector_size * fs->sector_count;
 	fs->zms_bm_storage.evt_handler = zms_event_handler;
-	rc = bm_storage_init(&fs->zms_bm_storage);
-	if (rc) {
-		LOG_ERR("bm_storage_init() failed, rc %u", rc);
+	ret = bm_storage_init(&fs->zms_bm_storage);
+	if (ret) {
+		LOG_ERR("bm_storage_init() failed, ret %u", ret);
 		return -EIO;
 	}
 
@@ -2115,7 +2116,7 @@ ssize_t bm_zms_write(struct bm_zms_fs *fs, uint32_t id, const void *data, size_t
 	size_t data_size;
 	uint32_t required_space = 0U; /* no space, appropriate for delete ate */
 	zms_op_t cur_write_op;
-	uint32_t rc = 0;
+	uint32_t rc;
 
 	if (!fs->init_flags.initialized) {
 		LOG_ERR("zms not initialized");

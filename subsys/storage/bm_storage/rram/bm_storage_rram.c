@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <nrf_error.h>
+#include <errno.h>
 #include <stdint.h>
 #include <zephyr/sys/atomic.h>
 #include <nrfx_rramc.h>
@@ -35,16 +35,16 @@ static void event_send(const struct bm_storage *storage, struct bm_storage_evt *
 	storage->evt_handler(evt);
 }
 
-uint32_t bm_storage_backend_init(struct bm_storage *storage)
+int bm_storage_backend_init(struct bm_storage *storage)
 {
-	uint32_t err;
+	int err;
 	nrfx_err_t nrfx_err;
 
 	/* If it's already initialized, return early successfully.
 	 * This is to support more than one client initialization.
 	 */
 	if (state.is_rramc_init) {
-		return NRF_SUCCESS;
+		return 0;
 	}
 
 	/* RRAMC backend must be initialized consistently from one context only.
@@ -52,15 +52,15 @@ uint32_t bm_storage_backend_init(struct bm_storage *storage)
 	 * Once the driver initialized, it will neither be re-initialized nor uninitialized.
 	 */
 	if (!atomic_cas(&state.operation_ongoing, 0, 1)) {
-		return NRF_ERROR_BUSY;
+		return -EBUSY;
 	}
 
 	nrfx_err = nrfx_rramc_init(&rramc_config, NULL);
 	if (nrfx_err != NRFX_SUCCESS) {
-		err = NRF_ERROR_INTERNAL;
+		err = -EIO;
 	} else {
 		state.is_rramc_init = true;
-		err = NRF_SUCCESS;
+		err = 0;
 	}
 
 	atomic_set(&state.operation_ongoing, 0);
@@ -68,27 +68,27 @@ uint32_t bm_storage_backend_init(struct bm_storage *storage)
 	return err;
 }
 
-uint32_t bm_storage_backend_read(const struct bm_storage *storage, uint32_t src, void *dest,
-				     uint32_t len)
+int bm_storage_backend_read(const struct bm_storage *storage, uint32_t src, void *dest,
+			    uint32_t len)
 {
 	if (!state.is_rramc_init) {
-		return NRF_ERROR_FORBIDDEN;
+		return -EPERM;
 	}
 
 	nrfx_rramc_buffer_read(dest, src, len);
 
-	return NRF_SUCCESS;
+	return 0;
 }
 
-uint32_t bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest,
-				      const void *src, uint32_t len, void *ctx)
+int bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest,
+			     const void *src, uint32_t len, void *ctx)
 {
 	if (!state.is_rramc_init) {
-		return NRF_ERROR_FORBIDDEN;
+		return -EPERM;
 	}
 
 	if (!atomic_cas(&state.operation_ongoing, 0, 1)) {
-		return NRF_ERROR_BUSY;
+		return -EBUSY;
 	}
 
 	nrfx_rramc_bytes_write(dest, src, len);
@@ -99,7 +99,7 @@ uint32_t bm_storage_backend_write(const struct bm_storage *storage, uint32_t des
 	struct bm_storage_evt evt = {
 		.id = BM_STORAGE_EVT_WRITE_RESULT,
 		.dispatch_type = BM_STORAGE_EVT_DISPATCH_SYNC,
-		.result = NRF_SUCCESS,
+		.result = 0,
 		.addr = dest,
 		.src = src,
 		.len = len,
@@ -108,7 +108,7 @@ uint32_t bm_storage_backend_write(const struct bm_storage *storage, uint32_t des
 
 	event_send(storage, &evt);
 
-	return NRF_SUCCESS;
+	return 0;
 }
 
 bool bm_storage_backend_is_busy(const struct bm_storage *storage)

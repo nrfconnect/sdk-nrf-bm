@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
+#include <errno.h>
 #include <nrf_error.h>
 #include <stdint.h>
 #include <zephyr/sys/atomic.h>
@@ -115,21 +116,19 @@ static uint32_t write_execute(const struct bm_storage_sd_op *op)
 	uint32_t *dest = (uint32_t *)(op->dest + op->offset);
 	const uint32_t *src  = (const uint32_t *)((uint32_t)op->src + op->offset);
 
-	uint32_t err = sd_flash_write(dest, src, chunk_len_words);
-
-	return err;
+	return sd_flash_write(dest, src, chunk_len_words);
 }
 
 static void queue_process(void)
 {
-	uint32_t err;
+	uint32_t ret;
 
 	if (state.type == BM_STORAGE_SD_STATE_IDLE) {
 		NRFX_CRITICAL_SECTION_ENTER();
-		err = ring_buf_get(&sd_fifo, (uint8_t *)&state.current_operation,
+		ret = ring_buf_get(&sd_fifo, (uint8_t *)&state.current_operation,
 				   sizeof(struct bm_storage_sd_op));
 		NRFX_CRITICAL_SECTION_EXIT();
-		if (err != sizeof(struct bm_storage_sd_op)) {
+		if (ret != sizeof(struct bm_storage_sd_op)) {
 			/* No more operations left to be processed, unlock the resource. */
 			atomic_set(&state.operation_ongoing, 0);
 			return;
@@ -138,9 +137,9 @@ static void queue_process(void)
 
 	state.type = BM_STORAGE_SD_STATE_OP_EXECUTING;
 
-	err = write_execute(&state.current_operation);
+	ret = write_execute(&state.current_operation);
 
-	switch (err) {
+	switch (ret) {
 	case NRF_SUCCESS:
 		/* The operation was accepted by the SoftDevice.
 		 * If the SoftDevice is enabled, wait for a system event.
@@ -162,7 +161,7 @@ static void queue_process(void)
 		break;
 	default:
 		/* An error has occurred. We cannot proceed further with this operation. */
-		event_send(&state.current_operation, true, NRF_ERROR_INTERNAL);
+		event_send(&state.current_operation, true, -EIO);
 		/* Reset the internal state so we can accept other operations. */
 		state.type = BM_STORAGE_SD_STATE_IDLE;
 		atomic_set(&state.operation_ongoing, 0);
@@ -214,18 +213,18 @@ static bool on_operation_failure(const struct bm_storage_sd_op *op)
 	return false;
 }
 
-uint32_t bm_storage_backend_init(struct bm_storage *storage)
+int bm_storage_backend_init(struct bm_storage *storage)
 {
 	/* If it's already initialized, return early successfully.
 	 * This is to support more than one client initialization.
 	 */
 	if (state.is_init) {
-		return NRF_SUCCESS;
+		return 0;
 	}
 
 	/* Initialize the SoftDevice storage backend from one context only. */
 	if (!atomic_cas(&state.operation_ongoing, 0, 1)) {
-		return NRF_ERROR_BUSY;
+		return -EBUSY;
 	}
 
 	state.sd_enabled = nrf_sdh_is_enabled();
@@ -236,39 +235,39 @@ uint32_t bm_storage_backend_init(struct bm_storage *storage)
 
 	atomic_set(&state.operation_ongoing, 0);
 
-	return NRF_SUCCESS;
+	return 0;
 }
 
-uint32_t bm_storage_backend_read(const struct bm_storage *storage, uint32_t src, void *dest,
-				   uint32_t len)
+int bm_storage_backend_read(const struct bm_storage *storage, uint32_t src, void *dest,
+			    uint32_t len)
 {
 	if (!state.is_init) {
-		return NRF_ERROR_FORBIDDEN;
+		return -EPERM;
 	}
 
 	/* SoftDevice expects this alignment. */
 	if (!is_aligned32(src)) {
-		return NRF_ERROR_INVALID_ADDR;
+		return -EFAULT;
 	}
 
 	/* src is expected to be 32-bit word-aligned. */
 	memcpy(dest, (uint32_t *)src, len);
 
-	return NRF_SUCCESS;
+	return 0;
 }
 
-uint32_t bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest,
-				    const void *src, uint32_t len, void *ctx)
+int bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest,
+			     const void *src, uint32_t len, void *ctx)
 {
 	uint32_t written;
 
 	if (!state.is_init) {
-		return NRF_ERROR_FORBIDDEN;
+		return -EPERM;
 	}
 
 	/* SoftDevice expects this alignment. */
 	if (!is_aligned32((uint32_t)src) || !is_aligned32(dest)) {
-		return NRF_ERROR_INVALID_ADDR;
+		return -EFAULT;
 	}
 
 	struct bm_storage_sd_op op = {
@@ -283,12 +282,12 @@ uint32_t bm_storage_backend_write(const struct bm_storage *storage, uint32_t des
 	written = ring_buf_put(&sd_fifo, (void *)&op, sizeof(struct bm_storage_sd_op));
 	NRFX_CRITICAL_SECTION_EXIT();
 	if (written != sizeof(struct bm_storage_sd_op)) {
-		return NRF_ERROR_INTERNAL;
+		return -EIO;
 	}
 
 	queue_start();
 
-	return NRF_SUCCESS;
+	return 0;
 }
 
 bool bm_storage_backend_is_busy(const struct bm_storage *storage)
@@ -331,8 +330,7 @@ static void on_soc_evt(uint32_t evt, void *ctx)
 			bool is_sync = (ctx != NULL);
 
 			event_send(&state.current_operation, is_sync,
-				   (evt == NRF_EVT_FLASH_OPERATION_SUCCESS) ?
-					NRF_SUCCESS : NRF_ERROR_TIMEOUT);
+				   (evt == NRF_EVT_FLASH_OPERATION_SUCCESS) ? 0 : -ETIMEDOUT);
 		}
 		break;
 	default:

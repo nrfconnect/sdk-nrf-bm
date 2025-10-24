@@ -52,10 +52,10 @@ struct bm_storage_evt {
 	/* Specifies if the operation was performed synchronously or asynchronously. */
 	enum bm_storage_evt_dispatch_type dispatch_type;
 	/* Result of the operation.
-	 * NRF_SUCCESS on success.
-	 * A positive NRF error otherwise.
+	 * 0 on success.
+	 * A negative errno otherwise.
 	 */
-	uint32_t result;
+	int result;
 	/* Destination address where the operation was performed. */
 	uint32_t addr;
 	/* Pointer to the data that was written to non-volatile memory.
@@ -143,12 +143,12 @@ struct bm_storage {
  *
  * @param[in] storage Storage instance to initialize.
  *
- * @retval NRF_SUCCESS on success.
- * @retval NRF_ERROR_NULL If @p storage is @c NULL.
- * @retval NRF_ERROR_BUSY If the implementation-specific resource is busy.
- * @retval NRF_ERROR_INTERNAL If an implementation-specific internal error occurred.
+ * @retval 0 on success.
+ * @retval -EFAULT If @p storage is @c NULL.
+ * @retval -EBUSY If the implementation-specific resource is busy.
+ * @retval -EIO If an implementation-specific internal error occurred.
  */
-uint32_t bm_storage_init(struct bm_storage *storage);
+int bm_storage_init(struct bm_storage *storage);
 
 /**
  * @brief Uninitialize a storage instance.
@@ -158,13 +158,13 @@ uint32_t bm_storage_init(struct bm_storage *storage);
  *
  * @param[in] storage Storage instance to uninitialize.
  *
- * @retval NRF_SUCCESS on success.
- * @retval NRF_ERROR_NULL If @p storage is @c NULL.
- * @retval NRF_ERROR_INVALID_STATE If @p storage is in an invalid state.
- * @retval NRF_ERROR_BUSY If the implementation-specific backend is busy with an ongoing operation.
- * @retval NRF_ERROR_NOT_SUPPORTED If the backend does not support uninitialization.
+ * @retval 0 on success.
+ * @retval -EFAULT If @p storage is @c NULL.
+ * @retval -EPERM If @p storage is in an invalid state.
+ * @retval -EBUSY If the implementation-specific backend is busy with an ongoing operation.
+ * @retval -ENOTSUP If the backend does not support uninitialization.
  */
-uint32_t bm_storage_uninit(struct bm_storage *storage);
+int bm_storage_uninit(struct bm_storage *storage);
 
 /**
  * @brief Read data from a storage instance.
@@ -174,16 +174,14 @@ uint32_t bm_storage_uninit(struct bm_storage *storage);
  * @param[out] dest Destination where the data will be copied to.
  * @param[in] len Length of the data to copy (in bytes).
  *
- * @retval NRF_SUCCESS on success.
- * @retval NRF_ERROR_NULL If @p storage is @c NULL.
- * @retval NRF_ERROR_INVALID_STATE If @p storage is in an invalid state.
- * @retval NRF_ERROR_INVALID_LENGTH If @p len is zero or not a multiple of
- *                                  @ref bm_storage_info.program_unit.
- * @retval NRF_ERROR_INVALID_ADDR If @p dest or @p src are not 32-bit word aligned, or if they are
- *                                outside the bounds of the memory region configured in @p storage.
- * @retval NRF_ERROR_FORBIDDEN If the implementation-specific backend has not been initialized.
+ * @retval 0 on success.
+ * @retval -EFAULT If @p storage is @c NULL or if @p dest or @p src are not 32-bit word aligned,
+ *                 or if they are outside the bounds of the memory region configured in @p storage.
+ * @retval -EPERM If @p storage is in an invalid state or if the implementation-specific backend
+ *                has not been initialized.
+ * @retval -EINVAL If @p len is zero or not a multiple of @ref bm_storage_info.program_unit.
  */
-uint32_t bm_storage_read(const struct bm_storage *storage, uint32_t src, void *dest, uint32_t len);
+int bm_storage_read(const struct bm_storage *storage, uint32_t src, void *dest, uint32_t len);
 
 /**
  * @brief Write data to a storage instance.
@@ -195,19 +193,17 @@ uint32_t bm_storage_read(const struct bm_storage *storage, uint32_t src, void *d
  * @param[in] ctx Pointer to user data, passed to the implementation-specific API function call.
  *                Can be NULL.
  *
- * @retval NRF_SUCCESS on success.
- * @retval NRF_ERROR_NULL If @p storage is @c NULL.
- * @retval NRF_ERROR_INVALID_STATE If @p storage is in an invalid state.
- * @retval NRF_ERROR_INVALID_LENGTH If @p len is zero or not a multiple of
- *                                  @ref bm_storage_info.program_unit.
- * @retval NRF_ERROR_INVALID_ADDR If @p dest or @p src are not 32-bit word aligned, or if they are
- *                                outside the bounds of the memory region configured in @p storage.
- * @retval NRF_ERROR_FORBIDDEN If the implementation-specific backend has not been initialized.
- * @retval NRF_ERROR_BUSY If the implementation-specific backend is busy with an ongoing operation.
- * @retval NRF_ERROR_INTERNAL If an implementation-specific internal error occurred.
+ * @retval 0 on success.
+ * @retval -EFAULT If @p storage is @c NULL or if @p dest or @p src are not 32-bit word aligned,
+ *                 or if they are outside the bounds of the memory region configured in @p storage.
+ * @retval -EPERM If @p storage is in an invalid state or if the implementation-specific backend
+ *                has not been initialized.
+ * @retval -EINVAL If @p len is zero or not a multiple of @ref bm_storage_info.program_unit.
+ * @retval -EBUSY If the implementation-specific backend is busy with an ongoing operation.
+ * @retval -EIO If an implementation-specific internal error occurred.
  */
-uint32_t bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void *src,
-			  uint32_t len, void *ctx);
+int bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void *src,
+		     uint32_t len, void *ctx);
 
 /**
  * @brief Erase data in a storage instance.
@@ -216,19 +212,16 @@ uint32_t bm_storage_write(const struct bm_storage *storage, uint32_t dest, const
  * @param[in] ctx Pointer to user data, passed to the implementation-specific API function call.
  *                Can be NULL.
  *
- * @retval NRF_SUCCESS on success.
- * @retval NRF_ERROR_NULL If @p storage is @c NULL.
- * @retval NRF_ERROR_INVALID_STATE If @p storage is in an invalid state.
- * @retval NRF_ERROR_INVALID_LENGTH If @p len is zero or not a multiple of
- *                                  @ref bm_storage_info.erase_unit.
- * @retval NRF_ERROR_INVALID_ADDR If @p addr is outside the bounds of the memory region configured
- *                                in @p storage.
- * @retval NRF_ERROR_FORBIDDEN If the implementation-specific backend has not been initialized.
- * @retval NRF_ERROR_BUSY If the implementation-specific backend is busy with an ongoing operation.
- * @retval NRF_ERROR_NOT_SUPPORTED If the implementation-specific backend does not implement this
- *                                 function.
+ * @retval 0 on success.
+ * @retval -EFAULT If @p storage is @c NULL or if @p addr is outside the bounds of the memory region
+ *                 configured in @p storage.
+ * @retval -EPERM If @p storage is in an invalid state or if the implementation-specific backend
+ *                has not been initialized.
+ * @retval -EINVAL If @p len is zero or not a multiple of @ref bm_storage_info.erase_unit.
+ * @retval -EBUSY If the implementation-specific backend is busy with an ongoing operation.
+ * @retval -ENOTSUP If the implementation-specific backend does not implement this function.
  */
-uint32_t bm_storage_erase(const struct bm_storage *storage, uint32_t addr, uint32_t len, void *ctx);
+int bm_storage_erase(const struct bm_storage *storage, uint32_t addr, uint32_t len, void *ctx);
 
 /**
  * @brief Query the status of a storage instance.

@@ -36,7 +36,7 @@ config BM_STORAGE_BACKEND_SD_MAX_RETRIES
 	int "Maximum number of attempts at executing an operation when the SoftDevice is busy"
 	default 8
 	help
-	  Increase this value if events frequently return the @ref NRF_ERROR_TIMEOUT error.
+	  Increase this value if events frequently return -ETIMEDOUT.
 	  The SoftDevice might fail to schedule flash access due to high BLE activity.
 
 endif # BM_STORAGE_BACKEND_SD

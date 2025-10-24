@@ -118,6 +118,10 @@ Libraries
      * All instances of ``pm_failure_evt_t`` to struct :c:struct:`pm_failure_evt` and removed the ``pm_failure_evt_t`` type.
      * All instances of ``pm_evt_t`` to struct :c:struct:`pm_evt` and removed the ``pm_evt_t`` type.
 
+* Storage library:
+
+  * Updated to use errno instead of nrf_errors.
+
 Samples
 =======
 
