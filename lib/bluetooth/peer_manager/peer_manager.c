@@ -369,6 +369,7 @@ uint32_t pm_init(void)
 	peer_ranks.token = PM_STORE_TOKEN_INVALID;
 #endif /* CONFIG_PM_PEER_RANKS */
 
+	n_registrants = 0;
 	module_initialized = true;
 
 	flag_conn_excluded = pm_conn_state_user_flag_acquire();
