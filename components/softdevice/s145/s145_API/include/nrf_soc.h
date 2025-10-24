@@ -698,13 +698,13 @@ SVCALL(SD_TEMP_GET, uint32_t, sd_temp_get(int32_t * p_temp));
 *
 * @param[in]  p_dst Pointer to start of flash location to be written.
 * @param[in]  p_src Pointer to buffer with data to be written.
-* @param[in]  size  Number of 32-bit words to write. Maximum size is the number of words in one
-*                   flash page. See the device's Product Specification for details.
+* @param[in]  size  Number of 32-bit words to write.
 *
 * @retval ::NRF_ERROR_INVALID_STATE  Power-fail comparator is enabled and a POFWARN event is pending.
 * @retval ::NRF_ERROR_INVALID_ADDR   Tried to write to a non existing flash address, or p_dst or p_src was unaligned.
 * @retval ::NRF_ERROR_BUSY           The previous command has not yet completed.
-* @retval ::NRF_ERROR_INVALID_LENGTH Size was 0, or higher than the maximum allowed size.
+* @retval ::NRF_ERROR_INVALID_LENGTH Size was 0.
+
 * @retval ::NRF_ERROR_FORBIDDEN      Tried to write to an address outside the application flash area.
 * @retval ::NRF_SUCCESS              The command was accepted.
 */

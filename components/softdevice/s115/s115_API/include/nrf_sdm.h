@@ -243,6 +243,10 @@ typedef struct
                                       for the nRF52 device being used for more information.*/
   uint8_t accuracy;       /**< External clock accuracy used in the LL to compute timing
                                windows, see @ref NRF_CLOCK_LF_ACCURACY.*/
+  uint8_t hfint_ctiv;     /**< HFINT calibration interval in seconds (1-255).
+                              @note To ensure correct operation, 10 degrees Celsius is the
+                              maximum temperature change allowed in one calibration timer
+                              interval. The interval should be selected to ensure this. */
 } nrf_clock_lf_cfg_t;
 
 /**@brief Fault Handler type.
@@ -289,7 +293,7 @@ typedef void (*nrf_fault_handler_t)(uint32_t id, uint32_t pc, uint32_t info);
  *       - Chosen low frequency clock source will be running.
  *
  * @param p_clock_lf_cfg Low frequency clock source and accuracy.
- *                       If NULL the clock will be configured as an RC source with rc_ctiv = 16 and .rc_temp_ctiv = 2
+ *                       If NULL the clock will be configured as an RC source with rc_ctiv = 16, .rc_temp_ctiv = 2, .hfint_ctiv = 4
  *                       In the case of XTAL source, the PPM accuracy of the chosen clock source must be greater than or equal to the actual characteristics of your XTAL clock.
  * @param fault_handler Callback to be invoked in case of fault, cannot be NULL.
  *
@@ -297,6 +301,7 @@ typedef void (*nrf_fault_handler_t)(uint32_t id, uint32_t pc, uint32_t info);
  * @retval ::NRF_ERROR_INVALID_ADDR  Invalid or NULL pointer supplied.
  * @retval ::NRF_ERROR_INVALID_STATE SoftDevice is already enabled, and the clock source and fault handler cannot be updated.
  * @retval ::NRF_ERROR_SDM_INCORRECT_INTERRUPT_CONFIGURATION SoftDevice interrupt is already enabled, or an enabled interrupt has an illegal priority level.
+ * @retval ::NRF_ERROR_SDM_INCORRECT_GRTC_CONFIGURATION GRTC is not running with SYSCOUNTER on or AUTOEN is not set.
  * @retval ::NRF_ERROR_SDM_LFCLK_SOURCE_UNKNOWN Unknown low frequency clock source selected.
  * @retval ::NRF_ERROR_INVALID_PARAM Invalid clock source configuration supplied in p_clock_lf_cfg.
  */
