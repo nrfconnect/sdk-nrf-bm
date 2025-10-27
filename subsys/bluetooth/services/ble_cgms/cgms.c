@@ -28,11 +28,15 @@ static void gatt_error_handler(uint16_t conn_handle, uint32_t nrf_error, void *c
 	struct ble_cgms_evt evt = {
 		.evt_type = BLE_CGMS_EVT_ERROR,
 		.error.reason = nrf_error,
+		.conn_handle = cgms->conn_handle,
 	};
 	struct ble_cgms *cgms = (struct ble_cgms *)ctx;
 
-	if (cgms->evt_handler && (nrf_error != NRF_ERROR_INVALID_STATE)) {
-		cgms->evt_handler(cgms, &evt);
+	if (nrf_error != NRF_ERROR_INVALID_STATE) {
+		LOG_ERR("GATT error, nrf_error %#x", nrf_err);
+		if (cgms->evt_handler) {
+			cgms->evt_handler(cgms, &evt);
+		}
 	}
 }
 

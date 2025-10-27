@@ -122,6 +122,7 @@ static void on_sst_value_write(struct ble_cgms *cgms, const ble_gatts_evt_write_
 	};
 	struct ble_cgms_evt cgms_evt = {
 		.evt_type = BLE_CGMS_EVT_ERROR,
+		.conn_handle = cgms->conn_handle,
 	};
 
 	nrf_err = sd_ble_gatts_rw_authorize_reply(cgms->conn_handle, &auth_reply);
@@ -134,6 +135,7 @@ static void on_sst_value_write(struct ble_cgms *cgms, const ble_gatts_evt_write_
 
 	nrf_err = cgm_update_sst(cgms, evt_write);
 	if (nrf_err) {
+		LOG_ERR("Failed to update SST, nrf_error %#x", nrf_err);
 		if (cgms->evt_handler != NULL) {
 			cgms_evt.error.reason = nrf_err;
 			cgms->evt_handler(cgms, &cgms_evt);
