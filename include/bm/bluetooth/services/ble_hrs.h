@@ -50,13 +50,17 @@ extern "C" {
  */
 enum ble_hrs_evt_type {
 	/**
+	 * @brief Error event.
+	 */
+	BLE_HRS_EVT_ERROR,
+	/**
 	 * @brief Heart rate value notification enabled.
 	 */
 	BLE_HRS_EVT_NOTIFICATION_ENABLED,
 	/**
 	 * @brief Heart rate value notifcation disabled.
 	 */
-	BLE_HRS_EVT_NOTIFICATION_DISABLED
+	BLE_HRS_EVT_NOTIFICATION_DISABLED,
 };
 
 /**
@@ -67,6 +71,17 @@ struct ble_hrs_evt {
 	 * @brief Event type.
 	 */
 	enum ble_hrs_evt_type evt_type;
+	/**
+	 * @brief Connection handle for which the event applies.
+	 */
+	uint16_t conn_handle;
+	union {
+		/** @ref BLE_HRS_EVT_ERROR event data. */
+		struct {
+			/** Error reason. */
+			uint32_t reason;
+		} error;
+	};
 };
 
 /* Forward declaration */
