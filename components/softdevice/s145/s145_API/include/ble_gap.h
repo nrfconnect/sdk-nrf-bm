@@ -553,7 +553,6 @@ enum BLE_GAP_QOS_CONN_EVENT_REPORT
 #define BLE_GAP_CP_CONN_SUP_TIMEOUT_MAX          0x0C80  /**< Highest supervision timeout permitted, in units of 10 ms, i.e. 32 s. */
 /**@} */
 
-
 /**@defgroup BLE_GAP_DEVNAME GAP device name defines.
  * @{ */
 #define BLE_GAP_DEVNAME_DEFAULT                  "nRF5x" /**< Default device name value. */

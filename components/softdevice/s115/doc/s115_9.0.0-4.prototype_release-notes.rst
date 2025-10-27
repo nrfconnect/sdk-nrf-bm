@@ -38,7 +38,7 @@ SoftDevice properties
 
   * nRF54L15: 0x162000 (``s115_nrf54l15_9.0.0-4.prototype_softdevice.hex``).
 
-* The Firmware ID of this SoftDevice is 0x30B2.
+* The Firmware ID of this SoftDevice is 0x30B5.
 
 New Features
 -------------
@@ -50,6 +50,8 @@ Changes
 
   * The function ``sd_flash_write`` now uses buffered writes to RRAM, with WRITEBUFSIZE=1.
     This reduces RRAM wear and improves performance (DRGN-24675).
+
+  * A new field ``hfint_ctiv`` has been added to ``nrf_clock_lf_cfg_t`` to control how often HFINT is calibrated (DRGN-26506).
 
 * GAP
 

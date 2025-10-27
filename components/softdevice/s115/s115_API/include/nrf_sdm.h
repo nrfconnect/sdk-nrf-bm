@@ -216,37 +216,40 @@ enum NRF_SD_SVCS
 typedef struct
 {
   uint8_t source;         /**< LF oscillator clock source, see @ref NRF_CLOCK_LF_SRC. */
-  uint8_t rc_ctiv;        /**< Only for ::NRF_CLOCK_LF_SRC_RC: Calibration timer interval in 1/4 second
-                               units (nRF52: 1-32).
+  uint8_t rc_ctiv;        /**< Only for ::NRF_CLOCK_LF_SRC_RC: Calibration timer interval in 1/4 second units (1-32).
                                @note To avoid excessive clock drift, 0.5 degrees Celsius is the
                                      maximum temperature change allowed in one calibration timer
                                      interval. The interval should be selected to ensure this.
 
-                                  @note Must be 0 if source is not ::NRF_CLOCK_LF_SRC_RC.  */
-  uint8_t rc_temp_ctiv;   /**<  Only for ::NRF_CLOCK_LF_SRC_RC: How often (in number of calibration
-                                intervals) the RC oscillator shall be calibrated if the temperature
-                                hasn't changed.
-                                     0: Always calibrate even if the temperature hasn't changed.
-                                     1: Only calibrate if the temperature has changed (legacy - nRF51 only).
-                                     2-33: Check the temperature and only calibrate if it has changed,
-                                           however calibration will take place every rc_temp_ctiv
-                                           intervals in any case.
+                               @note Must be 0 if source is not ::NRF_CLOCK_LF_SRC_RC.  */
+  uint8_t rc_temp_ctiv;   /**< Only for ::NRF_CLOCK_LF_SRC_RC: How often (in number of calibration
+                               intervals) the RC oscillator shall be calibrated if the temperature
+                               hasn't changed.
+                                    0: Always calibrate even if the temperature hasn't changed.
+                                    1: Invalid
+                                    2-33: Check the temperature and only calibrate if it has changed,
+                                          however calibration will take place every rc_temp_ctiv
+                                          intervals in any case.
 
-                                @note Must be 0 if source is not ::NRF_CLOCK_LF_SRC_RC.
+                               @note Must be 0 if source is not ::NRF_CLOCK_LF_SRC_RC.
 
-                                @note For nRF52, the application must ensure calibration at least once
-                                      every 8 seconds to ensure +/-500 ppm clock stability. The
-                                      recommended configuration for ::NRF_CLOCK_LF_SRC_RC on nRF52 is
-                                      rc_ctiv=16 and rc_temp_ctiv=2. This will ensure calibration at
-                                      least once every 8 seconds and for temperature changes of 0.5
-                                      degrees Celsius every 4 seconds. See the Product Specification
-                                      for the nRF52 device being used for more information.*/
+                               @note The application must ensure calibration at least once
+                                     every 8 seconds to ensure +/-500 ppm clock stability. The
+                                     recommended configuration for ::NRF_CLOCK_LF_SRC_RC is
+                                     rc_ctiv=16 and rc_temp_ctiv=2. This will ensure calibration at
+                                     least once every 8 seconds and for temperature changes of 0.5
+                                     degrees Celsius every 4 seconds. See the Product Specification
+                                     for the device being used for more information.*/
   uint8_t accuracy;       /**< External clock accuracy used in the LL to compute timing
                                windows, see @ref NRF_CLOCK_LF_ACCURACY.*/
   uint8_t hfint_ctiv;     /**< HFINT calibration interval in seconds (1-255).
-                              @note To ensure correct operation, 10 degrees Celsius is the
-                              maximum temperature change allowed in one calibration timer
-                              interval. The interval should be selected to ensure this. */
+                               @note To ensure correct operation, 10 degrees Celsius is the
+                               maximum temperature change allowed in one calibration timer
+                               interval. The interval should be selected to ensure this.
+
+                               @note If ::NRF_CLOCK_LF_SRC_RC is used as the clock source,
+                               the minimum interval of rc_ctiv and hfint_ctiv will be used
+                               for both LFRC and HFINT calibration. */
 } nrf_clock_lf_cfg_t;
 
 /**@brief Fault Handler type.
