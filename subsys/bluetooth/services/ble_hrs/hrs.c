@@ -383,7 +383,7 @@ void ble_hrs_conn_params_evt(struct ble_hrs *hrs, const struct ble_conn_params_e
 	__ASSERT(conn_params_evt, "GATT event is NULL");
 
 	if ((hrs->conn_handle == conn_params_evt->conn_handle)
-	    && (conn_params_evt->id == BLE_CONN_PARAMS_EVT_ATT_MTU_UPDATED)) {
+	    && (conn_params_evt->evt_type == BLE_CONN_PARAMS_EVT_ATT_MTU_UPDATED)) {
 		hrs->max_hrm_len = MAX_HRM_LEN_CALC(conn_params_evt->att_mtu);
 	}
 }

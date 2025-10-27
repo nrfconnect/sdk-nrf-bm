@@ -115,7 +115,7 @@ static void on_conn_params_update(uint16_t conn_handle, int idx,
 
 	if (conn_params_can_agree(&evt->conn_params)) {
 		const struct ble_conn_params_evt app_evt = {
-			.id = BLE_CONN_PARAMS_EVT_UPDATED,
+			.evt_type = BLE_CONN_PARAMS_EVT_UPDATED,
 			.conn_handle = conn_handle,
 			.conn_params = evt->conn_params,
 		};
@@ -132,7 +132,7 @@ static void on_conn_params_update(uint16_t conn_handle, int idx,
 
 	LOG_WRN("Could not agree on peer %#x connection params", conn_handle);
 	const struct ble_conn_params_evt app_evt = {
-		.id = BLE_CONN_PARAMS_EVT_REJECTED,
+		.evt_type = BLE_CONN_PARAMS_EVT_REJECTED,
 		.conn_handle = conn_handle,
 	};
 
@@ -174,6 +174,10 @@ NRF_SDH_BLE_OBSERVER(ble_observer, on_ble_evt, NULL, HIGH);
 static int on_state_evt(enum nrf_sdh_state_evt evt, void *ctx)
 {
 	uint32_t nrf_err;
+	struct ble_conn_params_evt app_evt = {
+		.evt_type = BLE_CONN_PARAMS_EVT_ERROR,
+		.conn_handle = BLE_CONN_HANDLE_INVALID,
+	};
 
 	if (evt != NRF_SDH_STATE_EVT_BLE_ENABLED) {
 		return 0;
@@ -182,6 +186,10 @@ static int on_state_evt(enum nrf_sdh_state_evt evt, void *ctx)
 	nrf_err = sd_ble_gap_ppcp_set(&ppcp);
 	if (nrf_err) {
 		LOG_ERR("Failed to set preferred conn params, nrf_error %#x", nrf_err);
+
+		app_evt.error.reason = nrf_err;
+		ble_conn_params_event_send(&app_evt);
+
 		return 0;
 	}
 

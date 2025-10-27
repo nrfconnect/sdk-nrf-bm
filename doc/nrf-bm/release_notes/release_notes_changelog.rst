@@ -112,7 +112,12 @@ Libraries
 
 * :ref:`lib_ble_conn_params` library:
 
-   * Added missing Kconfig dependencies.
+   * Added:
+
+    * Missing Kconfig dependencies.
+    * Error event.
+
+   * Updated the name of the ``id`` member in the :c:struct:`ble_conn_params_evt` structure to :c:member:`ble_conn_params_evt.evt_type`.
 
 * :ref:`lib_bm_zms` library:
 
