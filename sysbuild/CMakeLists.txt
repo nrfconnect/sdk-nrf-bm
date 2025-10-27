@@ -81,6 +81,9 @@ function(bm_install_setup)
             set_config_bool(mcuboot CONFIG_PSA_USE_CRACEN_HASH_DRIVER y)
           endif()
         endif()
+        if(SB_CONFIG_BM_BOOTLOADER_MCUBOOT_KEYS_REVOCATION)
+          set_config_bool(mcuboot CONFIG_BOOT_KEYS_REVOCATION y)
+        endif()
       endif()
 
       ExternalZephyrProject_Add(

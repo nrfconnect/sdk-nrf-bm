@@ -64,6 +64,11 @@ config BM_BOOTLOADER_MCUBOOT_GENERATE_DEFAULT_KMU_KEYFILE
 	help
 	  If enabled, the build system will generate keyfile.json file in the build directory.
 
+config BM_BOOTLOADER_MCUBOOT_KEYS_REVOCATION
+	bool "Auto revoke previous gen key"
+	help
+	  Automatically revoke previous generation key upon new valid key usage.
+
 menu "Firmware loader entrance modes"
 	depends on !BM_FIRMWARE_LOADER_NONE
 
