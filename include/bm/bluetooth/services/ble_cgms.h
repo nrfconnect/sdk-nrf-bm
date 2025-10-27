@@ -247,18 +247,30 @@ extern "C" {
 
 /** @brief CGM Service events. */
 enum ble_cgms_evt_type {
-	/** Error. */
-	BLE_CGMS_EVT_ERROR,
-	/** Glucose value notification enabled. */
+	/**
+	 * @brief Glucose value notification enabled.
+	 */
 	BLE_CGMS_EVT_NOTIFICATION_ENABLED,
-	/** Glucose value notification disabled. */
+	/**
+	 * @brief Glucose value notification disabled.
+	 */
 	BLE_CGMS_EVT_NOTIFICATION_DISABLED,
-	/** Glucose value notification start session. */
+	/**
+	 * @brief Glucose value notification start session.
+	 */
 	BLE_CGMS_EVT_START_SESSION,
-	/** Glucose value notification stop session. */
+	/**
+	 * @brief Glucose value notification stop session.
+	 */
 	BLE_CGMS_EVT_STOP_SESSION,
-	/** Glucose value write communication interval. */
+	/**
+	 * @brief Glucose value write communication interval.
+	 */
 	BLE_CGMS_EVT_WRITE_COMM_INTERVAL,
+	/**
+	 * @brief Error.
+	 */
+	BLE_CGMS_EVT_ERROR,
 };
 
 /** @} */ /* ble_cgms_enums */
@@ -272,10 +284,14 @@ enum ble_cgms_evt_type {
 struct ble_cgms_evt {
 	/** Event type. */
 	enum ble_cgms_evt_type evt_type;
+	/**
+	 * @brief Connection handle for which the event applies.
+	 */
+	uint16_t conn_handle;
 	union {
 		/** @ref BLE_CGMS_EVT_ERROR event data. */
 		struct {
-			/* Error reason */
+			/** Error reason. */
 			uint32_t reason;
 		} error;
 	};
