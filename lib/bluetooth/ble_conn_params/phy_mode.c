@@ -30,6 +30,10 @@ static void radio_phy_mode_update(uint16_t conn_handle, int idx)
 {
 	uint32_t nrf_err;
 	ble_gap_phys_t phys = links[idx].phy_mode;
+	struct ble_conn_params_evt app_evt = {
+		.evt_type = BLE_CONN_PARAMS_EVT_ERROR,
+		.conn_handle = conn_handle,
+	};
 
 
 	if (phys.tx_phys != BLE_GAP_PHY_NOT_SET) {
@@ -58,12 +62,18 @@ static void radio_phy_mode_update(uint16_t conn_handle, int idx)
 		radio_phy_mode_update(conn_handle, idx);
 	} else {
 		LOG_ERR("Failed PHY update procedure, nrf_error %#x", nrf_err);
+		app_evt.error.reason = nrf_err;
+		ble_conn_params_event_send(&app_evt);
 	}
 }
 
 static void on_radio_phy_mode_update_evt(uint16_t conn_handle, int idx,
 					 const ble_gap_evt_phy_update_t *evt)
 {
+	struct ble_conn_params_evt app_evt = {
+		.conn_handle = conn_handle,
+	};
+
 	if (evt->status == BLE_HCI_STATUS_CODE_SUCCESS) {
 		links[idx].phy_mode_update_pending = false;
 		links[idx].phy_mode.tx_phys = evt->tx_phy;
@@ -79,13 +89,16 @@ static void on_radio_phy_mode_update_evt(uint16_t conn_handle, int idx,
 		links[idx].phy_mode_update_pending = false;
 		LOG_ERR("PHY update failed with status %u for peer %#x", evt->status,
 			conn_handle);
+
+		/* Send error event to application and return */
+		app_evt.evt_type = BLE_CONN_PARAMS_EVT_ERROR;
+		app_evt.error.reason = evt->status;
+		ble_conn_params_event_send(&app_evt);
+		return;
 	}
 
-	const struct ble_conn_params_evt app_evt = {
-		.id = BLE_CONN_PARAMS_EVT_RADIO_PHY_MODE_UPDATED,
-		.conn_handle = conn_handle,
-		.phy_update_evt = *evt,
-	};
+	app_evt.evt_type = BLE_CONN_PARAMS_EVT_RADIO_PHY_MODE_UPDATED;
+	app_evt.phy_update_evt = *evt;
 
 	ble_conn_params_event_send(&app_evt);
 }

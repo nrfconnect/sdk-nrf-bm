@@ -22,9 +22,9 @@ extern "C" {
 #endif
 
 /**
- * @brief BLE connection parameter event IDs.
+ * @brief BLE connection parameter event types.
  */
-enum ble_conn_params_evt_id {
+enum ble_conn_params_evt_type {
 	/**
 	 * @brief Connection parameters updated.
 	 */
@@ -45,6 +45,10 @@ enum ble_conn_params_evt_id {
 	 * @brief GAP radio phy mode update procedure completed.
 	 */
 	BLE_CONN_PARAMS_EVT_RADIO_PHY_MODE_UPDATED,
+	/**
+	 * @brief Error.
+	 */
+	BLE_CONN_PARAMS_EVT_ERROR,
 };
 
 /**
@@ -66,9 +70,9 @@ struct ble_conn_params_data_length {
  */
 struct ble_conn_params_evt {
 	/**
-	 * @brief Event ID.
+	 * @brief Event type.
 	 */
-	enum ble_conn_params_evt_id id;
+	enum ble_conn_params_evt_type evt_type;
 	/**
 	 * @brief Connection handle.
 	 */
@@ -98,6 +102,13 @@ struct ble_conn_params_evt {
 		 * From @ref BLE_CONN_PARAMS_EVT_RADIO_PHY_MODE_UPDATED.
 		 */
 		ble_gap_evt_phy_update_t phy_update_evt;
+		/** @ref BLE_CONN_PARAMS_EVT_ERROR event data. */
+		struct {
+			/**
+			 * @brief Error reason.
+			 */
+			uint32_t reason;
+		} error;
 	};
 };
 

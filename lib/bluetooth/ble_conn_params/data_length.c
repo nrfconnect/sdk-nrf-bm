@@ -40,6 +40,10 @@ static void data_length_update(uint16_t conn_handle, int idx)
 		.max_rx_time_us = BLE_GAP_DATA_LENGTH_AUTO,
 	};
 	ble_gap_data_length_limitation_t dll = {0};
+	struct ble_conn_params_evt app_evt = {
+		.evt_type = BLE_CONN_PARAMS_EVT_ERROR,
+		.conn_handle = conn_handle,
+	};
 
 	do {
 		retry = false;
@@ -67,15 +71,20 @@ static void data_length_update(uint16_t conn_handle, int idx)
 				dlp.max_rx_octets = links[idx].desired.rx,
 
 				retry = true;
-			}
-			if (dll.tx_rx_time_limited_us != 0) {
+			} else if (dll.tx_rx_time_limited_us != 0) {
 				LOG_ERR("The requested combination of TX and RX packet lengths "
 					"is too long by %u microseconds.",
 					dll.tx_rx_time_limited_us);
+
+				app_evt.error.reason = nrf_err;
+				ble_conn_params_event_send(&app_evt);
 			}
 		} else if (nrf_err) {
 			LOG_ERR("Failed to initiate or respond to Data Length Update procedure, "
 				"nrf_error %#x", nrf_err);
+
+			app_evt.error.reason = nrf_err;
+			ble_conn_params_event_send(&app_evt);
 		}
 	} while (retry);
 }
@@ -111,7 +120,7 @@ static void on_data_length_update_evt(uint16_t conn_handle, int idx,
 
 	/* The Data length update has finished, send an event to the application. */
 	const struct ble_conn_params_evt app_evt = {
-		.id = BLE_CONN_PARAMS_EVT_DATA_LENGTH_UPDATED,
+		.evt_type = BLE_CONN_PARAMS_EVT_DATA_LENGTH_UPDATED,
 		.conn_handle = conn_handle,
 		.data_length.tx = links[idx].data_length.tx,
 		.data_length.rx = links[idx].data_length.rx,

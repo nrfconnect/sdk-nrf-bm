@@ -251,7 +251,7 @@ void on_conn_params_evt(const struct ble_conn_params_evt *evt)
 {
 	uint32_t nrf_err;
 
-	switch (evt->id) {
+	switch (evt->evt_type) {
 	case BLE_CONN_PARAMS_EVT_REJECTED:
 		nrf_err = sd_ble_gap_disconnect(evt->conn_handle,
 						BLE_HCI_CONN_INTERVAL_UNACCEPTABLE);
