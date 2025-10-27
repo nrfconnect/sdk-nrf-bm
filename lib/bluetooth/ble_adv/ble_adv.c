@@ -81,6 +81,7 @@ static void on_disconnected(struct ble_adv *ble_adv, ble_evt_t const *ble_evt)
 		if (ble_evt->evt.gap_evt.conn_handle == ble_adv->conn_handle) {
 			nrf_err = ble_adv_start(ble_adv, BLE_ADV_MODE_DIRECTED_HIGH_DUTY);
 			if (nrf_err) {
+				LOG_ERR("Failed to start advertising, nrf_error %#x", nrf_err);
 				adv_evt.evt_type = BLE_ADV_EVT_ERROR;
 				adv_evt.error.reason = nrf_err;
 				ble_adv->evt_handler(ble_adv, &adv_evt);
@@ -101,6 +102,7 @@ static void on_terminated(struct ble_adv *ble_adv, ble_evt_t const *ble_evt)
 		LOG_DBG("Advertising timeout");
 		nrf_err = ble_adv_start(ble_adv, adv_mode_next(ble_adv->mode_current));
 		if (nrf_err) {
+			LOG_ERR("Failed to start advertising, nrf_error %#x", nrf_err);
 			adv_evt.error.reason = nrf_err;
 			adv_evt.evt_type = BLE_ADV_EVT_ERROR;
 			ble_adv->evt_handler(ble_adv, &adv_evt);
