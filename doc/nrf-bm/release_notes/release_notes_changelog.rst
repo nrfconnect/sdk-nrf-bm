@@ -32,7 +32,7 @@ S145 SoftDevice
 SoftDevice Handler
 ==================
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Added the :kconfig:option:`NRF_SDH_CLOCK_HFINT_CALIBRATION_INTERVAL` Kconfig option to control the HFINT calibration interval.
 
 Boards
 ======
