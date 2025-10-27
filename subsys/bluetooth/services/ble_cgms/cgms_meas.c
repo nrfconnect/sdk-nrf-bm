@@ -160,7 +160,9 @@ uint32_t cgms_meas_send(struct ble_cgms *cgms, struct ble_cgms_rec *rec, uint16_
 /* Glucose measurement CCCD write event handler */
 static void on_meas_cccd_write(struct ble_cgms *cgms, const ble_gatts_evt_write_t *evt_write)
 {
-	struct ble_cgms_evt evt;
+	struct ble_cgms_evt evt = {
+		.conn_handle = cgms->conn_handle,
+	};
 
 	if (evt_write->len != 2) {
 		return;

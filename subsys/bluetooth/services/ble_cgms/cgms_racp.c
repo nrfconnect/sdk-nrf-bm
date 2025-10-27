@@ -75,6 +75,7 @@ static void racp_send(struct ble_cgms *cgms, struct ble_racp_value *racp_val)
 
 	struct ble_cgms_evt evt = {
 		.evt_type = BLE_CGMS_EVT_ERROR,
+		.conn_handle = cgms->conn_handle,
 	};
 
 	/* Send indication */
@@ -93,13 +94,16 @@ static void racp_send(struct ble_cgms *cgms, struct ble_racp_value *racp_val)
 
 	nrf_err = ble_gq_item_add(cgms->gatt_queue, &cgms_req, cgms->conn_handle);
 
-	/* Report error to application */
-	if ((cgms->evt_handler != NULL) &&
-	    (nrf_err) &&
+	if ((nrf_err != NRF_SUCCESS) &&
 	    (nrf_err != NRF_ERROR_INVALID_STATE)) {
-		evt.error.reason = nrf_err;
-		cgms->evt_handler(cgms, &evt);
+		LOG_ERR("Failed to add item to gatt queue, nrf_error %#x", nrf_err);
+		/* Report error to application */
+		if (cgms->evt_handler != NULL) {
+			evt.error.reason = nrf_err;
+			cgms->evt_handler(cgms, &evt);
+		}
 	}
+
 }
 
 static void racp_response_code_send(struct ble_cgms *cgms, uint8_t racp_opcode, uint8_t value)
@@ -295,6 +299,7 @@ static void racp_report_records_procedure(struct ble_cgms *cgms)
 	uint32_t nrf_err = NRF_SUCCESS;
 	struct ble_cgms_evt evt = {
 		.evt_type = BLE_CGMS_EVT_ERROR,
+		.conn_handle = cgms->conn_handle,
 	};
 
 	while (cgms->racp_data.racp_processing_active) {
@@ -316,6 +321,7 @@ static void racp_report_records_procedure(struct ble_cgms *cgms)
 			nrf_err = racp_report_records_less_equal(cgms);
 			break;
 		default:
+			LOG_ERR("Unknown RACP operator %d", cgms->racp_data.racp_proc_operator);
 			/* Report error to application */
 			if (cgms->evt_handler != NULL) {
 				evt.error.reason = NRF_ERROR_INTERNAL;
@@ -344,6 +350,7 @@ static void racp_report_records_procedure(struct ble_cgms *cgms)
 			return;
 
 		default:
+			LOG_ERR("Unhandled RACP error, nrf_error %#x", nrf_err);
 			/* Report error to application. */
 			if (cgms->evt_handler != NULL) {
 				evt.error.reason = NRF_ERROR_INTERNAL;
@@ -592,6 +599,7 @@ void cgms_racp_on_rw_auth_req(struct ble_cgms *cgms,
 	uint32_t nrf_err;
 	struct ble_cgms_evt cgms_evt = {
 		.evt_type = BLE_CGMS_EVT_ERROR,
+		.conn_handle = cgms->conn_handle,
 	};
 	ble_gatts_rw_authorize_reply_params_t auth_reply = {
 		.type = BLE_GATTS_AUTHORIZE_TYPE_WRITE,
@@ -617,6 +625,7 @@ void cgms_racp_on_rw_auth_req(struct ble_cgms *cgms,
 
 	nrf_err = sd_ble_gatts_rw_authorize_reply(cgms->conn_handle, &auth_reply);
 	if (nrf_err) {
+		LOG_ERR("sd_ble_gatts_rw_authorize_reply failed, nrf_error %#x", nrf_err);
 		if (cgms->evt_handler != NULL) {
 			cgms_evt.error.reason = nrf_err;
 			cgms->evt_handler(cgms, &cgms_evt);
