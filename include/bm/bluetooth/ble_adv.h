@@ -74,10 +74,6 @@ enum ble_adv_mode {
  */
 enum ble_adv_evt_type {
 	/**
-	 * @brief Error.
-	 */
-	BLE_ADV_EVT_ERROR,
-	/**
 	 * @brief Idle; no connectable advertising is ongoing.
 	 */
 	BLE_ADV_EVT_IDLE,
@@ -120,7 +116,11 @@ enum ble_adv_evt_type {
 	 * for directed advertising by calling @ref ble_adv_peer_addr_reply. Otherwise, it can
 	 * ignore the event to let the device advertise in the next configured advertising mode.
 	 */
-	BLE_ADV_EVT_PEER_ADDR_REQUEST
+	BLE_ADV_EVT_PEER_ADDR_REQUEST,
+	/**
+	 * @brief Error.
+	 */
+	BLE_ADV_EVT_ERROR,
 };
 
 /** @brief Advertising event. */
@@ -130,6 +130,7 @@ struct ble_adv_evt {
 	union {
 		/** @ref BLE_ADV_EVT_ERROR event data. */
 		struct {
+			/** Error reason. */
 			uint32_t reason;
 		} error;
 	};
