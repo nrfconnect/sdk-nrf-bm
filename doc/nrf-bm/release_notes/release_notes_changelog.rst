@@ -175,6 +175,11 @@ Libraries
     * To use errno instead of nrf_errors.
     * The :c:func:`bm_storage_init` function to expect an additional input parameter of type pointer to struct :c:struct:`bm_storage_config` for configuring the storage instance that is being initialized.
 
+* :ref:`lib_ble_service_bas` service:
+
+  * Added the error event to align event handling with other services.
+    The event is currently unused.
+
 * :ref:`lib_ble_service_nus` service:
 
   * Fixed an issue where the client context was shared between all instances.
