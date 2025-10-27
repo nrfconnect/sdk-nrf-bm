@@ -42,19 +42,33 @@ struct ble_lbs;
 	NRF_SDH_BLE_OBSERVER(_name ## _obs, ble_lbs_on_ble_evt, &_name, BLE_LBS_BLE_OBSERVER_PRIO)
 
 enum ble_lbs_evt_type {
+	/**
+	 * @brief Error event.
+	 */
+	BLE_LBS_EVT_ERROR,
+	/**
+	 * @brief LED write event.
+	 */
 	BLE_LBS_EVT_LED_WRITE,
 };
 
 struct ble_lbs_evt {
 	enum ble_lbs_evt_type evt_type;
+	/**
+	 * @brief Connection handle for which the event applies.
+	 */
+	uint16_t conn_handle;
 	union {
 		/** @ref BLE_LBS_EVT_LED_WRITE event data. */
 		struct {
-			/** Connection handle */
-			uint16_t conn_handle;
 			/** Value to write */
 			uint8_t value;
 		} led_write;
+		/** @ref BLE_LBS_EVT_ERROR event data. */
+		struct {
+			/** Error reason. */
+			uint32_t reason;
+		} error;
 	};
 };
 
