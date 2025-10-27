@@ -97,22 +97,22 @@ endobj
 endobj
 19 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 57 0 R /XYZ 57.02362 206.0236 0 ] /Rect [ 77.02362 627.6236 117.6451 637.8236 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 57 0 R /XYZ 57.02362 176.0236 0 ] /Rect [ 77.02362 627.6236 117.6451 637.8236 ] /Subtype /Link /Type /Annot
 >>
 endobj
 20 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 57 0 R /XYZ 57.02362 206.0236 0 ] /Rect [ 533.526 628.2611 538.252 638.4611 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 57 0 R /XYZ 57.02362 176.0236 0 ] /Rect [ 533.526 628.2611 538.252 638.4611 ] /Subtype /Link /Type /Annot
 >>
 endobj
 21 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 58 0 R /XYZ 57.02362 549.0236 0 ] /Rect [ 77.02362 611.4236 129.9361 621.6236 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 58 0 R /XYZ 57.02362 519.0236 0 ] /Rect [ 77.02362 611.4236 129.9361 621.6236 ] /Subtype /Link /Type /Annot
 >>
 endobj
 22 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 58 0 R /XYZ 57.02362 549.0236 0 ] /Rect [ 533.526 612.0611 538.252 622.2611 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 58 0 R /XYZ 57.02362 519.0236 0 ] /Rect [ 533.526 612.0611 538.252 622.2611 ] /Subtype /Link /Type /Annot
 >>
 endobj
 23 0 obj
@@ -411,7 +411,7 @@ endobj
 endobj
 69 0 obj
 <<
-/Author () /CreationDate (D:20251024105536-01'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20251024105536-01'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
+/Author () /CreationDate (D:20251027163632-01'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20251027163632-01'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
   /Subject (\(unspecified\)) /Title (s115 release notes) /Trapped /False
 >>
 endobj
@@ -454,12 +454,12 @@ endobj
 endobj
 77 0 obj
 <<
-/Dest [ 57 0 R /XYZ 57.02362 206.0236 0 ] /Next 78 0 R /Parent 73 0 R /Prev 76 0 R /Title (Limitations)
+/Dest [ 57 0 R /XYZ 57.02362 176.0236 0 ] /Next 78 0 R /Parent 73 0 R /Prev 76 0 R /Title (Limitations)
 >>
 endobj
 78 0 obj
 <<
-/Dest [ 58 0 R /XYZ 57.02362 549.0236 0 ] /Parent 73 0 R /Prev 77 0 R /Title (Known Issues)
+/Dest [ 58 0 R /XYZ 57.02362 519.0236 0 ] /Parent 73 0 R /Prev 77 0 R /Title (Known Issues)
 >>
 endobj
 79 0 obj
@@ -970,7 +970,7 @@ endstream
 endobj
 98 0 obj
 <<
-/Length 8644
+/Length 8723
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
@@ -1320,7 +1320,7 @@ q
 1 0 0 1 23 -3 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The Firmware ID of this SoftDevice is 0x30B2.) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The Firmware ID of this SoftDevice is 0x30B5.) Tj T* ET
 Q
 Q
 q
@@ -1349,32 +1349,32 @@ q
 1 0 0 1 57.02362 320.0236 cm
 Q
 q
-1 0 0 1 57.02362 274.0236 cm
+1 0 0 1 57.02362 244.0236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
 q
-1 0 0 1 6 31 cm
+1 0 0 1 6 61 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
 Q
 Q
 q
-1 0 0 1 23 31 cm
+1 0 0 1 23 61 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (SoftDevice) Tj T* ET
 Q
 Q
 q
-1 0 0 1 23 25 cm
+1 0 0 1 23 55 cm
 Q
 q
-1 0 0 1 23 25 cm
+1 0 0 1 23 55 cm
 Q
 q
-1 0 0 1 23 1 cm
+1 0 0 1 23 31 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1396,6 +1396,31 @@ Q
 Q
 Q
 q
+1 0 0 1 23 25 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (A new field ) Tj /F5 10 Tf (hfint_ctiv) Tj /F1 10 Tf ( has been added to ) Tj /F5 10 Tf (nrf_clock_lf_cfg_t) Tj /F1 10 Tf ( to control how often HFINT) Tj T* (is calibrated \(DRGN-26506\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
 1 0 0 1 23 -3 cm
 Q
 q
@@ -1403,10 +1428,10 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 268.0236 cm
+1 0 0 1 57.02362 238.0236 cm
 Q
 q
-1 0 0 1 57.02362 222.0236 cm
+1 0 0 1 57.02362 192.0236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1460,19 +1485,19 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 218.0236 cm
+1 0 0 1 57.02362 188.0236 cm
 Q
 q
-1 0 0 1 57.02362 188.0236 cm
+1 0 0 1 57.02362 158.0236 cm
 q
 BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Limitations) Tj T* ET
 Q
 Q
 q
-1 0 0 1 57.02362 176.0236 cm
+1 0 0 1 57.02362 146.0236 cm
 Q
 q
-1 0 0 1 57.02362 176.0236 cm
+1 0 0 1 57.02362 146.0236 cm
 Q
 q
 1 0 0 1 57.02362 98.02362 cm
@@ -1480,47 +1505,21 @@ q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
 q
-1 0 0 1 6 63 cm
+1 0 0 1 6 33 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
 Q
 Q
 q
-1 0 0 1 23 63 cm
+1 0 0 1 23 33 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (SoftDevice) Tj T* ET
 Q
 Q
 q
-1 0 0 1 23 57 cm
-Q
-q
-1 0 0 1 23 57 cm
-Q
-q
-1 0 0 1 23 33 cm
-q
-0 0 0 rg
-BT /F1 10 Tf 12 TL ET
-q
-1 0 0 1 6 9 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
-Q
-Q
-q
-1 0 0 1 23 -3 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (If Radio Notifications are enabled, flash write and flash erase operations initiated through the) Tj T* (SoftDevice API will be notified to the application as Radio Events \(DRGN-5197\).) Tj T* ET
-Q
-Q
-q
-Q
-Q
+1 0 0 1 23 27 cm
 Q
 q
 1 0 0 1 23 27 cm
@@ -1541,7 +1540,7 @@ q
 1 0 0 1 23 -3 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (Synthesized low frequency clock source is not tested or intended for use with the Bluetooth LE) Tj T* (stack.) Tj T* ET
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (If Radio Notifications are enabled, flash write and flash erase operations initiated through the) Tj T* (SoftDevice API will be notified to the application as Radio Events \(DRGN-5197\).) Tj T* ET
 Q
 Q
 q
@@ -1566,16 +1565,42 @@ endstream
 endobj
 99 0 obj
 <<
-/Length 4183
+/Length 4553
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
 q
-1 0 0 1 57.02362 617.0236 cm
+1 0 0 1 57.02362 587.0236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
-BT 1 0 0 1 6 135 Tm  T* ET
+BT 1 0 0 1 6 165 Tm  T* ET
+q
+1 0 0 1 23 151 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (Synthesized low frequency clock source is not tested or intended for use with the Bluetooth LE) Tj T* (stack.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 145 cm
+Q
 q
 1 0 0 1 23 109 cm
 q
@@ -1657,10 +1682,10 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 611.0236 cm
+1 0 0 1 57.02362 581.0236 cm
 Q
 q
-1 0 0 1 57.02362 565.0236 cm
+1 0 0 1 57.02362 535.0236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1715,22 +1740,22 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 561.0236 cm
+1 0 0 1 57.02362 531.0236 cm
 Q
 q
-1 0 0 1 57.02362 531.0236 cm
+1 0 0 1 57.02362 501.0236 cm
 q
 BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Known Issues) Tj T* ET
 Q
 Q
 q
-1 0 0 1 57.02362 519.0236 cm
+1 0 0 1 57.02362 489.0236 cm
 Q
 q
-1 0 0 1 57.02362 519.0236 cm
+1 0 0 1 57.02362 489.0236 cm
 Q
 q
-1 0 0 1 57.02362 507.0236 cm
+1 0 0 1 57.02362 477.0236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1753,10 +1778,10 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 501.0236 cm
+1 0 0 1 57.02362 471.0236 cm
 Q
 q
-1 0 0 1 57.02362 443.0236 cm
+1 0 0 1 57.02362 413.0236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1810,10 +1835,10 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 439.0236 cm
+1 0 0 1 57.02362 409.0236 cm
 Q
 q
-1 0 0 1 57.02362 439.0236 cm
+1 0 0 1 57.02362 409.0236 cm
 Q
 q
 1 0 0 1 51.02362 42.51969 cm
@@ -5611,34 +5636,34 @@ xref
 0000015559 00000 n 
 0000017419 00000 n 
 0000023293 00000 n 
-0000031989 00000 n 
-0000036224 00000 n 
-0000045284 00000 n 
-0000053703 00000 n 
-0000055263 00000 n 
-0000064315 00000 n 
-0000072813 00000 n 
-0000073725 00000 n 
-0000082671 00000 n 
-0000091842 00000 n 
-0000094279 00000 n 
-0000094451 00000 n 
-0000094486 00000 n 
-0000094521 00000 n 
-0000094556 00000 n 
-0000094591 00000 n 
-0000094626 00000 n 
-0000094661 00000 n 
-0000094696 00000 n 
-0000094731 00000 n 
-0000094766 00000 n 
-0000094802 00000 n 
-0000094838 00000 n 
-0000094874 00000 n 
+0000032068 00000 n 
+0000036673 00000 n 
+0000045733 00000 n 
+0000054152 00000 n 
+0000055712 00000 n 
+0000064764 00000 n 
+0000073262 00000 n 
+0000074174 00000 n 
+0000083120 00000 n 
+0000092291 00000 n 
+0000094728 00000 n 
+0000094900 00000 n 
+0000094935 00000 n 
+0000094970 00000 n 
+0000095005 00000 n 
+0000095040 00000 n 
+0000095075 00000 n 
+0000095110 00000 n 
+0000095145 00000 n 
+0000095180 00000 n 
+0000095215 00000 n 
+0000095251 00000 n 
+0000095287 00000 n 
+0000095323 00000 n 
 trailer
 <<
 /ID 
-[<c2efaf8bf362f6780b8fb10e45ee47b9><c2efaf8bf362f6780b8fb10e45ee47b9>]
+[<3a9b7695c6750dbbd6549c6c36374df3><3a9b7695c6750dbbd6549c6c36374df3>]
 % ReportLab generated PDF document -- digest (http://www.reportlab.com)
 
 /Info 69 0 R
@@ -5646,5 +5671,5 @@ trailer
 /Size 123
 >>
 startxref
-94910
+95359
 %%EOF
