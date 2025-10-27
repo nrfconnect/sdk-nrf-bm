@@ -120,8 +120,10 @@ static void on_connect(struct ble_hids *hids, ble_evt_t const *ble_evt)
 		struct ble_hids_evt evt = {
 			.evt_type = BLE_HIDS_EVT_ERROR,
 			.params.error.reason = nrf_err,
+			.conn_handle = ble_evt->evt.gap_evt.conn_handle,
 		};
 
+		LOG_ERR("Failed to get link context, nrf_error %#x", nrf_err);
 		hids->evt_handler(hids, &evt);
 	}
 
@@ -149,8 +151,10 @@ static void on_connect(struct ble_hids *hids, ble_evt_t const *ble_evt)
 			struct ble_hids_evt evt = {
 				.evt_type = BLE_HIDS_EVT_ERROR,
 				.params.error.reason = nrf_err,
+				.conn_handle = ble_evt->evt.gap_evt.conn_handle,
 			};
 
+			LOG_ERR("Failed to set GATTS value, nrf_error %#x", nrf_err);
 			hids->evt_handler(hids, &evt);
 		}
 	}
@@ -167,8 +171,10 @@ static void on_control_point_write(struct ble_hids *hids, ble_evt_t const *ble_e
 		struct ble_hids_evt evt = {
 			.evt_type = BLE_HIDS_EVT_ERROR,
 			.params.error.reason = nrf_err,
+			.conn_handle = ble_evt->evt.gatts_evt.conn_handle,
 		};
 
+		LOG_ERR("Failed to get link context, nrf_error %#x", nrf_err);
 		hids->evt_handler(hids, &evt);
 	}
 
@@ -177,7 +183,9 @@ static void on_control_point_write(struct ble_hids *hids, ble_evt_t const *ble_e
 	}
 
 	if (evt_write->len == 1) {
-		struct ble_hids_evt evt;
+		struct ble_hids_evt evt = {
+			.conn_handle = ble_evt->evt.gatts_evt.conn_handle,
+		};
 
 		switch (evt_write->data[0]) {
 		case HIDS_CONTROL_POINT_SUSPEND:
@@ -215,8 +223,10 @@ static void on_protocol_mode_write(struct ble_hids *hids, ble_evt_t const *ble_e
 		struct ble_hids_evt evt = {
 			.evt_type = BLE_HIDS_EVT_ERROR,
 			.params.error.reason = nrf_err,
+			.conn_handle = ble_evt->evt.gatts_evt.conn_handle,
 		};
 
+		LOG_ERR("Failed to get link context, nrf_error %#x", nrf_err);
 		hids->evt_handler(hids, &evt);
 	}
 
@@ -225,7 +235,9 @@ static void on_protocol_mode_write(struct ble_hids *hids, ble_evt_t const *ble_e
 	}
 
 	if (evt_write->len == 1) {
-		struct ble_hids_evt evt;
+		struct ble_hids_evt evt = {
+			.conn_handle = ble_evt->evt.gatts_evt.conn_handle,
+		};
 
 		switch (evt_write->data[0]) {
 		case PROTOCOL_MODE_BOOT:
@@ -265,8 +277,10 @@ void on_protocol_mode_read_auth(struct ble_hids *hids, ble_evt_t const *ble_evt)
 		struct ble_hids_evt evt = {
 			.evt_type = BLE_HIDS_EVT_ERROR,
 			.params.error.reason = nrf_err,
+			.conn_handle = ble_evt->evt.gatts_evt.conn_handle,
 		};
 
+		LOG_ERR("Failed to get link context, nrf_error %#x", nrf_err);
 		hids->evt_handler(hids, &evt);
 	}
 
@@ -287,8 +301,10 @@ void on_protocol_mode_read_auth(struct ble_hids *hids, ble_evt_t const *ble_evt)
 			struct ble_hids_evt evt = {
 				.evt_type = BLE_HIDS_EVT_ERROR,
 				.params.error.reason = nrf_err,
+				.conn_handle = ble_evt->evt.gatts_evt.conn_handle,
 			};
 
+			LOG_ERR("Failed to authorize rw request, nrf_error %#x", nrf_err);
 			hids->evt_handler(hids, &evt);
 		}
 	}
@@ -302,7 +318,9 @@ static void on_report_cccd_write(struct ble_hids *hids, struct ble_hids_char_id 
 	if (evt_write->len == 2) {
 		/* CCCD written, update notification state */
 		if (hids->evt_handler != NULL) {
-			struct ble_hids_evt evt;
+			struct ble_hids_evt evt = {
+				.conn_handle = ble_evt->evt.gatts_evt.conn_handle,
+			};
 
 			if (is_notification_enabled(evt_write->data)) {
 				evt.evt_type = BLE_HIDS_EVT_NOTIF_ENABLED;
@@ -332,8 +350,10 @@ static void on_report_value_write(struct ble_hids *hids, ble_evt_t const *ble_ev
 		struct ble_hids_evt evt = {
 			.evt_type = BLE_HIDS_EVT_ERROR,
 			.params.error.reason = nrf_err,
+			.conn_handle = ble_evt->evt.gatts_evt.conn_handle,
 		};
 
+		LOG_ERR("Failed to get link context, nrf_error %#x", nrf_err);
 		hids->evt_handler(hids, &evt);
 	}
 
@@ -347,7 +367,9 @@ static void on_report_value_write(struct ble_hids *hids, ble_evt_t const *ble_ev
 
 	/* Notify the applicartion */
 	if (hids->evt_handler != NULL) {
-		struct ble_hids_evt evt;
+		struct ble_hids_evt evt = {
+			.conn_handle = ble_evt->evt.gatts_evt.conn_handle,
+		};
 
 		evt.evt_type = BLE_HIDS_EVT_REP_CHAR_WRITE;
 		evt.params.char_write.char_id = *char_id;
@@ -375,8 +397,10 @@ static void on_report_value_read_auth(struct ble_hids *hids, struct ble_hids_cha
 		struct ble_hids_evt evt = {
 			.evt_type = BLE_HIDS_EVT_ERROR,
 			.params.error.reason = nrf_err,
+			.conn_handle = ble_evt->evt.gatts_evt.conn_handle,
 		};
 
+		LOG_ERR("Failed to get link context, nrf_error %#x", nrf_err);
 		hids->evt_handler(hids, &evt);
 	}
 
@@ -400,8 +424,10 @@ static void on_report_value_read_auth(struct ble_hids *hids, struct ble_hids_cha
 			struct ble_hids_evt evt = {
 				.evt_type = BLE_HIDS_EVT_ERROR,
 				.params.error.reason = nrf_err,
+				.conn_handle = ble_evt->evt.gap_evt.conn_handle,
 			};
 
+			LOG_ERR("Failed to authorize rw request, nrf_error %#x", nrf_err);
 			hids->evt_handler(hids, &evt);
 		}
 	} else {
@@ -409,7 +435,9 @@ static void on_report_value_read_auth(struct ble_hids *hids, struct ble_hids_cha
 	}
 
 	if (hids->evt_handler != NULL) {
-		struct ble_hids_evt evt;
+		struct ble_hids_evt evt = {
+			.conn_handle = ble_evt->evt.gap_evt.conn_handle,
+		};
 
 		evt.evt_type = BLE_HIDS_EVT_REPORT_READ;
 		evt.params.char_auth_read.char_id = *char_id;
