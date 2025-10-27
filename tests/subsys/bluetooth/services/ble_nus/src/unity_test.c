@@ -85,47 +85,49 @@ static uint32_t stub_sd_ble_gatts_value_get_err(uint16_t conn_handle, uint16_t h
 	}
 }
 
-static void ble_nus_evt_handler_on_connect(const struct ble_nus_evt *evt)
+static void ble_nus_evt_handler_on_connect(struct ble_nus *nus, const struct ble_nus_evt *evt)
 {
 	last_link_ctx = evt->link_ctx;
-	TEST_ASSERT_EQUAL(BLE_NUS_EVT_COMM_STARTED, evt->type);
+	TEST_ASSERT_EQUAL(BLE_NUS_EVT_COMM_STARTED, evt->evt_type);
 	TEST_ASSERT_TRUE(evt->link_ctx->is_notification_enabled);
 	evt_handler_called = true;
 }
 
-static void ble_nus_evt_handler_on_connect_null_ctx(const struct ble_nus_evt *evt)
+static void ble_nus_evt_handler_on_connect_null_ctx(struct ble_nus *nus,
+						    const struct ble_nus_evt *evt)
 {
-	TEST_ASSERT_EQUAL(BLE_NUS_EVT_COMM_STARTED, evt->type);
+	TEST_ASSERT_EQUAL(BLE_NUS_EVT_ERROR, evt->evt_type);
 	TEST_ASSERT_NULL(evt->link_ctx);
 	evt_handler_called = true;
 }
 
-static void ble_nus_evt_handler_on_write_notif(const struct ble_nus_evt *evt)
+static void ble_nus_evt_handler_on_write_notif(struct ble_nus *nus, const struct ble_nus_evt *evt)
 {
-	TEST_ASSERT_EQUAL(BLE_NUS_EVT_COMM_STARTED, evt->type);
+	TEST_ASSERT_EQUAL(BLE_NUS_EVT_COMM_STARTED, evt->evt_type);
 	TEST_ASSERT_TRUE(evt->link_ctx->is_notification_enabled);
 	evt_handler_called = true;
 }
 
-static void ble_nus_evt_handler_on_write_indica(const struct ble_nus_evt *evt)
+static void ble_nus_evt_handler_on_write_indica(struct ble_nus *nus, const struct ble_nus_evt *evt)
 {
-	TEST_ASSERT_EQUAL(BLE_NUS_EVT_COMM_STOPPED, evt->type);
+	TEST_ASSERT_EQUAL(BLE_NUS_EVT_COMM_STOPPED, evt->evt_type);
 	TEST_ASSERT_FALSE(evt->link_ctx->is_notification_enabled);
 	evt_handler_called = true;
 }
 
-static void ble_nus_evt_handler_on_write_value(const struct ble_nus_evt *evt)
+static void ble_nus_evt_handler_on_write_value(struct ble_nus *nus, const struct ble_nus_evt *evt)
 {
-	TEST_ASSERT_EQUAL(BLE_NUS_EVT_RX_DATA, evt->type);
-	TEST_ASSERT_EQUAL(0xAB, evt->params.rx_data.data[0]);
-	TEST_ASSERT_EQUAL(0xCD, evt->params.rx_data.data[1]);
-	TEST_ASSERT_EQUAL(2, evt->params.rx_data.length);
+	TEST_ASSERT_EQUAL(BLE_NUS_EVT_RX_DATA, evt->evt_type);
+	TEST_ASSERT_EQUAL(0xAB, evt->rx_data.data[0]);
+	TEST_ASSERT_EQUAL(0xCD, evt->rx_data.data[1]);
+	TEST_ASSERT_EQUAL(2, evt->rx_data.length);
 	evt_handler_called = true;
 }
 
-static void ble_nus_evt_handler_on_hvx_tx_complete(const struct ble_nus_evt *evt)
+static void ble_nus_evt_handler_on_hvx_tx_complete(struct ble_nus *nus,
+						   const struct ble_nus_evt *evt)
 {
-	TEST_ASSERT_EQUAL(BLE_NUS_EVT_TX_RDY, evt->type);
+	TEST_ASSERT_EQUAL(BLE_NUS_EVT_TX_RDY, evt->evt_type);
 	TEST_ASSERT_EQUAL_PTR(last_link_ctx, evt->link_ctx);
 	evt_handler_called = true;
 }
@@ -323,11 +325,11 @@ void test_ble_nus_on_ble_evt_gap_evt_on_write(void)
 	TEST_ASSERT_TRUE(evt_handler_called);
 
 	evt_handler_called = false;
-	ble_nus.evt_handler = ble_nus_evt_handler_on_write_indica;
+	ble_nus.evt_handler = ble_nus_evt_handler_on_connect_null_ctx;
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(test_case_conn_handle, -1);
 
 	ble_nus_on_ble_evt(&ble_evt, &ble_nus);
-	TEST_ASSERT_FALSE(evt_handler_called);
+	TEST_ASSERT_TRUE(evt_handler_called);
 
 	uint8_t *const data_ptr = ble_evt.evt.gatts_evt.params.write.data;
 

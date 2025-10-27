@@ -67,26 +67,26 @@ void ble_nus_on_ble_evt(ble_evt_t const *ble_evt, void *context);
 
 /** @brief Nordic UART Service event types. */
 enum ble_nus_evt_type {
-	/** Data received. */
+	/**
+	 * @brief Data received.
+	 */
 	BLE_NUS_EVT_RX_DATA,
-	/** Service is ready to accept new data to be transmitted. */
+	/**
+	 * @brief Service is ready to accept new data to be transmitted.
+	 */
 	BLE_NUS_EVT_TX_RDY,
-	/** Notification has been enabled. */
+	/**
+	 * @brief Notification has been enabled.
+	 */
 	BLE_NUS_EVT_COMM_STARTED,
-	/** Notification has been disabled. */
+	/**
+	 * @brief Notification has been disabled.
+	 */
 	BLE_NUS_EVT_COMM_STOPPED,
-};
-
-/**
- * @brief Nordic UART Service @ref BLE_NUS_EVT_RX_DATA event data.
- *
- * @details This structure is passed to an event when @ref BLE_NUS_EVT_RX_DATA occurs.
- */
-struct ble_nus_evt_rx_data {
-	/** Pointer to the buffer with received data. */
-	uint8_t const *data;
-	/** Length of received data. */
-	uint16_t length;
+	/**
+	 * @brief Error event.
+	 */
+	BLE_NUS_EVT_ERROR,
 };
 
 /**
@@ -106,21 +106,31 @@ struct ble_nus_client_context {
  */
 struct ble_nus_evt {
 	/** Event type. */
-	enum ble_nus_evt_type type;
-	/** Pointer to the instance. */
-	struct ble_nus *nus;
+	enum ble_nus_evt_type evt_type;
 	/** Connection handle. */
 	uint16_t conn_handle;
 	/** Pointer to the link context. */
 	struct ble_nus_client_context *link_ctx;
 	union {
 		/** @ref BLE_NUS_EVT_RX_DATA event data. */
-		struct ble_nus_evt_rx_data rx_data;
-	} params;
+		struct {
+			/** Pointer to the buffer with received data. */
+			uint8_t const *data;
+			/** Length of received data. */
+			uint16_t length;
+		} rx_data;
+		/** @ref BLE_BAS_EVT_ERROR event data. */
+		struct {
+			/** Error reason. */
+			uint32_t reason;
+		} error;
+	};
 };
 
+struct ble_nus;
+
 /** @brief Nordic UART Service event handler type. */
-typedef void (*ble_nus_evt_handler_t) (const struct ble_nus_evt *evt);
+typedef void (*ble_nus_evt_handler_t)(struct ble_nus *nus, const struct ble_nus_evt *evt);
 
 /*
  * @brief Nordic UART Service initialization structure.
