@@ -201,6 +201,10 @@ struct ble_hids_char_id {
  */
 enum ble_hids_evt_type {
 	/**
+	 * @brief Error.
+	 */
+	BLE_HIDS_EVT_ERROR,
+	/**
 	 * @brief Suspend command received.
 	 */
 	BLE_HIDS_EVT_HOST_SUSP,
@@ -232,10 +236,6 @@ enum ble_hids_evt_type {
 	 * @brief Read with response.
 	 */
 	BLE_HIDS_EVT_REPORT_READ,
-	/**
-	 * @brief Error.
-	 */
-	BLE_HIDS_EVT_ERROR,
 };
 
 /**
@@ -246,6 +246,10 @@ struct ble_hids_evt {
 	 * @brief Event type.
 	 */
 	enum ble_hids_evt_type evt_type;
+	/**
+	 * @brief Connection handle for which the event applies.
+	 */
+	uint16_t conn_handle;
 	/**
 	 * @brief BLE event.
 	 */
