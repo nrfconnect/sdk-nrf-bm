@@ -40,6 +40,10 @@ static void data_length_update(uint16_t conn_handle, int idx)
 		.max_rx_time_us = BLE_GAP_DATA_LENGTH_AUTO,
 	};
 	ble_gap_data_length_limitation_t dll = {0};
+	struct ble_conn_params_evt app_evt = {
+		.id = BLE_CONN_PARAMS_EVT_ERROR,
+		.conn_handle = conn_handle,
+	};
 
 	do {
 		retry = false;
@@ -72,10 +76,16 @@ static void data_length_update(uint16_t conn_handle, int idx)
 				LOG_ERR("The requested combination of TX and RX packet lengths "
 					"is too long by %u microseconds.",
 					dll.tx_rx_time_limited_us);
+
+				app_evt.error.reason = nrf_err;
+				ble_conn_params_event_send(&app_evt);
 			}
 		} else if (nrf_err) {
 			LOG_ERR("Failed to initiate or respond to Data Length Update procedure, "
 				"nrf_error %#x", nrf_err);
+
+			app_evt.error.reason = nrf_err;
+			ble_conn_params_event_send(&app_evt);
 		}
 	} while (retry);
 }

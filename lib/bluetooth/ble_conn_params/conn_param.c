@@ -34,6 +34,10 @@ static struct {
 static void conn_params_negotiate(uint16_t conn_handle, int idx)
 {
 	uint32_t nrf_err;
+	struct ble_conn_params_evt app_evt = {
+		.id = BLE_CONN_PARAMS_EVT_ERROR,
+		.conn_handle = conn_handle,
+	};
 
 	LOG_DBG("Negotiating desired parameters with peer %#x", conn_handle);
 
@@ -41,6 +45,9 @@ static void conn_params_negotiate(uint16_t conn_handle, int idx)
 	if (nrf_err) {
 		LOG_ERR("Failed to request GAP connection parameters update, nrf_error %#x",
 			nrf_err);
+
+		app_evt.error.reason = nrf_err;
+		ble_conn_params_event_send(&app_evt);
 	}
 }
 
@@ -174,6 +181,10 @@ NRF_SDH_BLE_OBSERVER(ble_observer, on_ble_evt, NULL, 0);
 static void on_state_evt(enum nrf_sdh_state_evt evt, void *ctx)
 {
 	uint32_t nrf_err;
+	struct ble_conn_params_evt app_evt = {
+		.id = BLE_CONN_PARAMS_EVT_ERROR,
+		.conn_handle = BLE_CONN_HANDLE_INVALID,
+	};
 
 	if (evt != NRF_SDH_STATE_EVT_BLE_ENABLED) {
 		return;
@@ -182,6 +193,10 @@ static void on_state_evt(enum nrf_sdh_state_evt evt, void *ctx)
 	nrf_err = sd_ble_gap_ppcp_set(&ppcp);
 	if (nrf_err) {
 		LOG_ERR("Failed to set preferred conn params, nrf_error %#x", nrf_err);
+
+		app_evt.error.reason = nrf_err;
+		ble_conn_params_event_send(&app_evt);
+
 		return;
 	}
 

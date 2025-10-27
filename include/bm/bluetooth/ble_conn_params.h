@@ -26,6 +26,10 @@ extern "C" {
  */
 enum ble_conn_params_evt_id {
 	/**
+	 * @brief Error.
+	 */
+	BLE_CONN_PARAMS_EVT_ERROR,
+	/**
 	 * @brief Connection parameters updated.
 	 */
 	BLE_CONN_PARAMS_EVT_UPDATED,
@@ -74,6 +78,13 @@ struct ble_conn_params_evt {
 	 */
 	uint16_t conn_handle;
 	union {
+		/** @ref BLE_CONN_PARAMS_EVT_ERROR event data. */
+		struct {
+			/**
+			 * @brief Error reason.
+			 */
+			uint32_t reason;
+		} error;
 		/**
 		 * @brief Negotiated connection parameters.
 		 *
