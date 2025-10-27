@@ -136,6 +136,7 @@ struct ble_adv_evt {
 	union {
 		/** @ref BLE_ADV_EVT_ERROR event data. */
 		struct {
+			/** Error reason. */
 			uint32_t reason;
 		} error;
 	};
