@@ -36,13 +36,17 @@ extern "C" {
  */
 enum ble_bas_evt_type {
 	/**
+	 * @brief Error event.
+	 */
+	BLE_BAS_EVT_ERROR,
+	/**
 	 * @brief Battery level notification enabled.
 	 */
 	BLE_BAS_EVT_NOTIFICATION_ENABLED,
 	/**
 	 * @brief Battery level notification disabled.
 	 */
-	BLE_BAS_EVT_NOTIFICATION_DISABLED
+	BLE_BAS_EVT_NOTIFICATION_DISABLED,
 };
 
 /**
@@ -57,6 +61,13 @@ struct  ble_bas_evt {
 	 * @brief Connection handle for which the event applies.
 	 */
 	uint16_t conn_handle;
+	union {
+		/** @ref BLE_BAS_EVT_ERROR event data. */
+		struct {
+			/** Error reason. */
+			uint32_t reason;
+		} error;
+	};
 };
 
 /* Forward declaration */

@@ -120,6 +120,11 @@ Libraries
      * All instances of ``pm_failure_evt_t`` to struct :c:struct:`pm_failure_evt` and removed the ``pm_failure_evt_t`` type.
      * All instances of ``pm_evt_t`` to struct :c:struct:`pm_evt` and removed the ``pm_evt_t`` type.
 
+* :ref:`lib_ble_service_bas` service:
+
+  * Added the error event to align event handling with other services.
+    The event is currently unused.
+
 * :ref:`lib_ble_service_nus` service:
 
   * Added the error event to align event handling with other services.
