@@ -180,6 +180,11 @@ Libraries
   * Added the error event to align event handling with other services.
     The event is currently unused.
 
+* :ref:`lib_ble_service_hrs` service:
+
+  * Added the error event to align event handling with other services.
+    The event is currently unused.
+
 * :ref:`lib_ble_service_nus` service:
 
   * Fixed an issue where the client context was shared between all instances.
