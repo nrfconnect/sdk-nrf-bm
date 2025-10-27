@@ -21,7 +21,7 @@ static void on_write(struct ble_lbs *lbs, const ble_evt_t *ble_evt)
 	ble_gatts_evt_t const *gatts_evt = &ble_evt->evt.gatts_evt;
 	struct ble_lbs_evt lbs_evt = {
 		.evt_type = BLE_LBS_EVT_LED_WRITE,
-		.led_write.conn_handle = gatts_evt->conn_handle,
+		.conn_handle = gatts_evt->conn_handle,
 	};
 
 	if ((gatts_evt->params.write.handle != lbs->led_char_handles.value_handle) ||
