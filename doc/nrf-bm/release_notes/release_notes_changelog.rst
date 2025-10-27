@@ -178,6 +178,8 @@ Libraries
 * :ref:`lib_ble_service_nus` service:
 
   * Fixed an issue where the client context was shared between all instances.
+  * Added the error event to align event handling with other services.
+  * Updated the name of the ``type`` member in the :c:struct:`ble_nus_evt` structure to :c:member:`ble_nus_evt.evt_type`.
 
 Samples
 =======

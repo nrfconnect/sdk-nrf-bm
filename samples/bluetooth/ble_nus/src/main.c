@@ -316,34 +316,38 @@ uint16_t ble_qwr_evt_handler(struct ble_qwr *qwr, const struct ble_qwr_evt *qwr_
  *
  * @param[in] evt NUS event parameters.
  */
-static void ble_nus_evt_handler(const struct ble_nus_evt *evt)
+static void ble_nus_evt_handler(struct ble_nus *nus, const struct ble_nus_evt *evt)
 {
 	const char newline = '\n';
 	nrfx_err_t nrfx_err;
 
-	if (evt->type != BLE_NUS_EVT_RX_DATA) {
+	if (evt->evt_type == BLE_NUS_EVT_ERROR) {
+		LOG_ERR("NUS error event, error %d", evt->error.reason);
+	}
+
+	if (evt->evt_type != BLE_NUS_EVT_RX_DATA) {
 		return;
 	}
 
 	/* Handle incoming data */
 	LOG_DBG("Received data from BLE NUS: %.*s (%d)",
-		evt->params.rx_data.length, evt->params.rx_data.data, evt->params.rx_data.length);
+		evt->rx_data.length, evt->rx_data.data, evt->rx_data.length);
 
 #if defined(CONFIG_APP_NUS_LPUARTE)
-	nrfx_err = bm_lpuarte_tx(&lpu, evt->params.rx_data.data, evt->params.rx_data.length, 3000);
+	nrfx_err = bm_lpuarte_tx(&lpu, evt->rx_data.data, evt->rx_data.length, 3000);
 	if (nrfx_err != NRFX_SUCCESS) {
 		LOG_ERR("bm_lpuarte_tx failed, nrfx_err %#x", nrfx_err);
 	}
 #else
-		nrfx_err = nrfx_uarte_tx(&nus_uarte_inst, evt->params.rx_data.data,
-				    evt->params.rx_data.length, NRFX_UARTE_TX_BLOCKING);
+		nrfx_err = nrfx_uarte_tx(&nus_uarte_inst, evt->rx_data.data,
+				    evt->rx_data.length, NRFX_UARTE_TX_BLOCKING);
 		if (nrfx_err != NRFX_SUCCESS) {
 			LOG_ERR("nrfx_uarte_tx failed, nrfx_err %#x", nrfx_err);
 		}
 #endif
 
 
-	if (evt->params.rx_data.data[evt->params.rx_data.length - 1] == '\r') {
+	if (evt->rx_data.data[evt->rx_data.length - 1] == '\r') {
 #if defined(CONFIG_APP_NUS_LPUARTE)
 		bm_lpuarte_tx(&lpu, &newline, 1, 3000);
 #else

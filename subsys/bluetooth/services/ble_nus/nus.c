@@ -104,8 +104,7 @@ static void on_connect(struct ble_nus *nus, ble_evt_t const *ble_evt)
 	uint32_t nrf_err;
 	const uint16_t conn_handle = ble_evt->evt.gap_evt.conn_handle;
 	struct ble_nus_evt evt = {
-		.type = BLE_NUS_EVT_COMM_STARTED,
-		.nus = nus,
+		.evt_type = BLE_NUS_EVT_COMM_STARTED,
 		.conn_handle = conn_handle,
 	};
 	uint8_t cccd_value[2];
@@ -119,6 +118,11 @@ static void on_connect(struct ble_nus *nus, ble_evt_t const *ble_evt)
 	ctx = ble_nus_client_context_get(nus, conn_handle);
 	if (ctx == NULL) {
 		LOG_ERR("Could not fetch nus context for connection handle %#x", conn_handle);
+		evt.evt_type = BLE_NUS_EVT_ERROR;
+		evt.error.reason = NRF_ERROR_NOT_FOUND;
+		if (nus->evt_handler != NULL) {
+			nus->evt_handler(nus, &evt);
+		}
 	}
 
 	/* Check the hosts CCCD value to inform of readiness to send data using the
@@ -132,7 +136,7 @@ static void on_connect(struct ble_nus *nus, ble_evt_t const *ble_evt)
 		}
 
 		evt.link_ctx = ctx;
-		nus->evt_handler(&evt);
+		nus->evt_handler(nus, &evt);
 	}
 }
 
@@ -147,7 +151,6 @@ static void on_write(struct ble_nus *nus, ble_evt_t const *ble_evt)
 	const uint16_t conn_handle = ble_evt->evt.gatts_evt.conn_handle;
 	const ble_gatts_evt_write_t *evt_write = &ble_evt->evt.gatts_evt.params.write;
 	struct ble_nus_evt evt = {
-		.nus = nus,
 		.conn_handle = conn_handle,
 	};
 	struct ble_nus_client_context *ctx;
@@ -155,6 +158,11 @@ static void on_write(struct ble_nus *nus, ble_evt_t const *ble_evt)
 	ctx = ble_nus_client_context_get(nus, conn_handle);
 	if (ctx == NULL) {
 		LOG_ERR("Could not fetch nus context for connection handle %#x", conn_handle);
+		evt.evt_type = BLE_NUS_EVT_ERROR;
+		evt.error.reason = NRF_ERROR_NOT_FOUND;
+		if (nus->evt_handler != NULL) {
+			nus->evt_handler(nus, &evt);
+		}
 	}
 
 	LOG_DBG("Link ctx %p", ctx);
@@ -164,23 +172,23 @@ static void on_write(struct ble_nus *nus, ble_evt_t const *ble_evt)
 		if (ctx != NULL) {
 			if (is_notification_enabled(evt_write->data)) {
 				ctx->is_notification_enabled = true;
-				evt.type = BLE_NUS_EVT_COMM_STARTED;
+				evt.evt_type = BLE_NUS_EVT_COMM_STARTED;
 			} else {
 				ctx->is_notification_enabled = false;
-				evt.type = BLE_NUS_EVT_COMM_STOPPED;
+				evt.evt_type = BLE_NUS_EVT_COMM_STOPPED;
 			}
 
 			if (nus->evt_handler != NULL) {
-				nus->evt_handler(&evt);
+				nus->evt_handler(nus, &evt);
 			}
 		}
 	} else if ((evt_write->handle == nus->rx_handles.value_handle) &&
 		   (nus->evt_handler != NULL)) {
-		evt.type = BLE_NUS_EVT_RX_DATA;
-		evt.params.rx_data.data = evt_write->data;
-		evt.params.rx_data.length = evt_write->len;
+		evt.evt_type = BLE_NUS_EVT_RX_DATA;
+		evt.rx_data.data = evt_write->data;
+		evt.rx_data.length = evt_write->len;
 
-		nus->evt_handler(&evt);
+		nus->evt_handler(nus, &evt);
 	} else {
 		/* Do nothing. This event is not relevant for this service. */
 	}
@@ -196,8 +204,7 @@ static void on_hvx_tx_complete(struct ble_nus *nus, ble_evt_t const *ble_evt)
 {
 	const uint16_t conn_handle = ble_evt->evt.gatts_evt.conn_handle;
 	struct ble_nus_evt evt = {
-		.type = BLE_NUS_EVT_TX_RDY,
-		.nus = nus,
+		.evt_type = BLE_NUS_EVT_TX_RDY,
 		.conn_handle = conn_handle,
 	};
 	struct ble_nus_client_context *ctx;
@@ -210,7 +217,7 @@ static void on_hvx_tx_complete(struct ble_nus *nus, ble_evt_t const *ble_evt)
 
 	if ((ctx->is_notification_enabled) && (nus->evt_handler != NULL)) {
 		evt.link_ctx = ctx;
-		nus->evt_handler(&evt);
+		nus->evt_handler(nus, &evt);
 	}
 }
 
