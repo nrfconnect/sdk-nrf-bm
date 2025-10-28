@@ -270,10 +270,8 @@ static uint32_t link_secure_central_encryption(uint16_t conn_handle, uint16_t pe
 
 	if ((err_code != NRF_SUCCESS) && (err_code != NRF_ERROR_NOT_FOUND)) {
 		if (err_code != NRF_ERROR_BUSY) {
-			NRF_LOG_ERROR("Could not retrieve stored bond. pds_peer_data_read() "
-				      "returned %s. "
-				      "peer_id: %d",
-				      nrf_strerror_get(err_code), peer_id);
+			LOG_ERR("Could not retrieve stored bond. pds_peer_data_read() "
+				"returned %s. peer_id: %d", nrf_strerror_get(err_code), peer_id);
 			err_code = NRF_ERROR_INTERNAL;
 		}
 	/* There is no bonding data stored. This means that a
