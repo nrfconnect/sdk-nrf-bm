@@ -106,14 +106,20 @@ static const req_data_store_t req_data_store[BLE_GQ_REQ_NUM] = {
 static void request_error_handle(const struct ble_gq_req *req, uint16_t conn_handle,
 				 uint32_t nrf_err)
 {
+	struct ble_gq_evt evt = {
+		.evt_type = BLE_GQ_EVT_ERROR,
+		.conn_handle = conn_handle,
+		.error.reason = nrf_err,
+	};
+
 	if (nrf_err == NRF_SUCCESS) {
 		LOG_DBG("SD GATT procedure (%d) succeeded on connection handle: %d.", req->type,
 			conn_handle);
 	} else {
 		LOG_DBG("SD GATT procedure (%d) failed on connection handle %d with nrf_error %#x",
 			req->type, conn_handle, nrf_err);
-		if (req->error_handler.cb != NULL) {
-			req->error_handler.cb(conn_handle, nrf_err, req->error_handler.ctx);
+		if (req->evt_handler != NULL) {
+			req->evt_handler(req, &evt);
 		}
 	}
 }

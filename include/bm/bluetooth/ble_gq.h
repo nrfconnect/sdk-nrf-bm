@@ -129,23 +129,39 @@ enum ble_gq_req_type {
 };
 
 /**
- * @brief Error handler type.
+ * @brief Advertising event types.
  */
-typedef void (*ble_gq_req_error_cb_t)(uint16_t conn_handle, uint32_t nrf_error, void *context);
+enum ble_gq_evt_type {
+	/**
+	 * @brief Error.
+	 */
+	BLE_GQ_EVT_ERROR,
+};
+
+/** @brief Gatt Queue event. */
+struct ble_gq_evt {
+	/** @brief Advertising event type. */
+	enum ble_gq_evt_type evt_type;
+	/**
+	 * @brief Connection handle for which the event applies.
+	 */
+	uint16_t conn_handle;
+	union {
+		/** @ref BLE_GQ_EVT_ERROR event data. */
+		struct {
+			/** Event result code. */
+			uint32_t reason;
+		} error;
+	};
+};
+
+/* Forward declaration */
+struct ble_gq_req;
 
 /**
- * @brief Structure used to handle SoftDevice error.
+ * @brief Event handler type.
  */
-struct ble_gq_req_error_handler {
-	/**
-	 * @brief Error handler to be called in case of an error from SoftDevice.
-	 */
-	ble_gq_req_error_cb_t cb;
-	/**
-	 * @brief Parameter passed to the error handler;
-	 */
-	void *ctx;
-};
+typedef void (*ble_gq_evt_handler_t)(const struct ble_gq_req *req, struct ble_gq_evt *evt);
 
 /**
  * @brief Structure to hold a BLE GATT request.
@@ -168,7 +184,11 @@ struct ble_gq_req {
 	/**
 	 * @brief Error handler structure.
 	 */
-	struct ble_gq_req_error_handler error_handler;
+	ble_gq_evt_handler_t evt_handler;
+	/**
+	 * @brief Context.
+	 */
+	void *ctx;
 	/**
 	 * @brief Request type specific parameters.
 	 */

@@ -357,8 +357,8 @@ static void socp_send(struct ble_cgms *cgms)
 
 	struct ble_gq_req cgms_req = {
 		.type = BLE_GQ_REQ_GATTS_HVX,
-		.error_handler.cb = cgms->gatt_err_handler,
-		.error_handler.ctx = cgms,
+		.evt_handler = cgms->ble_gq_evt_handler,
+		.ctx = cgms,
 		.gatts_hvx.type = BLE_GATT_HVX_INDICATION,
 		.gatts_hvx.handle = cgms->char_handles.socp.value_handle,
 		.gatts_hvx.offset = 0,

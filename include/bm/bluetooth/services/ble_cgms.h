@@ -460,7 +460,7 @@ struct ble_cgms {
 	/** Pointer to BLE GATT Queue instance. */
 	const struct ble_gq  *gatt_queue;
 	/** Error handler to be called in case of an error from SoftDevice. */
-	ble_gq_req_error_cb_t gatt_err_handler;
+	ble_gq_evt_handler_t ble_gq_evt_handler;
 	/** Handle of the CGM Service (as provided by the BLE stack). */
 	uint16_t service_handle;
 	/** GATTS characteristic handles for the different characteristics in the service. */
