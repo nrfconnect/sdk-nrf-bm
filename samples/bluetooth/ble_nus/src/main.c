@@ -71,26 +71,26 @@ static int buf_idx;
 #if defined(CONFIG_NUS_LPUARTE)
 static void lpuarte_rx_handler(char *data, size_t data_len)
 {
-	int err;
+	uint32_t nrf_err;
 	uint16_t len = data_len;
 
 	LOG_INF("Sending data over BLE NUS, len %d", len);
 
 	do {
-		err = ble_nus_data_send(&ble_nus, data, &len, conn_handle);
-		if ((err != 0) &&
-			(err != -EPIPE) &&
-			(err != -EAGAIN) &&
-			(err != -EBADF)) {
-			LOG_ERR("Failed to send NUS data, err %d", err);
+		nrf_err = ble_nus_data_send(&ble_nus, data, &len, conn_handle);
+		if ((nrf_err) &&
+		    (nrf_err != NRF_ERROR_INVALID_STATE) &&
+		    (nrf_err != NRF_ERROR_RESOURCES) &&
+		    (nrf_err != NRF_ERROR_NOT_FOUND)) {
+			LOG_ERR("Failed to send NUS data, nrf_error %#x", nrf_err);
 			return;
 		}
-	} while (err == -EAGAIN);
+	} while (nrf_err == NRF_ERROR_RESOURCES);
 }
 #else
 static void uarte_rx_handler(char *data, size_t data_len)
 {
-	int err;
+	uint32_t nrf_err;
 	uint8_t c;
 	/* receive buffer used in UART ISR callback */
 	static char rx_buf[BLE_NUS_MAX_DATA_LEN];
@@ -114,15 +114,15 @@ static void uarte_rx_handler(char *data, size_t data_len)
 			LOG_INF("Sending data over BLE NUS, len %d", len);
 
 			do {
-				err = ble_nus_data_send(&ble_nus, rx_buf, &len, conn_handle);
-				if ((err != 0) &&
-				    (err != -EPIPE) &&
-				    (err != -EAGAIN) &&
-				    (err != -EBADF)) {
-					LOG_ERR("Failed to send NUS data, err %d", err);
+				nrf_err = ble_nus_data_send(&ble_nus, rx_buf, &len, conn_handle);
+				if ((nrf_err) &&
+				    (nrf_err != NRF_ERROR_INVALID_STATE) &&
+				    (nrf_err != NRF_ERROR_RESOURCES) &&
+				    (nrf_err != NRF_ERROR_NOT_FOUND)) {
+					LOG_ERR("Failed to send NUS data, nrf_error %#x", nrf_err);
 					return;
 				}
-			} while (err == -EAGAIN);
+			} while (nrf_err == NRF_ERROR_RESOURCES);
 
 			if (len == rx_buf_idx) {
 				rx_buf_idx = 0;
@@ -488,9 +488,9 @@ int main(void)
 		goto idle;
 	}
 
-	err = ble_nus_init(&ble_nus, &nus_cfg);
-	if (err) {
-		LOG_ERR("Failed to initialize Nordic uart service, err %d", err);
+	nrf_err = ble_nus_init(&ble_nus, &nus_cfg);
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize Nordic uart service, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 
