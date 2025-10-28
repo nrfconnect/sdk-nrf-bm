@@ -6,13 +6,20 @@ from subprocess import call
 script_dir = os.path.dirname(os.path.abspath(__file__))  # Directory where the script is located
 source_dir = os.path.abspath("_build/source")
 samples_dir = os.path.abspath("../../samples")
-static_dir = os.path.abspath("../_static")  # Path to the _static directory
-requirements_path = os.path.join(script_dir, "requirements.txt")  # Path to the requirements.txt file
-includes_dir = os.path.join(script_dir, "includes")  # Path to the includes directory
-sample_dir = os.path.join(script_dir, "sample")  # Path to the sample directory
-pdf_source_dir = os.path.abspath('../../components/softdevice/s115/')  # Path to the PDF source directory
-pdf_destination_dir = os.path.join(source_dir, 'pdfs')  # Destination directory within _static
-images_dir = os.path.join(script_dir, "images")  # Path to the images directory
+# Path to the _static directory
+static_dir = os.path.abspath("../_static")
+# Path to the requirements.txt file
+requirements_path = os.path.join(script_dir, "requirements.txt")
+# Path to the includes directory
+includes_dir = os.path.join(script_dir, "includes")
+# Path to the sample directory
+sample_dir = os.path.join(script_dir, "sample")
+# Path to the PDF source directory
+pdf_source_dir = os.path.abspath('../../components/softdevice/s115/')
+# Destination directory within _static
+pdf_destination_dir = os.path.join(source_dir, 'pdfs')
+# Path to the images directory
+images_dir = os.path.join(script_dir, "images")
 softdevice_rst_source = os.path.abspath('../../components/softdevice/s115/doc')
 
 # Install packages from requirements.txt
@@ -52,7 +59,7 @@ else:
 
 # Copy sample READMEs
 if os.path.exists(samples_dir):
-    for root, dirs, files in os.walk(samples_dir):
+    for root, _dirs, files in os.walk(samples_dir):
         for file in files:
             if file == "README.rst":
                 relative_dir = os.path.relpath(root, samples_dir)
