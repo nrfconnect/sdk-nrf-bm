@@ -54,6 +54,7 @@ MaintainersFormat.txt
 ModulesMaintainers.txt
 Nits.txt
 Pylint.txt
+PythonCompat.txt
 Ruff.txt
 SphinxLint.txt
 SysbuildKconfig.txt
