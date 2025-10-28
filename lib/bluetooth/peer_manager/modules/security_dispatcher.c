@@ -238,6 +238,25 @@ static void sec_proc_start(uint16_t conn_handle, bool success, enum pm_conn_sec_
 	}
 }
 
+/**
+ * @brief Function for initiating pairing as a central, or all security as a periheral.
+ *
+ * See @ref smd_link_secure and @ref sd_ble_gap_authenticate for more information.
+ */
+static uint32_t link_secure_authenticate(uint16_t conn_handle, ble_gap_sec_params_t *sec_params)
+{
+	uint32_t err_code = sd_ble_gap_authenticate(conn_handle, sec_params);
+
+	if (err_code == NRF_ERROR_NO_MEM) {
+		/* sd_ble_gap_authenticate() returned NRF_ERROR_NO_MEM. Too many other sec
+		 * procedures running.
+		 */
+		err_code = NRF_ERROR_BUSY;
+	}
+
+	return err_code;
+}
+
 #if defined(CONFIG_SOFTDEVICE_CENTRAL)
 /**
  * @brief Function for initiating encryption as a central. See @ref smd_link_secure for more
@@ -356,6 +375,20 @@ static void sec_request_process(const ble_gap_evt_t *gap_evt)
 #endif /* CONFIG_SOFTDEVICE_CENTRAL */
 
 #ifdef BLE_GAP_ROLE_PERIPH
+/** @brief Function for asking the central to secure the link. See @ref smd_link_secure for more
+ * info.
+ */
+static uint32_t link_secure_peripheral(uint16_t conn_handle, ble_gap_sec_params_t *sec_params)
+{
+	uint32_t err_code = NRF_SUCCESS;
+
+	if (sec_params != NULL) {
+		err_code = link_secure_authenticate(conn_handle, sec_params);
+	}
+
+	return err_code;
+}
+
 /** @brief Function for processing the @ref BLE_GAP_EVT_SEC_INFO_REQUEST event from the SoftDevice.
  *
  * @param[in]  gap_evt  The event from the SoftDevice.
@@ -868,41 +901,6 @@ uint32_t smd_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *sec_params
 	return err_code;
 }
 
-/**
- * @brief Function for initiating pairing as a central, or all security as a periheral.
- *
- * See @ref smd_link_secure and @ref sd_ble_gap_authenticate for more information.
- */
-static uint32_t link_secure_authenticate(uint16_t conn_handle, ble_gap_sec_params_t *sec_params)
-{
-	uint32_t err_code = sd_ble_gap_authenticate(conn_handle, sec_params);
-
-	if (err_code == NRF_ERROR_NO_MEM) {
-		/* sd_ble_gap_authenticate() returned NRF_ERROR_NO_MEM. Too many other sec
-		 * procedures running.
-		 */
-		err_code = NRF_ERROR_BUSY;
-	}
-
-	return err_code;
-}
-
-#ifdef BLE_GAP_ROLE_PERIPH
-/** @brief Function for asking the central to secure the link. See @ref smd_link_secure for more
- * info.
- */
-static uint32_t link_secure_peripheral(uint16_t conn_handle, ble_gap_sec_params_t *sec_params)
-{
-	uint32_t err_code = NRF_SUCCESS;
-
-	if (sec_params != NULL) {
-		err_code = link_secure_authenticate(conn_handle, sec_params);
-	}
-
-	return err_code;
-}
-#endif
-
 uint32_t smd_link_secure(uint16_t conn_handle, ble_gap_sec_params_t *sec_params,
 			 bool force_repairing)
 {
@@ -911,6 +909,11 @@ uint32_t smd_link_secure(uint16_t conn_handle, ble_gap_sec_params_t *sec_params,
 	uint8_t role = ble_conn_state_role(conn_handle);
 
 	switch (role) {
+#if defined(CONFIG_SOFTDEVICE_CENTRAL)
+	case BLE_GAP_ROLE_CENTRAL:
+		return link_secure_central(conn_handle, sec_params, force_repairing);
+#endif /* CONFIG_SOFTDEVICE_CENTRAL */
+
 #ifdef BLE_GAP_ROLE_PERIPH
 	case BLE_GAP_ROLE_PERIPH:
 		return link_secure_peripheral(conn_handle, sec_params);
@@ -937,6 +940,12 @@ void smd_ble_evt_handler(const ble_evt_t *ble_evt)
 		sec_info_request_process(&(ble_evt->evt.gap_evt));
 		break;
 #endif /* BLE_GAP_ROLE_PERIPH */
+
+#if defined(CONFIG_SOFTDEVICE_CENTRAL)
+	case BLE_GAP_EVT_SEC_REQUEST:
+		sec_request_process(&(ble_evt->evt.gap_evt));
+		break;
+#endif /* CONFIG_SOFTDEVICE_CENTRAL */
 
 	case BLE_GAP_EVT_AUTH_STATUS:
 		auth_status_process(&(ble_evt->evt.gap_evt));
