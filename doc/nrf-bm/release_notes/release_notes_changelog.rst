@@ -201,6 +201,11 @@ Libraries
   * Added the error event to align event handling with other services.
   * Updated the name of the ``type`` member in the :c:struct:`ble_nus_evt` structure to :c:member:`ble_nus_evt.evt_type`.
 
+* BLE Gatt Queue library:
+
+  * Updated the event handling to align with other libraries.
+    The :c:struct:`ble_gq_req` now takes an :c:type:`ble_gq_evt_handler_t` event handler and the :c:member:`ble_gq_req.ctx` context.
+
 Samples
 =======
 

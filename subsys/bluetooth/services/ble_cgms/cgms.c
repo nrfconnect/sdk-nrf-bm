@@ -7,6 +7,7 @@
 #include <nrf_error.h>
 #include <stdint.h>
 
+#include <bm/bluetooth/ble_gq.h>
 #include <bm/bluetooth/ble_racp.h>
 #include <bm/bluetooth/services/ble_date_time.h>
 #include <bm/bluetooth/services/ble_cgms.h>
@@ -23,17 +24,17 @@
 LOG_MODULE_REGISTER(ble_cgms, CONFIG_BLE_CGMS_LOG_LEVEL);
 
 /* GATT errors and nrf_ble_gq errors event handler. */
-static void gatt_error_handler(uint16_t conn_handle, uint32_t nrf_error, void *ctx)
+static void ble_gq_evt_handler(const struct ble_gq_req *req, struct ble_gq_evt *gq_evt)
 {
 	struct ble_cgms_evt evt = {
 		.evt_type = BLE_CGMS_EVT_ERROR,
-		.error.reason = nrf_error,
-		.conn_handle = cgms->conn_handle,
+		.error.reason = gq_evt->error.reason,
+		.conn_handle = gq_evt->conn_handle,
 	};
-	struct ble_cgms *cgms = (struct ble_cgms *)ctx;
+	struct ble_cgms *cgms = (struct ble_cgms *)req->ctx;
 
-	if (nrf_error != NRF_ERROR_INVALID_STATE) {
-		LOG_ERR("GATT error, nrf_error %#x", nrf_err);
+	if (gq_evt->error.reason != NRF_ERROR_INVALID_STATE) {
+		LOG_ERR("GATT error, nrf_error %#x", gq_evt->error.reason);
 		if (cgms->evt_handler) {
 			cgms->evt_handler(cgms, &evt);
 		}
@@ -206,7 +207,7 @@ uint32_t ble_cgms_init(struct ble_cgms *cgms, const struct ble_cgms_config *cgms
 	cgms->is_session_started = false;
 	cgms->nb_run_session = 0;
 	cgms->conn_handle = BLE_CONN_HANDLE_INVALID;
-	cgms->gatt_err_handler = gatt_error_handler;
+	cgms->ble_gq_evt_handler = ble_gq_evt_handler;
 
 	memcpy(cgms->calibration_val[0].value, init_calib_val, BLE_CGMS_MAX_CALIB_LEN);
 
