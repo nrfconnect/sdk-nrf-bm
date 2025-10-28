@@ -157,6 +157,11 @@ Libraries
   * Fixed an issue where the client context was shared between all instances.
   * Added the error event to align event handling with other services.
 
+* BLE Gatt Queue library:
+
+  * Updated the event handling to align with other libraries.
+    The :c:struct:`ble_gq_req` now takes an :c:type:`ble_gq_evt_handler_t` event handler and the :c:member:`ble_gq_req.evt_handler_ctx` context.
+
 Samples
 =======
 
