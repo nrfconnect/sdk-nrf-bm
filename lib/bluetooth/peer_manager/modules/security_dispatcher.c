@@ -245,16 +245,16 @@ static void sec_proc_start(uint16_t conn_handle, bool success, enum pm_conn_sec_
  */
 static uint32_t link_secure_central_encryption(uint16_t conn_handle, uint16_t peer_id)
 {
-	struct pm_peer_data_const peer_data;
+	struct pm_peer_data peer_data;
 	uint32_t err_code;
 	const ble_gap_enc_key_t *existing_key = NULL;
 	bool lesc = false;
 	struct pm_peer_data_bonding bonding_data = { 0 };
+	const uint32_t buf_size = sizeof(struct pm_peer_data_bonding);
 
-	peer_data.all_data = &bonding_data;
+	peer_data.bonding_data = &bonding_data;
 
-	err_code = pds_peer_data_read(peer_id, PM_PEER_DATA_ID_BONDING, &peer_data,
-				      sizeof(struct pm_peer_data_bonding));
+	err_code = pds_peer_data_read(peer_id, PM_PEER_DATA_ID_BONDING, &peer_data, &buf_size);
 
 	if (err_code == NRF_SUCCESS) {
 		/* Use peer's key since they are peripheral. */
