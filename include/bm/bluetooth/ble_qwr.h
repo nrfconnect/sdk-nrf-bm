@@ -48,8 +48,6 @@ extern "C" {
 
 /** @brief Queued Writes module event types. */
 enum ble_qwr_evt_type {
-	/** Error event */
-	BLE_QWR_EVT_ERROR,
 	/** Event that indicates that an execute write command was received for a registered handle
 	 * and that the received data was actually written and is now ready.
 	 */
@@ -58,6 +56,8 @@ enum ble_qwr_evt_type {
 	 * and that the write request must now be accepted or rejected.
 	 */
 	BLE_QWR_EVT_AUTH_REQUEST,
+	/** Error event */
+	BLE_QWR_EVT_ERROR,
 };
 
 /** @brief Queued Writes module events. */
@@ -65,10 +65,6 @@ struct ble_qwr_evt {
 	/** Type of the event. */
 	enum ble_qwr_evt_type evt_type;
 	union {
-		/** @ref BLE_QWR_EVT_ERROR event data. */
-		struct {
-			uint32_t reason;
-		} error;
 		/** @ref BLE_QWR_EVT_EXECUTE_WRITE event data. */
 		struct {
 			/** Handle of the attribute to which the event relates. */
@@ -79,6 +75,11 @@ struct ble_qwr_evt {
 			/** Handle of the attribute to which the event relates. */
 			uint16_t attr_handle;
 		} auth_req;
+		/** @ref BLE_QWR_EVT_ERROR event data. */
+		struct {
+			/** Error reason. */
+			uint32_t reason;
+		} error;
 	};
 };
 
