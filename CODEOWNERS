@@ -20,6 +20,8 @@
 
 # Applications
 /applications/installer/                  @nrfconnect/ncs-eris
+/applications/firmware_loader/            @nrfconnect/ncs-eris
+/applications/softdevice/                 @nrfconnect/ncs-co-build-system
 
 # Boards
 /boards/                                  @nrfconnect/ncs-co-boards @nrfconnect/ncs-bm
@@ -61,7 +63,6 @@
 # Samples
 /samples/bluetooth/                       @nrfconnect/ncs-bm
 /samples/boot/                            @nrfconnect/ncs-eris
-/applications/firmware_loader/            @nrfconnect/ncs-eris
 /samples/peripherals/bm_zms/              @nrfconnect/ncs-bm @rghaddab
 /samples/peripherals/                     @nrfconnect/ncs-bm
 
