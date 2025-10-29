@@ -150,3 +150,45 @@ Documentation
 * Added documentation for the :ref:`lib_event_scheduler` library.
 * Added documentation for the :ref:`lib_sensorsim` library.
 * Added documentation for the :ref:`lib_ble_queued_writes` library.
+
+Interrupts
+==========
+
+* Interrupts in nRF Connect SDK Bare Metal now use the IRQ vector table directly instead of the
+  software ISR table. This saves 8 bytes of memory per IRQ, which is approximately 2kB for the
+  nRF54L05, nRF54L10 and nRF54L15 Application core. This change requires applications change
+  from using :c:macro:`IRQ_CONNECT` to :c:macro:`IRQ_DIRECT_CONNECT` and
+  :c:macro:`ISR_DIRECT_DECLARE` when defining an ISR.
+
+  An ISR defined with :c:macro:`IRQ_CONNECT`, like:
+
+  .. code-block:: c
+
+     int main(void)
+     {
+             IRQ_CONNECT(
+                     NRFX_IRQ_NUMBER_GET(NRF_GPIOTE_INST_GET(20)),
+                     10,
+                     NRFX_GPIOTE_INST_HANDLER_GET(20),
+                     0,
+                     0
+             );
+
+  Must be defined like this:
+
+  .. code-block:: c
+
+     ISR_DIRECT_DECLARE(gpiote_20_direct_isr)
+     {
+             NRFX_GPIOTE_INST_HANDLER_GET(20)();
+             return 0;
+     }
+
+     int main(void)
+     {
+             IRQ_DIRECT_CONNECT(
+                     NRFX_IRQ_NUMBER_GET(NRF_GPIOTE_INST_GET(20)),
+                     10,
+                     gpiote_20_direct_isr,
+                     0
+             );
