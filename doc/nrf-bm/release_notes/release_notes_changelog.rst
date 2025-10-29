@@ -68,6 +68,8 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Libraries
 =========
 
+* Added the :ref:`lib_ble_radio_notification` library.
+
 * :ref:`lib_ble_conn_params` library:
 
    * Added missing Kconfig dependencies.
@@ -112,7 +114,7 @@ Samples
 Bluetooth samples
 -----------------
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+Added the :ref:`ble_radio_ntf_sample` sample.
 
 Peripheral samples
 ------------------

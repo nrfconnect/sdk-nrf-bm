@@ -50,6 +50,7 @@
 /lib/bluetooth/ble_gq/                    @nrfconnect/ncs-bm
 /lib/bluetooth/ble_qwr/                   @nrfconnect/ncs-bm
 /lib/bluetooth/ble_racp/                  @nrfconnect/ncs-bm
+/lib/bluetooth/ble_radio_notification/    @nrfconnect/ncs-bm
 /lib/bluetooth/peer_manager/              @nrfconnect/ncs-bm
 /lib/bm_buttons/                          @nrfconnect/ncs-bm
 /lib/bm_timer/                            @nrfconnect/ncs-bm
@@ -89,10 +90,11 @@
 /sysbuild/                                @nrfconnect/ncs-co-build-system
 
 # Tests
+/tests/lib/bluetooth/ble_adv/             @nrfconnect/ncs-bm-test
 /tests/lib/bluetooth/ble_conn_state/      @nrfconnect/ncs-bm
 /tests/lib/bluetooth/ble_qwr/             @nrfconnect/ncs-bm
 /tests/lib/bluetooth/ble_racp/            @nrfconnect/ncs-bm
-/tests/lib/bluetooth/ble_adv/             @nrfconnect/ncs-bm-test
+/tests/lib/bluetooth/ble_radio_notif/     @nrfconnect/ncs-bm
 /tests/subsys/bluetooth/services/         @nrfconnect/ncs-bm @nrfconnect/ncs-bm-test
 /tests/subsys/fs/bm_zms/                  @nrfconnect/ncs-bm @rghaddab
 /tests/subsys/storage/bm_storage/         @nrfconnect/ncs-bm
