@@ -1,0 +1,10 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+config SOFTDEVICE_FILE
+	string "SoftDevice file (informative only, do not change)"
+
+source "Kconfig.zephyr"
