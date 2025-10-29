@@ -94,6 +94,17 @@ function(bm_install_setup)
         BUILD_ONLY y
       )
     endif()
+  else()
+    if(NOT SB_CONFIG_SOFTDEVICE_NONE)
+      ExternalZephyrProject_Add(
+        APPLICATION softdevice
+        SOURCE_DIR ${ZEPHYR_NRF_BM_MODULE_DIR}/applications/softdevice
+      )
+
+      set_config_string(softdevice CONFIG_SOFTDEVICE_FILE ${SB_CONFIG_SOFTDEVICE_FILE})
+      sysbuild_add_dependencies(CONFIGURE ${DEFAULT_IMAGE} softdevice)
+      sysbuild_add_dependencies(FLASH ${DEFAULT_IMAGE} softdevice)
+    endif()
   endif()
 endfunction()
 
