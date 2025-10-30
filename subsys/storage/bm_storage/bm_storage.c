@@ -4,21 +4,21 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <nrf_error.h>
+#include <errno.h>
 #include <zephyr/kernel.h>
 #include <sys/types.h>
 #include <bm/storage/bm_storage.h>
 #include <bm/storage/bm_storage_backend.h>
 
-__weak uint32_t bm_storage_backend_uninit(struct bm_storage *storage)
+__weak int bm_storage_backend_uninit(struct bm_storage *storage)
 {
-	return NRF_ERROR_NOT_SUPPORTED;
+	return -ENOTSUP;
 }
 
-__weak uint32_t bm_storage_backend_erase(const struct bm_storage *storage, uint32_t addr,
+__weak int bm_storage_backend_erase(const struct bm_storage *storage, uint32_t addr,
 					uint32_t len, void *ctx)
 {
-	return NRF_ERROR_NOT_SUPPORTED;
+	return -ENOTSUP;
 }
 
 __weak bool bm_storage_backend_is_busy(const struct bm_storage *storage)
@@ -33,41 +33,41 @@ static inline bool is_within_bounds(off_t addr, size_t len, off_t boundary_start
 		(len <= (boundary_start + boundary_size - addr)));
 }
 
-uint32_t bm_storage_init(struct bm_storage *storage)
+int bm_storage_init(struct bm_storage *storage)
 {
-	uint32_t err;
+	int err;
 
 	if (!storage) {
-		return NRF_ERROR_NULL;
+		return -EFAULT;
 	}
 
 	storage->nvm_info = &bm_storage_info;
 
 	err = bm_storage_backend_init(storage);
-	if (err != NRF_SUCCESS) {
+	if (err) {
 		return err;
 	}
 
 	storage->initialized = true;
 
-	return NRF_SUCCESS;
+	return 0;
 }
 
-uint32_t bm_storage_uninit(struct bm_storage *storage)
+int bm_storage_uninit(struct bm_storage *storage)
 {
-	uint32_t err;
+	int err;
 
 	if (!storage) {
-		return NRF_ERROR_NULL;
+		return -EFAULT;
 	}
 
 	if (!storage->initialized) {
-		return NRF_ERROR_INVALID_STATE;
+		return -EPERM;
 	}
 
 	err = bm_storage_backend_uninit(storage);
 
-	if (err == NRF_SUCCESS) {
+	if (err == 0) {
 		storage->initialized = false;
 		storage->nvm_info = NULL;
 	}
@@ -75,68 +75,68 @@ uint32_t bm_storage_uninit(struct bm_storage *storage)
 	return err;
 }
 
-uint32_t bm_storage_read(const struct bm_storage *storage, uint32_t src, void *dest, uint32_t len)
+int bm_storage_read(const struct bm_storage *storage, uint32_t src, void *dest, uint32_t len)
 {
 	if (!storage || !dest) {
-		return NRF_ERROR_NULL;
+		return -EFAULT;
 	}
 
 	if (!storage->initialized || !storage->nvm_info) {
-		return NRF_ERROR_INVALID_STATE;
+		return -EPERM;
 	}
 
 	if (len == 0) {
-		return NRF_ERROR_INVALID_LENGTH;
+		return -EINVAL;
 	}
 
 	if (!is_within_bounds(src, len, storage->start_addr,
 		storage->end_addr - storage->start_addr)) {
-		return NRF_ERROR_INVALID_ADDR;
+		return -EFAULT;
 	}
 
 	return bm_storage_backend_read(storage, src, dest, len);
 }
 
-uint32_t bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void *src,
-			  uint32_t len, void *ctx)
+int bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void *src,
+		     uint32_t len, void *ctx)
 {
 	if (!storage || !src) {
-		return NRF_ERROR_NULL;
+		return -EFAULT;
 	}
 
 	if (!storage->initialized || !storage->nvm_info) {
-		return NRF_ERROR_INVALID_STATE;
+		return -EPERM;
 	}
 
 	if (len == 0 || len % storage->nvm_info->program_unit != 0) {
-		return NRF_ERROR_INVALID_LENGTH;
+		return -EINVAL;
 	}
 
 	if (!is_within_bounds(dest, len, storage->start_addr,
 		storage->end_addr - storage->start_addr)) {
-		return NRF_ERROR_INVALID_ADDR;
+		return -EFAULT;
 	}
 
 	return bm_storage_backend_write(storage, dest, src, len, ctx);
 }
 
-uint32_t bm_storage_erase(const struct bm_storage *storage, uint32_t addr, uint32_t len, void *ctx)
+int bm_storage_erase(const struct bm_storage *storage, uint32_t addr, uint32_t len, void *ctx)
 {
 	if (!storage) {
-		return NRF_ERROR_NULL;
+		return -EFAULT;
 	}
 
 	if (!storage->initialized || !storage->nvm_info) {
-		return NRF_ERROR_INVALID_STATE;
+		return -EPERM;
 	}
 
 	if (len == 0 || len % storage->nvm_info->erase_unit != 0) {
-		return NRF_ERROR_INVALID_LENGTH;
+		return -EINVAL;
 	}
 
 	if (!is_within_bounds(addr, len, storage->start_addr,
 			      storage->end_addr - storage->start_addr)) {
-		return NRF_ERROR_INVALID_ADDR;
+		return -EFAULT;
 	}
 
 	return bm_storage_backend_erase(storage, addr, len, ctx);
