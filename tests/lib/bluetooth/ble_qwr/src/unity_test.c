@@ -24,7 +24,7 @@ void test_ble_qwr_init_efault(void)
 {
 	int err;
 	struct ble_qwr qwr;
-	struct ble_qwr_config qwr_config = {};
+	struct ble_qwr_config qwr_config = {0};
 
 	err = ble_qwr_init(&qwr, NULL);
 	TEST_ASSERT_EQUAL(-EFAULT, err);
@@ -37,7 +37,7 @@ void test_ble_qwr_init_eperm(void)
 {
 	int err;
 	struct ble_qwr qwr;
-	struct ble_qwr_config qwr_config = {};
+	struct ble_qwr_config qwr_config = {0};
 
 	err = ble_qwr_init(&qwr, &qwr_config);
 	TEST_ASSERT_EQUAL(0, err);
@@ -85,7 +85,7 @@ void test_ble_qwr_attr_register_efault(void)
 void test_ble_qwr_attr_register_eperm(void)
 {
 	int err;
-	struct ble_qwr qwr = {};
+	struct ble_qwr qwr = {0};
 
 	err = ble_qwr_attr_register(&qwr, 1);
 	TEST_ASSERT_EQUAL(-EPERM, err);
@@ -211,7 +211,7 @@ void test_ble_qwr_value_get_efault(void)
 void test_ble_qwr_value_get_eperm(void)
 {
 	int err;
-	struct ble_qwr qwr = {};
+	struct ble_qwr qwr = {0};
 	uint8_t mem[1];
 	uint16_t len = sizeof(mem);
 
@@ -222,7 +222,7 @@ void test_ble_qwr_value_get_eperm(void)
 void test_ble_qwr_value_get(void)
 {
 	int err;
-	struct ble_qwr qwr = {};
+	struct ble_qwr qwr = {0};
 	/* mem is filled by softdevice, we do it here */
 	uint8_t mem[] = {
 		0xa1, 0x00, 0x00, 0x00, /* attr_handle (little endian), val_offset */
@@ -285,7 +285,7 @@ void test_ble_qwr_conn_handle_assign_efault(void)
 void test_ble_qwr_conn_handle_assign_eperm(void)
 {
 	int err;
-	struct ble_qwr qwr = {};
+	struct ble_qwr qwr = {0};
 
 	err = ble_qwr_conn_handle_assign(&qwr, 1);
 	TEST_ASSERT_EQUAL(-EPERM, err);
@@ -294,7 +294,7 @@ void test_ble_qwr_conn_handle_assign_eperm(void)
 void test_ble_qwr_conn_handle_assign(void)
 {
 	int err;
-	struct ble_qwr qwr = {};
+	struct ble_qwr qwr = {0};
 	uint8_t mem[1];
 	struct ble_qwr_config qwr_config = {
 		.mem_buffer = {
@@ -315,8 +315,8 @@ void test_ble_qwr_conn_handle_assign(void)
 
 void test_ble_qwr_on_ble_evt_do_nothing(void)
 {
-	ble_evt_t const ble_evt = {};
-	struct ble_qwr qwr = {};
+	ble_evt_t const ble_evt = {0};
+	struct ble_qwr qwr = {0};
 
 	/* We expect these to return immediately */
 	ble_qwr_on_ble_evt(&ble_evt, NULL);
@@ -327,7 +327,7 @@ void test_ble_qwr_on_ble_evt_do_nothing(void)
 void test_ble_qwr_on_ble_evt_mem_req_sd_busy(void)
 {
 	int err;
-	struct ble_qwr qwr = {};
+	struct ble_qwr qwr = {0};
 	uint8_t mem[16];
 	struct ble_qwr_config qwr_config = {
 		.mem_buffer = {
@@ -379,7 +379,7 @@ void test_ble_qwr_on_ble_evt_mem_req_sd_busy(void)
 void test_ble_qwr_on_ble_evt_mem_req(void)
 {
 	int err;
-	struct ble_qwr qwr = {};
+	struct ble_qwr qwr = {0};
 	uint8_t mem[16];
 	struct ble_qwr_config qwr_config = {
 		.mem_buffer = {

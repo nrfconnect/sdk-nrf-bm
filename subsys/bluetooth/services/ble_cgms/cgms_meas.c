@@ -72,7 +72,7 @@ uint32_t cgms_meas_char_add(struct ble_cgms *cgms)
 	uint32_t err;
 	uint16_t num_recs;
 	uint8_t encoded_cgms_meas[BLE_CGMS_MEAS_LEN_MAX];
-	struct ble_cgms_rec initial_cgms_rec_value = {};
+	struct ble_cgms_rec initial_cgms_rec_value = {0};
 
 	num_recs = cgms_db_num_records_get();
 	if (num_recs > 0) {

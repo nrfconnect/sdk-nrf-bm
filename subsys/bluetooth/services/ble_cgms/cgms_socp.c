@@ -387,7 +387,7 @@ static void on_socp_value_write(struct ble_cgms *cgms, const ble_gatts_evt_write
 	uint32_t err;
 	struct ble_cgms_socp_value socp_request;
 	struct ble_cgms_evt evt;
-	struct ble_cgms_sst sst = {};
+	struct ble_cgms_sst sst = {0};
 
 	/* Decode request. */
 	ble_socp_decode(evt_write->len, evt_write->data, &socp_request);

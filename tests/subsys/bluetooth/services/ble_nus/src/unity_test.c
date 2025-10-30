@@ -216,10 +216,10 @@ void test_ble_nus_init_success(void)
 
 void test_ble_nus_on_ble_evt_gap_evt_do_nothing(void)
 {
-	ble_evt_t const ble_evt = {};
-	struct ble_nus nus_ctx = {};
-	ble_evt_t empty_ble_evt = {};
-	struct ble_nus empty_nus_ctx = {};
+	ble_evt_t const ble_evt = {0};
+	struct ble_nus nus_ctx = {0};
+	ble_evt_t empty_ble_evt = {0};
+	struct ble_nus empty_nus_ctx = {0};
 
 	ble_nus_on_ble_evt(NULL, &nus_ctx);
 	ble_nus_on_ble_evt(&ble_evt, NULL);
