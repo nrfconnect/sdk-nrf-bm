@@ -47,6 +47,11 @@ Boards
 
 * Removed unused peripheral nodes from Devicetree.
 
+Build system
+============
+
+* Added automatic flashing of SoftDevice files for projects that do not use MCUboot when ``west flash`` is invoked.
+
 DFU
 ===
 
