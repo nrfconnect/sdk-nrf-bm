@@ -67,13 +67,25 @@ void ble_nus_on_ble_evt(ble_evt_t const *ble_evt, void *context);
 
 /** @brief Nordic UART Service event types. */
 enum ble_nus_evt_type {
-	/** Data received. */
+	/**
+	 * @brief Error event.
+	 */
+	BLE_NUS_EVT_ERROR,
+	/**
+	 * @brief Data received.
+	 */
 	BLE_NUS_EVT_RX_DATA,
-	/** Service is ready to accept new data to be transmitted. */
+	/**
+	 * @brief Service is ready to accept new data to be transmitted.
+	 */
 	BLE_NUS_EVT_TX_RDY,
-	/** Notification has been enabled. */
+	/**
+	 * @brief Notification has been enabled.
+	 */
 	BLE_NUS_EVT_COMM_STARTED,
-	/** Notification has been disabled. */
+	/**
+	 * @brief Notification has been disabled.
+	 */
 	BLE_NUS_EVT_COMM_STOPPED,
 };
 
@@ -107,20 +119,30 @@ struct ble_nus_client_context {
 struct ble_nus_evt {
 	/** Event type. */
 	enum ble_nus_evt_type type;
-	/** Pointer to the instance. */
-	struct ble_nus *nus;
 	/** Connection handle. */
 	uint16_t conn_handle;
 	/** Pointer to the link context. */
 	struct ble_nus_client_context *link_ctx;
 	union {
+		/** @ref BLE_BAS_EVT_ERROR event data. */
+		struct {
+			/** Error reason. */
+			uint32_t reason;
+		} error;
 		/** @ref BLE_NUS_EVT_RX_DATA event data. */
-		struct ble_nus_evt_rx_data rx_data;
-	} params;
+		struct {
+			/** Pointer to the buffer with received data. */
+			uint8_t const *data;
+			/** Length of received data. */
+			uint16_t length;
+		} rx_data;
+	};
 };
 
+struct ble_nus;
+
 /** @brief Nordic UART Service event handler type. */
-typedef void (*ble_nus_evt_handler_t) (const struct ble_nus_evt *evt);
+typedef void (*ble_nus_evt_handler_t) (struct ble_nus *nus, const struct ble_nus_evt *evt);
 
 /*
  * @brief Nordic UART Service initialization structure.
@@ -163,10 +185,10 @@ struct ble_nus {
  * @param[in] nus_init Information needed to initialize the service.
  *
  * @retval 0 On success.
- * @retval -EFAULT If @p nus or @p nus_config is @c NULL.
- * @retval -EINVAL Invalid parameters.
+ * @retval NRF_ERROR_NULL If @p nus or @p nus_config is @c NULL.
+ * @retval NRF_ERROR_INVALID_PARAM Invalid parameters.
  */
-int ble_nus_init(struct ble_nus *nus, struct ble_nus_config const *nus_config);
+uint32_t ble_nus_init(struct ble_nus *nus, struct ble_nus_config const *nus_config);
 
 /**
  * @brief Function for handling the Nordic UART Service's BLE events.
@@ -193,16 +215,10 @@ void ble_nus_on_ble_evt(ble_evt_t const *ble_evt, void *context);
  * @param[in] conn_handle Connection handle of the destination client.
  *
  * @retval 0 On success.
- * @retval -EFAULT If @p nus, @p data or @p length is @c NULL.
- * @retval -EINVAL Invalid parameters.
- * @retval -ENOENT Invalid @p conn_handle.
- * @retval -EIO Failed to send notification.
- * @retval -ENOTCONN Connection handle unknown to the softdevice.
- * @retval -EPIPE Notifications not enabled in the CCCD.
- * @retval -EBADF Not found.
- * @retval -EAGAIN Not enough resources for operation.
+ * @return nrf_error on failure.
  */
-int ble_nus_data_send(struct ble_nus *nus, uint8_t *data, uint16_t *length, uint16_t conn_handle);
+uint32_t ble_nus_data_send(
+	struct ble_nus *nus, uint8_t *data, uint16_t *length, uint16_t conn_handle);
 
 #ifdef __cplusplus
 }

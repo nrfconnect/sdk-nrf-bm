@@ -114,9 +114,10 @@ struct ble_racp_value {
  * @param[in] data_len Length of data.
  * @param[out] racp_val Decoded Record Access Control Point value.
  *
- * @return 0 on success or negative errno on error.
+ * @retval NRF_SUCCESS on success.
+ * @retval NRF_ERROR_NULL if @p data or @p racp_val is NULL.
  */
-int ble_racp_decode(uint8_t const *data, size_t data_len, struct ble_racp_value *racp_val);
+uint32_t ble_racp_decode(uint8_t const *data, size_t data_len, struct ble_racp_value *racp_val);
 
 /**
  * @brief Encode a Record Access Control Point response.
@@ -127,9 +128,9 @@ int ble_racp_decode(uint8_t const *data, size_t data_len, struct ble_racp_value 
  * @param[out] buf Buffer for encoded data.
  * @param[out] len Buffer size.
  *
- * @return Length of encoded data or negative errno on error.
+ * @return Length of encoded data or 0 on error.
  */
-int ble_racp_encode(const struct ble_racp_value *racp_val, uint8_t *buf, size_t len);
+size_t ble_racp_encode(const struct ble_racp_value *racp_val, uint8_t *buf, size_t len);
 
 #ifdef __cplusplus
 }

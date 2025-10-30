@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
+#include <nrf_error.h>
 #include <ble_gap.h>
 #include <ble_gatts.h>
 #include <ble_gattc.h>
@@ -27,26 +28,36 @@ static struct {
 
 static void mtu_exchange_request(uint16_t conn_handle, int idx)
 {
-	int err;
+	uint32_t nrf_err;
+	struct ble_conn_params_evt app_evt = {
+		.id = BLE_CONN_PARAMS_EVT_ERROR,
+		.conn_handle = conn_handle,
+	};
 
-	err = sd_ble_gattc_exchange_mtu_request(conn_handle, links[idx].att_mtu_desired);
-	if (!err) {
+	nrf_err = sd_ble_gattc_exchange_mtu_request(conn_handle, links[idx].att_mtu_desired);
+	if (nrf_err == NRF_SUCCESS) {
 		return;
 	}
 
-	if (err == NRF_ERROR_BUSY) {
+	if (nrf_err == NRF_ERROR_BUSY) {
 		/* Retry */
 		LOG_DBG("Another procedure is ongoing, will retry");
 		links[idx].att_mtu_exchange_pending = true;
-	} else if (err) {
-		LOG_ERR("Failed to initiate ATT MTU exchange, nrf_error %#x", err);
+	} else if (nrf_err) {
+		LOG_ERR("Failed to initiate ATT MTU exchange, nrf_error %#x", nrf_err);
+
+		app_evt.error.reason = nrf_err;
+		ble_conn_params_event_send(&app_evt);
 	}
 }
 
 static void on_exchange_mtu_req_evt(uint16_t conn_handle, int idx,
 				    const ble_gatts_evt_exchange_mtu_request_t *evt)
 {
-	int err;
+	uint32_t nrf_err;
+	struct ble_conn_params_evt app_evt = {
+		.conn_handle = conn_handle,
+	};
 
 	/* Determine the lowest ATT MTU between our own desired ATT MTU and the peer's,
 	 * and at the same time ensure that we don't go lower than the actual MTU size.
@@ -57,20 +68,22 @@ static void on_exchange_mtu_req_evt(uint16_t conn_handle, int idx,
 
 	LOG_INF("Peer %#x requested ATT MTU of %u bytes", conn_handle, evt->client_rx_mtu);
 
-	err = sd_ble_gatts_exchange_mtu_reply(conn_handle, links[idx].att_mtu);
-	if (err) {
-		LOG_ERR("Failed to reply to MTU exchange request, nrf_error %#x", err);
+	nrf_err = sd_ble_gatts_exchange_mtu_reply(conn_handle, links[idx].att_mtu);
+	if (nrf_err) {
+		LOG_ERR("Failed to reply to MTU exchange request, nrf_error %#x", nrf_err);
+
+		app_evt.id = BLE_CONN_PARAMS_EVT_ERROR;
+		app_evt.error.reason = nrf_err;
+		ble_conn_params_event_send(&app_evt);
+
 		return;
 	}
 
 	LOG_INF("ATT MTU set to %u bytes for peer %#x", links[idx].att_mtu, conn_handle);
 
 	/* The ATT MTU exchange has finished, send an event to the application */
-	const struct ble_conn_params_evt app_evt = {
-		.id = BLE_CONN_PARAMS_EVT_ATT_MTU_UPDATED,
-		.conn_handle = conn_handle,
-		.att_mtu = links[idx].att_mtu,
-	};
+	app_evt.id = BLE_CONN_PARAMS_EVT_ATT_MTU_UPDATED;
+	app_evt.att_mtu = links[idx].att_mtu;
 
 	ble_conn_params_event_send(&app_evt);
 }
@@ -161,37 +174,37 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 }
 NRF_SDH_BLE_OBSERVER(ble_observer, on_ble_evt, NULL, 0);
 
-int ble_conn_params_att_mtu_set(uint16_t conn_handle, uint16_t att_mtu)
+uint32_t ble_conn_params_att_mtu_set(uint16_t conn_handle, uint16_t att_mtu)
 {
 	const int idx = nrf_sdh_ble_idx_get(conn_handle);
 
 	if (idx < 0) {
-		return -EINVAL;
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	if (att_mtu < BLE_GATT_ATT_MTU_DEFAULT || CONFIG_BLE_CONN_PARAMS_ATT_MTU < att_mtu) {
-		return -EINVAL;
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	links[idx].att_mtu_desired = att_mtu;
 	mtu_exchange_request(conn_handle, idx);
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
-int ble_conn_params_att_mtu_get(uint16_t conn_handle, uint16_t *att_mtu)
+uint32_t ble_conn_params_att_mtu_get(uint16_t conn_handle, uint16_t *att_mtu)
 {
 	const int idx = nrf_sdh_ble_idx_get(conn_handle);
 
 	if (idx < 0) {
-		return -EINVAL;
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	if (!att_mtu) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 
 	*att_mtu = links[idx].att_mtu;
 
-	return 0;
+	return NRF_SUCCESS;
 }

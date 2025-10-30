@@ -129,23 +129,41 @@ enum ble_gq_req_type {
 };
 
 /**
- * @brief Error handler type.
+ * @brief Advertising event types.
  */
-typedef void (*ble_gq_req_error_cb_t)(uint16_t conn_handle, uint32_t nrf_error, void *context);
+enum ble_gq_evt_type {
+	/**
+	 * @brief Error.
+	 */
+	BLE_GQ_EVT_ERROR,
+};
+
+/** @brief Gatt Queue event. */
+struct ble_gq_evt {
+	/** @brief Advertising event type. */
+	enum ble_gq_evt_type evt_type;
+	/**
+	 * @brief Connection handle for which the event applies.
+	 */
+	uint16_t conn_handle;
+	union {
+		/** @ref BLE_GQ_EVT_ERROR event data. */
+		struct {
+			/** Event result code. */
+			uint32_t reason;
+			/** User provided context. */
+			void *ctx;
+		} error;
+	};
+};
+
+/* Forward declaration */
+struct ble_gq_req;
 
 /**
- * @brief Structure used to handle SoftDevice error.
+ * @brief Event handler type.
  */
-struct ble_gq_req_error_handler {
-	/**
-	 * @brief Error handler to be called in case of an error from SoftDevice.
-	 */
-	ble_gq_req_error_cb_t cb;
-	/**
-	 * @brief Parameter passed to the error handler;
-	 */
-	void *ctx;
-};
+typedef void (*ble_gq_evt_handler_t)(const struct ble_gq_req *req, struct ble_gq_evt *evt);
 
 /**
  * @brief Structure to hold a BLE GATT request.
@@ -168,7 +186,11 @@ struct ble_gq_req {
 	/**
 	 * @brief Error handler structure.
 	 */
-	struct ble_gq_req_error_handler error_handler;
+	ble_gq_evt_handler_t evt_handler;
+	/**
+	 * @brief Context passed to the event handler.
+	 */
+	void *evt_handler_ctx;
 	/**
 	 * @brief Request type specific parameters.
 	 */
@@ -254,12 +276,14 @@ struct ble_gq {
  * @param[in] req          Pointer to the request.
  * @param[in] conn_handle  Connection handle associated with the request.
  *
- * @retval 0        Request was added successfully.
- * @retval -EFAULT  Any parameter was NULL.
- * @retval -EINVAL  If @p conn_handle is not registered or type of request @p req is not valid.
- * @retval -ENOMEM  There was no room in the queue or in the data pool.
+ * @retval NRF_SUCCESS Request was added successfully.
+ * @retval NRF_ERROR_NULL Any parameter was NULL.
+ * @retval NRF_ERROR_INVALID_PARAM If @p conn_handle is not registered or type of request
+ *                                 @p req is not valid.
+ * @retval NRF_ERROR_NO_MEM There was no room in the queue or in the data pool.
  */
-int ble_gq_item_add(const struct ble_gq *gatt_queue, struct ble_gq_req *req, uint16_t conn_handle);
+uint32_t ble_gq_item_add(const struct ble_gq *gatt_queue, struct ble_gq_req *req,
+			 uint16_t conn_handle);
 
 /**
  * @brief Register connection handle in the GATT queue instance.
@@ -271,11 +295,11 @@ int ble_gq_item_add(const struct ble_gq *gatt_queue, struct ble_gq_req *req, uin
  * @param[in] gatt_queue   Pointer to the @ref ble_gq instance.
  * @param[in] conn_handle  Connection handle.
  *
- * @retval 0        Connection handle was successful registered.
- * @retval -EFAULT  If @p gatt_queue was NULL.
- * @retval -ENOMEM  No space for another connection handle.
+ * @retval NRF_SUCCESS Connection handle was successful registered.
+ * @retval NRF_ERROR_NULL If @p gatt_queue was NULL.
+ * @retval NRF_ERROR_NO_MEM No space for another connection handle.
  */
-int ble_gq_conn_handle_register(const struct ble_gq *gatt_queue, uint16_t conn_handle);
+uint32_t ble_gq_conn_handle_register(const struct ble_gq *gatt_queue, uint16_t conn_handle);
 
 /**
  * @brief Handle BLE events from the SoftDevice.

@@ -37,10 +37,10 @@ extern "C" {
 /**
  * @brief Function for initializing the MCUmgr Bluetooth service.
  *
- * @retval 0 On success.
- * @retval -EINVAL Invalid parameters.
+ * @retval NRF_SUCCESS On success.
+ * @retval NRF_ERROR_INVALID_PARAM Invalid parameters.
  */
-int ble_mcumgr_init(void);
+uint32_t ble_mcumgr_init(void);
 
 /**
  * @brief Function for getting the MCUmgr Bluetooth service UUID type.

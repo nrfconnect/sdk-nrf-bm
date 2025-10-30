@@ -69,12 +69,13 @@ uint32_t cgms_racp_char_add(struct ble_cgms *cgms)
 
 static void racp_send(struct ble_cgms *cgms, struct ble_racp_value *racp_val)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	uint8_t encoded_resp[25];
 	uint16_t len;
 
 	struct ble_cgms_evt evt = {
 		.evt_type = BLE_CGMS_EVT_ERROR,
+		.conn_handle = cgms->conn_handle,
 	};
 
 	/* Send indication */
@@ -82,8 +83,8 @@ static void racp_send(struct ble_cgms *cgms, struct ble_racp_value *racp_val)
 
 	struct ble_gq_req cgms_req = {
 		.type = BLE_GQ_REQ_GATTS_HVX,
-		.error_handler.cb = cgms->gatt_err_handler,
-		.error_handler.ctx = cgms,
+		.evt_handler = cgms->ble_gq_evt_handler,
+		.evt_handler_ctx = cgms,
 		.gatts_hvx.type = BLE_GATT_HVX_INDICATION,
 		.gatts_hvx.handle = cgms->char_handles.racp.value_handle,
 		.gatts_hvx.offset = 0,
@@ -91,15 +92,18 @@ static void racp_send(struct ble_cgms *cgms, struct ble_racp_value *racp_val)
 		.gatts_hvx.p_len = &len,
 	};
 
-	err = ble_gq_item_add(cgms->gatt_queue, &cgms_req, cgms->conn_handle);
+	nrf_err = ble_gq_item_add(cgms->gatt_queue, &cgms_req, cgms->conn_handle);
 
-	/* Report error to application */
-	if ((cgms->evt_handler != NULL) &&
-	    (err != NRF_SUCCESS) &&
-	    (err != NRF_ERROR_INVALID_STATE)) {
-		evt.error.reason = err;
-		cgms->evt_handler(cgms, &evt);
+	if ((nrf_err != NRF_SUCCESS) &&
+	    (nrf_err != NRF_ERROR_INVALID_STATE)) {
+		LOG_ERR("Failed to add item to gatt queue, nrf_err %d", nrf_err);
+		/* Report error to application */
+		if (cgms->evt_handler != NULL) {
+			evt.error.reason = nrf_err;
+			cgms->evt_handler(cgms, &evt);
+		}
 	}
+
 }
 
 static void racp_response_code_send(struct ble_cgms *cgms, uint8_t racp_opcode, uint8_t value)
@@ -127,7 +131,7 @@ static uint32_t racp_report_records_all(struct ble_cgms *cgms)
 	if (cgms->racp_data.racp_proc_record_idx >= total_records) {
 		cgms->racp_data.racp_processing_active = false;
 	} else {
-		uint32_t err;
+		uint32_t nrf_err;
 		struct ble_cgms_rec rec[BLE_CGMS_MEAS_REC_PER_NOTIF_MAX];
 
 		cur_num_rec = total_records - cgms->racp_data.racp_proc_record_idx;
@@ -138,16 +142,16 @@ static uint32_t racp_report_records_all(struct ble_cgms *cgms)
 		recs_to_send = cur_num_rec;
 
 		for (i = 0; i < cur_num_rec; i++) {
-			err = cgms_db_record_get(&(rec[i]),
-						 cgms->racp_data.racp_proc_record_idx + i);
-			if (err != NRF_SUCCESS) {
-				return err;
+			nrf_err = cgms_db_record_get(&(rec[i]),
+						     cgms->racp_data.racp_proc_record_idx + i);
+			if (nrf_err) {
+				return nrf_err;
 			}
 		}
 
-		err = cgms_meas_send(cgms, rec, &recs_to_send);
-		if (err != NRF_SUCCESS) {
-			return err;
+		nrf_err = cgms_meas_send(cgms, rec, &recs_to_send);
+		if (nrf_err) {
+			return nrf_err;
 		}
 
 		cgms->racp_data.racp_proc_record_idx += recs_to_send;
@@ -159,7 +163,7 @@ static uint32_t racp_report_records_all(struct ble_cgms *cgms)
 /* Respond to the FIRST or the LAST operation. */
 static uint32_t racp_report_records_first_last(struct ble_cgms *cgms)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	struct ble_cgms_rec rec;
 	uint16_t total_records;
 	uint16_t recs_to_send = 1;
@@ -170,20 +174,20 @@ static uint32_t racp_report_records_first_last(struct ble_cgms *cgms)
 		cgms->racp_data.racp_processing_active = false;
 	} else {
 		if (cgms->racp_data.racp_proc_operator == RACP_OPERATOR_FIRST) {
-			err = cgms_db_record_get(&rec, 0);
-			if (err != NRF_SUCCESS) {
-				return err;
+			nrf_err = cgms_db_record_get(&rec, 0);
+			if (nrf_err) {
+				return nrf_err;
 			}
 		} else if (cgms->racp_data.racp_proc_operator == RACP_OPERATOR_LAST) {
-			err = cgms_db_record_get(&rec, total_records - 1);
-			if (err != NRF_SUCCESS) {
-				return err;
+			nrf_err = cgms_db_record_get(&rec, total_records - 1);
+			if (nrf_err) {
+				return nrf_err;
 			}
 		}
 
-		err = cgms_meas_send(cgms, &rec, &recs_to_send);
-		if (err != NRF_SUCCESS) {
-			return err;
+		nrf_err = cgms_meas_send(cgms, &rec, &recs_to_send);
+		if (nrf_err) {
+			return nrf_err;
 		}
 		cgms->racp_data.racp_proc_record_idx++;
 	}
@@ -204,7 +208,7 @@ static uint32_t racp_report_records_less_equal(struct ble_cgms *cgms)
 	if (cgms->racp_data.racp_proc_record_idx >= recs_to_send_total) {
 		cgms->racp_data.racp_processing_active = false;
 	} else {
-		uint32_t err;
+		uint32_t nrf_err;
 		struct ble_cgms_rec rec[BLE_CGMS_MEAS_REC_PER_NOTIF_MAX];
 
 		recs_to_send_remaining = (recs_to_send_total -
@@ -217,16 +221,16 @@ static uint32_t racp_report_records_less_equal(struct ble_cgms *cgms)
 		}
 
 		for (i = 0; i < recs_to_send; i++) {
-			err = cgms_db_record_get(&(rec[i]),
-						 cgms->racp_data.racp_proc_record_idx + i);
-			if (err != NRF_SUCCESS) {
-				return err;
+			nrf_err = cgms_db_record_get(&(rec[i]),
+						     cgms->racp_data.racp_proc_record_idx + i);
+			if (nrf_err) {
+				return nrf_err;
 			}
 		}
 
-		err = cgms_meas_send(cgms, rec, &recs_to_send);
-		if (err != NRF_SUCCESS) {
-			return err;
+		nrf_err = cgms_meas_send(cgms, rec, &recs_to_send);
+		if (nrf_err) {
+			return nrf_err;
 		}
 
 		cgms->racp_data.racp_proc_record_idx += recs_to_send;
@@ -238,7 +242,7 @@ static uint32_t racp_report_records_less_equal(struct ble_cgms *cgms)
 /* Respond to the GREATER OR EQUAL operation. */
 static uint32_t racp_report_records_greater_equal(struct ble_cgms *cgms)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	uint16_t recs_total = cgms_db_num_records_get();
 	uint16_t recs_to_send_remaining;
 	uint16_t recs_to_send;
@@ -261,14 +265,14 @@ static uint32_t racp_report_records_greater_equal(struct ble_cgms *cgms)
 	}
 
 	for (i = 0; i < recs_to_send; i++) {
-		err = cgms_db_record_get(&(rec[i]), cgms->racp_data.racp_proc_record_idx + i);
-		if (err != NRF_SUCCESS) {
-			return err;
+		nrf_err = cgms_db_record_get(&(rec[i]), cgms->racp_data.racp_proc_record_idx + i);
+		if (nrf_err) {
+			return nrf_err;
 		}
 	}
-	err = cgms_meas_send(cgms, rec, &recs_to_send);
-	if (err != NRF_SUCCESS) {
-		return err;
+	nrf_err = cgms_meas_send(cgms, rec, &recs_to_send);
+	if (nrf_err) {
+		return nrf_err;
 	}
 	cgms->racp_data.racp_proc_record_idx += recs_to_send;
 
@@ -292,30 +296,32 @@ static void racp_report_records_completed(struct ble_cgms *cgms)
 /* RACP report records procedure. */
 static void racp_report_records_procedure(struct ble_cgms *cgms)
 {
-	uint32_t err = NRF_SUCCESS;
+	uint32_t nrf_err = NRF_SUCCESS;
 	struct ble_cgms_evt evt = {
 		.evt_type = BLE_CGMS_EVT_ERROR,
+		.conn_handle = cgms->conn_handle,
 	};
 
 	while (cgms->racp_data.racp_processing_active) {
 		/* Execute requested procedure */
 		switch (cgms->racp_data.racp_proc_operator) {
 		case RACP_OPERATOR_ALL:
-			err = racp_report_records_all(cgms);
+			nrf_err = racp_report_records_all(cgms);
 			break;
 
 		case RACP_OPERATOR_FIRST:
 			/* Fall through. */
 		case RACP_OPERATOR_LAST:
-			err = racp_report_records_first_last(cgms);
+			nrf_err = racp_report_records_first_last(cgms);
 			break;
 		case RACP_OPERATOR_GREATER_OR_EQUAL:
-			err = racp_report_records_greater_equal(cgms);
+			nrf_err = racp_report_records_greater_equal(cgms);
 			break;
 		case RACP_OPERATOR_LESS_OR_EQUAL:
-			err = racp_report_records_less_equal(cgms);
+			nrf_err = racp_report_records_less_equal(cgms);
 			break;
 		default:
+			LOG_ERR("Unknown RACP operator %d", cgms->racp_data.racp_proc_operator);
 			/* Report error to application */
 			if (cgms->evt_handler != NULL) {
 				evt.error.reason = NRF_ERROR_INTERNAL;
@@ -327,7 +333,7 @@ static void racp_report_records_procedure(struct ble_cgms *cgms)
 		}
 
 		/* Error handling */
-		switch (err) {
+		switch (nrf_err) {
 		case NRF_SUCCESS:
 			if (!cgms->racp_data.racp_processing_active) {
 				racp_report_records_completed(cgms);
@@ -344,6 +350,7 @@ static void racp_report_records_procedure(struct ble_cgms *cgms)
 			return;
 
 		default:
+			LOG_ERR("Unhandled RACP error, nrf_error %d", nrf_err);
 			/* Report error to application. */
 			if (cgms->evt_handler != NULL) {
 				evt.error.reason = NRF_ERROR_INTERNAL;
@@ -436,14 +443,14 @@ static bool is_request_to_be_executed(struct ble_cgms *cgms,
 /* Get a record with time offset less or equal to the input param. */
 static uint32_t record_index_offset_less_or_equal_get(uint16_t offset, uint16_t *record_num)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	struct ble_cgms_rec rec;
 	uint16_t upper_bound = cgms_db_num_records_get();
 
 	for ((*record_num) = upper_bound; ((*record_num)-- > 0);) {
-		err = cgms_db_record_get(&rec, *record_num);
-		if (err != NRF_SUCCESS) {
-			return err;
+		nrf_err = cgms_db_record_get(&rec, *record_num);
+		if (nrf_err) {
+			return nrf_err;
 		}
 
 		if (rec.meas.time_offset <= offset) {
@@ -457,14 +464,14 @@ static uint32_t record_index_offset_less_or_equal_get(uint16_t offset, uint16_t 
 /* Get a record with time offset greater or equal to the input param. */
 static uint32_t record_index_offset_greater_or_equal_get(uint16_t offset, uint16_t *record_num)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	struct ble_cgms_rec rec;
 	uint16_t upper_bound = cgms_db_num_records_get();
 
 	for (*record_num = 0; *record_num < upper_bound; (*record_num)++) {
-		err = cgms_db_record_get(&rec, *record_num);
-		if (err != NRF_SUCCESS) {
-			return err;
+		nrf_err = cgms_db_record_get(&rec, *record_num);
+		if (nrf_err) {
+			return nrf_err;
 		}
 
 		if (rec.meas.time_offset >= offset) {
@@ -479,7 +486,7 @@ static uint32_t record_index_offset_greater_or_equal_get(uint16_t offset, uint16
 static void report_records_request_execute(struct ble_cgms *cgms,
 					   struct ble_racp_value *racp_request)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	uint16_t offset_requested;
 	uint16_t *record_num;
 	const uint8_t *op;
@@ -495,8 +502,8 @@ static void report_records_request_execute(struct ble_cgms *cgms,
 		op = &cgms->racp_data.racp_request.operand[OPERAND_LESS_GREATER_FILTER_TYPE_SIZE];
 		offset_requested = sys_get_le16(op);
 		record_num = &cgms->racp_data.racp_proc_record_idx;
-		err = record_index_offset_greater_or_equal_get(offset_requested, record_num);
-		if (err != NRF_SUCCESS) {
+		nrf_err = record_index_offset_greater_or_equal_get(offset_requested, record_num);
+		if (nrf_err) {
 			racp_report_records_completed(cgms);
 		}
 	}
@@ -505,8 +512,8 @@ static void report_records_request_execute(struct ble_cgms *cgms,
 		op = &cgms->racp_data.racp_request.operand[OPERAND_LESS_GREATER_FILTER_TYPE_SIZE];
 		offset_requested = sys_get_le16(op);
 		record_num = &cgms->racp_data.racp_proc_records_idx_last_to_send;
-		err = record_index_offset_less_or_equal_get(offset_requested, record_num);
-		if (err != NRF_SUCCESS) {
+		nrf_err = record_index_offset_less_or_equal_get(offset_requested, record_num);
+		if (nrf_err) {
 			racp_report_records_completed(cgms);
 		}
 	}
@@ -518,7 +525,7 @@ static void report_records_request_execute(struct ble_cgms *cgms,
 static void report_num_records_request_execute(struct ble_cgms   *cgms,
 					       struct ble_racp_value *racp_request)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	uint16_t total_records;
 	uint16_t num_records;
 
@@ -537,9 +544,10 @@ static void report_num_records_request_execute(struct ble_cgms   *cgms,
 		uint8_t *operand = cgms->racp_data.racp_request.operand;
 		uint16_t offset_requested =
 			sys_get_le16(&operand[OPERAND_LESS_GREATER_FILTER_TYPE_SIZE]);
-		err = record_index_offset_greater_or_equal_get(offset_requested, &index_of_offset);
+		nrf_err = record_index_offset_greater_or_equal_get(offset_requested,
+								   &index_of_offset);
 
-		if (err != NRF_SUCCESS) {
+		if (nrf_err) {
 			num_records = 0;
 		} else {
 			num_records = total_records - index_of_offset;
@@ -588,9 +596,10 @@ static void on_racp_value_write(struct ble_cgms *cgms, const ble_gatts_evt_write
 void cgms_racp_on_rw_auth_req(struct ble_cgms *cgms,
 			      const ble_gatts_evt_rw_authorize_request_t *auth_req)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	struct ble_cgms_evt cgms_evt = {
 		.evt_type = BLE_CGMS_EVT_ERROR,
+		.conn_handle = cgms->conn_handle,
 	};
 	ble_gatts_rw_authorize_reply_params_t auth_reply = {
 		.type = BLE_GATTS_AUTHORIZE_TYPE_WRITE,
@@ -608,16 +617,17 @@ void cgms_racp_on_rw_auth_req(struct ble_cgms *cgms,
 		.offset = 0,
 	};
 
-	err = sd_ble_gatts_value_get(cgms->conn_handle, cgms->char_handles.racp.cccd_handle,
-				     &gatts_val);
-	if ((err != NRF_SUCCESS) || !is_indication_enabled(gatts_val.p_value)) {
+	nrf_err = sd_ble_gatts_value_get(cgms->conn_handle, cgms->char_handles.racp.cccd_handle,
+					 &gatts_val);
+	if (nrf_err || !is_indication_enabled(gatts_val.p_value)) {
 		auth_reply.params.write.gatt_status = BLE_GATT_STATUS_ATTERR_CPS_CCCD_CONFIG_ERROR;
 	}
 
-	err = sd_ble_gatts_rw_authorize_reply(cgms->conn_handle, &auth_reply);
-	if (err != NRF_SUCCESS) {
+	nrf_err = sd_ble_gatts_rw_authorize_reply(cgms->conn_handle, &auth_reply);
+	if (nrf_err) {
+		LOG_ERR("sd_ble_gatts_rw_authorize_reply failed, nrf_err %d", nrf_err);
 		if (cgms->evt_handler != NULL) {
-			cgms_evt.error.reason = err;
+			cgms_evt.error.reason = nrf_err;
 			cgms->evt_handler(cgms, &cgms_evt);
 		}
 		return;

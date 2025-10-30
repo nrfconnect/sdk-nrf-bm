@@ -344,11 +344,12 @@ uint32_t cgms_socp_char_add(struct ble_cgms *cgms)
 /* Send a Specific Ops Control Point response. */
 static void socp_send(struct ble_cgms *cgms)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	uint8_t encoded_resp[BLE_CGMS_SOCP_LEN];
 	uint16_t len;
 	struct ble_cgms_evt cgms_evt = {
 		.evt_type = BLE_CGMS_EVT_ERROR,
+		.conn_handle = cgms->conn_handle,
 	};
 
 	/* Send indication. */
@@ -356,8 +357,8 @@ static void socp_send(struct ble_cgms *cgms)
 
 	struct ble_gq_req cgms_req = {
 		.type = BLE_GQ_REQ_GATTS_HVX,
-		.error_handler.cb = cgms->gatt_err_handler,
-		.error_handler.ctx = cgms,
+		.evt_handler = cgms->ble_gq_evt_handler,
+		.evt_handler_ctx = cgms,
 		.gatts_hvx.type = BLE_GATT_HVX_INDICATION,
 		.gatts_hvx.handle = cgms->char_handles.socp.value_handle,
 		.gatts_hvx.offset = 0,
@@ -365,15 +366,16 @@ static void socp_send(struct ble_cgms *cgms)
 		.gatts_hvx.p_len = &len,
 	};
 
-	err = ble_gq_item_add(cgms->gatt_queue, &cgms_req, cgms->conn_handle);
-
-	/* Report error to application. */
-	if ((cgms->evt_handler != NULL) &&
-	    (err != NRF_SUCCESS) &&
-	    (err != NRF_ERROR_INVALID_STATE)) {
-		cgms_evt.error.reason = err;
-		cgms->evt_handler(cgms, &cgms_evt);
+	nrf_err = ble_gq_item_add(cgms->gatt_queue, &cgms_req, cgms->conn_handle);
+	if ((nrf_err) && (nrf_err != NRF_ERROR_INVALID_STATE)) {
+		LOG_ERR("Failed to add item to gatt queue, nrf_error %d", nrf_err);
+		/* Report error to application. */
+		if (cgms->evt_handler != NULL) {
+			cgms_evt.error.reason = nrf_err;
+			cgms->evt_handler(cgms, &cgms_evt);
+		}
 	}
+
 }
 
 static bool is_feature_present(struct ble_cgms *cgms, uint32_t feature)
@@ -384,9 +386,11 @@ static bool is_feature_present(struct ble_cgms *cgms, uint32_t feature)
 /* Specific Ops Control Point write event handler. */
 static void on_socp_value_write(struct ble_cgms *cgms, const ble_gatts_evt_write_t *evt_write)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	struct ble_cgms_socp_value socp_request;
-	struct ble_cgms_evt evt;
+	struct ble_cgms_evt evt = {
+		.conn_handle = cgms->conn_handle,
+	};
 	struct ble_cgms_sst sst = {};
 
 	/* Decode request. */
@@ -426,11 +430,12 @@ static void on_socp_value_write(struct ble_cgms *cgms, const ble_gatts_evt_write
 				cgms->evt_handler(cgms, &evt);
 			}
 
-			err = cgms_sst_set(cgms, &sst);
-			if (err != NRF_SUCCESS) {
+			nrf_err = cgms_sst_set(cgms, &sst);
+			if (nrf_err) {
+				LOG_ERR("Failed to set SST, nrf_error %d", nrf_err);
 				if (cgms->evt_handler != NULL) {
 					evt.evt_type = BLE_CGMS_EVT_ERROR;
-					evt.error.reason = err;
+					evt.error.reason = nrf_err;
 					cgms->evt_handler(cgms, &evt);
 				}
 			}
@@ -440,11 +445,12 @@ static void on_socp_value_write(struct ble_cgms *cgms, const ble_gatts_evt_write
 
 			cgms->sensor_status.time_offset    = 0;
 			cgms->sensor_status.status.status &= (~BLE_CGMS_STATUS_SESSION_STOPPED);
-			err = ble_cgms_update_status(cgms, &cgms->sensor_status);
-			if (err != NRF_SUCCESS) {
+			nrf_err = ble_cgms_update_status(cgms, &cgms->sensor_status);
+			if (nrf_err) {
+				LOG_ERR("Failed to update CGMS status, nrf_error %d", nrf_err);
 				if (cgms->evt_handler != NULL) {
 					evt.evt_type = BLE_CGMS_EVT_ERROR;
-					evt.error.reason = err;
+					evt.error.reason = nrf_err;
 					cgms->evt_handler(cgms, &evt);
 				}
 			}
@@ -466,11 +472,12 @@ static void on_socp_value_write(struct ble_cgms *cgms, const ble_gatts_evt_write
 			evt.evt_type = BLE_CGMS_EVT_STOP_SESSION;
 			cgms->evt_handler(cgms, &evt);
 		}
-		err = ble_cgms_update_status(cgms, &status);
-		if (err != NRF_SUCCESS) {
+		nrf_err = ble_cgms_update_status(cgms, &status);
+		if (nrf_err) {
+			LOG_ERR("Failed to update CGMS status, nrf_error %d", nrf_err);
 			if (cgms->evt_handler != NULL) {
 				evt.evt_type = BLE_CGMS_EVT_ERROR;
-				evt.error.reason = err;
+				evt.error.reason = nrf_err;
 				cgms->evt_handler(cgms, &evt);
 			}
 		}
@@ -487,9 +494,10 @@ static void on_socp_value_write(struct ble_cgms *cgms, const ble_gatts_evt_write
 void cgms_socp_on_rw_auth_req(struct ble_cgms *cgms,
 			      const ble_gatts_evt_rw_authorize_request_t *auth_req)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	struct ble_cgms_evt cgms_evt = {
 		.evt_type = BLE_CGMS_EVT_ERROR,
+		.conn_handle = cgms->conn_handle,
 	};
 	ble_gatts_rw_authorize_reply_params_t auth_reply = {
 		.type = BLE_GATTS_AUTHORIZE_TYPE_WRITE,
@@ -508,17 +516,17 @@ void cgms_socp_on_rw_auth_req(struct ble_cgms *cgms,
 		.offset = 0,
 	};
 
-	err = sd_ble_gatts_value_get(cgms->conn_handle, cgms->char_handles.socp.cccd_handle,
-				     &gatts_val);
-	if ((err != NRF_SUCCESS) || !is_indication_enabled(gatts_val.p_value)) {
+	nrf_err = sd_ble_gatts_value_get(cgms->conn_handle, cgms->char_handles.socp.cccd_handle,
+					 &gatts_val);
+	if (nrf_err || !is_indication_enabled(gatts_val.p_value)) {
 		auth_reply.params.write.gatt_status = BLE_GATT_STATUS_ATTERR_CPS_CCCD_CONFIG_ERROR;
 	}
 
-	err = sd_ble_gatts_rw_authorize_reply(cgms->conn_handle, &auth_reply);
-	if (err != NRF_SUCCESS) {
+	nrf_err = sd_ble_gatts_rw_authorize_reply(cgms->conn_handle, &auth_reply);
+	if (nrf_err) {
+		LOG_ERR("Failed to reply authorize rw request, nrf_error %d", nrf_err);
 		if (cgms->evt_handler != NULL) {
-			cgms_evt.error.reason = err;
-			cgms_evt.evt_type = BLE_CGMS_EVT_ERROR;
+			cgms_evt.error.reason = nrf_err;
 			cgms->evt_handler(cgms, &cgms_evt);
 		}
 		return;

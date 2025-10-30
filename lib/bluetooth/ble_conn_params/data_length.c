@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
+#include <nrf_error.h>
 #include <ble_gap.h>
 #include <bm/bluetooth/ble_conn_params.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
@@ -30,7 +31,7 @@ static struct {
 
 static void data_length_update(uint16_t conn_handle, int idx)
 {
-	int err;
+	uint32_t nrf_err;
 	bool retry;
 	ble_gap_data_length_params_t dlp = {
 		.max_tx_octets = links[idx].desired.tx,
@@ -39,17 +40,21 @@ static void data_length_update(uint16_t conn_handle, int idx)
 		.max_rx_time_us = BLE_GAP_DATA_LENGTH_AUTO,
 	};
 	ble_gap_data_length_limitation_t dll = {0};
+	struct ble_conn_params_evt app_evt = {
+		.id = BLE_CONN_PARAMS_EVT_ERROR,
+		.conn_handle = conn_handle,
+	};
 
 	do {
 		retry = false;
 
-		err = sd_ble_gap_data_length_update(conn_handle, &dlp, &dll);
-		if (err == NRF_ERROR_BUSY) {
+		nrf_err = sd_ble_gap_data_length_update(conn_handle, &dlp, &dll);
+		if (nrf_err == NRF_ERROR_BUSY) {
 			/* Retry later. */
 			LOG_DBG("Another procedure is ongoing, will retry");
 			links[idx].data_length_update_pending = true;
 			return;
-		} else if (err == NRF_ERROR_RESOURCES) {
+		} else if (nrf_err == NRF_ERROR_RESOURCES) {
 			if ((dll.tx_payload_limited_octets != 0) ||
 			    (dll.rx_payload_limited_octets != 0)) {
 				LOG_WRN("The requested TX and RX packet lengths are too long by "
@@ -71,10 +76,16 @@ static void data_length_update(uint16_t conn_handle, int idx)
 				LOG_ERR("The requested combination of TX and RX packet lengths "
 					"is too long by %u microseconds.",
 					dll.tx_rx_time_limited_us);
+
+				app_evt.error.reason = nrf_err;
+				ble_conn_params_event_send(&app_evt);
 			}
-		} else if (err) {
+		} else if (nrf_err) {
 			LOG_ERR("Failed to initiate or respond to Data Length Update procedure, "
-				"nrf_error %#x", err);
+				"nrf_error %#x", nrf_err);
+
+			app_evt.error.reason = nrf_err;
+			ble_conn_params_event_send(&app_evt);
 		}
 	} while (retry);
 }
@@ -187,40 +198,42 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 }
 NRF_SDH_BLE_OBSERVER(ble_observer, on_ble_evt, NULL, 0);
 
-int ble_conn_params_data_length_set(uint16_t conn_handle, struct ble_conn_params_data_length dl)
+uint32_t ble_conn_params_data_length_set(uint16_t conn_handle,
+					 struct ble_conn_params_data_length dl)
 {
 	const int idx = nrf_sdh_ble_idx_get(conn_handle);
 
 	if (idx < 0) {
-		return -EINVAL;
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	if (dl.tx < BLE_GAP_DATA_LENGTH_DEFAULT || dl.tx > CONFIG_BLE_CONN_PARAMS_DATA_LENGTH_TX ||
 	    dl.rx < BLE_GAP_DATA_LENGTH_DEFAULT || dl.rx > CONFIG_BLE_CONN_PARAMS_DATA_LENGTH_RX) {
-		return -EINVAL;
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	links[idx].desired.tx = dl.tx;
 	links[idx].desired.rx = dl.rx;
 	data_length_update(conn_handle, idx);
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
-int ble_conn_params_data_length_get(uint16_t conn_handle, struct ble_conn_params_data_length *dl)
+uint32_t ble_conn_params_data_length_get(uint16_t conn_handle,
+					 struct ble_conn_params_data_length *dl)
 {
 	const int idx = nrf_sdh_ble_idx_get(conn_handle);
 
 	if (idx < 0) {
-		return -EINVAL;
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	if (!dl) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 
 	dl->tx = links[idx].data_length.tx;
 	dl->rx = links[idx].data_length.rx;
 
-	return 0;
+	return NRF_SUCCESS;
 }

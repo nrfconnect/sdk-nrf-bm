@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
+#include <nrf_error.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <bm/bluetooth/services/ble_nus.h>
@@ -101,11 +102,10 @@ static uint32_t nus_tx_char_add(struct ble_nus *nus, struct ble_nus_config const
  */
 static void on_connect(struct ble_nus *nus, ble_evt_t const *ble_evt)
 {
-	int err;
+	uint32_t nrf_err;
 	const uint16_t conn_handle = ble_evt->evt.gap_evt.conn_handle;
 	struct ble_nus_evt evt = {
 		.type = BLE_NUS_EVT_COMM_STARTED,
-		.nus = nus,
 		.conn_handle = conn_handle,
 	};
 	uint8_t cccd_value[2];
@@ -119,20 +119,25 @@ static void on_connect(struct ble_nus *nus, ble_evt_t const *ble_evt)
 	ctx = ble_nus_client_context_get(conn_handle);
 	if (ctx == NULL) {
 		LOG_ERR("Could not fetch nus context for connection handle %#x", conn_handle);
+		evt.type = BLE_NUS_EVT_ERROR;
+		evt.error.reason = NRF_ERROR_NOT_FOUND;
+		if (nus->evt_handler != NULL) {
+			nus->evt_handler(nus, &evt);
+		}
 	}
 
 	/* Check the hosts CCCD value to inform of readiness to send data using the
 	 * RX characteristic
 	 */
-	err = sd_ble_gatts_value_get(conn_handle, nus->tx_handles.cccd_handle, &gatts_val);
-	if ((err == 0) && (nus->evt_handler != NULL) &&
+	nrf_err = sd_ble_gatts_value_get(conn_handle, nus->tx_handles.cccd_handle, &gatts_val);
+	if ((nrf_err == NRF_SUCCESS) && (nus->evt_handler != NULL) &&
 	    is_notification_enabled(gatts_val.p_value)) {
 		if (ctx != NULL) {
 			ctx->is_notification_enabled = true;
 		}
 
 		evt.link_ctx = ctx;
-		nus->evt_handler(&evt);
+		nus->evt_handler(nus, &evt);
 	}
 }
 
@@ -147,7 +152,6 @@ static void on_write(struct ble_nus *nus, ble_evt_t const *ble_evt)
 	const uint16_t conn_handle = ble_evt->evt.gatts_evt.conn_handle;
 	const ble_gatts_evt_write_t *evt_write = &ble_evt->evt.gatts_evt.params.write;
 	struct ble_nus_evt evt = {
-		.nus = nus,
 		.conn_handle = conn_handle,
 	};
 	struct ble_nus_client_context *ctx;
@@ -155,6 +159,11 @@ static void on_write(struct ble_nus *nus, ble_evt_t const *ble_evt)
 	ctx = ble_nus_client_context_get(conn_handle);
 	if (ctx == NULL) {
 		LOG_ERR("Could not fetch nus context for connection handle %#x", conn_handle);
+		evt.type = BLE_NUS_EVT_ERROR;
+		evt.error.reason = NRF_ERROR_NOT_FOUND;
+		if (nus->evt_handler != NULL) {
+			nus->evt_handler(nus, &evt);
+		}
 	}
 
 	LOG_DBG("Link ctx %p", ctx);
@@ -171,16 +180,16 @@ static void on_write(struct ble_nus *nus, ble_evt_t const *ble_evt)
 			}
 
 			if (nus->evt_handler != NULL) {
-				nus->evt_handler(&evt);
+				nus->evt_handler(nus, &evt);
 			}
 		}
 	} else if ((evt_write->handle == nus->rx_handles.value_handle) &&
 		   (nus->evt_handler != NULL)) {
 		evt.type = BLE_NUS_EVT_RX_DATA;
-		evt.params.rx_data.data = evt_write->data;
-		evt.params.rx_data.length = evt_write->len;
+		evt.rx_data.data = evt_write->data;
+		evt.rx_data.length = evt_write->len;
 
-		nus->evt_handler(&evt);
+		nus->evt_handler(nus, &evt);
 	} else {
 		/* Do nothing. This event is not relevant for this service. */
 	}
@@ -197,7 +206,6 @@ static void on_hvx_tx_complete(struct ble_nus *nus, ble_evt_t const *ble_evt)
 	const uint16_t conn_handle = ble_evt->evt.gatts_evt.conn_handle;
 	struct ble_nus_evt evt = {
 		.type = BLE_NUS_EVT_TX_RDY,
-		.nus = nus,
 		.conn_handle = conn_handle,
 	};
 	struct ble_nus_client_context *ctx;
@@ -210,7 +218,7 @@ static void on_hvx_tx_complete(struct ble_nus *nus, ble_evt_t const *ble_evt)
 
 	if ((ctx->is_notification_enabled) && (nus->evt_handler != NULL)) {
 		evt.link_ctx = ctx;
-		nus->evt_handler(&evt);
+		nus->evt_handler(nus, &evt);
 	}
 }
 
@@ -244,14 +252,14 @@ void ble_nus_on_ble_evt(ble_evt_t const *ble_evt, void *ctx)
 	}
 }
 
-int ble_nus_init(struct ble_nus *nus, struct ble_nus_config const *cfg)
+uint32_t ble_nus_init(struct ble_nus *nus, struct ble_nus_config const *cfg)
 {
-	int err;
+	uint32_t nrf_err;
 	ble_uuid_t ble_uuid;
 	ble_uuid128_t uuid_base = { .uuid128 = BLE_NUS_UUID_BASE };
 
 	if (!nus || !cfg) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 
 	/* Initialize the service structure. */
@@ -259,45 +267,44 @@ int ble_nus_init(struct ble_nus *nus, struct ble_nus_config const *cfg)
 	nus->service_handle = BLE_CONN_HANDLE_INVALID;
 
 	/* Add a custom base UUID. */
-	err = sd_ble_uuid_vs_add(&uuid_base, &nus->uuid_type);
-	if (err) {
-		LOG_ERR("sd_ble_uuid_vs_add failed, nrf_error %#x", err);
-		return -EINVAL;
+	nrf_err = sd_ble_uuid_vs_add(&uuid_base, &nus->uuid_type);
+	if (nrf_err) {
+		LOG_ERR("sd_ble_uuid_vs_add failed, nrf_error %#x", nrf_err);
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	ble_uuid.type = nus->uuid_type;
 	ble_uuid.uuid = BLE_UUID_NUS_SERVICE;
 
 	/* Add the service. */
-	err = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY,
-				       &ble_uuid,
-				       &nus->service_handle);
-	if (err) {
-		LOG_ERR("Failed to add NUS service, nrf_error %#x", err);
-		return -EINVAL;
+	nrf_err = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY,
+					   &ble_uuid,
+					   &nus->service_handle);
+	if (nrf_err) {
+		LOG_ERR("Failed to add NUS service, nrf_error %#x", nrf_err);
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	/* Add NUS RX characteristic. */
-	err = nus_rx_char_add(nus, cfg);
-	if (err) {
-		LOG_ERR("nus_rx_char_add failed, nrf_error %#x", err);
-		return -EINVAL;
+	nrf_err = nus_rx_char_add(nus, cfg);
+	if (nrf_err) {
+		LOG_ERR("nus_rx_char_add failed, nrf_error %#x", nrf_err);
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	/* Add NUS TX characteristic. */
-	err = nus_tx_char_add(nus, cfg);
-	if (err) {
-		LOG_ERR("nus_tx_char_add failed, nrf_error %#x", err);
-		return -EINVAL;
+	nrf_err = nus_tx_char_add(nus, cfg);
+	if (nrf_err) {
+		LOG_ERR("nus_tx_char_add failed, nrf_error %#x", nrf_err);
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	return 0;
 }
 
-int ble_nus_data_send(struct ble_nus *nus, uint8_t *data,
+uint32_t ble_nus_data_send(struct ble_nus *nus, uint8_t *data,
 			   uint16_t *len, uint16_t conn_handle)
 {
-	int err;
 	ble_gatts_hvx_params_t hvx_params = {
 		.p_data = data,
 		.p_len = len,
@@ -306,45 +313,27 @@ int ble_nus_data_send(struct ble_nus *nus, uint8_t *data,
 	struct ble_nus_client_context *ctx;
 
 	if (!nus || !data || !len) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 
 	if (*len > BLE_NUS_MAX_DATA_LEN) {
-		return -EINVAL;
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	if (conn_handle == BLE_CONN_HANDLE_INVALID) {
-		return -ENOENT;
+		return NRF_ERROR_NOT_FOUND;
 	}
 
 	ctx = ble_nus_client_context_get(conn_handle);
 	if (ctx == NULL) {
-		return -ENOENT;
+		return NRF_ERROR_NOT_FOUND;
 	}
 
 	if (!ctx->is_notification_enabled) {
-		return -EINVAL;
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	hvx_params.handle = nus->tx_handles.value_handle;
 
-	err =  sd_ble_gatts_hvx(conn_handle, &hvx_params);
-	switch (err) {
-	case NRF_SUCCESS:
-		return 0;
-	case BLE_ERROR_INVALID_CONN_HANDLE:
-		return -ENOTCONN;
-	case NRF_ERROR_INVALID_STATE:
-	case BLE_ERROR_GATTS_SYS_ATTR_MISSING:
-		return -EPIPE;
-	case NRF_ERROR_RESOURCES:
-		return -EAGAIN;
-	case NRF_ERROR_NOT_FOUND:
-		return -EBADF;
-	default:
-		LOG_ERR("Failed to send NUS data, nrf_error %#x", err);
-		return -EIO;
-	}
-
-	return 0;
+	return sd_ble_gatts_hvx(conn_handle, &hvx_params);
 }

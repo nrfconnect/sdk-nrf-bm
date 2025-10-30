@@ -92,16 +92,16 @@ static bool peer_data_id_is_valid(enum pm_peer_data_id data_id)
 /**
  * @brief Function for sending a PM_EVT_ERROR_UNEXPECTED event.
  *
- * @param[in]  peer_id    The peer the event pertains to.
- * @param[in]  err_code   The unexpected error that occurred.
+ * @param[in]  peer_id   The peer the event pertains to.
+ * @param[in]  nrf_err   The unexpected error that occurred.
  */
-static void send_unexpected_error(uint16_t peer_id, uint32_t err_code)
+static void send_unexpected_error(uint16_t peer_id, uint32_t nrf_err)
 {
 	struct pm_evt error_evt = {
 		.evt_id = PM_EVT_ERROR_UNEXPECTED,
 		.peer_id = peer_id,
 		.params.error_unexpected = {
-			.error = err_code,
+			.error = nrf_err,
 		},
 	};
 	pds_evt_send(&error_evt);

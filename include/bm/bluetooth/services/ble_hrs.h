@@ -50,13 +50,17 @@ extern "C" {
  */
 enum ble_hrs_evt_type {
 	/**
+	 * @brief Error event.
+	 */
+	BLE_HRS_EVT_ERROR,
+	/**
 	 * @brief Heart rate value notification enabled.
 	 */
 	BLE_HRS_EVT_NOTIFICATION_ENABLED,
 	/**
 	 * @brief Heart rate value notifcation disabled.
 	 */
-	BLE_HRS_EVT_NOTIFICATION_DISABLED
+	BLE_HRS_EVT_NOTIFICATION_DISABLED,
 };
 
 /**
@@ -67,6 +71,17 @@ struct ble_hrs_evt {
 	 * @brief Event type.
 	 */
 	enum ble_hrs_evt_type evt_type;
+	/**
+	 * @brief Connection handle for which the event applies.
+	 */
+	uint16_t conn_handle;
+	union {
+		/** @ref BLE_HRS_EVT_ERROR event data. */
+		struct {
+			/** Error reason. */
+			uint32_t reason;
+		} error;
+	};
 };
 
 /* Forward declaration */
@@ -161,11 +176,11 @@ struct ble_hrs {
  * @param hrs Heart rate service.
  * @param hrs_config Heart rate service configuration.
  *
- * @retval 0 On success.
- * @retval -EFAULT If @p hrs or @p hrs_config are @c NULL.
- * @retval -EINVAL Invalid parameters.
+ * @retval NRF_SUCCESS On success.
+ * @retval NRF_ERROR_NULL If @p hrs or @p hrs_config are @c NULL.
+ * @retval NRF_ERROR_INVALID_PARAM Invalid parameters.
  */
-int ble_hrs_init(struct ble_hrs *hrs, const struct ble_hrs_config *hrs_config);
+uint32_t ble_hrs_init(struct ble_hrs *hrs, const struct ble_hrs_config *hrs_config);
 
 /**
  * @brief Connection parameters event handler.
@@ -187,13 +202,13 @@ void ble_hrs_conn_params_evt(struct ble_hrs *hrs, const struct ble_conn_params_e
  * @param hrs Heart rate service.
  * @param heart_rate heart rate Measurement.
  *
- * @retval 0 On success.
- * @retval -EFAULT If @p hrs is @c NULL.
- * @retval -EINVAL Failed to send notification.
- * @retval -ENOTCONN Invalid connection handle.
- * @retval -EPIPE Notifications not enabled in the CCCD.
+ * @retval NRF_SUCCESS On success.
+ * @retval NRF_ERROR_NULL If @p hrs is @c NULL.
+ * @retval NRF_ERROR_INVALID_PARAM Failed to send notification.
+ * @retval NRF_ERROR_NOT_FOUND Invalid connection handle.
+ * @retval NRF_ERROR_INVALID_STATE Notifications not enabled in the CCCD.
  */
-int ble_hrs_heart_rate_measurement_send(struct ble_hrs *hrs, uint16_t heart_rate);
+uint32_t ble_hrs_heart_rate_measurement_send(struct ble_hrs *hrs, uint16_t heart_rate);
 
 /**
  * @brief Function for adding a RR Interval measurement to the RR Interval buffer.
@@ -205,10 +220,10 @@ int ble_hrs_heart_rate_measurement_send(struct ble_hrs *hrs, uint16_t heart_rate
  * @param hrs Heart rate service.
  * @param rr_interval New RR interval measurement.
  *
- * @retval 0 On success.
- * @retval -EFAULT If @p hrs is @c NULL.
+ * @retval NRF_SUCCESS On success.
+ * @retval NRF_ERROR_NULL If @p hrs is @c NULL.
  */
-int ble_hrs_rr_interval_add(struct ble_hrs *hrs, uint16_t rr_interval);
+uint32_t ble_hrs_rr_interval_add(struct ble_hrs *hrs, uint16_t rr_interval);
 
 /**
  * @brief Function for checking if RR Interval buffer is full.
@@ -227,11 +242,12 @@ bool ble_hrs_rr_interval_buffer_is_full(struct ble_hrs *hrs);
  * @param hrs Heart rate service.
  * @param is_sensor_contact_supported New state of the sensor contact support bit.
  *
- * @retval 0 On success.
- * @retval -EFAULT If @p hrs is @c NULL.
- * @retval -EISCONN If in a connection.
+ * @retval NRF_SUCCESS On success.
+ * @retval NRF_ERROR_NULL If @p hrs is @c NULL.
+ * @retval NRF_ERROR_INVALID_STATE If in a connection.
  */
-int ble_hrs_sensor_contact_supported_set(struct ble_hrs *hrs, bool is_sensor_contact_supported);
+uint32_t ble_hrs_sensor_contact_supported_set(struct ble_hrs *hrs,
+					      bool is_sensor_contact_supported);
 
 /**
  * @brief Function for setting the state of the sensor contact detected bit.
@@ -239,10 +255,11 @@ int ble_hrs_sensor_contact_supported_set(struct ble_hrs *hrs, bool is_sensor_con
  * @param hrs Heart rate service.
  * @param is_sensor_contact_detected New state of the sensor contact detected bit.
  *
- * @retval 0 On success.
- * @retval -EFAULT If @p hrs is @c NULL.
+ * @retval NRF_SUCCESS On success.
+ * @retval NRF_ERROR_NULL If @p hrs is @c NULL.
  */
-int ble_hrs_sensor_contact_detected_update(struct ble_hrs *hrs, bool is_sensor_contact_detected);
+uint32_t ble_hrs_sensor_contact_detected_update(struct ble_hrs *hrs,
+						bool is_sensor_contact_detected);
 
 /**
  * @brief Function for setting the Body Sensor Location.
@@ -253,11 +270,11 @@ int ble_hrs_sensor_contact_detected_update(struct ble_hrs *hrs, bool is_sensor_c
  * @param hrs Heart rate service.
  * @param body_sensor_location New body sensor location.
  *
- * @retval 0 On success.
- * @retval -EFAULT If @p hrs is @c NULL.
- * @retval -EINVAL Failed to set new value.
+ * @retval NRF_SUCCESS On success.
+ * @retval NRF_ERROR_NULL If @p hrs is @c NULL.
+ * @retval NRF_ERROR_INVALID_PARAM Failed to set new value.
  */
-int ble_hrs_body_sensor_location_set(struct ble_hrs *hrs, uint8_t body_sensor_location);
+uint32_t ble_hrs_body_sensor_location_set(struct ble_hrs *hrs, uint8_t body_sensor_location);
 
 #ifdef __cplusplus
 }
