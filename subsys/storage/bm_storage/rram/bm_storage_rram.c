@@ -37,7 +37,7 @@ static void event_send(const struct bm_storage *storage, struct bm_storage_evt *
 
 uint32_t bm_storage_backend_init(struct bm_storage *storage)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	nrfx_err_t nrfx_err;
 
 	/* If it's already initialized, return early successfully.
@@ -57,15 +57,15 @@ uint32_t bm_storage_backend_init(struct bm_storage *storage)
 
 	nrfx_err = nrfx_rramc_init(&rramc_config, NULL);
 	if (nrfx_err != NRFX_SUCCESS) {
-		err = NRF_ERROR_INTERNAL;
+		nrf_err = NRF_ERROR_INTERNAL;
 	} else {
 		state.is_rramc_init = true;
-		err = NRF_SUCCESS;
+		nrf_err = NRF_SUCCESS;
 	}
 
 	atomic_set(&state.operation_ongoing, 0);
 
-	return err;
+	return nrf_err;
 }
 
 uint32_t bm_storage_backend_read(const struct bm_storage *storage, uint32_t src, void *dest,

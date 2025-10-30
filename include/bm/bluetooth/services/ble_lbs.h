@@ -94,9 +94,11 @@ struct ble_lbs {
  *                 be used to identify this particular service instance.
  * @param[in] cfg  Information needed to initialize the service.
  *
- * @retval 0 If the service was initialized successfully. Otherwise, an error code is returned.
+ * @retval NRF_SUCCESS If the service was initialized successfully.
+ * @retval NRF_ERROR_NULL If @p lbs or @p cfg is NULL.
+ * @retval NRF_ERROR_INVALID_PARAM If the supplied configuration is invalid.
  */
-int ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg);
+uint32_t ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg);
 
 /**
  * @brief Function for handling the application's BLE stack events.
@@ -117,9 +119,11 @@ void ble_lbs_on_ble_evt(const ble_evt_t *ble_evt, void *lbs_instance);
  * @param[in] lbs           LED Button Service structure.
  * @param[in] button_state  New button state.
  *
- * @retval 0 If the notification was sent successfully. Otherwise, an error code is returned.
+ * @retval NRF_SUCCESS If the notification was sent successfully.
+ * @retval NRF_ERROR_NULL If @p lbs is NULL.
+ * @retval NRF_ERROR_INVALID_PARAM If the parameters are invalid.
  */
-int ble_lbs_on_button_change(struct ble_lbs *lbs, uint16_t conn_handle, uint8_t button_state);
+uint32_t ble_lbs_on_button_change(struct ble_lbs *lbs, uint16_t conn_handle, uint8_t button_state);
 
 #ifdef __cplusplus
 }

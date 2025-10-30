@@ -29,7 +29,7 @@ static void pwm_handler(nrfx_pwm_evt_type_t event_type, void *ctx)
 
 int main(void)
 {
-	nrfx_err_t err;
+	nrfx_err_t nrfx_err;
 	nrfx_pwm_t pwm_instance = NRFX_PWM_INSTANCE(PWM_INST_IDX);
 	/*
 	 * PWM signal can be exposed on GPIO pin only within the same domain.
@@ -52,9 +52,9 @@ int main(void)
 	IRQ_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_PWM_INST_GET(PWM_INST_IDX)),
 		    CONFIG_PWM_IRQ_PRIO, NRFX_PWM_INST_HANDLER_GET(20), 0, 0);
 
-	err = nrfx_pwm_init(&pwm_instance, &config, pwm_handler, &pwm_instance);
-	if (err != NRFX_SUCCESS) {
-		LOG_ERR("Failed to initialize PWM, nrfx_error %#x", err);
+	nrfx_err = nrfx_pwm_init(&pwm_instance, &config, pwm_handler, &pwm_instance);
+	if (nrfx_err != NRFX_SUCCESS) {
+		LOG_ERR("Failed to initialize PWM, nrfx_error %#x", nrfx_err);
 		goto idle;
 	}
 

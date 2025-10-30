@@ -35,7 +35,7 @@ static inline bool is_within_bounds(off_t addr, size_t len, off_t boundary_start
 
 uint32_t bm_storage_init(struct bm_storage *storage)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 
 	if (!storage) {
 		return NRF_ERROR_NULL;
@@ -43,9 +43,9 @@ uint32_t bm_storage_init(struct bm_storage *storage)
 
 	storage->nvm_info = &bm_storage_info;
 
-	err = bm_storage_backend_init(storage);
-	if (err != NRF_SUCCESS) {
-		return err;
+	nrf_err = bm_storage_backend_init(storage);
+	if (nrf_err) {
+		return nrf_err;
 	}
 
 	storage->initialized = true;
@@ -55,7 +55,7 @@ uint32_t bm_storage_init(struct bm_storage *storage)
 
 uint32_t bm_storage_uninit(struct bm_storage *storage)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 
 	if (!storage) {
 		return NRF_ERROR_NULL;
@@ -65,14 +65,14 @@ uint32_t bm_storage_uninit(struct bm_storage *storage)
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	err = bm_storage_backend_uninit(storage);
+	nrf_err = bm_storage_backend_uninit(storage);
 
-	if (err == NRF_SUCCESS) {
+	if (nrf_err == NRF_SUCCESS) {
 		storage->initialized = false;
 		storage->nvm_info = NULL;
 	}
 
-	return err;
+	return nrf_err;
 }
 
 uint32_t bm_storage_read(const struct bm_storage *storage, uint32_t src, void *dest, uint32_t len)

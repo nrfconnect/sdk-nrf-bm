@@ -28,7 +28,7 @@ BUILD_ASSERT(CONFIG_BLE_CONN_PARAMS_PHY == BLE_GAP_PHY_AUTO ||
 
 static void radio_phy_mode_update(uint16_t conn_handle, int idx)
 {
-	int err;
+	uint32_t nrf_err;
 	ble_gap_phys_t phys = links[idx].phy_mode;
 
 
@@ -40,15 +40,15 @@ static void radio_phy_mode_update(uint16_t conn_handle, int idx)
 		phys.rx_phys &= BLE_GAP_PHYS_SUPPORTED;
 	}
 
-	err = sd_ble_gap_phy_update(conn_handle, &phys);
-	if (!err) {
+	nrf_err = sd_ble_gap_phy_update(conn_handle, &phys);
+	if (nrf_err == NRF_SUCCESS) {
 		return;
-	} else if (err == NRF_ERROR_BUSY) {
+	} else if (nrf_err == NRF_ERROR_BUSY) {
 		/* Retry */
 		links[idx].phy_mode_update_pending = true;
 		LOG_DBG("Failed PHY update procedure, another procedure is ongoing, "
 			"Will retry");
-	} else if (err == NRF_ERROR_RESOURCES) {
+	} else if (nrf_err == NRF_ERROR_RESOURCES) {
 		/* PHY update failed. Use current PHY. */
 		LOG_WRN("Failed PHY update procedure. Continue using current PHY mode");
 		LOG_DBG("GAP event length (%d) may be too small",
@@ -57,7 +57,7 @@ static void radio_phy_mode_update(uint16_t conn_handle, int idx)
 		links[idx].phy_mode.rx_phys = CONFIG_BLE_CONN_PARAMS_PHY;
 		radio_phy_mode_update(conn_handle, idx);
 	} else {
-		LOG_ERR("Failed PHY update procedure, nrf_error %#x", err);
+		LOG_ERR("Failed PHY update procedure, nrf_error %#x", nrf_err);
 	}
 }
 
@@ -158,33 +158,33 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 }
 NRF_SDH_BLE_OBSERVER(ble_observer, on_ble_evt, NULL, 0);
 
-int ble_conn_params_phy_radio_mode_set(uint16_t conn_handle, ble_gap_phys_t phy_pref)
+uint32_t ble_conn_params_phy_radio_mode_set(uint16_t conn_handle, ble_gap_phys_t phy_pref)
 {
 	const int idx = nrf_sdh_ble_idx_get(conn_handle);
 
 	if (idx < 0) {
-		return -EINVAL;
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	links[idx].phy_mode = phy_pref;
 	radio_phy_mode_update(conn_handle, idx);
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
-int ble_conn_params_phy_radio_mode_get(uint16_t conn_handle, ble_gap_phys_t *phy_pref)
+uint32_t ble_conn_params_phy_radio_mode_get(uint16_t conn_handle, ble_gap_phys_t *phy_pref)
 {
 	const int idx = nrf_sdh_ble_idx_get(conn_handle);
 
 	if (idx < 0) {
-		return -EINVAL;
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	if (!phy_pref) {
-		return -EFAULT;
+		return NRF_ERROR_NULL;
 	}
 
 	*phy_pref = links[idx].phy_mode;
 
-	return 0;
+	return NRF_SUCCESS;
 }

@@ -71,6 +71,7 @@ static struct bm_timer sensor_contact_timer;
 void battery_level_meas_timeout_handler(void *context)
 {
 	int err;
+	uint32_t nrf_err;
 	uint32_t battery_level;
 
 	ARG_UNUSED(context);
@@ -81,11 +82,11 @@ void battery_level_meas_timeout_handler(void *context)
 		return;
 	}
 
-	err = ble_bas_battery_level_update(&ble_bas, conn_handle, (uint8_t)battery_level);
-	if (err) {
+	nrf_err = ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level);
+	if (nrf_err) {
 		/* Ignore if not in a connection or notifications disabled in CCCD. */
-		if (err != -ENOTCONN && err != -EPIPE) {
-			LOG_ERR("Failed to update battery level, err %d", err);
+		if (nrf_err != NRF_ERROR_NOT_FOUND && nrf_err != NRF_ERROR_INVALID_STATE) {
+			LOG_ERR("Failed to update battery level, nrf_error %#x", nrf_err);
 		}
 	}
 }
@@ -94,6 +95,7 @@ static void heart_rate_meas_timeout_handler(void *context)
 {
 	static uint32_t cnt;
 	int err;
+	uint32_t nrf_err;
 	uint32_t heart_rate;
 
 	ARG_UNUSED(context);
@@ -104,11 +106,11 @@ static void heart_rate_meas_timeout_handler(void *context)
 		return;
 	}
 
-	err = ble_hrs_heart_rate_measurement_send(&ble_hrs, (uint16_t)heart_rate);
-	if (err) {
+	nrf_err = ble_hrs_heart_rate_measurement_send(&ble_hrs, (uint16_t)heart_rate);
+	if (nrf_err) {
 		/* Ignore if not in a connection or notifications disabled in CCCD. */
-		if (err != -ENOTCONN && err != -EPIPE) {
-			LOG_ERR("Failed to update heart rate measurement, err %d", err);
+		if (nrf_err != -ENOTCONN && nrf_err != -EPIPE) {
+			LOG_ERR("Failed to update heart rate measurement, nrf_error %#x", nrf_err);
 		}
 	}
 
@@ -122,6 +124,7 @@ static void heart_rate_meas_timeout_handler(void *context)
 static void rr_interval_timeout_handler(void *context)
 {
 	int err;
+	uint32_t nrf_err;
 	uint32_t rr_interval;
 
 	ARG_UNUSED(context);
@@ -137,9 +140,9 @@ static void rr_interval_timeout_handler(void *context)
 			break;
 		}
 
-		err = ble_hrs_rr_interval_add(&ble_hrs, (uint16_t)rr_interval);
-		if (err) {
-			LOG_ERR("Failed to add RR interval, err %d", err);
+		nrf_err = ble_hrs_rr_interval_add(&ble_hrs, (uint16_t)rr_interval);
+		if (nrf_err) {
+			LOG_ERR("Failed to add RR interval, nrf_error %#x", nrf_err);
 		}
 	}
 }
@@ -147,14 +150,14 @@ static void rr_interval_timeout_handler(void *context)
 static void sensor_contact_detected_timeout_handler(void *context)
 {
 	static bool sim_sensor_contact_detected;
-	int err;
+	int nrf_err;
 
 	ARG_UNUSED(context);
 
 	sim_sensor_contact_detected = !sim_sensor_contact_detected;
-	err = ble_hrs_sensor_contact_detected_update(&ble_hrs, sim_sensor_contact_detected);
-	if (err) {
-		LOG_ERR("Failed to update sensor contact detected state, err %d", err);
+	nrf_err = ble_hrs_sensor_contact_detected_update(&ble_hrs, sim_sensor_contact_detected);
+	if (nrf_err) {
+		LOG_ERR("Failed to update sensor contact detected state, nrf_error %#x", nrf_err);
 	}
 }
 
@@ -352,13 +355,13 @@ static int buttons_init(bool *erase_bonds)
 
 static void delete_bonds(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 
 	LOG_INF("Erase bonds!");
 
-	err = pm_peers_delete();
-	if (err) {
-		LOG_ERR("Failed to delete peers, err %d", err);
+	nrf_err = pm_peers_delete();
+	if (nrf_err) {
+		LOG_ERR("Failed to delete peers, nrf_error %#x", nrf_err);
 	}
 }
 
@@ -396,10 +399,10 @@ static void pm_evt_handler(struct pm_evt const *p_evt)
 static int peer_manager_init(void)
 {
 	ble_gap_sec_params_t sec_param;
-	int err;
+	int nrf_err;
 
-	err = pm_init();
-	if (err) {
+	nrf_err = pm_init();
+	if (nrf_err) {
 		return -EFAULT;
 	}
 
@@ -421,15 +424,15 @@ static int peer_manager_init(void)
 		.kdist_peer.id = 1,
 	};
 
-	err = pm_sec_params_set(&sec_param);
-	if (err) {
-		LOG_ERR("pm_sec_params_set() failed, err: %d", err);
+	nrf_err = pm_sec_params_set(&sec_param);
+	if (nrf_err) {
+		LOG_ERR("pm_sec_params_set() failed, nrf_error %#x", nrf_err);
 		return -EFAULT;
 	}
 
-	err = pm_register(pm_evt_handler);
-	if (err) {
-		LOG_ERR("pm_register() failed, err: %d", err);
+	nrf_err = pm_register(pm_evt_handler);
+	if (nrf_err) {
+		LOG_ERR("pm_register() failed, nrf_error %#x", nrf_err);
 		return -EFAULT;
 	}
 
@@ -502,29 +505,29 @@ int main(void)
 
 	LOG_INF("Peer Manager initialized");
 
-	err = ble_hrs_init(&ble_hrs, &hrs_cfg);
-	if (err) {
-		LOG_ERR("Failed to initialize heart rate service, err %d", err);
+	nrf_err = ble_hrs_init(&ble_hrs, &hrs_cfg);
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize heart rate service, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 
-	err = ble_bas_init(&ble_bas, &bas_cfg);
-	if (err) {
-		LOG_ERR("Failed to initialize battery service, err %d", err);
+	nrf_err = ble_bas_init(&ble_bas, &bas_cfg);
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize battery service, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 
-	err = ble_dis_init();
-	if (err) {
-		LOG_ERR("Failed to initialize device information service, err %d", err);
+	nrf_err = ble_dis_init();
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize device information service, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 
 	LOG_INF("Services initialized");
 
-	err = ble_conn_params_evt_handler_set(on_conn_params_evt);
-	if (err) {
-		LOG_ERR("Failed to setup conn param event handler, err %d", err);
+	nrf_err = ble_conn_params_evt_handler_set(on_conn_params_evt);
+	if (nrf_err) {
+		LOG_ERR("Failed to setup conn param event handler, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 

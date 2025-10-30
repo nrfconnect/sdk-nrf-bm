@@ -596,7 +596,7 @@ uint32_t im_whitelist_set(const uint16_t *peers, uint32_t peer_cnt)
 	/* Fetch GAP addresses for these peers, but don't fetch IRKs. */
 	ret = peers_id_keys_get(peers, peer_cnt, addrs, &wlist_addr_cnt, NULL, NULL);
 
-	if (ret != NRF_SUCCESS) {
+	if (ret) {
 		/* NRF_ERROR_NOT_FOUND,            if a peer or its data were not found.
 		 * BLE_ERROR_GAP_INVALID_BLE_ADDR, if a peer address can not be used for
 		 * whitelisting.

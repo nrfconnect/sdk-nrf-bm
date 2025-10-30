@@ -185,10 +185,10 @@ int main(void)
 
 	LOG_INF("Bluetooth enabled");
 
-	err = ble_mcumgr_init();
+	nrf_err = ble_mcumgr_init();
 
-	if (err) {
-		LOG_ERR("Failed to initialize MCUmgr: %d", err);
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize MCUmgr, nrf_error %#x", nrf_err);
 		return 0;
 	}
 
@@ -229,7 +229,7 @@ int main(void)
 		err = sd_ble_gap_disconnect(conn_handle,
 					    BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
 
-		if (err != NRF_SUCCESS) {
+		if (err) {
 			device_disconnected = true;
 		}
 

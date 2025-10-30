@@ -155,7 +155,7 @@ void report_fifo_process(void)
 
 	report.data = keys;
 	nrf_err = ble_hids_inp_rep_send(&ble_hids, conn_handle, &report);
-	if (nrf_err != NRF_SUCCESS && nrf_err != BLE_ERROR_GATTS_SYS_ATTR_MISSING) {
+	if (nrf_err && nrf_err != BLE_ERROR_GATTS_SYS_ATTR_MISSING) {
 		LOG_ERR("Failed to send queued input report, nrf_error %#x", nrf_err);
 	}
 }
@@ -173,6 +173,7 @@ void report_fifo_clear(void)
 static void battery_level_meas_timeout_handler(void *context)
 {
 	int err;
+	uint32_t nrf_err;
 	uint32_t battery_level;
 
 	ARG_UNUSED(context);
@@ -182,11 +183,11 @@ static void battery_level_meas_timeout_handler(void *context)
 		LOG_ERR("Sensorsim measure failed, err %d", err);
 	}
 
-	err = ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level);
-	if (err) {
+	nrf_err = ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level);
+	if (nrf_err) {
 		/* Ignore if not in a connection or notifications disabled in CCCD. */
-		if (err != -ENOTCONN && err != -EPIPE) {
-			LOG_ERR("Failed to update battery level, err %d", err);
+		if (nrf_err != NRF_ERROR_NOT_FOUND && nrf_err != NRF_ERROR_INVALID_STATE) {
+			LOG_ERR("Failed to update battery level, nrf_error %#x", nrf_err);
 		}
 	}
 }
@@ -269,8 +270,7 @@ static void ble_adv_evt_handler(struct ble_adv *ble_adv, const struct ble_adv_ev
 		nrf_gpio_pin_write(BOARD_PIN_LED_0, !BOARD_LED_ACTIVE_STATE);
 		break;
 	case BLE_ADV_EVT_WHITELIST_REQUEST:
-		nrf_err = pm_whitelist_get(whitelist_addrs, &addr_cnt,
-						whitelist_irks, &irk_cnt);
+		nrf_err = pm_whitelist_get(whitelist_addrs, &addr_cnt, whitelist_irks, &irk_cnt);
 		if (nrf_err) {
 			LOG_ERR("Failed to get whitelist, nrf_error %#x", nrf_err);
 		}
@@ -322,7 +322,7 @@ static void ble_adv_evt_handler(struct ble_adv *ble_adv, const struct ble_adv_ev
 
 static void on_hid_rep_char_write(const struct ble_hids_evt *evt)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	uint8_t report_val;
 	uint8_t report_index;
 
@@ -335,11 +335,11 @@ static void on_hid_rep_char_write(const struct ble_hids_evt *evt)
 			 */
 			__ASSERT_NO_MSG(CONFIG_BLE_HIDS_OUTPUT_REPORT_MAX_LEN == 1);
 
-			err = ble_hids_outp_rep_get(&ble_hids, report_index,
-						    CONFIG_BLE_HIDS_OUTPUT_REPORT_MAX_LEN, 0,
-						    conn_handle, &report_val);
-			if (err != NRF_SUCCESS) {
-				LOG_ERR("ble_hids_outp_rep_get failed, nrf_error %#x", err);
+			nrf_err = ble_hids_outp_rep_get(&ble_hids, report_index,
+							CONFIG_BLE_HIDS_OUTPUT_REPORT_MAX_LEN, 0,
+							conn_handle, &report_val);
+			if (nrf_err) {
+				LOG_ERR("ble_hids_outp_rep_get failed, nrf_error %#x", nrf_err);
 				return;
 			}
 
@@ -582,7 +582,7 @@ static int on_key_press(struct ble_hids *hids, const char key, bool pressed)
 	}
 
 	nrf_err = ble_hids_inp_rep_send(hids, conn_handle, &inp_rep);
-	if (nrf_err != NRF_SUCCESS && nrf_err != BLE_ERROR_GATTS_SYS_ATTR_MISSING) {
+	if (nrf_err && nrf_err != BLE_ERROR_GATTS_SYS_ATTR_MISSING) {
 		if (nrf_err == NRF_ERROR_RESOURCES) {
 			return report_fifo_put(&inp_rep);
 		}
@@ -595,7 +595,7 @@ static int on_key_press(struct ble_hids *hids, const char key, bool pressed)
 static void num_comp_reply(uint16_t conn_handle, bool accept)
 {
 	uint8_t key_type;
-	uint32_t err;
+	uint32_t nrf_err;
 
 	if (accept) {
 		LOG_INF("Numeric Match. Conn handle: %d", conn_handle);
@@ -605,9 +605,9 @@ static void num_comp_reply(uint16_t conn_handle, bool accept)
 		key_type = BLE_GAP_AUTH_KEY_TYPE_NONE;
 	}
 
-	err = sd_ble_gap_auth_key_reply(conn_handle, key_type, NULL);
-	if (err != NRF_SUCCESS) {
-		LOG_ERR("Failed to reply auth request, err %d", err);
+	nrf_err = sd_ble_gap_auth_key_reply(conn_handle, key_type, NULL);
+	if (nrf_err) {
+		LOG_ERR("Failed to reply auth request, nrf_error %#x", nrf_err);
 	}
 }
 
@@ -667,50 +667,50 @@ static void button_handler(uint8_t pin, uint8_t action)
 
 static void whitelist_set(enum pm_peer_id_list_skip skip)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	uint16_t peer_ids[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
 	uint32_t peer_id_count = BLE_GAP_WHITELIST_ADDR_MAX_COUNT;
 
-	err = pm_peer_id_list(peer_ids, &peer_id_count, PM_PEER_ID_INVALID, skip);
-	if (err) {
-		LOG_ERR("Failed to get peer id list, err %d", err);
+	nrf_err = pm_peer_id_list(peer_ids, &peer_id_count, PM_PEER_ID_INVALID, skip);
+	if (nrf_err) {
+		LOG_ERR("Failed to get peer id list, nrf_error %#x", nrf_err);
 	}
 
 	LOG_INF("Whitelisted peers: %d, max %d",
 		peer_id_count, BLE_GAP_WHITELIST_ADDR_MAX_COUNT);
 
-	err = pm_whitelist_set(peer_ids, peer_id_count);
-	if (err) {
-		LOG_ERR("Failed to set whitelist, err %d", err);
+	nrf_err = pm_whitelist_set(peer_ids, peer_id_count);
+	if (nrf_err) {
+		LOG_ERR("Failed to set whitelist, nrf_error %#x", nrf_err);
 	}
 }
 
 static void identities_set(enum pm_peer_id_list_skip skip)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 	uint16_t peer_ids[BLE_GAP_DEVICE_IDENTITIES_MAX_COUNT];
 	uint32_t peer_id_count = BLE_GAP_DEVICE_IDENTITIES_MAX_COUNT;
 
-	err = pm_peer_id_list(peer_ids, &peer_id_count, PM_PEER_ID_INVALID, skip);
-	if (err) {
-		LOG_ERR("Failed to get peer id list, err %d", err);
+	nrf_err = pm_peer_id_list(peer_ids, &peer_id_count, PM_PEER_ID_INVALID, skip);
+	if (nrf_err) {
+		LOG_ERR("Failed to get peer id list, nrf_error %#x", nrf_err);
 	}
 
-	err = pm_device_identities_list_set(peer_ids, peer_id_count);
-	if (err) {
-		LOG_ERR("Failed to set peer manager identity list, err %d", err);
+	nrf_err = pm_device_identities_list_set(peer_ids, peer_id_count);
+	if (nrf_err) {
+		LOG_ERR("Failed to set peer manager identity list, nrf_error %#x", nrf_err);
 	}
 }
 
 static void delete_bonds(void)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 
 	LOG_INF("Erasing bonds");
 
-	err = pm_peers_delete();
-	if (err) {
-		LOG_ERR("Failed to delete peers, err %d", err);
+	nrf_err = pm_peers_delete();
+	if (nrf_err) {
+		LOG_ERR("Failed to delete peers, nrf_error %#x", nrf_err);
 	}
 }
 
@@ -767,10 +767,10 @@ static void pm_evt_handler(struct pm_evt const *evt)
 static int peer_manager_init(void)
 {
 	ble_gap_sec_params_t sec_param;
-	int err;
+	uint32_t nrf_err;
 
-	err = pm_init();
-	if (err) {
+	nrf_err = pm_init();
+	if (nrf_err) {
 		return -EFAULT;
 	}
 
@@ -792,15 +792,15 @@ static int peer_manager_init(void)
 		.kdist_peer.id = 1,
 	};
 
-	err = pm_sec_params_set(&sec_param);
-	if (err) {
-		LOG_ERR("pm_sec_params_set() failed, err: %d", err);
+	nrf_err = pm_sec_params_set(&sec_param);
+	if (nrf_err) {
+		LOG_ERR("pm_sec_params_set() failed, nrf_error %#x", nrf_err);
 		return -EFAULT;
 	}
 
-	err = pm_register(pm_evt_handler);
-	if (err) {
-		LOG_ERR("pm_register() failed, err: %d", err);
+	nrf_err = pm_register(pm_evt_handler);
+	if (nrf_err) {
+		LOG_ERR("pm_register() failed, nrf_error %#x", nrf_err);
 		return -EFAULT;
 	}
 
@@ -950,26 +950,26 @@ int main(void)
 		goto idle;
 	}
 
-	err = ble_qwr_init(&ble_qwr, &qwr_config);
-	if (err) {
-		LOG_ERR("ble_qwr_init failed, err %d", err);
+	nrf_err = ble_qwr_init(&ble_qwr, &qwr_config);
+	if (nrf_err) {
+		LOG_ERR("ble_qwr_init failed, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 
-	err = ble_dis_init();
-	if (err) {
-		LOG_ERR("Failed to initialize device information service, err %d", err);
+	nrf_err = ble_dis_init();
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize device information service, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 
-	err = ble_bas_init(&ble_bas, &bas_config);
-	if (err) {
-		LOG_ERR("Failed to initialize BAS service, err %d", err);
+	nrf_err = ble_bas_init(&ble_bas, &bas_config);
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize BAS service, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 
 	nrf_err = hids_init();
-	if (nrf_err != NRF_SUCCESS) {
+	if (nrf_err) {
 		LOG_ERR("Failed to initialize HIDS, nrf_error %#x", err);
 		goto idle;
 	}

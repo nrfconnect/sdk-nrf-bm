@@ -41,16 +41,16 @@ Boards
 
 * MCUboot partition size has been reduced from 36 KiB to 31 KiB for the following board targets:
 
-  * `bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot`
-  * `bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot`
-  * `bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot`
+  * ``bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot``
+  * ``bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot``
+  * ``bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot``
 
 * Removed unused peripheral nodes from Devicetree.
 
 DFU
 ===
 
-* Support for KMU usage for MCUboot keys has been added, along with west auto-provisioning support (`west flash --erase` or `west flash --recover` must be used during first programming of a board to program the KMU with the keys).
+* Support for KMU usage for MCUboot keys has been added, along with west auto-provisioning support (``west flash --erase`` or ``west flash --recover`` must be used during first programming of a board to program the KMU with the keys).
   This feature can be controlled with sysbuild Kconfig options :kconfig:option:`SB_CONFIG_BM_BOOTLOADER_MCUBOOT_SIGNATURE_USING_KMU` to use KMU for key storage and :kconfig:option:`SB_CONFIG_BM_BOOTLOADER_MCUBOOT_GENERATE_DEFAULT_KMU_KEYFILE` to auto-provision the KMU when using the above west flash commands.
 * The code for the UART MCUmgr application has now been refactored into a separate library to facilitate reuse in other applications.
 
@@ -68,9 +68,19 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Libraries
 =========
 
-* Updated the following libraries to return ``nrf_errors`` instead of ``errnos``:
+* Updated the following libraries and BLE services to return ``nrf_errors`` instead of ``errnos``:
 
   * :ref:`lib_ble_adv`.
+  * :ref:`lib_ble_conn_params` library.
+  * BLE Gatt Queue library.
+  * BLE QWR library.
+  * BLE Record Access Control Point library.
+  * :ref:`lib_ble_service_bas` service.
+  * :ref:`lib_ble_service_dis` service.
+  * :ref:`lib_ble_service_hrs` service.
+  * :ref:`lib_ble_service_lbs` service.
+  * :ref:`lib_ble_service_mcumgr` service.
+  * :ref:`lib_ble_service_nus` service.
 
 * :ref:`lib_ble_conn_params` library:
 
