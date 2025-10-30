@@ -775,7 +775,7 @@ void test_ble_conn_state_user_flag_acquire(void)
 void test_ble_conn_state_user_flag_set_get(void)
 {
 	bool flag_state;
-	uint32_t acquired_ids[CONFIG_BLE_CONN_STATE_USER_FLAG_COUNT] = {};
+	uint32_t acquired_ids[CONFIG_BLE_CONN_STATE_USER_FLAG_COUNT] = {0};
 
 	uint16_t conn_handles[BLE_CONN_STATE_MAX_CONNECTIONS];
 	uint16_t invalid_conn_handle = 35354;

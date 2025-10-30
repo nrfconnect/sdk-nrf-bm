@@ -210,8 +210,8 @@ static void on_user_mem_release(struct ble_qwr *qwr, ble_common_evt_t const *evt
 static void on_prepare_write(struct ble_qwr *qwr, ble_gatts_evt_write_t const *write_evt)
 {
 	int err;
-	ble_gatts_rw_authorize_reply_params_t auth_reply = {};
-	struct ble_qwr_evt evt = {};
+	ble_gatts_rw_authorize_reply_params_t auth_reply = {0};
+	struct ble_qwr_evt evt = {0};
 
 	auth_reply.params.write.gatt_status = BLE_QWR_REJ_REQUEST_ERR_CODE;
 	auth_reply.type = BLE_GATTS_AUTHORIZE_TYPE_WRITE;
@@ -258,7 +258,7 @@ static void on_execute_write(struct ble_qwr *qwr, ble_gatts_evt_write_t const *w
 {
 	uint32_t err;
 	uint16_t ret_val;
-	ble_gatts_rw_authorize_reply_params_t auth_reply = {};
+	ble_gatts_rw_authorize_reply_params_t auth_reply = {0};
 	struct ble_qwr_evt evt;
 
 	auth_reply.params.write.gatt_status = BLE_GATT_STATUS_SUCCESS;
@@ -319,7 +319,7 @@ static void on_execute_write(struct ble_qwr *qwr, ble_gatts_evt_write_t const *w
 static void on_cancel_write(struct ble_qwr *qwr, ble_gatts_evt_write_t const *write_evt)
 {
 	uint32_t err;
-	ble_gatts_rw_authorize_reply_params_t auth_reply = {};
+	ble_gatts_rw_authorize_reply_params_t auth_reply = {0};
 	struct ble_qwr_evt evt;
 
 	auth_reply.type = BLE_GATTS_AUTHORIZE_TYPE_WRITE;
@@ -347,7 +347,7 @@ static void on_rw_authorize_request(struct ble_qwr *qwr, ble_gatts_evt_t const *
 #if (CONFIG_BLE_QWR_MAX_ATTR == 0)
 	uint32_t err;
 	ble_gatts_rw_authorize_reply_params_t auth_reply = {0};
-	struct ble_qwr_evt qwr_evt = {};
+	struct ble_qwr_evt qwr_evt = {0};
 #endif
 
 	if (evt->conn_handle != qwr->conn_handle) {

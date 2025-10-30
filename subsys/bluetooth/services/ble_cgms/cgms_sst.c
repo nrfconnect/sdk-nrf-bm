@@ -92,7 +92,7 @@ static uint8_t sst_encode(struct ble_cgms_sst *sst, uint8_t *sst_encoded)
 static uint32_t cgm_update_sst(struct ble_cgms *cgms, const ble_gatts_evt_write_t *evt_write)
 {
 	uint32_t err;
-	struct ble_cgms_sst sst = {};
+	struct ble_cgms_sst sst = {0};
 	struct tm c_time_and_date;
 
 	err = sst_decode(&sst, evt_write->data, evt_write->len);

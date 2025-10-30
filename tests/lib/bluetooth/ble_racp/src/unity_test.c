@@ -13,7 +13,7 @@
 void test_ble_racp_encode_efault(void)
 {
 	int ret;
-	const struct ble_racp_value racp_val = {};
+	const struct ble_racp_value racp_val = {0};
 	uint8_t data[5];
 
 	ret = ble_racp_encode(NULL, data, sizeof(data));
@@ -26,7 +26,7 @@ void test_ble_racp_encode_efault(void)
 void test_ble_racp_encode_einval(void)
 {
 	int ret;
-	struct ble_racp_value racp_val = {};
+	struct ble_racp_value racp_val = {0};
 	uint8_t data[5];
 
 	ret = ble_racp_encode(&racp_val, data, 0);
@@ -67,7 +67,7 @@ void test_ble_racp_encode(void)
 void test_ble_racp_decode_efault(void)
 {
 	int ret;
-	struct ble_racp_value racp_val = {};
+	struct ble_racp_value racp_val = {0};
 	uint8_t data[5];
 
 	ret = ble_racp_decode(NULL, 0, &racp_val);
@@ -93,7 +93,7 @@ void test_ble_racp_decode(void)
 	TEST_ASSERT_EQUAL_PTR(&data[2], racp_val.operand);
 	TEST_ASSERT_EQUAL(3, racp_val.operand_len);
 
-	uint8_t empty[] = {};
+	uint8_t empty[] = {0};
 
 	ret = ble_racp_decode(empty, 0, &racp_val);
 	TEST_ASSERT_EQUAL(0, ret);

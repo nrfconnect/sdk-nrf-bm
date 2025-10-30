@@ -463,7 +463,7 @@ static void adv_data_update_and_start(enum adv_mode adv_mode)
 		.name_type = BLE_ADV_DATA_FULL_NAME,
 		.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE,
 	};
-	struct ble_adv_data sr_data = {};
+	struct ble_adv_data sr_data = {0};
 
 	if (adv_mode_current != ADV_MODE_IDLE) {
 		err = sd_ble_gap_adv_stop(adv_handle);

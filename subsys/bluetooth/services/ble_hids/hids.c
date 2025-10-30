@@ -654,7 +654,7 @@ static uint32_t rep_char_add(struct ble_hids *hids, ble_gatt_char_props_t *prope
 		.p_attr_md = &attr_md,
 		.max_len = len,
 	};
-	ble_gatts_attr_md_t cccd_md = {};
+	ble_gatts_attr_md_t cccd_md = {0};
 
 	attr_md.read_perm = char_sec->read;
 	attr_md.write_perm = char_sec->write;
