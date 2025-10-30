@@ -107,6 +107,8 @@ Bare Metal Zephyr Memory Storage (ZMS)
    :inner:
    :members:
 
+.. _api_gatt_queue:
+
 GATT Queue
 ==========
 
