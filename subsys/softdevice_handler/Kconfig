@@ -67,6 +67,11 @@ config NRF_SDH_CLOCK_HFINT_CALIBRATION_INTERVAL
 	range 1 255
 	default 60
 
+config NRF_SDH_CLOCK_HFCLK_LATENCY
+	int "Ramp-up time of the high-frequency crystal oscillator in microseconds"
+	range 0 $(UINT16_MAX)
+	default 1500
+
 if NRF_SDH_BLE
 
 config NRF_SDH_BLE_CONN_TAG

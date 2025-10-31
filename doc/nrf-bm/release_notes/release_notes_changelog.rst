@@ -33,6 +33,7 @@ SoftDevice Handler
 ==================
 
 * Added the :kconfig:option:`NRF_SDH_CLOCK_HFINT_CALIBRATION_INTERVAL` Kconfig option to control the HFINT calibration interval.
+* Added the :kconfig:option:`NRF_SDH_CLOCK_HFCLK_LATENCY` Kconfig option to inform the SoftDevice about the ramp-up time of the high-frequency crystal oscillator.
 
 Boards
 ======
