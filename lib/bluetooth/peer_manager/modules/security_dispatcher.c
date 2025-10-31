@@ -238,6 +238,25 @@ static void sec_proc_start(uint16_t conn_handle, bool success, enum pm_conn_sec_
 	}
 }
 
+/**
+ * @brief Function for initiating pairing as a central, or all security as a periheral.
+ *
+ * See @ref smd_link_secure and @ref sd_ble_gap_authenticate for more information.
+ */
+static uint32_t link_secure_authenticate(uint16_t conn_handle, ble_gap_sec_params_t *sec_params)
+{
+	uint32_t err_code = sd_ble_gap_authenticate(conn_handle, sec_params);
+
+	if (err_code == NRF_ERROR_NO_MEM) {
+		/* sd_ble_gap_authenticate() returned NRF_ERROR_NO_MEM. Too many other sec
+		 * procedures running.
+		 */
+		err_code = NRF_ERROR_BUSY;
+	}
+
+	return err_code;
+}
+
 #if defined(CONFIG_SOFTDEVICE_CENTRAL)
 /**
  * @brief Function for initiating encryption as a central. See @ref smd_link_secure for more
@@ -245,16 +264,16 @@ static void sec_proc_start(uint16_t conn_handle, bool success, enum pm_conn_sec_
  */
 static uint32_t link_secure_central_encryption(uint16_t conn_handle, uint16_t peer_id)
 {
-	struct pm_peer_data_const peer_data;
+	struct pm_peer_data peer_data;
 	uint32_t err_code;
 	const ble_gap_enc_key_t *existing_key = NULL;
 	bool lesc = false;
 	struct pm_peer_data_bonding bonding_data = { 0 };
+	const uint32_t buf_size = sizeof(struct pm_peer_data_bonding);
 
-	peer_data.all_data = &bonding_data;
+	peer_data.bonding_data = &bonding_data;
 
-	err_code = pds_peer_data_read(peer_id, PM_PEER_DATA_ID_BONDING, &peer_data,
-				      sizeof(struct pm_peer_data_bonding));
+	err_code = pds_peer_data_read(peer_id, PM_PEER_DATA_ID_BONDING, &peer_data, &buf_size);
 
 	if (err_code == NRF_SUCCESS) {
 		/* Use peer's key since they are peripheral. */
@@ -270,10 +289,8 @@ static uint32_t link_secure_central_encryption(uint16_t conn_handle, uint16_t pe
 
 	if ((err_code != NRF_SUCCESS) && (err_code != NRF_ERROR_NOT_FOUND)) {
 		if (err_code != NRF_ERROR_BUSY) {
-			NRF_LOG_ERROR("Could not retrieve stored bond. pds_peer_data_read() "
-				      "returned %s. "
-				      "peer_id: %d",
-				      nrf_strerror_get(err_code), peer_id);
+			LOG_ERR("Could not retrieve stored bond. pds_peer_data_read() "
+				"returned %s. peer_id: %d", nrf_strerror_get(err_code), peer_id);
 			err_code = NRF_ERROR_INTERNAL;
 		}
 	/* There is no bonding data stored. This means that a
@@ -357,7 +374,21 @@ static void sec_request_process(const ble_gap_evt_t *gap_evt)
 }
 #endif /* CONFIG_SOFTDEVICE_CENTRAL */
 
-#ifdef BLE_GAP_ROLE_PERIPH
+#if defined(CONFIG_SOFTDEVICE_PERIPHERAL)
+/** @brief Function for asking the central to secure the link. See @ref smd_link_secure for more
+ * info.
+ */
+static uint32_t link_secure_peripheral(uint16_t conn_handle, ble_gap_sec_params_t *sec_params)
+{
+	uint32_t err_code = NRF_SUCCESS;
+
+	if (sec_params != NULL) {
+		err_code = link_secure_authenticate(conn_handle, sec_params);
+	}
+
+	return err_code;
+}
+
 /** @brief Function for processing the @ref BLE_GAP_EVT_SEC_INFO_REQUEST event from the SoftDevice.
  *
  * @param[in]  gap_evt  The event from the SoftDevice.
@@ -426,7 +457,7 @@ static void sec_info_request_process(const ble_gap_evt_t *gap_evt)
 				   BLE_GAP_SEC_STATUS_SOURCE_LOCAL);
 	}
 }
-#endif /* BLE_GAP_ROLE_PERIPH */
+#endif /* CONFIG_SOFTDEVICE_PERIPHERAL */
 
 /**
  * @brief Function for sending a PM_EVT_CONN_SEC_CONFIG_REQ event.
@@ -495,14 +526,14 @@ static void send_params_req(uint16_t conn_handle, const ble_gap_sec_params_t *pe
  */
 static void sec_params_request_process(const ble_gap_evt_t *gap_evt)
 {
-#ifdef BLE_GAP_ROLE_PERIPH
+#if defined(CONFIG_SOFTDEVICE_PERIPHERAL)
 	if (ble_conn_state_role(gap_evt->conn_handle) == BLE_GAP_ROLE_PERIPH) {
 		sec_proc_start(gap_evt->conn_handle, true,
 			       gap_evt->params.sec_params_request.peer_params.bond
 				       ? PM_CONN_SEC_PROCEDURE_BONDING
 				       : PM_CONN_SEC_PROCEDURE_PAIRING);
 	}
-#endif /* BLE_GAP_ROLE_PERIPH */
+#endif /* CONFIG_SOFTDEVICE_PERIPHERAL */
 
 	send_params_req(gap_evt->conn_handle, &gap_evt->params.sec_params_request.peer_params);
 }
@@ -806,14 +837,14 @@ uint32_t smd_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *sec_params
 	ble_gap_sec_keyset_t sec_keyset;
 
 	memset(&sec_keyset, 0, sizeof(ble_gap_sec_keyset_t));
-#ifdef BLE_GAP_ROLE_PERIPH
+#if defined(CONFIG_SOFTDEVICE_PERIPHERAL)
 	if (role == BLE_GAP_ROLE_PERIPH) {
 		/* Set the default value for allowing repairing at the start of the sec proc. (for
 		 * peripheral)
 		 */
 		ble_conn_state_user_flag_set(conn_handle, flag_allow_repairing, false);
 	}
-#endif /* BLE_GAP_ROLE_PERIPH */
+#endif /* CONFIG_SOFTDEVICE_PERIPHERAL */
 
 	if (role == BLE_GAP_ROLE_INVALID) {
 		return BLE_ERROR_INVALID_CONN_HANDLE;
@@ -829,7 +860,7 @@ uint32_t smd_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *sec_params
 			/* NULL params means reject pairing. */
 			sec_status = BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP;
 		} else {
-#ifdef BLE_GAP_ROLE_PERIPH
+#if defined(CONFIG_SOFTDEVICE_PERIPHERAL)
 			if ((im_peer_id_get_by_conn_handle(conn_handle) != PM_PEER_ID_INVALID) &&
 			    (role == BLE_GAP_ROLE_PERIPH) && !allow_repairing(conn_handle)) {
 				/* Bond already exists. Reject the pairing request if the user
@@ -841,7 +872,7 @@ uint32_t smd_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *sec_params
 					sec_status = BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP;
 				}
 			}
-#endif /* BLE_GAP_ROLE_PERIPH */
+#endif /* CONFIG_SOFTDEVICE_PERIPHERAL */
 
 			if (!sec_params->bond) {
 				/* Pairing, no bonding. */
@@ -859,9 +890,9 @@ uint32_t smd_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *sec_params
 		 * opportunity to change the parameters and retry the call.
 		 */
 		ble_gap_sec_params_t *aux_sec_params = NULL;
-#ifdef BLE_GAP_ROLE_PERIPH
+#if defined(CONFIG_SOFTDEVICE_PERIPHERAL)
 		aux_sec_params = (role == BLE_GAP_ROLE_PERIPH) ? sec_params : NULL;
-#endif /* BLE_GAP_ROLE_PERIPH */
+#endif /* CONFIG_SOFTDEVICE_PERIPHERAL */
 
 		err_code = sd_ble_gap_sec_params_reply(conn_handle, sec_status, aux_sec_params,
 						       &sec_keyset);
@@ -869,41 +900,6 @@ uint32_t smd_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *sec_params
 
 	return err_code;
 }
-
-/**
- * @brief Function for initiating pairing as a central, or all security as a periheral.
- *
- * See @ref smd_link_secure and @ref sd_ble_gap_authenticate for more information.
- */
-static uint32_t link_secure_authenticate(uint16_t conn_handle, ble_gap_sec_params_t *sec_params)
-{
-	uint32_t err_code = sd_ble_gap_authenticate(conn_handle, sec_params);
-
-	if (err_code == NRF_ERROR_NO_MEM) {
-		/* sd_ble_gap_authenticate() returned NRF_ERROR_NO_MEM. Too many other sec
-		 * procedures running.
-		 */
-		err_code = NRF_ERROR_BUSY;
-	}
-
-	return err_code;
-}
-
-#ifdef BLE_GAP_ROLE_PERIPH
-/** @brief Function for asking the central to secure the link. See @ref smd_link_secure for more
- * info.
- */
-static uint32_t link_secure_peripheral(uint16_t conn_handle, ble_gap_sec_params_t *sec_params)
-{
-	uint32_t err_code = NRF_SUCCESS;
-
-	if (sec_params != NULL) {
-		err_code = link_secure_authenticate(conn_handle, sec_params);
-	}
-
-	return err_code;
-}
-#endif
 
 uint32_t smd_link_secure(uint16_t conn_handle, ble_gap_sec_params_t *sec_params,
 			 bool force_repairing)
@@ -913,10 +909,15 @@ uint32_t smd_link_secure(uint16_t conn_handle, ble_gap_sec_params_t *sec_params,
 	uint8_t role = ble_conn_state_role(conn_handle);
 
 	switch (role) {
-#ifdef BLE_GAP_ROLE_PERIPH
+#if defined(CONFIG_SOFTDEVICE_CENTRAL)
+	case BLE_GAP_ROLE_CENTRAL:
+		return link_secure_central(conn_handle, sec_params, force_repairing);
+#endif /* CONFIG_SOFTDEVICE_CENTRAL */
+
+#if defined(CONFIG_SOFTDEVICE_PERIPHERAL)
 	case BLE_GAP_ROLE_PERIPH:
 		return link_secure_peripheral(conn_handle, sec_params);
-#endif /* BLE_GAP_ROLE_PERIPH */
+#endif /* CONFIG_SOFTDEVICE_PERIPHERAL */
 
 	default:
 		return BLE_ERROR_INVALID_CONN_HANDLE;
@@ -934,11 +935,17 @@ void smd_ble_evt_handler(const ble_evt_t *ble_evt)
 		sec_params_request_process(&(ble_evt->evt.gap_evt));
 		break;
 
-#ifdef BLE_GAP_ROLE_PERIPH
+#if defined(CONFIG_SOFTDEVICE_PERIPHERAL)
 	case BLE_GAP_EVT_SEC_INFO_REQUEST:
 		sec_info_request_process(&(ble_evt->evt.gap_evt));
 		break;
-#endif /* BLE_GAP_ROLE_PERIPH */
+#endif /* CONFIG_SOFTDEVICE_PERIPHERAL */
+
+#if defined(CONFIG_SOFTDEVICE_CENTRAL)
+	case BLE_GAP_EVT_SEC_REQUEST:
+		sec_request_process(&(ble_evt->evt.gap_evt));
+		break;
+#endif /* CONFIG_SOFTDEVICE_CENTRAL */
 
 	case BLE_GAP_EVT_AUTH_STATUS:
 		auth_status_process(&(ble_evt->evt.gap_evt));
