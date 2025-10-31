@@ -77,6 +77,18 @@ static void gpiote_uninit(void)
 	nrfx_gpiote_uninit(&gpiote30_instance);
 }
 
+ISR_DIRECT_DECLARE(gpiote_20_direct_isr)
+{
+	NRFX_GPIOTE_INST_HANDLER_GET(20)();
+	return 0;
+}
+
+ISR_DIRECT_DECLARE(gpiote_30_direct_isr)
+{
+	NRFX_GPIOTE_INST_HANDLER_GET(30)();
+	return 0;
+}
+
 static int gpiote_init(void)
 {
 	int err;
@@ -88,8 +100,9 @@ static int gpiote_init(void)
 			return -EIO;
 		}
 
-		IRQ_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_GPIOTE_INST_GET(20)) + NRF_GPIOTE_IRQ_GROUP,
-			    IRQ_PRIO, NRFX_GPIOTE_INST_HANDLER_GET(20), 0, 0);
+		IRQ_DIRECT_CONNECT(
+			NRFX_IRQ_NUMBER_GET(NRF_GPIOTE_INST_GET(20)) + NRF_GPIOTE_IRQ_GROUP,
+			IRQ_PRIO, gpiote_20_direct_isr, 0);
 	}
 
 	if (!nrfx_gpiote_init_check(&gpiote30_instance)) {
@@ -99,8 +112,9 @@ static int gpiote_init(void)
 			return -EIO;
 		}
 
-		IRQ_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_GPIOTE_INST_GET(30)) + NRF_GPIOTE_IRQ_GROUP,
-			    IRQ_PRIO, NRFX_GPIOTE_INST_HANDLER_GET(30), 0, 0);
+		IRQ_DIRECT_CONNECT(
+			NRFX_IRQ_NUMBER_GET(NRF_GPIOTE_INST_GET(30)) + NRF_GPIOTE_IRQ_GROUP,
+			IRQ_PRIO, gpiote_30_direct_isr, 0);
 	}
 
 	return 0;
