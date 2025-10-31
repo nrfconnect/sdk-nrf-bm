@@ -704,7 +704,6 @@ SVCALL(SD_TEMP_GET, uint32_t, sd_temp_get(int32_t * p_temp));
 * @retval ::NRF_ERROR_INVALID_ADDR   Tried to write to a non existing flash address, or p_dst or p_src was unaligned.
 * @retval ::NRF_ERROR_BUSY           The previous command has not yet completed.
 * @retval ::NRF_ERROR_INVALID_LENGTH Size was 0.
-
 * @retval ::NRF_ERROR_FORBIDDEN      Tried to write to an address outside the application flash area.
 * @retval ::NRF_SUCCESS              The command was accepted.
 */
