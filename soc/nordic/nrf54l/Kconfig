@@ -1,0 +1,20 @@
+if SOC_SERIES_NRF54LX
+
+config SOC_NORDIC_NRF54L_LFXO_SOMETHING_A
+	bool "Enable some SoC LFXO option with this"
+	help
+	  some descriptive text of what this does
+
+choice SOC_NORDIC_NRF54L_LFXO_CAP
+	prompt "LFXO capacitance"
+	default SOC_NORDIC_NRF54L_LFXO_CAP_1_0PF
+
+config SOC_NORDIC_NRF54L_LFXO_CAP_1_0PF
+	bool "1pF"
+
+config SOC_NORDIC_NRF54L_LFXO_CAP_0_5PF
+	bool "0.5pF"
+
+endchoice # SOC_NORDIC_NRF54L_LFXO_CAP
+
+endif # SOC_SERIES_NRF54LX
