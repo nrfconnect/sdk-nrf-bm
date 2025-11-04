@@ -15,6 +15,7 @@
 #include <zephyr/kernel.h>
 #include <ble_gattc.h>
 #include <bm/bluetooth/ble_gq.h>
+#include <bm/bluetooth/ble_gatt_db.h>
 
 #ifndef BLE_DB_DISCOVERY_H__
 #define BLE_DB_DISCOVERY_H__
@@ -29,66 +30,6 @@
 						.conn_handle = BLE_CONN_HANDLE_INVALID};           \
 	NRF_SDH_BLE_OBSERVER(_name##_obs, ble_db_discovery_on_ble_evt, &_name,                     \
 			     BLE_DB_DISC_BLE_OBSERVER_PRIO)
-
-/**
- * @brief BLE GATT database characteristic.
- */
-struct ble_gatt_db_char {
-	/**
-	 * @brief Structure containing information about the characteristic.
-	 */
-	ble_gattc_char_t characteristic;
-	/**
-	 * @brief CCCD Handle value for this characteristic.
-	 *
-	 * This will be set to BLE_GATT_HANDLE_INVALID if a CCCD is not present at the server.
-	 */
-	uint16_t cccd_handle;
-	/**
-	 * @brief Extended Properties Handle value for this characteristic.
-	 *
-	 * This will be set to BLE_GATT_HANDLE_INVALID if an Extended
-	 * Properties descriptor is not present at the server.
-	 */
-	uint16_t ext_prop_handle;
-	/**
-	 * @brief User Description Handle value for this characteristic.
-	 *
-	 * This will be set to BLE_GATT_HANDLE_INVALID if a User Description
-	 * descriptor is not present at the server.
-	 */
-	uint16_t user_desc_handle;
-	/**
-	 * @brief Report Reference Handle value for this characteristic.
-	 * This will be set to BLE_GATT_HANDLE_INVALID if a Report Reference
-	 * descriptor is not present at the server.
-	 */
-	uint16_t report_ref_handle;
-};
-
-/**
- * @brief BLE GATT database service.
- */
-struct ble_gatt_db_srv {
-	/**
-	 * @brief UUID of the service.
-	 */
-	ble_uuid_t srv_uuid;
-	/**
-	 * @brief Number of characteristics present in the service.
-	 */
-	uint8_t char_count;
-	/**
-	 * @brief Service Handle Range.
-	 */
-	ble_gattc_handle_range_t handle_range;
-	/**
-	 * @brief Array of information related to the characteristics present in the service.
-	 *
-	 * This list can extend further than one.
-	 */
-	struct ble_gatt_db_char charateristics[CONFIG_BLE_GATT_DB_MAX_CHARS];
-};
 
 /**
  * @brief BLE database discovery event type.
