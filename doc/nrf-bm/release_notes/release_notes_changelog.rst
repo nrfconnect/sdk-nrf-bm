@@ -203,6 +203,7 @@ Bluetooth LE Services
 
 * Updated how to configure the characteristic security for the following Bluetooth LE services:
 
+  * :ref:`lib_ble_service_bas` service.
   * :ref:`lib_ble_service_cgms` service.
 
 * :ref:`lib_ble_service_bas` service:
