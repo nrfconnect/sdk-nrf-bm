@@ -137,6 +137,7 @@ Bluetooth LE Services
 
 * Updated the characteristic security configuration for the following Bluetooth LE services:
 
+  * :ref:`lib_ble_service_bas` service.
   * :ref:`lib_ble_service_cgms` service.
 
 * :ref:`lib_ble_service_nus` service:

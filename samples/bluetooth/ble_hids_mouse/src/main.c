@@ -709,9 +709,7 @@ int main(void)
 		.can_notify = true,
 		.report_ref = NULL,
 		.battery_level = 100,
-		.batt_rd_sec = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-		.report_ref_rd_sec = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-		.cccd_wr_sec = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
+		.sec_mode = BLE_BAS_CONFIG_SEC_MODE_DEFAULT,
 	};
 
 	struct ble_qwr_config qwr_config = {
