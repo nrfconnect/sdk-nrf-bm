@@ -138,7 +138,7 @@ static void queue_process(void)
 			NRFX_CRITICAL_SECTION_ENTER();
 			rc = ring_buf_get(&zms_fifo, (uint8_t *)&cur_op, sizeof(zms_op_t));
 			NRFX_CRITICAL_SECTION_EXIT();
-			if (rc < 0) {
+			if (rc != sizeof(zms_op_t)) {
 				result = -EIO;
 				goto completed;
 			}
