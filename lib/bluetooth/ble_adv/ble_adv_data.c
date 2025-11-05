@@ -391,7 +391,9 @@ static uint32_t manuf_specific_data_encode(const struct ble_adv_data_manufacture
 		return NRF_ERROR_DATA_SIZE;
 	}
 
-	/* There is only 1 byte intended to encode length which is (data_size + AD_TYPE_FIELD_SIZE) */
+	/* There is only 1 byte intended to encode length which is
+	 * (data_size + AD_TYPE_FIELD_SIZE)
+	 */
 	if (data_size > (0x00FF - AD_TYPE_FIELD_SIZE)) {
 		return NRF_ERROR_DATA_SIZE;
 	}
