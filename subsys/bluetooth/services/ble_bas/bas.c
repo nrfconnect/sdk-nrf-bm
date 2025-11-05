@@ -21,7 +21,8 @@ static uint32_t battery_level_char_add(struct ble_bas *bas, const struct ble_bas
 	};
 	ble_gatts_attr_md_t cccd_md = {
 		.vloc = BLE_GATTS_VLOC_STACK,
-		.write_perm = cfg->cccd_wr_sec,
+		.write_perm = cfg->sec_mode.battery_lvl_char.cccd_write,
+		.read_perm = BLE_GAP_CONN_SEC_MODE_OPEN,
 	};
 	ble_gatts_char_md_t char_md = {
 		.char_props = {
@@ -31,7 +32,7 @@ static uint32_t battery_level_char_add(struct ble_bas *bas, const struct ble_bas
 	};
 	ble_gatts_attr_md_t attr_md = {
 		.vloc = BLE_GATTS_VLOC_STACK,
-		.read_perm = cfg->batt_rd_sec,
+		.read_perm = cfg->sec_mode.battery_lvl_char.read,
 	};
 	ble_gatts_attr_t attr_char_value = {
 		.p_uuid = &char_uuid,
@@ -40,8 +41,6 @@ static uint32_t battery_level_char_add(struct ble_bas *bas, const struct ble_bas
 		.init_len = sizeof(bas->battery_level),
 		.max_len = sizeof(bas->battery_level),
 	};
-
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.read_perm);
 
 	/* Set CCCD metadata if characteristic value can be notified. */
 	if (bas->can_notify) {
@@ -62,7 +61,7 @@ static uint32_t report_reference_descriptor_add(struct ble_bas *bas,
 	};
 	ble_gatts_attr_md_t attr_md = {
 		.vloc = BLE_GATTS_VLOC_STACK,
-		.read_perm = cfg->report_ref_rd_sec,
+		.read_perm = cfg->sec_mode.battery_report_ref.read,
 	};
 	uint8_t encoded_report_ref[sizeof(uint16_t)];
 	ble_gatts_attr_t descr_params = {

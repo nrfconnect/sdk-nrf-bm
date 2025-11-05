@@ -465,15 +465,13 @@ int main(void)
 		.evt_handler = ble_bas_evt_handler,
 		.can_notify = true,
 		.battery_level = CONFIG_APP_BATTERY_LEVEL_MAX,
+		.sec_mode = BLE_BAS_CONFIG_SEC_MODE_DEFAULT,
 	};
 	struct ble_hrs_config hrs_cfg = {
 		.evt_handler = ble_hrs_evt_handler,
 		.is_sensor_contact_supported = true,
 		.body_sensor_location = &body_sensor_location,
 	};
-
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&bas_cfg.batt_rd_sec);
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&bas_cfg.cccd_wr_sec);
 
 	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&hrs_cfg.hrm_cccd_wr_sec);
 	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&hrs_cfg.bsl_rd_sec);
