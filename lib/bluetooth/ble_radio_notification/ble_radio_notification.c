@@ -29,11 +29,9 @@ LOG_MODULE_REGISTER(ble_radio_ntf, CONFIG_BLE_RADIO_NOTIFICATION_LOG_LEVEL);
 /* Application event handler for handling Radio Notification events. */
 static ble_radio_notification_evt_handler_t evt_handler;
 
-void radio_notification_isr(const void *arg)
+ISR_DIRECT_DECLARE(radio_notification_isr)
 {
 	static bool radio_active = IS_ENABLED(CONFIG_BLE_RADIO_NOTIFICATION_ON_ACTIVE);
-
-	ARG_UNUSED(arg);
 
 #if defined(CONFIG_BLE_RADIO_NOTIFICATION_ON_BOTH)
 	radio_active = !radio_active;
@@ -42,6 +40,8 @@ void radio_notification_isr(const void *arg)
 	if (evt_handler) {
 		evt_handler(radio_active);
 	}
+
+	return 0;
 }
 
 uint32_t ble_radio_notification_init(uint32_t distance,
