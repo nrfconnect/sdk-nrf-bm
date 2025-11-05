@@ -319,11 +319,8 @@ static uint32_t services_init(void)
 		.can_notify = true,
 		.report_ref = NULL,
 		.battery_level = 100,
+		.sec_mode = BLE_BAS_CONFIG_SEC_MODE_DEFAULT,
 	};
-
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&bas_config.batt_rd_sec);
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&bas_config.report_ref_rd_sec);
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&bas_config.cccd_wr_sec);
 
 	struct ble_qwr_config qwr_config = {
 		.mem_buffer.len = CONFIG_APP_QWR_MEM_BUFF_SIZE,

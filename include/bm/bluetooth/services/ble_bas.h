@@ -16,6 +16,7 @@
 #include <stdbool.h>
 #include <ble.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
+#include <bm/bluetooth/services/common.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,6 +31,16 @@ extern "C" {
 	static struct ble_bas _name;                                                               \
 	extern void ble_bas_on_ble_evt(const ble_evt_t *ble_evt, void *ctx);                       \
 	NRF_SDH_BLE_OBSERVER(_name##_obs, ble_bas_on_ble_evt, &_name, HIGH)
+
+/** @brief Default security configuration. */
+#define BLE_BAS_CONFIG_SEC_MODE_DEFAULT                                                            \
+	{                                                                                          \
+		.battery_lvl_char = {                                                              \
+			.read = BLE_GAP_CONN_SEC_MODE_OPEN,                                        \
+			.cccd_write = BLE_GAP_CONN_SEC_MODE_OPEN,                                  \
+		},                                                                                 \
+		.battery_report_ref.read = BLE_GAP_CONN_SEC_MODE_OPEN,                             \
+	}
 
 /**
  * @brief Battery service event types.
@@ -113,18 +124,21 @@ struct ble_bas_config {
 	 * @brief Initial battery level.
 	 */
 	uint8_t battery_level;
-	/**
-	 * @brief Security requirement for reading the battery level characteristic value.
-	 */
-	ble_gap_conn_sec_mode_t batt_rd_sec;
-	/**
-	 * @brief Security requirement for writing the battery level characteristic CCCD.
-	 */
-	ble_gap_conn_sec_mode_t cccd_wr_sec;
-	/**
-	 * @brief Security requirement for reading the Report Reference characteristic descriptor.
-	 */
-	ble_gap_conn_sec_mode_t report_ref_rd_sec;
+	/** Characteristic security. */
+	struct {
+		/**  Battery Level characteristic */
+		struct {
+			/** Security requirement for reading battery level characteristic value. */
+			ble_gap_conn_sec_mode_t read;
+			/** Security requirement for writing battery level characteristic CCCD. */
+			ble_gap_conn_sec_mode_t cccd_write;
+		} battery_lvl_char;
+		/** Battery Service report reference. */
+		struct {
+			/** Security requirement for reading Battery Service report reference. */
+			ble_gap_conn_sec_mode_t read;
+		} battery_report_ref;
+	} sec_mode;
 };
 
 /**

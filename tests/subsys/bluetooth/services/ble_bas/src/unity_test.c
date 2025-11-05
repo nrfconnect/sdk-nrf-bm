@@ -43,10 +43,14 @@ static struct {
 static struct ble_bas_config bas_cfg_template = {
 	.can_notify = true,
 	.battery_level = BATTERY_REFERENCE_VALUE,
-	.batt_rd_sec = {.lv = 1, .sm = 2},
-	.cccd_wr_sec = {.lv = 3, .sm = 4},
-	.report_ref_rd_sec = {.lv = 5, .sm = 6},
 	.report_ref = (void *)&report_ref,
+	.sec_mode = {
+		.battery_lvl_char = {
+			.read = {.lv = 1, .sm = 2},
+			.cccd_write = {.lv = 3, .sm = 4},
+		},
+		.battery_report_ref.read = {.lv = 5, .sm = 6},
+	}
 };
 
 uint32_t stub_sd_ble_gatts_service_add_success(uint8_t type, ble_uuid_t const *p_uuid,
