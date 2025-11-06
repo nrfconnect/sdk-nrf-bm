@@ -1,15 +1,18 @@
 .. _lib_bm_timer:
 
-Timer library
-#############
+Bare Metal Timer library
+########################
 
 .. contents::
    :local:
    :depth: 2
 
-The timer library allows the application to create multiple timer instances.
+The Bare Metal (BM) Timer library provides a wrapper around Zephyr's Timers functionality, utilizing the GRTC peripheral.
 
-Functions such as starting and stopping timers, checking for timeouts, and invoking user-defined timeout handlers are all managed within the GRTC interrupt handler.
+The BM Timer has a resolution of 1 µs and can run in all power modes.
+This allows for waking up the system after a specific period or at specific intervals, independent of power modes.
+The BM Timer allows the application to create multiple timer instances, each with dedicated, user defined timeout handlers.
+The timers can be individually started and stopped.
 
 Configuration
 *************
@@ -40,14 +43,6 @@ The library provides macros to convert standard time units to ticks:
 
 * :c:macro:`BM_TIMER_US_TO_TICKS` - Converts microseconds to ticks.
 * :c:macro:`BM_TIMER_MS_TO_TICKS` - Converts milliseconds to ticks.
-
-The timer library is using the GRTC peripheral, available in all power modes including ``System OFF``.
-The GRTC peripheral has a resolution of 1 microsecond.
-
-.. note::
-
-   The timer accuracy is reduced in low power mode.
-   The low frequency clock source, running 32.768 kHz, provides a clock tick approximately every 30.5 microseconds.
 
 To stop a timer, call the :c:func:`bm_timer_stop` function.
 
