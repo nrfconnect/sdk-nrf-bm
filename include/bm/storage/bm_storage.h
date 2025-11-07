@@ -77,13 +77,21 @@ typedef void (*bm_storage_evt_handler_t)(struct bm_storage_evt *evt);
  * @brief Information about the implementation-specific non-volatile memory.
  */
 struct bm_storage_info {
-	/* Size of a page (in bytes). A page is the smallest unit that can be erased. */
+	/**
+	 * @brief Size of a page (in bytes). A page is the smallest unit that can be erased.
+	 */
 	uint32_t erase_unit;
-	/* Value used by the implementation-specific backend to represent erased memory. */
+	/**
+	 * @brief Value used by the implementation-specific backend to represent erased memory.
+	 */
 	uint32_t erase_value;
-	/* Size of the smallest programmable unit (in bytes). */
+	/**
+	 * @brief Size of the smallest programmable unit (in bytes).
+	 */
 	uint32_t program_unit;
-	/* Specifies if the implementation-specific backend does not need erase. */
+	/**
+	 * @brief Specifies if the implementation-specific backend does not need erase.
+	 */
 	bool no_explicit_erase;
 };
 
@@ -213,6 +221,8 @@ uint32_t bm_storage_write(const struct bm_storage *storage, uint32_t dest, const
  * @brief Erase data in a storage instance.
  *
  * @param[in] storage Storage instance to erase data in.
+ * @param[in] dest Address in non-volatile memory where to erase the data.
+ * @param[in] len Length of the data to be erased (in bytes).
  * @param[in] ctx Pointer to user data, passed to the implementation-specific API function call.
  *                Can be NULL.
  *
