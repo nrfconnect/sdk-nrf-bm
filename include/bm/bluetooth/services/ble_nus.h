@@ -149,7 +149,7 @@ struct ble_nus {
 	/** Handles related to the RX characteristic (as provided by the SoftDevice). */
 	ble_gatts_char_handles_t rx_handles;
 	/** Link context with handles of all current connections and its context. */
-	struct ble_nus_ctx *const ctx;
+	struct ble_nus_client_context contexts[CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT];
 	/** Event handler to be called for handling received data. */
 	ble_nus_evt_handler_t evt_handler;
 };

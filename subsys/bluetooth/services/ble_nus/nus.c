@@ -14,13 +14,12 @@
 
 LOG_MODULE_REGISTER(ble_nus, CONFIG_BLE_NUS_LOG_LEVEL);
 
-static struct ble_nus_client_context contexts[CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT];
-
-static struct ble_nus_client_context *ble_nus_client_context_get(uint16_t conn_handle)
+static struct ble_nus_client_context *ble_nus_client_context_get(struct ble_nus *nus,
+								 uint16_t conn_handle)
 {
 	const int idx = nrf_sdh_ble_idx_get(conn_handle);
 
-	return ((idx >= 0) ? &contexts[idx] : NULL);
+	return ((idx >= 0) ? &nus->contexts[idx] : NULL);
 }
 
 static uint32_t nus_rx_char_add(struct ble_nus *nus, struct ble_nus_config const *cfg)
@@ -116,7 +115,7 @@ static void on_connect(struct ble_nus *nus, ble_evt_t const *ble_evt)
 	};
 	struct ble_nus_client_context *ctx;
 
-	ctx = ble_nus_client_context_get(conn_handle);
+	ctx = ble_nus_client_context_get(nus, conn_handle);
 	if (ctx == NULL) {
 		LOG_ERR("Could not fetch nus context for connection handle %#x", conn_handle);
 	}
@@ -152,7 +151,7 @@ static void on_write(struct ble_nus *nus, ble_evt_t const *ble_evt)
 	};
 	struct ble_nus_client_context *ctx;
 
-	ctx = ble_nus_client_context_get(conn_handle);
+	ctx = ble_nus_client_context_get(nus, conn_handle);
 	if (ctx == NULL) {
 		LOG_ERR("Could not fetch nus context for connection handle %#x", conn_handle);
 	}
@@ -202,7 +201,7 @@ static void on_hvx_tx_complete(struct ble_nus *nus, ble_evt_t const *ble_evt)
 	};
 	struct ble_nus_client_context *ctx;
 
-	ctx = ble_nus_client_context_get(conn_handle);
+	ctx = ble_nus_client_context_get(nus, conn_handle);
 	if (ctx == NULL) {
 		LOG_ERR("Could not fetch nus context for connection handle %#x", conn_handle);
 		return;
@@ -317,7 +316,7 @@ int ble_nus_data_send(struct ble_nus *nus, uint8_t *data,
 		return -ENOENT;
 	}
 
-	ctx = ble_nus_client_context_get(conn_handle);
+	ctx = ble_nus_client_context_get(nus, conn_handle);
 	if (ctx == NULL) {
 		return -ENOENT;
 	}

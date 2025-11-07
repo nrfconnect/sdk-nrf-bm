@@ -122,6 +122,10 @@ Libraries
 
   * Updated to use errno instead of nrf_errors.
 
+* :ref:`lib_ble_service_nus` service:
+
+  * Fixed an issue where the client context was shared between all instances.
+
 Samples
 =======
 
