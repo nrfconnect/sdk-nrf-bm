@@ -79,37 +79,37 @@ __attribute__((weak)) void C_HardFault_Handler(void)
 	__asm__("SVC 255");
 }
 
-__attribute__((weak)) void C_TIMER0_Handler(void)
+__attribute__((weak)) void C_TIMER10_Handler(void)
 {
 	__asm__("SVC 255");
 }
 
-__attribute__((weak)) void C_RTC0_Handler(void)
+__attribute__((weak)) void C_GRTC_3_Handler(void)
 {
 	__asm__("SVC 255");
 }
 
-__attribute__((weak)) void C_SIGNALLING_Handler(void)
+__attribute__((weak)) void C_SWI00_Handler(void)
 {
 	__asm__("SVC 255");
 }
 
-__attribute__((weak)) void C_RADIO_Handler(void)
+__attribute__((weak)) void C_RADIO_0_Handler(void)
 {
 	__asm__("SVC 255");
 }
 
-__attribute__((weak)) void C_ECB_Handler(void)
+__attribute__((weak)) void C_ECB00_Handler(void)
 {
 	__asm__("SVC 255");
 }
 
-__attribute__((weak)) void C_CCM_Handler(void)
+__attribute__((weak)) void C_AAR00_CCM00_Handler(void)
 {
 	__asm__("SVC 255");
 }
 
-__attribute__((weak)) void C_POWER_CLOCK_Handler(void)
+__attribute__((weak)) void C_CLOCK_POWER_Handler(void)
 {
 	__asm__("SVC 255");
 }
