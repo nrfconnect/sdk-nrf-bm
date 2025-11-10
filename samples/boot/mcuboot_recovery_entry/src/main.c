@@ -45,7 +45,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {
 	uint32_t nrf_err;
 
-	__ASSERT(ble_evt, "BLE event is NULL");
+	__ASSERT(evt, "BLE event is NULL");
 
 	if (evt == NULL) {
 		return;
