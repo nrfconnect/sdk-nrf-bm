@@ -341,7 +341,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {
 	struct ble_mcumgr *mcumgr_data = (struct ble_mcumgr *)ctx;
 
-	__ASSERT(ble_evt, "BLE event is NULL");
+	__ASSERT(evt, "BLE event is NULL");
 	__ASSERT(ctx, "context is NULL");
 
 	if (ctx == NULL || evt == NULL) {
