@@ -99,11 +99,6 @@ __attribute__((weak)) void C_RADIO_Handler(void)
 	__asm__("SVC 255");
 }
 
-__attribute__((weak)) void C_RNG_Handler(void)
-{
-	__asm__("SVC 255");
-}
-
 __attribute__((weak)) void C_ECB_Handler(void)
 {
 	__asm__("SVC 255");
