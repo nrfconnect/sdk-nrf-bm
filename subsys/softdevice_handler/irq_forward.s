@@ -97,7 +97,7 @@ HardFault_Handler:
     .global CLOCK_POWER_IRQHandler
     .type CLOCK_POWER_IRQHandler, "function"
 CLOCK_POWER_IRQHandler:
-    LDR   R3, =C_POWER_CLOCK_Handler
+    LDR   R3, =C_CLOCK_POWER_Handler
     LDR   R0, =NRF_SD_ISR_OFFSET_CLOCK_POWER
     LDR   R1, =ConsumeOrForwardIRQ
     BX    R1
@@ -108,7 +108,7 @@ CLOCK_POWER_IRQHandler:
     .global RADIO_0_IRQHandler
     .type RADIO_0_IRQHandler, "function"
 RADIO_0_IRQHandler:
-    LDR   R3, =C_RADIO_Handler
+    LDR   R3, =C_RADIO_0_Handler
     LDR   R0, =NRF_SD_ISR_OFFSET_RADIO_0
     LDR   R1, =ConsumeOrForwardIRQ
     BX    R1
@@ -119,7 +119,7 @@ RADIO_0_IRQHandler:
     .global TIMER10_IRQHandler
     .type TIMER10_IRQHandler, "function"
 TIMER10_IRQHandler:
-    LDR   R3, =C_TIMER0_Handler
+    LDR   R3, =C_TIMER10_Handler
     LDR   R0, =NRF_SD_ISR_OFFSET_TIMER10
     LDR   R1, =ConsumeOrForwardIRQ
     BX    R1
@@ -130,7 +130,7 @@ TIMER10_IRQHandler:
     .global GRTC_3_IRQHandler
     .type GRTC_3_IRQHandler, "function"
 GRTC_3_IRQHandler:
-    LDR   R3, =C_RTC0_Handler
+    LDR   R3, =C_GRTC_3_Handler
     LDR   R0, =NRF_SD_ISR_OFFSET_GRTC_3
     LDR   R1, =ConsumeOrForwardIRQ
     BX    R1
@@ -141,7 +141,7 @@ GRTC_3_IRQHandler:
     .global ECB00_IRQHandler
     .type ECB00_IRQHandler, "function"
 ECB00_IRQHandler:
-    LDR   R3, =C_ECB_Handler
+    LDR   R3, =C_ECB00_Handler
     LDR   R0, =NRF_SD_ISR_OFFSET_ECB00
     LDR   R1, =ConsumeOrForwardIRQ
     BX    R1
@@ -152,7 +152,7 @@ ECB00_IRQHandler:
     .global AAR00_CCM00_IRQHandler
     .type AAR00_CCM00_IRQHandler, "function"
 AAR00_CCM00_IRQHandler:
-    LDR   R3, =C_CCM_Handler
+    LDR   R3, =C_AAR00_CCM00_Handler
     LDR   R0, =NRF_SD_ISR_OFFSET_AAR00_CCM00
     LDR   R1, =ConsumeOrForwardIRQ
     BX    R1
@@ -163,7 +163,7 @@ AAR00_CCM00_IRQHandler:
     .global SWI00_IRQHandler
     .type SWI00_IRQHandler, "function"
 SWI00_IRQHandler:
-    LDR   R3, =C_SIGNALLING_Handler
+    LDR   R3, =C_SWI00_Handler
     LDR   R0, =NRF_SD_ISR_OFFSET_SWI00
     LDR   R1, =ConsumeOrForwardIRQ
     BX    R1
