@@ -32,6 +32,15 @@ extern "C" {
 	extern void ble_hrs_on_ble_evt(const ble_evt_t *ble_evt, void *ctx);                       \
 	NRF_SDH_BLE_OBSERVER(_name##_obs, ble_hrs_on_ble_evt, &_name, HIGH)
 
+/** @brief Default security configuration. */
+#define BLE_HRS_CONFIG_SEC_MODE_DEFAULT                                                            \
+	{                                                                                          \
+		.hrm_char = {                                                                      \
+			.cccd_write = BLE_GAP_CONN_SEC_MODE_OPEN,                                  \
+		},                                                                                 \
+		.bsl_char.read = BLE_GAP_CONN_SEC_MODE_OPEN,                                       \
+	}
+
 /**
  * @defgroup BLE_HRS_BODY_SENSOR_LOCATION HRS Body sensor location
  * @{
@@ -109,13 +118,30 @@ struct ble_hrs_config {
 	 */
 	uint8_t *body_sensor_location;
 	/**
-	 * @brief Security requirement for writing the heart rate monitor characteristic CCCD.
+	 * @brief Security configuration.
 	 */
-	ble_gap_conn_sec_mode_t hrm_cccd_wr_sec;
-	/**
-	 * @brief Security requirement for reading the body sensor location characteristic value.
-	 */
-	ble_gap_conn_sec_mode_t bsl_rd_sec;
+	struct {
+		/**
+		 * @brief Security requirement for the heart rate monitor characteristic.
+		 */
+		struct {
+			/**
+			 * @brief Security requirement for writing the heart rate monitor
+			 *        characteristic CCCD.
+			 */
+			ble_gap_conn_sec_mode_t cccd_write;
+		} hrm_char;
+		/**
+		 * @brief Security requirement for the body sensor location characteristic.
+		 */
+		struct {
+			/**
+			 * @brief Security requirement for reading the body sensor location
+			 *        characteristic value.
+			 */
+			ble_gap_conn_sec_mode_t read;
+		} bsl_char;
+	} sec_mode;
 };
 
 /**

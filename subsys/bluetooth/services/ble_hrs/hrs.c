@@ -95,7 +95,8 @@ static uint32_t heart_rate_measurement_char_add(struct ble_hrs *hrs,
 	};
 	ble_gatts_attr_md_t cccd_md = {
 		.vloc = BLE_GATTS_VLOC_STACK,
-		.write_perm = cfg->hrm_cccd_wr_sec,
+		.read_perm = BLE_GAP_CONN_SEC_MODE_OPEN,
+		.write_perm = cfg->sec_mode.hrm_char.cccd_write,
 	};
 	ble_gatts_char_md_t char_md = {
 		.char_props = {
@@ -115,8 +116,6 @@ static uint32_t heart_rate_measurement_char_add(struct ble_hrs *hrs,
 		.max_len = sizeof(encoded_initial_hrm),
 	};
 
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.read_perm);
-
 	/* Add Heart rate measurement characteristic declaration, value, and CCCD attributes. */
 	return sd_ble_gatts_characteristic_add(hrs->service_handle, &char_md, &attr_char_value,
 					       &hrs->hrm_handles);
@@ -135,7 +134,7 @@ static uint32_t body_sensor_location_char_add(struct ble_hrs *hrs, const struct 
 	};
 	ble_gatts_attr_md_t attr_md = {
 		.vloc = BLE_GATTS_VLOC_STACK,
-		.read_perm = cfg->bsl_rd_sec,
+		.read_perm = cfg->sec_mode.bsl_char.read,
 	};
 	ble_gatts_attr_t attr_char_value = {
 		.p_uuid = &char_uuid,
