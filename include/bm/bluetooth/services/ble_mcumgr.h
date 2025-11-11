@@ -17,6 +17,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <ble.h>
+#include <bm/bluetooth/services/common.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
 
 #ifdef __cplusplus
@@ -34,13 +35,41 @@ extern "C" {
 #define BLE_MCUMGR_SERVICE_UUID_SUB 0xdc1d
 #define BLE_MCUMGR_CHARACTERISTIC_UUID_SUB 0x7828
 
+/** @brief Default security configuration. */
+#define BLE_MCUMGR_CONFIG_SEC_MODE_DEFAULT                                                         \
+	{                                                                                          \
+		.mcumgr_char = {                                                                   \
+			.read = BLE_GAP_CONN_SEC_MODE_OPEN,                                        \
+			.write = BLE_GAP_CONN_SEC_MODE_OPEN,                                       \
+			.cccd_write = BLE_GAP_CONN_SEC_MODE_OPEN,                                  \
+		},                                                                                 \
+	}
+
+/**
+ * @brief MCUmgr service configuration.
+ */
+struct ble_mcumgr_config {
+	/** Security configuration. */
+	struct {
+		/** MCUmgr characteristic */
+		struct {
+			/** Security requirement for reading MCUmgr characteristic value. */
+			ble_gap_conn_sec_mode_t read;
+			/** Security requirement for writing MCUmgr characteristic value. */
+			ble_gap_conn_sec_mode_t write;
+			/** Security requirement for writing MCUmgr characteristic CCCD. */
+			ble_gap_conn_sec_mode_t cccd_write;
+		} mcumgr_char;
+	} sec_mode;
+};
+
 /**
  * @brief Function for initializing the MCUmgr Bluetooth service.
  *
  * @retval NRF_SUCCESS On success.
  * @retval NRF_ERROR_INVALID_PARAM Invalid parameters.
  */
-uint32_t ble_mcumgr_init(void);
+uint32_t ble_mcumgr_init(const struct ble_mcumgr_config *cfg);
 
 /**
  * @brief Function for getting the MCUmgr Bluetooth service UUID type.
