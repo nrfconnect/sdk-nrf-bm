@@ -76,7 +76,7 @@ Libraries
 
 * Added the :ref:`lib_ble_radio_notification` library.
 
-* Updated the following libraries and BLE services to return ``nrf_errors`` instead of ``errnos``:
+* Updated the following libraries and Bluetooth LE services to return ``nrf_errors`` instead of ``errnos``:
 
   * :ref:`lib_ble_adv` library.
   * :ref:`lib_ble_conn_params` library.
@@ -88,7 +88,7 @@ Libraries
   * :ref:`lib_ble_service_lbs` service.
   * :ref:`lib_ble_service_mcumgr` service.
   * :ref:`lib_ble_service_nus` service.
-  * BLE Record Access Control Point library.
+  * Bluetooth LE Record Access Control Point library.
 
 * :ref:`lib_ble_conn_params` library:
 
@@ -131,6 +131,13 @@ Libraries
 * Storage library:
 
   * Updated to use errno instead of nrf_errors.
+
+Bluetooth LE Services
+------------
+
+* Updated the characteristic security configuration for the following Bluetooth LE services:
+
+  * :ref:`lib_ble_service_cgms` service.
 
 * :ref:`lib_ble_service_nus` service:
 
