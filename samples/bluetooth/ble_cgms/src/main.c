@@ -312,6 +312,7 @@ static uint32_t services_init(void)
 			.type = BLE_CGMS_MEAS_TYPE_VEN_BLOOD,
 			.sample_location = BLE_CGMS_MEAS_LOC_AST,
 		},
+		.sec_mode = BLE_CGMS_CONFIG_SEC_MODE_DEFAULT,
 	};
 	struct ble_bas_config bas_config = {
 		.evt_handler = NULL,

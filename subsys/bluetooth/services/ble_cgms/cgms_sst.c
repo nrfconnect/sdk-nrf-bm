@@ -144,7 +144,7 @@ static void on_sst_value_write(struct ble_cgms *cgms, const ble_gatts_evt_write_
 }
 
 /* Add the Session Start Time characteristic. */
-uint32_t cgms_sst_char_add(struct ble_cgms *cgms)
+uint32_t cgms_sst_char_add(struct ble_cgms *cgms, const struct ble_cgms_config *cgms_cfg)
 {
 	uint8_t init_value[BLE_CGMS_SST_LEN] = {0};
 
@@ -161,6 +161,8 @@ uint32_t cgms_sst_char_add(struct ble_cgms *cgms)
 	ble_gatts_attr_md_t attr_md = {
 		.vloc = BLE_GATTS_VLOC_STACK,
 		.wr_auth = true,
+		.read_perm = cgms_cfg->sec_mode.sst_char.read,
+		.write_perm = cgms_cfg->sec_mode.sst_char.write,
 	};
 	ble_gatts_attr_t attr_char_value = {
 		.p_uuid = &char_uuid,
@@ -169,9 +171,6 @@ uint32_t cgms_sst_char_add(struct ble_cgms *cgms)
 		.init_len = (BLE_CGMS_SST_LEN - BLE_CGMS_CRC_LEN),
 		.max_len = BLE_CGMS_SST_LEN,
 	};
-
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.read_perm);
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.write_perm);
 
 	return sd_ble_gatts_characteristic_add(cgms->service_handle, &char_md, &attr_char_value,
 					       &cgms->char_handles.sst);

@@ -29,14 +29,16 @@ LOG_MODULE_DECLARE(ble_cgms, CONFIG_BLE_CGMS_LOG_LEVEL);
 				  + OPERAND_LESS_GREATER_FILTER_PARAM_SIZE
 
 /* Add the Record Access Control Point characteristic */
-uint32_t cgms_racp_char_add(struct ble_cgms *cgms)
+uint32_t cgms_racp_char_add(struct ble_cgms *cgms, const struct ble_cgms_config *cgms_cfg)
 {
 	ble_uuid_t char_uuid = {
 		.type = BLE_UUID_TYPE_BLE,
 		.uuid = BLE_UUID_RECORD_ACCESS_CONTROL_POINT_CHAR,
 	};
 	ble_gatts_attr_md_t cccd_md = {
-		.vloc = BLE_GATTS_VLOC_STACK
+		.vloc = BLE_GATTS_VLOC_STACK,
+		.read_perm = BLE_GAP_CONN_SEC_MODE_OPEN,
+		.write_perm = cgms_cfg->sec_mode.racp_char.cccd_write,
 	};
 	ble_gatts_char_md_t char_md = {
 		.char_props = {
@@ -49,6 +51,7 @@ uint32_t cgms_racp_char_add(struct ble_cgms *cgms)
 		.vloc = BLE_GATTS_VLOC_STACK,
 		.wr_auth = true,
 		.vlen = true,
+		.write_perm = cgms_cfg->sec_mode.racp_char.write,
 	};
 	ble_gatts_attr_t attr_char_value = {
 		.p_uuid = &char_uuid,
@@ -57,11 +60,6 @@ uint32_t cgms_racp_char_add(struct ble_cgms *cgms)
 		.init_len = 0,
 		.max_len = BLE_GATT_ATT_MTU_DEFAULT,
 	};
-
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.write_perm);
-
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.read_perm);
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.write_perm);
 
 	return sd_ble_gatts_characteristic_add(cgms->service_handle, &char_md, &attr_char_value,
 					       &cgms->char_handles.racp);

@@ -26,6 +26,7 @@
 
 #include <bm/bluetooth/ble_gq.h>
 #include <bm/bluetooth/ble_racp.h>
+#include <bm/bluetooth/services/common.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
 #include <zephyr/sys/util.h>
 
@@ -44,6 +45,29 @@ extern "C" {
 	NRF_SDH_BLE_OBSERVER(_name ## _obs,                                                        \
 			     ble_cgms_on_ble_evt, &_name,                                          \
 			     HIGH)
+
+/** @brief Default security configuration. */
+#define BLE_CGMS_CONFIG_SEC_MODE_DEFAULT                                                           \
+	{                                                                                          \
+		.feature_char.read = BLE_GAP_CONN_SEC_MODE_OPEN,                                   \
+		.status_char.read = BLE_GAP_CONN_SEC_MODE_OPEN,                                    \
+		.srt_char.read = BLE_GAP_CONN_SEC_MODE_OPEN,                                       \
+		.meas_char = {                                                                     \
+			.cccd_write = BLE_GAP_CONN_SEC_MODE_OPEN,                                  \
+		},                                                                                 \
+		.racp_char = {                                                                     \
+			.write = BLE_GAP_CONN_SEC_MODE_OPEN,                                       \
+			.cccd_write = BLE_GAP_CONN_SEC_MODE_OPEN,                                  \
+		},                                                                                 \
+		.socp_char = {                                                                     \
+			.write = BLE_GAP_CONN_SEC_MODE_OPEN,                                       \
+			.cccd_write = BLE_GAP_CONN_SEC_MODE_OPEN,                                  \
+		},                                                                                 \
+		.sst_char = {                                                                      \
+			.read = BLE_GAP_CONN_SEC_MODE_OPEN,                                        \
+			.write = BLE_GAP_CONN_SEC_MODE_OPEN,                                       \
+		},                                                                                 \
+	}
 
 #define OPCODE_LENGTH 1
 #define HANDLE_LENGTH 2
@@ -390,6 +414,64 @@ struct ble_cgms_config {
 	struct ble_cgms_status initial_sensor_status;
 	/** Run time. */
 	uint16_t initial_run_time;
+	/** Characteristic security. */
+	struct {
+		/** Feature characteristic */
+		struct {
+			/** Security requirement for reading feature characteristic value. */
+			ble_gap_conn_sec_mode_t read;
+		} feature_char;
+		/** Status characteristic */
+		struct {
+			/** Security requirement for reading status characteristic value. */
+			ble_gap_conn_sec_mode_t read;
+		} status_char;
+		/** Session Run Time characteristic */
+		struct {
+			/** Security requirement for reading Session Run Time (SRT) characteristic
+			 * value.
+			 */
+			ble_gap_conn_sec_mode_t read;
+		} srt_char;
+		/** Measurement characteristic */
+		struct {
+			/** Security requirement for writing measurement characteristic CCCD. */
+			ble_gap_conn_sec_mode_t cccd_write;
+		} meas_char;
+		/** Record Access Control Point  */
+		struct {
+			/** Security requirement for writing Record Access Control Point (RACP)
+			 *  characteristic value.
+			 */
+			ble_gap_conn_sec_mode_t write;
+			/** Security requirement for writing Record Access Control Point (RACP)
+			 *  characteristic CCCD.
+			 */
+			ble_gap_conn_sec_mode_t cccd_write;
+		} racp_char;
+		/** Specific Operation Control Point (SOCP) */
+		struct {
+			/** Security requirement for writing Specific Operation Control Point (SOCP)
+			 *  characteristic value.
+			 */
+			ble_gap_conn_sec_mode_t write;
+			/** Security requirement for writing Specific Operation Control Point (SOCP)
+			 *  characteristic CCCD.
+			 */
+			ble_gap_conn_sec_mode_t cccd_write;
+		} socp_char;
+		/** Session Start Time (SST) */
+		struct {
+			/** Security requirement for reading Session Start Time (SST) characteristic
+			 *  value.
+			 */
+			ble_gap_conn_sec_mode_t read;
+			/** Security requirement for writing Session Start Time (SST) characteristic
+			 *  value.
+			 */
+			ble_gap_conn_sec_mode_t write;
+		} sst_char;
+	} sec_mode;
 };
 
 /** @brief Specific Operation Control Point response structure. */

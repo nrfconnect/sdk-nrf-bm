@@ -105,7 +105,7 @@ Libraries
 
 * Added the :ref:`lib_ble_radio_notification` library.
 
-* Updated the following libraries and BLE services to return ``nrf_errors`` instead of ``errnos``:
+* Updated the following libraries and Bluetooth LE services to return ``nrf_errors`` instead of ``errnos``:
 
   * :ref:`lib_ble_adv` library.
   * :ref:`lib_ble_conn_params` library.
@@ -117,7 +117,7 @@ Libraries
   * :ref:`lib_ble_service_lbs` service.
   * :ref:`lib_ble_service_mcumgr` service.
   * :ref:`lib_ble_service_nus` service.
-  * BLE Record Access Control Point library.
+  * Bluetooth LE Record Access Control Point library.
 
 * :ref:`lib_ble_conn_params` library:
 
@@ -197,6 +197,13 @@ Libraries
 
     * To use errno instead of nrf_errors.
     * The :c:func:`bm_storage_init` function to expect an additional input parameter of type pointer to struct :c:struct:`bm_storage_config` for configuring the storage instance that is being initialized.
+
+Bluetooth LE Services
+------------
+
+* Updated how to configure the characteristic security for the following Bluetooth LE services:
+
+  * :ref:`lib_ble_service_cgms` service.
 
 * :ref:`lib_ble_service_bas` service:
 

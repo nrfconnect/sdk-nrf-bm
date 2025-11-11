@@ -67,7 +67,7 @@ static uint8_t cgms_meas_encode(struct ble_cgms *cgms,
 }
 
 /* Add a characteristic for the Continuous Glucose Meter Measurement. */
-uint32_t cgms_meas_char_add(struct ble_cgms *cgms)
+uint32_t cgms_meas_char_add(struct ble_cgms *cgms, const struct ble_cgms_config *cgms_cfg)
 {
 	uint32_t nrf_err;
 	uint16_t num_recs;
@@ -89,7 +89,9 @@ uint32_t cgms_meas_char_add(struct ble_cgms *cgms)
 		.uuid = BLE_UUID_CGM_MEASUREMENT,
 	};
 	ble_gatts_attr_md_t cccd_md = {
-		.vloc = BLE_GATTS_VLOC_STACK
+		.vloc = BLE_GATTS_VLOC_STACK,
+		.read_perm = BLE_GAP_CONN_SEC_MODE_OPEN,
+		.write_perm = cgms_cfg->sec_mode.meas_char.cccd_write,
 	};
 	ble_gatts_char_md_t char_md = {
 		.char_props = {
@@ -108,9 +110,6 @@ uint32_t cgms_meas_char_add(struct ble_cgms *cgms)
 		.init_len = init_len,
 		.max_len = BLE_CGMS_MEAS_LEN_MAX,
 	};
-
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.read_perm);
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.write_perm);
 
 	return sd_ble_gatts_characteristic_add(cgms->service_handle, &char_md, &attr_char_value,
 					       &cgms->char_handles.measurement);
