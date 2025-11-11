@@ -712,6 +712,10 @@ int main(void)
 		.sec_mode = BLE_BAS_CONFIG_SEC_MODE_DEFAULT,
 	};
 
+	struct ble_dis_config dis_config = {
+		.sec_mode = BLE_DIS_CONFIG_SEC_MODE_DEFAULT,
+	};
+
 	struct ble_qwr_config qwr_config = {
 		.evt_handler = ble_qwr_evt_handler,
 	};
@@ -803,7 +807,7 @@ int main(void)
 		goto idle;
 	}
 
-	nrf_err = ble_dis_init();
+	nrf_err = ble_dis_init(&dis_config);
 	if (nrf_err) {
 		LOG_ERR("Failed to initialize device information service, nrf_error %#x", nrf_err);
 		goto idle;

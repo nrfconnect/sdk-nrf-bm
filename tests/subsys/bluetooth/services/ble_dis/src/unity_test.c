@@ -17,6 +17,10 @@
 
 #define HANDLE 0xa4
 
+struct ble_dis_config dis_config = {
+		.sec_mode = BLE_DIS_CONFIG_SEC_MODE_DEFAULT,
+};
+
 uint32_t stub_sd_ble_gatts_service_add_invalid_param(uint8_t type, ble_uuid_t const *p_uuid,
 						     uint16_t *p_handle, int cmock_num_calls)
 {
@@ -148,20 +152,28 @@ uint32_t stub_sd_ble_gatts_characteristic_add(
 	return NRF_SUCCESS;
 }
 
+void test_ble_dis_init_error_null(void)
+{
+	uint32_t nrf_err;
+
+	nrf_err = ble_dis_init(NULL);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
+}
+
 void test_ble_dis_init_error_invalid_param(void)
 {
 	uint32_t nrf_err;
 
 	__cmock_sd_ble_gatts_service_add_Stub(stub_sd_ble_gatts_service_add_invalid_param);
 
-	nrf_err = ble_dis_init();
+	nrf_err = ble_dis_init(&dis_config);
 	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, nrf_err);
 
 	__cmock_sd_ble_gatts_service_add_Stub(stub_sd_ble_gatts_service_add);
 	__cmock_sd_ble_gatts_characteristic_add_Stub(
 		stub_sd_ble_gatts_characteristic_add_invalid_param);
 
-	nrf_err = ble_dis_init();
+	nrf_err = ble_dis_init(&dis_config);
 	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, nrf_err);
 }
 
@@ -172,7 +184,7 @@ void test_ble_dis_init(void)
 	__cmock_sd_ble_gatts_service_add_Stub(stub_sd_ble_gatts_service_add);
 	__cmock_sd_ble_gatts_characteristic_add_Stub(stub_sd_ble_gatts_characteristic_add);
 
-	nrf_err = ble_dis_init();
+	nrf_err = ble_dis_init(&dis_config);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 

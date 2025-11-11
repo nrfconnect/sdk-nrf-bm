@@ -95,10 +95,6 @@ config BLE_DIS_REGULATORY_CERT_LIST
 
 endif
 
-characteristic=BLE_DIS_CHAR
-characteristic-str=Device Information Service characterstics
-source "$(ZEPHYR_NRF_BM_MODULE_DIR)/subsys/bluetooth/services/Kconfig.template.sec_mode"
-
 module=BLE_DIS
 module-str=BLE Device information service
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
