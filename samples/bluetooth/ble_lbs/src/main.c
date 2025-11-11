@@ -139,6 +139,7 @@ int main(void)
 	};
 	struct ble_lbs_config lbs_cfg = {
 		.evt_handler = lbs_evt_handler,
+		.sec_mode = BLE_LBS_CONFIG_SEC_MODE_DEFAULT,
 	};
 	struct ble_dis_config dis_config = {
 		.sec_mode = BLE_DIS_CONFIG_SEC_MODE_DEFAULT,
