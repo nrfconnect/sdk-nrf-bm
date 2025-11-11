@@ -474,10 +474,8 @@ int main(void)
 		.evt_handler = ble_hrs_evt_handler,
 		.is_sensor_contact_supported = true,
 		.body_sensor_location = &body_sensor_location,
+		.sec_mode = BLE_HRS_CONFIG_SEC_MODE_DEFAULT,
 	};
-
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&hrs_cfg.hrm_cccd_wr_sec);
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&hrs_cfg.bsl_rd_sec);
 
 	LOG_INF("BLE HRS sample started");
 
