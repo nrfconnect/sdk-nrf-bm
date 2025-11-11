@@ -489,27 +489,14 @@ static uint32_t hids_init(void)
 				.remote_wake = 1,
 				.normally_connectable = 1,
 			},
-			.rd_sec = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
 		},
 		.report_map = {
 			.data = report_map_data,
 			.len = sizeof(report_map_data),
-			.sec.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
 		},
 		.included_services_count = 0,
 		.included_services_array = NULL,
-		.boot_kb_inp_rep_sec = {
-			.cccd_write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-			.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-		},
-		.boot_kb_outp_rep_sec = {
-			.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-			.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-		},
-
-		.protocol_mode_sec.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-		.protocol_mode_sec.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-		.ctrl_point_sec.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
+		.sec_mode = BLE_HIDS_CONFIG_SEC_MODE_DEFAULT_KEYBOARD,
 	};
 
 	return ble_hids_init(&ble_hids, &hids_config);
