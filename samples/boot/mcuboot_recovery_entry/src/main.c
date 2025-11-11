@@ -167,6 +167,9 @@ int main(void)
 			.uuid = BLE_MCUMGR_SERVICE_UUID_SUB,
 		},
 	};
+	struct ble_mcumgr_config mcumgr_cfg = {
+		.sec_mode = BLE_MCUMGR_CONFIG_SEC_MODE_DEFAULT,
+	};
 
 	mgmt_callback_register(&os_mgmt_reboot_callback);
 
@@ -186,7 +189,7 @@ int main(void)
 
 	LOG_INF("Bluetooth enabled");
 
-	nrf_err = ble_mcumgr_init();
+	nrf_err = ble_mcumgr_init(&mcumgr_cfg);
 
 	if (nrf_err) {
 		LOG_ERR("Failed to initialize MCUmgr, nrf_error %#x", nrf_err);
