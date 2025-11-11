@@ -17,6 +17,7 @@
 #define BM_STORAGE_H__
 
 #include <stdint.h>
+#include <stddef.h>
 #include <stdbool.h>
 
 #ifdef __cplusplus
