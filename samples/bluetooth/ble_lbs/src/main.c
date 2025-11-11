@@ -140,6 +140,9 @@ int main(void)
 	struct ble_lbs_config lbs_cfg = {
 		.evt_handler = lbs_evt_handler,
 	};
+	struct ble_dis_config dis_config = {
+		.sec_mode = BLE_DIS_CONFIG_SEC_MODE_DEFAULT,
+	};
 
 	LOG_INF("BLE LBS sample started");
 
@@ -187,7 +190,7 @@ int main(void)
 		goto idle;
 	}
 
-	nrf_err = ble_dis_init();
+	nrf_err = ble_dis_init(&dis_config);
 	if (nrf_err) {
 		LOG_ERR("Failed to initialize device information service, nrf_error %#x", nrf_err);
 		goto idle;
