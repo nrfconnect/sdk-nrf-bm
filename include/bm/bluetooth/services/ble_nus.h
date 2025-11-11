@@ -17,6 +17,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <ble.h>
+#include <bm/bluetooth/services/common.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
 
 #ifdef __cplusplus
@@ -49,6 +50,19 @@ void ble_nus_on_ble_evt(ble_evt_t const *ble_evt, void *context);
 			     ble_nus_on_ble_evt,                                                   \
 			     &_name,                                                               \
 			     HIGH)
+
+/** @brief Default security configuration. */
+#define BLE_NUS_CONFIG_SEC_MODE_DEFAULT                                                            \
+	{                                                                                          \
+		.nus_rx_char = {                                                                   \
+			.read = BLE_GAP_CONN_SEC_MODE_OPEN,                                        \
+			.write = BLE_GAP_CONN_SEC_MODE_OPEN,                                       \
+		},                                                                                 \
+		.nus_tx_char = {                                                                   \
+			.read = BLE_GAP_CONN_SEC_MODE_OPEN,                                        \
+			.cccd_write = BLE_GAP_CONN_SEC_MODE_OPEN,                                  \
+		},                                                                                 \
+	}
 
 #define OPCODE_LENGTH 1
 #define HANDLE_LENGTH 2
@@ -142,6 +156,23 @@ typedef void (*ble_nus_evt_handler_t)(struct ble_nus *nus, const struct ble_nus_
 struct ble_nus_config {
 	/** Event handler to be called for handling received data. */
 	ble_nus_evt_handler_t evt_handler;
+	/** Security configuration. */
+	struct {
+		/** NUS Service RX characteristic */
+		struct {
+			/** Security requirement for reading NUS RX characteristic value. */
+			ble_gap_conn_sec_mode_t read;
+			/** Security requirement for writing NUS RX characteristic value. */
+			ble_gap_conn_sec_mode_t write;
+		} nus_rx_char;
+		/** NUS Service TX characteristic */
+		struct {
+			/** Security requirement for reading NUS TX characteristic value. */
+			ble_gap_conn_sec_mode_t read;
+			/** Security requirement for writing NUS TX characteristic CCCD. */
+			ble_gap_conn_sec_mode_t cccd_write;
+		} nus_tx_char;
+	} sec_mode;
 };
 
 /**
