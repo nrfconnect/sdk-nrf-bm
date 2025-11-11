@@ -1,0 +1,4 @@
+tests:
+  lib.ble_db_discovery:
+    platform_allow: native_sim
+    tags: unittest
