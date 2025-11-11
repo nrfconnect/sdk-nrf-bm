@@ -128,9 +128,14 @@ Libraries
      * All instances of ``pm_failure_evt_t`` to struct :c:struct:`pm_failure_evt` and removed the ``pm_failure_evt_t`` type.
      * All instances of ``pm_evt_t`` to struct :c:struct:`pm_evt` and removed the ``pm_evt_t`` type.
 
-* Storage library:
+* :ref:`lib_storage` library:
 
-  * Updated to use errno instead of nrf_errors.
+  * Added the struct :c:struct:`bm_storage_config` for configuring a storage instance at initialization.
+
+  * Updated:
+
+    * To use errno instead of nrf_errors.
+    * The :c:func:`bm_storage_init` function to expect an additional input parameter of type pointer to struct :c:struct:`bm_storage_config` for configuring the storage instance that is being initialized.
 
 * :ref:`lib_ble_service_nus` service:
 

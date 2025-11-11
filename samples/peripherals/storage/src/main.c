@@ -42,17 +42,8 @@ static void bm_storage_evt_handler_b(struct bm_storage_evt *evt);
 /* Tracks the number of write operations that are in the process of being executed. */
 static volatile int outstanding_writes;
 
-static struct bm_storage storage_a = {
-	.evt_handler = bm_storage_evt_handler_a,
-	.start_addr = STORAGE_A_START,
-	.end_addr = STORAGE_A_END,
-};
-
-static struct bm_storage storage_b = {
-	.evt_handler = bm_storage_evt_handler_b,
-	.start_addr = STORAGE_B_START,
-	.end_addr = STORAGE_B_END,
-};
+static struct bm_storage storage_a;
+static struct bm_storage storage_b;
 
 static void bm_storage_evt_handler_a(struct bm_storage_evt *evt)
 {
@@ -103,13 +94,25 @@ static int storage_inits(void)
 {
 	int err;
 
-	err = bm_storage_init(&storage_a);
+	struct bm_storage_config storage_config_a = {
+		.evt_handler = bm_storage_evt_handler_a,
+		.start_addr = STORAGE_A_START,
+		.end_addr = STORAGE_A_END,
+	};
+
+	err = bm_storage_init(&storage_a, &storage_config_a);
 	if (err) {
 		LOG_ERR("bm_storage_init() failed, err %d", err);
 		return err;
 	}
 
-	err = bm_storage_init(&storage_b);
+	struct bm_storage_config storage_config_b = {
+		.evt_handler = bm_storage_evt_handler_b,
+		.start_addr = STORAGE_B_START,
+		.end_addr = STORAGE_B_END,
+	};
+
+	err = bm_storage_init(&storage_b, &storage_config_b);
 	if (err) {
 		LOG_ERR("bm_storage_init() failed, err %d", err);
 		return err;

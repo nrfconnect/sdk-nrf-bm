@@ -36,10 +36,10 @@ Initialization
 
 Each storage instance is represented by a :c:struct:`bm_storage` structure.
 
-To initialize a storage instance, use the :c:func:`bm_storage_init` function, providing the following information:
+To initialize a storage instance, use the :c:func:`bm_storage_init` function, providing a configuration struct :c:struct:`bm_storage_config` with the following information:
 
-* :c:member:`bm_storage.evt_handler` – Event callback.
-* :c:member:`bm_storage.start_addr` and :c:member:`bm_storage.end_addr` – Accessible address range.
+* :c:member:`bm_storage_config.evt_handler` – Event callback.
+* :c:member:`bm_storage_config.start_addr` and :c:member:`bm_storage_config.end_addr` – Accessible address range.
 
 You can uninitialize a storage instance with the :c:func:`bm_storage_uninit` function.
 
