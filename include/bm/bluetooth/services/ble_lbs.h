@@ -14,6 +14,7 @@
 
 #include <stdint.h>
 #include <ble.h>
+#include <bm/bluetooth/services/common.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
 
 #ifdef __cplusplus
@@ -38,6 +39,19 @@ struct ble_lbs;
 	static struct ble_lbs _name;                                                               \
 	extern void ble_lbs_on_ble_evt(const ble_evt_t *ble_evt, void *lbs_instance);              \
 	NRF_SDH_BLE_OBSERVER(_name ## _obs, ble_lbs_on_ble_evt, &_name, HIGH)
+
+/** @brief Default security configuration. */
+#define BLE_LBS_CONFIG_SEC_MODE_DEFAULT                                                            \
+	{                                                                                          \
+		.lbs_button_char = {                                                               \
+			.read = BLE_GAP_CONN_SEC_MODE_OPEN,                                        \
+			.cccd_write = BLE_GAP_CONN_SEC_MODE_OPEN,                                  \
+		},                                                                                 \
+		.lbs_led_char = {                                                                  \
+			.read = BLE_GAP_CONN_SEC_MODE_OPEN,                                        \
+			.write = BLE_GAP_CONN_SEC_MODE_OPEN,                                       \
+		},                                                                                 \
+	}
 
 enum ble_lbs_evt_type {
 	/**
@@ -80,6 +94,22 @@ typedef void (*lbs_evt_handler_t)(struct ble_lbs *lbs, const struct ble_lbs_evt 
 struct ble_lbs_config {
 	/** @brief Event handler to be called when the LED Characteristic is written. */
 	lbs_evt_handler_t evt_handler;
+	/** Security configuration. */
+	struct {
+		/** LBS Button characteristic */
+		struct {
+			/** Security requirement for reading LBS button characteristic value. */
+			ble_gap_conn_sec_mode_t read;
+			/** Security requirement for writing LBS button characteristic CCCD. */
+			ble_gap_conn_sec_mode_t cccd_write;
+		} lbs_button_char;
+		struct {
+			/** Security requirement for reading LBS LED characteristic value. */
+			ble_gap_conn_sec_mode_t read;
+			/** Security requirement for wtiring LBS LED characteristic value. */
+			ble_gap_conn_sec_mode_t write;
+		} lbs_led_char;
+	} sec_mode;
 };
 
 /**

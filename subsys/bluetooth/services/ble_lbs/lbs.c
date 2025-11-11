@@ -92,6 +92,8 @@ uint32_t ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg)
 	};
 	ble_gatts_attr_md_t cccd_md = {
 		.vloc = BLE_GATTS_VLOC_STACK,
+		.read_perm = BLE_GAP_CONN_SEC_MODE_OPEN,
+		.write_perm = cfg->sec_mode.lbs_button_char.cccd_write,
 	};
 	ble_gatts_char_md_t char_md = {
 		.char_props = {
@@ -102,6 +104,7 @@ uint32_t ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg)
 	};
 	ble_gatts_attr_md_t attr_md = {
 		.vloc = BLE_GATTS_VLOC_STACK,
+		.read_perm = cfg->sec_mode.lbs_button_char.read,
 	};
 	ble_gatts_attr_t attr_char_value = {
 		.p_uuid = &char_uuid,
@@ -110,9 +113,6 @@ uint32_t ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg)
 		.init_len = sizeof(uint8_t),
 		.max_len = sizeof(uint8_t),
 	};
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.read_perm);
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.read_perm);
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.write_perm);
 
 	nrf_err = sd_ble_gatts_characteristic_add(lbs->service_handle, &char_md, &attr_char_value,
 						  &lbs->button_char_handles);
@@ -135,6 +135,8 @@ uint32_t ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg)
 	};
 	attr_md = (ble_gatts_attr_md_t){
 		.vloc = BLE_GATTS_VLOC_STACK,
+		.read_perm = cfg->sec_mode.lbs_led_char.read,
+		.write_perm = cfg->sec_mode.lbs_led_char.write,
 	};
 	attr_char_value = (ble_gatts_attr_t){
 		.p_uuid = &char_uuid,
@@ -143,8 +145,6 @@ uint32_t ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg)
 		.init_len = sizeof(uint8_t),
 		.max_len = sizeof(uint8_t),
 	};
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.read_perm);
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.write_perm);
 
 	nrf_err = sd_ble_gatts_characteristic_add(lbs->service_handle, &char_md, &attr_char_value,
 						  &lbs->led_char_handles);
