@@ -458,6 +458,7 @@ int main(void)
 
 	struct ble_nus_config nus_cfg = {
 		.evt_handler = ble_nus_evt_handler,
+		.sec_mode = BLE_NUS_CONFIG_SEC_MODE_DEFAULT,
 	};
 	struct ble_qwr_config qwr_config = {
 		.evt_handler = ble_qwr_evt_handler,
