@@ -33,15 +33,18 @@ static inline bool is_within_bounds(off_t addr, size_t len, off_t boundary_start
 		(len <= (boundary_start + boundary_size - addr)));
 }
 
-int bm_storage_init(struct bm_storage *storage)
+int bm_storage_init(struct bm_storage *storage, const struct bm_storage_config *config)
 {
 	int err;
 
-	if (!storage) {
+	if (!storage || !config) {
 		return -EFAULT;
 	}
 
 	storage->nvm_info = &bm_storage_info;
+	storage->evt_handler = config->evt_handler;
+	storage->start_addr = config->start_addr;
+	storage->end_addr = config->end_addr;
 
 	err = bm_storage_backend_init(storage);
 	if (err) {

@@ -106,22 +106,15 @@ struct bm_storage_info {
 struct bm_storage {
 	/**
 	 * @brief Tells whether the instance is initialized.
-	 *
-	 * @note This field must not be set manually.
 	 */
 	bool initialized;
 	/**
 	 * @brief Information about the implementation-specific functionality and the non-volatile
 	 *        memory peripheral.
-	 *
-	 * @note This field must not be set manually.
 	 */
 	const struct bm_storage_info *nvm_info;
 	/**
 	 * @brief The event handler function.
-	 *
-	 * @note If set to NULL, no events will be sent.
-	 *       This field must be set manually.
 	 */
 	bm_storage_evt_handler_t evt_handler;
 	/**
@@ -129,8 +122,6 @@ struct bm_storage {
 	 *        can operate.
 	 *        All non-volatile memory operations must be within the boundary delimited by this
 	 *        field and @ref end_addr.
-	 *
-	 * @note This field must be set manually.
 	 */
 	uint32_t start_addr;
 	/**
@@ -138,8 +129,32 @@ struct bm_storage {
 	 *        can operate.
 	 *        All non-volatile memory operations must be within the boundary delimited by this
 	 *        field and @ref start_addr.
+	 */
+	uint32_t end_addr;
+};
+
+/**
+ * @brief Configuration for storage instance initialization.
+ */
+struct bm_storage_config {
+	/**
+	 * @brief The event handler function.
 	 *
-	 * @note This field must be set manually.
+	 * @note If set to NULL, no events will be sent.
+	 */
+	bm_storage_evt_handler_t evt_handler;
+	/**
+	 * @brief The beginning of the non-volatile memory region where this storage instance
+	 *        can operate.
+	 *        All non-volatile memory operations must be within the boundary delimited by this
+	 *        field and @ref end_addr.
+	 */
+	uint32_t start_addr;
+	/**
+	 * @brief The last address (exclusive) of non-volatile memory where this storage instance
+	 *        can operate.
+	 *        All non-volatile memory operations must be within the boundary delimited by this
+	 *        field and @ref start_addr.
 	 */
 	uint32_t end_addr;
 };
@@ -151,13 +166,14 @@ struct bm_storage {
  *       configure each of them separately for initialization.
  *
  * @param[in] storage Storage instance to initialize.
+ * @param[in] config Configuration for the storage instance initialization.
  *
  * @retval 0 on success.
- * @retval -EFAULT If @p storage is @c NULL.
+ * @retval -EFAULT If @p storage is @c NULL or @p config is @c NULL.
  * @retval -EBUSY If the implementation-specific resource is busy.
  * @retval -EIO If an implementation-specific internal error occurred.
  */
-int bm_storage_init(struct bm_storage *storage);
+int bm_storage_init(struct bm_storage *storage, const struct bm_storage_config *config);
 
 /**
  * @brief Uninitialize a storage instance.

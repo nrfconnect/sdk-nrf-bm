@@ -2014,10 +2014,16 @@ int bm_zms_mount(struct bm_zms_fs *fs)
 	zms_op_t cur_init_op;
 
 	/* Initialize BM Storage */
-	fs->zms_bm_storage.start_addr = fs->offset;
-	fs->zms_bm_storage.end_addr = fs->offset + fs->sector_size * fs->sector_count;
-	fs->zms_bm_storage.evt_handler = zms_event_handler;
-	ret = bm_storage_init(&fs->zms_bm_storage);
+
+	memset(&fs->zms_bm_storage, 0, sizeof(struct bm_storage));
+
+	struct bm_storage_config config = {
+		.evt_handler = zms_event_handler,
+		.start_addr = fs->offset,
+		.end_addr = fs->offset + fs->sector_size * fs->sector_count,
+	};
+
+	ret = bm_storage_init(&fs->zms_bm_storage, &config);
 	if (ret) {
 		LOG_ERR("bm_storage_init() failed, ret %u", ret);
 		return -EIO;
