@@ -13,6 +13,7 @@
 #include <zephyr/sys/byteorder.h>
 #include <zephyr/sys/util.h>
 #include <zephyr/sys/__assert.h>
+#include <bm/bluetooth/services/ble_dis.h>
 
 #define SYS_ID_LEN 8 /* Length of System ID Characteristic Value */
 #define PNP_ID_LEN 7 /* Length of PnP ID Characteristic Value */
@@ -58,11 +59,16 @@ static const uint8_t regulatory_certifications[IEEE_CERT_LEN] =
 
 LOG_MODULE_REGISTER(ble_dis, CONFIG_BLE_DIS_LOG_LEVEL);
 
-uint32_t ble_dis_init(void)
+uint32_t ble_dis_init(const struct ble_dis_config *dis_config)
 {
 	uint32_t nrf_err;
 	uint16_t service_handle;
 	ble_uuid_t ble_uuid;
+
+	if (!dis_config) {
+		return NRF_ERROR_NULL;
+	}
+
 	ble_gatts_char_handles_t char_handles = {0};
 	ble_gatts_char_md_t char_md = {
 		.char_props = {
@@ -71,7 +77,7 @@ uint32_t ble_dis_init(void)
 	};
 	ble_gatts_attr_md_t attr_md = {
 		.vloc = BLE_GATTS_VLOC_STACK,
-		.read_perm = gap_conn_sec_mode_from_u8(CONFIG_BLE_DIS_CHAR_SEC_MODE),
+		.read_perm = dis_config->sec_mode.device_info_char.read,
 	};
 	ble_gatts_attr_t attr_char_value = {
 		.p_uuid = &ble_uuid,

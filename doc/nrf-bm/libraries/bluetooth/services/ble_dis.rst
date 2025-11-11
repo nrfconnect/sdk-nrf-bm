@@ -42,12 +42,6 @@ The DIS service can be configured by using the following Kconfig options:
 * :kconfig:option:`BLE_DIS_PNP_VER` - Sets the product version.
 * :kconfig:option:`BLE_DIS_REGULATORY_CERT` - Includes IEEE regulatory certifications.
 * :kconfig:option:`BLE_DIS_REGULATORY_CERT_LIST` - Sets the regulatory certification list.
-* :kconfig:option:`BLE_DIS_CHAR_SEC_MODE_JUST_WORKS` - Sets the service security mode to open link.
-* :kconfig:option:`BLE_DIS_CHAR_SEC_MODE_ENCRYPTED` - Sets the service security mode to encrypted.
-* :kconfig:option:`BLE_DIS_CHAR_SEC_MODE_ENCRYPTED_MITM` - Sets the service security mode to encrypted with man in the middle protection.
-* :kconfig:option:`BLE_DIS_CHAR_SEC_MODE_LESC_ENCRYPTED_MITM` - Sets the service security mode to LESC encryption with man-in-the-middle protection.
-* :kconfig:option:`BLE_DIS_CHAR_SEC_MODE_SIGNED` - Sets the service security mode to signing or encryption required.
-* :kconfig:option:`BLE_DIS_CHAR_SEC_MODE_SIGNED_MITM` - Sets the service security mode to signing or encryption required, with man in the middle protection.
 
 Initialization
 ==============

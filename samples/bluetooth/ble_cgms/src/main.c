@@ -328,6 +328,10 @@ static uint32_t services_init(void)
 		.evt_handler = qwr_evt_handler,
 	};
 
+	struct ble_dis_config dis_config = {
+		.sec_mode = BLE_DIS_CONFIG_SEC_MODE_DEFAULT,
+	};
+
 	nrf_err = ble_qwr_init(&ble_qwr, &qwr_config);
 	if (nrf_err) {
 		LOG_ERR("Failed to initialize QWR service, nrf_error %#x", nrf_err);
@@ -354,7 +358,7 @@ static uint32_t services_init(void)
 	}
 
 	/* Initialize Device Information Service. */
-	nrf_err = ble_dis_init();
+	nrf_err = ble_dis_init(&dis_config);
 	if (nrf_err) {
 		LOG_ERR("Failed to initialize DIS service, nrf_error %#x", nrf_err);
 		return nrf_err;
