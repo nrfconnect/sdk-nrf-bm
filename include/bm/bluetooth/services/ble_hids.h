@@ -43,6 +43,47 @@ extern "C" {
 	};                                                                                         \
 	NRF_SDH_BLE_OBSERVER(_name##_obs, ble_hids_on_ble_evt, &_name, HIGH)
 
+/** @brief Default mouse security configuration. */
+#define BLE_HIDS_CONFIG_SEC_MODE_DEFAULT_MOUSE                                                     \
+	{                                                                                          \
+		.hid_info_char.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                           \
+		.protocol_mode_char = {                                                            \
+			.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                                 \
+			.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                                \
+		},                                                                                 \
+		.ctrl_point_char = {                                                               \
+			.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                                \
+		},                                                                                 \
+		.boot_mouse_inp_rep_char = {                                                       \
+			.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                                 \
+			.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                                \
+			.cccd_write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                           \
+		},                                                                                 \
+	}
+
+/** @brief Default keyboard security configuration. */
+#define BLE_HIDS_CONFIG_SEC_MODE_DEFAULT_KEYBOARD                                                  \
+	{                                                                                          \
+		.hid_info_char.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                           \
+		.protocol_mode_char = {                                                            \
+			.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                                 \
+			.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                                \
+		},                                                                                 \
+		.ctrl_point_char = {                                                               \
+			.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                                \
+		},                                                                                 \
+		.boot_kb_inp_rep_char = {                                                          \
+			.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                                 \
+			.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                                \
+			.cccd_write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                           \
+		},                                                                                 \
+		.boot_kb_outp_rep_char = {                                                         \
+			.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                                 \
+			.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                                \
+			.cccd_write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                           \
+		},                                                                                 \
+	}
+
 /**
  * @brief HID boot keyboard input report maximum size, in bytes.
  */
@@ -316,22 +357,6 @@ struct ble_hids_evt {
  */
 typedef void (*ble_hids_evt_handler_t)(struct ble_hids *hids, const struct ble_hids_evt *evt);
 
-/** @brief Security requirements for HID Service characteristic. */
-struct ble_hids_char_sec {
-	/**
-	 * @brief Security requirement for reading HID Service characteristic value.
-	 */
-	ble_gap_conn_sec_mode_t read;
-	/**
-	 * @brief Security requirement for writing HID Service characteristic value.
-	 */
-	ble_gap_conn_sec_mode_t write;
-	/**
-	 * @brief Security requirement for writing HID Service characteristic CCCD.
-	 */
-	ble_gap_conn_sec_mode_t cccd_write;
-};
-
 /** @brief HID Report configuration. */
 struct ble_hids_report_config {
 	/**
@@ -349,7 +374,20 @@ struct ble_hids_report_config {
 	/**
 	 * @brief Security requirements for HID Service Input Report characteristic.
 	 */
-	struct ble_hids_char_sec sec;
+	struct {
+		/**
+		 * @brief Security requirement for reading HID Service characteristic value.
+		 */
+		ble_gap_conn_sec_mode_t read;
+		/**
+		 * @brief Security requirement for writing HID Service characteristic value.
+		 */
+		ble_gap_conn_sec_mode_t write;
+		/**
+		 * @brief Security requirement for writing HID Service characteristic CCCD.
+		 */
+		ble_gap_conn_sec_mode_t cccd_write;
+	} sec_mode;
 };
 
 /**
@@ -373,10 +411,6 @@ struct ble_hids_rep_map_config {
 	 * @brief Optional External Report Reference descriptor (will be added if != NULL).
 	 */
 	ble_uuid_t const *ext_rep_ref;
-	/**
-	 * @brief Security requirement for HID Service Report Map characteristic.
-	 */
-	struct ble_hids_char_sec sec;
 };
 
 /** @brief HID Report characteristic structure. */
@@ -456,10 +490,6 @@ struct ble_hids_config {
 			 */
 			uint8_t reserved: 6;
 		} flags;
-		/**
-		 * @brief Security requirement for reading HID Information characteristic value.
-		 */
-		ble_gap_conn_sec_mode_t rd_sec;
 	} hid_information;
 	/**
 	 * @brief Number of services to include in HID service.
@@ -470,29 +500,114 @@ struct ble_hids_config {
 	 */
 	uint16_t *included_services_array;
 	/**
-	 * @brief Security requirement for HID service Protocol Mode characteristic.
-	 *
-	 * @note Only read and write are used.
+	 * @brief Security configuration.
 	 */
-	struct ble_hids_char_sec protocol_mode_sec;
-	/**
-	 * @brief Security requirement for HID service Control Point characteristic.
-	 *
-	 * @note Only write is used.
-	 */
-	struct ble_hids_char_sec ctrl_point_sec;
-	/**
-	 * @brief Security requirements for HID Boot Keyboard Input Report characteristic.
-	 */
-	struct ble_hids_char_sec boot_mouse_inp_rep_sec;
-	/**
-	 * @brief Security requirements for HID Boot Keyboard Input Report characteristic.
-	 */
-	struct ble_hids_char_sec boot_kb_inp_rep_sec;
-	/**
-	 * @brief Security requirements for HID Boot Keyboard Output Report characteristic.
-	 */
-	struct ble_hids_char_sec boot_kb_outp_rep_sec;
+	struct {
+		/**
+		 * @brief Security requirement for HID information characteristic.
+		 */
+		struct {
+			/**
+			 * @brief Security requirement for reading HID Information characteristic
+			 * value.
+			 */
+			ble_gap_conn_sec_mode_t read;
+		} hid_info_char;
+		/**
+		 * @brief Security requirement for HID service Protocol Mode characteristic.
+		 */
+		struct {
+			/**
+			 * @brief Security requirement for reading HID Service Protocol Mode
+			 *        characteristic value.
+			 */
+			ble_gap_conn_sec_mode_t read;
+			/**
+			 * @brief Security requirement for writing HID Service Protocol Mode
+			 *        characteristic value.
+			 */
+			ble_gap_conn_sec_mode_t write;
+		} protocol_mode_char;
+		/**
+		 * @brief Security requirement for HID service Control Point characteristic.
+		 */
+		struct {
+			/**
+			 * @brief Security requirement for writing HID service Control Point
+			 *        characteristic value.
+			 */
+			ble_gap_conn_sec_mode_t write;
+		} ctrl_point_char;
+		/**
+		 * @brief  Security requirement for HID service Report Map characteristic.
+		 */
+		struct {
+			/**
+			 * @brief Security requirement for reading HID Service characteristic value.
+			 */
+			ble_gap_conn_sec_mode_t read;
+		} report_map_char;
+		/**
+		 * @brief Security requirements for HID Boot Keyboard Input Report characteristic.
+		 */
+		struct {
+			/**
+			 * @brief Security requirement for reading HID Boot Mouse Input Report
+			 *        characteristic value.
+			 */
+			ble_gap_conn_sec_mode_t read;
+			/**
+			 * @brief Security requirement for writing HID Boot Mouse Input Report
+			 *        characteristic value.
+			 */
+			ble_gap_conn_sec_mode_t write;
+			/**
+			 * @brief Security requirement for writing HID Boot Mouse Input Report
+			 *        characteristic CCCD.
+			 */
+			ble_gap_conn_sec_mode_t cccd_write;
+		} boot_mouse_inp_rep_char;
+		/**
+		 * @brief Security requirements for HID Boot Keyboard Input Report characteristic.
+		 */
+		struct {
+			/**
+			 * @brief Security requirement for reading HID Boot Keyboard Input Report
+			 *        characteristic value.
+			 */
+			ble_gap_conn_sec_mode_t read;
+			/**
+			 * @brief Security requirement for writing HID Boot Keyboard Input Report
+			 *        characteristic value.
+			 */
+			ble_gap_conn_sec_mode_t write;
+			/**
+			 * @brief Security requirement for writing HID Boot Keyboard Input Report
+			 *        characteristic CCCD.
+			 */
+			ble_gap_conn_sec_mode_t cccd_write;
+		} boot_kb_inp_rep_char;
+		/**
+		 * @brief Security requirements for HID Boot Keyboard Output Report characteristic.
+		 */
+		struct {
+			/**
+			 * @brief Security requirement for reading HID Boot Keyboard Output Report
+			 *        characteristic value.
+			 */
+			ble_gap_conn_sec_mode_t read;
+			/**
+			 * @brief Security requirement for writing HID Boot Keyboard Output Report
+			 *        characteristic value.
+			 */
+			ble_gap_conn_sec_mode_t write;
+			/**
+			 * @brief Security requirement for writing HID Boot Keyboard Output Report
+			 *        characteristic CCCD.
+			 */
+			ble_gap_conn_sec_mode_t cccd_write;
+		} boot_kb_outp_rep_char;
+	} sec_mode;
 };
 
 /** @brief HID Service structure. This contains various status information for the service. */

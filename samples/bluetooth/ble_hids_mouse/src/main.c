@@ -368,27 +368,27 @@ static uint32_t hids_init(void)
 	input_report->report_id = INPUT_REP_REF_BUTTONS_ID;
 	input_report->report_type = BLE_HIDS_REPORT_TYPE_INPUT;
 
-	input_report->sec.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
-	input_report->sec.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
-	input_report->sec.cccd_write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	input_report->sec_mode.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	input_report->sec_mode.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	input_report->sec_mode.cccd_write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
 
 	input_report = &input_report_array[INPUT_REP_MOVEMENT_INDEX];
 	input_report->len = INPUT_REP_MOVEMENT_LEN;
 	input_report->report_id = INPUT_REP_REF_MOVEMENT_ID;
 	input_report->report_type = BLE_HIDS_REPORT_TYPE_INPUT;
 
-	input_report->sec.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
-	input_report->sec.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
-	input_report->sec.cccd_write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	input_report->sec_mode.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	input_report->sec_mode.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	input_report->sec_mode.cccd_write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
 
 	input_report = &input_report_array[INPUT_REP_MPLAYER_INDEX];
 	input_report->len = INPUT_REP_MEDIA_PLAYER_LEN;
 	input_report->report_id = INPUT_REP_REF_MPLAYER_ID;
 	input_report->report_type = BLE_HIDS_REPORT_TYPE_INPUT;
 
-	input_report->sec.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
-	input_report->sec.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
-	input_report->sec.cccd_write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	input_report->sec_mode.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	input_report->sec_mode.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	input_report->sec_mode.cccd_write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
 
 	struct ble_hids_config hids_config = {
 		.evt_handler = on_hids_evt,
@@ -405,24 +405,14 @@ static uint32_t hids_init(void)
 				.remote_wake = 1,
 				.normally_connectable = 1,
 			},
-			.rd_sec = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
 		},
 		.report_map = {
 			.data = report_map_data,
 			.len = sizeof(report_map_data),
-			.sec.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
 		},
 		.included_services_count = 0,
 		.included_services_array = NULL,
-		.boot_mouse_inp_rep_sec = {
-			.cccd_write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-			.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-			.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-		},
-
-		.protocol_mode_sec.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-		.protocol_mode_sec.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-		.ctrl_point_sec.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
+		.sec_mode = BLE_HIDS_CONFIG_SEC_MODE_DEFAULT_MOUSE,
 	};
 
 	return ble_hids_init(&ble_hids, &hids_config);

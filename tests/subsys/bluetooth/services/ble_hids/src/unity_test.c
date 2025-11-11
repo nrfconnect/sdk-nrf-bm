@@ -515,21 +515,7 @@ void test_ble_hids_init_kb_no_mem(void)
 
 		.included_services_count = 0,
 		.included_services_array = NULL,
-		.report_map.sec.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-		.hid_information.rd_sec = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-		.boot_kb_inp_rep_sec = {
-			.cccd_write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-			.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-		},
-		.boot_kb_outp_rep_sec = {
-			.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-			.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-		},
-		.protocol_mode_sec = {
-			.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-			.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-		},
-		.ctrl_point_sec.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
+		.sec_mode = BLE_HIDS_CONFIG_SEC_MODE_DEFAULT_KEYBOARD,
 	};
 	struct ble_hids ble_hids = {
 		.link_ctx_storage = {
@@ -547,26 +533,26 @@ void test_ble_hids_init_kb_no_mem(void)
 	p_input_report->report_id = INPUT_REP_REF_ID;
 	p_input_report->report_type = BLE_HIDS_REPORT_TYPE_INPUT;
 
-	p_input_report->sec.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
-	p_input_report->sec.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
-	p_input_report->sec.cccd_write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	p_input_report->sec_mode.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	p_input_report->sec_mode.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	p_input_report->sec_mode.cccd_write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
 
 	p_output_report = &output_report[OUTPUT_REPORT_INDEX];
 	p_output_report->len = OUTPUT_REPORT_MAX_LEN;
 	p_output_report->report_id = OUTPUT_REP_REF_ID;
 	p_output_report->report_type = BLE_HIDS_REPORT_TYPE_OUTPUT;
 
-	p_output_report->sec.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
-	p_output_report->sec.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	p_output_report->sec_mode.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	p_output_report->sec_mode.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
 
 	p_feature_report = &feature_report[FEATURE_REPORT_INDEX];
 	p_feature_report->len = FEATURE_REPORT_MAX_LEN;
 	p_feature_report->report_id = FEATURE_REP_REF_ID;
 	p_feature_report->report_type = BLE_HIDS_REPORT_TYPE_FEATURE;
 
-	p_feature_report->sec.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
-	p_feature_report->sec.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
-	p_feature_report->sec.cccd_write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	p_feature_report->sec_mode.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	p_feature_report->sec_mode.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	p_feature_report->sec_mode.cccd_write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
 
 	__cmock_sd_ble_gatts_service_add_ExpectAndReturn(BLE_GATTS_SRVC_TYPE_PRIMARY, NULL,
 							 &ble_hids.service_handle,
@@ -1187,21 +1173,7 @@ void test_ble_hids_init_kb_correct(void)
 
 		.included_services_count = 0,
 		.included_services_array = NULL,
-		.report_map.sec.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-		.hid_information.rd_sec = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-		.boot_kb_inp_rep_sec = {
-			.cccd_write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-			.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-		},
-		.boot_kb_outp_rep_sec = {
-			.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-			.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-		},
-		.protocol_mode_sec = {
-			.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-			.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-		},
-		.ctrl_point_sec.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
+		.sec_mode = BLE_HIDS_CONFIG_SEC_MODE_DEFAULT_KEYBOARD,
 	};
 	struct ble_hids ble_hids = {
 		.link_ctx_storage = {
@@ -1219,26 +1191,26 @@ void test_ble_hids_init_kb_correct(void)
 	p_input_report->report_id = INPUT_REP_REF_ID;
 	p_input_report->report_type = BLE_HIDS_REPORT_TYPE_INPUT;
 
-	p_input_report->sec.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
-	p_input_report->sec.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
-	p_input_report->sec.cccd_write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	p_input_report->sec_mode.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	p_input_report->sec_mode.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	p_input_report->sec_mode.cccd_write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
 
 	p_output_report = &output_report[OUTPUT_REPORT_INDEX];
 	p_output_report->len = OUTPUT_REPORT_MAX_LEN;
 	p_output_report->report_id = OUTPUT_REP_REF_ID;
 	p_output_report->report_type = BLE_HIDS_REPORT_TYPE_OUTPUT;
 
-	p_output_report->sec.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
-	p_output_report->sec.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	p_output_report->sec_mode.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	p_output_report->sec_mode.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
 
 	p_feature_report = &feature_report[FEATURE_REPORT_INDEX];
 	p_feature_report->len = FEATURE_REPORT_MAX_LEN;
 	p_feature_report->report_id = FEATURE_REP_REF_ID;
 	p_feature_report->report_type = BLE_HIDS_REPORT_TYPE_FEATURE;
 
-	p_feature_report->sec.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
-	p_feature_report->sec.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
-	p_feature_report->sec.cccd_write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	p_feature_report->sec_mode.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	p_feature_report->sec_mode.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	p_feature_report->sec_mode.cccd_write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
 
 	__cmock_sd_ble_gatts_service_add_ExpectAndReturn(BLE_GATTS_SRVC_TYPE_PRIMARY, NULL,
 							 &ble_hids.service_handle, NRF_SUCCESS);

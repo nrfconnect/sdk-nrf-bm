@@ -656,13 +656,13 @@ static uint32_t protocol_mode_char_add(struct ble_hids *hids, ble_gap_conn_sec_m
 					       &hids->protocol_mode_handles);
 }
 
-static uint32_t rep_char_add(struct ble_hids *hids, ble_gatt_char_props_t *properties, uint16_t len,
-			     uint8_t report_id, uint8_t report_type,
-			     struct ble_hids_char_sec const *const char_sec,
+static uint32_t rep_char_add(struct ble_hids *hids, ble_gatt_char_props_t *properties,
+			     struct ble_hids_report_config const *rep_cfg,
 			     struct ble_hids_rep_char *rep_char)
 {
 	uint32_t nrf_err;
-	uint8_t encoded_rep_ref[BLE_SRV_ENCODED_REPORT_REF_LEN] = { report_id, report_type };
+	uint8_t encoded_rep_ref[BLE_SRV_ENCODED_REPORT_REF_LEN] = {rep_cfg->report_id,
+								   rep_cfg->report_type };
 
 	ble_gatts_char_md_t char_md = {
 		.char_props = *properties,
@@ -680,16 +680,16 @@ static uint32_t rep_char_add(struct ble_hids *hids, ble_gatt_char_props_t *prope
 	ble_gatts_attr_t attr_char_value = {
 		.p_uuid = &char_uuid,
 		.p_attr_md = &attr_md,
-		.max_len = len,
+		.max_len = rep_cfg->len,
 	};
 	ble_gatts_attr_md_t cccd_md = {0};
 
-	attr_md.read_perm = char_sec->read;
-	attr_md.write_perm = char_sec->write;
+	attr_md.read_perm = rep_cfg->sec_mode.read;
+	attr_md.write_perm = rep_cfg->sec_mode.write;
 
 	if ((properties->notify == 1) || (properties->indicate == 1)) {
 
-		cccd_md.write_perm = char_sec->cccd_write;
+		cccd_md.write_perm = rep_cfg->sec_mode.cccd_write;
 		BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.read_perm);
 
 		cccd_md.vloc = BLE_GATTS_VLOC_STACK;
@@ -717,8 +717,8 @@ static uint32_t rep_char_add(struct ble_hids *hids, ble_gatt_char_props_t *prope
 		.p_value = encoded_rep_ref,
 	};
 
-	desc_attr_md.read_perm = char_sec->read;
-	desc_attr_md.write_perm = char_sec->write;
+	desc_attr_md.read_perm = rep_cfg->sec_mode.read;
+	desc_attr_md.write_perm = rep_cfg->sec_mode.write;
 
 	return sd_ble_gatts_descriptor_add(rep_char->char_handles.value_handle, &desc_params,
 					   &rep_char->ref_handle);
@@ -739,7 +739,7 @@ static uint32_t rep_map_char_add(struct ble_hids *hids, const struct ble_hids_co
 	ble_gatts_attr_md_t attr_md = {
 		.vlen = 1,
 		.vloc = BLE_GATTS_VLOC_STACK,
-		.read_perm = hids_cfg->report_map.sec.read,
+		.read_perm = hids_cfg->sec_mode.report_map_char.read,
 	};
 	ble_gatts_attr_t attr_char_value = {
 		.p_uuid = &char_uuid,
@@ -775,7 +775,7 @@ static uint32_t rep_map_char_add(struct ble_hids *hids, const struct ble_hids_co
 		};
 		ble_gatts_attr_md_t attr_md = {
 			.vloc = BLE_GATTS_VLOC_STACK,
-			.read_perm = hids_cfg->report_map.sec.read,
+			.read_perm = hids_cfg->sec_mode.report_map_char.read,
 		};
 		ble_gatts_attr_t descr_params = {
 			.p_uuid = &desc_uuid,
@@ -797,18 +797,20 @@ static uint32_t rep_map_char_add(struct ble_hids *hids, const struct ble_hids_co
 }
 
 static uint32_t boot_inp_rep_char_add(struct ble_hids *hids, uint16_t uuid, uint16_t max_data_len,
-				      struct ble_hids_char_sec const *const char_sec,
+				      ble_gap_conn_sec_mode_t sec_read,
+				      ble_gap_conn_sec_mode_t sec_write,
+				      ble_gap_conn_sec_mode_t sec_cccd_write,
 				      ble_gatts_char_handles_t *char_handles)
 {
 	ble_gatts_attr_md_t cccd_md = {
 		.vloc = BLE_GATTS_VLOC_STACK,
-		.write_perm = char_sec->cccd_write,
+		.write_perm = sec_cccd_write,
 		.read_perm = BLE_GAP_CONN_SEC_MODE_OPEN,
 	};
 	ble_gatts_char_md_t char_md = {
 		.char_props = {
 			.read = 1,
-			.write = (char_sec->write.sm && char_sec->write.lv) ? 1 : 0,
+			.write = (sec_write.sm && sec_write.lv) ? 1 : 0,
 			.notify = 1,
 		},
 		.p_cccd_md = &cccd_md
@@ -820,8 +822,8 @@ static uint32_t boot_inp_rep_char_add(struct ble_hids *hids, uint16_t uuid, uint
 	ble_gatts_attr_md_t attr_md = {
 		.rd_auth = 1,
 		.vloc = BLE_GATTS_VLOC_STACK,
-		.read_perm = char_sec->read,
-		.write_perm = char_sec->write,
+		.read_perm = sec_read,
+		.write_perm = sec_write,
 	};
 	ble_gatts_attr_t attr_char_value = {
 		.p_uuid = &char_uuid,
@@ -851,15 +853,14 @@ static uint32_t boot_kb_outp_rep_char_add(struct ble_hids *hids,
 	ble_gatts_attr_md_t attr_md = {
 		.rd_auth = 1,
 		.vloc = BLE_GATTS_VLOC_STACK,
+		.read_perm = hids_cfg->sec_mode.boot_kb_outp_rep_char.read,
+		.write_perm = hids_cfg->sec_mode.boot_kb_outp_rep_char.write,
 	};
 	ble_gatts_attr_t attr_char_value = {
 		.p_uuid = &char_uuid,
 		.p_attr_md = &attr_md,
 		.max_len = BLE_HIDS_BOOT_KB_OUTPUT_REPORT_MAX_SIZE,
 	};
-
-	attr_md.read_perm = hids_cfg->boot_kb_outp_rep_sec.read;
-	attr_md.write_perm = hids_cfg->boot_kb_outp_rep_sec.write;
 
 	return sd_ble_gatts_characteristic_add(hids->service_handle, &char_md, &attr_char_value,
 					       &hids->boot_kb_outp_rep_handles);
@@ -890,7 +891,7 @@ static uint32_t hid_information_char_add(struct ble_hids *hids,
 	};
 	ble_gatts_attr_md_t attr_md = {
 		.vloc = BLE_GATTS_VLOC_STACK,
-		.read_perm = hids_cfg->hid_information.rd_sec,
+		.read_perm = hids_cfg->sec_mode.hid_info_char.read,
 	};
 	ble_gatts_attr_t attr_char_value = {
 		.p_uuid = &char_uuid,
@@ -944,13 +945,12 @@ static uint32_t inp_rep_characteristics_add(struct ble_hids *hids,
 			struct ble_hids_report_config const *rep_init = &hids_cfg->input_report[i];
 			ble_gatt_char_props_t properties = {
 				.read = true,
-				.write = (rep_init->sec.write.sm && rep_init->sec.write.lv) ? 1 : 0,
+				.write = (rep_init->sec_mode.write.sm &&
+					  rep_init->sec_mode.write.lv) ? 1 : 0,
 				.notify = true,
 			};
 
-			nrf_err = rep_char_add(hids, &properties, rep_init->len,
-					       rep_init->report_id,
-					       rep_init->report_type, &rep_init->sec,
+			nrf_err = rep_char_add(hids, &properties, rep_init,
 					       &hids->inp_rep_array[i]);
 			if (nrf_err) {
 				return nrf_err;
@@ -976,9 +976,7 @@ static uint32_t outp_rep_characteristics_add(struct ble_hids *hids,
 				.write_wo_resp = true,
 			};
 
-			nrf_err = rep_char_add(hids, &properties, rep_init->len,
-					       rep_init->report_id,
-					       rep_init->report_type, &rep_init->sec,
+			nrf_err = rep_char_add(hids, &properties, rep_init,
 					       &hids->outp_rep_array[i]);
 			if (nrf_err) {
 				return nrf_err;
@@ -1004,9 +1002,7 @@ static uint32_t feature_rep_characteristics_add(struct ble_hids *hids,
 				.write = true,
 			};
 
-			nrf_err = rep_char_add(hids, &properties, rep_init->len,
-					       rep_init->report_id,
-					       rep_init->report_type, &rep_init->sec,
+			nrf_err = rep_char_add(hids, &properties, rep_init,
 					       &hids->feature_rep_array[i]);
 			if (nrf_err) {
 				return nrf_err;
@@ -1073,8 +1069,8 @@ uint32_t ble_hids_init(struct ble_hids *hids, const struct ble_hids_config *hids
 
 #if defined(CONFIG_BLE_HIDS_BOOT_KEYBOARD) || defined(CONFIG_BLE_HIDS_BOOT_MOUSE)
 	/* Add Protocol Mode characteristic. */
-	nrf_err = protocol_mode_char_add(hids, hids_cfg->protocol_mode_sec.read,
-					 hids_cfg->protocol_mode_sec.write);
+	nrf_err = protocol_mode_char_add(hids, hids_cfg->sec_mode.protocol_mode_char.read,
+					 hids_cfg->sec_mode.protocol_mode_char.write);
 	if (nrf_err) {
 		return nrf_err;
 	}
@@ -1108,7 +1104,9 @@ uint32_t ble_hids_init(struct ble_hids *hids, const struct ble_hids_config *hids
 	/* Add Boot Keyboard Input Report characteristic. */
 	nrf_err = boot_inp_rep_char_add(hids, BLE_UUID_BOOT_KEYBOARD_INPUT_REPORT_CHAR,
 					BLE_HIDS_BOOT_KB_INPUT_REPORT_MAX_SIZE,
-					&hids_cfg->boot_kb_inp_rep_sec,
+					hids_cfg->sec_mode.boot_kb_inp_rep_char.read,
+					hids_cfg->sec_mode.boot_kb_inp_rep_char.write,
+					hids_cfg->sec_mode.boot_kb_inp_rep_char.cccd_write,
 					&hids->boot_kb_inp_rep_handles);
 	if (nrf_err) {
 		return nrf_err;
@@ -1126,7 +1124,10 @@ uint32_t ble_hids_init(struct ble_hids *hids, const struct ble_hids_config *hids
 	nrf_err = boot_inp_rep_char_add(
 		hids, BLE_UUID_BOOT_MOUSE_INPUT_REPORT_CHAR,
 		BLE_HIDS_BOOT_MOUSE_INPUT_REPORT_MAX_SIZE,
-		&hids_cfg->boot_mouse_inp_rep_sec, &hids->boot_mouse_inp_rep_handles);
+		hids_cfg->sec_mode.boot_mouse_inp_rep_char.read,
+		hids_cfg->sec_mode.boot_mouse_inp_rep_char.write,
+		hids_cfg->sec_mode.boot_mouse_inp_rep_char.cccd_write,
+		&hids->boot_mouse_inp_rep_handles);
 	if (nrf_err) {
 		return nrf_err;
 	}
@@ -1139,12 +1140,7 @@ uint32_t ble_hids_init(struct ble_hids *hids, const struct ble_hids_config *hids
 	}
 
 	/* Add HID Control Point characteristic. */
-	nrf_err = hid_control_point_char_add(hids, hids_cfg->ctrl_point_sec.write);
-	if (nrf_err) {
-		return nrf_err;
-	}
-
-	return nrf_err;
+	return hid_control_point_char_add(hids, hids_cfg->sec_mode.ctrl_point_char.write);
 }
 
 uint32_t ble_hids_inp_rep_send(struct ble_hids *hids, uint16_t conn_handle,
