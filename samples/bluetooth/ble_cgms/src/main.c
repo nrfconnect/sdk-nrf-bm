@@ -299,6 +299,7 @@ uint16_t qwr_evt_handler(struct ble_qwr *qwr, const struct ble_qwr_evt *evt)
 static uint32_t services_init(void)
 {
 	uint32_t nrf_err;
+
 	struct ble_cgms_config cgms_config = {
 		.evt_handler = cgms_evt_handler,
 		.gatt_queue = &ble_gatt_gueue,
@@ -312,6 +313,7 @@ static uint32_t services_init(void)
 			.type = BLE_CGMS_MEAS_TYPE_VEN_BLOOD,
 			.sample_location = BLE_CGMS_MEAS_LOC_AST,
 		},
+		.sec_mode = BLE_CGMS_CONFIG_SEC_MODE_KCONFIG,
 	};
 	struct ble_bas_config bas_config = {
 		.evt_handler = NULL,
