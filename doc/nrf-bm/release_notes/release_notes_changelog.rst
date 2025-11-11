@@ -209,6 +209,7 @@ Bluetooth LE Services
   * :ref:`lib_ble_service_hids` service.
   * :ref:`lib_ble_service_hrs` service.
   * :ref:`lib_ble_service_lbs` service.
+  * :ref:`lib_ble_service_mcumgr` service.
 
 * :ref:`lib_ble_service_bas` service:
 

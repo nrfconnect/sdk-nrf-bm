@@ -79,14 +79,21 @@ static struct ble_mcumgr_client_context *ble_mcumgr_client_context_get(uint16_t 
 	return ((idx >= 0) ? &contexts[idx] : NULL);
 }
 
-static uint32_t mcumgr_characteristic_add(struct ble_mcumgr *service)
+static uint32_t mcumgr_characteristic_add(struct ble_mcumgr *service,
+					  const struct ble_mcumgr_config *cfg)
 {
+
+	__ASSERT(service, "cfg is NULL");
+	__ASSERT(cfg, "cfg is NULL");
+
 	ble_uuid_t char_uuid = {
 		.type = service->uuid_type_characteristic,
 		.uuid = BLE_MCUMGR_CHARACTERISTIC_UUID_SUB,
 	};
 	ble_gatts_attr_md_t cccd_md = {
-		.vloc = BLE_GATTS_VLOC_STACK
+		.vloc = BLE_GATTS_VLOC_STACK,
+		.read_perm = BLE_GAP_CONN_SEC_MODE_OPEN,
+		.write_perm = cfg->sec_mode.mcumgr_char.cccd_write,
 	};
 	ble_gatts_char_md_t char_md = {
 		.char_props = {
@@ -98,6 +105,8 @@ static uint32_t mcumgr_characteristic_add(struct ble_mcumgr *service)
 	ble_gatts_attr_md_t attr_md = {
 		.vloc = BLE_GATTS_VLOC_STACK,
 		.vlen = true,
+		.read_perm = cfg->sec_mode.mcumgr_char.read,
+		.write_perm = cfg->sec_mode.mcumgr_char.write,
 	};
 	ble_gatts_attr_t attr_char_value = {
 		.p_uuid = &char_uuid,
@@ -106,13 +115,6 @@ static uint32_t mcumgr_characteristic_add(struct ble_mcumgr *service)
 		.init_len = 0,
 		.max_len = BLE_GATT_MAX_DATA_LEN,
 	};
-
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.read_perm);
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.write_perm);
-
-	/* Setup CCCD */
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.read_perm);
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.write_perm);
 
 	return sd_ble_gatts_characteristic_add(service->service_handle, &char_md, &attr_char_value,
 					       &service->characteristic_handle);
@@ -374,7 +376,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 
 NRF_SDH_BLE_OBSERVER(sdh_ble, on_ble_evt, &ble_mcumgr, HIGH);
 
-uint32_t ble_mcumgr_init(void)
+uint32_t ble_mcumgr_init(const struct ble_mcumgr_config *cfg)
 {
 	uint32_t nrf_err;
 	ble_uuid_t ble_uuid;
@@ -384,6 +386,10 @@ uint32_t ble_mcumgr_init(void)
 	ble_uuid128_t uuid_base_characteristic = {
 		.uuid128 = BLE_MCUMGR_CHARACTERISTIC_UUID
 	};
+
+	if (!cfg) {
+		return NRF_ERROR_NULL;
+	}
 
 	/* Initialize the service structure */
 	ble_mcumgr.service_handle = BLE_CONN_HANDLE_INVALID;
@@ -418,7 +424,7 @@ uint32_t ble_mcumgr_init(void)
 	}
 
 	/* Add MCUmgr characteristic */
-	nrf_err = mcumgr_characteristic_add(&ble_mcumgr);
+	nrf_err = mcumgr_characteristic_add(&ble_mcumgr, cfg);
 
 	if (nrf_err) {
 		LOG_ERR("mcumgr_characteristic_add failed, nrf_error %#x", nrf_err);

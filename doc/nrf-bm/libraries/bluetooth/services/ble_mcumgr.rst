@@ -15,6 +15,7 @@ Configuration
 *************
 
 Set the :kconfig:option:`CONFIG_BLE_MCUMGR` Kconfig option to enable the service.
+The characteristic security mode is configured in the :c:struct:`ble_mcumgr_config` structure provided during initialization.
 
 Initialization
 ==============
