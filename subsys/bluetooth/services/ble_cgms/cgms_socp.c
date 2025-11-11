@@ -303,14 +303,16 @@ static uint8_t ble_socp_encode(const struct ble_socp_rsp *socp_rsp, uint8_t *dat
 }
 
 /* Add the Specific Ops Control Point characteristic. */
-uint32_t cgms_socp_char_add(struct ble_cgms *cgms)
+uint32_t cgms_socp_char_add(struct ble_cgms *cgms, const struct ble_cgms_config *cgms_cfg)
 {
 	ble_uuid_t char_uuid = {
 		.type = BLE_UUID_TYPE_BLE,
 		.uuid = BLE_UUID_CGM_SPECIFIC_OPS_CTRLPT,
 	};
 	ble_gatts_attr_md_t cccd_md = {
-		.vloc = BLE_GATTS_VLOC_STACK
+		.vloc = BLE_GATTS_VLOC_STACK,
+		.read_perm = BLE_GAP_CONN_SEC_MODE_OPEN,
+		.write_perm = cgms_cfg->sec_mode.socp_char.cccd_write,
 	};
 	ble_gatts_char_md_t char_md = {
 		.char_props = {
@@ -323,6 +325,7 @@ uint32_t cgms_socp_char_add(struct ble_cgms *cgms)
 		.vloc = BLE_GATTS_VLOC_STACK,
 		.wr_auth = true,
 		.vlen = true,
+		.write_perm = cgms_cfg->sec_mode.socp_char.write,
 	};
 	ble_gatts_attr_t attr_char_value = {
 		.p_uuid = &char_uuid,
@@ -331,11 +334,6 @@ uint32_t cgms_socp_char_add(struct ble_cgms *cgms)
 		.init_len = 0,
 		.max_len = BLE_GATT_ATT_MTU_DEFAULT,
 	};
-
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.write_perm);
-
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.read_perm);
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.write_perm);
 
 	return sd_ble_gatts_characteristic_add(cgms->service_handle, &char_md, &attr_char_value,
 					       &cgms->char_handles.socp);
