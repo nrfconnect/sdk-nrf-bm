@@ -52,7 +52,7 @@ target_sources(app PRIVATE src/unity_test.c)
 
 target_include_directories(app PRIVATE ${ZEPHYR_NRF_BM_MODULE_DIR}/include)
 target_include_directories(app PRIVATE ${SOFTDEVICE_INCLUDE_DIR})
-target_include_directories(app PRIVATE ${ZEPHYR_HAL_NORDIC_MODULE_DIR}/nrfx/mdk)
+target_include_directories(app PRIVATE ${ZEPHYR_HAL_NORDIC_MODULE_DIR}/nrfx/bsp/stable/mdk)
 target_include_directories(app PRIVATE ${ZEPHYR_CMSIS_MODULE_DIR}/CMSIS/Core/Include)
 
 target_sources(app

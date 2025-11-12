@@ -49,10 +49,10 @@ enum button_state {
 	BUTTON_RELEASE_DETECTED
 };
 
-static const nrfx_gpiote_t gpiote20_instance = NRFX_GPIOTE_INSTANCE(20);
-static const nrfx_gpiote_t gpiote30_instance = NRFX_GPIOTE_INSTANCE(30);
+static nrfx_gpiote_t gpiote20_instance = NRFX_GPIOTE_INSTANCE(NRF_GPIOTE20);
+static nrfx_gpiote_t gpiote30_instance = NRFX_GPIOTE_INSTANCE(NRF_GPIOTE30);
 
-static inline const nrfx_gpiote_t *gpiote_get(uint32_t port)
+static inline nrfx_gpiote_t *gpiote_get(uint32_t port)
 {
 	switch (port) {
 	case 0:
@@ -79,42 +79,40 @@ static void gpiote_uninit(void)
 
 ISR_DIRECT_DECLARE(gpiote_20_direct_isr)
 {
-	NRFX_GPIOTE_INST_HANDLER_GET(20)();
+	nrfx_gpiote_irq_handler(&gpiote20_instance);
 	return 0;
 }
 
 ISR_DIRECT_DECLARE(gpiote_30_direct_isr)
 {
-	NRFX_GPIOTE_INST_HANDLER_GET(30)();
+	nrfx_gpiote_irq_handler(&gpiote30_instance);
 	return 0;
 }
 
 static int gpiote_init(void)
 {
-	nrfx_err_t nrfx_err;
+	int err;
 
 	if (!nrfx_gpiote_init_check(&gpiote20_instance)) {
-		nrfx_err = nrfx_gpiote_init(&gpiote20_instance, 0);
-		if (nrfx_err != NRFX_SUCCESS) {
-			LOG_ERR("Failed to initialize gpiote20, nrfx_err: 0x%08X", nrfx_err);
-			return -EIO;
+		err = nrfx_gpiote_init(&gpiote20_instance, 0);
+		if (err) {
+			LOG_ERR("Failed to initialize gpiote20, err %d", err);
+			return err;
 		}
 
-		IRQ_DIRECT_CONNECT(
-			NRFX_IRQ_NUMBER_GET(NRF_GPIOTE_INST_GET(20)) + NRF_GPIOTE_IRQ_GROUP,
-			IRQ_PRIO, gpiote_20_direct_isr, 0);
+		IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_GPIOTE20) + NRF_GPIOTE_IRQ_GROUP,
+				   IRQ_PRIO, gpiote_20_direct_isr, 0);
 	}
 
 	if (!nrfx_gpiote_init_check(&gpiote30_instance)) {
-		nrfx_err = nrfx_gpiote_init(&gpiote30_instance, 0);
-		if (nrfx_err != NRFX_SUCCESS) {
-			LOG_ERR("Failed to initialize gpiote30, nrfx_err: 0x%08X", nrfx_err);
-			return -EIO;
+		err = nrfx_gpiote_init(&gpiote30_instance, 0);
+		if (err) {
+			LOG_ERR("Failed to initialize gpiote30, err %d", err);
+			return err;
 		}
 
-		IRQ_DIRECT_CONNECT(
-			NRFX_IRQ_NUMBER_GET(NRF_GPIOTE_INST_GET(30)) + NRF_GPIOTE_IRQ_GROUP,
-			IRQ_PRIO, gpiote_30_direct_isr, 0);
+		IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_GPIOTE30) + NRF_GPIOTE_IRQ_GROUP,
+				   IRQ_PRIO, gpiote_30_direct_isr, 0);
 	}
 
 	return 0;
@@ -123,14 +121,14 @@ static int gpiote_init(void)
 static int gpiote_input_configure(nrfx_gpiote_pin_t pin,
 				  const nrfx_gpiote_input_pin_config_t *input_config)
 {
-	nrfx_err_t nrfx_err;
+	int err;
 
-	const nrfx_gpiote_t *gpiote_inst = gpiote_get(NRF_PIN_NUMBER_TO_PORT(pin));
+	nrfx_gpiote_t *gpiote_inst = gpiote_get(NRF_PIN_NUMBER_TO_PORT(pin));
 
-	nrfx_err = nrfx_gpiote_input_configure(gpiote_inst, pin, input_config);
-	if (nrfx_err != NRFX_SUCCESS) {
-		LOG_ERR("nrfx_gpiote_input_configure, nrfx_err: 0x%08X", nrfx_err);
-		return -EIO;
+	err = nrfx_gpiote_input_configure(gpiote_inst, pin, input_config);
+	if (err) {
+		LOG_ERR("nrfx_gpiote_input_configure, err %d", err);
+		return err;
 	}
 
 	return 0;

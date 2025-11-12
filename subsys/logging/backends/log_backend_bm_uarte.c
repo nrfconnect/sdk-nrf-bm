@@ -11,7 +11,7 @@
 #include <nrfx_uarte.h>
 #include <board-config.h>
 
-static const nrfx_uarte_t uarte_inst = NRFX_UARTE_INSTANCE(BOARD_CONSOLE_UARTE_INST);
+nrfx_uarte_t uarte_inst = NRFX_UARTE_INSTANCE(BOARD_CONSOLE_UARTE_INST);
 static uint8_t lbu_buffer[CONFIG_LOG_BACKEND_BM_UARTE_BUFFER_SIZE];
 static uint32_t log_format_current = CONFIG_LOG_BACKEND_BM_UARTE_OUTPUT_DEFAULT;
 
@@ -22,13 +22,13 @@ LOG_OUTPUT_DEFINE(bm_lbu_output, log_out, lbu_buffer, CONFIG_LOG_BACKEND_BM_UART
 
 ISR_DIRECT_DECLARE(log_backend_bm_uarte_direct_isr)
 {
-	NRFX_UARTE_INST_HANDLER_GET(BOARD_CONSOLE_UARTE_INST)();
+	nrfx_uarte_irq_handler(&uarte_inst);
 	return 0;
 }
 
 static int uarte_init(void)
 {
-	nrfx_err_t nrfx_err;
+	int err;
 
 	nrfx_uarte_config_t uarte_config = NRFX_UARTE_DEFAULT_CONFIG(
 		BOARD_CONSOLE_UARTE_PIN_TX, NRF_UARTE_PSEL_DISCONNECTED);
@@ -48,15 +48,15 @@ static int uarte_init(void)
 	uarte_config.tx_cache.length = sizeof(uarte_tx_buf);
 
 	/** We need to connect the IRQ ourselves. */
-	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(BOARD_CONSOLE_UARTE_INST)),
+	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(BOARD_CONSOLE_UARTE_INST),
 			   CONFIG_LOG_BACKEND_BM_UARTE_IRQ_PRIO,
 			   log_backend_bm_uarte_direct_isr, 0);
 
-	irq_enable(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(BOARD_CONSOLE_UARTE_INST)));
+	irq_enable(NRFX_IRQ_NUMBER_GET(BOARD_CONSOLE_UARTE_INST));
 
-	nrfx_err = nrfx_uarte_init(&uarte_inst, &uarte_config, NULL);
-	if (nrfx_err != NRFX_SUCCESS) {
-		return nrfx_err;
+	err = nrfx_uarte_init(&uarte_inst, &uarte_config, NULL);
+	if (err) {
+		return err;
 	}
 
 	return 0;
@@ -79,7 +79,7 @@ static void process(const struct log_backend *const backend, union log_msg_gener
 
 static void log_backend_uart_init(struct log_backend const *const backend)
 {
-	uarte_init();
+	(void)uarte_init();
 }
 
 static void dropped(const struct log_backend *const backend, uint32_t cnt)
