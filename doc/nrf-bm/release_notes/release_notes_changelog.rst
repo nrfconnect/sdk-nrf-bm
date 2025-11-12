@@ -84,6 +84,21 @@ Libraries
 
    * Added missing Kconfig dependencies.
 
+* :ref:`lib_bm_zms` library:
+
+   * Updated:
+
+     * The :c:func:`bm_zms_register` function to return ``-EFAULT`` instead of ``-EINVAL`` when the input parameters are ``NULL``.
+     * The :c:func:`bm_zms_mount` function to return ``-EFAULT`` when the input parameter ``fs`` is ``NULL``.
+     * The :c:func:`bm_zms_clear` function to return ``-EFAULT`` when the input parameter ``fs`` is ``NULL``.
+     * The :c:func:`bm_zms_write` function to return ``-EFAULT`` when the input parameter ``fs`` is ``NULL``.
+     * The :c:func:`bm_zms_delete` function to return ``-EFAULT`` when the input parameter ``fs`` is ``NULL``.
+     * The :c:func:`bm_zms_read` function to return ``-EFAULT`` when the input parameter ``fs`` is ``NULL``.
+     * The :c:func:`bm_zms_read_hist` function to return ``-EFAULT`` when the input parameter ``fs`` is ``NULL``.
+     * The :c:func:`bm_zms_get_data_length` function to return ``-EFAULT`` when the input parameter ``fs`` is ``NULL``.
+     * The :c:func:`bm_zms_calc_free_space` function to return ``-EFAULT`` when the input parameter ``fs`` is ``NULL``.
+     * The :c:func:`bm_zms_active_sector_free_space` function to return ``-EFAULT`` when the input parameter ``fs`` is ``NULL``.
+
 * :ref:`lib_peer_manager` library:
 
    * Updated:
