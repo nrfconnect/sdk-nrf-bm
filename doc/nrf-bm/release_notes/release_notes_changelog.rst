@@ -139,6 +139,8 @@ Libraries
 Samples
 =======
 
+* Updated all sample Kconfig options to be prefixed with ``APP_``.
+
 Bluetooth samples
 -----------------
 

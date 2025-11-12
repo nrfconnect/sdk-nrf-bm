@@ -9,7 +9,7 @@
 #include <nrfx_pwm.h>
 #include <board-config.h>
 
-LOG_MODULE_REGISTER(app, CONFIG_PWM_SAMPLE_LOG_LEVEL);
+LOG_MODULE_REGISTER(app, CONFIG_APP_PWM_LOG_LEVEL);
 
 /* nrfx PWM instance index. */
 #define PWM_INST_IDX 20
@@ -49,14 +49,14 @@ int main(void)
 	nrf_pwm_sequence_t seq = {
 		.values = {pwm_val},
 		.length = NRFX_ARRAY_SIZE(pwm_val),
-		.repeats = CONFIG_PWM_VALUE_REPEATS,
+		.repeats = CONFIG_APP_PWM_VALUE_REPEATS,
 		.end_delay = 0
 	};
 
 	LOG_INF("PWM sample started");
 
 	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_PWM_INST_GET(PWM_INST_IDX)),
-			   CONFIG_PWM_IRQ_PRIO,
+			   CONFIG_APP_PWM_IRQ_PRIO,
 			   pwm_direct_isr, 0);
 
 	nrfx_err = nrfx_pwm_init(&pwm_instance, &config, pwm_handler, &pwm_instance);
@@ -65,7 +65,7 @@ int main(void)
 		goto idle;
 	}
 
-	nrfx_pwm_simple_playback(&pwm_instance, &seq, CONFIG_PWM_PLAYBACK_COUNT,
+	nrfx_pwm_simple_playback(&pwm_instance, &seq, CONFIG_APP_PWM_PLAYBACK_COUNT,
 				 NRFX_PWM_FLAG_LOOP);
 
 idle:
