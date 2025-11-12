@@ -12,4 +12,7 @@ source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
 endmenu # "BLE MCUmgr sample"
 
+config MCUMGR_GRP_OS_MCUMGR_PARAMS_ROLE_VALUE
+    default 81
+
 source "Kconfig.zephyr"

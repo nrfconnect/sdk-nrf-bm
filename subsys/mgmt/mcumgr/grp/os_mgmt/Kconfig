@@ -59,6 +59,19 @@ config MCUMGR_GRP_OS_INFO
 	  Can be used similarly to the unix/linux uname command for retrieving system information
 	  including kernel version, processor architecture and board name.
 
+config MCUMGR_GRP_OS_MCUMGR_PARAMS_ROLE
+	bool "MCUMGR Parameter Role in response"
+	depends on MCUMGR_GRP_OS_MCUMGR_PARAMS
+	default y
+
+config MCUMGR_GRP_OS_MCUMGR_PARAMS_ROLE_VALUE
+	int "MCUMGR Parameter Role value"
+	default 80 if !MCUMGR_GPR_IMG
+	default 0
+	depends on MCUMGR_GRP_OS_MCUMGR_PARAMS_ROLE
+	help
+	  Value for `inst_role` field in response to MCUmgr Parameters request.
+
 if MCUMGR_GRP_OS_INFO
 
 config MCUMGR_GRP_OS_INFO_MAX_RESPONSE_SIZE
