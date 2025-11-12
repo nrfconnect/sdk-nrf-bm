@@ -2025,7 +2025,7 @@ int bm_zms_mount(struct bm_zms_fs *fs)
 
 	ret = bm_storage_init(&fs->zms_bm_storage, &config);
 	if (ret) {
-		LOG_ERR("bm_storage_init() failed, ret %u", ret);
+		LOG_ERR("bm_storage_init() failed, ret %d", ret);
 		return -EIO;
 	}
 
