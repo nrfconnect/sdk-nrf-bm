@@ -7,6 +7,7 @@
 #include <errno.h>
 
 #include <bm/storage/bm_storage.h>
+#include <bm/storage/bm_storage_backend.h>
 
 /* Arbitrary block size. */
 #define BLOCK_SIZE 16
