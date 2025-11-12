@@ -39,7 +39,7 @@
 
 #include <board-config.h>
 
-LOG_MODULE_REGISTER(app, CONFIG_BLE_CGMS_SAMPLE_LOG_LEVEL);
+LOG_MODULE_REGISTER(app, CONFIG_APP_BLE_CGMS_LOG_LEVEL);
 
 #ifndef IS_BIT_SET
 #define IS_BIT_SET(value, bit) ((((value) >> (bit)) & (0x1)) != 0)
@@ -77,9 +77,9 @@ static uint16_t conn_handle = BLE_CONN_HANDLE_INVALID;
 static struct sensorsim_state battery_sim_state;
 
 static uint16_t current_time_offset;
-static uint16_t glucose_concentration = CONFIG_GLUCOSE_CONCENTRATION_MIN;
+static uint16_t glucose_concentration = CONFIG_APP_GLUCOSE_CONCENTRATION_MIN;
 
-static uint8_t qwr_mem[CONFIG_QWR_MEM_BUFF_SIZE];
+static uint8_t qwr_mem[CONFIG_APP_QWR_MEM_BUFF_SIZE];
 
 /** @brief Function for performing battery measurement and updating the Battery Level characteristic
  *         in Battery Service.
@@ -159,7 +159,7 @@ static void glucose_meas_timeout_handler(void *context)
 	if (ble_cgms.comm_interval != 0) {
 		current_time_offset += ble_cgms.comm_interval;
 	} else {
-		current_time_offset += CONFIG_GLUCOSE_MEAS_INTERVAL;
+		current_time_offset += CONFIG_APP_GLUCOSE_MEAS_INTERVAL;
 	}
 
 	read_glucose_measurement();
@@ -254,7 +254,7 @@ static void cgms_evt_handler(struct ble_cgms *cgms, const struct ble_cgms_evt *e
 	case BLE_CGMS_EVT_WRITE_COMM_INTERVAL:
 		LOG_INF("CGMS change communication interval");
 		if (cgms->comm_interval == 0xFF) {
-			cgms->comm_interval = CONFIG_GLUCOSE_MEAS_INTERVAL;
+			cgms->comm_interval = CONFIG_APP_GLUCOSE_MEAS_INTERVAL;
 		}
 		err = bm_timer_stop(&glucose_meas_timer);
 		if (err) {
@@ -325,7 +325,7 @@ static uint32_t services_init(void)
 	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&bas_config.cccd_wr_sec);
 
 	struct ble_qwr_config qwr_config = {
-		.mem_buffer.len = CONFIG_QWR_MEM_BUFF_SIZE,
+		.mem_buffer.len = CONFIG_APP_QWR_MEM_BUFF_SIZE,
 		.mem_buffer.p_mem = qwr_mem,
 		.evt_handler = qwr_evt_handler,
 	};
@@ -337,7 +337,7 @@ static uint32_t services_init(void)
 	}
 
 	/* Initialize Glucose Service */
-	ble_cgms.comm_interval = CONFIG_GLUCOSE_MEAS_INTERVAL;
+	ble_cgms.comm_interval = CONFIG_APP_GLUCOSE_MEAS_INTERVAL;
 
 	nrf_err = ble_cgms_init(&ble_cgms, &cgms_config);
 	if (nrf_err) {
@@ -345,7 +345,7 @@ static uint32_t services_init(void)
 		return nrf_err;
 	}
 
-	ble_cgms.comm_interval = CONFIG_GLUCOSE_MEAS_INTERVAL;
+	ble_cgms.comm_interval = CONFIG_APP_GLUCOSE_MEAS_INTERVAL;
 
 	/* Add a basic battery measurement with only mandatory fields */
 
@@ -371,9 +371,9 @@ static int sensor_simulator_init(void)
 	int err;
 	/** Battery Level sensor simulator configuration. */
 	static struct sensorsim_cfg battery_sim_cfg = {
-		.min = CONFIG_BATTERY_LEVEL_MIN,
-		.max = CONFIG_BATTERY_LEVEL_MAX,
-		.incr = CONFIG_BATTERY_LEVEL_INCREMENT,
+		.min = CONFIG_APP_BATTERY_LEVEL_MIN,
+		.max = CONFIG_APP_BATTERY_LEVEL_MAX,
+		.incr = CONFIG_APP_BATTERY_LEVEL_INCREMENT,
 		.start_at_max = true,
 	};
 
@@ -393,7 +393,7 @@ static int application_timers_start(void)
 
 	/* Start application timers. */
 	err = bm_timer_start(&battery_timer,
-		BM_TIMER_MS_TO_TICKS(CONFIG_BATTERY_LEVEL_MEAS_INTERVAL_MS),
+		BM_TIMER_MS_TO_TICKS(CONFIG_APP_BATTERY_LEVEL_MEAS_INTERVAL_MS),
 		NULL);
 	if (err) {
 		LOG_ERR("Failed to start app timer, err %d", err);
@@ -594,17 +594,17 @@ static void button_handler(uint8_t pin, uint8_t action)
 
 	case BOARD_PIN_BTN_1:
 		LOG_INF("Increase GL Concentration");
-		glucose_concentration += CONFIG_GLUCOSE_CONCENTRATION_INC;
-		if (glucose_concentration > CONFIG_GLUCOSE_CONCENTRATION_MAX) {
-			glucose_concentration = CONFIG_GLUCOSE_CONCENTRATION_MIN;
+		glucose_concentration += CONFIG_APP_GLUCOSE_CONCENTRATION_INC;
+		if (glucose_concentration > CONFIG_APP_GLUCOSE_CONCENTRATION_MAX) {
+			glucose_concentration = CONFIG_APP_GLUCOSE_CONCENTRATION_MIN;
 		}
 		break;
 
 	case BOARD_PIN_BTN_3:
 		LOG_INF("Decrease GL Concentration");
-		glucose_concentration -= CONFIG_GLUCOSE_CONCENTRATION_DEC;
-		if (glucose_concentration < CONFIG_GLUCOSE_CONCENTRATION_MIN) {
-			glucose_concentration = CONFIG_GLUCOSE_CONCENTRATION_MAX;
+		glucose_concentration -= CONFIG_APP_GLUCOSE_CONCENTRATION_DEC;
+		if (glucose_concentration < CONFIG_APP_GLUCOSE_CONCENTRATION_MIN) {
+			glucose_concentration = CONFIG_APP_GLUCOSE_CONCENTRATION_MAX;
 		}
 		break;
 

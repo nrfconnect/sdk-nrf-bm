@@ -6,7 +6,7 @@
 
 menu "Storage sample"
 
-module=STORAGE_SAMPLE
+module=APP_STORAGE
 module-str=Storage Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
