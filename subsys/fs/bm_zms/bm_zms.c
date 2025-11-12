@@ -2010,16 +2010,20 @@ end:
 	return rc;
 }
 
-int bm_zms_mount(struct bm_zms_fs *fs)
+int bm_zms_mount(struct bm_zms_fs *fs, const struct bm_zms_fs_config *config)
 {
 	int ret;
 	uint32_t rc;
 	size_t write_block_size;
 	zms_op_t cur_init_op;
 
-	if (!fs) {
+	if (!fs || !config) {
 		return -EFAULT;
 	}
+
+	fs->offset = config->offset;
+	fs->sector_size = config->sector_size;
+	fs->sector_count = config->sector_count;
 
 	/* Initialize BM Storage */
 	fs->zms_bm_storage.start_addr = fs->offset;

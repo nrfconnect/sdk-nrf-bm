@@ -99,6 +99,18 @@ struct bm_zms_fs {
 #endif
 };
 
+/** Configuration for Zephyr Memory Storage file system structure initialization. */
+struct bm_zms_fs_config {
+	/** File system offset in flash. */
+	off_t offset;
+	/** Storage system is split into sectors. The sector size must be a multiple of
+	 *  `erase-block-size` if the device has erase capabilities.
+	 */
+	uint32_t sector_size;
+	/** Number of sectors in the file system. */
+	uint32_t sector_count;
+};
+
 /**
  * @}
  */
@@ -132,6 +144,7 @@ int bm_zms_register(struct bm_zms_fs *fs, bm_zms_cb_t cb);
  * @brief Mount a BM_ZMS file system.
  *
  * @param fs Pointer to the file system.
+ * @param config Pointer to the configuration for file system initialization.
  *
  * @retval 0 If the initialization is queued successfully.
  * @retval -EFAULT if @p fs is NULL.
@@ -140,7 +153,7 @@ int bm_zms_register(struct bm_zms_fs *fs, bm_zms_cb_t cb);
  * @retval -EINVAL if any of the sector layout is invalid.
  * @retval -EIO if the backend storage initialization failed.
  */
-int bm_zms_mount(struct bm_zms_fs *fs);
+int bm_zms_mount(struct bm_zms_fs *fs, const struct bm_zms_fs_config *config);
 
 /**
  * @brief Clear the BM_ZMS file system from device. The BM_ZMS file system must be re-mounted after
