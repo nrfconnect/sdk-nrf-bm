@@ -17,7 +17,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <nrf.h>
 #include <ble_gap.h>
 #include <ble_hci.h>
 #include <bm/bluetooth/peer_manager/ble_gatt_db.h>

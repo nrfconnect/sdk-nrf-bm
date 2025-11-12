@@ -17,7 +17,6 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <nrf.h>
 #include <ble.h>
 #include <bm/bluetooth/ble_adv.h>
 #include <bm/bluetooth/ble_conn_params.h>
