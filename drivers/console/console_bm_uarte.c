@@ -11,17 +11,21 @@
 
 #include <board-config.h>
 
-static const nrfx_uarte_t uarte_inst = NRFX_UARTE_INSTANCE(BOARD_CONSOLE_UARTE_INST);
+#if defined(CONFIG_LOG_BACKEND_BM_UARTE)
+extern nrfx_uarte_t uarte_inst;
+#else
+nrfx_uarte_t uarte_inst = NRFX_UARTE_INSTANCE(BOARD_CONSOLE_UARTE_INST);
+#endif
 
 ISR_DIRECT_DECLARE(console_bm_uarte_direct_isr)
 {
-	NRFX_UARTE_INST_HANDLER_GET(BOARD_CONSOLE_UARTE_INST)();
+	nrfx_uarte_irq_handler(&uarte_inst);
 	return 0;
 }
 
-static nrfx_err_t uarte_init(void)
+static int uarte_init(void)
 {
-	nrfx_err_t nrfx_err;
+	int err;
 
 	nrfx_uarte_config_t uarte_config = NRFX_UARTE_DEFAULT_CONFIG(
 		BOARD_CONSOLE_UARTE_PIN_TX, NRF_UARTE_PSEL_DISCONNECTED);
@@ -39,18 +43,18 @@ static nrfx_err_t uarte_init(void)
 	uarte_config.interrupt_priority = CONFIG_BM_UARTE_CONSOLE_UARTE_IRQ_PRIO;
 
 	/** We need to connect the IRQ ourselves. */
-	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(BOARD_CONSOLE_UARTE_INST)),
+	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(BOARD_CONSOLE_UARTE_INST),
 			   CONFIG_BM_UARTE_CONSOLE_UARTE_IRQ_PRIO,
 			   console_bm_uarte_direct_isr, 0);
 
-	irq_enable(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(BOARD_CONSOLE_UARTE_INST)));
+	irq_enable(NRFX_IRQ_NUMBER_GET(BOARD_CONSOLE_UARTE_INST));
 
-	nrfx_err = nrfx_uarte_init(&uarte_inst, &uarte_config, NULL);
-	if (nrfx_err != NRFX_SUCCESS) {
-		return nrfx_err;
+	err = nrfx_uarte_init(&uarte_inst, &uarte_config, NULL);
+	if (err) {
+		return err;
 	}
 
-	return NRFX_SUCCESS;
+	return 0;
 }
 
 static int console_out(int c)
@@ -61,11 +65,11 @@ static int console_out(int c)
 	const char r = '\r';
 
 	if ('\n' == c) {
-		nrfx_uarte_tx(&uarte_inst, &r, 1, NRFX_UARTE_TX_BLOCKING);
+		(void)nrfx_uarte_tx(&uarte_inst, &r, 1, NRFX_UARTE_TX_BLOCKING);
 	}
 #endif
 
-	nrfx_uarte_tx(&uarte_inst, &c2, 1, NRFX_UARTE_TX_BLOCKING);
+	(void)nrfx_uarte_tx(&uarte_inst, &c2, 1, NRFX_UARTE_TX_BLOCKING);
 
 	/* Return the character passed as input. */
 	return c;
@@ -74,7 +78,7 @@ static int console_out(int c)
 static int uart_log_backend_sys_init(void)
 {
 	if (!IS_ENABLED(CONFIG_LOG_BACKEND_BM_UARTE)) {
-		uarte_init();
+		(void)uarte_init();
 	}
 
 #if defined(CONFIG_STDOUT_CONSOLE)

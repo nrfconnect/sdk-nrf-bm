@@ -13,8 +13,6 @@
 
 #include <zephyr/sys/__assert.h>
 
-#include <nrf_erratas.h>
-
 #include <nrfx_nfct.h>
 #include <nrfx_timer.h>
 #include <hal/nrf_ficr.h>
@@ -26,6 +24,16 @@
 #include <zephyr/logging/log.h>
 
 LOG_MODULE_REGISTER(nfc_platform, CONFIG_NFC_PLATFORM_LOG_LEVEL);
+
+#if NRF54L_ERRATA_60_ENABLE_WORKAROUND
+#define NFC_PLATFORM_USE_TIMER_WORKAROUND 1
+#else
+#define NFC_PLATFORM_USE_TIMER_WORKAROUND 0
+#endif
+
+#if NFC_PLATFORM_USE_TIMER_WORKAROUND
+#define NFC_TIMER_IRQn NRFX_CONCAT_3(TIMER, NRFX_NFCT_CONFIG_TIMER_INSTANCE_ID, _IRQn)
+#endif /* NFC_PLATFORM_USE_TIMER_WORKAROUND */
 
 #define NFC_T2T_BUFFER_SIZE (IS_ENABLED(CONFIG_NFC_T2T_NRFXLIB) ? NFC_PLATFORM_T2T_BUFFER_SIZE : 0U)
 #define NFC_T4T_BUFFER_SIZE (IS_ENABLED(CONFIG_NFC_T4T_NRFXLIB) ? \
@@ -70,48 +78,53 @@ NRF_SDH_SOC_OBSERVER(nfc_sdh_soc, on_soc_evt, NULL, USER_LOW);
 
 #endif /* defined(CONFIG_SOFTDEVICE) */
 
-nrfx_err_t nfc_platform_setup(nfc_lib_cb_resolve_t nfc_lib_cb_resolve, uint8_t *p_irq_priority)
+int nfc_platform_setup(nfc_lib_cb_resolve_t nfc_lib_cb_resolve, uint8_t *p_irq_priority)
 {
 	int err;
 
 	IRQ_DIRECT_CONNECT(NFCT_IRQn, CONFIG_NFCT_IRQ_PRIORITY,
 			   nfc_isr_wrapper, 0);
 
+#if NFC_PLATFORM_USE_TIMER_WORKAROUND
+	IRQ_DIRECT_CONNECT(NFC_TIMER_IRQn, CONFIG_NFCT_IRQ_PRIORITY,
+			   nrfx_nfct_workaround_timer_handler, 0);
+#endif /* NFC_PLATFORM_USE_TIMER_WORKAROUND */
+
 	*p_irq_priority = CONFIG_NFCT_IRQ_PRIORITY;
 
 	err = nfc_platform_internal_init(nfc_lib_cb_resolve);
 	if (err) {
 		LOG_ERR("NFC platform init fail: callback resolution function pointer is invalid");
-		return NRFX_ERROR_NULL;
+		return -EFAULT;
 	}
 
 	LOG_DBG("NFC platform initialized");
-	return NRFX_SUCCESS;
+	return 0;
 }
 
-static nrfx_err_t nfc_platform_tagheaders_get(uint32_t tag_header[3])
+static int nfc_platform_tagheaders_get(uint32_t tag_header[3])
 {
 	tag_header[0] = nrf_ficr_nfc_tagheader_get(NRF_FICR, 0);
 	tag_header[1] = nrf_ficr_nfc_tagheader_get(NRF_FICR, 1);
 	tag_header[2] = nrf_ficr_nfc_tagheader_get(NRF_FICR, 2);
 
-	return NRFX_SUCCESS;
+	return 0;
 }
 
-nrfx_err_t nfc_platform_nfcid1_default_bytes_get(uint8_t * const buf,
-						 uint32_t        buf_len)
+int nfc_platform_nfcid1_default_bytes_get(uint8_t * const buf,
+					  uint32_t        buf_len)
 {
 	if (!buf) {
-		return NRFX_ERROR_INVALID_PARAM;
+		return -EINVAL;
 	}
 
 	if ((buf_len != NRFX_NFCT_NFCID1_SINGLE_SIZE) &&
 	    (buf_len != NRFX_NFCT_NFCID1_DOUBLE_SIZE) &&
 	    (buf_len != NRFX_NFCT_NFCID1_TRIPLE_SIZE)) {
-		return NRFX_ERROR_INVALID_LENGTH;
+		return -E2BIG;
 	}
 
-	nrfx_err_t err;
+	int err;
 	uint32_t nfc_tag_header[3];
 
 	err = nfc_platform_tagheaders_get(nfc_tag_header);
@@ -143,7 +156,7 @@ nrfx_err_t nfc_platform_nfcid1_default_bytes_get(uint8_t * const buf,
 		}
 	}
 
-	return NRFX_SUCCESS;
+	return 0;
 }
 
 uint8_t *nfc_platform_buffer_alloc(size_t size)

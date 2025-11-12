@@ -43,15 +43,18 @@ static uint16_t conn_handle = BLE_CONN_HANDLE_INVALID;
 #define NUS_UARTE_PIN_REQ BOARD_APP_LPUARTE_PIN_REQ
 
 struct bm_lpuarte lpu;
+static nrfx_gpiote_t gpiote_inst[] = {
+	NRFX_GPIOTE_INSTANCE(NRF_GPIOTE30), NRFX_GPIOTE_INSTANCE(NRF_GPIOTE20),
+};
 #else
 #define NUS_UARTE_INST BOARD_APP_UARTE_INST
 #define NUS_UARTE_PIN_TX BOARD_APP_UARTE_PIN_TX
 #define NUS_UARTE_PIN_RX BOARD_APP_UARTE_PIN_RX
 #define NUS_UARTE_PIN_CTS BOARD_APP_UARTE_PIN_CTS
 #define NUS_UARTE_PIN_RTS BOARD_APP_UARTE_PIN_RTS
-
-static const nrfx_uarte_t nus_uarte_inst = NRFX_UARTE_INSTANCE(NUS_UARTE_INST);
 #endif /* CONFIG_APP_NUS_LPUARTE */
+
+static nrfx_uarte_t nus_uarte_inst = NRFX_UARTE_INSTANCE(NUS_UARTE_INST);
 
 /* Maximum length of data (in bytes) that can be transmitted to the peer by the
  * Nordic UART service module.
@@ -159,16 +162,16 @@ static void uarte_evt_handler(nrfx_uarte_event_t const *event, void *ctx)
 		}
 
 #if !defined(CONFIG_APP_NUS_LPUARTE)
-		nrfx_uarte_rx_enable(&nus_uarte_inst, 0);
+		(void)nrfx_uarte_rx_enable(&nus_uarte_inst, 0);
 #endif
 		break;
 	case NRFX_UARTE_EVT_RX_BUF_REQUEST:
 #if defined(CONFIG_APP_NUS_LPUARTE)
-		bm_lpuarte_rx_buffer_set(&lpu, uarte_rx_buf[buf_idx],
-					 CONFIG_APP_NUS_UART_RX_BUF_SIZE);
+		(void)bm_lpuarte_rx_buffer_set(&lpu, uarte_rx_buf[buf_idx],
+					       CONFIG_APP_NUS_UART_RX_BUF_SIZE);
 #else
-		nrfx_uarte_rx_buffer_set(&nus_uarte_inst, uarte_rx_buf[buf_idx],
-					 CONFIG_APP_NUS_UART_RX_BUF_SIZE);
+		(void)nrfx_uarte_rx_buffer_set(&nus_uarte_inst, uarte_rx_buf[buf_idx],
+					       CONFIG_APP_NUS_UART_RX_BUF_SIZE);
 #endif
 
 		buf_idx = buf_idx ? 0 : 1;
@@ -319,7 +322,7 @@ uint16_t ble_qwr_evt_handler(struct ble_qwr *qwr, const struct ble_qwr_evt *qwr_
 static void ble_nus_evt_handler(struct ble_nus *nus, const struct ble_nus_evt *evt)
 {
 	const char newline = '\n';
-	nrfx_err_t nrfx_err;
+	int err;
 
 	if (evt->evt_type == BLE_NUS_EVT_ERROR) {
 		LOG_ERR("NUS error event, error %d", evt->error.reason);
@@ -334,44 +337,44 @@ static void ble_nus_evt_handler(struct ble_nus *nus, const struct ble_nus_evt *e
 		evt->rx_data.length, evt->rx_data.data, evt->rx_data.length);
 
 #if defined(CONFIG_APP_NUS_LPUARTE)
-	nrfx_err = bm_lpuarte_tx(&lpu, evt->rx_data.data, evt->rx_data.length, 3000);
-	if (nrfx_err != NRFX_SUCCESS) {
-		LOG_ERR("bm_lpuarte_tx failed, nrfx_err %#x", nrfx_err);
+	err = bm_lpuarte_tx(&lpu, evt->rx_data.data, evt->rx_data.length, 3000);
+	if (err) {
+		LOG_ERR("bm_lpuarte_tx failed, err %d", err);
 	}
 #else
-		nrfx_err = nrfx_uarte_tx(&nus_uarte_inst, evt->rx_data.data,
-				    evt->rx_data.length, NRFX_UARTE_TX_BLOCKING);
-		if (nrfx_err != NRFX_SUCCESS) {
-			LOG_ERR("nrfx_uarte_tx failed, nrfx_err %#x", nrfx_err);
-		}
+	err = nrfx_uarte_tx(&nus_uarte_inst, evt->rx_data.data,
+			    evt->rx_data.length, NRFX_UARTE_TX_BLOCKING);
+	if (err) {
+		LOG_ERR("nrfx_uarte_tx failed, err %d", err);
+	}
 #endif
 
 
 	if (evt->rx_data.data[evt->rx_data.length - 1] == '\r') {
 #if defined(CONFIG_APP_NUS_LPUARTE)
-		bm_lpuarte_tx(&lpu, &newline, 1, 3000);
+		(void)bm_lpuarte_tx(&lpu, &newline, 1, 3000);
 #else
-		nrfx_uarte_tx(&nus_uarte_inst, &newline, 1, NRFX_UARTE_TX_BLOCKING);
+		(void)nrfx_uarte_tx(&nus_uarte_inst, &newline, 1, NRFX_UARTE_TX_BLOCKING);
 #endif
 	}
 }
 
 ISR_DIRECT_DECLARE(uarte_direct_isr)
 {
-	NRFX_UARTE_INST_HANDLER_GET(NUS_UARTE_INST)();
+	nrfx_uarte_irq_handler(&nus_uarte_inst);
 	return 0;
 }
 
 #if defined(CONFIG_APP_NUS_LPUARTE)
 ISR_DIRECT_DECLARE(gpiote_20_direct_isr)
 {
-	NRFX_GPIOTE_INST_HANDLER_GET(20)();
+	nrfx_gpiote_irq_handler(&gpiote_inst[1]);
 	return 0;
 }
 
 ISR_DIRECT_DECLARE(gpiote_30_direct_isr)
 {
-	NRFX_GPIOTE_INST_HANDLER_GET(30)();
+	nrfx_gpiote_irq_handler(&gpiote_inst[0]);
 	return 0;
 }
 #endif
@@ -379,13 +382,15 @@ ISR_DIRECT_DECLARE(gpiote_30_direct_isr)
 /**
  * @brief Initalize UARTE driver.
  */
-static nrfx_err_t uarte_init(void)
+static int uarte_init(void)
 {
-	nrfx_err_t nrfx_err;
+	int err;
 	nrfx_uarte_config_t *uarte_cfg;
 #if defined(CONFIG_APP_NUS_LPUARTE)
 	struct bm_lpuarte_config lpu_cfg = {
-		.uarte_inst = NRFX_UARTE_INSTANCE(NUS_UARTE_INST),
+		.uarte_inst = &nus_uarte_inst,
+		.gpiote_inst = gpiote_inst,
+		.gpiote_inst_num = ARRAY_SIZE(gpiote_inst),
 		.uarte_cfg = NRFX_UARTE_DEFAULT_CONFIG(NUS_UARTE_PIN_TX,
 						       NUS_UARTE_PIN_RX),
 		.req_pin = BOARD_APP_LPUARTE_PIN_REQ,
@@ -414,38 +419,37 @@ static nrfx_err_t uarte_init(void)
 
 	/** We need to connect the IRQ ourselves. */
 
-	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(NUS_UARTE_INST)),
+	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NUS_UARTE_INST),
 			   CONFIG_APP_NUS_UART_IRQ_PRIO, uarte_direct_isr, 0);
 
-	irq_enable(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(NUS_UARTE_INST)));
+	irq_enable(NRFX_IRQ_NUMBER_GET(NUS_UARTE_INST));
 
 #if defined(CONFIG_APP_NUS_LPUARTE)
-	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_GPIOTE_INST_GET(20)) + NRF_GPIOTE_IRQ_GROUP,
+	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_GPIOTE20) + NRF_GPIOTE_IRQ_GROUP,
 			   CONFIG_APP_GPIOTE_IRQ_PRIO, gpiote_20_direct_isr, 0);
 
-	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_GPIOTE_INST_GET(30)) + NRF_GPIOTE_IRQ_GROUP,
+	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_GPIOTE30) + NRF_GPIOTE_IRQ_GROUP,
 			   CONFIG_APP_GPIOTE_IRQ_PRIO, gpiote_30_direct_isr, 0);
 
-	nrfx_err = bm_lpuarte_init(&lpu, &lpu_cfg, uarte_evt_handler);
-	if (nrfx_err != NRFX_SUCCESS) {
-		LOG_ERR("Failed to initialize UART, nrfx_err %#x", nrfx_err);
-		return nrfx_err;
+	err = bm_lpuarte_init(&lpu, &lpu_cfg, uarte_evt_handler);
+	if (err) {
+		LOG_ERR("Failed to initialize UART, err %d", err);
+		return err;
 	}
 #else
-	nrfx_err = nrfx_uarte_init(&nus_uarte_inst, &uarte_config, uarte_evt_handler);
-	if (nrfx_err != NRFX_SUCCESS) {
-		LOG_ERR("Failed to initialize UART, nrfx_err %#x", nrfx_err);
-		return nrfx_err;
+	err = nrfx_uarte_init(&nus_uarte_inst, &uarte_config, uarte_evt_handler);
+	if (err) {
+		LOG_ERR("Failed to initialize UART, err %d", err);
+		return err;
 	}
 #endif /* CONFIG_APP_NUS_LPUARTE */
 
-	return NRFX_SUCCESS;
+	return 0;
 }
 
 int main(void)
 {
 	int err;
-	nrfx_err_t nrfx_err;
 	uint32_t nrf_err;
 	struct ble_adv_config ble_adv_cfg = {
 		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
@@ -466,9 +470,9 @@ int main(void)
 
 	LOG_INF("BLE NUS sample started");
 
-	nrfx_err = uarte_init();
-	if (nrfx_err != NRFX_SUCCESS) {
-		LOG_ERR("Failed to enable UARTE, nrfx_err %#x", nrfx_err);
+	err = uarte_init();
+	if (err) {
+		LOG_ERR("Failed to enable UARTE, err %d", err);
 		goto idle;
 	}
 
@@ -523,22 +527,22 @@ int main(void)
 	}
 
 #if defined(CONFIG_APP_NUS_LPUARTE)
-	nrfx_err = bm_lpuarte_rx_enable(&lpu);
-	if (nrfx_err != NRFX_SUCCESS) {
-		LOG_ERR("UART RX failed, nrfx_err %#x", nrfx_err);
+	err = bm_lpuarte_rx_enable(&lpu);
+	if (err) {
+		LOG_ERR("UART RX failed, err %d", err);
 	}
 #else
 	const uint8_t out[] = "UART started.\r\n";
 
-	nrfx_err = nrfx_uarte_tx(&nus_uarte_inst, out, sizeof(out), NRFX_UARTE_TX_BLOCKING);
-	if (nrfx_err != NRFX_SUCCESS) {
-		LOG_ERR("UARTE TX failed, nrfx_err %#x", nrfx_err);
+	err = nrfx_uarte_tx(&nus_uarte_inst, out, sizeof(out), NRFX_UARTE_TX_BLOCKING);
+	if (err) {
+		LOG_ERR("UARTE TX failed, err %d", err);
 		goto idle;
 	}
 
-	nrfx_err = nrfx_uarte_rx_enable(&nus_uarte_inst, 0);
-	if (nrfx_err != NRFX_SUCCESS) {
-		LOG_ERR("UART RX failed, nrfx_err %#x", nrfx_err);
+	err = nrfx_uarte_rx_enable(&nus_uarte_inst, 0);
+	if (err) {
+		LOG_ERR("UART RX failed, err %d", err);
 	}
 #endif
 

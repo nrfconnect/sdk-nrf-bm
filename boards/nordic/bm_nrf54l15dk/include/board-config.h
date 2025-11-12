@@ -53,7 +53,7 @@ extern "C" {
 
 /* UART Logger configuration */
 #ifndef BOARD_CONSOLE_UARTE_INST
-#define BOARD_CONSOLE_UARTE_INST 20
+#define BOARD_CONSOLE_UARTE_INST NRF_UARTE20
 #endif
 
 #ifndef BOARD_CONSOLE_UARTE_PIN_TX
@@ -65,7 +65,7 @@ extern "C" {
 
 /* Application UART configuration */
 #ifndef BOARD_APP_UARTE_INST
-#define BOARD_APP_UARTE_INST 30
+#define BOARD_APP_UARTE_INST NRF_UARTE30
 #endif
 
 #ifndef BOARD_APP_UARTE_PIN_TX
@@ -83,7 +83,7 @@ extern "C" {
 
 /* Application LPUART configuration */
 #ifndef BOARD_APP_LPUARTE_INST
-#define BOARD_APP_LPUARTE_INST 21
+#define BOARD_APP_LPUARTE_INST NRF_UARTE21
 #endif
 
 #ifndef BOARD_APP_LPUARTE_PIN_TX

@@ -42,7 +42,11 @@ enum bm_lpuarte_rx_state {
 /* Low power uart structure. */
 struct bm_lpuarte {
 	/* Physical UART device instance */
-	nrfx_uarte_t uarte_inst;
+	nrfx_uarte_t *uarte_inst;
+	/* gpiote instances. */
+	nrfx_gpiote_t *gpiote_inst;
+	/* Number of gpiote instances. */
+	uint8_t gpiote_inst_num;
 	/* Request pin. */
 	nrfx_gpiote_pin_t req_pin;
 	/* Response pin. */
@@ -66,9 +70,13 @@ struct bm_lpuarte {
 /* Configuration structured. */
 struct bm_lpuarte_config {
 	/* Uarte instance. */
-	nrfx_uarte_t uarte_inst;
+	nrfx_uarte_t *uarte_inst;
 	/* Uarte instance configuration. */
 	nrfx_uarte_config_t uarte_cfg;
+	/* gpiote instances. */
+	nrfx_gpiote_t *gpiote_inst;
+	/* Number of gpiote instances. */
+	uint8_t gpiote_inst_num;
 	/* Request pin number. */
 	nrfx_gpiote_pin_t req_pin;
 	/* Ready pin number. */
@@ -82,9 +90,8 @@ struct bm_lpuarte_config {
  * @param[in] lpu_cfg Low Power UARTE driver instance configuration structure.
  * @param[in] event_handler Event handler provided by the user.
  */
-nrfx_err_t bm_lpuarte_init(struct bm_lpuarte *lpu,
-			   struct bm_lpuarte_config *lpu_cfg,
-			   nrfx_uarte_event_handler_t  event_handler);
+int bm_lpuarte_init(struct bm_lpuarte *lpu, struct bm_lpuarte_config *lpu_cfg,
+		    nrfx_uarte_event_handler_t  event_handler);
 
 /**
  * @brief Deinitialize LPUARTE driver instance.
@@ -101,13 +108,12 @@ void bm_lpuarte_uninit(struct bm_lpuarte *lpu);
  * @param[in] length Size of data to transfer.
  * @param[in] timeout TX timeout in milliseconds.
  *
- * @retval NRFX_SUCCESS              Initialization of transmission was successful.
- * @retval NRFX_ERROR_BUSY           When transfer is already in progress.
- * @retval NRFX_ERROR_NULL           @p lpu or @p data is NULL.
- * @retval NRFX_ERROR_INVALID_LENGTH length is zero.
+ * @retval 0       Initialization of transmission was successful.
+ * @retval -EBUSY  When transfer is already in progress.
+ * @retval -EFAULT If @p lpu or @p data is NULL.
+ * @retval -EINVAL Length is zero.
  */
-nrfx_err_t bm_lpuarte_tx(struct bm_lpuarte *lpu, uint8_t const *data, size_t length,
-			 int32_t timeout);
+int bm_lpuarte_tx(struct bm_lpuarte *lpu, uint8_t const *data, size_t length, int32_t timeout);
 
 /**
  * @brief Check if TX is in progress.
@@ -123,11 +129,11 @@ bool bm_lpuarte_tx_in_progress(struct bm_lpuarte *lpu);
  * @param[in] lpu  Low Power UARTE driver instance structure.
  * @param[in] sync If true, transmition is aborted synchronously.
  *
- * @retval NRFX_SUCCESS Successfully initiated abort.
- * @retval NRFX_ERROR_NULL if @p lpu is NULL.
- * @retval NRFX_ERROR_INVALID_STATE if there is no pending transfer.
+ * @retval 0            Successfully initiated abort.
+ * @retval -EFAULT      If @p lpu is NULL.
+ * @retval -EINPROGRESS If there is no pending transfer.
  */
-nrfx_err_t bm_lpuarte_tx_abort(struct bm_lpuarte *lpu, bool sync);
+int bm_lpuarte_tx_abort(struct bm_lpuarte *lpu, bool sync);
 
 /**
  * @brief Enable the receiver.
@@ -142,10 +148,10 @@ nrfx_err_t bm_lpuarte_tx_abort(struct bm_lpuarte *lpu, bool sync);
  *
  * @param[in] lpu Low Power UARTE driver instance structure.
  *
- * @retval NRFX_SUCCESS Receiver successfully enabled.
- * @retval NRFX_ERROR_BUSY When receiver is already enabled.
+ * @retval 0      Receiver successfully enabled.
+ * @retval -EBUSY When receiver is already enabled.
  */
-nrfx_err_t bm_lpuarte_rx_enable(struct bm_lpuarte *lpu);
+int bm_lpuarte_rx_enable(struct bm_lpuarte *lpu);
 
 /**
  * @brief Provide reception buffer.
@@ -159,11 +165,14 @@ nrfx_err_t bm_lpuarte_rx_enable(struct bm_lpuarte *lpu);
  * @param[in] data   Pointer to a buffer.
  * @param[in] length Buffer length.
  *
- * @retval NRFX_SUCCESS             Buffer successfully set.
- * @retval NRFX_ERROR_INVALID_STATE Buffer provided without pending request.
- * @retval NRFX_ERROR_TIMEOUT       Buffer provided too late. Receiver is being disabled.
+ * @retval 0            Buffer successfully set.
+ * @retval -EINPROGRESS Buffer provided without pending request.
+ * @retval -EACCES      No cache buffer provided or blocking mode is used,
+ *                      transfer cannot be handled.
+ * @retval -EBUSY       Previous buffer is still in use.
+ * @retval -EPERM       Provided uncached buffer after providing cached one.
  */
-nrfx_err_t bm_lpuarte_rx_buffer_set(struct bm_lpuarte *lpu, uint8_t *data, size_t length);
+int bm_lpuarte_rx_buffer_set(struct bm_lpuarte *lpu, uint8_t *data, size_t length);
 
 /**
  * @brief Abort any ongoing reception.
@@ -185,10 +194,10 @@ nrfx_err_t bm_lpuarte_rx_buffer_set(struct bm_lpuarte *lpu, uint8_t *data, size_
  * @param[in] lpu          Low Power UARTE driver instance structure.
  * @param[in] sync         If true, receiver is disabled synchronously.
  *
- * @retval NRFX_SUCCESS             Successfully initiate disabling or disabled (synchronous mode).
- * @retval NRFX_ERROR_INVALID_STATE Receiver was not enabled.
+ * @retval 0            Successfully initiate disabling or disabled (synchronous mode).
+ * @retval -EINPROGRESS Receiver was not enabled.
  */
-nrfx_err_t bm_lpuarte_rx_abort(struct bm_lpuarte *lpu, bool sync);
+int bm_lpuarte_rx_abort(struct bm_lpuarte *lpu, bool sync);
 
 #ifdef __cplusplus
 }
