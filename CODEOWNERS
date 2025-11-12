@@ -64,8 +64,9 @@
 # Samples
 /samples/bluetooth/                       @nrfconnect/ncs-bm
 /samples/boot/                            @nrfconnect/ncs-eris
-/samples/peripherals/bm_zms/              @nrfconnect/ncs-bm @rghaddab
 /samples/peripherals/                     @nrfconnect/ncs-bm
+/samples/subsys/                          @nrfconnect/ncs-bm
+/samples/subsys/fs/bm_zms/                @nrfconnect/ncs-bm @rghaddab
 
 # Samples documentation
 /samples/**/*.rst                         @nrfconnect/ncs-bm-doc
