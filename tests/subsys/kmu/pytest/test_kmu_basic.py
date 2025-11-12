@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 
+from collections.abc import Callable
 from pathlib import Path
 
 import pytest
@@ -10,7 +11,9 @@ from twister_harness import DeviceAdapter
 
 
 @pytest.mark.usefixtures("no_reset")
-def test_if_kmu_key_can_be_uploaded_with_west_provision(dut: DeviceAdapter, config_reader):
+def test_if_kmu_key_can_be_uploaded_with_west_provision(
+    dut: DeviceAdapter, config_reader: Callable
+):
     """Verify if KMU key is provisioned correctly."""
     sysbuild_config = Path(dut.device_config.build_dir) / "zephyr" / ".config"
     valid_key_file = config_reader(sysbuild_config).read(
@@ -34,11 +37,13 @@ def test_if_kmu_key_can_be_uploaded_with_west_provision(dut: DeviceAdapter, conf
 
 @pytest.mark.usefixtures("no_reset")
 def test_if_board_does_not_boot_when_image_is_not_signed_with_correct_key(
-    dut: DeviceAdapter, config_reader, nrf_bm_path: Path
+    dut: DeviceAdapter, config_reader: Callable, nrf_bm_path: Path
 ):
     """Verify if a board does not boot if an image is signed with wrong key."""
     invalid_keys = [
         nrf_bm_path / "tests/subsys/kmu/keys/ed25519-1.pem",
+        nrf_bm_path / "tests/subsys/kmu/keys/ed25519-2.pem",
+        nrf_bm_path / "tests/subsys/kmu/keys/ed25519-3.pem",
     ]
 
     provision_keys_for_kmu(keys=invalid_keys, keyname="BL_PUBKEY", dev_id=dut.device_config.id)
