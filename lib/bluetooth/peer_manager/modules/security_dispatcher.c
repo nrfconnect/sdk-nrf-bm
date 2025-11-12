@@ -245,16 +245,16 @@ static void sec_proc_start(uint16_t conn_handle, bool success, enum pm_conn_sec_
  */
 static uint32_t link_secure_authenticate(uint16_t conn_handle, ble_gap_sec_params_t *sec_params)
 {
-	uint32_t err_code = sd_ble_gap_authenticate(conn_handle, sec_params);
+	uint32_t nrf_err = sd_ble_gap_authenticate(conn_handle, sec_params);
 
-	if (err_code == NRF_ERROR_NO_MEM) {
+	if (nrf_err == NRF_ERROR_NO_MEM) {
 		/* sd_ble_gap_authenticate() returned NRF_ERROR_NO_MEM. Too many other sec
 		 * procedures running.
 		 */
-		err_code = NRF_ERROR_BUSY;
+		nrf_err = NRF_ERROR_BUSY;
 	}
 
-	return err_code;
+	return nrf_err;
 }
 
 #if defined(CONFIG_SOFTDEVICE_CENTRAL)
@@ -381,13 +381,13 @@ static void sec_request_process(const ble_gap_evt_t *gap_evt)
  */
 static uint32_t link_secure_peripheral(uint16_t conn_handle, ble_gap_sec_params_t *sec_params)
 {
-	uint32_t err_code = NRF_SUCCESS;
+	uint32_t nrf_err = NRF_SUCCESS;
 
 	if (sec_params != NULL) {
-		err_code = link_secure_authenticate(conn_handle, sec_params);
+		nrf_err = link_secure_authenticate(conn_handle, sec_params);
 	}
 
-	return err_code;
+	return nrf_err;
 }
 
 /** @brief Function for processing the @ref BLE_GAP_EVT_SEC_INFO_REQUEST event from the SoftDevice.

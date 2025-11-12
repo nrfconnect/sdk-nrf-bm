@@ -44,14 +44,15 @@ static void ble_adv_evt_handler(struct ble_adv *adv, const struct ble_adv_evt *a
 
 static void on_conn_params_evt(const struct ble_conn_params_evt *evt)
 {
-	uint32_t err;
+	uint32_t nrf_err;
 
 	switch (evt->id) {
 	case BLE_CONN_PARAMS_EVT_REJECTED:
-		err = sd_ble_gap_disconnect(evt->conn_handle, BLE_HCI_CONN_INTERVAL_UNACCEPTABLE);
-		if (err) {
+		nrf_err = sd_ble_gap_disconnect(evt->conn_handle,
+						BLE_HCI_CONN_INTERVAL_UNACCEPTABLE);
+		if (nrf_err) {
 			LOG_ERR("Disconnect failed on conn params update rejection, nrf_error %#x",
-				err);
+				nrf_err);
 		} else {
 			LOG_INF("Disconnected from peer, unacceptable conn params");
 		}
@@ -109,21 +110,21 @@ int main(void)
 
 	LOG_INF("Bluetooth enabled");
 
-	err = ble_conn_params_evt_handler_set(on_conn_params_evt);
-	if (err) {
-		LOG_ERR("Failed to setup conn param event handler, err %d", err);
+	nrf_err = ble_conn_params_evt_handler_set(on_conn_params_evt);
+	if (nrf_err) {
+		LOG_ERR("Failed to setup conn param event handler, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 
-	err = ble_adv_init(&ble_adv, &ble_adv_cfg);
-	if (err) {
-		LOG_ERR("Failed to initialize advertising, err %d", err);
+	nrf_err = ble_adv_init(&ble_adv, &ble_adv_cfg);
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize advertising, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 
-	err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
-	if (err) {
-		LOG_ERR("Failed to start advertising, err %d", err);
+	nrf_err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
+	if (nrf_err) {
+		LOG_ERR("Failed to start advertising, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 
