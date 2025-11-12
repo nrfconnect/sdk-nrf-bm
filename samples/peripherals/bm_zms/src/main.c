@@ -160,12 +160,14 @@ int main(void)
 		goto idle;
 	}
 
-	fs.offset = BM_ZMS_PARTITION_OFFSET;
-	fs.sector_size = CONFIG_APP_BM_ZMS_SECTOR_SIZE;
-	fs.sector_count = (BM_ZMS_PARTITION_SIZE / CONFIG_APP_BM_ZMS_SECTOR_SIZE);
+	struct bm_zms_fs_config config = {
+		.offset = BM_ZMS_PARTITION_OFFSET,
+		.sector_size = CONFIG_APP_BM_ZMS_SECTOR_SIZE,
+		.sector_count = (BM_ZMS_PARTITION_SIZE / CONFIG_APP_BM_ZMS_SECTOR_SIZE),
+	};
 
 	for (i = 0; i < CONFIG_APP_BM_ZMS_ITERATIONS_MAX; i++) {
-		rc = bm_zms_mount(&fs);
+		rc = bm_zms_mount(&fs, &config);
 		if (rc) {
 			LOG_ERR("Storage Init failed, rc=%d", rc);
 			goto idle;
