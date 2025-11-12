@@ -35,3 +35,50 @@ tests:
         - "../pytest/test_kmu_basic.py"
     extra_args:
       - SB_CONFIG_BM_BOOTLOADER_MCUBOOT_GENERATE_DEFAULT_KMU_KEYFILE=n
+  mcuboot.kmu.west.provision.key_revocation:
+    integration_platforms:
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+    platform_allow:
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+    tags:
+      - pytest
+      - kmu
+    timeout: 180
+    harness: pytest
+    harness_config:
+      pytest_root:
+        - "../pytest/test_kmu_key_revocation.py::test_if_kmu_keys_revocation_with_three_slots"
+        - "../pytest/test_kmu_key_revocation.py::test_if_previous_key_is_revoked_when_flashing_new_image"
+        - "../pytest/test_kmu_key_revocation.py::test_if_revocation_of_last_remaining_key_is_not_allowed"
+    extra_args:
+      - SB_CONFIG_BM_BOOTLOADER_MCUBOOT_GENERATE_DEFAULT_KMU_KEYFILE=n
+      - mcuboot_CONFIG_BOOT_KEYS_REVOCATION=y
+      - mcuboot_CONFIG_LTO=n
+      - mcuboot_CONFIG_BOOT_SIGNATURE_KMU_SLOTS=3
+  mcuboot.kmu.west.provision.key_revocation_with_two_slots:
+    integration_platforms:
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+    platform_allow:
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+    tags:
+      - pytest
+      - kmu
+    timeout: 180
+    harness: pytest
+    harness_config:
+      pytest_root:
+        - "../pytest/test_kmu_key_revocation.py::test_if_kmu_keys_revocation_with_two_slots"
+        - "../pytest/test_kmu_key_revocation.py::test_if_kmu_keys_revocation_with_two_slots_third_key_valid"
+    extra_args:
+      - SB_CONFIG_BM_BOOTLOADER_MCUBOOT_GENERATE_DEFAULT_KMU_KEYFILE=n
+      - mcuboot_CONFIG_BOOT_KEYS_REVOCATION=y
+      - mcuboot_CONFIG_LTO=n
+      - mcuboot_CONFIG_BOOT_SIGNATURE_KMU_SLOTS=2
