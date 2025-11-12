@@ -1,13 +1,13 @@
-.. _storage_sample:
+.. _bm_storage_sample:
 
-Storage
-#######
+Bare Metal Storage
+##################
 
 .. contents::
    :local:
    :depth: 2
 
-The Storage sample demonstrates how to configure and use storage instances with event callbacks.
+The Bare Metal Storage sample demonstrates how to configure and use storage instances with event callbacks.
 Depending on the configuration selected, the sample uses either the SoftDevice storage backend or the RRAM storage backend.
 
 Refer to the `Kconfig fragments`_ section for more information on configuration.

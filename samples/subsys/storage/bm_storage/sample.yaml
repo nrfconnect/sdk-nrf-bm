@@ -1,7 +1,7 @@
 sample:
-  name: Storage Sample
+  name: Bare Metal Storage Sample
 tests:
-  sample.storage:
+  sample.bm_storage:
     sysbuild: true
     build_only: true
     integration_platforms:
@@ -19,7 +19,7 @@ tests:
       - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
     tags: ci_build
-  sample.storage_rram:
+  sample.bm_storage_rram:
     sysbuild: true
     build_only: true
     integration_platforms:
