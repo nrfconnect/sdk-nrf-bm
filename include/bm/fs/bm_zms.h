@@ -123,8 +123,8 @@ typedef void (*bm_zms_cb_t)(bm_zms_evt_t const *p_evt);
  * @param fs Pointer to the file system structure.
  *
  * @retval 0 on success.
+ * @retval -EFAULT if @p fs or @p cb are NULL.
  * @retval -ENOMEM if no more callback slots are available.
- * @retval -EINVAL if @p fs or @p cb are NULL.
  */
 int bm_zms_register(struct bm_zms_fs *fs, bm_zms_cb_t cb);
 
@@ -134,6 +134,7 @@ int bm_zms_register(struct bm_zms_fs *fs, bm_zms_cb_t cb);
  * @param fs Pointer to the file system.
  *
  * @retval 0 If the initialization is queued successfully.
+ * @retval -EFAULT if @p fs is NULL.
  * @retval -ENOMEM if the internal fifo is full.
  * @retval -EBUSY if an initialization is already executing.
  * @retval -EINVAL if any of the sector layout is invalid.
@@ -148,6 +149,7 @@ int bm_zms_mount(struct bm_zms_fs *fs);
  * @param fs Pointer to the file system.
  *
  * @retval 0 if the clear operation is queued successfully.
+ * @retval -EFAULT if @p fs is NULL.
  * @retval -EACCES if @p fs is not mounted.
  * @retval -EIO if there is an internal error.
  */
@@ -168,6 +170,7 @@ int bm_zms_clear(struct bm_zms_fs *fs);
  * @return Number of bytes queued for write. On success, it will be equal to the number of bytes
  *         requested to be written or 0.
  *         On error, returns negative value of error codes defined in `errno.h`.
+ * @retval -EFAULT if @p fs is NULL.
  * @retval -EACCES if BM_ZMS is still not initialized.
  * @retval -EIO if there is an internal error.
  * @retval -EINVAL if @p len is invalid.
@@ -181,6 +184,7 @@ ssize_t bm_zms_write(struct bm_zms_fs *fs, uint32_t id, const void *data, size_t
  * @param id ID of the entry to be deleted.
  *
  * @retval 0 if the delete operation is queued.
+ * @retval -EFAULT if @p fs is NULL.
  * @retval -EACCES if BM_ZMS is still not initialized.
  * @retval -EIO if there is an internal error.
  */
@@ -199,6 +203,7 @@ int bm_zms_delete(struct bm_zms_fs *fs, uint32_t id);
  *         one.
  *         On error, returns negative value of error codes defined in `errno.h`.
  * @retval Number of bytes read (> 0) on success.
+ * @retval -EFAULT if @p fs is NULL.
  * @retval -EACCES if BM_ZMS is still not initialized.
  * @retval -EIO if there is a memory read/write error.
  * @retval -ENOENT if there is no entry with the given @p id.
@@ -219,6 +224,7 @@ ssize_t bm_zms_read(struct bm_zms_fs *fs, uint32_t id, void *data, size_t len);
  *         this indicates not all bytes were read, and more data is available.
  *         On error, returns negative value of error codes defined in `errno.h`.
  * @retval Number of bytes read (> 0) on success.
+ * @retval -EFAULT if @p fs is NULL.
  * @retval -EACCES if BM_ZMS is still not initialized.
  * @retval -EIO if there is a memory read/write error.
  * @retval -ENOENT if there is no entry with the given @p id and history counter.
@@ -234,6 +240,7 @@ ssize_t bm_zms_read_hist(struct bm_zms_fs *fs, uint32_t id, void *data, size_t l
  * @return Data length contained in the ATE. On success, it will be equal to the number of bytes
  *         in the ATE. On error, returns negative value of error codes defined in `errno.h`.
  * @retval Length of the entry with the given @p id (> 0) on success.
+ * @retval -EFAULT if @p fs is NULL.
  * @retval -EACCES if BM_ZMS is still not initialized.
  * @retval -EIO if there is a memory read/write error.
  * @retval -ENOENT if there is no entry with the given @p id and history counter.
@@ -250,6 +257,7 @@ ssize_t bm_zms_get_data_length(struct bm_zms_fs *fs, uint32_t id);
  *         Calculating the free space is a time-consuming operation, especially on SPI flash.
  *         On error, returns negative value of error codes defined in `errno.h`.
  * @retval Number of free bytes (>= 0) on success.
+ * @retval -EFAULT if @p fs is NULL.
  * @retval -EACCES if BM_ZMS is still not initialized.
  * @retval -EIO if there is a memory read/write error.
  */
@@ -261,6 +269,7 @@ ssize_t bm_zms_calc_free_space(struct bm_zms_fs *fs);
  * @param fs Pointer to the file system.
  *
  * @retval Number of free bytes (>= 0) in the current active sector.
+ * @retval -EFAULT if @p fs is NULL.
  * @retval -EACCES if BM_ZMS is still not initialized.
  */
 ssize_t bm_zms_active_sector_free_space(struct bm_zms_fs *fs);
