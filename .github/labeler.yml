@@ -22,7 +22,7 @@
 - all:
   - changed-files:
     - all-globs-to-all-files:
-      - "!doc/nrf-bm/releases_notes/release_notes_changelog.rst"
+      - "!doc/nrf-bm/release_notes/release_notes_changelog.rst"
       - "!.github/*"
       - "!CODEOWNERS"
       - "!.*"
