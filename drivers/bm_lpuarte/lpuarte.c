@@ -11,27 +11,18 @@
 
 LOG_MODULE_REGISTER(lpuarte, CONFIG_BM_SW_LPUARTE_LOG_LEVEL);
 
-static const nrfx_gpiote_t gpiote20_instance = NRFX_GPIOTE_INSTANCE(20);
-static const nrfx_gpiote_t gpiote30_instance = NRFX_GPIOTE_INSTANCE(30);
+static void req_pin_handler(nrfx_gpiote_pin_t pin, nrfx_gpiote_trigger_t trigger, void *context);
+static void rdy_pin_handler(nrfx_gpiote_pin_t pin, nrfx_gpiote_trigger_t trigger, void *context);
 
-static void req_pin_handler(nrfx_gpiote_pin_t pin,
-			    nrfx_gpiote_trigger_t trigger,
-			    void *context);
-
-static void rdy_pin_handler(nrfx_gpiote_pin_t pin,
-			    nrfx_gpiote_trigger_t trigger,
-			    void *context);
-
-static inline const nrfx_gpiote_t *gpiote_get(uint32_t pin)
+static nrfx_gpiote_t *gpiote_get(struct bm_lpuarte *lpu, uint32_t pin)
 {
-	switch (NRF_PIN_NUMBER_TO_PORT(pin)) {
-	case 0:
-		return &gpiote30_instance;
-	case 1:
-		return &gpiote20_instance;
-	default:
+	const uint32_t port = NRF_PIN_NUMBER_TO_PORT(pin);
+
+	if (port >= lpu->gpiote_inst_num) {
 		return NULL;
 	}
+
+	return &lpu->gpiote_inst[port];
 }
 
 /* Called when UARTE transfer is finished to indicate to the receiver that it can be closed. */
@@ -60,7 +51,7 @@ static void req_pin_set(struct bm_lpuarte *lpu)
 
 	nrf_gpio_reconfigure(lpu->req_pin, &dir, &input, NULL, NULL, NULL);
 
-	nrfx_gpiote_trigger_disable(gpiote_get(lpu->req_pin), lpu->req_pin);
+	nrfx_gpiote_trigger_disable(gpiote_get(lpu, lpu->req_pin), lpu->req_pin);
 }
 
 /* Reconfigure pin to input with pull up and high->low state detection.
@@ -73,13 +64,13 @@ static void req_pin_arm(struct bm_lpuarte *lpu)
 	/* Add pull up before reconfiguring to input. */
 	nrf_gpio_reconfigure(lpu->req_pin, NULL, NULL, &pull, NULL, NULL);
 
-	nrfx_gpiote_trigger_enable(gpiote_get(lpu->req_pin), lpu->req_pin, true);
+	nrfx_gpiote_trigger_enable(gpiote_get(lpu, lpu->req_pin), lpu->req_pin, true);
 }
 
-static nrfx_err_t req_pin_init(struct bm_lpuarte *lpu, nrfx_gpiote_pin_t pin)
+static int req_pin_init(struct bm_lpuarte *lpu, nrfx_gpiote_pin_t pin)
 {
 	uint8_t ch;
-	nrfx_err_t nrfx_err;
+	int err;
 	nrf_gpio_pin_pull_t pull_config = NRF_GPIO_PIN_PULLDOWN;
 	nrfx_gpiote_trigger_config_t trigger_config = {
 		.trigger = NRFX_GPIOTE_TRIGGER_HITOLO,
@@ -95,14 +86,14 @@ static nrfx_err_t req_pin_init(struct bm_lpuarte *lpu, nrfx_gpiote_pin_t pin)
 		.p_handler_config = &handler_config
 	};
 
-	nrfx_err = nrfx_gpiote_channel_alloc(gpiote_get(pin), &ch);
-	if (nrfx_err != NRFX_SUCCESS) {
-		return nrfx_err;
+	err = nrfx_gpiote_channel_alloc(gpiote_get(lpu, pin), &ch);
+	if (err) {
+		return err;
 	}
 
-	nrfx_err = nrfx_gpiote_input_configure(gpiote_get(pin), pin, &input_config);
-	if (nrfx_err != NRFX_SUCCESS) {
-		return nrfx_err;
+	err = nrfx_gpiote_input_configure(gpiote_get(lpu, pin), pin, &input_config);
+	if (err) {
+		return err;
 	}
 
 	lpu->req_pin = pin;
@@ -112,22 +103,22 @@ static nrfx_err_t req_pin_init(struct bm_lpuarte *lpu, nrfx_gpiote_pin_t pin)
 	 */
 	req_pin_idle(lpu);
 
-	return NRFX_SUCCESS;
+	return 0;
 }
 
 static void req_pin_uninit(struct bm_lpuarte *lpu, nrfx_gpiote_pin_t pin)
 {
-	(void)nrfx_gpiote_pin_uninit(gpiote_get(pin), pin);
+	(void)nrfx_gpiote_pin_uninit(gpiote_get(lpu, pin), pin);
 }
 
 static void rdy_pin_suspend(struct bm_lpuarte *lpu)
 {
-	nrfx_gpiote_trigger_disable(gpiote_get(lpu->rdy_pin), lpu->rdy_pin);
+	nrfx_gpiote_trigger_disable(gpiote_get(lpu, lpu->rdy_pin), lpu->rdy_pin);
 }
 
-static nrfx_err_t rdy_pin_init(struct bm_lpuarte *lpu, nrfx_gpiote_pin_t pin)
+static int rdy_pin_init(struct bm_lpuarte *lpu, nrfx_gpiote_pin_t pin)
 {
-	nrfx_err_t nrfx_err;
+	int err;
 	nrf_gpio_pin_pull_t pull_config = NRF_GPIO_PIN_NOPULL;
 	nrfx_gpiote_handler_config_t handler_config = {
 		.handler = rdy_pin_handler,
@@ -139,31 +130,31 @@ static nrfx_err_t rdy_pin_init(struct bm_lpuarte *lpu, nrfx_gpiote_pin_t pin)
 		.p_handler_config = &handler_config
 	};
 
-	nrfx_err = nrfx_gpiote_channel_alloc(gpiote_get(pin), &lpu->rdy_ch);
-	if (nrfx_err != NRFX_SUCCESS) {
-		return nrfx_err;
+	err = nrfx_gpiote_channel_alloc(gpiote_get(lpu, pin), &lpu->rdy_ch);
+	if (err) {
+		return err;
 	}
 
-	nrfx_err = nrfx_gpiote_input_configure(gpiote_get(pin), pin, &input_config);
-	if (nrfx_err != NRFX_SUCCESS) {
-		return nrfx_err;
+	err = nrfx_gpiote_input_configure(gpiote_get(lpu, pin), pin, &input_config);
+	if (err) {
+		return err;
 	}
 
 	lpu->rdy_pin = pin;
 	nrf_gpio_pin_clear(pin);
 
-	return NRFX_SUCCESS;
+	return 0;
 }
 
 static void rdy_pin_uninit(struct bm_lpuarte *lpu, nrfx_gpiote_pin_t pin)
 {
-	(void)nrfx_gpiote_pin_uninit(gpiote_get(pin), pin);
+	(void)nrfx_gpiote_pin_uninit(gpiote_get(lpu, pin), pin);
 }
 
 /* Pin activated to detect high state (using SENSE). */
 static void rdy_pin_idle(struct bm_lpuarte *lpu)
 {
-	nrfx_err_t nrfx_err;
+	int err;
 	nrfx_gpiote_trigger_config_t trigger_config = {
 		.trigger = NRFX_GPIOTE_TRIGGER_HIGH
 	};
@@ -172,10 +163,10 @@ static void rdy_pin_idle(struct bm_lpuarte *lpu)
 		.p_trigger_config = &trigger_config,
 		.p_handler_config = NULL
 	};
-	const nrfx_gpiote_t *gpiote = gpiote_get(lpu->rdy_pin);
+	nrfx_gpiote_t *gpiote = gpiote_get(lpu, lpu->rdy_pin);
 
-	nrfx_err = nrfx_gpiote_input_configure(gpiote, lpu->rdy_pin, &input_config);
-	__ASSERT(nrfx_err == NRFX_SUCCESS, "Unexpected nrfx_err %#x", nrfx_err);
+	err = nrfx_gpiote_input_configure(gpiote, lpu->rdy_pin, &input_config);
+	__ASSERT(err == 0, "Unexpected err %d", err);
 
 	nrfx_gpiote_trigger_enable(gpiote, lpu->rdy_pin, true);
 }
@@ -189,7 +180,7 @@ static void rdy_pin_idle(struct bm_lpuarte *lpu)
  */
 static bool rdy_pin_blink(struct bm_lpuarte *lpu)
 {
-	nrfx_err_t nrfx_err;
+	int err;
 	nrfx_gpiote_trigger_config_t trigger_config = {
 		.trigger = NRFX_GPIOTE_TRIGGER_HITOLO,
 		.p_in_channel = &lpu->rdy_ch
@@ -201,14 +192,14 @@ static bool rdy_pin_blink(struct bm_lpuarte *lpu)
 	};
 	const nrf_gpio_pin_dir_t dir_in = NRF_GPIO_PIN_DIR_INPUT;
 	const nrf_gpio_pin_dir_t dir_out = NRF_GPIO_PIN_DIR_OUTPUT;
-	const nrfx_gpiote_t *gpiote = gpiote_get(lpu->rdy_pin);
+	nrfx_gpiote_t *gpiote = gpiote_get(lpu, lpu->rdy_pin);
 	bool ret;
 
 	/* Drive low for a moment */
 	nrf_gpio_reconfigure(lpu->rdy_pin, &dir_out, NULL, NULL, NULL, NULL);
 
-	nrfx_err = nrfx_gpiote_input_configure(gpiote, lpu->rdy_pin, &input_config);
-	__ASSERT(nrfx_err == NRFX_SUCCESS, "Unexpected nrfx_err %#x", nrfx_err);
+	err = nrfx_gpiote_input_configure(gpiote, lpu->rdy_pin, &input_config);
+	__ASSERT(err == 0, "Unexpected err %d", err);
 
 	nrfx_gpiote_trigger_enable(gpiote, lpu->rdy_pin, true);
 
@@ -241,14 +232,14 @@ static bool rdy_pin_blink(struct bm_lpuarte *lpu)
 /* Set response pin to idle and disable RX. */
 static void deactivate_rx(struct bm_lpuarte *lpu)
 {
-	nrfx_err_t nrfx_err;
+	int err;
 
 	/* abort rx */
 	LOG_DBG("RX: Deactivate");
 	lpu->rx_state = RX_TO_IDLE;
-	nrfx_err = nrfx_uarte_rx_abort(&lpu->uarte_inst, true, false);
-	if (nrfx_err != NRFX_SUCCESS) {
-		LOG_ERR("RX: Failed to disable, nrfx_err %#x", nrfx_err);
+	err = nrfx_uarte_rx_abort(lpu->uarte_inst, true, false);
+	if (err) {
+		LOG_ERR("RX: Failed to disable, err %d", err);
 	}
 
 	rdy_pin_idle(lpu);
@@ -260,14 +251,14 @@ static void deactivate_rx(struct bm_lpuarte *lpu)
  */
 static void activate_rx(struct bm_lpuarte *lpu)
 {
-	nrfx_err_t nrfx_err;
+	int err;
 
 	LOG_DBG("Activating uarte RX");
 
-	nrfx_err = nrfx_uarte_rx_enable(&lpu->uarte_inst,
+	err = nrfx_uarte_rx_enable(lpu->uarte_inst,
 				   NRFX_UARTE_RX_ENABLE_CONT | NRFX_UARTE_RX_ENABLE_STOP_ON_END);
-	if (nrfx_err != NRFX_SUCCESS) {
-		LOG_ERR("lpuarte rx enable failed, nrfx_err %#x", nrfx_err);
+	if (err) {
+		LOG_ERR("lpuarte rx enable failed, err %d", err);
 	}
 
 	lpu->rx_state = RX_ACTIVE;
@@ -312,7 +303,7 @@ static void req_pin_handler(nrfx_gpiote_pin_t pin, nrfx_gpiote_trigger_t trigger
 	ARG_UNUSED(pin);
 	const uint8_t *buf;
 	size_t len;
-	nrfx_err_t nrfx_err;
+	int err;
 	struct bm_lpuarte *lpu = context;
 
 	LOG_DBG("req_pin_evt");
@@ -334,9 +325,9 @@ static void req_pin_handler(nrfx_gpiote_pin_t pin, nrfx_gpiote_trigger_t trigger
 	buf = lpu->tx_buf;
 	len = lpu->tx_len;
 	NRFX_CRITICAL_SECTION_EXIT();
-	nrfx_err = nrfx_uarte_tx(&lpu->uarte_inst, buf, len, 0);
-	if (nrfx_err != NRFX_SUCCESS) {
-		LOG_ERR("TX: Not started, nrfx_err %#x", nrfx_err);
+	err = nrfx_uarte_tx(lpu->uarte_inst, buf, len, 0);
+	if (err) {
+		LOG_ERR("TX: Not started, err %d", err);
 		tx_complete(lpu);
 
 		const nrfx_uarte_event_t tx_done_aborted_evt = {
@@ -384,17 +375,17 @@ static void rdy_pin_handler(nrfx_gpiote_pin_t pin, nrfx_gpiote_trigger_t trigger
 
 static void tx_timeout(void *context)
 {
-	nrfx_err_t nrfx_err;
+	int err;
 	struct bm_lpuarte *lpu = context;
 	const uint8_t *buf = lpu->tx_buf;
 
 	LOG_WRN("TX abort timeout");
 	if (lpu->tx_active) {
-		nrfx_err = nrfx_uarte_tx_abort(&lpu->uarte_inst, true);
-		if (nrfx_err == NRFX_ERROR_INVALID_STATE) {
+		err = nrfx_uarte_tx_abort(lpu->uarte_inst, true);
+		if (err == -EINPROGRESS) {
 			LOG_DBG("No active transfer. Already finished?");
-		} else if (nrfx_err != NRFX_SUCCESS) {
-			__ASSERT(0, "Unexpected tx_abort, nrfx_err %#x", nrfx_err);
+		} else if (err) {
+			__ASSERT(false, "Unexpected tx_abort, err %d", err);
 		}
 		return;
 	}
@@ -444,59 +435,58 @@ static void nrfx_uarte_evt_handler(nrfx_uarte_event_t const *event, void *ctx)
 	lpu->callback(event, ctx);
 }
 
-nrfx_err_t bm_lpuarte_init(struct bm_lpuarte *lpu,
-			   struct bm_lpuarte_config *lpu_cfg,
-			   nrfx_uarte_event_handler_t  event_handler)
+int bm_lpuarte_init(struct bm_lpuarte *lpu, struct bm_lpuarte_config *lpu_cfg,
+		    nrfx_uarte_event_handler_t  event_handler)
 {
-	nrfx_err_t nrfx_err;
+	int err;
 
 	/* We use the uarte context for storing the pointer to the lpu instance */
 	lpu_cfg->uarte_cfg.p_context = lpu;
 
-	memcpy(&lpu->uarte_inst, &lpu_cfg->uarte_inst, sizeof(nrfx_uarte_t));
+	lpu->uarte_inst = lpu_cfg->uarte_inst;
+	lpu->gpiote_inst = lpu_cfg->gpiote_inst;
+	lpu->gpiote_inst_num = lpu_cfg->gpiote_inst_num;
 	lpu->req_pin = lpu_cfg->req_pin;
 	lpu->rdy_pin = lpu_cfg->rdy_pin;
 	lpu->rx_state = RX_OFF;
 
 	lpu->callback = event_handler;
 
-	if (!nrfx_gpiote_init_check(&gpiote20_instance)) {
-		nrfx_err = nrfx_gpiote_init(&gpiote20_instance, 0);
-		if (nrfx_err != NRFX_SUCCESS) {
-			LOG_ERR("Failed to initialize gpiote20, nrfx_err: %#x", nrfx_err);
-			return NRFX_ERROR_INVALID_STATE;
+	for (uint8_t i = 0; i < lpu->gpiote_inst_num; i++) {
+		nrfx_gpiote_t *inst = &lpu->gpiote_inst[i];
+
+		if (inst == NULL || nrfx_gpiote_init_check(inst)) {
+			continue;
+		}
+
+		err = nrfx_gpiote_init(inst, 0);
+		if (err) {
+			LOG_ERR("Failed to initialize gpiote %#x, err %d", (uint32_t)inst, err);
+			return err;
 		}
 	}
 
-	if (!nrfx_gpiote_init_check(&gpiote30_instance)) {
-		nrfx_err = nrfx_gpiote_init(&gpiote30_instance, 0);
-		if (nrfx_err != NRFX_SUCCESS) {
-			LOG_ERR("Failed to initialize gpiote30, nrfx_err: %#x", nrfx_err);
-			return NRFX_ERROR_INVALID_STATE;
-		}
+	err = req_pin_init(lpu, lpu_cfg->req_pin);
+	if (err) {
+		LOG_ERR("req pin init failed, err %d", err);
+		return err;
 	}
 
-	nrfx_err = req_pin_init(lpu, lpu_cfg->req_pin);
-	if (nrfx_err != NRFX_SUCCESS) {
-		LOG_ERR("req pin init failed, nrfx_err %#x", nrfx_err);
-		return nrfx_err;
+	err = rdy_pin_init(lpu, lpu_cfg->rdy_pin);
+	if (err) {
+		LOG_ERR("rdy pin init failed, err %d", err);
+		return err;
 	}
 
-	nrfx_err = rdy_pin_init(lpu, lpu_cfg->rdy_pin);
-	if (nrfx_err != NRFX_SUCCESS) {
-		LOG_ERR("rdy pin init failed, nrfx_err %#x", nrfx_err);
-		return nrfx_err;
+	(void)bm_timer_init(&lpu->tx_timer, BM_TIMER_MODE_SINGLE_SHOT, tx_timeout);
+
+	err = nrfx_uarte_init(lpu->uarte_inst, &lpu_cfg->uarte_cfg, nrfx_uarte_evt_handler);
+	if (err) {
+		LOG_ERR("Failed to initialize UARTE, err %d", err);
+		return err;
 	}
 
-	bm_timer_init(&lpu->tx_timer, BM_TIMER_MODE_SINGLE_SHOT, tx_timeout);
-
-	nrfx_err = nrfx_uarte_init(&lpu->uarte_inst, &lpu_cfg->uarte_cfg, nrfx_uarte_evt_handler);
-	if (nrfx_err != NRFX_SUCCESS) {
-		LOG_ERR("Failed to initialize UARTE, nrfx_err %#x", nrfx_err);
-		return nrfx_err;
-	}
-
-	return nrfx_err;
+	return err;
 }
 
 void bm_lpuarte_uninit(struct bm_lpuarte *lpu)
@@ -508,24 +498,23 @@ void bm_lpuarte_uninit(struct bm_lpuarte *lpu)
 		(void)bm_lpuarte_tx_abort(lpu, true);
 	}
 
-	nrfx_uarte_uninit(&lpu->uarte_inst);
+	nrfx_uarte_uninit(lpu->uarte_inst);
 	req_pin_uninit(lpu, lpu->req_pin);
 	rdy_pin_uninit(lpu, lpu->rdy_pin);
 
 	/* Don't uninitialize gpiote instances as they can be used by other drivers and libraries */
 }
 
-nrfx_err_t bm_lpuarte_tx(struct bm_lpuarte *lpu, uint8_t const *data, size_t len,
-			 int32_t timeout)
+int bm_lpuarte_tx(struct bm_lpuarte *lpu, uint8_t const *data, size_t len, int32_t timeout)
 {
 	if (!lpu || !data) {
-		return NRFX_ERROR_NULL;
+		return -EFAULT;
 	}
 	if (!len) {
-		return NRFX_ERROR_INVALID_LENGTH;
+		return -EINVAL;
 	}
 	if (!atomic_ptr_cas((atomic_ptr_t *)&lpu->tx_buf, NULL, (void *)data)) {
-		return NRFX_ERROR_BUSY;
+		return -EBUSY;
 	}
 
 	lpu->tx_len = len;
@@ -534,7 +523,7 @@ nrfx_err_t bm_lpuarte_tx(struct bm_lpuarte *lpu, uint8_t const *data, size_t len
 	/* Enable interrupt on pin going low. */
 	req_pin_arm(lpu);
 
-	return NRFX_SUCCESS;
+	return 0;
 }
 
 bool bm_lpuarte_tx_in_progress(struct bm_lpuarte *lpu)
@@ -542,16 +531,16 @@ bool bm_lpuarte_tx_in_progress(struct bm_lpuarte *lpu)
 	return (lpu->tx_buf != NULL);
 }
 
-nrfx_err_t bm_lpuarte_tx_abort(struct bm_lpuarte *lpu, bool sync)
+int bm_lpuarte_tx_abort(struct bm_lpuarte *lpu, bool sync)
 {
-	nrfx_err_t nrfx_err;
+	int err;
 	const uint8_t *buf = lpu->tx_buf;
 
 	if (!lpu) {
-		return NRFX_ERROR_NULL;
+		return -EFAULT;
 	}
 	if (!lpu->tx_buf) {
-		return NRFX_ERROR_INVALID_STATE;
+		return -EINPROGRESS;
 	}
 
 	bm_timer_stop(&lpu->tx_timer);
@@ -559,10 +548,10 @@ nrfx_err_t bm_lpuarte_tx_abort(struct bm_lpuarte *lpu, bool sync)
 	tx_complete(lpu);
 	NRFX_CRITICAL_SECTION_EXIT();
 
-	nrfx_err = nrfx_uarte_tx_abort(&lpu->uarte_inst, sync);
-	if (nrfx_err == NRFX_ERROR_INVALID_STATE && !sync) {
+	err = nrfx_uarte_tx_abort(lpu->uarte_inst, sync);
+	if (err == -EINPROGRESS && !sync) {
 		/* If abort is before TX is started we report ABORT from here. */
-		nrfx_err = NRFX_SUCCESS;
+		err = 0;
 
 		const nrfx_uarte_event_t tx_done_aborted_evt = {
 			.type = NRFX_UARTE_EVT_TX_DONE,
@@ -576,38 +565,36 @@ nrfx_err_t bm_lpuarte_tx_abort(struct bm_lpuarte *lpu, bool sync)
 		lpu->callback(&tx_done_aborted_evt, lpu);
 	}
 
-	return nrfx_err;
+	return err;
 }
 
-nrfx_err_t bm_lpuarte_rx_enable(struct bm_lpuarte *lpu)
+int bm_lpuarte_rx_enable(struct bm_lpuarte *lpu)
 {
 	if (!atomic_cas((atomic_t *)&lpu->rx_state, (atomic_val_t)RX_OFF, (atomic_val_t)RX_IDLE)) {
-		return NRFX_ERROR_BUSY;
+		return -EBUSY;
 	}
 
 	rdy_pin_idle(lpu);
 
-	return NRFX_SUCCESS;
+	return 0;
 }
 
-nrfx_err_t bm_lpuarte_rx_buffer_set(struct bm_lpuarte *lpu,
-				    uint8_t *data,
-				    size_t length)
+int bm_lpuarte_rx_buffer_set(struct bm_lpuarte *lpu, uint8_t *data, size_t length)
 {
-	return nrfx_uarte_rx_buffer_set(&lpu->uarte_inst, data, length);
+	return nrfx_uarte_rx_buffer_set(lpu->uarte_inst, data, length);
 }
 
-nrfx_err_t bm_lpuarte_rx_abort(struct bm_lpuarte *lpu, bool sync)
+int bm_lpuarte_rx_abort(struct bm_lpuarte *lpu, bool sync)
 {
-	nrfx_err_t nrfx_err;
+	int err;
 
 	if (lpu->rx_state == RX_OFF) {
-		return NRFX_ERROR_INVALID_STATE;
+		return -EINPROGRESS;
 	}
 
 	lpu->rx_state = RX_TO_OFF;
-	nrfx_err = nrfx_uarte_rx_abort(&lpu->uarte_inst, true, sync);
-	if (nrfx_err == NRFX_ERROR_INVALID_STATE || sync) {
+	err = nrfx_uarte_rx_abort(lpu->uarte_inst, true, sync);
+	if (err == -EINPROGRESS || sync) {
 		lpu->rx_state = RX_OFF;
 		rdy_pin_idle(lpu);
 
@@ -627,5 +614,5 @@ nrfx_err_t bm_lpuarte_rx_abort(struct bm_lpuarte *lpu, bool sync)
 		}
 	}
 
-	return nrfx_err;
+	return err;
 }

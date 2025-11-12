@@ -22,7 +22,7 @@ LOG_MODULE_REGISTER(uart_mcumgr, CONFIG_MCUMGR_TRANSPORT_LOG_LEVEL);
 static char uarte_rx_buf[CONFIG_MCUMGR_TRANSPORT_BM_UART_RX_BUF_SIZE];
 
 /** MCUmgr UARTE instance */
-static const nrfx_uarte_t uarte_inst = NRFX_UARTE_INSTANCE(BOARD_APP_UARTE_INST);
+static nrfx_uarte_t uarte_inst = NRFX_UARTE_INSTANCE(BOARD_APP_UARTE_INST);
 
 /** Callback to execute when a valid fragment has been received. */
 static uart_mcumgr_recv_fn *uart_mcumgr_recv_cb;
@@ -142,12 +142,12 @@ static void uarte_event_handler(nrfx_uarte_event_t const *event, void *ctx)
 		}
 
 		/* Provide new UART RX buffer. */
-		nrfx_uarte_rx(&uarte_inst, uarte_rx_buf, 1);
+		(void)nrfx_uarte_rx_enable(&uarte_inst, 0);
 		break;
 	}
 	case NRFX_UARTE_EVT_RX_BUF_REQUEST:
 	{
-		nrfx_uarte_rx_buffer_set(&uarte_inst, uarte_rx_buf, 1);
+		(void)nrfx_uarte_rx_buffer_set(&uarte_inst, uarte_rx_buf, 1);
 		break;
 	}
 	case NRFX_UARTE_EVT_ERROR:
@@ -169,7 +169,7 @@ static int uart_mcumgr_send_raw(const void *data, int len)
 {
 	if ((uint32_t)data >= CONFIG_SRAM_BASE_ADDRESS) {
 		/* Data is in RAM and can be sent out directly */
-		nrfx_uarte_tx(&uarte_inst, data, len, NRFX_UARTE_TX_BLOCKING);
+		(void)nrfx_uarte_tx(&uarte_inst, data, len, NRFX_UARTE_TX_BLOCKING);
 	} else {
 		/* Data is in NVM or another non-RAM source, send byte-by-byte using RAM buffer */
 		int pos = 0;
@@ -177,8 +177,8 @@ static int uart_mcumgr_send_raw(const void *data, int len)
 
 		while (pos < len) {
 			tmp_buf = ((uint8_t *)data)[pos];
-			nrfx_uarte_tx(&uarte_inst, &tmp_buf, sizeof(tmp_buf),
-				      NRFX_UARTE_TX_BLOCKING);
+			(void)nrfx_uarte_tx(&uarte_inst, &tmp_buf, sizeof(tmp_buf),
+					    NRFX_UARTE_TX_BLOCKING);
 			++pos;
 		}
 	}
@@ -198,7 +198,7 @@ void uart_mcumgr_register(uart_mcumgr_recv_fn *cb)
 
 ISR_DIRECT_DECLARE(bm_uart_mcumgr_direct_isr)
 {
-	NRFX_UARTE_INST_HANDLER_GET(BOARD_APP_UARTE_INST)();
+	nrfx_uarte_irq_handler(&uarte_inst);
 	return 0;
 }
 
@@ -207,7 +207,7 @@ ISR_DIRECT_DECLARE(bm_uart_mcumgr_direct_isr)
  */
 static int bm_uarte_init(void)
 {
-	nrfx_err_t nrfx_err;
+	int err;
 
 	nrfx_uarte_config_t uarte_config = NRFX_UARTE_DEFAULT_CONFIG(BOARD_APP_UARTE_PIN_TX,
 								     BOARD_APP_UARTE_PIN_RX);
@@ -225,26 +225,26 @@ static int bm_uarte_init(void)
 	uarte_config.interrupt_priority = CONFIG_MCUMGR_TRANSPORT_BM_UART_UARTE_IRQ_PRIO;
 
 	/** We need to connect the IRQ ourselves. */
-	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(BOARD_APP_UARTE_INST)),
+	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(BOARD_APP_UARTE_INST),
 			   CONFIG_MCUMGR_TRANSPORT_BM_UART_UARTE_IRQ_PRIO,
 			   bm_uart_mcumgr_direct_isr, 0);
 
-	irq_enable(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(BOARD_APP_UARTE_INST)));
+	irq_enable(NRFX_IRQ_NUMBER_GET(BOARD_APP_UARTE_INST));
 
-	nrfx_err = nrfx_uarte_init(&uarte_inst, &uarte_config, uarte_event_handler);
+	err = nrfx_uarte_init(&uarte_inst, &uarte_config, uarte_event_handler);
 
-	if (nrfx_err != NRFX_SUCCESS) {
-		LOG_ERR("Failed to initialize UART, nrfx_err %#x", nrfx_err);
-		return nrfx_err;
+	if (err) {
+		LOG_ERR("Failed to initialize UART, err %d", err);
+		return err;
 	}
 
-	nrfx_err = nrfx_uarte_rx(&uarte_inst, uarte_rx_buf, 1);
+	err = nrfx_uarte_rx_enable(&uarte_inst, 0);
 
-	if (nrfx_err != NRFX_SUCCESS) {
-		LOG_ERR("UART RX failed, nrfx_err %#x", nrfx_err);
+	if (err) {
+		LOG_ERR("UART RX failed, err %d", err);
 	}
 
-	return nrfx_err;
+	return err;
 }
 
 SYS_INIT(bm_uarte_init, APPLICATION, 0);

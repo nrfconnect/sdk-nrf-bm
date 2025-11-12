@@ -38,7 +38,6 @@ static void event_send(const struct bm_storage *storage, struct bm_storage_evt *
 int bm_storage_backend_init(struct bm_storage *storage)
 {
 	int err;
-	nrfx_err_t nrfx_err;
 
 	/* If it's already initialized, return early successfully.
 	 * This is to support more than one client initialization.
@@ -55,12 +54,9 @@ int bm_storage_backend_init(struct bm_storage *storage)
 		return -EBUSY;
 	}
 
-	nrfx_err = nrfx_rramc_init(&rramc_config, NULL);
-	if (nrfx_err != NRFX_SUCCESS) {
-		err = -EIO;
-	} else {
+	err = nrfx_rramc_init(&rramc_config, NULL);
+	if (err == 0) {
 		state.is_rramc_init = true;
-		err = 0;
 	}
 
 	atomic_set(&state.operation_ongoing, 0);
@@ -75,7 +71,7 @@ int bm_storage_backend_read(const struct bm_storage *storage, uint32_t src, void
 		return -EPERM;
 	}
 
-	nrfx_rramc_buffer_read(dest, src, len);
+	(void)nrfx_rramc_buffer_read(dest, src, len);
 
 	return 0;
 }
