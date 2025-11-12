@@ -29,7 +29,6 @@ target_sources(app PRIVATE src/unity_test.c)
 target_include_directories(app PRIVATE
   ${ZEPHYR_NRF_BM_MODULE_DIR}/include
   ${SOFTDEVICE_INCLUDE_DIR}
-  ${ZEPHYR_HAL_NORDIC_MODULE_DIR}/nrfx/mdk
 )
 
 target_sources(app PRIVATE
