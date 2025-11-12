@@ -351,11 +351,13 @@ uint32_t pds_init(void)
 		return NRF_ERROR_INTERNAL;
 	}
 
-	fs.offset = PEER_MANAGER_PARTITION_OFFSET;
-	fs.sector_size = CONFIG_PM_BM_ZMS_SECTOR_SIZE;
-	fs.sector_count = (PEER_MANAGER_PARTITION_SIZE / CONFIG_PM_BM_ZMS_SECTOR_SIZE);
+	struct bm_zms_fs_config config = {
+		.offset = PEER_MANAGER_PARTITION_OFFSET,
+		.sector_size = CONFIG_PM_BM_ZMS_SECTOR_SIZE,
+		.sector_count = (PEER_MANAGER_PARTITION_SIZE / CONFIG_PM_BM_ZMS_SECTOR_SIZE),
+	};
 
-	err = bm_zms_mount(&fs);
+	err = bm_zms_mount(&fs, &config);
 	if (err) {
 		LOG_ERR("Could not initialize NVM storage. bm_zms_mount() returned %d.", err);
 		return NRF_ERROR_RESOURCES;

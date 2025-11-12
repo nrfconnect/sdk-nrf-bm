@@ -2010,28 +2010,32 @@ end:
 	return rc;
 }
 
-int bm_zms_mount(struct bm_zms_fs *fs)
+int bm_zms_mount(struct bm_zms_fs *fs, const struct bm_zms_fs_config *config)
 {
 	int ret;
 	uint32_t rc;
 	size_t write_block_size;
 	zms_op_t cur_init_op;
 
-	if (!fs) {
+	if (!fs || !config) {
 		return -EFAULT;
 	}
+
+	fs->offset = config->offset;
+	fs->sector_size = config->sector_size;
+	fs->sector_count = config->sector_count;
 
 	/* Initialize BM Storage */
 
 	memset(&fs->zms_bm_storage, 0, sizeof(struct bm_storage));
 
-	struct bm_storage_config config = {
+	struct bm_storage_config conf = {
 		.evt_handler = zms_event_handler,
 		.start_addr = fs->offset,
 		.end_addr = fs->offset + fs->sector_size * fs->sector_count,
 	};
 
-	ret = bm_storage_init(&fs->zms_bm_storage, &config);
+	ret = bm_storage_init(&fs->zms_bm_storage, &conf);
 	if (ret) {
 		LOG_ERR("bm_storage_init() failed, ret %d", ret);
 		return -EIO;
