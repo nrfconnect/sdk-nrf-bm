@@ -93,7 +93,9 @@
 /sysbuild/                                @nrfconnect/ncs-co-build-system
 
 # Tests
+/tests/lib/                               @nrfconnect/ncs-bm
 /tests/lib/bluetooth/ble_adv/             @nrfconnect/ncs-bm-test
+/tests/lib/bluetooth/ble_conn_params/     @nrfconnect/ncs-bm
 /tests/lib/bluetooth/ble_conn_state/      @nrfconnect/ncs-bm
 /tests/lib/bluetooth/ble_qwr/             @nrfconnect/ncs-bm
 /tests/lib/bluetooth/ble_racp/            @nrfconnect/ncs-bm
