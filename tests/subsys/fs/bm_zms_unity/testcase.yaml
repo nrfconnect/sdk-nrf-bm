@@ -1,0 +1,4 @@
+tests:
+  lib.bm_zms_unity:
+    platform_allow: native_sim
+    tags: unittest

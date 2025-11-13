@@ -27,6 +27,10 @@
 #define NRFX_CRITICAL_SECTION_EXIT(...)
 #endif
 
+#if CONFIG_UNITY
+#define __ALIGN(x) __aligned(x)
+#endif
+
 LOG_MODULE_REGISTER(bm_zms, CONFIG_BM_ZMS_LOG_LEVEL);
 
 static zms_op_t cur_op; /* Current bm_zms operation. */
