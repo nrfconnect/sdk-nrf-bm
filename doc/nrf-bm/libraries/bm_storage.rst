@@ -103,7 +103,7 @@ Each event includes the result code, information about the address range of the 
 Sample
 ******
 
-The usage of this library is demonstrated in the :ref:`storage_sample` sample.
+The usage of this library is demonstrated in the :ref:`bm_storage_sample` sample.
 
 Dependencies
 ************

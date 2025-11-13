@@ -4,12 +4,12 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-menu "Storage sample"
+menu "Bare Metal Storage sample"
 
-module=STORAGE_SAMPLE
-module-str=Storage Sample
+module=BM_STORAGE_SAMPLE
+module-str=Bare Metal Storage Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
-endmenu # "Storage sample"
+endmenu # "Bare Metal Storage sample"
 
 source "Kconfig.zephyr"
