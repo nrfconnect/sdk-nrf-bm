@@ -71,7 +71,7 @@ Kconfig fragments
 *****************
 
 By default, the sample uses the SoftDevice storage backend.
-To build the sample for the RRAM backend, you can use the :file:`storage-rram.conf` Kconfig fragment.
+To build the sample for the RRAM backend, you can use the :file:`backend-rram.conf` Kconfig fragment.
 To configure it for this sample, follow the steps outlined in the `Configuring and building the sample`_ section.
 
 Building and running
