@@ -98,7 +98,7 @@
 /tests/lib/bluetooth/ble_racp/            @nrfconnect/ncs-bm
 /tests/lib/bluetooth/ble_radio_notif/     @nrfconnect/ncs-bm
 /tests/subsys/bluetooth/services/         @nrfconnect/ncs-bm @nrfconnect/ncs-bm-test
-/tests/subsys/fs/bm_zms/                  @nrfconnect/ncs-bm @rghaddab
+/tests/subsys/fs/                         @nrfconnect/ncs-bm @rghaddab
 /tests/subsys/kmu/                        @nrfconnect/ncs-eris
 /tests/subsys/storage/bm_storage/         @nrfconnect/ncs-bm
 

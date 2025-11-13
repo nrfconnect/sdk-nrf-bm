@@ -59,5 +59,5 @@ Apache-2.0: |
   ^nrf-bm/subsys/mgmt/mcumgr/transport/src/smp_uart.c
   ^nrf-bm/subsys/fs/bm_zms/
   ^nrf-bm/include/bm/fs/bm_zms.h
-  ^nrf-bm/tests/subsys/fs/bm_zms/
+  ^nrf-bm/tests/subsys/fs/bm_zms_ztest/
   ^nrf-bm/.ruff.toml
