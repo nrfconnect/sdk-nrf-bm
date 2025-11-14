@@ -4,8 +4,10 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
- /* Override NCS default. */
+/* Override NCS default. */
 #include "bm_nrf54l15dk_nrf54l051015_peripherals.dtsi"
+
+#include "bm_nrf54l15dk_nrf54l051015_oscillator.dtsi"
 
 /delete-node/ &cpuapp_sram;
 
@@ -56,11 +58,4 @@
 		status = "okay";
 		reg = <0x0 0x1>;
 	};
-};
-
-&grtc {
-	owned-channels = <0 1 2 3 4 5 6 7 8 9 10 11>;
-	/* Channels 7-11 are reserved for SoftDevice. */
-	child-owned-channels = <7 8 9 10 11>;
-	status = "okay";
 };
