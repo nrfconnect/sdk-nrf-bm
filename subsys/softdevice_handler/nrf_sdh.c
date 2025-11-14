@@ -14,10 +14,24 @@
 
 LOG_MODULE_REGISTER(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
 
-#if ((CONFIG_NRF_SDH_CLOCK_LF_SRC == NRF_CLOCK_LF_SRC_RC) &&                                       \
-	(CONFIG_NRF_SDH_CLOCK_LF_ACCURACY != NRF_CLOCK_LF_ACCURACY_500_PPM))
-#warning Please select NRF_CLOCK_LF_ACCURACY_500_PPM when using NRF_CLOCK_LF_SRC_RC
+#if (CONFIG_NRF_SDH_CLOCK_LF_SRC == NRF_CLOCK_LF_SRC_XTAL)
+
+BUILD_ASSERT(CONFIG_NRF_SDH_CLOCK_LF_RC_CTIV == 0, "rc_ctiv must be 0 when using LFXO");
+BUILD_ASSERT(CONFIG_NRF_SDH_CLOCK_LF_RC_TEMP_CTIV == 0, "rc_temp_ctiv must be 0 when usings LFXO");
+BUILD_ASSERT(CONFIG_NRF_SDH_CLOCK_LF_ACCURACY == 0, "accuracy must be 0 when using LFXO");
+
+#if defined(CONFIG_NRF_GRTC_START_SYSCOUNTER) && !defined(CONFIG_NRF_GRTC_TIMER_SOURCE_LFXO)
+#warning Please select CONFIG_NRF_GRTC_TIMER_SOURCE_LFXO when using CONFIG_NRF_SDH_CLOCK_LF_SRC_XO
 #endif
+
+#elif (CONFIG_NRF_SDH_CLOCK_LF_SRC == NRF_CLOCK_LF_SRC_RC)
+
+#if defined(CONFIG_NRF_GRTC_START_SYSCOUNTER) && defined(CONFIG_NRF_GRTC_TIMER_SOURCE_LFXO)
+#warning Please select CONFIG_NRF_GRTC_TIMER_SOURCE_LFLPRC or \
+	 CONFIG_NRF_GRTC_TIMER_SOURCE_SYSTEM_LFCLK when using CONFIG_NRF_SDH_CLOCK_LF_SRC_RC
+#endif
+
+#endif /* CONFIG_NRF_SDH_CLOCK_LF_SRC */
 
 static atomic_t sdh_enabled;	/* Whether the SoftDevice is enabled. */
 static atomic_t sdh_suspended;	/* Whether this module is suspended. */
