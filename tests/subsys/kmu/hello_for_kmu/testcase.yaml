@@ -29,6 +29,7 @@ tests:
     tags:
       - pytest
       - kmu
+    timeout: 300
     harness: pytest
     harness_config:
       pytest_root:
@@ -47,7 +48,7 @@ tests:
     tags:
       - pytest
       - kmu
-    timeout: 180
+    timeout: 600
     harness: pytest
     harness_config:
       pytest_root:
@@ -71,12 +72,14 @@ tests:
     tags:
       - pytest
       - kmu
-    timeout: 180
+    timeout: 600
     harness: pytest
     harness_config:
       pytest_root:
         - "../pytest/test_kmu_key_revocation.py::test_if_kmu_keys_revocation_with_two_slots"
         - "../pytest/test_kmu_key_revocation.py::test_if_kmu_keys_revocation_with_two_slots_third_key_valid"
+        - "../pytest/test_kmu_key_revocation.py::test_boot_failure_when_kmu_key_is_missing"
+        - "../pytest/test_kmu_key_revocation.py::test_dut_does_not_boot_when_flashed_with_image_signed_with_wrong_key"
     extra_args:
       - SB_CONFIG_BM_BOOTLOADER_MCUBOOT_GENERATE_DEFAULT_KMU_KEYFILE=n
       - mcuboot_CONFIG_BOOT_KEYS_REVOCATION=y
