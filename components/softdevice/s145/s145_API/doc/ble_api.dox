@@ -503,7 +503,7 @@
  * APP rbox APP [label = "Keys stored in keyset"];
  * @endmsc
  *
- * @defgroup BLE_GAP_PERIPH_BONDING_STATIC_PK_MSC Bonding: Passkey Entry with static passkey
+ * @defgroup BLE_GAP_PERIPH_BONDING_APP_PK_MSC Bonding: Passkey Entry with application-provided passkey
  * @msc
  * hscale = "2";
  * APP,SD,CENTRAL;
