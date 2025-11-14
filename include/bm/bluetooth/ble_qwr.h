@@ -67,6 +67,7 @@ struct ble_qwr_evt {
 	union {
 		/** @ref BLE_QWR_EVT_ERROR event data. */
 		struct {
+			/** Error reason. */
 			uint32_t reason;
 		} error;
 		/** @ref BLE_QWR_EVT_EXECUTE_WRITE event data. */

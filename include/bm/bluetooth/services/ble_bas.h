@@ -42,7 +42,11 @@ enum ble_bas_evt_type {
 	/**
 	 * @brief Battery level notification disabled.
 	 */
-	BLE_BAS_EVT_NOTIFICATION_DISABLED
+	BLE_BAS_EVT_NOTIFICATION_DISABLED,
+	/**
+	 * @brief Error event.
+	 */
+	BLE_BAS_EVT_ERROR,
 };
 
 /**
@@ -57,6 +61,13 @@ struct  ble_bas_evt {
 	 * @brief Connection handle for which the event applies.
 	 */
 	uint16_t conn_handle;
+	union {
+		/** @ref BLE_BAS_EVT_ERROR event data. */
+		struct {
+			/** Error reason. */
+			uint32_t reason;
+		} error;
+	};
 };
 
 /* Forward declaration */

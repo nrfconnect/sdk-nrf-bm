@@ -164,7 +164,9 @@ static void on_disconnect(struct ble_hrs *hrs, const ble_gap_evt_t *gap_evt)
 
 static void on_write(struct ble_hrs *hrs, const ble_gatts_evt_t *gatts_evt)
 {
-	struct ble_hrs_evt hrs_evt;
+	struct ble_hrs_evt hrs_evt = {
+		.conn_handle = gatts_evt->conn_handle,
+	};
 
 	if (!hrs->evt_handler) {
 		return;
