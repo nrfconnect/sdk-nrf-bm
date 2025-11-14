@@ -50,7 +50,7 @@ static uint8_t encode_feature_location_type(uint8_t *buf_out, struct ble_cgms_fe
 }
 
 /* Add the glucose feature characteristic. */
-static uint32_t feature_char_add(struct ble_cgms *cgms)
+static uint32_t feature_char_add(struct ble_cgms *cgms, const struct ble_cgms_config *cgms_cfg)
 {
 	uint8_t init_value_len;
 	uint8_t encoded_initial_feature[BLE_CGMS_FEATURE_LEN];
@@ -68,6 +68,7 @@ static uint32_t feature_char_add(struct ble_cgms *cgms)
 	};
 	ble_gatts_attr_md_t attr_md = {
 		.vloc = BLE_GATTS_VLOC_STACK,
+		.read_perm = cgms_cfg->sec_mode.feature_char.read,
 	};
 	ble_gatts_attr_t attr_char_value = {
 		.p_uuid = &char_uuid,
@@ -77,7 +78,6 @@ static uint32_t feature_char_add(struct ble_cgms *cgms)
 		.max_len = init_value_len,
 	};
 
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.read_perm);
 	BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&attr_md.write_perm);
 
 	return sd_ble_gatts_characteristic_add(cgms->service_handle, &char_md, &attr_char_value,
@@ -99,7 +99,7 @@ static uint8_t encode_status(uint8_t *buf_out, struct ble_cgms *cgms)
 }
 
 /* Add the CGMS status characteristic. */
-static uint32_t status_char_add(struct ble_cgms *cgms)
+static uint32_t status_char_add(struct ble_cgms *cgms, const struct ble_cgms_config *cgms_cfg)
 {
 	uint8_t init_value_len;
 	uint8_t encoded_initial_status[BLE_CGMS_STATUS_LEN];
@@ -118,6 +118,7 @@ static uint32_t status_char_add(struct ble_cgms *cgms)
 	ble_gatts_attr_md_t attr_md = {
 		.vloc = BLE_GATTS_VLOC_STACK,
 		.vlen = true,
+		.read_perm = cgms_cfg->sec_mode.status_char.read,
 	};
 	ble_gatts_attr_t attr_char_value = {
 		.p_uuid = &char_uuid,
@@ -127,7 +128,6 @@ static uint32_t status_char_add(struct ble_cgms *cgms)
 		.max_len = init_value_len,
 	};
 
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.read_perm);
 	BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&attr_md.write_perm);
 
 	/* Add Nordic UART Service characteristic RX declaration. */
@@ -136,7 +136,7 @@ static uint32_t status_char_add(struct ble_cgms *cgms)
 }
 
 /* Add the Session Run Time characteristic. */
-static uint32_t srt_char_add(struct ble_cgms *cgms)
+static uint32_t srt_char_add(struct ble_cgms *cgms, const struct ble_cgms_config *cgms_cfg)
 {
 	uint8_t len = 0;
 	uint8_t encoded_initial_srt[BLE_CGMS_SRT_LEN];
@@ -156,6 +156,7 @@ static uint32_t srt_char_add(struct ble_cgms *cgms)
 	ble_gatts_attr_md_t attr_md = {
 		.vloc = BLE_GATTS_VLOC_STACK,
 		.vlen = true,
+		.read_perm = cgms_cfg->sec_mode.srt_char.read,
 	};
 	ble_gatts_attr_t attr_char_value = {
 		.p_uuid = &char_uuid,
@@ -165,17 +166,15 @@ static uint32_t srt_char_add(struct ble_cgms *cgms)
 		.max_len = BLE_CGMS_SRT_LEN,
 	};
 
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.read_perm);
-
 	BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&attr_md.write_perm);
 
 	return sd_ble_gatts_characteristic_add(cgms->service_handle, &char_md, &attr_char_value,
 					       &cgms->char_handles.srt);
 }
 
-uint32_t ble_cgms_init(struct ble_cgms *cgms, const struct ble_cgms_config *cgms_init)
+uint32_t ble_cgms_init(struct ble_cgms *cgms, const struct ble_cgms_config *cgms_cfg)
 {
-	if (!cgms || !cgms_init || !cgms_init->evt_handler || !cgms_init->gatt_queue) {
+	if (!cgms || !cgms_cfg || !cgms_cfg->evt_handler || !cgms_cfg->gatt_queue) {
 		return NRF_ERROR_NULL;
 	}
 
@@ -194,11 +193,11 @@ uint32_t ble_cgms_init(struct ble_cgms *cgms, const struct ble_cgms_config *cgms
 	}
 
 	/* Initialize service structure. */
-	cgms->evt_handler = cgms_init->evt_handler;
-	cgms->gatt_queue = cgms_init->gatt_queue;
-	cgms->feature = cgms_init->feature;
-	cgms->sensor_status = cgms_init->initial_sensor_status;
-	cgms->session_run_time = cgms_init->initial_run_time;
+	cgms->evt_handler = cgms_cfg->evt_handler;
+	cgms->gatt_queue = cgms_cfg->gatt_queue;
+	cgms->feature = cgms_cfg->feature;
+	cgms->sensor_status = cgms_cfg->initial_sensor_status;
+	cgms->session_run_time = cgms_cfg->initial_run_time;
 	cgms->is_session_started = false;
 	cgms->nb_run_session = 0;
 	cgms->conn_handle = BLE_CONN_HANDLE_INVALID;
@@ -216,49 +215,49 @@ uint32_t ble_cgms_init(struct ble_cgms *cgms, const struct ble_cgms_config *cgms
 	}
 
 	/* Add CGM Measurement characteristic. */
-	nrf_err = cgms_meas_char_add(cgms);
+	nrf_err = cgms_meas_char_add(cgms, cgms_cfg);
 	if (nrf_err) {
 		LOG_ERR("Failed to add CGMS measurement characteristic, nrf_error %#x", nrf_err);
 		return nrf_err;
 	}
 
 	/* Add CGM Feature characteristic. */
-	nrf_err = feature_char_add(cgms);
+	nrf_err = feature_char_add(cgms, cgms_cfg);
 	if (nrf_err) {
 		LOG_ERR("Failed to add CGMS feature characteristic, nrf_error %#x", nrf_err);
 		return nrf_err;
 	}
 
 	/* Add CGM Status characteristic. */
-	nrf_err = status_char_add(cgms);
+	nrf_err = status_char_add(cgms, cgms_cfg);
 	if (nrf_err) {
 		LOG_ERR("Failed to add CGMS status characteristic, nrf_error %#x", nrf_err);
 		return nrf_err;
 	}
 
 	/* Add CGM Session Start Time characteristic. */
-	nrf_err = cgms_sst_char_add(cgms);
+	nrf_err = cgms_sst_char_add(cgms, cgms_cfg);
 	if (nrf_err) {
 		LOG_ERR("Failed to add CGMS SST characteristic, nrf_error %#x", nrf_err);
 		return nrf_err;
 	}
 
 	/* Add CGM Session Run Time characteristic. */
-	nrf_err = srt_char_add(cgms);
+	nrf_err = srt_char_add(cgms, cgms_cfg);
 	if (nrf_err) {
 		LOG_ERR("Failed to add CGMS SRT characteristic, nrf_error %#x", nrf_err);
 		return nrf_err;
 	}
 
 	/* Add CGM Record Access Control Point characteristic. */
-	nrf_err = cgms_racp_char_add(cgms);
+	nrf_err = cgms_racp_char_add(cgms, cgms_cfg);
 	if (nrf_err) {
 		LOG_ERR("Failed to add CGMS RACP characteristic, nrf_error %#x", nrf_err);
 		return nrf_err;
 	}
 
 	/* Add CGM Specific Ops Control Point characteristic. */
-	nrf_err = cgms_socp_char_add(cgms);
+	nrf_err = cgms_socp_char_add(cgms, cgms_cfg);
 	if (nrf_err) {
 		LOG_ERR("Failed to add CGMS SOCP characteristic, nrf_error %#x", nrf_err);
 		return nrf_err;

@@ -47,7 +47,7 @@ struct ble_cgms_sst {
  * @return If functions from other modules return errors to this function,
  *         the @ref nrf_error is propagated.
  */
-uint32_t cgms_sst_char_add(struct ble_cgms *cgms);
+uint32_t cgms_sst_char_add(struct ble_cgms *cgms, const struct ble_cgms_config *cgms_cfg);
 
 /**
  * @brief Set the Session Start Time characteristic value.

@@ -299,6 +299,7 @@ uint16_t qwr_evt_handler(struct ble_qwr *qwr, const struct ble_qwr_evt *evt)
 static uint32_t services_init(void)
 {
 	uint32_t nrf_err;
+
 	struct ble_cgms_config cgms_config = {
 		.evt_handler = cgms_evt_handler,
 		.gatt_queue = &ble_gatt_gueue,
@@ -312,22 +313,24 @@ static uint32_t services_init(void)
 			.type = BLE_CGMS_MEAS_TYPE_VEN_BLOOD,
 			.sample_location = BLE_CGMS_MEAS_LOC_AST,
 		},
+		.sec_mode = BLE_CGMS_CONFIG_SEC_MODE_KCONFIG,
 	};
 	struct ble_bas_config bas_config = {
 		.evt_handler = NULL,
 		.can_notify = true,
 		.report_ref = NULL,
 		.battery_level = 100,
+		.sec_mode = BLE_BAS_CONFIG_SEC_MODE_DEFAULT,
 	};
-
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&bas_config.batt_rd_sec);
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&bas_config.report_ref_rd_sec);
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&bas_config.cccd_wr_sec);
 
 	struct ble_qwr_config qwr_config = {
 		.mem_buffer.len = CONFIG_QWR_MEM_BUFF_SIZE,
 		.mem_buffer.p_mem = qwr_mem,
 		.evt_handler = qwr_evt_handler,
+	};
+
+	struct ble_dis_config dis_config = {
+		.sec_mode = BLE_DIS_CONFIG_SEC_MODE_DEFAULT,
 	};
 
 	nrf_err = ble_qwr_init(&ble_qwr, &qwr_config);
@@ -356,7 +359,7 @@ static uint32_t services_init(void)
 	}
 
 	/* Initialize Device Information Service. */
-	nrf_err = ble_dis_init();
+	nrf_err = ble_dis_init(&dis_config);
 	if (nrf_err) {
 		LOG_ERR("Failed to initialize DIS service, nrf_error %#x", nrf_err);
 		return nrf_err;
