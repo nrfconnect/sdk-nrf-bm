@@ -42,9 +42,15 @@ SoftDevice Handler
   * The :c:func:`nrf_sdh_soc_evt_to_str` function to stringify a SoC event.
   * The :c:func:`nrf_sdh_observer_ready` function to ready an observer for a SoftDevice state change.
 
-* Changed:
+* Updated:
 
   * The return type of the :c:type:`nrf_sdh_state_evt_handler_t` event handler to ``int``.
+  * The LF clock source selection with a choice and tied it to the choice of GRTC timer source :kconfig:option:`CONFIG_NRF_GRTC_TIMER_SOURCE`.
+    The default GRTC timer source of the ``bm_nrf54l15dk`` board target is LFXO (:kconfig:option:`CONFIG_NRF_GRTC_TIMER_SOURCE_LFXO`).
+    Select the :kconfig:option:`CONFIG_NRF_GRTC_TIMER_SOURCE_LFLPRC` Kconfig option if it is desired to run the GRTC from RC.
+  * The :kconfig:option:`CONFIG_NRF_SDH_CLOCK_LF_RC_CTIV` and :kconfig:option:`CONFIG_NRF_SDH_CLOCK_LF_RC_TEMP_CTIV` Kconfig options with ranges, default values, help text, and conditional prompt.
+    These Kconfig options are zero if the LF clock source is XO and are only user-configurable when the LF clock source is RC.
+  * The :kconfig:option:`CONFIG_NRF_SDH_CLOCK_LF_ACCURACY` Kconfig option with a Kconfig choice to limit the selection to valid values.
 
 * Removed:
 

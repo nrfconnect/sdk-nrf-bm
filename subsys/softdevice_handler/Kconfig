@@ -45,20 +45,105 @@ config NRF_SDH_DISPATCH_MODEL
 
 menu "Clock configuration"
 
+choice
+	prompt "Low-frequency clock source"
+	default NRF_SDH_CLOCK_LF_SRC_XO
+	default NRF_SDH_CLOCK_LF_SRC_RC
+
+config NRF_SDH_CLOCK_LF_SRC_RC
+	depends on NRF_GRTC_TIMER_SOURCE_LFLPRC
+	bool "LFRC"
+
+config NRF_SDH_CLOCK_LF_SRC_XO
+	bool "LFXO"
+	depends on $(dt_nodelabel_enabled,lfxo)
+	depends on NRF_GRTC_TIMER_SOURCE_LFXO
+endchoice
+
 config NRF_SDH_CLOCK_LF_SRC
-	int "LF Clock"
-	default 1
+	int
+	default 0 if NRF_SDH_CLOCK_LF_SRC_RC
+	default 1 if NRF_SDH_CLOCK_LF_SRC_XO
 
 config NRF_SDH_CLOCK_LF_RC_CTIV
-	int "Calibration timer interval"
+	int "Calibration timer interval (1/4 second units)" if NRF_SDH_CLOCK_LF_SRC_RC
+	range 1 32 if NRF_SDH_CLOCK_LF_SRC_RC
+	default 16 if NRF_SDH_CLOCK_LF_SRC_RC
 	default 0
+	help
+	  To avoid excessive clock drift, 0.5 degrees Celsius is the
+	  maximum temperature change allowed in one calibration timer
+	  interval. The interval should be selected to ensure this.
 
 config NRF_SDH_CLOCK_LF_RC_TEMP_CTIV
-	int "Calibration timer interval"
+	int "How often to calibrate if the temperature hasn't changed" if NRF_SDH_CLOCK_LF_SRC_RC
+	range 0 33 if NRF_SDH_CLOCK_LF_SRC_RC
+	default 2 if NRF_SDH_CLOCK_LF_SRC_RC
 	default 0
+	help
+	  How often (in number of calibration intervals) the RC oscillator
+	  shall be calibrated if the temperature hasn't changed.
+	  0: Always calibrate even if the temperature hasn't changed.
+	  1: Invalid
+	  2-33: Check the temperature and only calibrate if it has changed.
+	        However, always calibrate when this many intervals have passed.
+
+choice
+	prompt "Clock accuracy"
+	default NRF_SDH_CLOCK_LF_ACCURACY_500_PPM if NRF_SDH_CLOCK_LF_SRC_RC
+	default NRF_SDH_CLOCK_LF_ACCURACY_250_PPM
+
+config NRF_SDH_CLOCK_LF_ACCURACY_500_PPM
+	bool "500 ppm"
+
+config NRF_SDH_CLOCK_LF_ACCURACY_250_PPM
+	bool "250 ppm"
+
+config NRF_SDH_CLOCK_LF_ACCURACY_150_PPM
+	bool "150 ppm"
+
+config NRF_SDH_CLOCK_LF_ACCURACY_100_PPM
+	bool "100 ppm"
+
+config NRF_SDH_CLOCK_LF_ACCURACY_75_PPM
+	bool "75 ppm"
+
+config NRF_SDH_CLOCK_LF_ACCURACY_50_PPM
+	bool "50 ppm"
+
+config NRF_SDH_CLOCK_LF_ACCURACY_30_PPM
+	bool "30 ppm"
+
+config NRF_SDH_CLOCK_LF_ACCURACY_20_PPM
+	bool "20 ppm"
+
+config NRF_SDH_CLOCK_LF_ACCURACY_10_PPM
+	bool "10 ppm"
+
+config NRF_SDH_CLOCK_LF_ACCURACY_5_PPM
+	bool "5 ppm"
+
+config NRF_SDH_CLOCK_LF_ACCURACY_2_PPM
+	bool "2 ppm"
+
+config NRF_SDH_CLOCK_LF_ACCURACY_1_PPM
+	bool "1 ppm"
+endchoice
 
 config NRF_SDH_CLOCK_LF_ACCURACY
-	int "Accuracy"
+	int
+	default 0 if NRF_SDH_CLOCK_LF_ACCURACY_250_PPM
+	default 1 if NRF_SDH_CLOCK_LF_ACCURACY_500_PPM
+	default 2 if NRF_SDH_CLOCK_LF_ACCURACY_150_PPM
+	default 3 if NRF_SDH_CLOCK_LF_ACCURACY_100_PPM
+	default 4 if NRF_SDH_CLOCK_LF_ACCURACY_75_PPM
+	default 5 if NRF_SDH_CLOCK_LF_ACCURACY_50_PPM
+	default 6 if NRF_SDH_CLOCK_LF_ACCURACY_30_PPM
+	default 7 if NRF_SDH_CLOCK_LF_ACCURACY_20_PPM
+	default 8 if NRF_SDH_CLOCK_LF_ACCURACY_10_PPM
+	default 9 if NRF_SDH_CLOCK_LF_ACCURACY_5_PPM
+	default 10 if NRF_SDH_CLOCK_LF_ACCURACY_2_PPM
+	default 11 if NRF_SDH_CLOCK_LF_ACCURACY_1_PPM
 	default 0
 
 config NRF_SDH_CLOCK_HFINT_CALIBRATION_INTERVAL
