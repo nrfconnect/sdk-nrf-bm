@@ -46,6 +46,8 @@ config NRF_SDH_DISPATCH_MODEL
 	default 1 if NRF_SDH_DISPATCH_MODEL_SCHED
 	default 2 if NRF_SDH_DISPATCH_MODEL_POLL
 
+menu "LF clock"
+
 config NRF_SDH_CLOCK_LF_SRC
 	int "LF Clock"
 	default 1
@@ -62,6 +64,10 @@ config NRF_SDH_CLOCK_LF_ACCURACY
 	int "Accuracy"
 	default 0
 
+endmenu # "LF Clock"
+
+menu "HF clock"
+
 config NRF_SDH_CLOCK_HFINT_CALIBRATION_INTERVAL
 	int "HFINT calibration interval in seconds"
 	range 1 255
@@ -71,6 +77,8 @@ config NRF_SDH_CLOCK_HFCLK_LATENCY
 	int "Ramp-up time of the high-frequency crystal oscillator in microseconds"
 	range 0 $(UINT16_MAX)
 	default 1500
+
+endmenu # "HF Clock"
 
 if NRF_SDH_BLE
 
