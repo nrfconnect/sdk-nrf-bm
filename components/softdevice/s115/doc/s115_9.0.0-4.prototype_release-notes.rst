@@ -38,7 +38,7 @@ SoftDevice properties
 
   * nRF54L15: 0x162000 (``s115_nrf54l15_9.0.0-4.prototype_softdevice.hex``).
 
-* The Firmware ID of this SoftDevice is 0x30B9.
+* The Firmware ID of this SoftDevice is 0x300B.
 
 New Features
 -------------
@@ -53,9 +53,23 @@ Changes
 
   * A new field ``hfint_ctiv`` has been added to ``nrf_clock_lf_cfg_t`` to control how often HFINT is calibrated (DRGN-26506).
 
+  * A new field ``hfclk_latency`` has been added to ``nrf_clock_lf_cfg_t`` to inform the SoftDevice
+    about the ramp-up time of the high-frequency crystal oscillator (DRGN-26554).
+
 * GAP
 
   * The SoftDevice no longer enforces the spec-required 1 second interval between channel map updates (``ble_gap_opt_ch_map_t``) (DRGN-26253).
+
+  * The SoftDevice no longer allows an all-zeroes Identity Resolving Key (IRK) in the device identity list
+    when in network privacy mode (``BLE_GAP_PRIVACY_MODE_NETWORK_PRIVACY``).
+    ``sd_ble_gap_privacy_set`` and ``sd_ble_gap_device_identities_set`` now return ``BLE_ERROR_GAP_ZERO_IRK_NOT_ALLOWED`` in this case.
+
+  * The SoftDevice now uses an application-provided passkey (``BLE_GAP_OPT_PASSKEY``) for only one pairing attempt.
+    Using a static or non-random passkey is insecure and not allowed by the Bluetooth Core Specification (DRGN-26638).
+
+  * The API for Data Signing has been removed. This was never supported by the SoftDevice (DRGN-26752).
+
+  * The API for BR/EDR Link Key has been removed. This was never supported by the SoftDevice (DRGN-26752).
 
 
 Limitations

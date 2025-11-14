@@ -331,7 +331,6 @@ typedef struct
  *                                   - @ref ble_gatts_attr_md_t::write_perm is @ref BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS, that is not allowed by the Bluetooth Specification.
  *                                   - wrong @ref ble_gatts_attr_md_t::read_perm, only @ref BLE_GAP_CONN_SEC_MODE_SET_OPEN is allowed by the Bluetooth Specification.
  *                                   - wrong @ref ble_gatts_attr_md_t::vloc, only @ref BLE_GATTS_VLOC_STACK is allowed.
- * @retval ::NRF_ERROR_NOT_SUPPORTED Security Mode 2 not supported
  */
 typedef struct
 {
