@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 
+import logging
 from collections.abc import Callable
 from pathlib import Path
 
@@ -35,6 +36,8 @@ LINES_FOR_KEY_VERIFICATION_FAIL = [
     "*Error: no bootable configuration found*",
     "*Unable to find bootable image*",
 ]
+
+logger = logging.getLogger(__name__)
 
 
 @pytest.mark.usefixtures("no_reset")
@@ -170,14 +173,14 @@ def test_if_previous_key_is_revoked_when_flashing_new_image(
     lines = dut.readlines_until(regex="Hello World!", print_output=True, timeout=20)
     pytest.LineMatcher(lines).fnmatch_lines(LINES_FOR_CORRECT_BOOT)
 
-    # flash DUT with the second image
+    logger.info("Flash DUT with the second image")
     west_flash(build_dir_2, dut.device_config.id)
     dut.clear_buffer()
     reset_board(dut.device_config.id)
     lines = dut.readlines_until(regex="Hello World!", print_output=True, timeout=20)
     pytest.LineMatcher(lines).fnmatch_lines(LINES_FOR_CORRECT_BOOT)
 
-    # flash again with the first image
+    logger.info("Flash DUT with the first image")
     west_flash(build_dir_1, dut.device_config.id)
     dut.clear_buffer()
     reset_board(dut.device_config.id)
@@ -196,14 +199,14 @@ def test_if_revocation_of_last_remaining_key_is_not_allowed(
 ):
     """Prevent Revocation of Last Remaining Key.
 
-    - build images signed with key1, key2 and key3
-    - provison Dut with 2 keys (key1 and key2)
-    - flash device with the image signed with key1 and reset
-    - flash device with the image signed with key2 and reset
-    - flash device with the image signed with key3 and reset
-    - verified that Dut does not boot due to 3rd image is not signed with valid key
-    - flash device with image sidned with key2
-    - verify that Dut boots correctly and `Hello World` is printed to UART console
+    - Build images signed with key1, key2 and key3
+    - Provison Dut with 2 keys (key1 and key2)
+    - Flash device with the image signed with key1 and reset
+    - Flash device with the image signed with key2 and reset
+    - Flash device with the image signed with key3 and reset
+    - Verified that Dut does not boot due to 3rd image is not signed with valid key
+    - Flash device with image sidned with key2
+    - Verify that Dut boots correctly and `Hello World` is printed to UART console
     """
     sysbuild_config = Path(dut.device_config.build_dir) / "zephyr" / ".config"
     valid_key_file = config_reader(sysbuild_config).read(
@@ -244,7 +247,7 @@ def test_if_revocation_of_last_remaining_key_is_not_allowed(
     build_director.run()
     assert not build_director.excptions, "Building samples failed"
 
-    # provision with first two keys
+    logger.info("Provision DUT with two keys")
     provision_keys_for_kmu(
         keys=list(keys.values())[:2], keyname="BL_PUBKEY", dev_id=dut.device_config.id
     )
@@ -254,15 +257,15 @@ def test_if_revocation_of_last_remaining_key_is_not_allowed(
     lines = dut.readlines_until(regex="Hello World!", print_output=True, timeout=20)
     pytest.LineMatcher(lines).fnmatch_lines(LINES_FOR_CORRECT_BOOT)
 
-    # flash DUT with the second image
-    west_flash(build_dir_2, dut.device_config.id)
+    logger.info("Flash DUT with the second image")
+    west_flash(build_dir_2, dut.device_config.id, extra_args="--no-reset")
     dut.clear_buffer()
     reset_board(dut.device_config.id)
     lines = dut.readlines_until(regex="Hello World!", print_output=True, timeout=20)
     pytest.LineMatcher(lines).fnmatch_lines(LINES_FOR_CORRECT_BOOT)
 
-    # flash DUT with the third image
-    west_flash(build_dir_3, dut.device_config.id)
+    logger.info("Flash DUT with the third image")
+    west_flash(build_dir_3, dut.device_config.id, extra_args="--no-reset")
     dut.clear_buffer()
     reset_board(dut.device_config.id)
     lines = dut.readlines_until(
@@ -271,12 +274,53 @@ def test_if_revocation_of_last_remaining_key_is_not_allowed(
     pytest.LineMatcher(lines).no_fnmatch_line("*Hello World!*")
     pytest.LineMatcher(lines).fnmatch_lines(LINES_FOR_REVOCED_KEYS)
 
-    # flash DUT with the second image
+    logger.info("Flash DUT with the second image")
     west_flash(build_dir_2, dut.device_config.id)
+    dut.clear_buffer()
+    reset_board(dut.device_config.id)
+    # Check if Dut boots correctly and `Hello World` is printed
+    lines = dut.readlines_until(
+        regex="Unable to find bootable image|Hello World!", print_output=True, timeout=20
+    )
+    pytest.LineMatcher(lines).fnmatch_lines(LINES_FOR_CORRECT_BOOT)
+
+
+@pytest.mark.usefixtures("no_reset")
+def test_boot_failure_when_kmu_key_is_missing(
+    dut: DeviceAdapter, config_reader: Callable, nrf_bm_path: Path, request: pytest.FixtureRequest
+):
+    """Verify if DUT does not boot when the key was not provisioned.
+
+    - Flash DUT with signed image
+    - Reset DUT without provisinonig any KMU keys
+    - Verify if DUT does not boot
+    """
     dut.clear_buffer()
     reset_board(dut.device_config.id)
     # Check if Dut boots correctly
     lines = dut.readlines_until(
         regex="Unable to find bootable image|Hello World!", print_output=True, timeout=20
     )
-    pytest.LineMatcher(lines).fnmatch_lines(LINES_FOR_CORRECT_BOOT)
+    pytest.LineMatcher(lines).no_fnmatch_line("*Hello World!*")
+    pytest.LineMatcher(lines).fnmatch_lines(LINES_FOR_REVOCED_KEYS)
+
+
+@pytest.mark.usefixtures("no_reset")
+def test_dut_does_not_boot_when_flashed_with_image_signed_with_wrong_key(
+    dut: DeviceAdapter, nrf_bm_path: Path
+):
+    """Verify if DUT does not boot when flashed with an image signed with wrong key."""
+    keys_dict = {
+        1: nrf_bm_path / "tests/subsys/kmu/keys/ed25519-1.pem",
+        2: nrf_bm_path / "tests/subsys/kmu/keys/ed25519-2.pem",
+        3: nrf_bm_path / "tests/subsys/kmu/keys/ed25519-3.pem",
+    }
+    keys = [str(value) for value in keys_dict.values()]
+
+    provision_keys_for_kmu(keys=keys, keyname="BL_PUBKEY", dev_id=dut.device_config.id)
+    reset_board(dut.device_config.id)
+    lines = dut.readlines_until(
+        regex="Unable to find bootable image|Hello World!", print_output=True, timeout=20
+    )
+    pytest.LineMatcher(lines).no_fnmatch_line("*Hello World!*")
+    pytest.LineMatcher(lines).fnmatch_lines(LINES_FOR_KEY_VERIFICATION_FAIL)
