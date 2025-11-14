@@ -58,7 +58,10 @@ SoftDevice Handler
 Boards
 ======
 
-* Added nrf54l15DK board variants for the S145 SoftDevice.
+* Added
+
+  * The nRF54L15 DK board variants for the S145 SoftDevice.
+  * The :file:`bm_nrf54l15dk_nrf54l051015_oscillator.dtsi` file with HF and LF external oscillator configuration choices for the nRF54L05, nRF54L10, and nRF54L15.
 
 * MCUboot partition size has been reduced from 36 KiB to 31 KiB for the following board targets:
 
