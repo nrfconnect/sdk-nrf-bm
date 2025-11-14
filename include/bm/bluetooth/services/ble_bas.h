@@ -29,7 +29,7 @@ extern "C" {
 #define BLE_BAS_DEF(_name)                                                                         \
 	static struct ble_bas _name;                                                               \
 	extern void ble_bas_on_ble_evt(const ble_evt_t *ble_evt, void *ctx);                       \
-	NRF_SDH_BLE_OBSERVER(_name##_obs, ble_bas_on_ble_evt, &_name, 0)
+	NRF_SDH_BLE_OBSERVER(_name##_obs, ble_bas_on_ble_evt, &_name, HIGH)
 
 /**
  * @brief Battery service event types.

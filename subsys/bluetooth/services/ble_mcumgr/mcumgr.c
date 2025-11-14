@@ -372,7 +372,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 	};
 }
 
-NRF_SDH_BLE_OBSERVER(sdh_ble, on_ble_evt, &ble_mcumgr, 0);
+NRF_SDH_BLE_OBSERVER(sdh_ble, on_ble_evt, &ble_mcumgr, HIGH);
 
 uint32_t ble_mcumgr_init(void)
 {

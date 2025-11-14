@@ -16,7 +16,8 @@
 #include "cmock_ble.h"
 #include "cmock_nrf_sdh_ble.h"
 
-BLE_NUS_DEF(ble_nus);
+static struct ble_nus ble_nus;
+
 uint16_t test_case_conn_handle = 0x1000;
 bool evt_handler_called;
 struct ble_nus_client_context *last_link_ctx;

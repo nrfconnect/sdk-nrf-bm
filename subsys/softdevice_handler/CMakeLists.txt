@@ -5,11 +5,14 @@
 #
 zephyr_library()
 zephyr_linker_sources(SECTIONS sdh.ld)
+zephyr_linker_sources(DATA_SECTIONS sdh_ram.ld)
 zephyr_library_sources(
   nrf_sdh.c
   nrf_sdh_soc.c
   irq_connect.c
 )
+
+zephyr_library_sources_ifdef(CONFIG_NRF_SDH_SOC_RAND_SEED rand_seed.c)
 
 if(CONFIG_SOFTDEVICE_S115 OR CONFIG_SOFTDEVICE_S145)
   zephyr_library_sources(irq_forward.s)

@@ -32,8 +32,28 @@ S145 SoftDevice
 SoftDevice Handler
 ==================
 
-* Added the :kconfig:option:`NRF_SDH_CLOCK_HFINT_CALIBRATION_INTERVAL` Kconfig option to control the HFINT calibration interval.
-* Added the :kconfig:option:`NRF_SDH_CLOCK_HFCLK_LATENCY` Kconfig option to inform the SoftDevice about the ramp-up time of the high-frequency crystal oscillator.
+* Added:
+
+  * The :kconfig:option:`NRF_SDH_CLOCK_HFINT_CALIBRATION_INTERVAL` Kconfig option to control the HFINT calibration interval.
+  * The :kconfig:option:`NRF_SDH_CLOCK_HFCLK_LATENCY` Kconfig option to inform the SoftDevice about the ramp-up time of the high-frequency crystal oscillator.
+  * The :kconfig:option:`CONFIG_NRF_SDH_SOC_RAND_SEED` Kconfig option to control whether to automatically respond to SoftDevice random seed requests.
+  * Priority levels for SoftDevice event observers: HIGHEST, HIGH, USER, USER_LOW, LOWEST.
+  * The :c:func:`nrf_sdh_ble_evt_to_str` function to stringify a BLE event.
+  * The :c:func:`nrf_sdh_soc_evt_to_str` function to stringify a SoC event.
+  * The :c:func:`nrf_sdh_observer_ready` function to ready an observer for a SoftDevice state change.
+
+* Changed:
+
+  * The return type of the :c:type:`nrf_sdh_state_evt_handler_t` event handler to ``int``.
+
+* Removed:
+
+  * The ``nrf_sdh_ble_app_ram_start_get`` function, use ``DT_REG_ADDR(DT_CHOSEN(zephyr_sram))`` instead.
+  * The ``NRF_SDH_STATE_REQ_OBSERVER`` macro and relative data types.
+    Register a state event observer and return non-zero to :c:enum:`NRF_SDH_STATE_EVT_ENABLE_PREPARE`
+    or :c:enum:`NRF_SDH_STATE_EVT_DISABLE_PREPARE` to abort state changes instead.
+  * The ``nrf_sdh_request_continue`` function.
+  * The ``nrf_sdh_is_enabled`` function, use the SoftDevice native function :c:func:`sd_softdevice_is_enabled` instead.
 
 Boards
 ======

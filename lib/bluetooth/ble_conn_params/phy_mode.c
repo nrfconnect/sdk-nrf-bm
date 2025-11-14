@@ -156,7 +156,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		radio_phy_mode_update(conn_handle, idx);
 	}
 }
-NRF_SDH_BLE_OBSERVER(ble_observer, on_ble_evt, NULL, 0);
+NRF_SDH_BLE_OBSERVER(ble_observer, on_ble_evt, NULL, HIGH);
 
 uint32_t ble_conn_params_phy_radio_mode_set(uint16_t conn_handle, ble_gap_phys_t phy_pref)
 {

@@ -28,17 +28,11 @@ extern "C" {
 #endif
 
 /**
- * @brief Advertising module BLE event observer priority.
- */
-#define BLE_ADV_BLE_OBSERVER_PRIO 0
-
-/**
  * @brief Declare an instance of a BLE advertising library.
  */
 #define BLE_ADV_DEF(instance)                                                                      \
 	static struct ble_adv instance;                                                            \
-	NRF_SDH_BLE_OBSERVER(ble_adv_##instance, ble_adv_on_ble_evt, &instance,                    \
-			     BLE_ADV_BLE_OBSERVER_PRIO)
+	NRF_SDH_BLE_OBSERVER(ble_adv_##instance, ble_adv_on_ble_evt, &instance, HIGH)
 
 /**
  * @brief Advertising modes.

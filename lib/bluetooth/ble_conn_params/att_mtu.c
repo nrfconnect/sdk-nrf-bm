@@ -160,7 +160,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		mtu_exchange_request(conn_handle, idx);
 	}
 }
-NRF_SDH_BLE_OBSERVER(ble_observer, on_ble_evt, NULL, 0);
+NRF_SDH_BLE_OBSERVER(ble_observer, on_ble_evt, NULL, HIGH);
 
 uint32_t ble_conn_params_att_mtu_set(uint16_t conn_handle, uint16_t att_mtu)
 {

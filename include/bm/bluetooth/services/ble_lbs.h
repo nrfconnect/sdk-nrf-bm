@@ -20,8 +20,6 @@
 extern "C" {
 #endif
 
-#define BLE_LBS_BLE_OBSERVER_PRIO 2
-
 #define BLE_UUID_LBS_BASE	{ 0x23, 0xD1, 0xBC, 0xEA, 0x5F, 0x78, 0x23, 0x15,                  \
 				  0xDE, 0xEF, 0x12, 0x12, 0x00, 0x00, 0x00, 0x00 }
 #define BLE_UUID_LBS_SERVICE	 0x1523
@@ -39,7 +37,7 @@ struct ble_lbs;
 #define BLE_LBS_DEF(_name)                                                                         \
 	static struct ble_lbs _name;                                                               \
 	extern void ble_lbs_on_ble_evt(const ble_evt_t *ble_evt, void *lbs_instance);              \
-	NRF_SDH_BLE_OBSERVER(_name ## _obs, ble_lbs_on_ble_evt, &_name, BLE_LBS_BLE_OBSERVER_PRIO)
+	NRF_SDH_BLE_OBSERVER(_name ## _obs, ble_lbs_on_ble_evt, &_name, HIGH)
 
 enum ble_lbs_evt_type {
 	BLE_LBS_EVT_LED_WRITE,
