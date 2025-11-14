@@ -6,21 +6,21 @@
 
 menu "Bare Metal ZMS sample"
 
-config BM_ZMS_SECTOR_SIZE
+config APP_BM_ZMS_SECTOR_SIZE
 	int "Sector size"
 	default 1024
 
-config BM_ZMS_ITERATIONS_MAX
+config APP_BM_ZMS_ITERATIONS_MAX
 	int "Number of iterations in total"
 	default 2
 
-config BM_ZMS_ITERATIONS_DELETE_INTERVAL
+config APP_BM_ZMS_ITERATIONS_DELETE_INTERVAL
 	int "Number of iterations between each delete"
 	default 1
 	help
 	  Specifies the number of iterations between deleting all basic items.
 
-module=BM_ZMS_SAMPLE
+module=APP_BM_ZMS
 module-str=Bare Metal ZMS Sample
 source "subsys/logging/Kconfig.template.log_config"
 

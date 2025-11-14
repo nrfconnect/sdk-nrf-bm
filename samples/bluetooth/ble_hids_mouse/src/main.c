@@ -32,7 +32,7 @@
 
 #include <board-config.h>
 
-LOG_MODULE_REGISTER(app, CONFIG_BLE_HIDS_MOUSE_SAMPLE_LOG_LEVEL);
+LOG_MODULE_REGISTER(app, CONFIG_APP_BLE_HIDS_MOUSE_LOG_LEVEL);
 
 #define BASE_USB_HID_SPEC_VERSION 0x0101
 
@@ -698,9 +698,9 @@ int main(void)
 	};
 
 	struct sensorsim_cfg battery_sim_cfg = {
-		.min = CONFIG_BATTERY_LEVEL_MIN,
-		.max = CONFIG_BATTERY_LEVEL_MAX,
-		.incr = CONFIG_BATTERY_LEVEL_INCREMENT,
+		.min = CONFIG_APP_BATTERY_LEVEL_MIN,
+		.max = CONFIG_APP_BATTERY_LEVEL_MAX,
+		.incr = CONFIG_APP_BATTERY_LEVEL_INCREMENT,
 		.start_at_max = true,
 	};
 
@@ -832,7 +832,7 @@ int main(void)
 	}
 
 	err = bm_timer_start(&battery_timer,
-			     BM_TIMER_MS_TO_TICKS(CONFIG_BATTERY_LEVEL_MEAS_INTERVAL_MS), NULL);
+			     BM_TIMER_MS_TO_TICKS(CONFIG_APP_BATTERY_LEVEL_MEAS_INTERVAL_MS), NULL);
 	if (err) {
 		LOG_ERR("Failed to start app timer, err %d", err);
 		goto idle;

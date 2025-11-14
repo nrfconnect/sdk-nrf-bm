@@ -6,25 +6,25 @@
 
 menu "BLE CGMS sample"
 
-config QWR_MEM_BUFF_SIZE
+config APP_QWR_MEM_BUFF_SIZE
 	int "QWR memory buffer size"
 	default 512
 
 menu "Battery measurement simulation"
 
-config BATTERY_LEVEL_MEAS_INTERVAL_MS
+config APP_BATTERY_LEVEL_MEAS_INTERVAL_MS
 	int "Battery level measurement interval in ms"
 	default 10000
 
-config BATTERY_LEVEL_MIN
+config APP_BATTERY_LEVEL_MIN
 	int "Minimum battery level as returned by the simulated measurement function"
 	default 81
 
-config BATTERY_LEVEL_MAX
+config APP_BATTERY_LEVEL_MAX
 	int "Maximum battery level as returned by the simulated measurement function"
 	default 100
 
-config BATTERY_LEVEL_INCREMENT
+config APP_BATTERY_LEVEL_INCREMENT
 	int "Battery level increment value"
 	default 1
 	help
@@ -36,33 +36,33 @@ menu "Glucose measurement simulation"
 
 endmenu # Glucose measurement simulation
 
-config GLUCOSE_MEAS_INTERVAL
+config APP_GLUCOSE_MEAS_INTERVAL
 	int "Fastest possible communication interval"
 	default 1
 
-config GLUCOSE_CONCENTRATION_INC
+config APP_GLUCOSE_CONCENTRATION_INC
 	int "Glucose concentration increment on button press"
 	default 10
 	help
 	   How much the simulated glucose concentration will increase upon a button press.
 
-config GLUCOSE_CONCENTRATION_DEC
+config APP_GLUCOSE_CONCENTRATION_DEC
 	int "Glucose concentration increment on button press"
 	default 5
 	help
 	   How much the simulated glucose concentration will decrease upon a button press.
 
-config GLUCOSE_CONCENTRATION_MAX
+config APP_GLUCOSE_CONCENTRATION_MAX
 	int "Maximum glucose concentration (mg/dL)"
 	default 800
 
-config GLUCOSE_CONCENTRATION_MIN
+config APP_GLUCOSE_CONCENTRATION_MIN
 	int "Minimum glucose concentration (mg/dL)"
 	default 5
 
 endmenu # "BLE CGMS sample"
 
-module=BLE_CGMS_SAMPLE
+module=APP_BLE_CGMS
 module-str=BLE CGMS Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

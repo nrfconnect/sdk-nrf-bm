@@ -9,7 +9,7 @@
 #include <zephyr/logging/log_ctrl.h>
 #include <board-config.h>
 
-LOG_MODULE_REGISTER(app, CONFIG_BUTTONS_SAMPLE_LOG_LEVEL);
+LOG_MODULE_REGISTER(app, CONFIG_APP_BUTTONS_LOG_LEVEL);
 
 static volatile bool running;
 

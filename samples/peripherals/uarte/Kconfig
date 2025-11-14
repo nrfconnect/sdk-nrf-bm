@@ -6,27 +6,27 @@
 
 menu "UARTE sample"
 
-config UARTE_DATA_LEN_MAX
+config APP_UARTE_DATA_LEN_MAX
 	int "maximum UARTE data length"
 	default 128
 	help
 	  Defines the maximum length the application can store in the receive buffer.
 
-config UARTE_HWFC
+config APP_UARTE_HWFC
 	bool "UARTE HWFC"
 	help
 	  Enable hardware flow control on the UARTE peripheral used by the application.
 
-config UARTE_PARITY
+config APP_UARTE_PARITY
 	bool "UARTE parity"
 	help
 	  Enable parity on the UARTE peripheral used by the application.
 
-config UARTE_IRQ_PRIO
+config APP_UARTE_IRQ_PRIO
 	int "UARTE IRQ priority"
 	default 5
 
-module=UARTE_SAMPLE
+module=APP_UARTE
 module-str=UARTE Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

@@ -13,7 +13,7 @@
 
 #include <board-config.h>
 
-LOG_MODULE_REGISTER(app, CONFIG_LPUARTE_SAMPLE_LOG_LEVEL);
+LOG_MODULE_REGISTER(app, CONFIG_APP_LPUARTE_LOG_LEVEL);
 
 /** Application Low Power UARTE instance */
 struct bm_lpuarte lpu;
@@ -84,20 +84,20 @@ static nrfx_err_t lpuarte_init(void)
 		.rdy_pin = BOARD_APP_LPUARTE_PIN_RDY,
 	};
 
-#if defined(CONFIG_LPUARTE_PARITY)
+#if defined(CONFIG_APP_LPUARTE_PARITY)
 	lpu_cfg.uarte_cfg.config.parity = NRF_UARTE_PARITY_INCLUDED;
 #endif
 
-	lpu_cfg.uarte_cfg.interrupt_priority = CONFIG_LPUARTE_IRQ_PRIO;
+	lpu_cfg.uarte_cfg.interrupt_priority = CONFIG_APP_LPUARTE_IRQ_PRIO;
 
 	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_GPIOTE_INST_GET(20)) + NRF_GPIOTE_IRQ_GROUP,
-			   CONFIG_LPUARTE_GPIOTE_IRQ_PRIO, gpiote_20_direct_isr, 0);
+			   CONFIG_APP_LPUARTE_GPIOTE_IRQ_PRIO, gpiote_20_direct_isr, 0);
 
 	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_GPIOTE_INST_GET(30)) + NRF_GPIOTE_IRQ_GROUP,
-			   CONFIG_LPUARTE_GPIOTE_IRQ_PRIO, gpiote_30_direct_isr, 0);
+			   CONFIG_APP_LPUARTE_GPIOTE_IRQ_PRIO, gpiote_30_direct_isr, 0);
 
 	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(BOARD_APP_LPUARTE_INST)),
-			   CONFIG_LPUARTE_IRQ_PRIO, lpuarte_direct_isr, 0);
+			   CONFIG_APP_LPUARTE_IRQ_PRIO, lpuarte_direct_isr, 0);
 
 	irq_enable(NRFX_IRQ_NUMBER_GET(NRF_UARTE_INST_GET(BOARD_APP_LPUARTE_INST)));
 

@@ -21,7 +21,7 @@
 static struct bm_zms_fs fs;
 static bool nvm_is_full;
 
-LOG_MODULE_REGISTER(app, CONFIG_BM_ZMS_SAMPLE_LOG_LEVEL);
+LOG_MODULE_REGISTER(app, CONFIG_APP_BM_ZMS_LOG_LEVEL);
 
 static void wait_for_ongoing_writes(void)
 {
@@ -161,10 +161,10 @@ int main(void)
 	}
 
 	fs.offset = BM_ZMS_PARTITION_OFFSET;
-	fs.sector_size = CONFIG_BM_ZMS_SECTOR_SIZE;
-	fs.sector_count = (BM_ZMS_PARTITION_SIZE / CONFIG_BM_ZMS_SECTOR_SIZE);
+	fs.sector_size = CONFIG_APP_BM_ZMS_SECTOR_SIZE;
+	fs.sector_count = (BM_ZMS_PARTITION_SIZE / CONFIG_APP_BM_ZMS_SECTOR_SIZE);
 
-	for (i = 0; i < CONFIG_BM_ZMS_ITERATIONS_MAX; i++) {
+	for (i = 0; i < CONFIG_APP_BM_ZMS_ITERATIONS_MAX; i++) {
 		rc = bm_zms_mount(&fs);
 		if (rc) {
 			LOG_ERR("Storage Init failed, rc=%d", rc);
@@ -249,7 +249,7 @@ int main(void)
 		wait_for_ongoing_writes();
 
 		/* Each DELETE_ITERATION delete all basic items */
-		if (!(i % CONFIG_BM_ZMS_ITERATIONS_DELETE_INTERVAL) && (i)) {
+		if (!(i % CONFIG_APP_BM_ZMS_ITERATIONS_DELETE_INTERVAL) && (i)) {
 			rc = delete_basic_items(&fs);
 			if (rc) {
 				goto idle;
@@ -257,7 +257,7 @@ int main(void)
 		}
 	}
 
-	if (i != CONFIG_BM_ZMS_ITERATIONS_MAX) {
+	if (i != CONFIG_APP_BM_ZMS_ITERATIONS_MAX) {
 		LOG_ERR("Error: Something went wrong at iteration %u rc=%d", i, rc);
 		goto idle;
 	}
