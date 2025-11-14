@@ -588,16 +588,6 @@ static bool sec_params_verify(ble_gap_sec_params_t *sec_params)
 		return false;
 	}
 
-	/* Signing is not supported. */
-	if (sec_params->kdist_own.sign || sec_params->kdist_peer.sign) {
-		return false;
-	}
-
-	/* link bit must be 0. */
-	if (sec_params->kdist_own.link || sec_params->kdist_peer.link) {
-		return false;
-	}
-
 	/* If bonding is not enabled, no keys can be distributed. */
 	if (!sec_params->bond && (sec_params->kdist_own.enc || sec_params->kdist_own.id ||
 				  sec_params->kdist_peer.enc || sec_params->kdist_peer.id)) {

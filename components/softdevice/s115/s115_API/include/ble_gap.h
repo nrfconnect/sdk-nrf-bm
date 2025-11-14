@@ -173,6 +173,7 @@ enum BLE_GAP_TX_POWER_ROLES
 #define BLE_ERROR_GAP_WHITELIST_IN_USE              (NRF_GAP_ERR_BASE + 0x003)  /**< Attempt to modify the whitelist while already in use by another operation. */
 #define BLE_ERROR_GAP_DEVICE_IDENTITIES_IN_USE      (NRF_GAP_ERR_BASE + 0x004)  /**< Attempt to modify the device identity list while already in use by another operation. */
 #define BLE_ERROR_GAP_DEVICE_IDENTITIES_DUPLICATE   (NRF_GAP_ERR_BASE + 0x005)  /**< The device identity list contains entries with duplicate identity addresses. */
+#define BLE_ERROR_GAP_ZERO_IRK_NOT_ALLOWED          (NRF_GAP_ERR_BASE + 0x006)  /**< An IRK of all zeros is not allowed in the device identity list in network privacy mode. */
 /**@} */
 
 
@@ -470,10 +471,6 @@ enum BLE_GAP_TX_POWER_ROLES
 #define BLE_GAP_CONN_SEC_MODE_SET_ENC_WITH_MITM(ptr)      do {(ptr)->sm = 1; (ptr)->lv = 3;} while(0)
 /**@brief Set sec_mode pointed to by ptr to require LESC encryption and MITM protection.*/
 #define BLE_GAP_CONN_SEC_MODE_SET_LESC_ENC_WITH_MITM(ptr) do {(ptr)->sm = 1; (ptr)->lv = 4;} while(0)
-/**@brief Set sec_mode pointed to by ptr to require signing or encryption, no MITM protection needed.*/
-#define BLE_GAP_CONN_SEC_MODE_SET_SIGNED_NO_MITM(ptr)     do {(ptr)->sm = 2; (ptr)->lv = 1;} while(0)
-/**@brief Set sec_mode pointed to by ptr to require signing or encryption with MITM protection.*/
-#define BLE_GAP_CONN_SEC_MODE_SET_SIGNED_WITH_MITM(ptr)   do {(ptr)->sm = 2; (ptr)->lv = 2;} while(0)
 /**@} */
 
 
@@ -633,12 +630,10 @@ typedef struct
  * Security Mode 1 Level 2: Encrypted link required, MITM protection not necessary.\n
  * Security Mode 1 Level 3: MITM protected encrypted link required.\n
  * Security Mode 1 Level 4: LESC MITM protected encrypted link using a 128-bit strength encryption key required.\n
- * Security Mode 2 Level 1: Signing or encryption required, MITM protection not necessary.\n
- * Security Mode 2 Level 2: MITM protected signing required, unless link is MITM protected encrypted.\n
  */
 typedef struct
 {
-  uint8_t sm : 4;                     /**< Security Mode (1 or 2), 0 for no permissions at all. */
+  uint8_t sm : 4;                     /**< Security Mode (1), 0 for no permissions at all. */
   uint8_t lv : 4;                     /**< Level (1, 2, 3 or 4), 0 for no permissions at all. */
 
 } ble_gap_conn_sec_mode_t;
@@ -782,8 +777,6 @@ typedef struct
 {
   uint8_t enc     : 1;                        /**< Long Term Key and Master Identification. */
   uint8_t id      : 1;                        /**< Identity Resolving Key and Identity Address Information. */
-  uint8_t sign    : 1;                        /**< Connection Signature Resolving Key. */
-  uint8_t link    : 1;                        /**< Derive the Link Key from the LTK. */
 } ble_gap_sec_kdist_t;
 
 
@@ -823,13 +816,6 @@ typedef struct
   uint16_t  ediv;                       /**< Encrypted Diversifier. */
   uint8_t   rand[BLE_GAP_SEC_RAND_LEN]; /**< Random Number. */
 } ble_gap_master_id_t;
-
-
-/**@brief GAP Signing Information. */
-typedef struct
-{
-  uint8_t   csrk[BLE_GAP_SEC_KEY_LEN];        /**< Connection Signature Resolving Key. */
-} ble_gap_sign_info_t;
 
 
 /**@brief GAP LE Secure Connections P-256 Public Key. */
@@ -908,7 +894,6 @@ typedef struct
   ble_gap_master_id_t master_id;                     /**< Master Identification for LTK lookup. */
   uint8_t             enc_info  : 1;                 /**< If 1, Encryption Information required. */
   uint8_t             id_info   : 1;                 /**< If 1, Identity Information required. */
-  uint8_t             sign_info : 1;                 /**< If 1, Signing Information required. */
 } ble_gap_evt_sec_info_request_t;
 
 /**@brief Event structure for @ref BLE_GAP_EVT_PASSKEY_DISPLAY. */
@@ -975,7 +960,6 @@ typedef struct
 {
   ble_gap_enc_key_t      *p_enc_key;           /**< Encryption Key, or NULL. */
   ble_gap_id_key_t       *p_id_key;            /**< Identity Key, or NULL. */
-  ble_gap_sign_info_t    *p_sign_key;          /**< Signing Key, or NULL. */
   ble_gap_lesc_p256_pk_t *p_pk;                /**< LE Secure Connections P-256 Public Key. When in debug mode the application must use the value defined
                                                     in the Bluetooth Core Specification, Vol 3, Part H, Section 2.3.5.6.1 */
 } ble_gap_sec_keys_t;
@@ -1016,7 +1000,6 @@ typedef struct
   uint8_t               bonded : 1;             /**< Procedure resulted in a bond. */
   uint8_t               lesc : 1;               /**< Procedure resulted in a LE Secure Connection. */
   ble_gap_sec_levels_t  sm1_levels;             /**< Levels supported in Security Mode 1. */
-  ble_gap_sec_levels_t  sm2_levels;             /**< Levels supported in Security Mode 2. */
   ble_gap_sec_kdist_t   kdist_own;              /**< Bitmap stating which keys were exchanged (distributed) by the local device. If bonding with LE Secure Connections, the enc bit will be always set. */
   ble_gap_sec_kdist_t   kdist_peer;             /**< Bitmap stating which keys were exchanged (distributed) by the remote device. If bonding with LE Secure Connections, the enc bit will never be set. */
 } ble_gap_evt_auth_status_t;
@@ -1266,14 +1249,19 @@ typedef struct
 /**@brief Passkey Option.
  *
  * @mscs
- * @mmsc{@ref BLE_GAP_PERIPH_BONDING_STATIC_PK_MSC}
+ * @mmsc{@ref BLE_GAP_PERIPH_BONDING_APP_PK_MSC}
  * @endmscs
  *
  * @details Structure containing the passkey to be used during pairing. This can be used with @ref
- *          sd_ble_opt_set to make the SoftDevice use a preprogrammed passkey for authentication
- *          instead of generating a random one.
+ *          sd_ble_opt_set to make the SoftDevice use an application-provided passkey for authentication
+ *          instead of an internally generated one.
  *
- * @note Repeated pairing attempts using the same preprogrammed passkey makes pairing vulnerable to MITM attacks.
+ * @note The passkey shall be generated for every pairing attempt by secure random number generator.
+ *
+ * @note Repeated pairing attempts using the same passkey makes pairing vulnerable to MITM attacks
+ *       and is not allowed by the Bluetooth Core Specification, Vol 3, Part H, Section 2.3.5.3 and 2.3.5.6.3.
+ *       The passkey will only be used for one pairing attempt and the SoftDevice will internally generate a new passkey
+ *       for the next pairing attempt unless @ref sd_ble_opt_set is called again.
  *
  * @note @ref sd_ble_opt_get is not supported for this option.
  *
@@ -1428,6 +1416,7 @@ SVCALL(SD_BLE_GAP_WHITELIST_SET, uint32_t, sd_ble_gap_whitelist_set(ble_gap_addr
  * @retval ::BLE_ERROR_GAP_DEVICE_IDENTITIES_IN_USE The device identity list is in use and cannot be set or cleared.
  * @retval ::BLE_ERROR_GAP_DEVICE_IDENTITIES_DUPLICATE The device identity list contains multiple entries with the same identity address.
  * @retval ::BLE_ERROR_GAP_INVALID_BLE_ADDR Invalid address type is supplied.
+ * @retval ::BLE_ERROR_GAP_ZERO_IRK_NOT_ALLOWED An all zeroes IRK is supplied while in @ref BLE_GAP_PRIVACY_MODE_NETWORK_PRIVACY mode.
  * @retval ::NRF_ERROR_DATA_SIZE The given device identity list size invalid (zero or too large); this can
  *                               only return when pp_id_keys is not NULL.
  */
@@ -1451,6 +1440,7 @@ SVCALL(SD_BLE_GAP_DEVICE_IDENTITIES_SET, uint32_t, sd_ble_gap_device_identities_
  * @retval ::NRF_ERROR_INVALID_ADDR The pointer to privacy settings is NULL or invalid.
  *                                  Otherwise, the p_device_irk pointer in privacy parameter is an invalid pointer.
  * @retval ::NRF_ERROR_INVALID_PARAM Out of range parameters are provided.
+ * @retval ::BLE_ERROR_GAP_ZERO_IRK_NOT_ALLOWED @ref BLE_GAP_PRIVACY_MODE_NETWORK_PRIVACY is requested while an all zeroes IRK is in the device identity list.
  * @retval ::NRF_ERROR_INVALID_STATE Privacy settings cannot be changed while advertising.
  */
 SVCALL(SD_BLE_GAP_PRIVACY_SET, uint32_t, sd_ble_gap_privacy_set(ble_gap_privacy_params_t const *p_privacy_params));
@@ -1788,7 +1778,7 @@ SVCALL(SD_BLE_GAP_AUTHENTICATE, uint32_t, sd_ble_gap_authenticate(uint16_t conn_
  * @mmsc{@ref BLE_GAP_PERIPH_BONDING_JW_MSC}
  * @mmsc{@ref BLE_GAP_PERIPH_BONDING_PK_PERIPH_MSC}
  * @mmsc{@ref BLE_GAP_PERIPH_BONDING_PK_CENTRAL_OOB_MSC}
- * @mmsc{@ref BLE_GAP_PERIPH_BONDING_STATIC_PK_MSC}
+ * @mmsc{@ref BLE_GAP_PERIPH_BONDING_APP_PK_MSC}
  * @mmsc{@ref BLE_GAP_PERIPH_PAIRING_CONFIRM_FAIL_MSC}
  * @mmsc{@ref BLE_GAP_PERIPH_LESC_PAIRING_JW_MSC}
  * @mmsc{@ref BLE_GAP_PERIPH_LESC_BONDING_NC_MSC}
@@ -1818,7 +1808,6 @@ SVCALL(SD_BLE_GAP_AUTHENTICATE, uint32_t, sd_ble_gap_authenticate(uint16_t conn_
  * @retval ::NRF_ERROR_INVALID_PARAM Invalid parameter(s) supplied.
  * @retval ::NRF_ERROR_INVALID_STATE Security parameters has not been requested.
  * @retval ::BLE_ERROR_INVALID_CONN_HANDLE Invalid connection handle supplied.
- * @retval ::NRF_ERROR_NOT_SUPPORTED Setting of sign or link fields in @ref ble_gap_sec_kdist_t not supported.
  */
 SVCALL(SD_BLE_GAP_SEC_PARAMS_REPLY, uint32_t, sd_ble_gap_sec_params_reply(uint16_t conn_handle, uint8_t sec_status, ble_gap_sec_params_t const *p_sec_params, ble_gap_sec_keyset_t const *p_sec_keyset));
 
@@ -1961,7 +1950,6 @@ SVCALL(SD_BLE_GAP_LESC_OOB_DATA_SET, uint32_t, sd_ble_gap_lesc_oob_data_set(uint
  *
  * @details This function is only used to reply to a @ref BLE_GAP_EVT_SEC_INFO_REQUEST, calling it at other times will result in @ref NRF_ERROR_INVALID_STATE.
  * @note    If the call returns an error code, the request is still pending, and the reply call may be repeated with corrected parameters.
- * @note    Data signing is not yet supported, and p_sign_info must therefore be NULL.
  *
  * @mscs
  * @mmsc{@ref BLE_GAP_PERIPH_ENC_MSC}
@@ -1970,7 +1958,6 @@ SVCALL(SD_BLE_GAP_LESC_OOB_DATA_SET, uint32_t, sd_ble_gap_lesc_oob_data_set(uint
  * @param[in] conn_handle Connection handle.
  * @param[in] p_enc_info Pointer to a @ref ble_gap_enc_info_t encryption information structure. May be NULL to signal none is available.
  * @param[in] p_id_info Pointer to a @ref ble_gap_irk_t identity information structure. May be NULL to signal none is available.
- * @param[in] p_sign_info Pointer to a @ref ble_gap_sign_info_t signing information structure. May be NULL to signal none is available.
  *
  * @retval ::NRF_SUCCESS Successfully accepted security information.
  * @retval ::NRF_ERROR_INVALID_PARAM Invalid parameter(s) supplied.
@@ -1980,7 +1967,7 @@ SVCALL(SD_BLE_GAP_LESC_OOB_DATA_SET, uint32_t, sd_ble_gap_lesc_oob_data_set(uint
  *                                   - Encryption information provided by the app without being requested. See @ref ble_gap_evt_sec_info_request_t::enc_info.
  * @retval ::BLE_ERROR_INVALID_CONN_HANDLE Invalid connection handle supplied.
  */
-SVCALL(SD_BLE_GAP_SEC_INFO_REPLY, uint32_t, sd_ble_gap_sec_info_reply(uint16_t conn_handle, ble_gap_enc_info_t const *p_enc_info, ble_gap_irk_t const *p_id_info, ble_gap_sign_info_t const *p_sign_info));
+SVCALL(SD_BLE_GAP_SEC_INFO_REPLY, uint32_t, sd_ble_gap_sec_info_reply(uint16_t conn_handle, ble_gap_enc_info_t const *p_enc_info, ble_gap_irk_t const *p_id_info));
 
 
 /**@brief Get the current connection security.
