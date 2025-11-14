@@ -110,11 +110,11 @@ Mounting the storage system
 Mounting the storage system starts by checking that the file system properties are correct, such as the sector_size and sector_count.
 Then, the ``bm_zms_mount`` function must be called to make the storage ready.
 
-To mount the file system, the following elements in the ``bm_zms_fs`` structure must be initialized:
+To mount the file system, the following members in the struct :c:struct:`bm_zms_fs_config` must be set:
 
 .. code-block:: c
 
-	struct bm_zms_fs {
+	struct bm_zms_fs_config {
 		/** File system offset in non-volatile memory **/
 		off_t offset;
 

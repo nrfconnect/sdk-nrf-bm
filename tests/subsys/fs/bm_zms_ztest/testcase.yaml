@@ -1,20 +1,20 @@
 common:
-  tags: bm_zms
+  tags: bm_zms_ztest
   skip: true
   platform_allow:
     - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice
     - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice
     - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice
 tests:
-  lib.bm_zms:
-    tags: bm_zms
-  lib.bm_zms.cache:
+  lib.bm_zms_ztest:
+    tags: bm_zms_ztest
+  lib.bm_zms_ztest.cache:
     extra_args:
       - CONFIG_BM_ZMS_LOOKUP_CACHE=y
       - CONFIG_BM_ZMS_LOOKUP_CACHE_SIZE=64
-  lib.bm_zms.data_crc:
+  lib.bm_zms_ztest.data_crc:
     extra_args:
       - CONFIG_BM_ZMS_DATA_CRC=y
-  lib.bm_zms.softdevice:
+  lib.bm_zms_ztest.softdevice:
     extra_args:
       - CONFIG_SOFTDEVICE=y

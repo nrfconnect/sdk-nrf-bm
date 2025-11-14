@@ -6,7 +6,7 @@
 
 cmake_minimum_required(VERSION 3.20.0)
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
-project(bm_zms)
+project(bm_zms_ztest)
 
 target_include_directories(app PRIVATE
 			   ${ZEPHYR_NRF_BM_MODULE_DIR}/include

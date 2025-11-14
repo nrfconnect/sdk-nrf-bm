@@ -27,6 +27,10 @@
 #define NRFX_CRITICAL_SECTION_EXIT(...)
 #endif
 
+#if CONFIG_UNITY
+#define __ALIGN(x) __aligned(x)
+#endif
+
 LOG_MODULE_REGISTER(bm_zms, CONFIG_BM_ZMS_LOG_LEVEL);
 
 static zms_op_t cur_op; /* Current bm_zms operation. */
@@ -328,7 +332,7 @@ int bm_zms_register(struct bm_zms_fs *fs, bm_zms_cb_t cb)
 	int i;
 
 	if (!fs || !cb) {
-		return -EINVAL;
+		return -EFAULT;
 	}
 
 	for (i = 0; i < CONFIG_BM_ZMS_MAX_USERS; i++) {
@@ -1686,6 +1690,10 @@ int bm_zms_clear(struct bm_zms_fs *fs)
 	uint32_t rc;
 	zms_op_t cur_clear_op;
 
+	if (!fs) {
+		return -EFAULT;
+	}
+
 	if (!fs->init_flags.initialized) {
 		LOG_ERR("zms not initialized");
 		return -EACCES;
@@ -2006,12 +2014,20 @@ end:
 	return rc;
 }
 
-int bm_zms_mount(struct bm_zms_fs *fs)
+int bm_zms_mount(struct bm_zms_fs *fs, const struct bm_zms_fs_config *config)
 {
 	int ret;
 	uint32_t rc;
 	size_t write_block_size;
 	zms_op_t cur_init_op;
+
+	if (!fs || !config) {
+		return -EFAULT;
+	}
+
+	fs->offset = config->offset;
+	fs->sector_size = config->sector_size;
+	fs->sector_count = config->sector_count;
 
 	/* Initialize BM Storage */
 
@@ -2123,6 +2139,10 @@ ssize_t bm_zms_write(struct bm_zms_fs *fs, uint32_t id, const void *data, size_t
 	uint32_t required_space = 0U; /* no space, appropriate for delete ate */
 	zms_op_t cur_write_op;
 	uint32_t rc;
+
+	if (!fs) {
+		return -EFAULT;
+	}
 
 	if (!fs->init_flags.initialized) {
 		LOG_ERR("zms not initialized");
@@ -2240,6 +2260,10 @@ ssize_t bm_zms_read_hist(struct bm_zms_fs *fs, uint32_t id, void *data, size_t l
 #ifdef CONFIG_BM_ZMS_DATA_CRC
 	uint32_t computed_data_crc;
 #endif
+
+	if (!fs) {
+		return -EFAULT;
+	}
 
 	if (!fs->init_flags.initialized) {
 		LOG_ERR("zms not initialized");
@@ -2366,6 +2390,10 @@ ssize_t bm_zms_calc_free_space(struct bm_zms_fs *fs)
 	ssize_t free_space = 0;
 	const uint32_t second_to_last_offset = (2 * fs->ate_size);
 
+	if (!fs) {
+		return -EFAULT;
+	}
+
 	if (!fs->init_flags.initialized) {
 		LOG_ERR("zms not initialized");
 		return -EACCES;
@@ -2464,6 +2492,10 @@ ssize_t bm_zms_calc_free_space(struct bm_zms_fs *fs)
 
 ssize_t bm_zms_active_sector_free_space(struct bm_zms_fs *fs)
 {
+	if (!fs) {
+		return -EFAULT;
+	}
+
 	if (!fs->init_flags.initialized) {
 		LOG_ERR("ZMS not initialized");
 		return -EACCES;
