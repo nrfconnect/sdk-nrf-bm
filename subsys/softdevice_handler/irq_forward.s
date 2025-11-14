@@ -94,10 +94,10 @@ HardFault_Handler:
     .thumb
     .thumb_func
     .align 1
-    .global CLOCK_POWER_IRQHandler
-    .type CLOCK_POWER_IRQHandler, "function"
-CLOCK_POWER_IRQHandler:
-    LDR   R3, =C_CLOCK_POWER_Handler
+    .global CLOCK_POWER_SD_IRQHandler
+    .type CLOCK_POWER_SD_IRQHandler, "function"
+CLOCK_POWER_SD_IRQHandler:
+    LDR   R3, =C_CLOCK_POWER_SD_Handler
     LDR   R0, =NRF_SD_ISR_OFFSET_CLOCK_POWER
     LDR   R1, =ConsumeOrForwardIRQ
     BX    R1
