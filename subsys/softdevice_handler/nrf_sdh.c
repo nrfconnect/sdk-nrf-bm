@@ -127,6 +127,19 @@ static int nrf_sdh_enable(void)
 	atomic_set(&sdh_is_suspended, false);
 	atomic_set(&sdh_transition, false);
 
+#if defined(CONFIG_NRF_SDH_DISPATCH_MODEL_SCHED)
+	/* Upon enabling the SoftDevice events IRQ, the SoftDevice will request a rand seed.
+	 * When the events are dispatched by the scheduler, it won't be possible to
+	 * enable Bluetooth until that event has been processed (in the main() loop).
+	 * To avoid this, we seed the SoftDevice before enabling the interrupt so
+	 * that no event is generated, and the application can complete the BLE
+	 * initialization before reaching the main() loop.
+	 */
+	BUILD_ASSERT(IS_ENABLED(CONFIG_NRF_SDH_SOC_RAND_SEED));
+	extern void sdh_soc_rand_seed(uint32_t evt, void *ctx);
+	(void) sdh_soc_rand_seed(NRF_EVT_RAND_SEED_REQUEST, NULL);
+#endif /* CONFIG_NRF_SDH_DISPATCH_MODEL_SCHED */
+
 	/* Enable event interrupt, the priority has already been set by the stack. */
 	NVIC_EnableIRQ((IRQn_Type)SD_EVT_IRQn);
 

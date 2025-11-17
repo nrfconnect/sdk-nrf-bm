@@ -134,13 +134,14 @@ endmenu
 endif # NRF_SDH_BLE
 
 config NRF_SDH_SOC_RAND_SEED
-	bool "Automatically respond to SoftDevice random seeds requests"
+	bool "Automatically respond to SoftDevice random seeds requests" if !NRF_SDH_DISPATCH_MODEL_SCHED
 	depends on NRF_SECURITY
 	depends on MBEDTLS_PSA_CRYPTO_C
 	default y
 	help
 	  Automatically seed SoftDevice upon NRF_EVT_RAND_SEED_REQUEST events,
-	  using CRACEN to generate the random seed.
+	  using CRACEN to generate the random seed. This option must be enabled
+	  when the SoftDevice events are dispatched via the scheduler.
 
 config NRF_SDH_STR_TABLES
 	bool "Build string tables for SoftDevice events"
