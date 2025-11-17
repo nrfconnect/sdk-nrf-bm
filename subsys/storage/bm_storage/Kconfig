@@ -24,6 +24,10 @@ config BM_STORAGE_BACKEND_SD
 	depends on NRF_SDH
 	depends on RING_BUFFER
 
+config BM_STORAGE_BACKEND_NATIVE_SIM
+	bool "Bare Metal native simulator storage backend"
+	depends on BOARD_NATIVE_SIM
+
 endchoice
 
 if BM_STORAGE_BACKEND_SD
@@ -40,5 +44,12 @@ config BM_STORAGE_BACKEND_SD_MAX_RETRIES
 	  The SoftDevice might fail to schedule flash access due to high BLE activity.
 
 endif # BM_STORAGE_BACKEND_SD
+
+if BM_STORAGE_BACKEND_NATIVE_SIM
+
+config BM_STORAGE_BACKEND_NATIVE_SIM_ASYNC
+	bool "Asynchronous execution of storage operations"
+
+endif # BM_STORAGE_BACKEND_NATIVE_SIM
 
 endif # BM_STORAGE
