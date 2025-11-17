@@ -1,4 +1,4 @@
 tests:
-  lib.bm_storage:
+  subsys.bm_storage:
     platform_allow: native_sim
     tags: unittest
