@@ -12,7 +12,8 @@
 
 LOG_MODULE_DECLARE(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
 
-static void on_rand_seed_evt(uint32_t evt, void *ctx)
+/* Extern in nrf_sdh.c */
+void sdh_soc_rand_seed(uint32_t evt, void *ctx)
 {
 	uint32_t nrf_err;
 	psa_status_t status;
@@ -42,4 +43,4 @@ static void on_rand_seed_evt(uint32_t evt, void *ctx)
 	LOG_DBG("SoftDevice RNG seeded");
 }
 
-NRF_SDH_SOC_OBSERVER(rand_seed, on_rand_seed_evt, NULL, HIGH);
+NRF_SDH_SOC_OBSERVER(rand_seed, sdh_soc_rand_seed, NULL, HIGH);
