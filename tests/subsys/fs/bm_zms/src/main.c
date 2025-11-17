@@ -118,10 +118,10 @@ ZTEST_F(bm_zms, test_bm_zms_register)
 	int err;
 
 	err = bm_zms_register(NULL, &bm_zms_test_handler);
-	zassert_true(err == -EINVAL, "bm_zms_register unexpected failure");
+	zassert_true(err == -EFAULT, "bm_zms_register unexpected failure");
 
 	err = bm_zms_register(&fixture->fs, NULL);
-	zassert_true(err == -EINVAL, "bm_zms_register unexpected failure");
+	zassert_true(err == -EFAULT, "bm_zms_register unexpected failure");
 
 	err = bm_zms_register(&fixture->fs, &bm_zms_test_handler);
 	zassert_true(err == 0, "bm_zms_register call failure");
@@ -285,7 +285,7 @@ ZTEST_F(bm_zms, test_zms_gc_3sectors)
 	/* 101st write will trigger 4th GC. */
 	const uint16_t max_writes_4 = 41 + 20 + 20 + 20;
 
-	fixture->fs.sector_count = 3;
+	fixture->config.sector_count = 3;
 
 	err = bm_zms_register(&fixture->fs, &bm_zms_test_handler);
 	zassert_true(err == 0, "bm_zms_register call failure err %x", err);
@@ -579,7 +579,7 @@ ZTEST_F(bm_zms, test_zms_cache_gc)
 	err = bm_zms_register(&fixture->fs, &bm_zms_test_handler);
 	zassert_true(err == 0, "bm_zms_register call failure");
 
-	fixture->fs.sector_count = 3;
+	fixture->config.sector_count = 3;
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
 	wait_for_init(&fixture->fs);
 	zassert_true(err == 0, "bm_zms_mount call failure");
