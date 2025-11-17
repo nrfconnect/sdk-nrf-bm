@@ -29,6 +29,10 @@
 
 LOG_MODULE_REGISTER(bm_zms, CONFIG_BM_ZMS_LOG_LEVEL);
 
+#if CONFIG_ZTEST
+#define __ALIGN(x) __aligned(x)
+#endif
+
 static zms_op_t cur_op; /* Current bm_zms operation. */
 static zms_op_t *p_cur_op;
 static atomic_t cur_op_result = ATOMIC_INIT(0);

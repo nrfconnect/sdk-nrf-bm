@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
+#include <zephyr/kernel.h>
 #include <zephyr/sys/crc.h>
 #include <zephyr/sys/atomic.h>
 #include <zephyr/sys/crc.h>
@@ -17,19 +18,42 @@
 #include <bm_zms_priv.h>
 
 /* Arbitrary block size. */
-#define SECTOR_SIZE 1024U
+#define TEST_SECTOR_SIZE 1024U
+#define TEST_SECTOR_COUNT 4U
+#define TEST_PARTITION_SIZE (TEST_SECTOR_SIZE * TEST_SECTOR_COUNT)
 
-#define STORAGE_NODE	     DT_NODELABEL(storage_partition)
-#define TEST_PARTITION_START DT_REG_ADDR(STORAGE_NODE)
-#define TEST_PARTITION_SIZE  (SECTOR_SIZE * 4)
-#define TEST_DATA_ID	     1
-#define TEST_SECTOR_COUNT    4U
+static uint8_t mem[TEST_PARTITION_SIZE];
+
+#define TEST_PARTITION_START ((off_t)mem)
+#define TEST_DATA_ID 1
 
 struct bm_zms_fixture {
 	struct bm_zms_fs fs;
 	struct bm_zms_fs_config config;
 };
+
 static bool nvm_is_full;
+
+static void wait_for_ongoing_writes(struct bm_zms_fs *fs)
+{
+	while (fs->ongoing_writes) {
+		k_sleep(K_MSEC(100));
+	}
+}
+
+static void wait_for_init(struct bm_zms_fs *fs)
+{
+	while (!fs->init_flags.initialized) {
+		k_sleep(K_MSEC(100));
+	}
+}
+
+static void wait_for_uninit(struct bm_zms_fs *fs)
+{
+	while (fs->init_flags.initialized) {
+		k_sleep(K_MSEC(100));
+	}
+}
 
 static void *setup(void)
 {
@@ -37,7 +61,7 @@ static void *setup(void)
 
 	memset(&fixture, 0, sizeof(struct bm_zms_fixture));
 	fixture.config.offset = TEST_PARTITION_START;
-	fixture.config.sector_size = SECTOR_SIZE;
+	fixture.config.sector_size = TEST_SECTOR_SIZE;
 	fixture.config.sector_count = TEST_SECTOR_COUNT;
 
 	return &fixture;
@@ -58,37 +82,10 @@ static void after(void *data)
 
 		err = bm_zms_clear(&fixture->fs);
 		zassert_true(err == 0, "zms_clear call failure: %x", err);
+		wait_for_uninit(&fixture->fs);
 	}
 
-	fixture->fs.sector_count = TEST_SECTOR_COUNT;
-}
-
-static void wait_for_ongoing_writes(struct bm_zms_fs *fs)
-{
-	while (fs->ongoing_writes) {
-#if defined(CONFIG_SOFTDEVICE)
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
-#endif
-	}
-}
-
-static void wait_for_init(struct bm_zms_fs *fs)
-{
-	while (!fs->init_flags.initialized) {
-#if defined(CONFIG_SOFTDEVICE)
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
-#endif
-	}
+	fixture->config.sector_count = TEST_SECTOR_COUNT;
 }
 
 void bm_zms_test_handler(bm_zms_evt_t const *p_evt)
@@ -171,6 +168,8 @@ ZTEST_F(bm_zms, test_bm_zms_write)
 
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
 	zassert_true(err == 0, "zms_mount call failure: %d", err);
+	wait_for_init(&fixture->fs);
+
 	execute_long_pattern_write(TEST_DATA_ID, &fixture->fs);
 }
 
@@ -184,7 +183,7 @@ ZTEST_F(bm_zms, test_zms_gc)
 	/* 21st write will trigger GC. */
 	const uint16_t max_writes = 21;
 
-	fixture->fs.sector_count = 2;
+	fixture->config.sector_count = 2;
 
 	err = bm_zms_register(&fixture->fs, &bm_zms_test_handler);
 	zassert_true(err == 0, "bm_zms_register call failure");
@@ -318,6 +317,7 @@ ZTEST_F(bm_zms, test_zms_gc_3sectors)
 
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
 	zassert_true(err == 0, "bm_zms_mount call failure");
+	wait_for_init(&fixture->fs);
 
 	zassert_equal(fixture->fs.ate_wra >> ADDR_SECT_SHIFT, 0, "unexpected write sector");
 	check_content(max_id, &fixture->fs);
@@ -361,7 +361,7 @@ ZTEST_F(bm_zms, test_zms_full_sector)
 	uint32_t filling_id = 0;
 	uint32_t data_read;
 
-	fixture->fs.sector_count = 3;
+	fixture->config.sector_count = 3;
 
 	err = bm_zms_register(&fixture->fs, &bm_zms_test_handler);
 	zassert_true(err == 0, "bm_zms_register call failure");
@@ -417,7 +417,7 @@ ZTEST_F(bm_zms, test_delete)
 	uint32_t ate_wra;
 	uint32_t data_wra;
 
-	fixture->fs.sector_count = 3;
+	fixture->config.sector_count = 3;
 
 	err = bm_zms_register(&fixture->fs, &bm_zms_test_handler);
 	zassert_true(err == 0, "bm_zms_register call failure");
@@ -497,7 +497,7 @@ ZTEST_F(bm_zms, test_zms_cache_init)
 	err = bm_zms_register(&fixture->fs, &bm_zms_test_handler);
 	zassert_true(err == 0, "bm_zms_register call failure");
 
-	fixture->fs.sector_count = 3;
+	fixture->config.sector_count = 3;
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
 	wait_for_init(&fixture->fs);
 	zassert_true(err == 0, "bm_zms_mount call failure");
@@ -546,7 +546,7 @@ ZTEST_F(bm_zms, test_zms_cache_collission)
 	err = bm_zms_register(&fixture->fs, &bm_zms_test_handler);
 	zassert_true(err == 0, "bm_zms_register call failure");
 
-	fixture->fs.sector_count = 4;
+	fixture->config.sector_count = 4;
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
 	wait_for_init(&fixture->fs);
 	zassert_true(err == 0, "bm_zms_mount call failure");
