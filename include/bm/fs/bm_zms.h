@@ -25,7 +25,7 @@ extern "C" {
  */
 
 /**
- * @defgroup bm_zms_data_structures BM_ZMS data structures
+ * @defgroup bm_zms_data_types BM_ZMS data types
  * @ingroup bm_zms
  * @{
  */
@@ -60,8 +60,14 @@ typedef struct {
 struct bm_zms_init_flags {
 	volatile bool initialized;  /* true when the storage is initialized. */
 	volatile bool initializing; /* true when initialization is ongoing. */
-	bool cb_registred;	    /* true when the user callback is registred. */
 } __packed;
+
+/**
+ * @brief Bare Metal ZMS event handler function prototype.
+ *
+ * @param p_evt The event.
+ */
+typedef void (*bm_zms_cb_t)(bm_zms_evt_t const *p_evt);
 
 /** Zephyr Memory Storage file system structure */
 struct bm_zms_fs {
@@ -91,8 +97,8 @@ struct bm_zms_fs {
 	struct bm_storage zms_bm_storage;
 	/** Number of writes currently handled by the storage system. */
 	atomic_t ongoing_writes;
-	/** The user number that identifies the callback for an event. */
-	uint32_t user_num;
+	/** User callback for propagating events. */
+	bm_zms_cb_t user_cb;
 #if CONFIG_BM_ZMS_LOOKUP_CACHE
 	/** Lookup table used to cache ATE addresses of written IDs. */
 	uint64_t lookup_cache[CONFIG_BM_ZMS_LOOKUP_CACHE_SIZE];
@@ -122,13 +128,6 @@ struct bm_zms_fs_config {
  */
 
 /**
- *@brief Bare Metal ZMS event handler function prototype.
- *
- * @param p_evt The event.
- */
-typedef void (*bm_zms_cb_t)(bm_zms_evt_t const *p_evt);
-
-/**
  * @brief Register a callback to BM_ZMS for handling events.
  *
  * @param fs Pointer to the file system structure.
@@ -136,7 +135,6 @@ typedef void (*bm_zms_cb_t)(bm_zms_evt_t const *p_evt);
  *
  * @retval 0 on success.
  * @retval -EFAULT if @p fs or @p cb are NULL.
- * @retval -ENOMEM if no more callback slots are available.
  */
 int bm_zms_register(struct bm_zms_fs *fs, bm_zms_cb_t cb);
 

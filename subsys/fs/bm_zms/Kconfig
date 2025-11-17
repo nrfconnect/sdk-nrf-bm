@@ -50,12 +50,6 @@ config BM_ZMS_CUSTOM_BLOCK_SIZE
 	help
 	  Changes the internal buffer size of BM_ZMS.
 
-config BM_ZMS_MAX_USERS
-	int "BM_ZMS maximum users"
-	default 8
-	help
-	  Defines the maximum number of event handlers that can be registred by the user.
-
 config BM_ZMS_OP_QUEUE_SIZE
 	int "BM_ZMS operations queue size"
 	default 16
