@@ -9,3 +9,4 @@ zephyr_library_sources(bm_storage.c)
 
 add_subdirectory_ifdef(CONFIG_BM_STORAGE_BACKEND_RRAM rram)
 add_subdirectory_ifdef(CONFIG_BM_STORAGE_BACKEND_SD sd)
+add_subdirectory_ifdef(CONFIG_BM_STORAGE_BACKEND_NATIVE_SIM native_sim)
