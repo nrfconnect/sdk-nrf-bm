@@ -438,7 +438,7 @@ static void sec_info_request_process(const ble_gap_evt_t *gap_evt)
 		}
 	}
 
-	nrf_err = sd_ble_gap_sec_info_reply(gap_evt->conn_handle, enc_info, NULL);
+	nrf_err = sd_ble_gap_sec_info_reply(gap_evt->conn_handle, enc_info);
 
 	if (nrf_err == NRF_ERROR_INVALID_STATE) {
 		/* Do nothing. If disconnecting, it will be caught later by the handling of the

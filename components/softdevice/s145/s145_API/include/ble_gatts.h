@@ -152,7 +152,6 @@ enum BLE_GATTS_CFGS
 #define BLE_GATTS_OP_INVALID                0x00  /**< Invalid Operation. */
 #define BLE_GATTS_OP_WRITE_REQ              0x01  /**< Write Request. */
 #define BLE_GATTS_OP_WRITE_CMD              0x02  /**< Write Command. */
-#define BLE_GATTS_OP_SIGN_WRITE_CMD         0x03  /**< Signed Write Command. */
 #define BLE_GATTS_OP_PREP_WRITE_REQ         0x04  /**< Prepare Write Request. */
 #define BLE_GATTS_OP_EXEC_WRITE_REQ_CANCEL  0x05  /**< Execute Write Request: Cancel all prepared writes. */
 #define BLE_GATTS_OP_EXEC_WRITE_REQ_NOW     0x06  /**< Execute Write Request: Immediately execute all prepared writes. */

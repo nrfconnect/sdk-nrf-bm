@@ -598,7 +598,7 @@ SVCALL(SD_BLE_GATTC_READ, uint32_t, sd_ble_gattc_read(uint16_t conn_handle, uint
 SVCALL(SD_BLE_GATTC_CHAR_VALUES_READ, uint32_t, sd_ble_gattc_char_values_read(uint16_t conn_handle, uint16_t const *p_handles, uint16_t handle_count));
 
 
-/**@brief Perform a Write (Characteristic Value or Descriptor, with or without response, signed or not, long or reliable) procedure.
+/**@brief Perform a Write (Characteristic Value or Descriptor, with or without response, long or reliable) procedure.
  *
  * @details This function can perform all write procedures described in GATT.
  *

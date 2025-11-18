@@ -97,22 +97,22 @@ endobj
 endobj
 19 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 56 0 R /XYZ 57.02362 613.0236 0 ] /Rect [ 77.02362 627.6236 117.6451 637.8236 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 56 0 R /XYZ 57.02362 583.0236 0 ] /Rect [ 77.02362 627.6236 117.6451 637.8236 ] /Subtype /Link /Type /Annot
 >>
 endobj
 20 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 56 0 R /XYZ 57.02362 613.0236 0 ] /Rect [ 533.526 628.2611 538.252 638.4611 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 56 0 R /XYZ 57.02362 583.0236 0 ] /Rect [ 533.526 628.2611 538.252 638.4611 ] /Subtype /Link /Type /Annot
 >>
 endobj
 21 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 56 0 R /XYZ 57.02362 289.0236 0 ] /Rect [ 77.02362 611.4236 129.9361 621.6236 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 56 0 R /XYZ 57.02362 259.0236 0 ] /Rect [ 77.02362 611.4236 129.9361 621.6236 ] /Subtype /Link /Type /Annot
 >>
 endobj
 22 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 56 0 R /XYZ 57.02362 289.0236 0 ] /Rect [ 533.526 612.0611 538.252 622.2611 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 56 0 R /XYZ 57.02362 259.0236 0 ] /Rect [ 533.526 612.0611 538.252 622.2611 ] /Subtype /Link /Type /Annot
 >>
 endobj
 23 0 obj
@@ -391,7 +391,7 @@ endobj
 endobj
 66 0 obj
 <<
-/Author () /CreationDate (D:20251114131953-01'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20251114131953-01'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
+/Author () /CreationDate (D:20251118154509-01'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20251118154509-01'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
   /Subject (\(unspecified\)) /Title (s145 release notes) /Trapped /False
 >>
 endobj
@@ -434,12 +434,12 @@ endobj
 endobj
 74 0 obj
 <<
-/Dest [ 56 0 R /XYZ 57.02362 613.0236 0 ] /Next 75 0 R /Parent 70 0 R /Prev 73 0 R /Title (Limitations)
+/Dest [ 56 0 R /XYZ 57.02362 583.0236 0 ] /Next 75 0 R /Parent 70 0 R /Prev 73 0 R /Title (Limitations)
 >>
 endobj
 75 0 obj
 <<
-/Dest [ 56 0 R /XYZ 57.02362 289.0236 0 ] /Parent 70 0 R /Prev 74 0 R /Title (Known Issues)
+/Dest [ 56 0 R /XYZ 57.02362 259.0236 0 ] /Parent 70 0 R /Prev 74 0 R /Title (Known Issues)
 >>
 endobj
 76 0 obj
@@ -1282,7 +1282,7 @@ q
 1 0 0 1 23 -3 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The Firmware ID of this SoftDevice is 0x300B.) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The Firmware ID of this SoftDevice is 0x300F.) Tj T* ET
 Q
 Q
 q
@@ -1507,18 +1507,18 @@ endstream
 endobj
 95 0 obj
 <<
-/Length 7456
+/Length 7900
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
 q
-1 0 0 1 57.02362 629.0236 cm
+1 0 0 1 57.02362 599.0236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
-BT 1 0 0 1 6 123 Tm  T* ET
+BT 1 0 0 1 6 153 Tm  T* ET
 q
-1 0 0 1 23 97 cm
+1 0 0 1 23 127 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1533,6 +1533,32 @@ q
 1 0 0 1 23 -3 cm
 q
 BT 1 0 0 1 0 26 Tm 12 TL /F1 10 Tf 0 0 0 rg (The SoftDevice now uses an application-provided passkey \() Tj /F5 10 Tf (BLE_GAP_OPT_PASSKEY) Tj /F1 10 Tf (\) for only) Tj T* (one pairing attempt. Using a static or non-random passkey is insecure and not allowed by the) Tj T* (Bluetooth Core Specification \(DRGN-26638\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 121 cm
+Q
+q
+1 0 0 1 23 97 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (The API for Data Signing has been removed. This was never supported by the SoftDevice) Tj T* (\(DRGN-26752\).) Tj T* ET
 Q
 Q
 q
@@ -1558,7 +1584,7 @@ q
 1 0 0 1 23 -3 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (The API for Data Signing has been removed. This was never supported by the SoftDevice) Tj T* (\(DRGN-26752\).) Tj T* ET
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (The API for BR/EDR Link Key has been removed. This was never supported by the SoftDevice) Tj T* (\(DRGN-26752\).) Tj T* ET
 Q
 Q
 q
@@ -1583,8 +1609,7 @@ Q
 q
 1 0 0 1 23 -3 cm
 q
-0 0 0 rg
-BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (The API for BR/EDR Link Key has been removed. This was never supported by the SoftDevice) Tj T* (\(DRGN-26752\).) Tj T* ET
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (Removed the ) Tj /F5 10 Tf (p_id_info) Tj /F1 10 Tf ( parameter from ) Tj /F5 10 Tf (sd_ble_gap_sec_info_reply) Tj /F1 10 Tf (. It was unused by) Tj T* (the SoftDevice \(DRGN-26752\).) Tj T* ET
 Q
 Q
 q
@@ -1651,22 +1676,22 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 625.0236 cm
+1 0 0 1 57.02362 595.0236 cm
 Q
 q
-1 0 0 1 57.02362 595.0236 cm
+1 0 0 1 57.02362 565.0236 cm
 q
 BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Limitations) Tj T* ET
 Q
 Q
 q
-1 0 0 1 57.02362 583.0236 cm
+1 0 0 1 57.02362 553.0236 cm
 Q
 q
-1 0 0 1 57.02362 583.0236 cm
+1 0 0 1 57.02362 553.0236 cm
 Q
 q
-1 0 0 1 57.02362 357.0236 cm
+1 0 0 1 57.02362 327.0236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1823,10 +1848,10 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 351.0236 cm
+1 0 0 1 57.02362 321.0236 cm
 Q
 q
-1 0 0 1 57.02362 305.0236 cm
+1 0 0 1 57.02362 275.0236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1881,22 +1906,22 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 301.0236 cm
+1 0 0 1 57.02362 271.0236 cm
 Q
 q
-1 0 0 1 57.02362 271.0236 cm
+1 0 0 1 57.02362 241.0236 cm
 q
 BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Known Issues) Tj T* ET
 Q
 Q
 q
-1 0 0 1 57.02362 259.0236 cm
+1 0 0 1 57.02362 229.0236 cm
 Q
 q
-1 0 0 1 57.02362 259.0236 cm
+1 0 0 1 57.02362 229.0236 cm
 Q
 q
-1 0 0 1 57.02362 247.0236 cm
+1 0 0 1 57.02362 217.0236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1919,10 +1944,10 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 241.0236 cm
+1 0 0 1 57.02362 211.0236 cm
 Q
 q
-1 0 0 1 57.02362 183.0236 cm
+1 0 0 1 57.02362 153.0236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1976,10 +2001,10 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 179.0236 cm
+1 0 0 1 57.02362 149.0236 cm
 Q
 q
-1 0 0 1 57.02362 179.0236 cm
+1 0 0 1 57.02362 149.0236 cm
 Q
 q
 1 0 0 1 51.02362 42.51969 cm
@@ -5726,31 +5751,31 @@ xref
 0000016724 00000 n 
 0000022374 00000 n 
 0000031394 00000 n 
-0000038902 00000 n 
-0000047638 00000 n 
-0000056362 00000 n 
-0000065021 00000 n 
-0000073848 00000 n 
-0000074759 00000 n 
-0000083705 00000 n 
-0000093145 00000 n 
-0000096123 00000 n 
-0000096284 00000 n 
-0000096319 00000 n 
-0000096354 00000 n 
-0000096389 00000 n 
-0000096424 00000 n 
-0000096459 00000 n 
-0000096494 00000 n 
-0000096529 00000 n 
-0000096564 00000 n 
-0000096599 00000 n 
-0000096635 00000 n 
-0000096671 00000 n 
+0000039346 00000 n 
+0000048082 00000 n 
+0000056806 00000 n 
+0000065465 00000 n 
+0000074292 00000 n 
+0000075203 00000 n 
+0000084149 00000 n 
+0000093589 00000 n 
+0000096567 00000 n 
+0000096728 00000 n 
+0000096763 00000 n 
+0000096798 00000 n 
+0000096833 00000 n 
+0000096868 00000 n 
+0000096903 00000 n 
+0000096938 00000 n 
+0000096973 00000 n 
+0000097008 00000 n 
+0000097043 00000 n 
+0000097079 00000 n 
+0000097115 00000 n 
 trailer
 <<
 /ID 
-[<045d6badc2402cea3634e02c5d654e11><045d6badc2402cea3634e02c5d654e11>]
+[<37e7b683ce0f7b3420c0bad83f90a4cc><37e7b683ce0f7b3420c0bad83f90a4cc>]
 % ReportLab generated PDF document -- digest (http://www.reportlab.com)
 
 /Info 66 0 R
@@ -5758,5 +5783,5 @@ trailer
 /Size 117
 >>
 startxref
-96707
+97151
 %%EOF
