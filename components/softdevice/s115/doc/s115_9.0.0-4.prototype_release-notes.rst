@@ -38,7 +38,7 @@ SoftDevice properties
 
   * nRF54L15: 0x162000 (``s115_nrf54l15_9.0.0-4.prototype_softdevice.hex``).
 
-* The Firmware ID of this SoftDevice is 0x300B.
+* The Firmware ID of this SoftDevice is 0x300F.
 
 New Features
 -------------
@@ -70,6 +70,8 @@ Changes
   * The API for Data Signing has been removed. This was never supported by the SoftDevice (DRGN-26752).
 
   * The API for BR/EDR Link Key has been removed. This was never supported by the SoftDevice (DRGN-26752).
+
+  * Removed the ``p_id_info`` parameter from ``sd_ble_gap_sec_info_reply``. It was unused by the SoftDevice (DRGN-26752).
 
 
 Limitations
