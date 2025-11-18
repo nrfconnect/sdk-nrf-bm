@@ -84,6 +84,7 @@
 /subsys/fs/bm_zms/                        @nrfconnect/ncs-bm @rghaddab
 /subsys/logging/                          @nrfconnect/ncs-bm
 /subsys/mgmt/mcumgr/                      @nrfconnect/ncs-eris
+/subsys/nfc/                              @nrfconnect/ncs-bm
 /subsys/softdevice/                       @nrfconnect/ncs-bm
 /subsys/softdevice_handler/               @nrfconnect/ncs-bm
 /subsys/storage/bm_storage/               @nrfconnect/ncs-bm
