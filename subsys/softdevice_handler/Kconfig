@@ -25,7 +25,7 @@ config NRF_SDH_DISPATCH_MODEL_IRQ
 
 config NRF_SDH_DISPATCH_MODEL_SCHED
 	bool "Scheduler"
-	depends on EVENT_SCHEDULER
+	depends on BM_SCHEDULER
 	help
 	  SoftDevice events are passed to the application using the scheduler.
 

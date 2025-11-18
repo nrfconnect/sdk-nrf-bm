@@ -3,14 +3,14 @@
 #
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
-menuconfig EVENT_SCHEDULER
+menuconfig BM_SCHEDULER
 	bool "Event scheduler"
 	help
 	  A library to defer event processing to main().
 
-if EVENT_SCHEDULER
+if BM_SCHEDULER
 
-config EVENT_SCHEDULER_BUF_SIZE
+config BM_SCHEDULER_BUF_SIZE
 	int "Event buffer size"
 	# Maximum BLE event length is 500 (w/ 247 MTU)
 	default 512
@@ -18,7 +18,7 @@ config EVENT_SCHEDULER_BUF_SIZE
 	  Size of the buffer that events will be copied into.
 	  This is a dedicated heap.
 
-module=EVENT_SCHEDULER
+module=BM_SCHEDULER
 module-str=Event scheduler
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

@@ -1,4 +1,4 @@
-.. _lib_event_scheduler:
+.. _lib_bm_scheduler:
 
 Event Scheduler
 ###############
@@ -20,9 +20,9 @@ Configuration
 *************
 
 The library is enabled using the Kconfig system.
-Set the :kconfig:option:`CONFIG_EVENT_SCHEDULER` Kconfig option to enable the library.
+Set the :kconfig:option:`CONFIG_BM_SCHEDULER` Kconfig option to enable the library.
 
-Use the :kconfig:option:`CONFIG_EVENT_SCHEDULER_BUF_SIZE` Kconfig option to set the size of the event scheduler buffer that the events are copied into.
+Use the :kconfig:option:`CONFIG_BM_SCHEDULER_BUF_SIZE` Kconfig option to set the size of the event scheduler buffer that the events are copied into.
 
 Initialization
 ==============
@@ -32,9 +32,9 @@ The library is initialized automatically on application startup.
 Usage
 *****
 
-The SoftDevice event handler can call the :c:func:`event_scheduler_defer` function to schedule an event for later execution in the main thread.
+The SoftDevice event handler can call the :c:func:`bm_scheduler_defer` function to schedule an event for later execution in the main thread.
 
-To process these deferred events, call the :c:func:`event_scheduler_process` function regularly in the main application function.
+To process these deferred events, call the :c:func:`bm_scheduler_process` function regularly in the main application function.
 
 Dependencies
 ************
@@ -44,7 +44,7 @@ This library does not have any dependencies.
 API documentation
 *****************
 
-| Header file: :file:`include/bm/event_scheduler.h`
-| Source files: :file:`lib/event_scheduler/`
+| Header file: :file:`include/bm/bm_scheduler.h`
+| Source files: :file:`lib/bm_scheduler/`
 
-:ref:`Event Scheduler library API reference <api_event_scheduler>`
+:ref:`Event Scheduler library API reference <api_bm_scheduler>`

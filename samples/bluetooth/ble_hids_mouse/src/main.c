@@ -22,7 +22,7 @@
 
 #include <bm/softdevice_handler/nrf_sdh.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
-#include <bm/event_scheduler.h>
+#include <bm/bm_scheduler.h>
 #include <bm/bm_buttons.h>
 #include <bm/bm_timer.h>
 #include <bm/sensorsim.h>

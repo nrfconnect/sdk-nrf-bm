@@ -179,6 +179,10 @@ Libraries
 
   * Fixed an issue where the client context was shared between all instances.
 
+* :ref:`lib_bm_scheduler` library:
+
+  * Renamed library from ``event_scheduler`` to ``bm_scheduler``.
+
 Samples
 =======
 
@@ -212,7 +216,7 @@ Documentation
 * Added documentation for the :ref:`lib_ble_adv` library.
 * Added documentation for the :ref:`lib_ble_gatt_queue` library.
 * Added documentation for the :ref:`lib_ble_queued_writes` library.
-* Added documentation for the :ref:`lib_event_scheduler` library.
+* Added documentation for the :ref:`lib_bm_scheduler` library.
 * Added documentation for the :ref:`lib_sensorsim` library.
 * Added documentation for the :ref:`lib_storage` library.
 * Added documentation for the :ref:`lib_ble_queued_writes` library.

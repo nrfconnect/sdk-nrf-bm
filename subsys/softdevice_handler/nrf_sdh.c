@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <nrf_sdm.h>
 #include <bm/softdevice_handler/nrf_sdh.h>
-#include <bm/event_scheduler.h>
+#include <bm/bm_scheduler.h>
 #include <zephyr/toolchain.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/atomic.h>
@@ -333,7 +333,7 @@ void SD_EVT_IRQHandler(void)
 {
 	int err;
 
-	err = event_scheduler_defer(sdh_events_poll, NULL, 0);
+	err = bm_scheduler_defer(sdh_events_poll, NULL, 0);
 	if (err) {
 		LOG_WRN("Unable to schedule SoftDevice event, err %d", err);
 	}
