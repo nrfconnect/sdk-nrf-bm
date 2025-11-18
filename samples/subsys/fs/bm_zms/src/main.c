@@ -51,6 +51,20 @@ static void wait_for_init(void)
 	}
 }
 
+static void wait_for_uninit(void)
+{
+	while (fs.init_flags.initialized) {
+#if defined(CONFIG_SOFTDEVICE)
+		/* Wait for an event. */
+		__WFE();
+
+		/* Clear Event Register */
+		__SEV();
+		__WFE();
+#endif
+	}
+}
+
 #define IP_ADDRESS_ID 1
 #define KEY_VALUE_ID  0xbeefdead
 #define CNT_ID        2
@@ -315,6 +329,7 @@ int main(void)
 		LOG_ERR("Error while cleaning the storage, rc=%d", rc);
 		goto idle;
 	}
+	wait_for_uninit();
 
 	LOG_INF("BM_ZMS sample finished Successfully");
 
