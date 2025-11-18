@@ -224,6 +224,10 @@ Libraries
   * Updated the event handling to align with other libraries.
     The :c:struct:`ble_gq_req` now takes an :c:type:`ble_gq_evt_handler_t` event handler and the :c:member:`ble_gq_req.ctx` context.
 
+* :ref:`lib_bm_scheduler` library:
+
+  * Renamed library from ``event_scheduler`` to ``bm_scheduler``.
+
 Samples
 =======
 
@@ -257,7 +261,7 @@ Documentation
 * Added documentation for the :ref:`lib_ble_adv` library.
 * Added documentation for the :ref:`lib_ble_gatt_queue` library.
 * Added documentation for the :ref:`lib_ble_queued_writes` library.
-* Added documentation for the :ref:`lib_event_scheduler` library.
+* Added documentation for the :ref:`lib_bm_scheduler` library.
 * Added documentation for the :ref:`lib_sensorsim` library.
 * Added documentation for the :ref:`lib_storage` library.
 * Added documentation for the :ref:`lib_ble_queued_writes` library.

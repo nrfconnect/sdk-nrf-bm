@@ -6,7 +6,7 @@
 menu "Libraries"
 
 rsource "bluetooth/Kconfig"
-rsource "event_scheduler/Kconfig"
+rsource "bm_scheduler/Kconfig"
 rsource "bm_buttons/Kconfig"
 rsource "bm_timer/Kconfig"
 rsource "sensorsim/Kconfig"

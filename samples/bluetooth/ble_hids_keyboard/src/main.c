@@ -25,7 +25,7 @@
 #include <bm/bluetooth/peer_manager/nrf_ble_lesc.h>
 #include <bm/bluetooth/peer_manager/peer_manager.h>
 #include <bm/bluetooth/peer_manager/peer_manager_handler.h>
-#include <bm/event_scheduler.h>
+#include <bm/bm_scheduler.h>
 #include <zephyr/sys/ring_buffer.h>
 #include <zephyr/toolchain.h>
 #include <zephyr/logging/log.h>

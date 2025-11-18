@@ -66,12 +66,12 @@ Bare Metal Buttons library
    :inner:
    :members:
 
-.. _api_event_scheduler:
+.. _api_bm_scheduler:
 
 Bare Metal Event Scheduler library
 ==================================
 
-.. doxygengroup:: event_scheduler
+.. doxygengroup:: bm_scheduler
    :inner:
    :members:
 
