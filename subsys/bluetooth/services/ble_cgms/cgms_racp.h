@@ -36,7 +36,7 @@ extern "C" {
  * @return If functions from other modules return errors to this function,
  *         the @ref nrf_error are propagated.
  */
-uint32_t cgms_racp_char_add(struct ble_cgms *cgms);
+uint32_t cgms_racp_char_add(struct ble_cgms *cgms, const struct ble_cgms_config *cgms_cfg);
 
 /**
  * @brief Function for handling @ref BLE_GATTS_EVT_RW_AUTHORIZE_REQUEST events.

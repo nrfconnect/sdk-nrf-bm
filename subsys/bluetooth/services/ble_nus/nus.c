@@ -38,6 +38,8 @@ static uint32_t nus_rx_char_add(struct ble_nus *nus, struct ble_nus_config const
 	ble_gatts_attr_md_t attr_md = {
 		.vloc = BLE_GATTS_VLOC_STACK,
 		.vlen = true,
+		.read_perm = cfg->sec_mode.nus_rx_char.read,
+		.write_perm = cfg->sec_mode.nus_rx_char.write,
 	};
 	ble_gatts_attr_t attr_char_value = {
 		.p_uuid = &char_uuid,
@@ -46,9 +48,6 @@ static uint32_t nus_rx_char_add(struct ble_nus *nus, struct ble_nus_config const
 		.init_len = sizeof(uint8_t),
 		.max_len = BLE_NUS_MAX_DATA_LEN,
 	};
-
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.read_perm);
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.write_perm);
 
 	/* Add Nordic UART RX characteristic declaration and value attributes. */
 	return sd_ble_gatts_characteristic_add(nus->service_handle, &char_md, &attr_char_value,
@@ -62,7 +61,9 @@ static uint32_t nus_tx_char_add(struct ble_nus *nus, struct ble_nus_config const
 		.uuid = BLE_UUID_NUS_TX_CHARACTERISTIC,
 	};
 	ble_gatts_attr_md_t cccd_md = {
-		.vloc = BLE_GATTS_VLOC_STACK
+		.vloc = BLE_GATTS_VLOC_STACK,
+		.read_perm = BLE_GAP_CONN_SEC_MODE_OPEN,
+		.write_perm = cfg->sec_mode.nus_tx_char.cccd_write,
 	};
 	ble_gatts_char_md_t char_md = {
 		.char_props = {
@@ -73,6 +74,7 @@ static uint32_t nus_tx_char_add(struct ble_nus *nus, struct ble_nus_config const
 	ble_gatts_attr_md_t attr_md = {
 		.vloc = BLE_GATTS_VLOC_STACK,
 		.vlen = true,
+		.read_perm = cfg->sec_mode.nus_tx_char.read,
 	};
 	ble_gatts_attr_t attr_char_value = {
 		.p_uuid = &char_uuid,
@@ -81,12 +83,6 @@ static uint32_t nus_tx_char_add(struct ble_nus *nus, struct ble_nus_config const
 		.init_len = 0,
 		.max_len = BLE_NUS_MAX_DATA_LEN,
 	};
-
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.read_perm);
-
-	/* Setup CCCD */
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.read_perm);
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.write_perm);
 
 	/* Add Nordic UART TX declaration, value and CCCD attributes */
 	return sd_ble_gatts_characteristic_add(nus->service_handle, &char_md, &attr_char_value,

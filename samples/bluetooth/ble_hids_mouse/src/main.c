@@ -405,24 +405,14 @@ static uint32_t hids_init(void)
 				.remote_wake = 1,
 				.normally_connectable = 1,
 			},
-			.rd_sec = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
 		},
 		.report_map = {
 			.data = report_map_data,
 			.len = sizeof(report_map_data),
-			.sec.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
 		},
 		.included_services_count = 0,
 		.included_services_array = NULL,
-		.boot_mouse_inp_rep_sec = {
-			.cccd_write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-			.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-			.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-		},
-
-		.protocol_mode_sec.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-		.protocol_mode_sec.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-		.ctrl_point_sec.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
+		.sec_mode = BLE_HIDS_CONFIG_SEC_MODE_DEFAULT_MOUSE,
 	};
 
 	return ble_hids_init(&ble_hids, &hids_config);
@@ -709,9 +699,11 @@ int main(void)
 		.can_notify = true,
 		.report_ref = NULL,
 		.battery_level = 100,
-		.batt_rd_sec = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-		.report_ref_rd_sec = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-		.cccd_wr_sec = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
+		.sec_mode = BLE_BAS_CONFIG_SEC_MODE_DEFAULT,
+	};
+
+	struct ble_dis_config dis_config = {
+		.sec_mode = BLE_DIS_CONFIG_SEC_MODE_DEFAULT,
 	};
 
 	struct ble_qwr_config qwr_config = {
@@ -805,7 +797,7 @@ int main(void)
 		goto idle;
 	}
 
-	nrf_err = ble_dis_init();
+	nrf_err = ble_dis_init(&dis_config);
 	if (nrf_err) {
 		LOG_ERR("Failed to initialize device information service, nrf_error %#x", nrf_err);
 		goto idle;
