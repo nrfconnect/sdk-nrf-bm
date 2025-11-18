@@ -130,8 +130,8 @@ struct bm_zms_fs_config {
 /**
  * @brief Register a callback to BM_ZMS for handling events.
  *
- * @param cb Pointer to the event handler callback.
  * @param fs Pointer to the file system structure.
+ * @param cb Pointer to the event handler callback.
  *
  * @retval 0 on success.
  * @retval -EFAULT if @p fs or @p cb are NULL.
