@@ -1,20 +1,20 @@
 .. _lib_bm_scheduler:
 
-Event Scheduler
-###############
+Bare Metal scheduler
+####################
 
 .. contents::
    :local:
    :depth: 2
 
-The event scheduler is used for transferring execution from the interrupt context to the main application context.
+The Bare Metal scheduler is a library for scheduling functions to run on the main thread.
 
 Overview
 ********
 
-In some applications, it is beneficial to defer the execution of certain interrupts, such as those from the SoftDevice, to the main application function.
+This library enables queuing and execution of functions in the main-thread context.
+It can be used, for example, to defer the execution of operations from an ISR to the main thread.
 This shortens the time spent in the interrupt service routine (ISR).
-It also allows for lower priority events to be raised before the previous event is fully processed.
 
 Configuration
 *************
@@ -34,7 +34,7 @@ Usage
 
 The SoftDevice event handler can call the :c:func:`bm_scheduler_defer` function to schedule an event for later execution in the main thread.
 
-To process these deferred events, call the :c:func:`bm_scheduler_process` function regularly in the main application function.
+To process these deferred events, call the :c:func:`bm_scheduler_process` function regularly in the main application loop.
 
 Dependencies
 ************
@@ -47,4 +47,4 @@ API documentation
 | Header file: :file:`include/bm/bm_scheduler.h`
 | Source files: :file:`lib/bm_scheduler/`
 
-:ref:`Event Scheduler library API reference <api_bm_scheduler>`
+:ref:`Bare Metal scheduler library API reference <api_bm_scheduler>`
