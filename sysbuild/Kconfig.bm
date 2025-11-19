@@ -106,6 +106,12 @@ config BM_BOOT_IMG_HASH_ALG_PURE
 
 endchoice
 
+config BM_BOOT_BOOTCONF_LOCK_WRITES
+	bool "Protect bootloader's NVM from writes"
+	depends on SOC_NRF54L15_CPUAPP || SOC_NRF54L10_CPUAPP || SOC_NRF54L05_CPUAPP
+	help
+	  Sets RRAMC's BOOTCONF region protection to disable writes.
+
 endmenu
 
 endif # BM_BOOTLOADER_MCUBOOT
