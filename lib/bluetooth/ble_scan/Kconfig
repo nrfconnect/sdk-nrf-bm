@@ -5,19 +5,17 @@
 #
 
 menuconfig BLE_SCAN
-	bool "BLE scan"
-	depends on SOFTDEVICE
+	bool "BLE Scan"
+	depends on SOFTDEVICE_CENTRAL
 	select EXPERIMENTAL
-	help
-	  scan.
 
 if BLE_SCAN
 
-config BLE_SCAN_BUFFER
-	int "Scan buffer length"
+config BLE_SCAN_BUFFER_SIZE
+	int "Scan buffer size"
 	default 31
 	help
-	  Data length for an advertising set.
+	  Maximum size for an advertising set.
 
 config BLE_SCAN_NAME_MAX_LEN
 	int "Scan name maximum length"
@@ -29,37 +27,47 @@ config BLE_SCAN_SHORT_NAME_MAX_LEN
 	int "Scan short name maximum length"
 	default 32
 	help
-	  Maximum size of the short name to search for in the advertisement report
+	  Maximum size of the short name to search for in the advertisement report.
 
-config BLE_SCAN_NAME_CNT
+config BLE_SCAN_FILTER
+	bool "Enable scan filter"
+	default y
+	help
+	  Enabling filters for the scanning module.
+
+if BLE_SCAN_FILTER
+
+config BLE_SCAN_NAME_COUNT
 	int "Scan name count"
 	default 1
 	help
-	  Number of name filters.
+	  Maximum number of name filters.
 
-config BLE_SCAN_APPEARANCE_CNT
+config BLE_SCAN_APPEARANCE_COUNT
 	int "Scan appearance count"
 	default 0
 	help
-	  Number of appearance filters.
+	  Maximum number of appearance filters.
 
-config BLE_SCAN_ADDRESS_CNT
+config BLE_SCAN_ADDRESS_COUNT
 	int "Scan address count"
 	default 0
 	help
-	  Number of address filters.
+	  Maximum number of address filters.
 
-config BLE_SCAN_SHORT_NAME_CNT
+config BLE_SCAN_SHORT_NAME_COUNT
 	int "Scan short name count"
 	default 0
 	help
-	  Number of short name filters.
+	  Maximum number of short name filters.
 
-config BLE_SCAN_UUID_CNT
+config BLE_SCAN_UUID_COUNT
 	int "Scan UUID count"
 	default 0
 	help
-	  Number of filters for UUIDs.
+	  Maximum number of filters for UUIDs.
+
+endif # BLE_SCAN_FILTER
 
 config BLE_SCAN_SCAN_INTERVAL
 	int "Scanning interval"
@@ -69,10 +77,11 @@ config BLE_SCAN_SCAN_INTERVAL
 
 config BLE_SCAN_SCAN_DURATION
 	hex "Scan duration"
-	default 0x0000
-	range 0x0000 0xFFFF
+	default 0x0
+	range 0x0 0xFFFF
 	help
-	  Duration of a scanning session in units of 10 ms. If set to 0x0000, the scanning continues until it is explicitly disabled.
+	  Duration of a scanning session in units of 10 ms.
+	  If set to 0, the scanning continues until it is explicitly disabled.
 
 config BLE_SCAN_SCAN_WINDOW
 	int "Scanning window"
@@ -84,34 +93,28 @@ config BLE_SCAN_SLAVE_LATENCY
 	int "Scan slave latency"
 	default 0
 	help
-	  Determines the slave latency in counts of connection events
+	  Determines the slave latency in counts of connection events.
 
 config BLE_SCAN_MIN_CONNECTION_INTERVAL
 	hex "Minimum connection interval"
-	default 0x0006
-	range 0x0006 0x0C80
+	default 0x6
+	range 0x6 0xC80
 	help
-	  Determines the minimum connection interval in units of 1.25 milliseconds
+	  Determines the minimum connection interval in units of 1.25 milliseconds.
 
 config BLE_SCAN_MAX_CONNECTION_INTERVAL
 	hex "Maximum connection interval"
-	default 0x0018
-	range 0x0006 0x0C80
+	default 0x18
+	range 0x6 0xC80
 	help
-	  Determines the maximum connection interval in units of 1.25 milliseconds
+	  Determines the maximum connection interval in units of 1.25 milliseconds.
 
 config BLE_SCAN_SUPERVISION_TIMEOUT
 	hex "Scan supervision timeout"
-	default 0x0C80
-	range 0x000A 0x0C80
+	default 0xC80
+	range 0xA 0xC80
 	help
-	  Determines the supervision time-out in units of 10 millisecond
-
-config BLE_SCAN_FILTER_ENABLE
-	bool "Scan filter enable"
-	default y
-	help
-	  Enabling filters for the Scanning Module.
+	  Determines the supervision time-out in units of 10 millisecond.
 
 module=BLE_SCAN
 module-str=BLE Scan

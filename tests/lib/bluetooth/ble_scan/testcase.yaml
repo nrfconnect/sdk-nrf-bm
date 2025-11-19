@@ -1,4 +1,4 @@
 tests:
-  lib.ble_racp:
+  lib.ble_scan:
     platform_allow: native_sim
     tags: unittest
