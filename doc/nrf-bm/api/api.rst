@@ -154,6 +154,15 @@ Record Access Control Point
 
 .. _api_sensorsim:
 
+Scan library
+============
+
+.. doxygengroup:: ble_scan
+   :inner:
+   :members:
+
+.. _api_ble_scan:
+
 Sensor data simulator library
 =============================
 
