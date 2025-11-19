@@ -5,7 +5,7 @@
 #
 
 function(bm_install_setup)
-  if(NOT DEFINED SB_CONFIG_BM_BOOTLOADER_NONE)
+  if(NOT SB_CONFIG_BM_BOOTLOADER_NONE)
     ExternalZephyrProject_Add(
       APPLICATION ${SB_CONFIG_BM_BOOTLOADER_IMAGE_NAME}
       SOURCE_DIR ${SB_CONFIG_BM_BOOTLOADER_IMAGE_PATH}
@@ -15,7 +15,14 @@ function(bm_install_setup)
     sysbuild_add_dependencies(CONFIGURE ${DEFAULT_IMAGE} ${SB_CONFIG_BM_BOOTLOADER_IMAGE_NAME})
     sysbuild_add_dependencies(FLASH ${DEFAULT_IMAGE} ${SB_CONFIG_BM_BOOTLOADER_IMAGE_NAME})
 
-    if(NOT DEFINED SB_CONFIG_BM_FIRMWARE_LOADER_NONE)
+    if(SB_CONFIG_BM_BOOT_BOOTCONF_LOCK_WRITES)
+      ExternalZephyrProject_Add(
+        APPLICATION bootconf
+        SOURCE_DIR ${ZEPHYR_NRF_BM_MODULE_DIR}/cmake/bootconf
+      )
+    endif()
+
+    if(NOT SB_CONFIG_BM_FIRMWARE_LOADER_NONE)
       ExternalZephyrProject_Add(
         APPLICATION ${SB_CONFIG_BM_FIRMWARE_LOADER_IMAGE_NAME}
         SOURCE_DIR ${SB_CONFIG_BM_FIRMWARE_LOADER_IMAGE_PATH}
@@ -111,7 +118,7 @@ endfunction()
 function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
   cmake_parse_arguments(PRE_CMAKE "" "" "IMAGES" ${ARGN})
 
-  if(NOT DEFINED SB_CONFIG_NCS_BM)
+  if(NOT SB_CONFIG_NCS_BM)
     # Disable bare-metal on all images
     foreach(image ${PRE_CMAKE_IMAGES})
       set_config_int(${image} CONFIG_NCS_BM n)
@@ -120,10 +127,10 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
     return()
   endif()
 
-  if(NOT DEFINED SB_CONFIG_BM_BOOTLOADER_NONE)
+  if(NOT SB_CONFIG_BM_BOOTLOADER_NONE)
     set(bm_install_images 1)
 
-    if(NOT DEFINED SB_CONFIG_BM_FIRMWARE_LOADER_NONE)
+    if(NOT SB_CONFIG_BM_FIRMWARE_LOADER_NONE)
       # Firmware loader present
       set_target_properties(${SB_CONFIG_BM_FIRMWARE_LOADER_IMAGE_NAME} PROPERTIES
         IMAGE_CONF_SCRIPT ${ZEPHYR_NRF_BM_MODULE_DIR}/sysbuild/image_configurations/MAIN_image_default.cmake
@@ -185,7 +192,7 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
       set_config_int(${image} CONFIG_BM_METADATA_WRITE n)
     endif()
 
-    if(NOT DEFINED SB_CONFIG_BM_BOOTLOADER_NONE AND NOT image STREQUAL "mcuboot")
+    if(NOT SB_CONFIG_BM_BOOTLOADER_NONE AND NOT image STREQUAL "mcuboot")
       if(SB_CONFIG_SOC_SERIES_NRF54LX)
         set_config_int(installer CONFIG_ROM_START_OFFSET 0x800)
       else()
@@ -197,7 +204,7 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
   if(SB_CONFIG_SOFTDEVICE_NONE)
     set_config_bool(${DEFAULT_IMAGE} CONFIG_SOFTDEVICE n)
 
-    if(NOT DEFINED SB_CONFIG_BM_BOOTLOADER_NONE AND NOT DEFINED SB_CONFIG_BM_FIRMWARE_LOADER_NONE)
+    if(NOT SB_CONFIG_BM_BOOTLOADER_NONE AND NOT SB_CONFIG_BM_FIRMWARE_LOADER_NONE)
       set_config_bool(${SB_CONFIG_BM_FIRMWARE_LOADER_IMAGE_NAME} CONFIG_SOFTDEVICE n)
     endif()
   else()
@@ -205,7 +212,7 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
       if(SB_CONFIG_${option})
         set_config_bool(${DEFAULT_IMAGE} CONFIG_${option} y)
 
-        if(NOT DEFINED SB_CONFIG_BM_BOOTLOADER_NONE AND NOT DEFINED SB_CONFIG_BM_FIRMWARE_LOADER_NONE AND NOT DEFINED SB_CONFIG_BM_FIRMWARE_LOADER_UART_MCUMGR)
+        if(NOT SB_CONFIG_BM_BOOTLOADER_NONE AND NOT SB_CONFIG_BM_FIRMWARE_LOADER_NONE AND NOT SB_CONFIG_BM_FIRMWARE_LOADER_UART_MCUMGR)
           set_config_bool(${SB_CONFIG_BM_FIRMWARE_LOADER_IMAGE_NAME} CONFIG_${option} y)
         endif()
         break()
@@ -215,38 +222,50 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
 endfunction()
 
 function(${SYSBUILD_CURRENT_MODULE_NAME}_post_cmake)
-  if(NOT DEFINED SB_CONFIG_NCS_BM)
+  if(NOT SB_CONFIG_NCS_BM)
     return()
   endif()
 
   cmake_parse_arguments(PRE_CMAKE "" "" "IMAGES" ${ARGN})
 
-  if(NOT DEFINED SB_CONFIG_BM_BOOTLOADER_NONE)
+  if(NOT SB_CONFIG_BM_BOOTLOADER_NONE)
     set(check_targets mcuboot;${DEFAULT_IMAGE})
     set(dependency_targets ${SB_CONFIG_SOFTDEVICE_FILE})
     set(production_targets mcuboot;${DEFAULT_IMAGE})
     set(production_files)
 
-    if(NOT DEFINED SB_CONFIG_BM_FIRMWARE_LOADER_NONE)
+    if(NOT SB_CONFIG_BM_FIRMWARE_LOADER_NONE)
       list(APPEND check_targets installer)
       list(APPEND check_targets ${SB_CONFIG_BM_FIRMWARE_LOADER_IMAGE_NAME})
       list(APPEND production_targets ${SB_CONFIG_BM_FIRMWARE_LOADER_IMAGE_NAME})
     endif()
 
+    if(SB_CONFIG_BM_BOOT_BOOTCONF_LOCK_WRITES)
+      list(APPEND check_targets bootconf)
+      list(APPEND dependency_targets bootconf)
+      list(APPEND production_targets bootconf)
+    endif()
+
     foreach(image ${check_targets})
-      sysbuild_get(${image}_kernel_bin_name IMAGE ${image} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
       sysbuild_get(${image}_binary_dir IMAGE ${image} VAR APPLICATION_BINARY_DIR CACHE)
 
       list(APPEND dependency_targets
         ${image}_extra_byproducts
         ${${image}_binary_dir}/zephyr/.config
-        ${${image}_binary_dir}/zephyr/${${image}_kernel_bin_name}.bin
       )
 
-      if("${image}" STREQUAL "${SB_CONFIG_BM_FIRMWARE_LOADER_IMAGE_NAME}")
+      if(NOT "${image}" STREQUAL "bootconf")
+        sysbuild_get(${image}_kernel_bin_name IMAGE ${image} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
+
         list(APPEND dependency_targets
-          ${${image}_binary_dir}/zephyr/${${image}_kernel_bin_name}.signed.bin
+          ${${image}_binary_dir}/zephyr/${${image}_kernel_bin_name}.bin
         )
+
+        if("${image}" STREQUAL "${SB_CONFIG_BM_FIRMWARE_LOADER_IMAGE_NAME}")
+          list(APPEND dependency_targets
+            ${${image}_binary_dir}/zephyr/${${image}_kernel_bin_name}.signed.bin
+          )
+        endif()
       endif()
     endforeach()
 
@@ -273,15 +292,24 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_post_cmake)
     endif()
 
     foreach(image ${production_targets})
-      sysbuild_get(${image}_kernel_bin_name IMAGE ${image} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
       sysbuild_get(${image}_binary_dir IMAGE ${image} VAR APPLICATION_BINARY_DIR CACHE)
 
-      if("${image}" STREQUAL "mcuboot")
+      if("${image}" STREQUAL "bootconf")
         list(APPEND production_files
-          ${${image}_binary_dir}/zephyr/${${image}_kernel_bin_name}_signed_softdevice_flash_metadata.hex)
+          ${${image}_binary_dir}/bootconf.hex
+        )
       else()
-        list(APPEND production_files
-          ${${image}_binary_dir}/zephyr/${${image}_kernel_bin_name}.signed.hex)
+        sysbuild_get(${image}_kernel_bin_name IMAGE ${image} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
+
+        if("${image}" STREQUAL "mcuboot")
+          list(APPEND production_files
+            ${${image}_binary_dir}/zephyr/${${image}_kernel_bin_name}_signed_softdevice_flash_metadata.hex
+          )
+        else()
+          list(APPEND production_files
+            ${${image}_binary_dir}/zephyr/${${image}_kernel_bin_name}.signed.hex
+          )
+        endif()
       endif()
     endforeach()
 
