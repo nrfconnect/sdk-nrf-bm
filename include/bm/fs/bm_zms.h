@@ -147,7 +147,7 @@ int bm_zms_register(struct bm_zms_fs *fs, bm_zms_cb_t cb);
  * @param config Pointer to the configuration for file system initialization.
  *
  * @retval 0 If the initialization is queued successfully.
- * @retval -EFAULT if @p fs is NULL.
+ * @retval -EFAULT if @p fs or @p config are NULL.
  * @retval -ENOMEM if the internal fifo is full.
  * @retval -EBUSY if an initialization is already executing.
  * @retval -EINVAL if any of the sector layout is invalid.
