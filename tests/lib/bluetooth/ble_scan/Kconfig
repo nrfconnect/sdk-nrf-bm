@@ -1,0 +1,6 @@
+# Clear dependencies for BLE_SCAN and enable it to allow
+# testing the features without enabling the library.
+config BLE_SCAN
+	default y
+
+source "Kconfig.zephyr"

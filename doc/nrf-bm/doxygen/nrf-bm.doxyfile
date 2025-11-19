@@ -2402,6 +2402,12 @@ INCLUDE_FILE_PATTERNS  =
 
 PREDEFINED             = __DOXYGEN__ \
                          CONFIG_BLE_QWR_MAX_ATTR=1 \
+                         CONFIG_BLE_SCAN_FILTER=1 \
+                         CONFIG_BLE_SCAN_NAME_COUNT=1 \
+                         CONFIG_BLE_SCAN_SHORT_NAME_COUNT=1 \
+                         CONFIG_BLE_SCAN_ADDRESS_COUNT=1 \
+                         CONFIG_BLE_SCAN_UUID_COUNT=1 \
+                         CONFIG_BLE_SCAN_APPEARANCE_COUNT=1 \
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
 # tag can be used to specify a list of macro names that should be expanded. The
