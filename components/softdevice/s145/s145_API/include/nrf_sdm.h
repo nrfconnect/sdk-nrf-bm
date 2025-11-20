@@ -48,11 +48,9 @@
 #define NRF_SDM_H__
 
 #include <stdint.h>
-#include "nrf.h"
 #include "nrf_svc.h"
 #include "nrf_error.h"
 #include "nrf_error_sdm.h"
-#include "nrf_soc.h"
 
 #ifdef __cplusplus
 extern "C" {

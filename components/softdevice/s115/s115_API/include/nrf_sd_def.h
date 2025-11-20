@@ -39,9 +39,6 @@
 #ifndef NRF_SD_DEF_H__
 #define NRF_SD_DEF_H__
 
-#include <stdint.h>
-#include "nrf_soc.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif

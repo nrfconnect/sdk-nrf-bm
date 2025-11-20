@@ -48,7 +48,6 @@
 #define NRF_SOC_H__
 
 #include <stdint.h>
-#include "nrf.h"
 #include "nrf_svc.h"
 #include "nrf_error.h"
 #include "nrf_error_soc.h"
@@ -386,46 +385,6 @@ SVCALL(SD_MUTEX_ACQUIRE, uint32_t, sd_mutex_acquire(nrf_mutex_t * p_mutex));
  */
 SVCALL(SD_MUTEX_RELEASE, uint32_t, sd_mutex_release(nrf_mutex_t * p_mutex));
 
-/**@brief Query the capacity of the application random pool.
- *
- * @param[out] p_pool_capacity The capacity of the pool.
- *
- * @deprecated This function is deprecated and will be removed in a future release.
- *
- * @retval ::NRF_SUCCESS
- */
-#ifdef SUPPRESS_INLINE_IMPLEMENTATION
-uint32_t sd_rand_application_pool_capacity_get(uint8_t * p_pool_capacity);
-#else
-__STATIC_INLINE uint32_t sd_rand_application_pool_capacity_get(uint8_t * p_pool_capacity)
-{
-  *p_pool_capacity = 255;
-
-  return NRF_SUCCESS;
-}
-#endif /* SUPPRESS_INLINE_IMPLEMENTATION */
-
-
-/**@brief Get number of random bytes available to the application.
- *
- * @param[out] p_bytes_available The number of bytes currently available in the pool.
- *
- * @deprecated This function is deprecated and will be removed in a future release.
- *
- * @retval ::NRF_SUCCESS
- */
-#ifdef SUPPRESS_INLINE_IMPLEMENTATION
-uint32_t sd_rand_application_bytes_available_get(uint8_t * p_bytes_available);
-
-#else
-__STATIC_INLINE uint32_t sd_rand_application_bytes_available_get(uint8_t * p_bytes_available)
-{
-  *p_bytes_available = 255;
-
-  return NRF_SUCCESS;
-}
-#endif /* SUPPRESS_INLINE_IMPLEMENTATION */
-
 /**@brief Generate NIST SP 800-90A compliant random numbers
  *
  * @param[out]  p_buff  Pointer to uint8_t buffer for storing the bytes.
@@ -544,46 +503,6 @@ SVCALL(SD_CLOCK_HFCLK_RELEASE, uint32_t, sd_clock_hfclk_release(void));
  * @retval ::NRF_SUCCESS
  */
 SVCALL(SD_CLOCK_HFCLK_IS_RUNNING, uint32_t, sd_clock_hfclk_is_running(uint32_t * p_is_running));
-
-/**@brief Waits for an event.
- *
- * An event is either an interrupt or a pended interrupt when the interrupt
- * is disabled.
- *
- * In order to wake up from disabled interrupts, the SEVONPEND flag has to be set in the Cortex-M
- * MCU's System Control Register (SCR), CMSIS_SCB. In that case, when a disabled interrupt gets
- * pended, this function will return.
- *
- * @note The application must ensure that the pended flag is cleared using NVIC_ClearPendingIRQ
- *       in order to sleep using this function. This is only necessary for disabled interrupts, as
- *       the interrupt handler will clear the pending flag automatically for enabled interrupts.
- *
- * @note If an interrupt has happened since the last time sd_app_evt_wait was
- *       called this function will return immediately and not go to sleep. This is to avoid race
- *       conditions that can occur when a flag is updated in the interrupt handler and processed
- *       in the main loop.
- *
- * @post An interrupt has happened or a interrupt pending flag is set.
- *
- * @deprecated This function is deprecated and will be removed in a future release.
- *
- * @retval ::NRF_SUCCESS
- */
-#ifdef SUPPRESS_INLINE_IMPLEMENTATION
-uint32_t sd_app_evt_wait(void);
-#else
-__STATIC_INLINE uint32_t sd_app_evt_wait(void)
-{
-  /* Wait for an event. */
-  __WFE();
-
-  /* Clear Event Register */
-  __SEV();
-  __WFE();
-
-  return NRF_SUCCESS;
-}
-#endif /* SUPPRESS_INLINE_IMPLEMENTATION */
 
 /**@brief Configures the Radio Notification signal.
  *
