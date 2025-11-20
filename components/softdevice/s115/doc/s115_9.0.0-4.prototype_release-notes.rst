@@ -38,7 +38,7 @@ SoftDevice properties
 
   * nRF54L15: 0x162000 (``s115_nrf54l15_9.0.0-4.prototype_softdevice.hex``).
 
-* The Firmware ID of this SoftDevice is 0x300F.
+* The Firmware ID of this SoftDevice is 0x3011.
 
 New Features
 -------------
@@ -47,6 +47,14 @@ Changes
 -------
 
 * SoftDevice
+
+  * Deprecated wrapper functions defined in the SoftDevice headers have been removed (DRGN-26817).
+
+    * ``sd_rand_application_pool_capacity_get``
+
+    * ``sd_rand_application_bytes_available_get``
+
+    * ``sd_app_evt_wait``
 
   * The function ``sd_flash_write`` now uses buffered writes to RRAM, with WRITEBUFSIZE=1.
     This reduces RRAM wear and improves performance (DRGN-24675).
