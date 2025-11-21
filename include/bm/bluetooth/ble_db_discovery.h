@@ -28,8 +28,7 @@
 #define BLE_DB_DISCOVERY_DEF(_name)                                                                \
 	static struct ble_db_discovery _name = {.discovery_in_progress = 0,                        \
 						.conn_handle = BLE_CONN_HANDLE_INVALID};           \
-	NRF_SDH_BLE_OBSERVER(_name##_obs, ble_db_discovery_on_ble_evt, &_name,                     \
-			     BLE_DB_DISC_BLE_OBSERVER_PRIO)
+	NRF_SDH_BLE_OBSERVER(_name##_obs, ble_db_discovery_on_ble_evt, &_name, HIGH);
 
 /**
  * @brief BLE database discovery event type.
