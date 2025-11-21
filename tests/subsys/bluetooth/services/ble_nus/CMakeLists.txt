@@ -31,7 +31,6 @@ target_compile_definitions(app PRIVATE
 target_include_directories(app PRIVATE
   ${ZEPHYR_NRF_BM_MODULE_DIR}/include
   ${SOFTDEVICE_INCLUDE_DIR}
-  ${ZEPHYR_HAL_NORDIC_MODULE_DIR}/nrfx/mdk
 )
 
 # Generate and add test file

@@ -12,14 +12,15 @@
 LOG_MODULE_REGISTER(app, CONFIG_APP_PWM_LOG_LEVEL);
 
 /* nrfx PWM instance index. */
-#define PWM_INST_IDX 20
+#define PWM_INST NRF_PWM20
 
+nrfx_pwm_t pwm_instance = NRFX_PWM_INSTANCE(PWM_INST);
 nrf_pwm_values_common_t pwm_val[] = {
 	0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000,
 	900, 800, 700, 600, 500, 400, 300, 200, 100, 0
 };
 
-static void pwm_handler(nrfx_pwm_evt_type_t event_type, void *ctx)
+static void pwm_handler(nrfx_pwm_event_type_t event_type, void *ctx)
 {
 	static uint32_t curr_loop = 1;
 
@@ -29,14 +30,13 @@ static void pwm_handler(nrfx_pwm_evt_type_t event_type, void *ctx)
 
 ISR_DIRECT_DECLARE(pwm_direct_isr)
 {
-	NRFX_PWM_INST_HANDLER_GET(20)();
+	nrfx_pwm_irq_handler(&pwm_instance);
 	return 0;
 }
 
 int main(void)
 {
-	nrfx_err_t nrfx_err;
-	nrfx_pwm_t pwm_instance = NRFX_PWM_INSTANCE(PWM_INST_IDX);
+	int err;
 	/*
 	 * PWM signal can be exposed on GPIO pin only within the same domain.
 	 * For nRF54L-series there is only one domain which contains both PWM and GPIO:
@@ -55,13 +55,13 @@ int main(void)
 
 	LOG_INF("PWM sample started");
 
-	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_PWM_INST_GET(PWM_INST_IDX)),
+	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(PWM_INST),
 			   CONFIG_APP_PWM_IRQ_PRIO,
 			   pwm_direct_isr, 0);
 
-	nrfx_err = nrfx_pwm_init(&pwm_instance, &config, pwm_handler, &pwm_instance);
-	if (nrfx_err != NRFX_SUCCESS) {
-		LOG_ERR("Failed to initialize PWM, nrfx_err %#x", nrfx_err);
+	err = nrfx_pwm_init(&pwm_instance, &config, pwm_handler, &pwm_instance);
+	if (err) {
+		LOG_ERR("Failed to initialize PWM, err %d", err);
 		goto idle;
 	}
 
