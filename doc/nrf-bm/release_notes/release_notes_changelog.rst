@@ -137,6 +137,9 @@ Libraries
      * The :c:func:`bm_zms_active_sector_free_space` function to return ``-EFAULT`` when the input parameter ``fs`` is ``NULL``.
      * The :c:func:`bm_zms_mount` function to expect an additional input parameter of type pointer to struct :c:struct:`bm_zms_fs_config` for configuring a Zephyr Memory Storage file system instance at initialization.
 
+   * Removed the :kconfig:option:`CONFIG_BM_ZMS_MAX_USERS` Kconfig option. Now the library expects at most one callback for each instance of the struct :c:struct:`bm_zms_fs`.
+   * Removed the :c:member:`bm_zms_init_flags.cb_registred` member since it was not used anymore.
+
 * :ref:`lib_peer_manager` library:
 
    * Updated:

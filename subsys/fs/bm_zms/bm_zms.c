@@ -51,9 +51,6 @@ static int bm_zms_clear_execute(void);
  */
 static atomic_t queued_op_cnt;
 
-/* The table of app callback functions. */
-static bm_zms_cb_t zms_cb_table[CONFIG_BM_ZMS_MAX_USERS];
-
 /* Queue of bm_zms operations. */
 RING_BUF_DECLARE(zms_fifo, CONFIG_BM_ZMS_OP_QUEUE_SIZE * sizeof(zms_op_t));
 
@@ -97,8 +94,8 @@ static void event_prepare(bm_zms_evt_t *p_evt)
 
 static void event_send(bm_zms_evt_t const *const p_evt, struct bm_zms_fs *fs)
 {
-	if (zms_cb_table[fs->user_num] != NULL) {
-		zms_cb_table[fs->user_num](p_evt);
+	if (fs->user_cb != NULL) {
+		fs->user_cb(p_evt);
 	}
 }
 
@@ -188,7 +185,7 @@ static void queue_process(void)
 				/* bm_zms needs to be reinitialized after clearing */
 				cur_op.fs->init_flags.initialized = false;
 				cur_op.fs->init_flags.initializing = false;
-				zms_cb_table[cur_op.fs->user_num] = NULL;
+				cur_op.fs->user_cb = NULL;
 				cur_op.op_completed = true;
 				result = 0;
 			} else {
@@ -325,23 +322,11 @@ static void zms_event_handler(struct bm_storage_evt *p_evt)
 
 int bm_zms_register(struct bm_zms_fs *fs, bm_zms_cb_t cb)
 {
-	int i;
-
 	if (!fs || !cb) {
 		return -EFAULT;
 	}
 
-	for (i = 0; i < CONFIG_BM_ZMS_MAX_USERS; i++) {
-		if (zms_cb_table[i] == NULL) {
-			break;
-		}
-	}
-	if (i == CONFIG_BM_ZMS_MAX_USERS) {
-		return -ENOMEM;
-	}
-	zms_cb_table[i] = cb;
-	fs->user_num = i;
-	fs->init_flags.cb_registred = true;
+	fs->user_cb = cb;
 
 	return 0;
 }
