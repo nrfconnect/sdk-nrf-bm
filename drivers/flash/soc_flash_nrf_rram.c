@@ -56,6 +56,8 @@ LOG_MODULE_REGISTER(flash_nrf_rram, CONFIG_FLASH_LOG_LEVEL);
 #define ERASE_VALUE              0xFF
 #define WRITE_LINE_SIZE       WRITE_BLOCK_SIZE_FROM_DT
 
+static volatile bool write_busy;
+
 static inline bool is_aligned_32(uint32_t data)
 {
 	return (data & 0x3) ? false : true;
@@ -88,6 +90,18 @@ static int nrf_rram_read(const struct device *dev, off_t addr, void *data, size_
 	return 0;
 }
 
+void rrw_done(void)
+{
+	uint32_t pm = __get_PRIMASK();
+
+	__disable_irq();
+	write_busy = false;
+	if (!pm) {
+		__enable_irq();
+	}
+	barrier_dmem_fence_full(); /* Barrier following our last write. */
+}
+
 static int nrf_rram_write(const struct device *dev, off_t addr, const void *data, size_t len)
 {
 	int ret = 0;
@@ -113,6 +127,18 @@ static int nrf_rram_write(const struct device *dev, off_t addr, const void *data
 		return 0;
 	}
 
+	uint32_t pm = __get_PRIMASK();
+
+	__disable_irq();
+	if (write_busy) {
+		if (!pm) {
+			__enable_irq();
+		}
+		return -EBUSY;
+	}
+	if (!pm) {
+		__enable_irq();
+	}
 	LOG_DBG("Write: %p: %zu", (void *)addr, len);
 
 	ret = sd_flash_write((uint32_t *)addr, data, len / sizeof(uint32_t));
@@ -120,30 +146,6 @@ static int nrf_rram_write(const struct device *dev, off_t addr, const void *data
 	if (ret) {
 		return -EIO;
 	}
-
-	while (1) {
-		int taskid;
-
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
-
-		ret = sd_evt_get(&taskid);
-
-		if (!ret && (taskid == NRF_EVT_FLASH_OPERATION_SUCCESS ||
-			     taskid == NRF_EVT_FLASH_OPERATION_ERROR)) {
-			if (taskid != NRF_EVT_FLASH_OPERATION_SUCCESS) {
-				ret = -EIO;
-			}
-
-			break;
-		}
-	}
-
-	barrier_dmem_fence_full(); /* Barrier following our last write. */
 
 	return ret;
 }
