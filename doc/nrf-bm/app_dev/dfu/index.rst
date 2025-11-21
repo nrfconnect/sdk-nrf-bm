@@ -13,3 +13,4 @@ This chapter provides an overview of the Device Firmware Update (DFU) capabiliti
    single_bank_dfu
    bootloader_keys
    ug_dfu
+   dfu_name
