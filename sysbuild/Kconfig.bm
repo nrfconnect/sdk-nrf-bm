@@ -86,6 +86,14 @@ config BM_BOOTLOADER_MCUBOOT_FIRMWARE_LOADER_ENTRANCE_BOOT_MODE
 
 endmenu
 
+config BM_APP_CAN_SETUP_FIRMWARE_LOADER_NAME
+	bool "Remote setup firmware loader BLE Advertising Name"
+	depends on !BM_FIRMWARE_LOADER_NONE
+	help
+	  If enable, the application and the firmware loader will be configured
+	  for supporting setup of the firmware loader BLE name using the settings retention
+	  memory backend. The settings key for writing the name is `fw_loader/adv_name`.
+
 choice BM_BOOTLOADER_MCUBOOT_IMG_HASH_ALG
 	prompt "Hashing algorithm"
 	default BM_BOOT_IMG_HASH_ALG_PURE if BM_BOOTLOADER_MCUBOOT_SIGNATURE_TYPE_ED25519 && SOC_SERIES_NRF54LX
