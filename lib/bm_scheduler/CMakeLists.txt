@@ -4,4 +4,4 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 zephyr_library()
-zephyr_library_sources(event_scheduler.c)
+zephyr_library_sources(bm_scheduler.c)

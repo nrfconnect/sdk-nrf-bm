@@ -6,12 +6,12 @@
 
 /** @file
  *
- * @defgroup event_scheduler NCS Bare Metal Event Scheduler library
+ * @defgroup bm_scheduler NCS Bare Metal Event Scheduler library
  * @{
  */
 
-#ifndef EVENT_SCHEDULER_H__
-#define EVENT_SCHEDULER_H__
+#ifndef BM_SCHEDULER_H__
+#define BM_SCHEDULER_H__
 
 #include <stdint.h>
 #include <zephyr/sys/slist.h>
@@ -30,7 +30,7 @@ typedef void (*evt_handler_t)(void *evt, size_t len);
  *
  * An event consists of a function (handler) and some data that the function has to process.
  */
-struct event_scheduler_event {
+struct bm_scheduler_event {
 	/**
 	 * @brief Reserved.
 	 */
@@ -63,7 +63,7 @@ struct event_scheduler_event {
  * @retval -EINVAL Invalid @p data and @p len combination.
  * @retval -ENOMEM No memory to schedule this event.
  */
-int event_scheduler_defer(evt_handler_t handler, void *data, size_t len);
+int bm_scheduler_defer(evt_handler_t handler, void *data, size_t len);
 
 /**
  * @brief Process deferred events.
@@ -72,12 +72,12 @@ int event_scheduler_defer(evt_handler_t handler, void *data, size_t len);
  *
  * @retval 0 On success.
  */
-int event_scheduler_process(void);
+int bm_scheduler_process(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* EVENT_SCHEDULER_H__ */
+#endif /* BM_SCHEDULER_H__ */
 
 /** @} */

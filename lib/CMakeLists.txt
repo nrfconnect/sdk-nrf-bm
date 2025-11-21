@@ -5,7 +5,7 @@
 #
 
 add_subdirectory(bluetooth)
-add_subdirectory_ifdef(CONFIG_EVENT_SCHEDULER event_scheduler)
+add_subdirectory_ifdef(CONFIG_BM_SCHEDULER bm_scheduler)
 add_subdirectory_ifdef(CONFIG_BM_BUTTONS bm_buttons)
 add_subdirectory_ifdef(CONFIG_BM_TIMER bm_timer)
 add_subdirectory_ifdef(CONFIG_SENSORSIM sensorsim)
