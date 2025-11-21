@@ -14,6 +14,7 @@ rsource "logging/Kconfig"
 rsource "mgmt/mcumgr/Kconfig"
 rsource "softdevice/Kconfig"
 rsource "softdevice_handler/Kconfig"
+rsource "settings/Kconfig"
 rsource "storage/Kconfig"
 # zephyr-keep-sorted-stop
 
