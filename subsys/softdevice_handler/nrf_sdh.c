@@ -15,10 +15,19 @@
 
 LOG_MODULE_REGISTER(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
 
-#if ((CONFIG_NRF_SDH_CLOCK_LF_SRC == NRF_CLOCK_LF_SRC_RC) &&                                       \
-	(CONFIG_NRF_SDH_CLOCK_LF_ACCURACY != NRF_CLOCK_LF_ACCURACY_500_PPM))
-#warning Please select NRF_CLOCK_LF_ACCURACY_500_PPM when using NRF_CLOCK_LF_SRC_RC
-#endif
+#if defined(CONFIG_NRF_SDH_CLOCK_LF_SRC_XO)
+BUILD_ASSERT(CONFIG_NRF_SDH_CLOCK_LF_RC_CTIV == 0, "rc_ctiv must be 0 when using LFXO");
+BUILD_ASSERT(CONFIG_NRF_SDH_CLOCK_LF_RC_TEMP_CTIV == 0, "rc_temp_ctiv must be 0 when usings LFXO");
+#endif /* CONFIG_NRF_SDH_CLOCK_LF_SRC_XO */
+
+#if defined(CONFIG_NRF_GRTC_TIMER)
+BUILD_ASSERT(IS_ENABLED(CONFIG_NRF_GRTC_START_SYSCOUNTER),
+	     "The application must start the GRTC for the SoftDevice to have a clock source");
+BUILD_ASSERT(IS_ENABLED(CONFIG_NRF_GRTC_TIMER_SOURCE_LFXO) ||
+	     IS_ENABLED(CONFIG_NRF_GRTC_TIMER_SOURCE_LFLPRC),
+	     "The selected GRTC timer source is invalid when using SoftDevice. "
+	     "Please select either LFXO (if external LF oscillator) or LFLPRC (internal RC)");
+#endif /* CONFIG_NRF_GRTC_TIMER */
 
 static atomic_t sdh_is_suspended;	/* Whether the SoftDevice event interrupts are disabled. */
 static atomic_t sdh_transition;		/* Whether enable/disable process was started. */
