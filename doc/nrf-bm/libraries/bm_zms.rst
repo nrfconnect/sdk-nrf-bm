@@ -138,6 +138,14 @@ After that, it checks that the sector after this one is empty, or it will erase 
 If this initialization is successful, the library sets the flag ``bm_zms_fs.init_flags.initialized`` to true.
 For asynchronous storage backends, you must wait for the initialization to finish before triggering a write or read operation.
 
+Clearing the storage system
+===========================
+
+Call the :c:func:`bm_zms_clear` function to clear the storage and uninitialize it.
+
+When this uninitialization is successful, the library sets the flag :c:member:`bm_zms_fs.init_flags.initialized` to false.
+For asynchronous storage backends, you must wait for the uninitialization to finish before reinitializing the storage system.
+
 BM_ZMS ID/data write
 ====================
 
