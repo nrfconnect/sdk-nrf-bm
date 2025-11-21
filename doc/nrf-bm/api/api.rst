@@ -57,6 +57,15 @@ Bluetooth LE Radio Notification library
    :inner:
    :members:
 
+.. _api_ble_scan:
+
+Bluetooth LE Scan library
+=========================
+
+.. doxygengroup:: ble_scan
+   :inner:
+   :members:
+
 .. _api_bm_buttons:
 
 Bare Metal Buttons library
@@ -153,6 +162,15 @@ Record Access Control Point
    :members:
 
 .. _api_sensorsim:
+
+Scan library
+============
+
+.. doxygengroup:: ble_scan
+   :inner:
+   :members:
+
+.. _api_ble_scan:
 
 Sensor data simulator library
 =============================

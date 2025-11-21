@@ -1,0 +1,4 @@
+tests:
+  lib.ble_scan:
+    platform_allow: native_sim
+    tags: unittest
