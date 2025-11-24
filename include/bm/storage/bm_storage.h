@@ -6,10 +6,10 @@
 
 /** @file
  *
- * @defgroup bm_storage NCS Bare Metal Storage library
+ * @defgroup bm_storage NCS Bare Metal Storage subsystem
  * @{
  *
- * @brief Library that provides abstractions for operations such as read, write, and erase
+ * @brief Subsystem that provides abstractions for operations such as read, write, and erase
  *        on non-volatile memory.
  */
 

@@ -1,25 +1,25 @@
 .. _lib_storage:
 
-Storage Library
-###############
+Bare Metal Storage
+##################
 
 .. contents::
    :local:
    :depth: 2
 
-The Storage library provides abstractions for reading, writing, and erasing non-volatile memory (NVM).
+The Bare Metal Storage subsystem provides abstractions for reading, writing, and erasing non-volatile memory (NVM).
 
 Overview
 ********
 
-The library supports multiple storage instances, each bound to a specific memory region, and reports operation results through user-defined event handlers.
+The subsystem supports multiple storage instances, each bound to a specific memory region, and reports operation results through user-defined event handlers.
 Depending on the backend and runtime state, operations may be synchronous or asynchronous.
 
 Configuration
 *************
 
-The library is enabled and configured entirely using the Kconfig system.
-Set the :kconfig:option:`CONFIG_BM_STORAGE` Kconfig option to enable the library.
+The subsystem is enabled and configured entirely using the Kconfig system.
+Set the :kconfig:option:`CONFIG_BM_STORAGE` Kconfig option to enable the subsystem.
 
 Select a storage backend by enabling one of the following Kconfig options:
 
@@ -46,7 +46,7 @@ You can uninitialize a storage instance with the :c:func:`bm_storage_uninit` fun
 Usage
 *****
 
-The following is a list of operations you can perform with this library.
+The following is a list of operations you can perform with this subsystem.
 
 Read
 ====
@@ -103,7 +103,7 @@ Each event includes the result code, information about the address range of the 
 Sample
 ******
 
-The usage of this library is demonstrated in the :ref:`bm_storage_sample` sample.
+The usage of this subsystem is demonstrated in the :ref:`bm_storage_sample` sample.
 
 Dependencies
 ************
@@ -128,4 +128,4 @@ API documentation
 | Header file: :file:`include/bm_storage.h`
 | Source files: :file:`lib/bm_storage/`
 
-:ref:`Storage library API reference <api_storage>`
+:ref:`Bare Metal Storage API reference <api_storage>`
