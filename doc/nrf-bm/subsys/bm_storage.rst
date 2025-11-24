@@ -125,7 +125,7 @@ Dependencies
 API documentation
 *****************
 
-| Header file: :file:`include/bm_storage.h`
-| Source files: :file:`lib/bm_storage/`
+| Header file: :file:`include/bm/storage/bm_storage.h`
+| Source files: :file:`subsys/storage/bm_storage/`
 
 :ref:`Bare Metal Storage API reference <api_storage>`
