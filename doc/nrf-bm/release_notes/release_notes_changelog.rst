@@ -125,7 +125,6 @@ Libraries
 
    * Updated:
 
-     * The :c:func:`bm_zms_register` function to return ``-EFAULT`` instead of ``-EINVAL`` when the input parameters are ``NULL``.
      * The :c:func:`bm_zms_mount` function to return ``-EFAULT`` when the input parameter ``fs`` is ``NULL``.
      * The :c:func:`bm_zms_clear` function to return ``-EFAULT`` when the input parameter ``fs`` is ``NULL``.
      * The :c:func:`bm_zms_write` function to return ``-EFAULT`` when the input parameter ``fs`` is ``NULL``.
@@ -145,6 +144,8 @@ Libraries
      * The ``CONFIG_BM_ZMS_MAX_USERS`` Kconfig option.
        Now the library expects at most one callback for each instance of the struct :c:struct:`bm_zms_fs`.
      * The ``bm_zms_init_flags.cb_registred`` member as it was not used anymore.
+     * The ``bm_zms_register`` function.
+       The event handler configuration is now done with the struct :c:struct:`bm_zms_fs_config`.
 
 * :ref:`lib_peer_manager` library:
 
