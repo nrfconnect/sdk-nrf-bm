@@ -94,8 +94,8 @@ static void event_prepare(struct bm_zms_evt *evt)
 
 static void event_send(struct bm_zms_evt const *const evt, struct bm_zms_fs *fs)
 {
-	if (fs->user_cb != NULL) {
-		fs->user_cb(evt);
+	if (fs->evt_handler != NULL) {
+		fs->evt_handler(evt);
 	}
 }
 
@@ -185,7 +185,7 @@ static void queue_process(void)
 				/* bm_zms needs to be reinitialized after clearing */
 				cur_op.fs->init_flags.initialized = false;
 				cur_op.fs->init_flags.initializing = false;
-				cur_op.fs->user_cb = NULL;
+				cur_op.fs->evt_handler = NULL;
 				cur_op.op_completed = true;
 				result = 0;
 			} else {
@@ -318,17 +318,6 @@ static void zms_event_handler(struct bm_storage_evt *p_evt)
 	if (p_evt->dispatch_type == BM_STORAGE_EVT_DISPATCH_ASYNC) {
 		queue_process();
 	}
-}
-
-int bm_zms_register(struct bm_zms_fs *fs, bm_zms_cb_t cb)
-{
-	if (!fs || !cb) {
-		return -EFAULT;
-	}
-
-	fs->user_cb = cb;
-
-	return 0;
 }
 
 #ifdef CONFIG_BM_ZMS_LOOKUP_CACHE
@@ -2009,6 +1998,7 @@ int bm_zms_mount(struct bm_zms_fs *fs, const struct bm_zms_fs_config *config)
 	fs->offset = config->offset;
 	fs->sector_size = config->sector_size;
 	fs->sector_count = config->sector_count;
+	fs->evt_handler = config->evt_handler;
 
 	/* Initialize BM Storage */
 

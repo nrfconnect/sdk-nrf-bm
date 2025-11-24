@@ -31,6 +31,26 @@ struct bm_zms_fixture {
 };
 static bool nvm_is_full;
 
+void bm_zms_test_handler(struct bm_zms_evt const *evt)
+{
+	if (evt->evt_type == BM_ZMS_EVT_MOUNT) {
+		zassert_true(evt->result == 0, "bm_zms_mount call failure: %d",
+			     evt->result);
+	} else if ((evt->evt_type == BM_ZMS_EVT_WRITE) || (evt->evt_type == BM_ZMS_EVT_DELETE)) {
+		if (evt->result == 0) {
+			return;
+		}
+		if (evt->result == -ENOSPC) {
+			nvm_is_full = true;
+			return;
+		}
+		printf("BM_ZMS Error received %d\n", evt->result);
+	} else if (evt->evt_type == BM_ZMS_EVT_CLEAR) {
+		zassert_true(evt->result == 0, "bm_zms_clear call failure: %d",
+			     evt->result);
+	}
+}
+
 static void *setup(void)
 {
 	static struct bm_zms_fixture fixture;
@@ -39,6 +59,7 @@ static void *setup(void)
 	fixture.config.offset = TEST_PARTITION_START;
 	fixture.config.sector_size = SECTOR_SIZE;
 	fixture.config.sector_count = TEST_SECTOR_COUNT;
+	fixture.config.evt_handler = bm_zms_test_handler;
 
 	return &fixture;
 }
@@ -91,41 +112,7 @@ static void wait_for_init(struct bm_zms_fs *fs)
 	}
 }
 
-void bm_zms_test_handler(struct bm_zms_evt const *evt)
-{
-	if (evt->evt_type == BM_ZMS_EVT_MOUNT) {
-		zassert_true(evt->result == 0, "bm_zms_mount call failure: %d",
-			     evt->result);
-	} else if ((evt->evt_type == BM_ZMS_EVT_WRITE) || (evt->evt_type == BM_ZMS_EVT_DELETE)) {
-		if (evt->result == 0) {
-			return;
-		}
-		if (evt->result == -ENOSPC) {
-			nvm_is_full = true;
-			return;
-		}
-		printf("BM_ZMS Error received %d\n", evt->result);
-	} else if (evt->evt_type == BM_ZMS_EVT_CLEAR) {
-		zassert_true(evt->result == 0, "bm_zms_clear call failure: %d",
-			     evt->result);
-	}
-}
-
 ZTEST_SUITE(bm_zms, NULL, setup, before, after, NULL);
-
-ZTEST_F(bm_zms, test_bm_zms_register)
-{
-	int err;
-
-	err = bm_zms_register(NULL, &bm_zms_test_handler);
-	zassert_true(err == -EFAULT, "bm_zms_register unexpected failure");
-
-	err = bm_zms_register(&fixture->fs, NULL);
-	zassert_true(err == -EFAULT, "bm_zms_register unexpected failure");
-
-	err = bm_zms_register(&fixture->fs, &bm_zms_test_handler);
-	zassert_true(err == 0, "bm_zms_register call failure");
-}
 
 ZTEST_F(bm_zms, test_bm_zms_mount)
 {
@@ -166,9 +153,6 @@ ZTEST_F(bm_zms, test_bm_zms_write)
 {
 	int err;
 
-	err = bm_zms_register(&fixture->fs, &bm_zms_test_handler);
-	zassert_true(err == 0, "bm_zms_register call failure");
-
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
 	zassert_true(err == 0, "zms_mount call failure: %d", err);
 	execute_long_pattern_write(TEST_DATA_ID, &fixture->fs);
@@ -185,9 +169,6 @@ ZTEST_F(bm_zms, test_zms_gc)
 	const uint16_t max_writes = 21;
 
 	fixture->fs.sector_count = 2;
-
-	err = bm_zms_register(&fixture->fs, &bm_zms_test_handler);
-	zassert_true(err == 0, "bm_zms_register call failure");
 
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
 	wait_for_init(&fixture->fs);
@@ -287,9 +268,6 @@ ZTEST_F(bm_zms, test_zms_gc_3sectors)
 
 	fixture->config.sector_count = 3;
 
-	err = bm_zms_register(&fixture->fs, &bm_zms_test_handler);
-	zassert_true(err == 0, "bm_zms_register call failure err %x", err);
-
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
 	wait_for_init(&fixture->fs);
 	zassert_true(err == 0, "bm_zms_mount call failure err %d", err);
@@ -363,9 +341,6 @@ ZTEST_F(bm_zms, test_zms_full_sector)
 
 	fixture->fs.sector_count = 3;
 
-	err = bm_zms_register(&fixture->fs, &bm_zms_test_handler);
-	zassert_true(err == 0, "bm_zms_register call failure");
-
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
 	wait_for_init(&fixture->fs);
 	zassert_true(err == 0, "bm_zms_mount call failure");
@@ -418,9 +393,6 @@ ZTEST_F(bm_zms, test_delete)
 	uint32_t data_wra;
 
 	fixture->fs.sector_count = 3;
-
-	err = bm_zms_register(&fixture->fs, &bm_zms_test_handler);
-	zassert_true(err == 0, "bm_zms_register call failure");
 
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
 	wait_for_init(&fixture->fs);
@@ -494,9 +466,6 @@ ZTEST_F(bm_zms, test_zms_cache_init)
 
 	/* Test cache initialization when the store is empty */
 
-	err = bm_zms_register(&fixture->fs, &bm_zms_test_handler);
-	zassert_true(err == 0, "bm_zms_register call failure");
-
 	fixture->fs.sector_count = 3;
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
 	wait_for_init(&fixture->fs);
@@ -543,9 +512,6 @@ ZTEST_F(bm_zms, test_zms_cache_collission)
 	int err;
 	uint16_t data;
 
-	err = bm_zms_register(&fixture->fs, &bm_zms_test_handler);
-	zassert_true(err == 0, "bm_zms_register call failure");
-
 	fixture->fs.sector_count = 4;
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
 	wait_for_init(&fixture->fs);
@@ -575,9 +541,6 @@ ZTEST_F(bm_zms, test_zms_cache_gc)
 	int err;
 	size_t num;
 	uint16_t data = 0;
-
-	err = bm_zms_register(&fixture->fs, &bm_zms_test_handler);
-	zassert_true(err == 0, "bm_zms_register call failure");
 
 	fixture->config.sector_count = 3;
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
@@ -633,9 +596,6 @@ ZTEST_F(bm_zms, test_zms_cache_hash_quality)
 	uint32_t id;
 	uint16_t data;
 
-	err = bm_zms_register(&fixture->fs, &bm_zms_test_handler);
-	zassert_true(err == 0, "bm_zms_register call failure");
-
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
 	wait_for_init(&fixture->fs);
 	zassert_true(err == 0, "bm_zms_mount call failure");
@@ -661,8 +621,6 @@ ZTEST_F(bm_zms, test_zms_cache_hash_quality)
 	err = bm_zms_clear(&fixture->fs);
 	zassert_true(err == 0, "bm_zms_clear call failure");
 
-	err = bm_zms_register(&fixture->fs, &bm_zms_test_handler);
-	zassert_true(err == 0, "bm_zms_register call failure");
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
 	wait_for_init(&fixture->fs);
 	zassert_true(err == 0, "bm_zms_mount call failure");
