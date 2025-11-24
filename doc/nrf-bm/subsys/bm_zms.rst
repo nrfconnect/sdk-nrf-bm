@@ -3,7 +3,7 @@
 Bare Metal Zephyr Memory Storage (BM_ZMS)
 #########################################
 
-Bare Metal Zephyr Memory Storage is a key-value storage system that is designed to work with all types of non-volatile storage technologies.
+Bare Metal Zephyr Memory Storage is a key-value storage subsystem that is designed to work with all types of non-volatile storage technologies.
 
 The Bare Metal version is designed to work with asynchronous and synchronous storage APIs.
 
@@ -20,9 +20,9 @@ The key-value pair is divided into two parts:
 Additionally, each sector includes header ATEs at the last positions.
 These ATEs are essential for describing the sector's status (whether it is 'closed' or 'open') and for indicating the current version of BM_ZMS.
 
-When the current sector is full, the library verifies first that the following sector is empty.
+When the current sector is full, the subsystem verifies first that the following sector is empty.
 It then garbage collects the sector N+2, where N is the current sector number, by moving the valid ATEs to the N+1 empty sector.
-The library then erases the garbage-collected sector and closes the current sector by writing a ``garbage_collect_done`` ATE and the ``close`` ATE (one of the header entries).
+The subsystem then erases the garbage-collected sector and closes the current sector by writing a ``garbage_collect_done`` ATE and the ``close`` ATE (one of the header entries).
 
 Afterwards, it moves forward to the next sector and starts writing entries again.
 
@@ -94,7 +94,7 @@ This ATE can appear at any position of the sector.
 BM_ZMS workflow
 ***************
 
-The following sections describe in detail the operations performed by this library.
+The following sections describe in detail the operations performed by this subsystem.
 
 Registering the user callback handler
 =====================================
@@ -135,7 +135,7 @@ To do this, it looks for a closed sector followed by an open one.
 Then, within the open sector, it finds (recovers) the last written ATE.
 After that, it checks that the sector after this one is empty, or it will erase it.
 
-If this initialization is successful, the library sets the flag ``bm_zms_fs.init_flags.initialized`` to true.
+If this initialization is successful, the subsystem sets the flag ``bm_zms_fs.init_flags.initialized`` to true.
 For asynchronous storage backends, you must wait for the initialization to finish before triggering a write or read operation.
 
 BM_ZMS ID/data write
@@ -299,7 +299,7 @@ Where:
 Features
 ********
 
-The current version of this library offers the following features:
+The current version of this subsystem offers the following features:
 
 **Version 1**
 

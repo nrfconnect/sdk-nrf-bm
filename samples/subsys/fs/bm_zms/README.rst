@@ -7,7 +7,7 @@ Bare Metal Zephyr Memory Storage (BM_ZMS)
    :local:
    :depth: 2
 
-The BM_ZMS sample demonstrates how to use the Bare Metal ZMS (Zephyr Memory Storage) library to manage key-value pairs, counters, and long arrays in a storage system.
+The BM_ZMS sample demonstrates how to use the Bare Metal ZMS (Zephyr Memory Storage) subsystem to manage key-value pairs, counters, and long arrays in a storage system.
 It shows how to add, read, and delete items in the storage.
 
 Refer to the `Kconfig fragments`_ section for more information on configuration.
