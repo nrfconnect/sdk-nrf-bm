@@ -99,6 +99,12 @@
 &cpuapp_sram {
 	status = "okay";
 
+	/* Override setting in bm_nrf54l15dk_nrf54l15_cpuapp_common.dtsi
+	 * to adjust sram size to not overlap with retainedmem
+	 */
+	reg = < 0x20000080 (DT_SIZE_K(256) - DT_SIZE_K(1) - 0x80)>;
+	ranges = < 0x0 0x20000080 (DT_SIZE_K(256) - DT_SIZE_K(1) - 0x80)>;
+
 	softdevice_static_ram: sram@0 {
 		label = "softdevice_static_ram";
 		reg = <0x0 0x1780>;
