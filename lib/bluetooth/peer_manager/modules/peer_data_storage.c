@@ -345,16 +345,11 @@ uint32_t pds_init(void)
 	/* Check for re-initialization if debugging. */
 	__ASSERT_NO_MSG(!module_initialized);
 
-	err = bm_zms_register(&fs, bm_zms_evt_handler);
-	if (err) {
-		LOG_ERR("Could not initialize NVM storage. bm_zms_register() returned %d.", err);
-		return NRF_ERROR_INTERNAL;
-	}
-
 	struct bm_zms_fs_config config = {
 		.offset = PEER_MANAGER_PARTITION_OFFSET,
 		.sector_size = CONFIG_PM_BM_ZMS_SECTOR_SIZE,
 		.sector_count = (PEER_MANAGER_PARTITION_SIZE / CONFIG_PM_BM_ZMS_SECTOR_SIZE),
+		.evt_handler = bm_zms_evt_handler,
 	};
 
 	err = bm_zms_mount(&fs, &config);

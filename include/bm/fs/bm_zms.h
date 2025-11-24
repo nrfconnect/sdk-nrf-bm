@@ -76,7 +76,7 @@ struct bm_zms_init_flags {
  *
  * @param evt The event.
  */
-typedef void (*bm_zms_cb_t)(struct bm_zms_evt const *evt);
+typedef void (*bm_zms_evt_handler_t)(struct bm_zms_evt const *evt);
 
 /** Zephyr Memory Storage file system structure */
 struct bm_zms_fs {
@@ -106,8 +106,8 @@ struct bm_zms_fs {
 	struct bm_storage zms_bm_storage;
 	/** Number of writes currently handled by the storage system. */
 	atomic_t ongoing_writes;
-	/** User callback for propagating events. */
-	bm_zms_cb_t user_cb;
+	/** Event handler for propagating events. */
+	bm_zms_evt_handler_t evt_handler;
 #if CONFIG_BM_ZMS_LOOKUP_CACHE
 	/** Lookup table used to cache ATE addresses of written IDs. */
 	uint64_t lookup_cache[CONFIG_BM_ZMS_LOOKUP_CACHE_SIZE];
@@ -124,6 +124,8 @@ struct bm_zms_fs_config {
 	uint32_t sector_size;
 	/** Number of sectors in the file system. */
 	uint32_t sector_count;
+	/** Event handler for propagating events. */
+	bm_zms_evt_handler_t evt_handler;
 };
 
 /**
@@ -135,17 +137,6 @@ struct bm_zms_fs_config {
  * @ingroup bm_zms
  * @{
  */
-
-/**
- * @brief Register a callback to BM_ZMS for handling events.
- *
- * @param fs Pointer to the file system structure.
- * @param cb Pointer to the event handler callback.
- *
- * @retval 0 on success.
- * @retval -EFAULT if @p fs or @p cb are NULL.
- */
-int bm_zms_register(struct bm_zms_fs *fs, bm_zms_cb_t cb);
 
 /**
  * @brief Mount a BM_ZMS file system.

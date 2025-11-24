@@ -154,16 +154,11 @@ int main(void)
 		longarray[n] = n;
 	}
 
-	rc = bm_zms_register(&fs, bm_zms_sample_handler);
-	if (rc) {
-		LOG_ERR("Something is wrong %u", rc);
-		goto idle;
-	}
-
 	struct bm_zms_fs_config config = {
 		.offset = BM_ZMS_PARTITION_OFFSET,
 		.sector_size = CONFIG_APP_BM_ZMS_SECTOR_SIZE,
 		.sector_count = (BM_ZMS_PARTITION_SIZE / CONFIG_APP_BM_ZMS_SECTOR_SIZE),
+		.evt_handler = bm_zms_sample_handler
 	};
 
 	for (i = 0; i < CONFIG_APP_BM_ZMS_ITERATIONS_MAX; i++) {
