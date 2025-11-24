@@ -5,11 +5,10 @@
 #
 
 menuconfig BM_ZMS
-	bool "Bare Metal Zephyr Memory Storage [EXPERIMENTAL]"
+	bool "Bare Metal Zephyr Memory Storage"
 	select CRC
 	select RING_BUFFER
 	select BM_STORAGE
-	select EXPERIMENTAL
 	help
 	  Bare Metal Zephyr Memory Storage library.
 

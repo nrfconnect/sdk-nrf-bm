@@ -155,6 +155,7 @@ Libraries
      * The ``bm_zms_init_flags.cb_registred`` member as it was not used anymore.
      * The ``bm_zms_register`` function.
        The event handler configuration is now done with the struct :c:struct:`bm_zms_fs_config`.
+     * The selection of the :kconfig:option:`CONFIG_EXPERIMENTAL` Kconfig option.
 
 * :ref:`lib_peer_manager` library:
 
