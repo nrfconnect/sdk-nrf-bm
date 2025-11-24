@@ -91,23 +91,23 @@ static void wait_for_init(struct bm_zms_fs *fs)
 	}
 }
 
-void bm_zms_test_handler(bm_zms_evt_t const *p_evt)
+void bm_zms_test_handler(struct bm_zms_evt const *evt)
 {
-	if (p_evt->evt_id == BM_ZMS_EVT_INIT) {
-		zassert_true(p_evt->result == 0, "bm_zms_init call failure: %d",
-			     p_evt->result);
-	} else if ((p_evt->evt_id == BM_ZMS_EVT_WRITE) || (p_evt->evt_id == BM_ZMS_EVT_DELETE)) {
-		if (p_evt->result == 0) {
+	if (evt->evt_type == BM_ZMS_EVT_MOUNT) {
+		zassert_true(evt->result == 0, "bm_zms_mount call failure: %d",
+			     evt->result);
+	} else if ((evt->evt_type == BM_ZMS_EVT_WRITE) || (evt->evt_type == BM_ZMS_EVT_DELETE)) {
+		if (evt->result == 0) {
 			return;
 		}
-		if (p_evt->result == -ENOSPC) {
+		if (evt->result == -ENOSPC) {
 			nvm_is_full = true;
 			return;
 		}
-		printf("BM_ZMS Error received %d\n", p_evt->result);
-	} else if (p_evt->evt_id == BM_ZMS_EVT_CLEAR) {
-		zassert_true(p_evt->result == 0, "bm_zms_clear call failure: %d",
-			     p_evt->result);
+		printf("BM_ZMS Error received %d\n", evt->result);
+	} else if (evt->evt_type == BM_ZMS_EVT_CLEAR) {
+		zassert_true(evt->result == 0, "bm_zms_clear call failure: %d",
+			     evt->result);
 	}
 }
 

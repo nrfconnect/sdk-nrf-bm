@@ -110,24 +110,24 @@ static int delete_basic_items(struct bm_zms_fs *fs)
 	return rc;
 }
 
-void bm_zms_sample_handler(bm_zms_evt_t const *p_evt)
+void bm_zms_sample_handler(struct bm_zms_evt const *evt)
 {
-	if (p_evt->evt_id == BM_ZMS_EVT_INIT) {
-		if (p_evt->result) {
-			LOG_ERR("BM_ZMS initialization failed with error %d", p_evt->result);
+	if (evt->evt_type == BM_ZMS_EVT_MOUNT) {
+		if (evt->result) {
+			LOG_ERR("BM_ZMS initialization failed with error %d", evt->result);
 			return;
 		}
-	} else if ((p_evt->evt_id == BM_ZMS_EVT_WRITE) || (p_evt->evt_id == BM_ZMS_EVT_DELETE)) {
-		if (!p_evt->result) {
+	} else if ((evt->evt_type == BM_ZMS_EVT_WRITE) || (evt->evt_type == BM_ZMS_EVT_DELETE)) {
+		if (!evt->result) {
 			return;
 		}
-		if (p_evt->result == -ENOSPC) {
+		if (evt->result == -ENOSPC) {
 			nvm_is_full = true;
 			return;
 		}
-		LOG_ERR("BM_ZMS Error received %d", p_evt->result);
+		LOG_ERR("BM_ZMS Error received %d", evt->result);
 	} else {
-		LOG_WRN("Unhandled BM_ZMS event ID %u", p_evt->evt_id);
+		LOG_WRN("Unhandled BM_ZMS event ID %u", evt->evt_type);
 	}
 }
 

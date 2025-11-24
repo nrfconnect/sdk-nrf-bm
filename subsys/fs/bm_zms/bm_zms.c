@@ -65,26 +65,26 @@ static int zms_get_sector_header(struct bm_zms_fs *fs, uint64_t addr, struct zms
 static int zms_ate_valid_different_sector(struct bm_zms_fs *fs, const struct zms_ate *entry,
 					  uint8_t cycle_cnt);
 
-static void event_prepare(bm_zms_evt_t *p_evt)
+static void event_prepare(struct bm_zms_evt *evt)
 {
 	switch (cur_op.op_code) {
 	case ZMS_OP_INIT:
-		p_evt->evt_id = BM_ZMS_EVT_INIT;
+		evt->evt_type = BM_ZMS_EVT_MOUNT;
 		break;
 
 	case ZMS_OP_WRITE:
 		atomic_sub(&cur_op.fs->ongoing_writes, 1);
-		p_evt->evt_id = (!cur_op.data_len && !cur_op.data) ? BM_ZMS_EVT_DELETE :
+		evt->evt_type = (!cur_op.data_len && !cur_op.data) ? BM_ZMS_EVT_DELETE :
 			BM_ZMS_EVT_WRITE;
-		p_evt->id = cur_op.id;
+		evt->id = cur_op.id;
 		break;
 
 	case ZMS_OP_CLEAR:
-		p_evt->evt_id = BM_ZMS_EVT_CLEAR;
+		evt->evt_type = BM_ZMS_EVT_CLEAR;
 		break;
 
 	case ZMS_OP_NONE:
-		p_evt->evt_id = BM_ZMS_EVT_NONE;
+		evt->evt_type = BM_ZMS_EVT_NONE;
 		break;
 	default:
 		/* Should not happen. */
@@ -92,10 +92,10 @@ static void event_prepare(bm_zms_evt_t *p_evt)
 	}
 }
 
-static void event_send(bm_zms_evt_t const *const p_evt, struct bm_zms_fs *fs)
+static void event_send(struct bm_zms_evt const *const evt, struct bm_zms_fs *fs)
 {
 	if (fs->user_cb != NULL) {
-		fs->user_cb(p_evt);
+		fs->user_cb(evt);
 	}
 }
 
@@ -220,7 +220,7 @@ completed:
 			/* no errors. */
 			evt_result = 0;
 		}
-		bm_zms_evt_t evt = {
+		struct bm_zms_evt evt = {
 			/* The operation might have failed for one of the following reasons:
 			 * -ENOSPC:  no free space in flash.
 			 * -EIO:     Internal BM_ZMS error.

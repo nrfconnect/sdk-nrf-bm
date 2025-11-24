@@ -186,7 +186,7 @@ static void peer_ids_load(void)
 	}
 }
 
-static void bm_zms_evt_handler(const bm_zms_evt_t *evt)
+static void bm_zms_evt_handler(const struct bm_zms_evt *evt)
 {
 	uint16_t peer_id;
 	enum pm_peer_data_id data_id;
@@ -195,8 +195,8 @@ static void bm_zms_evt_handler(const bm_zms_evt_t *evt)
 
 	struct pm_evt pds_evt = { .peer_id = peer_id };
 
-	switch (evt->evt_id) {
-	case BM_ZMS_EVT_INIT:
+	switch (evt->evt_type) {
+	case BM_ZMS_EVT_MOUNT:
 		if (evt->result) {
 			LOG_ERR("BM_ZMS initialization failed with error %d", evt->result);
 		}
