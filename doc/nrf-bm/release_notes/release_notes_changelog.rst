@@ -136,6 +136,9 @@ Libraries
      * The :c:func:`bm_zms_calc_free_space` function to return ``-EFAULT`` when the input parameter ``fs`` is ``NULL``.
      * The :c:func:`bm_zms_active_sector_free_space` function to return ``-EFAULT`` when the input parameter ``fs`` is ``NULL``.
      * The :c:func:`bm_zms_mount` function to expect an additional input parameter of type pointer to struct :c:struct:`bm_zms_fs_config` for configuring a Zephyr Memory Storage file system instance at initialization.
+     * By renaming the type ``bm_zms_evt_id_t`` to enum :c:enum:`bm_zms_evt_type`.
+     * By renaming the type ``bm_zms_evt_t`` to struct :c:struct:`bm_zms_evt`.
+     * By renaming the event ``BM_ZMS_EVT_INIT`` to :c:enum:`BM_ZMS_EVT_MOUNT`.
 
    * Removed:
 

@@ -31,30 +31,39 @@ extern "C" {
  */
 
 /** BM_ZMS event IDs. */
-typedef enum {
-	BM_ZMS_EVT_NONE,   /* Event if an internal error happened before queuing an operation. */
-	BM_ZMS_EVT_INIT,   /* Event for @ref bm_zms_init. */
-	BM_ZMS_EVT_WRITE,  /* Event for @ref bm_zms_write. */
-	BM_ZMS_EVT_DELETE, /* Event for @ref bm_zms_delete. */
-	BM_ZMS_EVT_CLEAR,  /* Event for @ref bm_zms_clear. */
-} bm_zms_evt_id_t;
+enum bm_zms_evt_type {
+	/** Event if an internal error happened before queuing an operation. */
+	BM_ZMS_EVT_NONE,
+	/** Event for @ref bm_zms_mount. */
+	BM_ZMS_EVT_MOUNT,
+	/** Event for @ref bm_zms_write. */
+	BM_ZMS_EVT_WRITE,
+	/** Event for @ref bm_zms_delete. */
+	BM_ZMS_EVT_DELETE,
+	/** Event for @ref bm_zms_clear. */
+	BM_ZMS_EVT_CLEAR,
+};
 
 /**@brief A BM_ZMS event. */
-typedef struct {
-	bm_zms_evt_id_t evt_id; /* The event ID. See @ref bm_zms_evt_id_t. */
-	int result;		/* The result of the operation related to this event.
-				 * The operation might have failed for one of the following reasons:
-				 * -ENOSPC:  There is no free space in flash.
-				 * -EIO:     Internal BM_ZMS error.
-				 * -ENOTSUP: The BM_ZMS version is not supported.
-				 * -ENOEXEC: Bad BM_ZMS format.
-				 * -EFAULT:  Bad sector layout.
-				 * -ENOMEM:  The internal queue buffer is full.
-				 */
-	uint32_t id;            /* The ID of the entry as specified in the corresponding
-				 * write/delete operation.
-				 */
-} bm_zms_evt_t;
+struct bm_zms_evt {
+	/** The event type. See @ref bm_zms_evt_type. */
+	enum bm_zms_evt_type evt_type;
+	/** The result of the operation related to this event.
+	 *  The operation might have failed for one of the following
+	 *  reasons:
+	 *  -ENOSPC:  There is no free space in non-volatile storage.
+	 *  -EIO:     Internal BM_ZMS error.
+	 *  -ENOTSUP: The BM_ZMS version is not supported.
+	 *  -ENOEXEC: Bad BM_ZMS format.
+	 *  -EFAULT:  Bad sector layout.
+	 *  -ENOMEM:  The internal queue buffer is full.
+	 */
+	int result;
+	/** The ID of the entry as specified in the corresponding
+	 *  write/delete operation.
+	 */
+	uint32_t id;
+};
 
 /* Init flags. */
 struct bm_zms_init_flags {
@@ -65,13 +74,13 @@ struct bm_zms_init_flags {
 /**
  * @brief Bare Metal ZMS event handler function prototype.
  *
- * @param p_evt The event.
+ * @param evt The event.
  */
-typedef void (*bm_zms_cb_t)(bm_zms_evt_t const *p_evt);
+typedef void (*bm_zms_cb_t)(struct bm_zms_evt const *evt);
 
 /** Zephyr Memory Storage file system structure */
 struct bm_zms_fs {
-	/** File system offset in flash. */
+	/** File system offset in non-volatile storage. */
 	off_t offset;
 	/** Allocation Table Entry (ATE) write address.
 	 * Addresses are stored as `uint64_t`:
@@ -107,7 +116,7 @@ struct bm_zms_fs {
 
 /** Configuration for Zephyr Memory Storage file system structure initialization. */
 struct bm_zms_fs_config {
-	/** File system offset in flash. */
+	/** File system offset in non-volatile storage. */
 	off_t offset;
 	/** Storage system is split into sectors. The sector size must be a multiple of
 	 *  `erase-block-size` if the device has erase capabilities.
