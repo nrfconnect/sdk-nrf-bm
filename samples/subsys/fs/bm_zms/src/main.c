@@ -11,6 +11,11 @@
 #define BM_ZMS_PARTITION_OFFSET DT_REG_ADDR(STORAGE_NODE)
 #define BM_ZMS_PARTITION_SIZE DT_REG_SIZE(STORAGE_NODE)
 
+#define IP_ADDRESS_ID 1
+#define KEY_VALUE_ID  0xbeefdead
+#define CNT_ID        2
+#define LONG_DATA_ID  3
+
 #if defined(CONFIG_SOFTDEVICE)
 #include <bm/softdevice_handler/nrf_sdh.h>
 #include <nrf_soc.h>
@@ -19,13 +24,49 @@
 #include <bm/fs/bm_zms.h>
 
 static struct bm_zms_fs fs;
-static bool nvm_is_full;
+static volatile bool nvm_is_full;
+static volatile bool write_notif;
+static volatile bool mount_notif;
+static volatile bool clear_notif;
 
 LOG_MODULE_REGISTER(app, CONFIG_APP_BM_ZMS_LOG_LEVEL);
 
-static void wait_for_ongoing_writes(void)
+void bm_zms_sample_handler(struct bm_zms_evt const *evt)
 {
-	while (fs.ongoing_writes) {
+	switch (evt->evt_type) {
+	case BM_ZMS_EVT_MOUNT:
+		mount_notif = true;
+		if (evt->result) {
+			LOG_ERR("bm_zms_mount failed with error %d", evt->result);
+			return;
+		}
+		break;
+	case BM_ZMS_EVT_CLEAR:
+		clear_notif = true;
+		if (evt->result) {
+			LOG_ERR("bm_zms_clear failed with error %d", evt->result);
+			return;
+		}
+		break;
+	case BM_ZMS_EVT_WRITE:
+	case BM_ZMS_EVT_DELETE:
+		write_notif = true;
+		if (evt->result == -ENOSPC) {
+			nvm_is_full = true;
+			return;
+		} else if (evt->result) {
+			LOG_ERR("BM_ZMS Error received %d", evt->result);
+		}
+		break;
+	default:
+		LOG_WRN("Unhandled BM_ZMS event ID %u", evt->evt_type);
+		break;
+	}
+}
+
+static void wait_for_write(void)
+{
+	while (!write_notif) {
 #if defined(CONFIG_SOFTDEVICE)
 		/* Wait for an event. */
 		__WFE();
@@ -35,11 +76,12 @@ static void wait_for_ongoing_writes(void)
 		__WFE();
 #endif
 	}
+	write_notif = false;
 }
 
-static void wait_for_init(void)
+static void wait_for_mount(void)
 {
-	while (!fs.init_flags.initialized) {
+	while (!mount_notif) {
 #if defined(CONFIG_SOFTDEVICE)
 		/* Wait for an event. */
 		__WFE();
@@ -49,12 +91,23 @@ static void wait_for_init(void)
 		__WFE();
 #endif
 	}
+	mount_notif = false;
 }
 
-#define IP_ADDRESS_ID 1
-#define KEY_VALUE_ID  0xbeefdead
-#define CNT_ID        2
-#define LONG_DATA_ID  3
+static void wait_for_clear(void)
+{
+	while (!clear_notif) {
+#if defined(CONFIG_SOFTDEVICE)
+		/* Wait for an event. */
+		__WFE();
+
+		/* Clear Event Register */
+		__SEV();
+		__WFE();
+#endif
+	}
+	clear_notif = false;
+}
 
 static int delete_and_verify_items(struct bm_zms_fs *fs, uint32_t id)
 {
@@ -64,7 +117,7 @@ static int delete_and_verify_items(struct bm_zms_fs *fs, uint32_t id)
 	if (rc) {
 		goto error1;
 	}
-	wait_for_ongoing_writes();
+	wait_for_write();
 	rc = bm_zms_get_data_length(fs, id);
 	if (rc > 0) {
 		goto error2;
@@ -88,47 +141,25 @@ static int delete_basic_items(struct bm_zms_fs *fs)
 		LOG_ERR("Error while deleting item %x rc=%d", IP_ADDRESS_ID, rc);
 		return rc;
 	}
-	wait_for_ongoing_writes();
+
 	rc = delete_and_verify_items(fs, KEY_VALUE_ID);
 	if (rc) {
 		LOG_ERR("Error while deleting item %x rc=%d", KEY_VALUE_ID, rc);
 		return rc;
 	}
-	wait_for_ongoing_writes();
+
 	rc = delete_and_verify_items(fs, CNT_ID);
 	if (rc) {
 		LOG_ERR("Error while deleting item %x rc=%d", CNT_ID, rc);
 		return rc;
 	}
-	wait_for_ongoing_writes();
+
 	rc = delete_and_verify_items(fs, LONG_DATA_ID);
 	if (rc) {
 		LOG_ERR("Error while deleting item %x rc=%d", LONG_DATA_ID, rc);
 	}
-	wait_for_ongoing_writes();
 
 	return rc;
-}
-
-void bm_zms_sample_handler(struct bm_zms_evt const *evt)
-{
-	if (evt->evt_type == BM_ZMS_EVT_MOUNT) {
-		if (evt->result) {
-			LOG_ERR("BM_ZMS initialization failed with error %d", evt->result);
-			return;
-		}
-	} else if ((evt->evt_type == BM_ZMS_EVT_WRITE) || (evt->evt_type == BM_ZMS_EVT_DELETE)) {
-		if (!evt->result) {
-			return;
-		}
-		if (evt->result == -ENOSPC) {
-			nvm_is_full = true;
-			return;
-		}
-		LOG_ERR("BM_ZMS Error received %d", evt->result);
-	} else {
-		LOG_WRN("Unhandled BM_ZMS event ID %u", evt->evt_type);
-	}
 }
 
 int main(void)
@@ -161,13 +192,28 @@ int main(void)
 		.evt_handler = bm_zms_sample_handler
 	};
 
+	/* Let's mount and clear the existing storage partition to reset the conditions. */
+	rc = bm_zms_mount(&fs, &config);
+	if (rc) {
+		LOG_ERR("Storage Init failed, rc=%d", rc);
+		goto idle;
+	}
+	wait_for_mount();
+
+	rc = bm_zms_clear(&fs);
+	if (rc < 0) {
+		LOG_ERR("Error while cleaning the storage, rc=%d", rc);
+		goto idle;
+	}
+	wait_for_clear();
+
 	for (i = 0; i < CONFIG_APP_BM_ZMS_ITERATIONS_MAX; i++) {
 		rc = bm_zms_mount(&fs, &config);
 		if (rc) {
 			LOG_ERR("Storage Init failed, rc=%d", rc);
 			goto idle;
 		}
-		wait_for_init();
+		wait_for_mount();
 
 		LOG_INF("ITERATION: %u", i);
 		/* IP_ADDRESS_ID is used to store an address, lets see if we can
@@ -188,7 +234,7 @@ int main(void)
 			LOG_ERR("Error while writing Entry rc=%d", rc);
 			goto idle;
 		}
-		wait_for_ongoing_writes();
+		wait_for_write();
 
 		/* KEY_VALUE_ID is used to store a key/value pair , lets see if we can read
 		 * it from storage.
@@ -205,7 +251,7 @@ int main(void)
 			LOG_ERR("Error while writing Entry rc=%d", rc);
 			goto idle;
 		}
-		wait_for_ongoing_writes();
+		wait_for_write();
 
 		/* CNT_ID is used to store the loop counter, lets see
 		 * if we can read it from storage
@@ -224,7 +270,7 @@ int main(void)
 			LOG_ERR("Error while writing Entry rc=%d", rc);
 			goto idle;
 		}
-		wait_for_ongoing_writes();
+		wait_for_write();
 
 		/* LONG_DATA_ID is used to store a larger dataset ,lets see if we can read
 		 * it from non-volatile memory.
@@ -243,7 +289,7 @@ int main(void)
 			LOG_ERR("Error while writing Entry rc=%d", rc);
 			goto idle;
 		}
-		wait_for_ongoing_writes();
+		wait_for_write();
 
 		/* Each DELETE_ITERATION delete all basic items */
 		if (!(i % CONFIG_APP_BM_ZMS_ITERATIONS_DELETE_INTERVAL) && (i)) {
@@ -265,7 +311,7 @@ int main(void)
 		if (rc < 0) {
 			goto idle;
 		}
-		wait_for_ongoing_writes();
+		wait_for_write();
 		id++;
 	}
 
@@ -310,6 +356,7 @@ int main(void)
 		LOG_ERR("Error while cleaning the storage, rc=%d", rc);
 		goto idle;
 	}
+	wait_for_clear();
 
 	LOG_INF("BM_ZMS sample finished Successfully");
 
