@@ -204,8 +204,8 @@ def test_if_revocation_of_last_remaining_key_is_not_allowed(
     - Flash device with the image signed with key1 and reset
     - Flash device with the image signed with key2 and reset
     - Flash device with the image signed with key3 and reset
-    - Verified that Dut does not boot due to 3rd image is not signed with valid key
-    - Flash device with image sidned with key2
+    - Verified that Dut does not boot due to the 3rd image is not signed with valid key
+    - Flash device with image signed with key2
     - Verify that Dut boots correctly and `Hello World` is printed to UART console
     """
     sysbuild_config = Path(dut.device_config.build_dir) / "zephyr" / ".config"
@@ -275,7 +275,7 @@ def test_if_revocation_of_last_remaining_key_is_not_allowed(
     pytest.LineMatcher(lines).fnmatch_lines(LINES_FOR_REVOCED_KEYS)
 
     logger.info("Flash DUT with the second image")
-    west_flash(build_dir_2, dut.device_config.id)
+    west_flash(build_dir_2, dut.device_config.id, extra_args="--no-reset")
     dut.clear_buffer()
     reset_board(dut.device_config.id)
     # Check if Dut boots correctly and `Hello World` is printed
