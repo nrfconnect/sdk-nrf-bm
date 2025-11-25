@@ -185,7 +185,6 @@ static void queue_process(void)
 				/* bm_zms needs to be reinitialized after clearing */
 				cur_op.fs->init_flags.initialized = false;
 				cur_op.fs->init_flags.initializing = false;
-				cur_op.fs->evt_handler = NULL;
 				cur_op.op_completed = true;
 				result = 0;
 			} else {
