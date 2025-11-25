@@ -1,10 +1,12 @@
 common:
   tags: bm_zms
-  skip: true
   platform_allow:
+    - native_sim
     - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice
     - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice
     - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice
+  integration_platforms:
+    - native_sim
 tests:
   subsys.bm_zms:
     tags: bm_zms
@@ -15,6 +17,10 @@ tests:
   subsys.bm_zms.data_crc:
     extra_args:
       - CONFIG_BM_ZMS_DATA_CRC=y
+  subsys.bm_zms.async:
+    extra_args:
+      - CONFIG_BM_STORAGE_BACKEND_NATIVE_SIM_ASYNC=y
   subsys.bm_zms.softdevice:
+    filter: BOARD_NATIVE_SIM
     extra_args:
       - CONFIG_SOFTDEVICE=y

@@ -20,7 +20,7 @@
 #include <bm/fs/bm_zms.h>
 #include "bm_zms_priv.h"
 
-#if CONFIG_HAS_NRFX
+#ifdef CONFIG_HAS_NRFX
 #include <nrfx.h>
 #else
 #define NRFX_CRITICAL_SECTION_ENTER(...)
@@ -28,6 +28,10 @@
 #endif
 
 LOG_MODULE_REGISTER(bm_zms, CONFIG_BM_ZMS_LOG_LEVEL);
+
+#if defined(CONFIG_ZTEST) && defined(CONFIG_BOARD_NATIVE_SIM)
+#define __ALIGN(x) __aligned(x)
+#endif
 
 static zms_op_t cur_op; /* Current bm_zms operation. */
 static zms_op_t *p_cur_op;
