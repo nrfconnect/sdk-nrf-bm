@@ -87,24 +87,6 @@ static inline bool ble_gap_conn_sec_mode_equal(const ble_gap_conn_sec_mode_t *a,
 		.sm = 1, .lv = 4                                                                   \
 	}
 
-/**
- * @brief Set sec_mode to require signing or encryption, no MITM protection needed.
- */
-#define BLE_GAP_CONN_SEC_MODE_SIGNED_NO_MITM                                                       \
-	(ble_gap_conn_sec_mode_t)                                                                  \
-	{                                                                                          \
-		.sm = 2, .lv = 1                                                                   \
-	}
-
-/**
- * @brief Set sec_mode to require signing or encryption with MITM protection.
- */
-#define BLE_GAP_CONN_SEC_MODE_SIGNED_WITH_MITM                                                     \
-	(ble_gap_conn_sec_mode_t)                                                                  \
-	{                                                                                          \
-		.sm = 2, .lv = 2                                                                   \
-	}
-
 #ifdef __cplusplus
 }
 #endif
