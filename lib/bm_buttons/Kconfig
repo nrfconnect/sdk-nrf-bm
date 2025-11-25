@@ -18,7 +18,7 @@ config BM_BUTTONS_NUM_PINS
 	default 24 if SOC_SERIES_NRF54LX
 
 module=BM_BUTTONS
-module-str=Bare Metal Buttons
+module-str=Buttons library
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
 endif
