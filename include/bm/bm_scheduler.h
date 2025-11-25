@@ -23,7 +23,7 @@ extern "C" {
 /**
  * @brief Event handler prototype.
  */
-typedef void (*evt_handler_t)(void *evt, size_t len);
+typedef void (*bm_scheduler_fn_t)(void *evt, size_t len);
 
 /**
  * @brief An event to be scheduled for execution in the main thread.
@@ -38,7 +38,7 @@ struct bm_scheduler_event {
 	/**
 	 * @brief Event handler.
 	 */
-	evt_handler_t handler;
+	bm_scheduler_fn_t handler;
 	/**
 	 * @brief Event length.
 	 */
@@ -63,7 +63,7 @@ struct bm_scheduler_event {
  * @retval -EINVAL Invalid @p data and @p len combination.
  * @retval -ENOMEM No memory to schedule this event.
  */
-int bm_scheduler_defer(evt_handler_t handler, void *data, size_t len);
+int bm_scheduler_defer(bm_scheduler_fn_t handler, void *data, size_t len);
 
 /**
  * @brief Process deferred events.

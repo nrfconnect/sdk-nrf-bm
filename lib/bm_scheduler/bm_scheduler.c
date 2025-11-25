@@ -19,7 +19,7 @@ static sys_slist_t event_list;
 static struct sys_heap heap;
 static uint8_t buf[CONFIG_BM_SCHEDULER_BUF_SIZE];
 
-int bm_scheduler_defer(evt_handler_t handler, void *data, size_t len)
+int bm_scheduler_defer(bm_scheduler_fn_t handler, void *data, size_t len)
 {
 	uint32_t pm;
 	struct bm_scheduler_event *evt;
