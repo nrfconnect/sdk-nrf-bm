@@ -22,7 +22,7 @@ config BM_TIMER_IRQ_PRIO
 	  when softdevice is used.
 
 module=BM_TIMER
-module-str=Bare Metal Timer
+module-str=Timer library
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
 endif # BM_TIMER
