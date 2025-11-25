@@ -1,0 +1,1 @@
+ITERABLE_SECTION_ROM(nrf_sdh_ble_evt_observers, 4)

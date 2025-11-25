@@ -1,0 +1,20 @@
+# Clear dependencies for BLE_SCAN and enable it to allow
+# testing the features without enabling the library.
+config BLE_DB_DISCOVERY
+	default y
+
+# Redefine Kconfigs used by the tested module that are defined in
+# other modules we do not want to enable.
+config BLE_GQ_MAX_CONNECTIONS
+	default 1
+
+config BLE_GQ_QUEUE_SIZE
+	default 8
+
+config BLE_GQ_HEAP_SIZE
+	default 256
+
+config NRF_SDH_BLE_TOTAL_LINK_COUNT
+	default 1
+
+source "Kconfig.zephyr"

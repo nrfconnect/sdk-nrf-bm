@@ -19,7 +19,7 @@
 #include <stddef.h>
 #include <ble_gap.h>
 #include <ble_hci.h>
-#include <bm/bluetooth/peer_manager/ble_gatt_db.h>
+#include <bm/bluetooth/ble_gatt_db.h>
 
 #ifdef __cplusplus
 extern "C" {

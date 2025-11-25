@@ -48,6 +48,15 @@ Bluetooth LE Connection State library
    :inner:
    :members:
 
+.. _api_ble_db_discovery:
+
+Bluetooth LE Database Discovery library
+=======================================
+
+.. doxygengroup:: ble_db_discovery
+   :inner:
+   :members:
+
 .. _api_ble_radio_notif:
 
 Bluetooth LE Radio Notification library
