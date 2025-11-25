@@ -13,41 +13,128 @@
 #include <zephyr/sys/crc.h>
 #include <zephyr/ztest.h>
 
+#if defined(CONFIG_BOARD_NATIVE_SIM)
+#include <zephyr/kernel.h>
+#endif
+
 #include <bm/fs/bm_zms.h>
 #include <bm_zms_priv.h>
 
 /* Arbitrary block size. */
-#define SECTOR_SIZE 1024U
+#define TEST_SECTOR_SIZE 1024U
+#define TEST_SECTOR_COUNT 4U
+#define TEST_PARTITION_SIZE (TEST_SECTOR_SIZE * TEST_SECTOR_COUNT)
+#define TEST_DATA_ID 1
 
-#define STORAGE_NODE	     DT_NODELABEL(storage_partition)
+#if defined(CONFIG_BOARD_NATIVE_SIM)
+static uint8_t mem[TEST_PARTITION_SIZE];
+#define TEST_PARTITION_START ((off_t)mem)
+K_SEM_DEFINE(mount_sem, 0, 1);
+K_SEM_DEFINE(clear_sem, 0, 1);
+K_SEM_DEFINE(write_sem, 0, 1);
+#else
+#define STORAGE_NODE DT_NODELABEL(storage_partition)
 #define TEST_PARTITION_START DT_REG_ADDR(STORAGE_NODE)
-#define TEST_PARTITION_SIZE  (SECTOR_SIZE * 4)
-#define TEST_DATA_ID	     1
-#define TEST_SECTOR_COUNT    4U
+#endif
+
+#if defined(CONFIG_SOFTDEVICE)
+static volatile bool write_notif;
+#endif
 
 struct bm_zms_fixture {
 	struct bm_zms_fs fs;
 	struct bm_zms_fs_config config;
 };
-static bool nvm_is_full;
 
-void bm_zms_test_handler(struct bm_zms_evt const *evt)
+static bool nvm_is_full;
+static bool fs_is_init;
+
+static void wait_for_write(void)
 {
-	if (evt->evt_type == BM_ZMS_EVT_MOUNT) {
+#if defined(CONFIG_BOARD_NATIVE_SIM)
+	k_sem_take(&write_sem, K_FOREVER);
+#elif defined(CONFIG_SOFTDEVICE)
+	while (!write_notif) {
+		/* Wait for an event. */
+		__WFE();
+
+		/* Clear Event Register */
+		__SEV();
+		__WFE();
+	}
+	write_notif = false;
+#endif
+}
+
+static void wait_for_mount(void)
+{
+#if defined(CONFIG_BOARD_NATIVE_SIM)
+	k_sem_take(&mount_sem, K_FOREVER);
+#elif defined(CONFIG_SOFTDEVICE)
+	while (!is_init) {
+		/* Wait for an event. */
+		__WFE();
+
+		/* Clear Event Register */
+		__SEV();
+		__WFE();
+	}
+#endif
+}
+
+static void wait_for_clear(void)
+{
+#if defined(CONFIG_BOARD_NATIVE_SIM)
+	k_sem_take(&clear_sem, K_FOREVER);
+#elif defined(CONFIG_SOFTDEVICE)
+	while (fs_is_init) {
+		/* Wait for an event. */
+		__WFE();
+
+		/* Clear Event Register */
+		__SEV();
+		__WFE();
+	}
+#endif
+}
+
+void bm_zms_test_evt_handler(struct bm_zms_evt const *evt)
+{
+	switch (evt->evt_type) {
+	case BM_ZMS_EVT_MOUNT:
+		fs_is_init = true;
+#if defined(CONFIG_BOARD_NATIVE_SIM)
+		k_sem_give(&mount_sem);
+#endif
 		zassert_true(evt->result == 0, "bm_zms_mount call failure: %d",
 			     evt->result);
-	} else if ((evt->evt_type == BM_ZMS_EVT_WRITE) || (evt->evt_type == BM_ZMS_EVT_DELETE)) {
-		if (evt->result == 0) {
-			return;
-		}
+		break;
+	case BM_ZMS_EVT_CLEAR:
+		fs_is_init = false;
+#if defined(CONFIG_BOARD_NATIVE_SIM)
+		k_sem_give(&clear_sem);
+#endif
+		zassert_true(evt->result == 0, "bm_zms_clear call failure: %d",
+			     evt->result);
+		break;
+	case BM_ZMS_EVT_WRITE:
+	case BM_ZMS_EVT_DELETE:
+#if defined(CONFIG_BOARD_NATIVE_SIM)
+		k_sem_give(&write_sem);
+#elif defined(CONFIG_SOFTDEVICE)
+		write_notif = true;
+#endif
 		if (evt->result == -ENOSPC) {
 			nvm_is_full = true;
 			return;
+		} else if (evt->result) {
+			printf("BM_ZMS Error received %d\n", evt->result);
 		}
-		printf("BM_ZMS Error received %d\n", evt->result);
-	} else if (evt->evt_type == BM_ZMS_EVT_CLEAR) {
-		zassert_true(evt->result == 0, "bm_zms_clear call failure: %d",
-			     evt->result);
+
+		break;
+	default:
+		printf("BM_ZMS unexpected event received %d\n", evt->evt_type);
+		break;
 	}
 }
 
@@ -57,9 +144,9 @@ static void *setup(void)
 
 	memset(&fixture, 0, sizeof(struct bm_zms_fixture));
 	fixture.config.offset = TEST_PARTITION_START;
-	fixture.config.sector_size = SECTOR_SIZE;
+	fixture.config.sector_size = TEST_SECTOR_SIZE;
 	fixture.config.sector_count = TEST_SECTOR_COUNT;
-	fixture.config.evt_handler = bm_zms_test_handler;
+	fixture.config.evt_handler = bm_zms_test_evt_handler;
 
 	return &fixture;
 }
@@ -74,42 +161,15 @@ static void after(void *data)
 	struct bm_zms_fixture *fixture = (struct bm_zms_fixture *)data;
 
 	/* Clear BM_ZMS */
-	if (fixture->fs.init_flags.initialized) {
+	if (fs_is_init) {
 		int err;
 
 		err = bm_zms_clear(&fixture->fs);
-		zassert_true(err == 0, "zms_clear call failure: %x", err);
+		zassert_true(err == 0, "zms_clear call failure: %d", err);
+		wait_for_clear();
 	}
 
-	fixture->fs.sector_count = TEST_SECTOR_COUNT;
-}
-
-static void wait_for_ongoing_writes(struct bm_zms_fs *fs)
-{
-	while (fs->ongoing_writes) {
-#if defined(CONFIG_SOFTDEVICE)
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
-#endif
-	}
-}
-
-static void wait_for_init(struct bm_zms_fs *fs)
-{
-	while (!fs->init_flags.initialized) {
-#if defined(CONFIG_SOFTDEVICE)
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
-#endif
-	}
+	fixture->config.sector_count = TEST_SECTOR_COUNT;
 }
 
 ZTEST_SUITE(bm_zms, NULL, setup, before, after, NULL);
@@ -119,7 +179,7 @@ ZTEST_F(bm_zms, test_bm_zms_mount)
 	int err;
 
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
-	wait_for_init(&fixture->fs);
+	wait_for_mount();
 	zassert_true(err == 0, "bm_zms_mount call failure");
 }
 
@@ -141,7 +201,7 @@ static void execute_long_pattern_write(uint32_t id, struct bm_zms_fs *fs)
 	len = bm_zms_write(fs, id, wr_buf, sizeof(wr_buf));
 	zassert_true(len == sizeof(wr_buf), "bm_zms_write failed");
 
-	wait_for_ongoing_writes(fs);
+	wait_for_write();
 
 	len = bm_zms_read(fs, id, rd_buf, sizeof(rd_buf));
 	zassert_true(len == sizeof(rd_buf), "bm_zms_read unexpected failure");
@@ -155,6 +215,8 @@ ZTEST_F(bm_zms, test_bm_zms_write)
 
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
 	zassert_true(err == 0, "zms_mount call failure: %d", err);
+	wait_for_mount();
+
 	execute_long_pattern_write(TEST_DATA_ID, &fixture->fs);
 }
 
@@ -168,10 +230,10 @@ ZTEST_F(bm_zms, test_zms_gc)
 	/* 21st write will trigger GC. */
 	const uint16_t max_writes = 21;
 
-	fixture->fs.sector_count = 2;
+	fixture->config.sector_count = 2;
 
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
-	wait_for_init(&fixture->fs);
+	wait_for_mount();
 	zassert_true(err == 0, "zms_mount call failure: %d", err);
 
 	for (int i = 0; i < max_writes; i++) {
@@ -181,7 +243,7 @@ ZTEST_F(bm_zms, test_zms_gc)
 		memset(buf, id_data, sizeof(buf));
 
 		len = bm_zms_write(&fixture->fs, id, buf, sizeof(buf));
-		wait_for_ongoing_writes(&fixture->fs);
+		wait_for_write();
 		zassert_true(len == sizeof(buf), "bm_zms_write failed");
 	}
 
@@ -198,7 +260,7 @@ ZTEST_F(bm_zms, test_zms_gc)
 	}
 
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
-	wait_for_init(&fixture->fs);
+	wait_for_mount();
 	zassert_true(err == 0, "bm_zms_mount call failure");
 
 	for (int id = 0; id < max_id; id++) {
@@ -226,7 +288,7 @@ static void write_content(uint32_t max_id, uint32_t begin, uint32_t end, struct 
 		memset(buf, id_data, sizeof(buf));
 
 		len = bm_zms_write(fs, id, buf, sizeof(buf));
-		wait_for_ongoing_writes(fs);
+		wait_for_write();
 		zassert_true(len == sizeof(buf), "bm_zms_write failed");
 	}
 }
@@ -269,7 +331,7 @@ ZTEST_F(bm_zms, test_zms_gc_3sectors)
 	fixture->config.sector_count = 3;
 
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
-	wait_for_init(&fixture->fs);
+	wait_for_mount();
 	zassert_true(err == 0, "bm_zms_mount call failure err %d", err);
 	zassert_equal(fixture->fs.ate_wra >> ADDR_SECT_SHIFT, 0, "unexpected write sector");
 
@@ -281,7 +343,7 @@ ZTEST_F(bm_zms, test_zms_gc_3sectors)
 	check_content(max_id, &fixture->fs);
 
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
-	wait_for_init(&fixture->fs);
+	wait_for_mount();
 	zassert_true(err == 0, "bm_zms_mount call failure");
 
 	zassert_equal(fixture->fs.ate_wra >> ADDR_SECT_SHIFT, 2, "unexpected write sector");
@@ -296,6 +358,7 @@ ZTEST_F(bm_zms, test_zms_gc_3sectors)
 
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
 	zassert_true(err == 0, "bm_zms_mount call failure");
+	wait_for_mount();
 
 	zassert_equal(fixture->fs.ate_wra >> ADDR_SECT_SHIFT, 0, "unexpected write sector");
 	check_content(max_id, &fixture->fs);
@@ -308,7 +371,7 @@ ZTEST_F(bm_zms, test_zms_gc_3sectors)
 	check_content(max_id, &fixture->fs);
 
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
-	wait_for_init(&fixture->fs);
+	wait_for_mount();
 	zassert_true(err == 0, "bm_zms_mount call failure");
 
 	zassert_equal(fixture->fs.ate_wra >> ADDR_SECT_SHIFT, 1, "unexpected write sector");
@@ -322,7 +385,7 @@ ZTEST_F(bm_zms, test_zms_gc_3sectors)
 	check_content(max_id, &fixture->fs);
 
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
-	wait_for_init(&fixture->fs);
+	wait_for_mount();
 	zassert_true(err == 0, "bm_zms_mount call failure");
 
 	zassert_equal(fixture->fs.ate_wra >> ADDR_SECT_SHIFT, 2, "unexpected write sector");
@@ -339,15 +402,15 @@ ZTEST_F(bm_zms, test_zms_full_sector)
 	uint32_t filling_id = 0;
 	uint32_t data_read;
 
-	fixture->fs.sector_count = 3;
+	fixture->config.sector_count = 3;
 
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
-	wait_for_init(&fixture->fs);
+	wait_for_mount();
 	zassert_true(err == 0, "bm_zms_mount call failure");
 
 	while (!nvm_is_full) {
 		len = bm_zms_write(&fixture->fs, filling_id, &filling_id, sizeof(filling_id));
-		wait_for_ongoing_writes(&fixture->fs);
+		wait_for_write();
 		if (len == -ENOSPC) {
 			break;
 		}
@@ -358,16 +421,16 @@ ZTEST_F(bm_zms, test_zms_full_sector)
 
 	/* check whether can delete whatever from full storage */
 	err = bm_zms_delete(&fixture->fs, 1);
-	wait_for_ongoing_writes(&fixture->fs);
+	wait_for_write();
 	zassert_true(err == 0, "bm_zms_delete call failure");
 
 	/* the last sector is full now, test re-initialization */
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
-	wait_for_init(&fixture->fs);
+	wait_for_mount();
 	zassert_true(err == 0, "bm_zms_mount call failure");
 
 	len = bm_zms_write(&fixture->fs, filling_id, &filling_id, sizeof(filling_id));
-	wait_for_ongoing_writes(&fixture->fs);
+	wait_for_write();
 	zassert_true(len == sizeof(filling_id), "bm_zms_write failed");
 
 	/* sanitycheck on ZMS content */
@@ -392,15 +455,15 @@ ZTEST_F(bm_zms, test_delete)
 	uint32_t ate_wra;
 	uint32_t data_wra;
 
-	fixture->fs.sector_count = 3;
+	fixture->config.sector_count = 3;
 
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
-	wait_for_init(&fixture->fs);
+	wait_for_mount();
 	zassert_true(err == 0, "bm_zms_mount call failure");
 
 	for (filling_id = 0; filling_id < 10; filling_id++) {
 		len = bm_zms_write(&fixture->fs, filling_id, &filling_id, sizeof(filling_id));
-		wait_for_ongoing_writes(&fixture->fs);
+		wait_for_write();
 
 		zassert_true(len == sizeof(filling_id), "bm_zms_write failed");
 
@@ -410,7 +473,7 @@ ZTEST_F(bm_zms, test_delete)
 
 		/* delete the first entry while it is the most recent one */
 		err = bm_zms_delete(&fixture->fs, filling_id);
-		wait_for_ongoing_writes(&fixture->fs);
+		wait_for_write();
 		zassert_true(err == 0, "bm_zms_delete call failure");
 
 		len = bm_zms_read(&fixture->fs, filling_id, &data_read, sizeof(data_read));
@@ -419,7 +482,7 @@ ZTEST_F(bm_zms, test_delete)
 
 	/* delete existing entry */
 	err = bm_zms_delete(&fixture->fs, 1);
-	wait_for_ongoing_writes(&fixture->fs);
+	wait_for_write();
 	zassert_true(err == 0, "bm_zms_delete call failure");
 
 	len = bm_zms_read(&fixture->fs, 1, &data_read, sizeof(data_read));
@@ -429,7 +492,7 @@ ZTEST_F(bm_zms, test_delete)
 	data_wra = fixture->fs.data_wra;
 }
 
-#ifdef CONFIG_BM_ZMS_LOOKUP_CACHE
+#if defined(CONFIG_BM_ZMS_LOOKUP_CACHE)
 static size_t num_matching_cache_entries(uint64_t addr, bool compare_sector_only,
 					 struct bm_zms_fs *fs)
 {
@@ -458,7 +521,7 @@ static size_t num_occupied_cache_entries(struct bm_zms_fs *fs)
  */
 ZTEST_F(bm_zms, test_zms_cache_init)
 {
-#ifdef CONFIG_BM_ZMS_LOOKUP_CACHE
+#if defined(CONFIG_BM_ZMS_LOOKUP_CACHE)
 	int err;
 	size_t num;
 	uint64_t ate_addr;
@@ -466,9 +529,9 @@ ZTEST_F(bm_zms, test_zms_cache_init)
 
 	/* Test cache initialization when the store is empty */
 
-	fixture->fs.sector_count = 3;
+	fixture->config.sector_count = 3;
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
-	wait_for_init(&fixture->fs);
+	wait_for_mount();
 	zassert_true(err == 0, "bm_zms_mount call failure");
 
 	num = num_occupied_cache_entries(&fixture->fs);
@@ -479,7 +542,7 @@ ZTEST_F(bm_zms, test_zms_cache_init)
 	ate_addr = fixture->fs.ate_wra;
 	err = bm_zms_write(&fixture->fs, 1, &data, sizeof(data));
 	zassert_equal(err, sizeof(data), "bm_zms_write call failure");
-	wait_for_ongoing_writes(&fixture->fs);
+	wait_for_write();
 
 	num = num_occupied_cache_entries(&fixture->fs);
 	zassert_equal(num, 1, "cache not updated after write");
@@ -491,7 +554,7 @@ ZTEST_F(bm_zms, test_zms_cache_init)
 
 	memset(fixture->fs.lookup_cache, 0xAA, sizeof(fixture->fs.lookup_cache));
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
-	wait_for_init(&fixture->fs);
+	wait_for_mount();
 	zassert_true(err == 0, "bm_zms_mount call failure");
 
 	num = num_occupied_cache_entries(&fixture->fs);
@@ -508,20 +571,20 @@ ZTEST_F(bm_zms, test_zms_cache_init)
  */
 ZTEST_F(bm_zms, test_zms_cache_collission)
 {
-#ifdef CONFIG_BM_ZMS_LOOKUP_CACHE
+#if defined(CONFIG_BM_ZMS_LOOKUP_CACHE)
 	int err;
 	uint16_t data;
 
-	fixture->fs.sector_count = 4;
+	fixture->config.sector_count = 4;
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
-	wait_for_init(&fixture->fs);
+	wait_for_mount();
 	zassert_true(err == 0, "bm_zms_mount call failure");
 
 	for (int id = 0; id < CONFIG_BM_ZMS_LOOKUP_CACHE_SIZE + 1; id++) {
 		data = id;
 		err = bm_zms_write(&fixture->fs, id, &data, sizeof(data));
 		zassert_equal(err, sizeof(data), "bm_zms_write call failure");
-		wait_for_ongoing_writes(&fixture->fs);
+		wait_for_write();
 	}
 
 	for (int id = 0; id < CONFIG_BM_ZMS_LOOKUP_CACHE_SIZE + 1; id++) {
@@ -537,14 +600,14 @@ ZTEST_F(bm_zms, test_zms_cache_collission)
  */
 ZTEST_F(bm_zms, test_zms_cache_gc)
 {
-#ifdef CONFIG_BM_ZMS_LOOKUP_CACHE
+#if defined(CONFIG_BM_ZMS_LOOKUP_CACHE)
 	int err;
 	size_t num;
 	uint16_t data = 0;
 
 	fixture->config.sector_count = 3;
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
-	wait_for_init(&fixture->fs);
+	wait_for_mount();
 	zassert_true(err == 0, "bm_zms_mount call failure");
 
 	/* Fill the first sector with writes of ID 1 */
@@ -554,7 +617,7 @@ ZTEST_F(bm_zms, test_zms_cache_gc)
 		++data;
 		err = bm_zms_write(&fixture->fs, 1, &data, sizeof(data));
 		zassert_equal(err, sizeof(data), "bm_zms_write call failure");
-		wait_for_ongoing_writes(&fixture->fs);
+		wait_for_write();
 	}
 
 	/* Verify that cache contains a single entry for sector 0 */
@@ -568,7 +631,7 @@ ZTEST_F(bm_zms, test_zms_cache_gc)
 		++data;
 		err = bm_zms_write(&fixture->fs, 2, &data, sizeof(data));
 		zassert_equal(err, sizeof(data), "bm_zms_write call failure");
-		wait_for_ongoing_writes(&fixture->fs);
+		wait_for_write();
 	}
 
 	/*
@@ -589,7 +652,7 @@ ZTEST_F(bm_zms, test_zms_cache_gc)
  */
 ZTEST_F(bm_zms, test_zms_cache_hash_quality)
 {
-#ifdef CONFIG_BM_ZMS_LOOKUP_CACHE
+#if defined(CONFIG_BM_ZMS_LOOKUP_CACHE)
 	const size_t MIN_CACHE_OCCUPANCY = CONFIG_BM_ZMS_LOOKUP_CACHE_SIZE * 6 / 10;
 	int err;
 	size_t num;
@@ -597,7 +660,7 @@ ZTEST_F(bm_zms, test_zms_cache_hash_quality)
 	uint16_t data;
 
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
-	wait_for_init(&fixture->fs);
+	wait_for_mount();
 	zassert_true(err == 0, "bm_zms_mount call failure");
 
 	/* Write ZMS IDs from 0 to CONFIG_BM_ZMS_LOOKUP_CACHE_SIZE - 1 */
@@ -608,7 +671,7 @@ ZTEST_F(bm_zms, test_zms_cache_hash_quality)
 
 		err = bm_zms_write(&fixture->fs, id, &data, sizeof(data));
 		zassert_equal(err, sizeof(data), "bm_zms_write call failure");
-		wait_for_ongoing_writes(&fixture->fs);
+		wait_for_write();
 	}
 
 	/* Verify that at least 60% cache entries are occupied */
@@ -622,7 +685,7 @@ ZTEST_F(bm_zms, test_zms_cache_hash_quality)
 	zassert_true(err == 0, "bm_zms_clear call failure");
 
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
-	wait_for_init(&fixture->fs);
+	wait_for_mount();
 	zassert_true(err == 0, "bm_zms_mount call failure");
 
 	/* Write CONFIG_BM_ZMS_LOOKUP_CACHE_SIZE ZMS IDs that form the following
@@ -635,7 +698,7 @@ ZTEST_F(bm_zms, test_zms_cache_hash_quality)
 
 		err = bm_zms_write(&fixture->fs, id, &data, sizeof(data));
 		zassert_equal(err, sizeof(data), "bm_zms_write call failure");
-		wait_for_ongoing_writes(&fixture->fs);
+		wait_for_write();
 	}
 
 	/* Verify that at least 60% cache entries are occupied */

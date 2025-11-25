@@ -8,7 +8,7 @@
 
 # All these samples shall run without multithreading
 config MULTITHREADING
-	default n if !UNITY
+	default n if (!UNITY && !(ZTEST && BOARD_NATIVE_SIM))
 
 # Software ISR table is not needed if multithreading is not used
 config GEN_SW_ISR_TABLE
