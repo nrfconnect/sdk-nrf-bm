@@ -12,6 +12,15 @@ API documentation
 Libraries
 *********
 
+.. api_nrf_sdh:
+
+SoftDevice handler
+==================
+
+.. doxygengroup:: nrf_sdh
+   :inner:
+   :members:
+
 .. _api_ble_adv:
 
 Bluetooth LE Advertising library
