@@ -13,6 +13,7 @@ All other samples and applications that are included in the distribution must be
    :glob:
    :caption: Subpages:
 
+   sample/intro
    sample/ble
    sample/dfu
    sample/nfc

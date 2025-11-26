@@ -62,12 +62,16 @@ To boot an image that uses the KMU feature, you must program the MCUboot signing
 If you do not perform this step, the device will not boot.
 You can enable this setup through the :kconfig:option:`SB_CONFIG_BM_BOOTLOADER_MCUBOOT_SIGNATURE_USING_KMU` Kconfig option.
 
+.. _ug_bootloader_kmu_autokeys:
+
 Automatic key programming
 =========================
 
 The configuration option :kconfig:option:`SB_CONFIG_BM_BOOTLOADER_MCUBOOT_GENERATE_DEFAULT_KMU_KEYFILE`, enabled by default, automates the programming of the public key file to the board.
-This automation occurs when you use the ``west flash`` command with the ``--erase`` or ``--recover`` arguments.
+In |nRFVSC|, this automatically happens when using the :guilabel:`Erase and Flash to Board` option.
+If using ``west flash`` on the command line, this automatically happens when using the ``--erase`` or ``--recover`` arguments.
 It is essential to run this command first after building the project to prepare the board for development.
+
 For more information about KMU on the nRF54L Series, see `Introduction to KMU key provisioning`_ and `Performing KMU provisioning`_.
 
 Runtime revocation

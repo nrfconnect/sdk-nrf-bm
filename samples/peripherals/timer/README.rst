@@ -7,7 +7,7 @@ Timer
    :local:
    :depth: 2
 
-The Timer sample demonstrates the use of both single-shot and periodic timers.
+The Timer sample demonstrates how to configure and use the Bare Metal Timer (:ref:`lib_bm_timer`) library to generate both single-shot and periodic callback events to your application code.
 
 Requirements
 ************
@@ -74,11 +74,7 @@ Building and running
 
 This sample can be found under :file:`samples/peripherals/timer/` in the |BMshort| folder structure.
 
-.. include:: /includes/create_sample.txt
-
-.. include:: /includes/configure_and_build_sample.txt
-
-.. include:: /includes/program_sample.txt
+For details on how to create, configure and program a sample, see :ref:`getting_started_with_the_samples`.
 
 Testing
 =======
