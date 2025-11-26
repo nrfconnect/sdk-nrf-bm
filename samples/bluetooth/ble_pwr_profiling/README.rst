@@ -203,21 +203,13 @@ CONFIG_APP_BLE_PWR_PROFILING_NONCONN_ADVERTISING_INTERVAL - Non-connectable adve
 CONFIG_APP_BLE_PWR_PROFILING_LED - Enable LEDs
    Enabled by default. The LEDs can be disabled to reduce power consumption.
 
-Programming the S115 SoftDevice
-*******************************
 
-.. include:: /includes/softdevice_flash.txt
-
-.. _ble_pwr_profiling_sample_testing:
-
-Building and running
-********************
+Playing with the sample
+***********************
 
 This sample can be found under :file:`samples/bluetooth/ble_pwr_profiling/` in the |BMshort| folder structure.
 
-.. include:: /includes/create_sample.txt
-
-.. include:: /includes/configure_and_build_sample.txt
+For details on how to create, configure and program a sample see :ref:`getting_started_with_the_samples`.
 
 .. note::
    To remove terminal messages (at the benefit of a very small decrease in power consumption), disable the following Kconfig options:
@@ -225,10 +217,9 @@ This sample can be found under :file:`samples/bluetooth/ble_pwr_profiling/` in t
    * :kconfig:option:`CONFIG_CONSOLE`
    * :kconfig:option:`CONFIG_LOG_BACKEND_BM_UARTE`
 
-.. include:: /includes/program_sample.txt
 
 Testing
-=======
+*******
 
 This testing procedure assumes that you are using `nRF Connect for Mobile`_ or `nRF Connect for Desktop`_.
 After programming the sample to your development kit, you need another device for measuring the power consumption.

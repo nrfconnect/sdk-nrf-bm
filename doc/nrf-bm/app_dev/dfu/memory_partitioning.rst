@@ -46,6 +46,30 @@ The memory in the device is divided into several partitions, each serving a spec
      - Used for application data storage that persists across resets and firmware updates.
      - Placement and size are configurable based on application requirements.
 
+
+.. _ug_memorypartiton_irot:
+Configuring MCUboot to be IRoT
+******************************
+
+Configuring MCUboot to be an imutable bootloader (IRoT) is implemented using the functionality exposed using ``UICR.BOOTCONF`` register.
+By default this functionality is disabled, but it can be enabled setting sysbuild kconfig SB_CONFIG_BM_BOOT_BOOTCONF_LOCK_WRITES=y.
+This is done by by creating a file ``sysbuild.conf``, place it in project root folder, and include SB_CONFIG_BM_BOOT_BOOTCONF_LOCK_WRITES=y.
+It will set the ``UICR.BOOTCONF.SIZE`` as specified in board file for boot_partition, and activate the following protection: ``EXECUTE``, ``READ``, ``SECURE`` and ``LOCK``.
+
+
+Programming
+===========
+With IRoT enabled, preparing the board for further development requires user to do an erase all before programming.
+In nRF Connect for VS Code extension this is done by using ``Erase and Flash to Board``, alternatively using  the ``west flash`` command with the ``--erase`` or ``--recover`` arguments.
+When IRot is established the device will be blocked from performing flash operation in the boot_partition without doing an erase all operation.
+All other regions will be open and can be flashed as before.
+
+.. note:: Use nRFutil device version 2.15.0 or higher as older version had some issue related to ERASEALL and UICR.BOOTCONF on nRF54L.
+    Alternativly use the ``Recover`` function to erase the device removing IRoT protection.
+
+
+
+
 Requirement for MCUboot
 ***********************
 

@@ -59,6 +59,6 @@ Automatic key programming
 =========================
 
 The configuration option :kconfig:option:`SB_CONFIG_BM_BOOTLOADER_MCUBOOT_GENERATE_DEFAULT_KMU_KEYFILE`, enabled by default, automates the programming of the public key file to the board.
-This automation occurs when you use the ``west flash`` command with the ``--erase`` or ``--recover`` arguments.
+This automation occurs when you in nRF Connect for VS Code extension uses ``Erase and Flash to Board`` alternatively using  the ``west flash`` command with the ``--erase`` or ``--recover`` arguments.
 It is essential to run this command first after building the project to prepare the board for development.
 For more information about KMU on the nRF54L Series, see `Introduction to KMU key provisioning`_ and `Performing KMU provisioning`_.
