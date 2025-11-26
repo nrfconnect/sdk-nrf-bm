@@ -1,3 +1,0 @@
-The SoftDevice is included as part of the build process and output as a separate ``SoftDevice`` image in the build directory.
-With the MCUboot board target, the SoftDevice is signed and included as part of the MCUboot image.
-When using the ``west flash`` command or the |VSC| Extension :guilabel:`Flash` button to program the application, the SoftDevice image is programmed together with the other images.

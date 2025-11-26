@@ -58,11 +58,7 @@ Building and running
 
 This sample is located under :file:`samples/nfc/record_text_t4t/` in the |BMshort| folder structure.
 
-.. include:: /includes/create_sample.txt
-
-.. include:: /includes/configure_and_build_sample.txt
-
-.. include:: /includes/program_sample.txt
+For details on how to create, configure, and program a sample, see :ref:`getting_started_with_the_samples`.
 
 .. note::
    |nfc_nfct_driver_note|

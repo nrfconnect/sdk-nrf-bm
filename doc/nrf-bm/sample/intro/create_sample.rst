@@ -1,7 +1,11 @@
-Creating a copy of the sample
-=============================
+.. _sample_intro_copy:
 
-Follow these steps to create a new application based on this sample:
+Creating a copy of a sample
+###########################
+
+This procedure is the recommended approach when working with the samples and allows you to add changes without modifying the SDK itself.
+
+Follow these steps to create a new application based on a sample:
 
 1. Open the |nRFVSC| by clicking its icon.
 #. From the :guilabel:`Welcome View`, click :guilabel:`Create a new application`.
@@ -23,7 +27,7 @@ Follow these steps to create a new application based on this sample:
 
       Create New Application from Sample - Quick Pick Menu
 
-#. Click on the name of this sample.
+#. Click on the name of the sample you want to work with.
 
    A prompt appears asking to enter the location for the application.
    You can also use the folder button at the top of the quick pick to open a folder picker.

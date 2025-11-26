@@ -72,26 +72,8 @@ When connected, the sample forwards any data received on the RX pin of the UART 
 
 Any data sent from the Bluetooth LE unit is sent out of the UART 0 peripheral’s TX pin.
 
-Programming the S115 SoftDevice
-*******************************
-
-.. include:: /includes/softdevice_flash.txt
-
-.. _ble_nus_sample_testing:
-
-Building and running
-********************
-
-This sample can be found under :file:`samples/bluetooth/ble_nus/` in the |BMshort| folder structure.
-
-.. include:: /includes/create_sample.txt
-
-.. include:: /includes/configure_and_build_sample.txt
-
-.. include:: /includes/program_sample.txt
-
 Building and running with LPUARTE
-*********************************
+=================================
 
 The :file:`lpuarte.conf` file configures the sample to use the :ref:`LPUARTE <driver_lpuarte>` driver for the NUS Service.
 This is useful for reducing the power consumption.
@@ -105,6 +87,13 @@ Make sure the ``REQ`` pin on one board is connected to the ``RDY`` on the other 
 
    With the LPUARTE configuration, the console is used only for application logging and not for NUS data.
    Output on the NUS TX line will be handled as input on the NUS RX line on the same device (loopback) or as NUS input to the other device (when using two devices).
+
+Building and running
+********************
+
+This sample can be found under :file:`samples/bluetooth/ble_nus/` in the |BMshort| folder structure.
+
+For details on how to create, configure, and program a sample, see :ref:`getting_started_with_the_samples`.
 
 Testing
 =======

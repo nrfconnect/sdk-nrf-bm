@@ -1,14 +1,16 @@
-Configuring and building the sample
-===================================
+.. _sample_intro_config_build:
 
-Follow these steps to create your first build configuration for this sample:
+Configuring and building a sample
+#################################
 
-1. Verify the configuration of this sample.
+Follow these steps to create your first build configuration for a sample:
+
+1. Verify the configuration of the selected sample.
 
    You will need the following information:
 
    * The |NCS| version and toolchain version that the current |BMshort| release is based on: |ncs_release|
-   * The board target onto which you want to program the firmware (see `Requirements`_).
+   * The board target onto which you want to program the firmware (see the Requirements section of each sample description).
 
    This information will be used in the steps that follow.
 
@@ -64,6 +66,14 @@ Follow these steps to create your first build configuration for this sample:
          :alt: Build configuration files
 
          Build configuration files
+
+      When selecting simple board variants, the SoftDevice hex file is automatically included.
+      When the build process is completed, the `Applications View`_ lists the SoftDevice in addition to the main application.
+
+      .. note::
+         This is also the case for the peripheral samples where the SoftDevice is not needed.
+         This is because the SDK does not include board targets without the SoftDevice, in order to reduce complexity.
+
 
    .. group-tab:: MCUboot board variants
 

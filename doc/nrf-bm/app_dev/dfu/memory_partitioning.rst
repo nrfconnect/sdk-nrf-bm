@@ -46,6 +46,31 @@ The memory in the device is divided into several partitions, each serving a spec
      - Used for application data storage that persists across resets and firmware updates.
      - Placement and size are configurable based on application requirements.
 
+.. _ug_memorypartiton_irot:
+
+Configuring MCUboot to be IRoT
+******************************
+
+Configuring MCUboot to act as Immutable Root of Trust (IRoT) is done using the immutable boot region configuration register ``UICR.BOOTCONF``.
+By default, this functionality is disabled, but it can be enabled with the :kconfig:option:`SB_CONFIG_BM_BOOT_BOOTCONF_LOCK_WRITES` sysbuild Kconfig option.
+This is done by by creating a :file:`sysbuild.conf` file in the project's root folder and including ``SB_CONFIG_BM_BOOT_BOOTCONF_LOCK_WRITES=y``.
+
+Enabling this option sets the ``EXECUTE``, ``READ``, ``SECURE``, and ``LOCK`` bits in the ``UICR.BOOTCONF`` register and sets the ``UICR.BOOTCONF.SIZE`` to the size of the ``boot_partition`` from the board files.
+This enables write protection on the bootloader region and locks down the configuration registers for the immutable boot region.
+
+Programming
+===========
+
+With IRoT enabled, you must run an Erase All before programming certain parts of the memory.
+In |nRFVSC|, this is done by using the :guilabel:`Erase and Flash to Board` option, or, alternatively, by using  the ``west flash`` command with the ``--erase`` or ``--recover`` arguments.
+
+When IRoT is established, the device is blocked from performing write operations on the ``boot_partition`` without performing an erase all operation.
+All other regions are open and can be programmed just like before the IRoT was established.
+
+.. note::
+   Use nRF Util device version 2.15.0 or higher as older versions have a known issue related to ERASEALL and UICR.BOOTCONF on nRF54L.
+   Alternatively, use the ``Recover`` function to erase the device and remove the IRoT protection.
+
 Requirement for MCUboot
 ***********************
 
@@ -69,7 +94,7 @@ An example of such images are application and firmware loader.
 The SoftDevice is not affected by this requirement.
 
 SoftDevice placement
---------------------
+********************
 
 .. figure:: ../../images/dfu_softdevice.svg
    :alt: Placement of the SoftDevice relative to the top of NVM
