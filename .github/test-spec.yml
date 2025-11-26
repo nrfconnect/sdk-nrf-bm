@@ -1,0 +1,51 @@
+# This is the Jenkins ci variant of the .github/labler.yaml
+
+"__EXCLUDE__":
+  - "**/VERSION"
+  - "**/*.rst"
+
+"CI-bm-samples":
+  - "applications/**/*"
+  - "components/softdevice/**/*"
+  - "boards/**/*"
+  - "cmake/**/*"
+  - "drivers/**/*"
+  - "include/**/*"
+  - "lib/**/*"
+  - "modules/**/*"
+  - "samples/**/*"
+  - "scripts/**/*"
+  - "subsys/**/*"
+  - "sysbuild/**/*"
+  - "tests/**/*"
+  - "zephyr/**/*"
+  - "CMakeLists.txt"
+  - "Jenkinsfile"
+  - "Kconfig.nrf_bm"
+  - "west.yml"
+
+"CI-dfu-test":
+  - "applications/softdevice/**/*"
+  - "applications/installer/**/*"
+  - "applications/firmware_loader/**/*"
+  - "boards/**/*"
+  - "cmake/**/*"
+  - "components/softdevice/s115/**/*"
+  - "components/softdevice/s145/**/*"
+  - "drivers/**/*"
+  - "include/**/*"
+  - "lib/**/*"
+  - "modules/**/*"
+  - "samples/boot/**/*"
+  - "scripts/pytest_plugins/**/*"
+  - "scripts/generate_flash_metadata.py"
+  - "scripts/generate_metadata.py"
+  - "subsys/**/*"
+  - "sysbuild/**/*"
+  - "tests/subsys/kmu/**/*"
+  - "west.yml"
+
+"CI-nfc-test":
+  - "subsys/nfc/**/*"
+  - "samples/nfc/**/*"
+  - "west.yml"
