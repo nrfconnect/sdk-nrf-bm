@@ -16,22 +16,17 @@ ${SOFTDEVICE_VARIANT}/${SOFTDEVICE_VARIANT}_API/include")
 
 cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble_gatts.h)
 
-target_compile_definitions(app PRIVATE
+zephyr_compile_definitions(
   NRF54L15_XXAA
   SVCALL_AS_NORMAL_FUNCTION
   SUPPRESS_INLINE_IMPLEMENTATION
-  CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT=1
 )
 
-target_include_directories(app PRIVATE
+zephyr_include_directories(
   ${SOFTDEVICE_INCLUDE_DIR}
   ${ZEPHYR_NRF_BM_MODULE_DIR}/include
-  ${ZEPHYR_HAL_NORDIC_MODULE_DIR}/nrfx/mdk
 )
 
 # Generate and add test file
 test_runner_generate(src/unity_test.c)
 target_sources(app PRIVATE src/unity_test.c)
-
-# Unit under test
-target_sources(app PRIVATE ${ZEPHYR_NRF_BM_MODULE_DIR}/subsys/bluetooth/services/ble_bas/bas.c)

@@ -12,9 +12,4 @@ project(unit_test_ble_racp)
 test_runner_generate(src/unity_test.c)
 target_sources(app PRIVATE src/unity_test.c)
 
-target_sources(app
-  PRIVATE
-  ${ZEPHYR_NRF_BM_MODULE_DIR}/lib/bluetooth/ble_racp/ble_racp.c
-)
-
 zephyr_include_directories(${ZEPHYR_NRF_BM_MODULE_DIR}/include)
