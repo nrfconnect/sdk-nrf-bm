@@ -65,10 +65,12 @@ struct bm_zms_evt {
 	uint32_t id;
 };
 
-/* Init flags. */
+/** Init flags. */
 struct bm_zms_init_flags {
-	volatile bool initialized;  /* true when the storage is initialized. */
-	volatile bool initializing; /* true when initialization is ongoing. */
+	/** true when the storage is initialized. */
+	volatile bool initialized;
+	/** true when initialization is ongoing. */
+	volatile bool initializing;
 } __packed;
 
 /**
@@ -141,6 +143,9 @@ struct bm_zms_fs_config {
 /**
  * @brief Mount a BM_ZMS file system.
  *
+ * @note Once the mount operation is completed, a @ref BM_ZMS_EVT_MOUNT event will be propagated
+ *       to the configured event handler.
+ *
  * @param fs Pointer to the file system.
  * @param config Pointer to the configuration for file system initialization.
  *
@@ -157,6 +162,9 @@ int bm_zms_mount(struct bm_zms_fs *fs, const struct bm_zms_fs_config *config);
  * @brief Clear the BM_ZMS file system from device. The BM_ZMS file system must be re-mounted after
  * this operation.
  *
+ * @note Once the clear operation is completed, a @ref BM_ZMS_EVT_CLEAR event will be propagated
+ *       to the configured event handler.
+ *
  * @param fs Pointer to the file system.
  *
  * @retval 0 if the clear operation is queued successfully.
@@ -172,6 +180,8 @@ int bm_zms_clear(struct bm_zms_fs *fs);
  * @note  When the `len` parameter is equal to `0` the entry is effectively removed (it is
  * equivalent to calling @ref bm_zms_delete()). It is not possible to distinguish between a
  * deleted entry and an entry with data of length 0.
+ * Once the write operation is completed, a @ref BM_ZMS_EVT_WRITE event will be propagated
+ * to the configured event handler.
  *
  * @param fs Pointer to the file system.
  * @param id ID of the entry to be written.
@@ -190,6 +200,9 @@ ssize_t bm_zms_write(struct bm_zms_fs *fs, uint32_t id, const void *data, size_t
 
 /**
  * @brief Delete an entry from the file system.
+ *
+ * @note Once the delete operation is completed, a @ref BM_ZMS_EVT_DELETE event will be propagated
+ *       to the configured event handler.
  *
  * @param fs Pointer to the file system.
  * @param id ID of the entry to be deleted.
