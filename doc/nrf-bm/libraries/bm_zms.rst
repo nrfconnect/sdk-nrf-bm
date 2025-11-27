@@ -101,7 +101,7 @@ Registering the user callback handler
 
 BM_ZMS can be used with asynchronous and synchronous storage APIs.
 
-To use it with asynchronous APIs, it is recommended to register a callback handler that will be called when an operation (write/init) has finished.
+To use it with asynchronous APIs, it is recommended to register a callback handler that will be called when an operation (mount, clear, write, or delete) has finished.
 Read operations are synchronous and do not require a callback handler.
 
 Mounting the storage system
@@ -114,17 +114,19 @@ To mount the file system, the following members in the struct :c:struct:`bm_zms_
 
 .. code-block:: c
 
-	struct bm_zms_fs_config {
-		/** File system offset in non-volatile memory **/
-		off_t offset;
-
-		/** Storage system is split into sectors, each sector size must be multiple of
-		 * erase-blocks if the device has erase capabilities
-		 */
-		uint32_t sector_size;
-		/** Number of sectors in the file system */
-		uint32_t sector_count;
-	};
+  /** Configuration for Zephyr Memory Storage file system structure initialization. */
+  struct bm_zms_fs_config {
+    /** File system offset in non-volatile storage. */
+    off_t offset;
+    /** Storage system is split into sectors. The sector size must be a multiple of
+    *  `erase-block-size` if the device has erase capabilities.
+    */
+    uint32_t sector_size;
+    /** Number of sectors in the file system. */
+    uint32_t sector_count;
+    /** Event handler for propagating events. */
+    bm_zms_evt_handler_t evt_handler;
+  };
 
 Initialization
 ==============
@@ -135,8 +137,16 @@ To do this, it looks for a closed sector followed by an open one.
 Then, within the open sector, it finds (recovers) the last written ATE.
 After that, it checks that the sector after this one is empty, or it will erase it.
 
-If this initialization is successful, the library sets the flag ``bm_zms_fs.init_flags.initialized`` to true.
+If this initialization is successful, the library will propagate a :c:enum:`BM_ZMS_EVT_MOUNT` event to the configured event handler.
 For asynchronous storage backends, you must wait for the initialization to finish before triggering a write or read operation.
+
+Clearing the storage system
+===========================
+
+Call the :c:func:`bm_zms_clear` function to clear the storage and uninitialize it.
+
+If this uninitialization is successful, the library will propagate a :c:enum:`BM_ZMS_EVT_CLEAR` event to the configured event handler.
+For asynchronous storage backends, you must wait for the uninitialization to finish before reinitializing the storage system.
 
 BM_ZMS ID/data write
 ====================
@@ -152,6 +162,8 @@ If BM_ZMS still has some queued write operations to process, it sets the ``bm_zm
 
 If the sector is full (cannot hold the current data + ATE), BM_ZMS moves to the next sector, garbage collects the sector after the newly opened one, and then erases it.
 Data whose size is smaller or equal to 8 bytes is written within the ATE.
+
+When a write operation has completed, the library will propagate a :c:enum:`BM_ZMS_EVT_WRITE` event to the configured event handler.
 
 BM_ZMS ID/data read (with history)
 ==================================
