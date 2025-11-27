@@ -11,7 +11,7 @@ jobs:
     name: Run Twister patch series (PR)
     runs-on:
       - runs-on=${{ github.run_id }}
-      - runner=4cpu-linux-x64
+      - runner=64cpu-linux-x64
     # Keep aligned with target NCS version
     container: ghcr.io/nrfconnect/sdk-nrf-toolchain:v3.1.0
     defaults:
@@ -47,7 +47,12 @@ jobs:
           apt-get update
           apt-get install -y build-essential ninja-build gcc-multilib g++-multilib ruby
 
-      - name: Run Twister
+      - name: Twister Build Only (all)
+        working-directory: nrf-bm
+        run: |
+          west twister -T tests --build-only
+
+      - name: Run Twister (native_sim)
         working-directory: nrf-bm
         run: |
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
