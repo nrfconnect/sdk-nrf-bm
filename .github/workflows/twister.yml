@@ -21,70 +21,70 @@ jobs:
         shell: bash
 
     steps:
-    - name: Checkout the code
-      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-      with:
-        path: nrf-bm
-        fetch-depth: 0
+      - name: Checkout the code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          path: nrf-bm
+          fetch-depth: 0
 
-    - name: restore-cache-sdk
-      id: cache-sdk
-      uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
-      with:
-        path: |
-          nrf
-          zephyr
-          modules
-        key: ${{ runner.os }}-nrf-sdk
+      - name: restore-cache-sdk
+        id: cache-sdk
+        uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+        with:
+          path: |
+            nrf
+            zephyr
+            modules
+          key: ${{ runner.os }}-nrf-sdk
 
-    - name: Prepare west project
-      run: |
-        west init -l nrf-bm
-        west update -o=--depth=1 -n
+      - name: Prepare west project
+        run: |
+          west init -l nrf-bm
+          west update -o=--depth=1 -n
 
-    - name: Install requirements
-      run: |
-        apt-get update
-        apt-get install -y build-essential ninja-build gcc-multilib g++-multilib ruby
+      - name: Install requirements
+        run: |
+          apt-get update
+          apt-get install -y build-essential ninja-build gcc-multilib g++-multilib ruby
 
-    - name: Run Twister
-      working-directory: nrf-bm
-      run: |
-        if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-          COVERAGE_OPTION="--coverage --coverage-basedir lib"
-        else
-          COVERAGE_OPTION=""
-        fi
-        west twister -vc $COVERAGE_OPTION -p native_sim -T tests --enable-asan --enable-lsan --enable-ubsan
+      - name: Run Twister
+        working-directory: nrf-bm
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            COVERAGE_OPTION="--coverage --coverage-basedir lib"
+          else
+            COVERAGE_OPTION=""
+          fi
+          west twister -vc $COVERAGE_OPTION -p native_sim -T tests --enable-asan --enable-lsan --enable-ubsan
 
-    - name: upload-logs
-      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-      if: ${{ !cancelled() }}
-      with:
-        name: twister-logs
-        path: nrf-bm/twister-out/**/*.log
-        retention-days: 5
+      - name: upload-logs
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: ${{ !cancelled() }}
+        with:
+          name: twister-logs
+          path: nrf-bm/twister-out/**/*.log
+          retention-days: 5
 
-    - name: compress-twister-out-full
-      if: github.event_name == 'workflow_dispatch'
-      working-directory: nrf-bm
-      run: tar -zcvf twister-out.tar.gz twister-out
+      - name: compress-twister-out-full
+        if: github.event_name == 'workflow_dispatch'
+        working-directory: nrf-bm
+        run: tar -zcvf twister-out.tar.gz twister-out
 
-    - name: upload-twister-out-full
-      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-      if: github.event_name == 'workflow_dispatch' && !cancelled()
-      with:
-        name: twister-out-full
-        path: nrf-bm/twister-out.tar.gz
-        retention-days: 5
-        compression-level: 0 # Opt out of compression since already compressed previously
+      - name: upload-twister-out-full
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: github.event_name == 'workflow_dispatch' && !cancelled()
+        with:
+          name: twister-out-full
+          path: nrf-bm/twister-out.tar.gz
+          retention-days: 5
+          compression-level: 0 # Opt out of compression since already compressed previously
 
-    - name: save-cache-sdk
-      if: always() && steps.cache-sdk.outputs.cache-hit != 'true'
-      uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4
-      with:
-        path: |
-          nrf
-          zephyr
-          modules
-        key: ${{ steps.cache-sdk.outputs.cache-primary-key }}
+      - name: save-cache-sdk
+        if: always() && steps.cache-sdk.outputs.cache-hit != 'true'
+        uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+        with:
+          path: |
+            nrf
+            zephyr
+            modules
+          key: ${{ steps.cache-sdk.outputs.cache-primary-key }}
