@@ -228,6 +228,10 @@ Libraries
 
   * Renamed library from ``event_scheduler`` to ``bm_scheduler``.
 
+* :ref:`lib_bm_buttons` library:
+
+  * Fixed the GPIO trigger configuration when the ``active_state`` is ``BM_BUTTONS_ACTIVE_HIGH``
+
 Samples
 =======
 

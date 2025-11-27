@@ -340,16 +340,17 @@ int bm_buttons_init(struct bm_buttons_config const *configs, uint8_t num_configs
 	global.num_configs = num_configs;
 	global.detection_delay = detection_delay;
 
-	const nrfx_gpiote_trigger_config_t trigger_config = {
-		.trigger = NRFX_GPIOTE_TRIGGER_HITOLO,
-	};
-
 	const nrfx_gpiote_handler_config_t handler_config = {
 		.handler = gpiote_evt_handler,
 	};
 
 	for (int i = 0; i < num_configs; i++) {
 		const nrf_gpio_pin_pull_t pull_config = configs[i].pull_config;
+		const nrfx_gpiote_trigger_config_t trigger_config = {
+			.trigger = (configs[i].active_state == BM_BUTTONS_ACTIVE_HIGH)
+				? NRFX_GPIOTE_TRIGGER_LOTOHI
+				: NRFX_GPIOTE_TRIGGER_HITOLO
+		};
 		const nrfx_gpiote_input_pin_config_t input_config = {
 			.p_pull_config = &pull_config,
 			.p_trigger_config = &trigger_config,
