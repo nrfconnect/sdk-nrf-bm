@@ -188,15 +188,17 @@ static void user_event(uint8_t pin, enum bm_buttons_evt_type type)
 
 static void evt_handle(uint8_t pin, uint8_t index, bool is_active)
 {
+	unsigned int key;
+
 	switch (state_get(index)) {
 	case BUTTON_IDLE:
 		if (is_active) {
 			state_set(index, BUTTON_PRESS_ARMED);
 			LOG_DBG("Pin %d %s -> %s", pin, STRINGIFY(BUTTON_IDLE),
 				STRINGIFY(BUTTON_PRESS_ARMED));
-			NRFX_CRITICAL_SECTION_ENTER();
+			key = irq_lock();
 			global.pin_active |= 1ULL << index;
-			NRFX_CRITICAL_SECTION_EXIT();
+			irq_unlock(key);
 		} else {
 			/* Stay in BUTTON_IDLE. */
 		}
@@ -209,9 +211,9 @@ static void evt_handle(uint8_t pin, uint8_t index, bool is_active)
 			user_event(pin, BM_BUTTONS_PRESS);
 		} else {
 			state_set(index, BUTTON_IDLE);
-			NRFX_CRITICAL_SECTION_ENTER();
+			key = irq_lock();
 			global.pin_active &= ~(1ULL << index);
-			NRFX_CRITICAL_SECTION_EXIT();
+			irq_unlock(key);
 		}
 		break;
 	case BUTTON_PRESSED:
@@ -231,9 +233,9 @@ static void evt_handle(uint8_t pin, uint8_t index, bool is_active)
 		} else {
 			state_set(index, BUTTON_IDLE);
 			user_event(pin, BM_BUTTONS_RELEASE);
-			NRFX_CRITICAL_SECTION_ENTER();
+			key = irq_lock();
 			global.pin_active &= ~(1ULL << index);
-			NRFX_CRITICAL_SECTION_EXIT();
+			irq_unlock(key);
 		}
 		break;
 	}
@@ -254,6 +256,7 @@ static void timer_start(void)
 static int buttons_disable(void)
 {
 	int err;
+	unsigned int key;
 
 	err = bm_timer_stop(&global.timer);
 	if (err) {
@@ -264,9 +267,9 @@ static int buttons_disable(void)
 		gpiote_trigger_enable(global.configs[i].pin_number, false);
 	}
 
-	NRFX_CRITICAL_SECTION_ENTER();
+	key = irq_lock();
 	global.pin_active = 0;
-	NRFX_CRITICAL_SECTION_EXIT();
+	irq_unlock(key);
 
 	return 0;
 }
