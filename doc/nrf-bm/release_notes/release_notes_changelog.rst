@@ -270,15 +270,20 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Documentation
 =============
 
-* Added documentation for the :ref:`lib_bm_buttons` library.
-* Added documentation for the :ref:`lib_bm_timer` library.
-* Added documentation for the :ref:`lib_ble_adv` library.
-* Added documentation for the :ref:`lib_ble_gatt_queue` library.
-* Added documentation for the :ref:`lib_ble_queued_writes` library.
-* Added documentation for the :ref:`lib_bm_scheduler` library.
-* Added documentation for the :ref:`lib_sensorsim` library.
-* Added documentation for the :ref:`lib_storage` library.
-* Added documentation for the :ref:`lib_ble_queued_writes` library.
+* Added:
+
+  * Documentation for the following libraries:
+
+    * :ref:`lib_bm_buttons`
+    * :ref:`lib_bm_timer`
+    * :ref:`lib_ble_adv`
+    * :ref:`lib_ble_gatt_queue`
+    * :ref:`lib_ble_queued_writes`
+    * :ref:`lib_bm_scheduler`
+    * :ref:`lib_sensorsim`
+    * :ref:`lib_storage`
+
+  * :ref:`S145 SoftDevice release notes and migration documents <s145_docs>`.
 
 Interrupts
 ==========
