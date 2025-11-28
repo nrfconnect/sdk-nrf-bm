@@ -5,7 +5,9 @@
 #
 
 menuconfig BLE_ADV
-	bool "BLE Advertising"
+	bool "Bluetooth LE Advertising"
+	depends on SOFTDEVICE
+	select BLE_ADV_DATA
 
 if BLE_ADV
 
@@ -124,3 +126,15 @@ module-str=BLE Advertising
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
 endif # BLE_ADV
+
+menuconfig BLE_ADV_DATA
+	bool "Bluetooth LE Advertising data"
+	depends on SOFTDEVICE
+
+if BLE_ADV_DATA
+
+module=BLE_ADV_DATA
+module-str=BLE Advertising data
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endif # BLE_ADV_DATA
