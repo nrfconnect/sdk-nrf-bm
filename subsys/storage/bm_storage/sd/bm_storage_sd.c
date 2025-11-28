@@ -8,11 +8,11 @@
 #include <nrf_soc.h>
 #include <nrf_sdm.h>
 #include <nrf_error.h>
-#include <nrfx.h>
 #include <bm/softdevice_handler/nrf_sdh_soc.h>
 #include <bm/softdevice_handler/nrf_sdh.h>
 #include <bm/storage/bm_storage.h>
 #include <bm/storage/bm_storage_backend.h>
+#include <zephyr/irq.h>
 #include <zephyr/sys/atomic.h>
 #include <zephyr/sys/ring_buffer.h>
 
@@ -120,12 +120,13 @@ static uint32_t write_execute(const struct bm_storage_sd_op *op)
 static void queue_process(void)
 {
 	uint32_t ret;
+	unsigned int key;
 
 	if (state.type == BM_STORAGE_SD_STATE_IDLE) {
-		NRFX_CRITICAL_SECTION_ENTER();
+		key = irq_lock();
 		ret = ring_buf_get(&sd_fifo, (uint8_t *)&state.current_operation,
 				   sizeof(struct bm_storage_sd_op));
-		NRFX_CRITICAL_SECTION_EXIT();
+		irq_unlock(key);
 		if (ret != sizeof(struct bm_storage_sd_op)) {
 			/* No more operations left to be processed, unlock the resource. */
 			atomic_set(&state.operation_ongoing, 0);
@@ -258,6 +259,7 @@ int bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest,
 			     const void *src, uint32_t len, void *ctx)
 {
 	uint32_t written;
+	unsigned int key;
 
 	if (!state.is_init) {
 		return -EPERM;
@@ -276,9 +278,10 @@ int bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest,
 		.dest = dest,
 	};
 
-	NRFX_CRITICAL_SECTION_ENTER();
+	key = irq_lock();
 	written = ring_buf_put(&sd_fifo, (void *)&op, sizeof(struct bm_storage_sd_op));
-	NRFX_CRITICAL_SECTION_EXIT();
+	irq_unlock(key);
+
 	if (written != sizeof(struct bm_storage_sd_op)) {
 		return -EIO;
 	}
