@@ -15,5 +15,6 @@ All other samples and applications that are included in the distribution must be
 
    sample/ble
    sample/dfu
+   sample/nfc
    sample/peripheral
    sample/subsys
