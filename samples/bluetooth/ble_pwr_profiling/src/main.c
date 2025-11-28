@@ -460,7 +460,6 @@ static uint32_t ble_service_init(uint16_t *service_handle, uint8_t *uuid_type,
 /* Add optional advertising data and start advertising in the given mode */
 static void adv_data_update_and_start(enum adv_mode adv_mode)
 {
-	int err;
 	uint32_t nrf_err;
 	ble_gap_adv_data_t new_adv_data = {0};
 
