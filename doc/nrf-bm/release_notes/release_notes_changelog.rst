@@ -119,6 +119,11 @@ Libraries
   * :ref:`lib_ble_service_nus` service.
   * Bluetooth LE Record Access Control Point library.
 
+* :ref:`lib_ble_adv` library:
+
+  * Updated the advertising and scan response data encoder provided in the :file:`include/bm/bluetooth/ble_adv_data.h` file so that it can be used by enabling the :kconfig:option:`CONFIG_BLE_ADV_DATA` Kconfig option.
+    You can enable this without using the :kconfig:option:`CONFIG_BLE_ADV` Kconfig option.
+
 * :ref:`lib_ble_conn_params` library:
 
    * Added:
