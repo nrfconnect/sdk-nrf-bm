@@ -7,6 +7,7 @@
 #include <bm/drivers/bm_lpuarte.h>
 #include <nrfx_gpiote.h>
 #include <nrfx_uarte.h>
+#include <zephyr/irq.h>
 #include <zephyr/logging/log.h>
 
 LOG_MODULE_REGISTER(lpuarte, CONFIG_BM_SW_LPUARTE_LOG_LEVEL);
@@ -193,6 +194,7 @@ static bool rdy_pin_blink(struct bm_lpuarte *lpu)
 	const nrf_gpio_pin_dir_t dir_in = NRF_GPIO_PIN_DIR_INPUT;
 	const nrf_gpio_pin_dir_t dir_out = NRF_GPIO_PIN_DIR_OUTPUT;
 	nrfx_gpiote_t *gpiote = gpiote_get(lpu, lpu->rdy_pin);
+	unsigned int key;
 	bool ret;
 
 	/* Drive low for a moment */
@@ -203,7 +205,7 @@ static bool rdy_pin_blink(struct bm_lpuarte *lpu)
 
 	nrfx_gpiote_trigger_enable(gpiote, lpu->rdy_pin, true);
 
-	NRFX_CRITICAL_SECTION_ENTER();
+	key = irq_lock();
 
 	nrf_gpiote_event_t event = nrf_gpiote_in_event_get(lpu->rdy_ch);
 
@@ -224,7 +226,7 @@ static bool rdy_pin_blink(struct bm_lpuarte *lpu)
 	} else {
 		ret = true;
 	}
-	NRFX_CRITICAL_SECTION_EXIT();
+	irq_unlock(key);
 
 	return ret;
 }
@@ -305,6 +307,7 @@ static void req_pin_handler(nrfx_gpiote_pin_t pin, nrfx_gpiote_trigger_t trigger
 	size_t len;
 	int err;
 	struct bm_lpuarte *lpu = context;
+	unsigned int key;
 
 	LOG_DBG("req_pin_evt");
 
@@ -320,11 +323,12 @@ static void req_pin_handler(nrfx_gpiote_pin_t pin, nrfx_gpiote_trigger_t trigger
 	req_pin_set(lpu);
 	bm_timer_stop(&lpu->tx_timer);
 
-	NRFX_CRITICAL_SECTION_ENTER();
+	key = irq_lock();
 	lpu->tx_active = true;
 	buf = lpu->tx_buf;
 	len = lpu->tx_len;
-	NRFX_CRITICAL_SECTION_EXIT();
+	irq_unlock(key);
+
 	err = nrfx_uarte_tx(lpu->uarte_inst, buf, len, 0);
 	if (err) {
 		LOG_ERR("TX: Not started, err %d", err);
@@ -535,6 +539,7 @@ int bm_lpuarte_tx_abort(struct bm_lpuarte *lpu, bool sync)
 {
 	int err;
 	const uint8_t *buf = lpu->tx_buf;
+	unsigned int key;
 
 	if (!lpu) {
 		return -EFAULT;
@@ -544,9 +549,9 @@ int bm_lpuarte_tx_abort(struct bm_lpuarte *lpu, bool sync)
 	}
 
 	bm_timer_stop(&lpu->tx_timer);
-	NRFX_CRITICAL_SECTION_ENTER();
+	key = irq_lock();
 	tx_complete(lpu);
-	NRFX_CRITICAL_SECTION_EXIT();
+	irq_unlock(key);
 
 	err = nrfx_uarte_tx_abort(lpu->uarte_inst, sync);
 	if (err == -EINPROGRESS && !sync) {
