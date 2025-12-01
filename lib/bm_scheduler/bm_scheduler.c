@@ -7,17 +7,16 @@
 #include <errno.h>
 #include <string.h>
 #include <bm/bm_scheduler.h>
-#include <zephyr/logging/log.h>
 #include <zephyr/init.h>
-#include <zephyr/sys/sys_heap.h>
+#include <zephyr/kernel.h>	/* k_heap */
 #include <zephyr/sys/slist.h>
 #include <zephyr/sys/util.h>
+#include <zephyr/logging/log.h>
 
 LOG_MODULE_REGISTER(bm_scheduler, CONFIG_BM_SCHEDULER_LOG_LEVEL);
 
 static sys_slist_t event_list;
-static struct sys_heap heap;
-static uint8_t buf[CONFIG_BM_SCHEDULER_BUF_SIZE];
+static K_HEAP_DEFINE(heap, CONFIG_BM_SCHEDULER_BUF_SIZE);
 
 int bm_scheduler_defer(bm_scheduler_fn_t handler, void *data, size_t len)
 {
@@ -31,13 +30,7 @@ int bm_scheduler_defer(bm_scheduler_fn_t handler, void *data, size_t len)
 		return -EINVAL;
 	}
 
-	pm = __get_PRIMASK();
-	__disable_irq();
-	evt = sys_heap_alloc(&heap, sizeof(struct bm_scheduler_event) + len);
-	if (!pm) {
-		__enable_irq();
-	}
-
+	evt = k_heap_alloc(&heap, sizeof(struct bm_scheduler_event) + len, K_NO_WAIT);
 	if (!evt) {
 		return -ENOMEM;
 	}
@@ -78,12 +71,7 @@ int bm_scheduler_process(void)
 		LOG_DBG("Dispatching event %p to handler %p", evt, evt->handler);
 		evt->handler(evt->data, evt->len);
 
-		pm = __get_PRIMASK();
-		__disable_irq();
-		sys_heap_free(&heap, evt);
-		if (!pm) {
-			__enable_irq();
-		}
+		k_heap_free(&heap, evt);
 	}
 
 	return 0;
@@ -92,8 +80,6 @@ int bm_scheduler_process(void)
 static int bm_scheduler_init(void)
 {
 	sys_slist_init(&event_list);
-	sys_heap_init(&heap, buf, sizeof(buf));
-
 	LOG_DBG("Event scheduler initialized");
 
 	return 0;
