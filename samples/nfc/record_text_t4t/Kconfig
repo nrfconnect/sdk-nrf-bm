@@ -1,0 +1,15 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "NFC Text Record sample for Type 4 Tag"
+
+module=APP_NFC_TEXT_RECORD_T4T
+module-str=NFC Text Record Sample for Type 4 Tag
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endmenu # "NFC Text Record sample for Type 4 Tag"
+
+source "Kconfig.zephyr"
