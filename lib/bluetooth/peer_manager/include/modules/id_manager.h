@@ -224,23 +224,23 @@ uint32_t im_privacy_get(ble_gap_privacy_params_t *privacy_params);
 bool im_address_resolve(const ble_gap_addr_t *addr, const ble_gap_irk_t *irk);
 
 /**
- * @brief Function for setting / clearing the whitelist.
+ * @brief Function for setting / clearing the allow list.
  *
- * @param peers     The peers to whitelist. Pass NULL to clear the whitelist.
- * @param peer_cnt  The number of peers to whitelist. Pass zero to clear the whitelist.
+ * @param peers     The peers to put on the allow list. Pass NULL to clear the allow list.
+ * @param peer_cnt  The number of peers to put on the allow list. Pass zero to clear the allow list.
  *
- * @retval NRF_SUCCESS                      If the whitelist was successfully set or cleared.
- * @retval BLE_GAP_ERROR_WHITELIST_IN_USE   If a whitelist is in use.
+ * @retval NRF_SUCCESS                      If the allow list was successfully set or cleared.
+ * @retval BLE_ERROR_GAP_WHITELIST_IN_USE   If allow list is in use.
  * @retval BLE_ERROR_GAP_INVALID_BLE_ADDR   If any peer has an address which can not be used
- *                                          for whitelisting.
+ *                                          for allow listing.
  * @retval NRF_ERROR_NOT_FOUND              If any peer or its data could not be found.
  * @retval NRF_ERROR_DATA_SIZE              If @p peer_cnt is greater than
  *                                          @ref BLE_GAP_WHITELIST_ADDR_MAX_COUNT.
  */
-uint32_t im_whitelist_set(const uint16_t *peers, const uint32_t peer_cnt);
+uint32_t im_allow_list_set(const uint16_t *peers, const uint32_t peer_cnt);
 
 /**
- * @brief Retrieves the current whitelist, set by a previous call to @ref im_whitelist_set.
+ * @brief Retrieves the current allow list, set by a previous call to @ref im_allow_list_set.
  *
  * @param[out]   addrs     A buffer where to copy the GAP addresses.
  * @param[inout] addr_cnt  In: the size of the @p addrs buffer.
@@ -249,16 +249,16 @@ uint32_t im_whitelist_set(const uint16_t *peers, const uint32_t peer_cnt);
  * @param[inout] irk_cnt   In: the size of the @p irks buffer.
  *                         Out: the number of IRKs copied into the buffer.
  *
- * @retval NRF_SUCCESS                      If the whitelist was successfully retrieved.
+ * @retval NRF_SUCCESS                      If the allow list was successfully retrieved.
  * @retval BLE_ERROR_GAP_INVALID_BLE_ADDR   If any peer has an address which can not be used for
- *                                          whitelisting.
- * @retval NRF_ERROR_NOT_FOUND              If the data for any of the cached whitelisted peers
+ *                                          allow listing.
+ * @retval NRF_ERROR_NOT_FOUND              If the data for any of the cached allow listed peers
  *                                          can not be found anymore. It might have been deleted in
  *                                          the meanwhile.
  * @retval NRF_ERROR_NO_MEM                 If the provided buffers are too small.
  */
-uint32_t im_whitelist_get(ble_gap_addr_t *addrs, uint32_t *addr_cnt, ble_gap_irk_t *irks,
-			  uint32_t *irk_cnt);
+uint32_t im_allow_list_get(ble_gap_addr_t *addrs, uint32_t *addr_cnt, ble_gap_irk_t *irks,
+			   uint32_t *irk_cnt);
 
 /** @brief Set the device identities list. */
 uint32_t im_device_identities_list_set(const uint16_t *peers, uint32_t peer_cnt);

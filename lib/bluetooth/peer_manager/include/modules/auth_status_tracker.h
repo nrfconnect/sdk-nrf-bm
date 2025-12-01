@@ -44,10 +44,10 @@ void ast_auth_error_notify(uint16_t conn_handle);
  *
  * @param[in]  conn_handle  Connection handle on which this check must be performed.
  *
- * @retval  true   If the connected peer is blacklisted.
- * @retval  false  If the connected peer is not blacklisted.
+ * @retval  true   If the connected peer is on the deny list.
+ * @retval  false  If the connected peer is not on the deny list.
  */
-bool ast_peer_blacklisted(uint16_t conn_handle);
+bool ast_peer_deny_listed(uint16_t conn_handle);
 
 #ifdef __cplusplus
 }

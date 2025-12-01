@@ -365,7 +365,7 @@ static uint32_t allow_list_load(void)
 
 	peer_list_get(peers, &peer_cnt);
 
-	nrf_err = pm_whitelist_set(peers, peer_cnt);
+	nrf_err = pm_allow_list_set(peers, peer_cnt);
 	if (nrf_err) {
 		return nrf_err;
 	}
@@ -393,7 +393,7 @@ static uint32_t on_allow_list_req(void)
 		return nrf_err;
 	}
 
-	nrf_err = pm_whitelist_get(allow_list_addrs, &addr_cnt, allow_list_irks, &irk_cnt);
+	nrf_err = pm_allow_list_get(allow_list_addrs, &addr_cnt, allow_list_irks, &irk_cnt);
 	if (nrf_err) {
 		return nrf_err;
 	}

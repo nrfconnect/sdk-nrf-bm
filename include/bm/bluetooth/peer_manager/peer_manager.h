@@ -101,7 +101,7 @@ uint32_t pm_sec_params_set(ble_gap_sec_params_t *sec_params);
  *          It uses the parameters that were previously provided in a call to
  *          @ref pm_sec_params_set.
  *
- *          If the connection is a master connection, calling this function starts a security
+ *          If the connection is a central connection, calling this function starts a security
  *          procedure on the link. If there are keys from a previous bonding procedure with this
  *          peer and the keys meet the security requirements in the currently active security
  *          parameters, the function attempts to establish encryption with the existing keys.
@@ -112,8 +112,8 @@ uint32_t pm_sec_params_set(ble_gap_sec_params_t *sec_params);
  *          The procedure might be queued, in which case the @ref PM_EVT_CONN_SEC_START event is
  *          delayed until the procedure is initiated in the SoftDevice.
  *
- *          If the connection is a slave connection, the function sends a security request to
- *          the peer (master). It is up to the peer then to initiate pairing or encryption.
+ *          If the connection is a peripheral connection, the function sends a security request to
+ *          the peer (central). It is up to the peer then to initiate pairing or encryption.
  *          If the peer ignores the request, a @ref BLE_GAP_EVT_AUTH_STATUS event occurs
  *          with the status @ref BLE_GAP_SEC_STATUS_TIMEOUT. Otherwise, the peer initiates
  *          security, in which case things happen as if the peer had initiated security itself.
@@ -253,36 +253,37 @@ bool pm_sec_is_sufficient(uint16_t conn_handle, struct pm_conn_sec_status *sec_s
 uint32_t pm_lesc_public_key_set(ble_gap_lesc_p256_pk_t *public_key);
 
 /**
- * @brief Set or clear the whitelist.
+ * @brief Set or clear the allow list.
  *
- * When using the S13x SoftDevice v3.x, this function sets or clears the whitelist.
+ * When using the S13x SoftDevice v3.x, this function sets or clears the allow list.
  * When using the S13x SoftDevice v2.x, this function caches a list of
- * peers that can be retrieved later by @ref pm_whitelist_get to pass to the @ref
+ * peers that can be retrieved later by @ref pm_allow_list_get to pass to the @ref
  * lib_ble_advertising.
  *
- * To clear the current whitelist, pass either NULL as @p peers or zero as @p peer_cnt.
+ * To clear the current allow list, pass either NULL as @p peers or zero as @p peer_cnt.
  *
- * @param[in] peers     The peers to add to the whitelist. Pass NULL to clear the current whitelist.
- * @param[in] peer_cnt  The number of peers to add to the whitelist. The number must not be greater
+ * @param[in] peers     The peers to add to the allow list. Pass NULL to clear the current allow
+ *                      list.
+ * @param[in] peer_cnt  The number of peers to add to the allow list. The number must not be greater
  *                      than @ref BLE_GAP_WHITELIST_ADDR_MAX_COUNT. Pass zero to clear the current
- *                      whitelist.
+ *                      allow list.
  *
- * @retval NRF_SUCCESS                     If the whitelist was successfully set or cleared.
- * @retval BLE_GAP_ERROR_WHITELIST_IN_USE  If a whitelist is already in use and cannot be set.
+ * @retval NRF_SUCCESS                     If the allow list was successfully set or cleared.
+ * @retval BLE_ERROR_GAP_WHITELIST_IN_USE  If an allow list is already in use and cannot be set.
  * @retval BLE_ERROR_GAP_INVALID_BLE_ADDR  If a peer in @p peers has an address that cannot
- *                                         be used for whitelisting.
+ *                                         be added to the allow list.
  * @retval NRF_ERROR_NOT_FOUND             If any of the peers in @p peers cannot be found.
  * @retval NRF_ERROR_DATA_SIZE             If @p peer_cnt is greater than
  *                                         @ref BLE_GAP_WHITELIST_ADDR_MAX_COUNT.
  * @retval NRF_ERROR_INVALID_STATE         If the Peer Manager is not initialized.
  */
-uint32_t pm_whitelist_set(const uint16_t *peers, uint32_t peer_cnt);
+uint32_t pm_allow_list_set(const uint16_t *peers, uint32_t peer_cnt);
 
 /**
- * @brief Retrieve the previously set whitelist.
+ * @brief Retrieve the previously set allow list.
  *
- * The function retrieves the whitelist of GAP addresses and IRKs that was
- * previously set by @ref pm_whitelist_set.
+ * The function retrieves the allow list of GAP addresses and IRKs that was
+ * previously set by @ref pm_allow_list_set.
  *
  * To retrieve only GAP addresses or only IRKs, provide only one of the
  * buffers. If a buffer is provided, its size must be specified.
@@ -300,18 +301,18 @@ uint32_t pm_whitelist_set(const uint16_t *peers, uint32_t peer_cnt);
  *                          Out: The number of IRKs copied into the buffer.
  *                          If @p irks is NULL, this parameter remains unchanged.
  *
- * @retval NRF_SUCCESS                     If the whitelist was successfully retrieved.
+ * @retval NRF_SUCCESS                     If the allow list was successfully retrieved.
  * @retval BLE_ERROR_GAP_INVALID_BLE_ADDR  If a peer has an address that cannot be used for
- *                                         whitelisting (this error can occur only
+ *                                         allow listing (this error can occur only
  *                                         when using the S13x SoftDevice v2.x).
  * @retval NRF_ERROR_NULL                  If a required parameter is NULL.
  * @retval NRF_ERROR_NO_MEM                If the provided buffers are too small.
- * @retval NRF_ERROR_NOT_FOUND             If the data for any of the cached whitelisted peers
+ * @retval NRF_ERROR_NOT_FOUND             If the data for any of the cached allow listed peers
  *                                         cannot be found. It might have been deleted.
  * @retval NRF_ERROR_INVALID_STATE         If the Peer Manager is not initialized.
  */
-uint32_t pm_whitelist_get(ble_gap_addr_t *addrs, uint32_t *addr_cnt, ble_gap_irk_t *irks,
-			  uint32_t *irk_cnt);
+uint32_t pm_allow_list_get(ble_gap_addr_t *addrs, uint32_t *addr_cnt, ble_gap_irk_t *irks,
+			   uint32_t *irk_cnt);
 
 /**
  * @brief Function for setting and clearing the device identities list.
@@ -329,7 +330,7 @@ uint32_t pm_whitelist_get(ble_gap_addr_t *addrs, uint32_t *addr_cnt, ble_gap_irk
  * @retval NRF_ERROR_NOT_FOUND                     If a peer is invalid or its data could not
  *                                                 be found in non-volatile storage.
  * @retval BLE_ERROR_GAP_INVALID_BLE_ADDR          If a peer has an address that cannot be
- *                                                 used for whitelisting.
+ *                                                 used for allow listing.
  * @retval BLE_ERROR_GAP_DEVICE_IDENTITIES_IN_USE  If the device identities list is in use and
  *                                                 cannot be set.
  * @retval NRF_ERROR_INVALID_STATE                 If the Peer Manager is not initialized.

@@ -49,8 +49,8 @@ struct im_connection {
 };
 
 static struct im_connection connections[IM_MAX_CONN_HANDLES];
-static uint8_t wlisted_peer_cnt;
-static uint16_t wlisted_peers[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
+static uint8_t allow_listed_peer_cnt;
+static uint16_t allow_listed_peers[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
 
 /**
  * @brief Function for sending an event to all registered event handlers.
@@ -433,7 +433,7 @@ static uint32_t peers_id_keys_get(const uint16_t *peers, uint32_t peer_cnt,
 		if ((addr_type != BLE_GAP_ADDR_TYPE_PUBLIC) &&
 		    (addr_type != BLE_GAP_ADDR_TYPE_RANDOM_STATIC)) {
 			/* The address shared by the peer during bonding can't be used for
-			 * whitelisting.
+			 * allow listing.
 			 */
 			return BLE_ERROR_GAP_INVALID_BLE_ADDR;
 		}
@@ -502,8 +502,8 @@ uint32_t im_device_identities_list_set(const uint16_t *peers, uint32_t peer_cnt)
 		if ((addr_type != BLE_GAP_ADDR_TYPE_PUBLIC) &&
 		    (addr_type != BLE_GAP_ADDR_TYPE_RANDOM_STATIC)) {
 			LOG_WRN("peer id %d: The address shared by the peer during bonding cannot "
-				"be "
-				"whitelisted. Remove the peer ID from the peer list and try again.",
+				"be used with allow list. "
+				"Remove the peer ID from the peer list and try again.",
 				peers[i]);
 			return BLE_ERROR_GAP_INVALID_BLE_ADDR;
 		}
@@ -537,56 +537,56 @@ uint32_t im_privacy_get(ble_gap_privacy_params_t *privacy_params)
 	return sd_ble_gap_privacy_get(privacy_params);
 }
 
-/* Create a whitelist for the user using the cached list of peers.
- * This whitelist is meant to be provided by the application to the Advertising module.
+/* Create an allow list for the user using the cached list of peers.
+ * This allow list is meant to be provided by the application to the Advertising module.
  */
-uint32_t im_whitelist_get(ble_gap_addr_t *addrs, uint32_t *addr_cnt, ble_gap_irk_t *irks,
+uint32_t im_allow_list_get(ble_gap_addr_t *addrs, uint32_t *addr_cnt, ble_gap_irk_t *irks,
 			    uint32_t *irk_cnt)
 {
 	/* One of the two buffers has to be provided. */
 	__ASSERT_NO_MSG((addrs != NULL) || (irks != NULL));
 	__ASSERT_NO_MSG((addr_cnt != NULL) || (irk_cnt != NULL));
 
-	if (((addr_cnt != NULL) && (wlisted_peer_cnt > *addr_cnt)) ||
-	    ((irk_cnt != NULL) && (wlisted_peer_cnt > *irk_cnt))) {
+	if (((addr_cnt != NULL) && (allow_listed_peer_cnt > *addr_cnt)) ||
+	    ((irk_cnt != NULL) && (allow_listed_peer_cnt > *irk_cnt))) {
 		/* The size of the cached list of peers is larger than the provided buffers. */
 		return NRF_ERROR_NO_MEM;
 	}
 
 	/* NRF_SUCCESS or
 	 * NRF_ERROR_NOT_FOUND,            if a peer or its data were not found.
-	 * BLE_ERROR_GAP_INVALID_BLE_ADDR, if a peer address can not be used for whitelisting.
+	 * BLE_ERROR_GAP_INVALID_BLE_ADDR, if a peer address can not be used for allow listing.
 	 */
-	return peers_id_keys_get(wlisted_peers, wlisted_peer_cnt, addrs, addr_cnt, irks,
+	return peers_id_keys_get(allow_listed_peers, allow_listed_peer_cnt, addrs, addr_cnt, irks,
 				 irk_cnt);
 }
 
-/* Copies the peers to whitelist into a local cache.
- * The cached list will be used by im_whitelist_get() to retrieve the active whitelist.
- * For SoftDevices 3x, also loads the peers' GAP addresses and whitelists them using
+/* Copies the peers to add to the allow list into a local cache.
+ * The cached list will be used by im_allow_list_get() to retrieve the active allow list.
+ * For SoftDevices 3x, also loads the peers' GAP addresses and sets the allow lists using
  * sd_ble_gap_whitelist_set().
  */
-uint32_t im_whitelist_set(const uint16_t *peers, uint32_t peer_cnt)
+uint32_t im_allow_list_set(const uint16_t *peers, uint32_t peer_cnt)
 {
-	/* Clear the cache of whitelisted peers. */
-	memset(wlisted_peers, 0x00, sizeof(wlisted_peers));
+	/* Clear the cache of allow listed peers. */
+	memset(allow_listed_peers, 0x00, sizeof(allow_listed_peers));
 
 	if ((peers == NULL) || (peer_cnt == 0)) {
-		/* Clear the current whitelist. */
-		wlisted_peer_cnt = 0;
+		/* Clear the current allow list. */
+		allow_listed_peer_cnt = 0;
 
 		/* NRF_SUCCESS, or
-		 * BLE_GAP_ERROR_WHITELIST_IN_USE
+		 * BLE_ERROR_GAP_WHITELIST_IN_USE
 		 */
 		return sd_ble_gap_whitelist_set(NULL, 0);
 	}
 
-	/* Copy the new whitelisted peers. */
-	wlisted_peer_cnt = peer_cnt;
-	memcpy(wlisted_peers, peers, sizeof(*peers) * peer_cnt);
+	/* Copy the new allow listed peers. */
+	allow_listed_peer_cnt = peer_cnt;
+	memcpy(allow_listed_peers, peers, sizeof(*peers) * peer_cnt);
 
 	uint32_t nrf_err;
-	uint32_t wlist_addr_cnt = BLE_GAP_WHITELIST_ADDR_MAX_COUNT;
+	uint32_t allow_list_addr_cnt = BLE_GAP_WHITELIST_ADDR_MAX_COUNT;
 
 	const ble_gap_addr_t *addr_ptrs[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
 	ble_gap_addr_t addrs[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
@@ -594,12 +594,12 @@ uint32_t im_whitelist_set(const uint16_t *peers, uint32_t peer_cnt)
 	memset(addrs, 0x00, sizeof(addrs));
 
 	/* Fetch GAP addresses for these peers, but don't fetch IRKs. */
-	nrf_err = peers_id_keys_get(peers, peer_cnt, addrs, &wlist_addr_cnt, NULL, NULL);
+	nrf_err = peers_id_keys_get(peers, peer_cnt, addrs, &allow_list_addr_cnt, NULL, NULL);
 
 	if (nrf_err) {
 		/* NRF_ERROR_NOT_FOUND,            if a peer or its data were not found.
-		 * BLE_ERROR_GAP_INVALID_BLE_ADDR, if a peer address can not be used for
-		 * whitelisting.
+		 * BLE_ERROR_GAP_INVALID_BLE_ADDR, if a peer address can not be used in an
+		 *                                 allow list.
 		 */
 		return nrf_err;
 	}
@@ -609,7 +609,7 @@ uint32_t im_whitelist_set(const uint16_t *peers, uint32_t peer_cnt)
 	}
 
 	/* NRF_ERROR_DATA_SIZE,             if peer_cnt > BLE_GAP_WHITELIST_ADDR_MAX_COUNT.
-	 * BLE_ERROR_GAP_WHITELIST_IN_USE,  if a whitelist is in use.
+	 * BLE_ERROR_GAP_WHITELIST_IN_USE,  if an allow list is in use.
 	 */
 	return sd_ble_gap_whitelist_set(addr_ptrs, peer_cnt);
 }

@@ -15,15 +15,15 @@ LOG_MODULE_REGISTER(ble_adv, CONFIG_BLE_ADV_LOG_LEVEL);
 /* Total number of possible advertising modes  */
 #define BLE_ADV_MODES (5)
 
-static bool whitelist_has_entries(struct ble_adv *ble_adv)
+static bool allow_list_has_entries(struct ble_adv *ble_adv)
 {
-	return ble_adv->whitelist_in_use;
+	return ble_adv->allow_list_in_use;
 }
 
-static bool use_whitelist(struct ble_adv *ble_adv)
+static bool use_allow_list(struct ble_adv *ble_adv)
 {
-	return (IS_ENABLED(CONFIG_BLE_ADV_USE_WHITELIST) &&
-		!ble_adv->whitelist_temporarily_disabled && whitelist_has_entries(ble_adv));
+	return (IS_ENABLED(CONFIG_BLE_ADV_USE_ALLOW_LIST) &&
+		!ble_adv->allow_list_temporarily_disabled && allow_list_has_entries(ble_adv));
 }
 
 static bool peer_addr_is_valid(const ble_gap_addr_t *addr)
@@ -52,7 +52,7 @@ static bool adv_mode_is_directed(enum ble_adv_mode mode)
 	}
 }
 
-static bool adv_mode_has_whitelist(enum ble_adv_mode mode)
+static bool adv_mode_has_allow_list(enum ble_adv_mode mode)
 {
 	switch (mode) {
 	case BLE_ADV_MODE_FAST:
@@ -75,7 +75,7 @@ static void on_disconnected(struct ble_adv *ble_adv, ble_evt_t const *ble_evt)
 	uint32_t nrf_err;
 	struct ble_adv_evt adv_evt;
 
-	ble_adv->whitelist_temporarily_disabled = false;
+	ble_adv->allow_list_temporarily_disabled = false;
 
 	if (IS_ENABLED(CONFIG_BLE_ADV_RESTART_ON_DISCONNECT)) {
 		if (ble_evt->evt.gap_evt.conn_handle == ble_adv->conn_handle) {
@@ -187,7 +187,7 @@ static uint32_t set_adv_mode_fast(struct ble_adv *ble_adv, ble_gap_adv_params_t 
 
 	adv_params->interval = CONFIG_BLE_ADV_FAST_ADVERTISING_INTERVAL;
 	adv_params->duration = CONFIG_BLE_ADV_FAST_ADVERTISING_TIMEOUT;
-	if (use_whitelist(ble_adv)) {
+	if (use_allow_list(ble_adv)) {
 		/* Set filter policy and advertising flags */
 		adv_params->filter_policy = BLE_GAP_ADV_FP_FILTER_CONNREQ;
 		nrf_err = flags_set(ble_adv, BLE_GAP_ADV_FLAG_BR_EDR_NOT_SUPPORTED);
@@ -219,7 +219,7 @@ static uint32_t set_adv_mode_slow(struct ble_adv *ble_adv, ble_gap_adv_params_t 
 	adv_params->interval = CONFIG_BLE_ADV_SLOW_ADVERTISING_INTERVAL;
 	adv_params->duration = CONFIG_BLE_ADV_SLOW_ADVERTISING_TIMEOUT;
 
-	if (use_whitelist(ble_adv)) {
+	if (use_allow_list(ble_adv)) {
 		/* Set filter policy and advertising flags */
 		adv_params->filter_policy = BLE_GAP_ADV_FP_FILTER_CONNREQ;
 		nrf_err = flags_set(ble_adv, BLE_GAP_ADV_FLAG_BR_EDR_NOT_SUPPORTED);
@@ -331,8 +331,8 @@ uint32_t ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	ble_adv->whitelist_in_use = false;
-	ble_adv->whitelist_reply_expected = false;
+	ble_adv->allow_list_in_use = false;
+	ble_adv->allow_list_reply_expected = false;
 	ble_adv->peer_addr_reply_expected = false;
 
 	/* Initialize advertising parameters with default values */
@@ -352,11 +352,11 @@ uint32_t ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 		}
 	}
 
-	/* Fetch the whitelist */
-	if (IS_ENABLED(CONFIG_BLE_ADV_USE_WHITELIST)) {
-		if (adv_mode_has_whitelist(mode) && !ble_adv->whitelist_temporarily_disabled) {
-			ble_adv->whitelist_reply_expected = true;
-			adv_evt.evt_type = BLE_ADV_EVT_WHITELIST_REQUEST;
+	/* Fetch the allow list */
+	if (IS_ENABLED(CONFIG_BLE_ADV_USE_ALLOW_LIST)) {
+		if (adv_mode_has_allow_list(mode) && !ble_adv->allow_list_temporarily_disabled) {
+			ble_adv->allow_list_reply_expected = true;
+			adv_evt.evt_type = BLE_ADV_EVT_ALLOW_LIST_REQUEST;
 			ble_adv->evt_handler(ble_adv, &adv_evt);
 		}
 	}
@@ -451,7 +451,7 @@ void ble_adv_on_ble_evt(const ble_evt_t *ble_evt, void *instance)
 		on_connected(ble_adv, ble_evt);
 		break;
 	case BLE_GAP_EVT_DISCONNECTED:
-		/* Upon disconnection, activate whitelist and start directed advertising */
+		/* Upon disconnection, activate allow list and start directed advertising */
 		on_disconnected(ble_adv, ble_evt);
 		break;
 	case BLE_GAP_EVT_ADV_SET_TERMINATED:
@@ -482,30 +482,30 @@ uint32_t ble_adv_peer_addr_reply(struct ble_adv *ble_adv, const ble_gap_addr_t *
 	return NRF_SUCCESS;
 }
 
-uint32_t ble_adv_whitelist_reply(struct ble_adv *ble_adv,
-				 const ble_gap_addr_t *addrs, uint32_t addr_cnt,
-				 const ble_gap_irk_t *irks, uint32_t irk_cnt)
+uint32_t ble_adv_allow_list_reply(struct ble_adv *ble_adv,
+				  const ble_gap_addr_t *addrs, uint32_t addr_cnt,
+				  const ble_gap_irk_t *irks, uint32_t irk_cnt)
 {
 	if (!ble_adv) {
 		return NRF_ERROR_NULL;
 	}
-	if (!ble_adv->whitelist_reply_expected) {
+	if (!ble_adv->allow_list_reply_expected) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	ble_adv->whitelist_reply_expected = false;
-	ble_adv->whitelist_in_use = (addr_cnt > 0 || irk_cnt > 0);
+	ble_adv->allow_list_reply_expected = false;
+	ble_adv->allow_list_in_use = (addr_cnt > 0 || irk_cnt > 0);
 
 	return NRF_SUCCESS;
 }
 
-uint32_t ble_adv_restart_without_whitelist(struct ble_adv *ble_adv)
+uint32_t ble_adv_restart_without_allow_list(struct ble_adv *ble_adv)
 {
 	uint32_t nrf_err;
 
 	(void)sd_ble_gap_adv_stop(ble_adv->adv_handle);
 
-	ble_adv->whitelist_temporarily_disabled = true;
+	ble_adv->allow_list_temporarily_disabled = true;
 	ble_adv->adv_params.filter_policy = BLE_GAP_ADV_FP_ANY;
 
 	/* Set correct flags */

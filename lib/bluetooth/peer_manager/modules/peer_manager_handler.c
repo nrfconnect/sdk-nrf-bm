@@ -58,7 +58,7 @@ static const char *const event_str[] = {
 	PM_EVT_STR(PM_EVT_LOCAL_DB_CACHE_APPLY_FAILED),
 	PM_EVT_STR(PM_EVT_SERVICE_CHANGED_IND_SENT),
 	PM_EVT_STR(PM_EVT_SERVICE_CHANGED_IND_CONFIRMED),
-	PM_EVT_STR(PM_EVT_SLAVE_SECURITY_REQ),
+	PM_EVT_STR(PM_EVT_PERIPHERAL_SECURITY_REQ),
 	PM_EVT_STR(PM_EVT_FLASH_GARBAGE_COLLECTED),
 	PM_EVT_STR(PM_EVT_FLASH_GARBAGE_COLLECTION_FAILED),
 };
@@ -319,7 +319,7 @@ void pm_handler_flash_clean(const struct pm_evt *pm_evt)
 	case PM_EVT_LOCAL_DB_CACHE_APPLY_FAILED:
 	case PM_EVT_SERVICE_CHANGED_IND_SENT:
 	case PM_EVT_SERVICE_CHANGED_IND_CONFIRMED:
-	case PM_EVT_SLAVE_SECURITY_REQ:
+	case PM_EVT_PERIPHERAL_SECURITY_REQ:
 		break;
 	default:
 		break;
@@ -440,7 +440,7 @@ void pm_handler_pm_evt_log(const struct pm_evt *pm_evt)
 		LOG_DBG("Service Changed indication confirmed.");
 		break;
 
-	case PM_EVT_SLAVE_SECURITY_REQ:
+	case PM_EVT_PERIPHERAL_SECURITY_REQ:
 		LOG_DBG("Security Request received from peer.");
 		break;
 

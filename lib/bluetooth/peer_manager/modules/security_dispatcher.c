@@ -364,11 +364,11 @@ static void sec_request_process(const ble_gap_evt_t *gap_evt)
 	}
 
 	struct pm_evt evt = {
-		.evt_id = PM_EVT_SLAVE_SECURITY_REQ,
+		.evt_id = PM_EVT_PERIPHERAL_SECURITY_REQ,
 		.conn_handle = gap_evt->conn_handle
 	};
 
-	memcpy(&evt.params.slave_security_req, &gap_evt->params.sec_request,
+	memcpy(&evt.params.peripheral_security_req, &gap_evt->params.sec_request,
 	       sizeof(ble_gap_evt_sec_request_t));
 
 	evt_send(&evt);
@@ -853,7 +853,7 @@ uint32_t smd_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *sec_params
 
 #if defined(CONFIG_PM_RA_PROTECTION)
 	/* Check for repeated attempts here. */
-	if (ast_peer_blacklisted(conn_handle)) {
+	if (ast_peer_deny_listed(conn_handle)) {
 		sec_status = BLE_GAP_SEC_STATUS_REPEATED_ATTEMPTS;
 	} else
 #endif /* CONFIG_PM_RA_PROTECTION */

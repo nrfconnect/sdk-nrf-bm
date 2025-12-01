@@ -525,17 +525,17 @@ bool pm_address_resolve(const ble_gap_addr_t *addr, const ble_gap_irk_t *irk)
 	}
 }
 
-uint32_t pm_whitelist_set(const uint16_t *peers, uint32_t peer_cnt)
+uint32_t pm_allow_list_set(const uint16_t *peers, uint32_t peer_cnt)
 {
 	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	return im_whitelist_set(peers, peer_cnt);
+	return im_allow_list_set(peers, peer_cnt);
 }
 
-uint32_t pm_whitelist_get(ble_gap_addr_t *addrs, uint32_t *addr_cnt, ble_gap_irk_t *irks,
-			    uint32_t *irk_cnt)
+uint32_t pm_allow_list_get(ble_gap_addr_t *addrs, uint32_t *addr_cnt, ble_gap_irk_t *irks,
+			   uint32_t *irk_cnt)
 {
 	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
@@ -550,7 +550,7 @@ uint32_t pm_whitelist_get(ble_gap_addr_t *addrs, uint32_t *addr_cnt, ble_gap_irk
 		return NRF_ERROR_NULL;
 	}
 
-	return im_whitelist_get(addrs, addr_cnt, irks, irk_cnt);
+	return im_allow_list_get(addrs, addr_cnt, irks, irk_cnt);
 }
 
 uint32_t pm_device_identities_list_set(const uint16_t *peers, uint32_t peer_cnt)

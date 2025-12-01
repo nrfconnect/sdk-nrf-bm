@@ -79,7 +79,7 @@ config PM_RA_PROTECTION
 	bool "Protection against repeated pairing attempts"
 	help
 	  Enable protection against repeated Bluetooth pairing attempts from the same device.
-	  Offending peers will be temporarily blacklisted with increasing backoff times to
+	  Offending peers will be temporarily added to a deny list with increasing backoff times to
 	  prevent pairing spam or brute-force attacks.
 
 if PM_RA_PROTECTION

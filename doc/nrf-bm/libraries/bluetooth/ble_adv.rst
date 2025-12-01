@@ -53,18 +53,18 @@ Disabled advertising modes are skipped (Directed High Duty is always skipped if 
 You can configure the timeout thresholds and advertising intervals for Direct, Fast, and Slow advertising.
 Direct High Duty is a one-shot burst and its timeout threshold and advertising interval cannot be configured.
 
-Whitelist
-=========
+Allow list
+==========
 
-Whitelist advertising affects the filtering parameters for Fast and Slow advertising modes.
-The whitelist stores information about all devices that have been connected before.
-If you enable the use of the whitelist, the application specifically advertises to the devices that are on the whitelist.
+Allow list advertising affects the filtering parameters for Fast and Slow advertising modes.
+The allow list stores information about all devices that have been connected before.
+If you enable the use of the allow list, the application specifically advertises to the devices that are on the allow list.
 
-You can enable or disable whitelist advertising by using Kconfig options.
-After initialization, you can temporarily disable whitelist advertising for one connection using the :c:func:`ble_adv_restart_without_whitelist` function.
-After the device disconnects, the whitelist will take effect again.
+You can enable or disable allow list advertising by using Kconfig options.
+After initialization, you can temporarily disable allow list advertising for one connection using the :c:func:`ble_adv_restart_without_allow_list` function.
+After the device disconnects, the allow list will take effect again.
 
-To permanently disable whitelist advertising, you must disable it in Kconfig.
+To permanently disable allow list advertising, you must disable it in Kconfig.
 
 .. _lib_ble_adv_configure:
 
@@ -100,9 +100,9 @@ The library is enabled and configured using the Kconfig system:
   * :kconfig:option:`CONFIG_BLE_ADV_SLOW_ADVERTISING_TIMEOUT` - Sets the Slow advertising timeout in units of 10 ms.
   * :kconfig:option:`CONFIG_BLE_ADV_SLOW_ADVERTISING_INTERVAL` - Sets the Slow advertising interval in units of 0.625 ms.
 
-* Whitelist and extended advertising:
+* Allow list and extended advertising:
 
-  * :kconfig:option:`CONFIG_BLE_ADV_USE_WHITELIST` - Enables the use of a whitelist.
+  * :kconfig:option:`CONFIG_BLE_ADV_USE_ALLOW_LIST` - Enables the use of allow list.
   * :kconfig:option:`CONFIG_BLE_ADV_EXTENDED_ADVERTISING` - Enables extended advertising.
 
 * PHY-related settings:
@@ -130,16 +130,16 @@ Before compiling your application, enable the intended :ref:`advertising modes <
 Make sure to provide an event handler that is called when advertising transitions to a new mode.
 You can then use this event handler to add functionality, for example to indicate mode transitions to the user by flashing an LED when advertising starts, or to power down the application when no peer is found.
 
-If enabled, the event handler must handle requests to update the whitelist (:c:enum:`BLE_ADV_EVT_WHITELIST_REQUEST`) and peer address (:c:enum:`BLE_ADV_EVT_PEER_ADDR_REQUEST`).
+If enabled, the event handler must handle requests to update the allow list (:c:enum:`BLE_ADV_EVT_ALLOW_LIST_REQUEST`) and peer address (:c:enum:`BLE_ADV_EVT_PEER_ADDR_REQUEST`).
 If the peer address request event is ignored, the Directed advertising mode cannot be used.
-Likewise, if the whitelist request event is ignored, the Fast and Slow advertising modes will not use the whitelist.
+Likewise, if the allow list request event is ignored, the Fast and Slow advertising modes will not use the allow list.
 
-When replying to the :c:enum:`BLE_ADV_EVT_WHITELIST_REQUEST` event, the application must provide the whitelist in the following way:
+When replying to the :c:enum:`BLE_ADV_EVT_ALLOW_LIST_REQUEST` event, the application must provide the allow list in the following way:
 
-* If the application uses :ref:`lib_peer_manager`: Retrieve the whitelist by calling the :c:func:`pm_whitelist_get` function.
-  Make sure that the :c:func:`pm_whitelist_set` function was previously called.
-  Then, call the :c:func:`ble_adv_whitelist_reply` function with the output of the :c:func:`pm_whitelist_get` function.
-* If the application does not use :ref:`lib_peer_manager`: call the :c:func:`sd_ble_gap_whitelist_set` function. Then, call the :c:func:`ble_advertising_whitelist_reply` function.
+* If the application uses :ref:`lib_peer_manager`: Retrieve the allow list by calling the :c:func:`pm_allow_list_get` function.
+  Make sure that the :c:func:`pm_allow_list_set` function was previously called.
+  Then, call the :c:func:`ble_adv_allow_list_reply` function with the output of the :c:func:`pm_allow_list_get` function.
+* If the application does not use :ref:`lib_peer_manager`: call the :c:func:`sd_ble_gap_whitelist_set` function. Then, call the :c:func:`ble_adv_allow_list_reply` function.
   After initialization, call the :c:func:`ble_advertising_start` function to start advertising in the intended mode.
 
 The application must reply to the :c:enum:`BLE_ADV_EVT_PEER_ADDR_REQUEST` event by calling the :c:func:`ble_adv_peer_addr_reply` function.

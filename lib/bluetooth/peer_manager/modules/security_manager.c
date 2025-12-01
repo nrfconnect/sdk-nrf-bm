@@ -382,9 +382,9 @@ bool sm_sec_is_sufficient(uint16_t conn_handle, struct pm_conn_sec_status *sec_s
 
 #if defined(CONFIG_SOFTDEVICE_CENTRAL)
 /**
- * @brief Function for handling @ref PM_EVT_SLAVE_SECURITY_REQ events.
+ * @brief Function for handling @ref PM_EVT_PERIPHERAL_SECURITY_REQ events.
  *
- * @param[in]  event  The @ref PM_EVT_SLAVE_SECURITY_REQ event.
+ * @param[in]  event  The @ref PM_EVT_PERIPHERAL_SECURITY_REQ event.
  */
 static void sec_req_process(const struct pm_evt *event)
 {
@@ -395,9 +395,9 @@ static void sec_req_process(const struct pm_evt *event)
 		null_params = true;
 	} else if (ble_conn_state_encrypted(event->conn_handle)) {
 		struct pm_conn_sec_status sec_status_req = {
-			.bonded = event->params.slave_security_req.bond,
-			.mitm_protected = event->params.slave_security_req.mitm,
-			.lesc = event->params.slave_security_req.lesc,
+			.bonded = event->params.peripheral_security_req.bond,
+			.mitm_protected = event->params.peripheral_security_req.mitm,
+			.lesc = event->params.peripheral_security_req.lesc,
 		};
 
 		force_repairing = !sm_sec_is_sufficient(event->conn_handle, &sec_status_req);
@@ -431,7 +431,7 @@ void sm_smd_evt_handler(struct pm_evt *event)
 	case PM_EVT_CONN_SEC_PARAMS_REQ:
 		params_req_process(event);
 		break;
-	case PM_EVT_SLAVE_SECURITY_REQ:
+	case PM_EVT_PERIPHERAL_SECURITY_REQ:
 #if defined(CONFIG_SOFTDEVICE_CENTRAL)
 		sec_req_process(event);
 #endif

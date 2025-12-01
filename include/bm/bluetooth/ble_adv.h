@@ -57,7 +57,7 @@ enum ble_adv_mode {
 	/**
 	 * @brief Fast advertising.
 	 *
-	 * Attempt to connect to any peer device, or filter with a whitelist if one exists.
+	 * Attempt to connect to any peer device, or filter with an allow list if one exists.
 	 */
 	BLE_ADV_MODE_FAST,
 	/**
@@ -94,21 +94,21 @@ enum ble_adv_evt_type {
 	 */
 	BLE_ADV_EVT_SLOW,
 	/**
-	 * @brief Fast advertising mode using the whitelist has started.
+	 * @brief Fast advertising mode using the allow list has started.
 	 */
-	BLE_ADV_EVT_FAST_WHITELIST,
+	BLE_ADV_EVT_FAST_ALLOW_LIST,
 	/**
-	 * @brief Slow advertising mode using the whitelist has started.
+	 * @brief Slow advertising mode using the allow list has started.
 	 */
-	BLE_ADV_EVT_SLOW_WHITELIST,
+	BLE_ADV_EVT_SLOW_ALLOW_LIST,
 	/**
-	 * @brief Whitelist request.
+	 * @brief Allow list request.
 	 *
-	 * When this event is received, the application can reply with a whitelist to be used
-	 * for advertising by calling @ref ble_adv_whitelist_reply. Otherwise, it can
-	 * ignore the event to let the device advertise without a whitelist.
+	 * When this event is received, the application can reply with an allow list to be used
+	 * for advertising by calling @ref ble_adv_allow_list_reply. Otherwise, it can
+	 * ignore the event to let the device advertise without an allow list.
 	 */
-	BLE_ADV_EVT_WHITELIST_REQUEST,
+	BLE_ADV_EVT_ALLOW_LIST_REQUEST,
 	/**
 	 * @brief Peer address request (for directed advertising).
 	 *
@@ -202,17 +202,17 @@ struct ble_adv {
 	 */
 	bool peer_addr_reply_expected;
 	/**
-	 * @brief Whether a whitelist has been requested.
+	 * @brief Whether an allow list has been requested.
 	 */
-	bool whitelist_reply_expected;
+	bool allow_list_reply_expected;
 	/**
-	 * @brief Whether the whitelist is disabled.
+	 * @brief Whether the allow list is disabled.
 	 */
-	bool whitelist_temporarily_disabled;
+	bool allow_list_temporarily_disabled;
 	/**
-	 * @brief Whether the whitelist is in use.
+	 * @brief Whether the allow list is in use.
 	 */
-	bool whitelist_in_use;
+	bool allow_list_in_use;
 };
 
 /**
@@ -302,30 +302,30 @@ uint32_t ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode);
 uint32_t ble_adv_peer_addr_reply(struct ble_adv *ble_adv, const ble_gap_addr_t *peer_addr);
 
 /**
- * @brief Set a whitelist for fast and slow advertising.
+ * @brief Set an allow list for fast and slow advertising.
  *
- * The whitelist must be set by the application upon receiving @ref BLE_ADV_EVT_WHITELIST_REQUEST
- * Without the whitelist, the whitelist advertising for fast and slow modes will not be run.
+ * The allow list must be set by the application upon receiving @ref BLE_ADV_EVT_ALLOW_LIST_REQUEST
+ * Without the allow list, the allow list advertising for fast and slow modes will not be run.
  *
  * @param[in] ble_adv Advertising Module instance.
- * @param[in] gap_addrs The list of GAP addresses to whitelist.
- * @param[in] addr_cnt The number of GAP addresses to whitelist.
- * @param[in] gap_irks The list of peer IRK to whitelist.
- * @param[in] irk_cnt The number of peer IRK to whitelist.
+ * @param[in] gap_addrs The list of GAP addresses.
+ * @param[in] addr_cnt The number of GAP addresses.
+ * @param[in] gap_irks The list of peer IRKs.
+ * @param[in] irk_cnt The number of peer IRKs.
  *
  * @retval NRF_SUCCESS On success.
  * @retval NRF_ERROR_INVALID_STATE Library is not initialized.
  * @retval NRF_ERROR_NULL @p ble_adv is @c NULL.
  * @retval NRF_ERROR_INVALID_PARAM Invalid parameters.
  */
-uint32_t ble_adv_whitelist_reply(struct ble_adv *ble_adv,
-				 const ble_gap_addr_t *gap_addrs, uint32_t addr_cnt,
-				 const ble_gap_irk_t *gap_irks, uint32_t irk_cnt);
+uint32_t ble_adv_allow_list_reply(struct ble_adv *ble_adv,
+				  const ble_gap_addr_t *gap_addrs, uint32_t addr_cnt,
+				  const ble_gap_irk_t *gap_irks, uint32_t irk_cnt);
 
 /**
- * @brief Restart advertising without whitelist.
+ * @brief Restart advertising without allow list.
  *
- * This function temporarily disables whitelist advertising.
+ * This function temporarily disables allow list advertising.
  * Calling this function resets the current time-out countdown.
  *
  * @param[in] ble_adv Advertising Module instance.
@@ -335,7 +335,7 @@ uint32_t ble_adv_whitelist_reply(struct ble_adv *ble_adv,
  * @retval NRF_ERROR_NULL @p ble_adv is @c NULL.
  * @retval NRF_ERROR_INVALID_PARAM Invalid advertising parameters.
  */
-uint32_t ble_adv_restart_without_whitelist(struct ble_adv *ble_adv);
+uint32_t ble_adv_restart_without_allow_list(struct ble_adv *ble_adv);
 
 /**
  * @brief Function for updating advertising data.
