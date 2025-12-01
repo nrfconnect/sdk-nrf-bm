@@ -11,7 +11,6 @@ menuconfig PEER_MANAGER
 	depends on BLE_CONN_STATE
 	depends on BM_TIMER
 	depends on BM_ZMS
-	select EXPERIMENTAL
 	help
 	  Peer Manager library.
 

@@ -189,6 +189,8 @@ Libraries
      * All instances of ``pm_failure_evt_t`` to struct :c:struct:`pm_failure_evt` and removed the ``pm_failure_evt_t`` type.
      * All instances of ``pm_evt_t`` to struct :c:struct:`pm_evt` and removed the ``pm_evt_t`` type.
 
+   * Removed the selection of the :kconfig:option:`CONFIG_EXPERIMENTAL` Kconfig option.
+
 * :ref:`lib_storage` library:
 
   * Added the struct :c:struct:`bm_storage_config` for configuring a storage instance at initialization.
