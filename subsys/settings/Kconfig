@@ -8,7 +8,8 @@ menu "Settings"
 	depends on SETTINGS
 
 config NCS_BM_SETTINGS_BLUETOOTH_NAME
-	bool "Bluetooth name"
+	bool "Bluetooth name [EXPERIMENTAL]"
+	select EXPERIMENTAL
 	help
 	  If enabled, settings handlers for support BLE advertising name
 	  sharing under `fw_loader/adv_name` key are included into the build.
