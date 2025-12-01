@@ -140,7 +140,7 @@ When replying to the :c:enum:`BLE_ADV_EVT_ALLOW_LIST_REQUEST` event, the applica
   Make sure that the :c:func:`pm_allow_list_set` function was previously called.
   Then, call the :c:func:`ble_adv_allow_list_reply` function with the output of the :c:func:`pm_allow_list_get` function.
 * If the application does not use :ref:`lib_peer_manager`: call the :c:func:`sd_ble_gap_whitelist_set` function. Then, call the :c:func:`ble_adv_allow_list_reply` function.
-  After initialization, call the :c:func:`ble_advertising_start` function to start advertising in the intended mode.
+  After initialization, call the :c:func:`ble_adv_start` function to start advertising in the intended mode.
 
 The application must reply to the :c:enum:`BLE_ADV_EVT_PEER_ADDR_REQUEST` event by calling the :c:func:`ble_adv_peer_addr_reply` function.
 
