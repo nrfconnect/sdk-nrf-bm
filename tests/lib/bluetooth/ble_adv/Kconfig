@@ -1,6 +1,9 @@
-# Redefine this symbol without dependencies, so that tests
-# can enable it without having to enable the dependencies too.
+# Redefine these symbols without dependencies, so that tests
+# can enable them without having to enable the dependencies too.
 config BLE_ADV
+	default y
+
+config BLE_ADV_DATA
 	default y
 
 source "Kconfig.zephyr"
