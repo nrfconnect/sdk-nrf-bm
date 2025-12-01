@@ -26,6 +26,7 @@
 #include <bm/bluetooth/peer_manager/peer_manager.h>
 #include <bm/bluetooth/peer_manager/peer_manager_handler.h>
 #include <bm/bm_scheduler.h>
+#include <zephyr/irq.h>
 #include <zephyr/sys/ring_buffer.h>
 #include <zephyr/toolchain.h>
 #include <zephyr/logging/log.h>
@@ -108,10 +109,12 @@ RING_BUF_DECLARE(report_fifo, CONFIG_APP_BLE_HIDS_REPORT_FIFO_SIZE *
 
 uint32_t report_fifo_put(struct ble_hids_input_report *report)
 {
-	uint32_t written = 0;
+	uint32_t written;
 	uint32_t space;
+	unsigned int key;
 
-	NRFX_CRITICAL_SECTION_ENTER();
+	key = irq_lock();
+	written = 0;
 	space = ring_buf_space_get(&report_fifo);
 	if (space >= (sizeof(struct ble_hids_input_report) +
 		      CONFIG_BLE_HIDS_INPUT_REPORT_MAX_LEN)) {
@@ -120,7 +123,7 @@ uint32_t report_fifo_put(struct ble_hids_input_report *report)
 		written = ring_buf_put(&report_fifo, (void *)report->data,
 				       CONFIG_BLE_HIDS_INPUT_REPORT_MAX_LEN);
 	}
-	NRFX_CRITICAL_SECTION_EXIT();
+	irq_unlock(key);
 
 	if (!written) {
 		LOG_ERR("Could not put input report in buffer");
@@ -133,11 +136,13 @@ uint32_t report_fifo_put(struct ble_hids_input_report *report)
 void report_fifo_process(void)
 {
 	uint32_t nrf_err;
-	uint32_t written = 0;
+	uint32_t written;
 	struct ble_hids_input_report report;
 	uint8_t keys[CONFIG_BLE_HIDS_INPUT_REPORT_MAX_LEN];
+	unsigned int key;
 
-	NRFX_CRITICAL_SECTION_ENTER();
+	key = irq_lock();
+	written = 0;
 	if (!ring_buf_is_empty(&report_fifo)) {
 		written = ring_buf_get(&report_fifo, (uint8_t *)&report,
 				       sizeof(struct ble_hids_input_report));
@@ -147,7 +152,7 @@ void report_fifo_process(void)
 				CONFIG_BLE_HIDS_INPUT_REPORT_MAX_LEN);
 		__ASSERT_NO_MSG(written == CONFIG_BLE_HIDS_INPUT_REPORT_MAX_LEN);
 	}
-	NRFX_CRITICAL_SECTION_EXIT();
+	irq_unlock(key);
 
 	if (!written) {
 		return;
