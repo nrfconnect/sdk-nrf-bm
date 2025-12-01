@@ -87,8 +87,9 @@ config BM_BOOTLOADER_MCUBOOT_FIRMWARE_LOADER_ENTRANCE_BOOT_MODE
 endmenu
 
 config BM_APP_CAN_SETUP_FIRMWARE_LOADER_NAME
-	bool "Remote setup firmware loader BLE Advertising Name"
+	bool "Remote setup firmware loader BLE Advertising Name [EXPERIMENTAL]"
 	depends on !BM_FIRMWARE_LOADER_NONE
+	select EXPERIMENTAL
 	help
 	  If enable, the application and the firmware loader will be configured
 	  for supporting setup of the firmware loader BLE name using the settings retention
