@@ -8,6 +8,7 @@
 #include <string.h>
 #include <bm/bm_scheduler.h>
 #include <zephyr/init.h>
+#include <zephyr/irq.h>
 #include <zephyr/kernel.h>	/* k_heap */
 #include <zephyr/sys/slist.h>
 #include <zephyr/sys/util.h>
@@ -20,8 +21,8 @@ static K_HEAP_DEFINE(heap, CONFIG_BM_SCHEDULER_BUF_SIZE);
 
 int bm_scheduler_defer(bm_scheduler_fn_t handler, void *data, size_t len)
 {
-	uint32_t pm;
 	struct bm_scheduler_event *evt;
+	unsigned int key;
 
 	if (!handler) {
 		return -EFAULT;
@@ -40,12 +41,9 @@ int bm_scheduler_defer(bm_scheduler_fn_t handler, void *data, size_t len)
 
 	memcpy(evt->data, data, len);
 
-	pm = __get_PRIMASK();
-	__disable_irq();
+	key = irq_lock();
 	sys_slist_append(&event_list, &evt->node);
-	if (!pm) {
-		__enable_irq();
-	}
+	irq_unlock(key);
 
 	LOG_DBG("Event %p scheduled for %p", evt, handler);
 
@@ -54,18 +52,15 @@ int bm_scheduler_defer(bm_scheduler_fn_t handler, void *data, size_t len)
 
 int bm_scheduler_process(void)
 {
-	uint32_t pm;
 	sys_snode_t *node;
 	struct bm_scheduler_event *evt;
+	unsigned int key;
 
 	while (!sys_slist_is_empty(&event_list)) {
 
-		pm = __get_PRIMASK();
-		__disable_irq();
+		key = irq_lock();
 		node = sys_slist_get_not_empty(&event_list);
-		if (!pm) {
-			__enable_irq();
-		}
+		irq_unlock(key);
 
 		evt = CONTAINER_OF(node, struct bm_scheduler_event, node);
 		LOG_DBG("Dispatching event %p to handler %p", evt, evt->handler);
