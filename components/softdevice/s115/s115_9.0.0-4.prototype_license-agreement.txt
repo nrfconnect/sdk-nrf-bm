@@ -1,3 +1,5 @@
+DUMMY CHANGE
+
 Copyright (c) Nordic Semiconductor ASA
 All rights reserved.
 
