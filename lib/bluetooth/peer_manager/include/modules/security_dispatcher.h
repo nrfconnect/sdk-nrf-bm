@@ -85,14 +85,14 @@ uint32_t smd_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *sec_params
  * @brief Function for initiating security on the link, with the specified parameters.
  *
  * @note If the connection is a peripheral connection, this will send a security request to the
- *       master, but the master is not obligated to initiate pairing or encryption in response.
+ *       central, but the central is not obligated to initiate pairing or encryption in response.
  * @note If the connection is a central connection and a key is available, the parameters will be
  *       used to determine whether to re-pair or to encrypt using the existing key. If no key is
  *       available, pairing will be started.
  *
  * @param[in]  conn_handle      Handle of the connection to initiate pairing on.
  * @param[in]  sec_params       The security parameters to use for this link. As a central, this can
- *                              be NULL to reject a slave security request.
+ *                              be NULL to reject a peripheral security request.
  * @param[in]  force_repairing  Whether to force a pairing procedure to happen regardless of whether
  *                              an encryption key already exists. This argument is only relevant for
  *                              the central role. Recommended value: false

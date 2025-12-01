@@ -7,7 +7,7 @@ Bluetooth: Peer Manager
    :local:
    :depth: 2
 
-The Peer Manager library handles Bluetooth LE link security procedures and can be used to initiate pairing, bonding, and encryption, as well as to manage device whitelists.
+The Peer Manager library handles Bluetooth LE link security procedures and can be used to initiate pairing, bonding, and encryption, as well as to manage device allow lists.
 
 Overview
 ********
@@ -19,7 +19,7 @@ The Peer Manager provides functionality for:
 * Creating and storing bonds and GATT data in non-volatile storage
 * Managing application-specific peer data
 * Notifying bonded peers when the GATT database changes
-* Building whitelists based on peer information
+* Building allow lists based on peer information
 
 Managing link security
 ======================
@@ -45,16 +45,16 @@ Using this mechanism can be convenient, for example, to write application data f
 If an application's GATT database changes, all peers must be informed of this change.
 The Peer Manager provides a function that the application should call to distribute the service changed indications.
 
-Managing whitelists
-===================
+Managing allow lists
+====================
 
-The Peer Manager can be used to create a whitelist that restricts which peers are allowed to connect.
-To construct a whitelist, you must provide a list of peer IDs.
-The whitelist will then contain the addresses and Identity Resolving Keys (IRKs) of the specified peers.
+The Peer Manager can be used to create an allow list that restricts which peers are allowed to connect.
+To construct an allow list, you must provide a list of peer IDs.
+The allow list will then contain the addresses and Identity Resolving Keys (IRKs) of the specified peers.
 
 .. note::
 
-   If you include the Peer Manager in an application and want to use whitelisting, the whitelist must be created by the Peer Manager.
+   If you include the Peer Manager in an application and want to use the allow list, the allow list must be created by the Peer Manager.
 
 Architecture
 ************
@@ -91,10 +91,10 @@ More detailed description of peer tracking policy can be found in `Bluetooth Cor
 ID Manager
 ==========
 
-The ID Manager keeps track of connected peers and identifies them based on different kinds of IDs: the static device address, master ID, Identity Resolving Key (IRK), IRK whitelist index, and peer ID.
+The ID Manager keeps track of connected peers and identifies them based on different kinds of IDs: the static device address, master ID, Identity Resolving Key (IRK), IRK allow list index, and peer ID.
 It detects if different IDs refer to the same peer and determines which of the connected peers are bonded.
 When a bonded device is connected, the application can ask for the connection handle associated with the peer ID (or the other way around).
-In addition, the ID Manager creates and maintains whitelists.
+In addition, the ID Manager creates and maintains allow lists.
 
 GATT Cache Manager
 ==================
@@ -371,18 +371,18 @@ The :c:func:`pm_peer_data_store` function can also be used directly, as in the f
       return nrf_err;
    }
 
-Using a whitelist
-=================
+Using allow list
+================
 
-The Peer Manager can be used to set and retrieve a whitelist that can be provided to the Bluetooth LE advertising module and used during advertising.
-When a whitelist is needed, call the :c:func:`pm_whitelist_set` function to whitelist peers based on their peer IDs.
+The Peer Manager can be used to set and retrieve an allow list that can be provided to the Bluetooth LE advertising module and used during advertising.
+When the allow list is needed, call the :c:func:`pm_allow_list_set` function to add peers to the allow list based on their peer IDs.
 
-The following example shows how to use the :c:func:`pm_whitelist_set` function to whitelist a number of peers and the :c:func:`pm_whitelist_get` function to retrieve such a list and provide it to the Bluetooth LE advertising module for use during advertising:
+The following example shows how to use the :c:func:`pm_allow_list_set` function to add a number of peers to the allow list and the :c:func:`pm_allow_list_get` function to retrieve such a list and provide it to the Bluetooth LE advertising module for use during advertising:
 
 .. code-block:: c
 
    {
-      /* Fetch a list of peer IDs from Peer Manager and whitelist them. */
+      /* Fetch a list of peer IDs from Peer Manager and add them to the allow list. */
 
       uint16_t peer_ids[8] = {PM_PEER_ID_INVALID};
       uint32_t n_peer_ids = 0;
@@ -393,8 +393,8 @@ The following example shows how to use the :c:func:`pm_whitelist_set` function t
          peer_id = pm_next_peer_id_get(peer_id);
       }
 
-      /* Whitelist peers. */
-      nrf_err = pm_whitelist_set(peer_ids, n_peer_ids);
+      /* Set the allow list. */
+      nrf_err = pm_allow_list_set(peer_ids, n_peer_ids);
       if (nrf_err) {
          return nrf_err;
       }
@@ -404,29 +404,29 @@ The following example shows how to use the :c:func:`pm_whitelist_set` function t
    {
       switch (ble_adv_evt) {
       ...
-      case BLE_ADV_EVT_WHITELIST_REQUEST:
+      case BLE_ADV_EVT_ALLOW_LIST_REQUEST:
             /* When the Advertising module is about to advertise, an event
              * will be received by the application. In this event, the application
-             * retrieves a whitelist from the Peer Manager, based on the peers
-             * previously whitelisted using pm_whitelist_set().
+             * retrieves the allow list from the Peer Manager, based on the peers
+             * previously added to the allow list using pm_allow_list_set().
              */
 
             uint32_t nrf_err;
 
-            /* Storage for the whitelist. */
+            /* Storage for the allow list. */
             ble_gap_irk_t irks[8] = {0};
             ble_gap_addr_t addrs[8] = {0};
 
             uint32_t irk_cnt = 8;
             uint32_t addr_cnt = 8;
 
-            nrf_err = pm_whitelist_get(addrs, &addr_cnt, irks, &irk_cnt);
+            nrf_err = pm_allow_list_get(addrs, &addr_cnt, irks, &irk_cnt);
             if (nrf_err) {
                return;
             }
 
-            /* Apply the whitelist. */
-            nrf_err = ble_advertising_whitelist_reply(addrs, addr_cnt, irks, irk_cnt);
+            /* Apply the allow list. */
+            nrf_err = ble_adv_allow_list_reply(addrs, addr_cnt, irks, irk_cnt);
             if (nrf_err) {
                return;
             }

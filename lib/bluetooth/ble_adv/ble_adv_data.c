@@ -37,9 +37,9 @@
 #define AD_TYPE_TX_POWER_LEVEL_DATA_SIZE  1UL
 /* Size (in octets) of the TX Power Level */
 #define AD_TYPE_TX_POWER_LEVEL_SIZE	  (AD_DATA_OFFSET + AD_TYPE_TX_POWER_LEVEL_DATA_SIZE)
-/* Data size (in octets) of the Slave Connection Interval Range */
+/* Data size (in octets) of the Peripheral Connection Interval Range */
 #define AD_TYPE_CONN_INT_DATA_SIZE	  4UL
-/* Data size (in octets) of the Slave Connection Interval Range */
+/* Data size (in octets) of the Peripheral Connection Interval Range */
 #define AD_TYPE_CONN_INT_SIZE		  (AD_DATA_OFFSET + AD_TYPE_CONN_INT_DATA_SIZE)
 /* Size (in octets) of the Company Identifier Code, part of the Manufacturer Specific Data */
 #define AD_TYPE_MANUF_SPEC_DATA_ID_SIZE	  2UL
@@ -537,9 +537,9 @@ uint32_t ble_adv_data_encode(const struct ble_adv_data *ble_adv_data, uint8_t *b
 			return nrf_err;
 		}
 	}
-	/* Encode Slave Connection Interval Range */
-	if (ble_adv_data->slave_conn_int != NULL) {
-		nrf_err = conn_int_encode(ble_adv_data->slave_conn_int, buf, len, max_size);
+	/* Encode peripheral connection interval range */
+	if (ble_adv_data->periph_conn_int != NULL) {
+		nrf_err = conn_int_encode(ble_adv_data->periph_conn_int, buf, len, max_size);
 		if (nrf_err) {
 			return nrf_err;
 		}

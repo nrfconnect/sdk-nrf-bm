@@ -175,8 +175,8 @@ static void ble_adv_evt_handler(struct ble_adv *ble_adv, const struct ble_adv_ev
 	uint32_t nrf_err;
 	ble_gap_addr_t *peer_addr;
 	struct pm_peer_data_bonding peer_bonding_data;
-	ble_gap_addr_t whitelist_addrs[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
-	ble_gap_irk_t whitelist_irks[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
+	ble_gap_addr_t allow_list_addrs[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
+	ble_gap_irk_t allow_list_irks[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
 	uint32_t addr_cnt = BLE_GAP_WHITELIST_ADDR_MAX_COUNT;
 	uint32_t irk_cnt = BLE_GAP_WHITELIST_ADDR_MAX_COUNT;
 
@@ -188,19 +188,19 @@ static void ble_adv_evt_handler(struct ble_adv *ble_adv, const struct ble_adv_ev
 	case BLE_ADV_EVT_DIRECTED:
 	case BLE_ADV_EVT_FAST:
 	case BLE_ADV_EVT_SLOW:
-	case BLE_ADV_EVT_FAST_WHITELIST:
-	case BLE_ADV_EVT_SLOW_WHITELIST:
+	case BLE_ADV_EVT_FAST_ALLOW_LIST:
+	case BLE_ADV_EVT_SLOW_ALLOW_LIST:
 		nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
 		break;
 	case BLE_ADV_EVT_IDLE:
 		nrf_gpio_pin_write(BOARD_PIN_LED_0, !BOARD_LED_ACTIVE_STATE);
 		break;
-	case BLE_ADV_EVT_WHITELIST_REQUEST:
-		nrf_err = pm_whitelist_get(whitelist_addrs, &addr_cnt, whitelist_irks, &irk_cnt);
+	case BLE_ADV_EVT_ALLOW_LIST_REQUEST:
+		nrf_err = pm_allow_list_get(allow_list_addrs, &addr_cnt, allow_list_irks, &irk_cnt);
 		if (nrf_err) {
-			LOG_ERR("Failed to get whitelist, nrf_error %#x", nrf_err);
+			LOG_ERR("Failed to get allow list, nrf_error %#x", nrf_err);
 		}
-		LOG_DBG("pm_whitelist_get returns %d addr in whitelist and %d irk whitelist",
+		LOG_DBG("pm_allow_list_get returns %d addr in allow list and %d irk allow list",
 				addr_cnt, irk_cnt);
 
 		/* Set the correct identities list
@@ -208,10 +208,10 @@ static void ble_adv_evt_handler(struct ble_adv *ble_adv, const struct ble_adv_ev
 		 */
 		identities_set(PM_PEER_ID_LIST_SKIP_NO_IRK);
 
-		nrf_err = ble_adv_whitelist_reply(ble_adv, whitelist_addrs, addr_cnt,
-						  whitelist_irks, irk_cnt);
+		nrf_err = ble_adv_allow_list_reply(ble_adv, allow_list_addrs, addr_cnt,
+						   allow_list_irks, irk_cnt);
 		if (nrf_err) {
-			LOG_ERR("Failed to set whitelist, nrf_error %#x", nrf_err);
+			LOG_ERR("Failed to set allow list, nrf_error %#x", nrf_err);
 		}
 		break;
 
@@ -507,7 +507,7 @@ static void button_handler(uint8_t pin, uint8_t action)
 	}
 }
 
-static void whitelist_set(enum pm_peer_id_list_skip skip)
+static void allow_list_set(enum pm_peer_id_list_skip skip)
 {
 	uint32_t nrf_err;
 	uint16_t peer_ids[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
@@ -518,12 +518,12 @@ static void whitelist_set(enum pm_peer_id_list_skip skip)
 		LOG_ERR("Failed to get peer id list, nrf_error %#x", nrf_err);
 	}
 
-	LOG_INF("whitelist_peer_cnt %d, MAX_PEERS_WLIST %d",
+	LOG_INF("Number of peers added to the allow list: %d, max %d",
 		peer_id_count, BLE_GAP_WHITELIST_ADDR_MAX_COUNT);
 
-	nrf_err = pm_whitelist_set(peer_ids, peer_id_count);
+	nrf_err = pm_allow_list_set(peer_ids, peer_id_count);
 	if (nrf_err) {
-		LOG_ERR("Failed to set whitelist, nrf_error %#x", nrf_err);
+		LOG_ERR("Failed to set allow list, nrf_error %#x", nrf_err);
 	}
 }
 
@@ -563,7 +563,7 @@ static uint32_t advertising_start(bool erase_bonds)
 	if (erase_bonds) {
 		delete_bonds();
 	} else {
-		whitelist_set(PM_PEER_ID_LIST_SKIP_NO_ID_ADDR);
+		allow_list_set(PM_PEER_ID_LIST_SKIP_NO_ID_ADDR);
 
 		nrf_err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
 		if (nrf_err) {
@@ -592,11 +592,11 @@ static void pm_evt_handler(struct pm_evt const *evt)
 	case PM_EVT_PEER_DATA_UPDATE_SUCCEEDED:
 		if (evt->params.peer_data_update_succeeded.flash_changed &&
 		    (evt->params.peer_data_update_succeeded.data_id == PM_PEER_DATA_ID_BONDING)) {
-			LOG_INF("New Bond, add the peer to the whitelist if possible");
-			/* Note: You should check on what kind of white list policy your
+			LOG_INF("New Bond, add the peer to the allow list if possible");
+			/* Note: You should check on what kind of allow list policy your
 			 * application should use.
 			 */
-			whitelist_set(PM_PEER_ID_LIST_SKIP_NO_ID_ADDR);
+			allow_list_set(PM_PEER_ID_LIST_SKIP_NO_ID_ADDR);
 		}
 		break;
 

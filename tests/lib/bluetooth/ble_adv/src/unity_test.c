@@ -152,34 +152,34 @@ void test_ble_adv_peer_addr_reply(void)
 }
 
 
-void test_ble_adv_whitelist_reply(void)
+void test_ble_adv_allow_list_reply(void)
 {
 	struct ble_adv ble_adv_config = {0};
 	uint32_t nrf_err;
 	const ble_gap_addr_t addrs = {0};
 	const ble_gap_irk_t irks = {0};
 
-	nrf_err = ble_adv_whitelist_reply(NULL, &addrs, 0, &irks, 0);
+	nrf_err = ble_adv_allow_list_reply(NULL, &addrs, 0, &irks, 0);
 	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 
-	nrf_err = ble_adv_whitelist_reply(&ble_adv_config, &addrs, 0, &irks, 0);
+	nrf_err = ble_adv_allow_list_reply(&ble_adv_config, &addrs, 0, &irks, 0);
 	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, nrf_err);
 
-	ble_adv_config.whitelist_reply_expected = NULL;
-	nrf_err = ble_adv_whitelist_reply(&ble_adv_config, NULL, 0, NULL, 0);
+	ble_adv_config.allow_list_reply_expected = NULL;
+	nrf_err = ble_adv_allow_list_reply(&ble_adv_config, NULL, 0, NULL, 0);
 	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, nrf_err);
 
-	ble_adv_config.whitelist_reply_expected = true;
-	nrf_err = ble_adv_whitelist_reply(&ble_adv_config, &addrs, 0, &irks, 0);
+	ble_adv_config.allow_list_reply_expected = true;
+	nrf_err = ble_adv_allow_list_reply(&ble_adv_config, &addrs, 0, &irks, 0);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
-	TEST_ASSERT_TRUE(ble_adv_config.whitelist_reply_expected == false);
-	TEST_ASSERT_TRUE(ble_adv_config.whitelist_in_use == false);
+	TEST_ASSERT_TRUE(ble_adv_config.allow_list_reply_expected == false);
+	TEST_ASSERT_TRUE(ble_adv_config.allow_list_in_use == false);
 
-	ble_adv_config.whitelist_reply_expected = true;
-	nrf_err = ble_adv_whitelist_reply(&ble_adv_config, &addrs, 1, &irks, 0);
+	ble_adv_config.allow_list_reply_expected = true;
+	nrf_err = ble_adv_allow_list_reply(&ble_adv_config, &addrs, 1, &irks, 0);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
-	TEST_ASSERT_TRUE(ble_adv_config.whitelist_reply_expected == false);
-	TEST_ASSERT_TRUE(ble_adv_config.whitelist_in_use == true);
+	TEST_ASSERT_TRUE(ble_adv_config.allow_list_reply_expected == false);
+	TEST_ASSERT_TRUE(ble_adv_config.allow_list_in_use == true);
 }
 
 void test_ble_adv_start(void)
@@ -187,7 +187,7 @@ void test_ble_adv_start(void)
 	struct ble_adv ble_adv = {
 		.is_initialized = true,
 		.evt_handler = ble_adv_evt_handler,
-		.whitelist_temporarily_disabled = false,
+		.allow_list_temporarily_disabled = false,
 	};
 	enum ble_adv_mode mode[MAX_ADV_MODES] = {BLE_ADV_MODE_DIRECTED_HIGH_DUTY,
 		BLE_ADV_MODE_DIRECTED, BLE_ADV_MODE_FAST, BLE_ADV_MODE_SLOW, BLE_ADV_MODE_IDLE};
@@ -220,7 +220,7 @@ void test_ble_adv_start(void)
 		nrf_err = ble_adv_start(&ble_adv, mode[i]);
 		TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 		TEST_ASSERT_TRUE(ble_adv.mode_current == mode[i]);
-		TEST_ASSERT_TRUE(ble_adv.whitelist_in_use == false);
+		TEST_ASSERT_TRUE(ble_adv.allow_list_in_use == false);
 		TEST_ASSERT_TRUE(ble_adv.adv_params.primary_phy == CONFIG_BLE_ADV_PRIMARY_PHY);
 		TEST_ASSERT_TRUE(ble_adv.adv_params.secondary_phy == CONFIG_BLE_ADV_SECONDARY_PHY);
 		TEST_ASSERT_TRUE(ble_adv.adv_params.filter_policy == BLE_GAP_ADV_FP_ANY);
@@ -241,11 +241,11 @@ void test_ble_adv_start(void)
 			TEST_ASSERT_TRUE(ble_adv_evt_type == BLE_ADV_EVT_DIRECTED);
 		}
 		if (mode[i] == BLE_ADV_MODE_FAST) {
-			TEST_ASSERT_TRUE(ble_adv.whitelist_reply_expected == true);
+			TEST_ASSERT_TRUE(ble_adv.allow_list_reply_expected == true);
 			TEST_ASSERT_TRUE(ble_adv_evt_type == BLE_ADV_EVT_FAST);
 		}
 		if (mode[i] == BLE_ADV_MODE_SLOW) {
-			TEST_ASSERT_TRUE(ble_adv.whitelist_reply_expected == true);
+			TEST_ASSERT_TRUE(ble_adv.allow_list_reply_expected == true);
 			TEST_ASSERT_TRUE(ble_adv_evt_type == BLE_ADV_EVT_SLOW);
 		}
 	}
@@ -256,7 +256,7 @@ void test_ble_adv_start_error_invalid_param(void)
 	struct ble_adv ble_adv = {
 		.is_initialized = true,
 		.evt_handler = ble_adv_evt_handler,
-		.whitelist_temporarily_disabled = false,
+		.allow_list_temporarily_disabled = false,
 	};
 	uint32_t nrf_err;
 

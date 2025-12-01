@@ -337,7 +337,7 @@ enum pm_evt_id {
 	 */
 	PM_EVT_SERVICE_CHANGED_IND_CONFIRMED,
 	/** @brief The peer (peripheral) has requested link encryption, which has been enabled. */
-	PM_EVT_SLAVE_SECURITY_REQ,
+	PM_EVT_PERIPHERAL_SECURITY_REQ,
 	/**
 	 * @brief The non-volatile storage has been garbage collected, possibly freeing up space.
 	 */
@@ -486,8 +486,8 @@ struct pm_evt {
 		/** @brief Parameters specific to the @ref PM_EVT_ERROR_UNEXPECTED event. */
 		struct pm_failure_evt error_unexpected;
 #ifdef CONFIG_SOFTDEVICE_CENTRAL
-		/** @brief Parameters specific to the @ref PM_EVT_SLAVE_SECURITY_REQ event. */
-		ble_gap_evt_sec_request_t slave_security_req;
+		/** @brief Parameters specific to the @ref PM_EVT_PERIPHERAL_SECURITY_REQ event. */
+		ble_gap_evt_sec_request_t peripheral_security_req;
 #endif
 		/**
 		 * @brief Parameters specific to the @ref PM_EVT_FLASH_GARBAGE_COLLECTION_FAILED

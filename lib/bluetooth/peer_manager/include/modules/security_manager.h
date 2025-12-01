@@ -132,7 +132,7 @@ bool sm_sec_is_sufficient(uint16_t conn_handle, struct pm_conn_sec_status *sec_s
  * @brief Function for initiating security on the link, with the specified parameters.
  *
  * @note If the connection is a peripheral connection, this will send a security request to the
- *       master, but the master is not obligated to initiate pairing or encryption in response.
+ *       central, but the central is not obligated to initiate pairing or encryption in response.
  * @note If the connection is a central connection and a key is available, the parameters will be
  *       used to determine whether to re-pair or to encrypt using the existing key. If no key is
  *       available, pairing will be started.

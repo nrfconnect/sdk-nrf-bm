@@ -167,8 +167,8 @@ struct ble_adv_data {
 	} srv_list;
 	/** TX Power Level */
 	int8_t *tx_power_level;
-	/** Slave Connection Interval Range */
-	struct ble_adv_data_conn_int *slave_conn_int;
+	/** Peripheral connection interval range */
+	struct ble_adv_data_conn_int *periph_conn_int;
 	/** Manufacturer specific data */
 	struct ble_adv_data_manufacturer *manufacturer_data;
 };

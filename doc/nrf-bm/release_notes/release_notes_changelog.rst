@@ -121,8 +121,21 @@ Libraries
 
 * :ref:`lib_ble_adv` library:
 
-  * Updated the advertising and scan response data encoder provided in the :file:`include/bm/bluetooth/ble_adv_data.h` file so that it can be used by enabling the :kconfig:option:`CONFIG_BLE_ADV_DATA` Kconfig option.
-    You can enable this without using the :kconfig:option:`CONFIG_BLE_ADV` Kconfig option.
+   * Updated the advertising and scan response data encoder provided in the :file:`include/bm/bluetooth/ble_adv_data.h` file so that it can be used by enabling the :kconfig:option:`CONFIG_BLE_ADV_DATA` Kconfig option.
+     You can enable this without using the :kconfig:option:`CONFIG_BLE_ADV` Kconfig option.
+
+   * Renamed:
+
+     * The ``ble_adv_whitelist_reply``function to :c:func:`ble_adv_allow_list_reply`.
+     * The ``ble_adv_restart_without_whitelist``function to :c:func:`ble_adv_restart_without_allow_list`.
+     * The ``BLE_ADV_EVT_FAST_WHITELIST`` enumerator in the :c:enum:`ble_adv_evt_type` enumeration to :c:enumerator:`BLE_ADV_EVT_FAST_ALLOW_LIST`.
+     * The ``BLE_ADV_EVT_SLOW_WHITELIST`` enumerator in the :c:enum:`ble_adv_evt_type` enumeration to :c:enumerator:`BLE_ADV_EVT_SLOW_ALLOW_LIST`.
+     * The ``BLE_ADV_EVT_WHITELIST_REQUEST`` enumerator in the :c:enum:`ble_adv_evt_type` enumeration to :c:enumerator:`BLE_ADV_EVT_ALLOW_LIST_REQUEST`.
+     * The ``whitelist_reply_expected`` member in the :c:struct:`ble_adv` structure to :c:member:`ble_adv.allow_list_reply_expected`.
+     * The ``whitelist_temporarily_disabled`` member in the :c:struct:`ble_adv` structure to :c:member:`ble_adv.allow_list_temporarily_disabled`.
+     * The ``whitelist_in_use`` member in the :c:struct:`ble_adv` structure to :c:member:`ble_adv.allow_list_in_use`.
+     * The ``slave_conn_int`` member in the :c:struct:`ble_adv_data` structure to :c:member:`ble_adv_data.periph_conn_int`.
+     * The ``CONFIG_BLE_ADV_USE_WHITELIST`` Kconfig option to :kconfig:option:`CONFIG_BLE_ADV_USE_ALLOW_LIST`.
 
 * :ref:`lib_ble_conn_params` library:
 
@@ -195,6 +208,10 @@ Libraries
      * All instances of ``pm_peer_data_update_failed_t`` to struct :c:struct:`pm_peer_data_update_failed_evt` and removed the ``pm_peer_data_update_failed_t`` type.
      * All instances of ``pm_failure_evt_t`` to struct :c:struct:`pm_failure_evt` and removed the ``pm_failure_evt_t`` type.
      * All instances of ``pm_evt_t`` to struct :c:struct:`pm_evt` and removed the ``pm_evt_t`` type.
+     * The name of the ``pm_whitelist_get`` function to :c:func:`pm_allow_list_get`.
+     * The name of the ``pm_whitelist_set``function to :c:func:`pm_allow_list_set`.
+     * The name of the ``PM_EVT_SLAVE_SECURITY_REQ`` enumerator in the :c:enum:`pm_evt_id` enumeration to :c:enumerator:`PM_EVT_PERIPHERAL_SECURITY_REQ`.
+     * The name of the ``slave_security_req`` member in the :c:struct:`pm_evt` structure to :c:member:`pm_evt.peripheral_security_req`.
 
    * Removed the selection of the :kconfig:option:`CONFIG_EXPERIMENTAL` Kconfig option.
 
@@ -208,7 +225,7 @@ Libraries
     * The :c:func:`bm_storage_init` function to expect an additional input parameter of type pointer to struct :c:struct:`bm_storage_config` for configuring the storage instance that is being initialized.
 
 Bluetooth LE Services
-------------
+---------------------
 
 * Updated how to configure the characteristic security for the following Bluetooth LE services:
 
