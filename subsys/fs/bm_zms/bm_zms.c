@@ -15,17 +15,11 @@
 #include <zephyr/sys/atomic.h>
 #include <zephyr/sys/ring_buffer.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/irq.h>
 
 #include <bm/storage/bm_storage.h>
 #include <bm/fs/bm_zms.h>
 #include "bm_zms_priv.h"
-
-#ifdef CONFIG_HAS_NRFX
-#include <nrfx.h>
-#else
-#define NRFX_CRITICAL_SECTION_ENTER(...)
-#define NRFX_CRITICAL_SECTION_EXIT(...)
-#endif
 
 LOG_MODULE_REGISTER(bm_zms, CONFIG_BM_ZMS_LOG_LEVEL);
 
@@ -118,6 +112,7 @@ static void queue_process(void)
 	int result = 0, prev_result = 0;
 	int evt_result = 0;
 	uint32_t rc;
+	unsigned int key;
 
 	while (true) {
 		if (queue_process_start) {
@@ -136,9 +131,10 @@ static void queue_process(void)
 
 		if (p_cur_op == NULL) {
 			/* Load the next from the queue if no operation is being executed.*/
-			NRFX_CRITICAL_SECTION_ENTER();
+			key = irq_lock();
 			rc = ring_buf_get(&zms_fifo, (uint8_t *)&cur_op, sizeof(zms_op_t));
-			NRFX_CRITICAL_SECTION_EXIT();
+			irq_unlock(key);
+
 			if (rc != sizeof(zms_op_t)) {
 				result = -EIO;
 				goto completed;
@@ -1662,6 +1658,7 @@ int bm_zms_clear(struct bm_zms_fs *fs)
 {
 	uint32_t rc;
 	zms_op_t cur_clear_op;
+	unsigned int key;
 
 	if (!fs) {
 		return -EFAULT;
@@ -1672,7 +1669,7 @@ int bm_zms_clear(struct bm_zms_fs *fs)
 		return -EACCES;
 	}
 
-	NRFX_CRITICAL_SECTION_ENTER();
+	key = irq_lock();
 	memset(&cur_clear_op, 0, sizeof(cur_clear_op));
 	cur_clear_op.fs = fs;
 	cur_clear_op.op_code = ZMS_OP_CLEAR;
@@ -1681,7 +1678,7 @@ int bm_zms_clear(struct bm_zms_fs *fs)
 	cur_clear_op.addr = 0U;
 
 	rc = ring_buf_put(&zms_fifo, (uint8_t *)&cur_clear_op, sizeof(zms_op_t));
-	NRFX_CRITICAL_SECTION_EXIT();
+	irq_unlock(key);
 	if (rc != sizeof(zms_op_t)) {
 		return -ENOMEM;
 	}
@@ -1993,6 +1990,7 @@ int bm_zms_mount(struct bm_zms_fs *fs, const struct bm_zms_fs_config *config)
 	uint32_t rc;
 	size_t write_block_size;
 	zms_op_t cur_init_op;
+	unsigned int key;
 
 	if (!fs || !config) {
 		return -EFAULT;
@@ -2062,14 +2060,14 @@ int bm_zms_mount(struct bm_zms_fs *fs, const struct bm_zms_fs_config *config)
 	fs->init_flags.initialized = false;
 	fs->ongoing_writes = ATOMIC_INIT(0);
 
-	NRFX_CRITICAL_SECTION_ENTER();
+	key = irq_lock();
 	memset(&cur_init_op, 0, sizeof(cur_init_op));
 	cur_init_op.fs = fs;
 	cur_init_op.op_code = ZMS_OP_INIT;
 	cur_init_op.step = ZMS_OP_INIT_START;
 
 	rc = ring_buf_put(&zms_fifo, (uint8_t *)&cur_init_op, sizeof(zms_op_t));
-	NRFX_CRITICAL_SECTION_EXIT();
+	irq_unlock(key);
 	if (rc != sizeof(zms_op_t)) {
 		return -ENOMEM;
 	}
@@ -2113,6 +2111,7 @@ ssize_t bm_zms_write(struct bm_zms_fs *fs, uint32_t id, const void *data, size_t
 	uint32_t required_space = 0U; /* no space, appropriate for delete ate */
 	zms_op_t cur_write_op;
 	uint32_t rc;
+	unsigned int key;
 
 	if (!fs) {
 		return -EFAULT;
@@ -2147,7 +2146,7 @@ ssize_t bm_zms_write(struct bm_zms_fs *fs, uint32_t id, const void *data, size_t
 		}
 	}
 
-	NRFX_CRITICAL_SECTION_ENTER();
+	key = irq_lock();
 	memset(&cur_write_op, 0, sizeof(cur_write_op));
 	cur_write_op.fs = fs;
 	cur_write_op.op_code = ZMS_OP_WRITE;
@@ -2160,7 +2159,7 @@ ssize_t bm_zms_write(struct bm_zms_fs *fs, uint32_t id, const void *data, size_t
 	cur_write_op.required_space = required_space;
 
 	rc = ring_buf_put(&zms_fifo, (uint8_t *)&cur_write_op, sizeof(zms_op_t));
-	NRFX_CRITICAL_SECTION_EXIT();
+	irq_unlock(key);
 	if (rc != sizeof(zms_op_t)) {
 		return -ENOMEM;
 	}
