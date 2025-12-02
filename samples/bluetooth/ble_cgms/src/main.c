@@ -35,14 +35,11 @@
 
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
+#include <zephyr/sys/util.h>
 
 #include <board-config.h>
 
 LOG_MODULE_REGISTER(app, CONFIG_APP_BLE_CGMS_LOG_LEVEL);
-
-#ifndef IS_BIT_SET
-#define IS_BIT_SET(value, bit) ((((value) >> (bit)) & (0x1)) != 0)
-#endif
 
 enum led_indicate {
 	LED_INDICATE_IDLE = 1,
