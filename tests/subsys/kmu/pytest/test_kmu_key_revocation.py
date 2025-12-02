@@ -134,7 +134,6 @@ def test_if_kmu_keys_revocation_with_two_slots_third_key_valid(
     pytest.LineMatcher(lines).fnmatch_lines(LINES_FOR_KEY_VERIFICATION_FAIL)
 
 
-@pytest.mark.xfail(reason="Won't work until https://github.com/nrfconnect/sdk-mcuboot/pull/564")
 @pytest.mark.usefixtures("no_reset")
 def test_if_previous_key_is_revoked_when_flashing_new_image(
     dut: DeviceAdapter, config_reader: Callable, nrf_bm_path: Path, request: pytest.FixtureRequest
