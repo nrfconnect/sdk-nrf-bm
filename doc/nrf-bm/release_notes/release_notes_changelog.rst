@@ -292,6 +292,12 @@ DFU samples
 
 * Moved the MCUmgr samples to the :file:`applications/firmware_loader` folder.
 
+Subsystem samples
+-----------------
+
+* Moved the :ref:`bm_storage_sample` and :ref:`bm_zms_sample` samples to the :file:`samples/subsys` folder.
+* Removed the RRAM storage backend from the :ref:`bm_storage_sample` and :ref:`bm_zms_sample` samples.
+
 Known issues and limitations
 ============================
 
