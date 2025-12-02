@@ -49,23 +49,23 @@ extern "C" {
 /** @brief Default security configuration. */
 #define BLE_CGMS_CONFIG_SEC_MODE_DEFAULT                                                           \
 	{                                                                                          \
-		.feature_char.read = BLE_GAP_CONN_SEC_MODE_OPEN,                                   \
-		.status_char.read = BLE_GAP_CONN_SEC_MODE_OPEN,                                    \
-		.srt_char.read = BLE_GAP_CONN_SEC_MODE_OPEN,                                       \
+		.feature_char.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                            \
+		.status_char.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                             \
+		.srt_char.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                                \
 		.meas_char = {                                                                     \
-			.cccd_write = BLE_GAP_CONN_SEC_MODE_OPEN,                                  \
+			.cccd_write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                           \
 		},                                                                                 \
 		.racp_char = {                                                                     \
-			.write = BLE_GAP_CONN_SEC_MODE_OPEN,                                       \
-			.cccd_write = BLE_GAP_CONN_SEC_MODE_OPEN,                                  \
+			.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                                \
+			.cccd_write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                           \
 		},                                                                                 \
 		.socp_char = {                                                                     \
-			.write = BLE_GAP_CONN_SEC_MODE_OPEN,                                       \
-			.cccd_write = BLE_GAP_CONN_SEC_MODE_OPEN,                                  \
+			.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                                \
+			.cccd_write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                           \
 		},                                                                                 \
 		.sst_char = {                                                                      \
-			.read = BLE_GAP_CONN_SEC_MODE_OPEN,                                        \
-			.write = BLE_GAP_CONN_SEC_MODE_OPEN,                                       \
+			.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                                 \
+			.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                                \
 		},                                                                                 \
 	}
 

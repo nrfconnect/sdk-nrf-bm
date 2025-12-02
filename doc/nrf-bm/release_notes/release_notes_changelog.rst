@@ -259,6 +259,11 @@ Bluetooth LE Services
   * Added the error event to align event handling with other services.
   * Updated the name of the ``type`` member in the :c:struct:`ble_nus_evt` structure to :c:member:`ble_nus_evt.evt_type`.
 
+* :ref:`lib_ble_service_cgms` service:
+
+  * Updated the default characteristic security to encryption without MITM protection.
+    This is done to conform to the CGMS specification.
+
 * BLE Gatt Queue library:
 
   * Updated the event handling to align with other libraries.
