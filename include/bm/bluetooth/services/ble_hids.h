@@ -47,6 +47,7 @@ extern "C" {
 #define BLE_HIDS_CONFIG_SEC_MODE_DEFAULT_MOUSE                                                     \
 	{                                                                                          \
 		.hid_info_char.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                           \
+		.report_map_char.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                         \
 		.protocol_mode_char = {                                                            \
 			.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                                 \
 			.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                                \
@@ -65,6 +66,7 @@ extern "C" {
 #define BLE_HIDS_CONFIG_SEC_MODE_DEFAULT_KEYBOARD                                                  \
 	{                                                                                          \
 		.hid_info_char.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                           \
+		.report_map_char.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                         \
 		.protocol_mode_char = {                                                            \
 			.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                                 \
 			.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                                \
