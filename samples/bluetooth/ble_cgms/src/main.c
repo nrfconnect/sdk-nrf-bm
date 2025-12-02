@@ -20,6 +20,10 @@
 #include <ble.h>
 #include <bm/bluetooth/ble_adv.h>
 #include <bm/bluetooth/ble_conn_params.h>
+#include <bm/bluetooth/peer_manager/nrf_ble_lesc.h>
+#include <bm/bluetooth/peer_manager/peer_manager.h>
+#include <bm/bluetooth/peer_manager/peer_manager_handler.h>
+#include <bm/bluetooth/services/common.h>
 #include <bm/bluetooth/services/uuid.h>
 #include <bm/bluetooth/services/ble_bas.h>
 #include <bm/bluetooth/services/ble_cgms.h>
@@ -40,6 +44,23 @@
 #include <board-config.h>
 
 LOG_MODULE_REGISTER(app, CONFIG_APP_BLE_CGMS_LOG_LEVEL);
+
+/* Perform bonding. */
+#define SEC_PARAM_BOND 1
+/* Man In The Middle protection not required. */
+#define SEC_PARAM_MITM 0
+/* LE Secure Connections enabled. */
+#define SEC_PARAM_LESC 1
+/* Keypress notifications not enabled. */
+#define SEC_PARAM_KEYPRESS 0
+/* No I/O capabilities. */
+#define SEC_PARAM_IO_CAPABILITIES BLE_GAP_IO_CAPS_DISPLAY_YESNO
+/* Out Of Band data not available. */
+#define SEC_PARAM_OOB 0
+/* Minimum encryption key size. */
+#define SEC_PARAM_MIN_KEY_SIZE 7
+/* Maximum encryption key size. */
+#define SEC_PARAM_MAX_KEY_SIZE 16
 
 enum led_indicate {
 	LED_INDICATE_IDLE = 1,
@@ -68,6 +89,10 @@ BLE_GQ_DEF(ble_gatt_gueue);
 
 /** Handle of the current connection. */
 static uint16_t conn_handle = BLE_CONN_HANDLE_INVALID;
+/* Peer ID */
+static uint16_t peer_id;
+/* Flag for ongoing authentication request */
+static bool auth_key_request;
 
 /** Battery Level sensor simulator state. */
 static struct sensorsim_state battery_sim_state;
@@ -325,7 +350,7 @@ static uint32_t services_init(void)
 	};
 
 	struct ble_dis_config dis_config = {
-		.sec_mode = BLE_DIS_CONFIG_SEC_MODE_DEFAULT,
+		.sec_mode.device_info_char.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
 	};
 
 	nrf_err = ble_qwr_init(&ble_qwr, &qwr_config);
@@ -471,6 +496,18 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		}
 
 		break;
+	case BLE_GAP_EVT_PASSKEY_DISPLAY:
+		LOG_INF("Passkey: %.*s", BLE_GAP_PASSKEY_LEN,
+			evt->evt.gap_evt.params.passkey_display.passkey);
+		if (evt->evt.gap_evt.params.passkey_display.match_request) {
+			LOG_INF("Pairing request, press button 0 to accept or button 1 to reject.");
+			auth_key_request = true;
+		}
+		break;
+	case BLE_GAP_EVT_AUTH_KEY_REQUEST:
+		LOG_INF("Pairing request, press button 0 to accept or button 1 to reject.");
+		auth_key_request = true;
+		break;
 	case BLE_GATTC_EVT_TIMEOUT:
 		/* Disconnect on GATT Client timeout event. */
 		LOG_DBG("GATT Client Timeout.");
@@ -478,20 +515,6 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 						BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
 		if (nrf_err) {
 			LOG_ERR("Failed to disconnect GAP, nrf_error %#x", nrf_err);
-		}
-		break;
-	case BLE_GAP_EVT_AUTH_STATUS:
-		LOG_INF("Authentication status: %#x",
-		       evt->evt.gap_evt.params.auth_status.auth_status);
-		break;
-	case BLE_GAP_EVT_SEC_PARAMS_REQUEST:
-		break;
-	case BLE_GATTS_EVT_SYS_ATTR_MISSING:
-		LOG_INF("BLE_GATTS_EVT_SYS_ATTR_MISSING");
-		/* No system attributes have been stored */
-		nrf_err = sd_ble_gatts_sys_attr_set(conn_handle, NULL, 0, 0);
-		if (nrf_err) {
-			LOG_ERR("Failed to set system attributes, nrf_error %#x", nrf_err);
 		}
 		break;
 	case BLE_GATTS_EVT_TIMEOUT:
@@ -508,6 +531,23 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 
 NRF_SDH_BLE_OBSERVER(sdh_ble, on_ble_evt, NULL, USER_LOW);
 
+static void identities_set(enum pm_peer_id_list_skip skip)
+{
+	uint32_t nrf_err;
+	uint16_t peer_ids[BLE_GAP_DEVICE_IDENTITIES_MAX_COUNT];
+	uint32_t peer_id_count = BLE_GAP_DEVICE_IDENTITIES_MAX_COUNT;
+
+	nrf_err = pm_peer_id_list(peer_ids, &peer_id_count, PM_PEER_ID_INVALID, skip);
+	if (nrf_err) {
+		LOG_ERR("Failed to get peer id list, nrf_error %#x", nrf_err);
+	}
+
+	nrf_err = pm_device_identities_list_set(peer_ids, peer_id_count);
+	if (nrf_err) {
+		LOG_ERR("Failed to set peer manager identity list, nrf_error %#x", nrf_err);
+	}
+}
+
 /**
  * @brief Function for handling advertising events.
  *
@@ -517,6 +557,13 @@ NRF_SDH_BLE_OBSERVER(sdh_ble, on_ble_evt, NULL, USER_LOW);
  */
 static void ble_adv_evt_handler(struct ble_adv *adv, const struct ble_adv_evt *adv_evt)
 {
+	uint32_t nrf_err;
+	ble_gap_addr_t *peer_addr;
+	ble_gap_addr_t allow_list_addrs[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
+	ble_gap_irk_t allow_list_irks[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
+	uint32_t addr_cnt = BLE_GAP_WHITELIST_ADDR_MAX_COUNT;
+	uint32_t irk_cnt = BLE_GAP_WHITELIST_ADDR_MAX_COUNT;
+
 	switch (adv_evt->evt_type) {
 	case BLE_ADV_EVT_ERROR:
 		LOG_ERR("BLE advertising error, %#x", adv_evt->error.reason);
@@ -539,6 +586,51 @@ static void ble_adv_evt_handler(struct ble_adv *adv, const struct ble_adv_evt *a
 		break;
 	case BLE_ADV_EVT_IDLE:
 		led_indication_set(LED_INDICATE_IDLE);
+		break;
+	case BLE_ADV_EVT_ALLOW_LIST_REQUEST:
+		nrf_err = pm_allow_list_get(allow_list_addrs, &addr_cnt, allow_list_irks, &irk_cnt);
+		if (nrf_err) {
+			LOG_ERR("Failed to get allow list, nrf_error %#x", nrf_err);
+		}
+		LOG_DBG("pm_allow_list_get returns %d addr in allow list and %d irk allow list",
+				addr_cnt, irk_cnt);
+
+		/* Set the correct identities list
+		 * (no excluding peers with no Central Address Resolution).
+		 */
+		identities_set(PM_PEER_ID_LIST_SKIP_NO_IRK);
+
+		nrf_err = ble_adv_allow_list_reply(adv, allow_list_addrs, addr_cnt,
+						   allow_list_irks, irk_cnt);
+		if (nrf_err) {
+			LOG_ERR("Failed to set allow list, nrf_error %#x", nrf_err);
+		}
+		break;
+	case BLE_ADV_EVT_PEER_ADDR_REQUEST:
+		struct pm_peer_data_bonding peer_bonding_data;
+
+		/* Only Give peer address if we have a handle to the bonded peer. */
+		if (peer_id != PM_PEER_ID_INVALID) {
+			nrf_err = pm_peer_data_bonding_load(peer_id, &peer_bonding_data);
+			if (nrf_err != NRF_ERROR_NOT_FOUND) {
+				if (nrf_err) {
+					LOG_ERR("Failed to load bonding data, nrf_error %#x",
+						nrf_err);
+				}
+
+				/* Manipulate identities to exclude peers with no
+				 * Central Address Resolution.
+				 */
+				identities_set(PM_PEER_ID_LIST_SKIP_ALL);
+
+				peer_addr = &(peer_bonding_data.peer_ble_id.id_addr_info);
+				nrf_err = ble_adv_peer_addr_reply(adv, peer_addr);
+				if (nrf_err) {
+					LOG_ERR("Failed to reply peer address, nrf_error %#x",
+						nrf_err);
+				}
+			}
+		}
 		break;
 	default:
 		break;
@@ -574,6 +666,25 @@ static int ble_stack_init(void)
 	return 0;
 }
 
+static void num_comp_reply(uint16_t conn_handle, bool accept)
+{
+	uint8_t key_type;
+	uint32_t nrf_err;
+
+	if (accept) {
+		LOG_INF("Numeric Match. Conn handle: %d", conn_handle);
+		key_type = BLE_GAP_AUTH_KEY_TYPE_PASSKEY;
+	} else {
+		LOG_INF("Numeric REJECT. Conn handle: %d", conn_handle);
+		key_type = BLE_GAP_AUTH_KEY_TYPE_NONE;
+	}
+
+	nrf_err = sd_ble_gap_auth_key_reply(conn_handle, key_type, NULL);
+	if (nrf_err) {
+		LOG_ERR("Failed to reply auth request, nrf_error %#x", nrf_err);
+	}
+}
+
 /**
  * @brief Function for handling events from the BSP module.
  *
@@ -581,6 +692,26 @@ static int ble_stack_init(void)
  */
 static void button_handler(uint8_t pin, uint8_t action)
 {
+	if (auth_key_request) {
+		switch (pin) {
+		case BOARD_PIN_BTN_0:
+			if (action == BM_BUTTONS_PRESS) {
+				num_comp_reply(conn_handle, true);
+			} else {
+				auth_key_request = false;
+			}
+			break;
+		case BOARD_PIN_BTN_1:
+			if (action == BM_BUTTONS_PRESS) {
+				num_comp_reply(conn_handle, false);
+			} else {
+				auth_key_request = false;
+			}
+			break;
+		}
+		return;
+	}
+
 	if (action != BM_BUTTONS_PRESS) {
 		return;
 	}
@@ -609,6 +740,127 @@ static void button_handler(uint8_t pin, uint8_t action)
 	default:
 		break;
 	}
+}
+
+static void allow_list_set(enum pm_peer_id_list_skip skip)
+{
+	uint32_t nrf_err;
+	uint16_t peer_ids[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
+	uint32_t peer_id_count = BLE_GAP_WHITELIST_ADDR_MAX_COUNT;
+
+	nrf_err = pm_peer_id_list(peer_ids, &peer_id_count, PM_PEER_ID_INVALID, skip);
+	if (nrf_err) {
+		LOG_ERR("Failed to get peer id list, nrf_error %#x", nrf_err);
+	}
+
+	LOG_INF("Number of peers added to the allow list: %d, max %d",
+		peer_id_count, BLE_GAP_WHITELIST_ADDR_MAX_COUNT);
+
+	nrf_err = pm_allow_list_set(peer_ids, peer_id_count);
+	if (nrf_err) {
+		LOG_ERR("Failed to set allow list, nrf_error %#x", nrf_err);
+	}
+}
+
+static void delete_bonds(void)
+{
+	uint32_t nrf_err;
+
+	LOG_INF("Erasing bonds");
+
+	nrf_err = pm_peers_delete();
+	if (nrf_err) {
+		LOG_ERR("Failed to delete peers, nrf_error %#x", nrf_err);
+	}
+}
+
+static uint32_t advertising_start(bool erase_bonds)
+{
+	uint32_t nrf_err = NRF_SUCCESS;
+
+	if (erase_bonds) {
+		delete_bonds();
+	} else {
+		allow_list_set(PM_PEER_ID_LIST_SKIP_NO_ID_ADDR);
+
+		nrf_err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
+		if (nrf_err) {
+			LOG_ERR("Failed to start advertising, nrf_error %#x", nrf_err);
+		}
+	}
+
+	return nrf_err;
+}
+
+static void pm_evt_handler(struct pm_evt const *evt)
+{
+	pm_handler_on_pm_evt(evt);
+	pm_handler_disconnect_on_sec_failure(evt);
+	pm_handler_flash_clean(evt);
+
+	switch (evt->evt_id) {
+	case PM_EVT_CONN_SEC_SUCCEEDED:
+		peer_id = evt->peer_id;
+		break;
+
+	case PM_EVT_PEERS_DELETE_SUCCEEDED:
+		advertising_start(false);
+		break;
+
+	case PM_EVT_PEER_DATA_UPDATE_SUCCEEDED:
+		if (evt->params.peer_data_update_succeeded.flash_changed &&
+		    (evt->params.peer_data_update_succeeded.data_id == PM_PEER_DATA_ID_BONDING)) {
+			LOG_INF("New bond, add the peer to the allow list if possible");
+			allow_list_set(PM_PEER_ID_LIST_SKIP_NO_ID_ADDR);
+		}
+		break;
+
+	default:
+		break;
+	}
+}
+
+static uint32_t peer_manager_init(void)
+{
+	ble_gap_sec_params_t sec_param;
+	uint32_t nrf_err;
+
+	nrf_err = pm_init();
+	if (nrf_err) {
+		return nrf_err;
+	}
+
+	memset(&sec_param, 0, sizeof(ble_gap_sec_params_t));
+
+	/* Security parameters to be used for all security procedures. */
+	sec_param = (ble_gap_sec_params_t) {
+		.bond = SEC_PARAM_BOND,
+		.mitm = SEC_PARAM_MITM,
+		.lesc = SEC_PARAM_LESC,
+		.keypress = SEC_PARAM_KEYPRESS,
+		.io_caps = SEC_PARAM_IO_CAPABILITIES,
+		.oob = SEC_PARAM_OOB,
+		.min_key_size = SEC_PARAM_MIN_KEY_SIZE,
+		.max_key_size = SEC_PARAM_MAX_KEY_SIZE,
+		.kdist_own.enc = 1,
+		.kdist_own.id = 1,
+		.kdist_peer.enc = 1,
+		.kdist_peer.id = 1,
+	};
+
+	nrf_err = pm_sec_params_set(&sec_param);
+	if (nrf_err) {
+		LOG_ERR("pm_sec_params_set() failed, nrf_error %#x", nrf_err);
+		return nrf_err;
+	}
+
+	nrf_err = pm_register(pm_evt_handler);
+	if (nrf_err) {
+		LOG_ERR("pm_register() failed, nrf_error %#x", nrf_err);
+		return nrf_err;
+	}
+
+	return NRF_SUCCESS;
 }
 
 /** @brief Function for initializing the Advertising functionality. */
@@ -694,6 +946,8 @@ static int buttons_leds_init(bool *erase_bonds)
 		return err;
 	}
 
+	*erase_bonds = bm_buttons_is_pressed(BOARD_PIN_BTN_1);
+
 	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
 	nrf_gpio_cfg_output(BOARD_PIN_LED_1);
 	nrf_gpio_cfg_output(BOARD_PIN_LED_2);
@@ -712,7 +966,7 @@ int main(void)
 {
 	int err;
 	uint32_t nrf_err;
-	bool erase_bonds;
+	bool erase_bonds = false;
 
 	err = timers_init();
 	if (err) {
@@ -722,8 +976,14 @@ int main(void)
 	if (err) {
 		goto idle;
 	}
+
 	err = ble_stack_init();
 	if (err) {
+		goto idle;
+	}
+	nrf_err = peer_manager_init();
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize Peer Manager, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 	nrf_err = gap_params_init();
@@ -752,7 +1012,7 @@ int main(void)
 		goto idle;
 	}
 
-	nrf_err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
+	nrf_err = advertising_start(erase_bonds);
 	if (nrf_err) {
 		LOG_ERR("Failed to start advertising, nrf_error %#x", nrf_err);
 		goto idle;
@@ -763,6 +1023,8 @@ int main(void)
 idle:
 	/* Enter main loop. */
 	while (true) {
+		(void)nrf_ble_lesc_request_handler();
+
 		while (LOG_PROCESS()) {
 		}
 

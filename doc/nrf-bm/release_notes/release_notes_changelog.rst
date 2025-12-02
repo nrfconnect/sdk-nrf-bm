@@ -280,7 +280,13 @@ Samples
 Bluetooth samples
 -----------------
 
-Added the :ref:`ble_radio_ntf_sample` sample.
+* Added the :ref:`ble_radio_ntf_sample` sample.
+
+* Updated:
+
+   * The :ref:`ble_cgms_sample` sample to require at least encryption without MITM tection to access the CGM service characteristics.
+     This is done to conform to the CGMS specification.
+   * The :ref:`ble_cgms_sample` sample to support pairing and bonding.
 
 Peripheral samples
 ------------------
