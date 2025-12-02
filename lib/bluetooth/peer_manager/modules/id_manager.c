@@ -563,8 +563,7 @@ uint32_t im_allow_list_get(ble_gap_addr_t *addrs, uint32_t *addr_cnt, ble_gap_ir
 
 /* Copies the peers to add to the allow list into a local cache.
  * The cached list will be used by im_allow_list_get() to retrieve the active allow list.
- * For SoftDevices 3x, also loads the peers' GAP addresses and sets the allow lists using
- * sd_ble_gap_whitelist_set().
+ * Also loads the peers' GAP addresses and sets the allow lists using sd_ble_gap_whitelist_set().
  */
 uint32_t im_allow_list_set(const uint16_t *peers, uint32_t peer_cnt)
 {

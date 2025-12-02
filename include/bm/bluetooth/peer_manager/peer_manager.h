@@ -255,11 +255,6 @@ uint32_t pm_lesc_public_key_set(ble_gap_lesc_p256_pk_t *public_key);
 /**
  * @brief Set or clear the allow list.
  *
- * When using the S13x SoftDevice v3.x, this function sets or clears the allow list.
- * When using the S13x SoftDevice v2.x, this function caches a list of
- * peers that can be retrieved later by @ref pm_allow_list_get to pass to the @ref
- * lib_ble_advertising.
- *
  * To clear the current allow list, pass either NULL as @p peers or zero as @p peer_cnt.
  *
  * @param[in] peers     The peers to add to the allow list. Pass NULL to clear the current allow
@@ -303,8 +298,7 @@ uint32_t pm_allow_list_set(const uint16_t *peers, uint32_t peer_cnt);
  *
  * @retval NRF_SUCCESS                     If the allow list was successfully retrieved.
  * @retval BLE_ERROR_GAP_INVALID_BLE_ADDR  If a peer has an address that cannot be used for
- *                                         allow listing (this error can occur only
- *                                         when using the S13x SoftDevice v2.x).
+ *                                         allow listing.
  * @retval NRF_ERROR_NULL                  If a required parameter is NULL.
  * @retval NRF_ERROR_NO_MEM                If the provided buffers are too small.
  * @retval NRF_ERROR_NOT_FOUND             If the data for any of the cached allow listed peers
