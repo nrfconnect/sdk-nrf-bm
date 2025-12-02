@@ -16,10 +16,8 @@
 #define CNT_ID        2
 #define LONG_DATA_ID  3
 
-#if defined(CONFIG_SOFTDEVICE)
 #include <bm/softdevice_handler/nrf_sdh.h>
 #include <nrf_soc.h>
-#endif
 
 #include <bm/fs/bm_zms.h>
 
@@ -67,14 +65,12 @@ void bm_zms_sample_handler(struct bm_zms_evt const *evt)
 static void wait_for_write(void)
 {
 	while (!write_notif) {
-#if defined(CONFIG_SOFTDEVICE)
 		/* Wait for an event. */
 		__WFE();
 
 		/* Clear Event Register */
 		__SEV();
 		__WFE();
-#endif
 	}
 	write_notif = false;
 }
@@ -82,14 +78,12 @@ static void wait_for_write(void)
 static void wait_for_mount(void)
 {
 	while (!mount_notif) {
-#if defined(CONFIG_SOFTDEVICE)
 		/* Wait for an event. */
 		__WFE();
 
 		/* Clear Event Register */
 		__SEV();
 		__WFE();
-#endif
 	}
 	mount_notif = false;
 }
@@ -97,14 +91,12 @@ static void wait_for_mount(void)
 static void wait_for_clear(void)
 {
 	while (!clear_notif) {
-#if defined(CONFIG_SOFTDEVICE)
 		/* Wait for an event. */
 		__WFE();
 
 		/* Clear Event Register */
 		__SEV();
 		__WFE();
-#endif
 	}
 	clear_notif = false;
 }
@@ -174,13 +166,12 @@ int main(void)
 
 	LOG_INF("BM_ZMS sample started");
 
-#if defined(CONFIG_SOFTDEVICE)
 	rc = nrf_sdh_enable_request();
 	if (rc) {
 		LOG_ERR("Failed to enable SoftDevice, rc %u", rc);
 		goto idle;
 	}
-#endif
+
 	for (int n = 0; n < sizeof(longarray); n++) {
 		longarray[n] = n;
 	}
@@ -366,14 +357,13 @@ idle:
 		while (LOG_PROCESS()) {
 			/* Empty. */
 		}
-#if defined(CONFIG_SOFTDEVICE)
+
 		/* Wait for an event. */
 		__WFE();
 
 		/* Clear Event Register */
 		__SEV();
 		__WFE();
-#endif
 	}
 
 	return 0;

@@ -10,10 +10,8 @@
 #include <zephyr/logging/log_ctrl.h>
 #include <zephyr/sys/util.h>
 
-#if defined(CONFIG_SOFTDEVICE)
 #include <bm/softdevice_handler/nrf_sdh.h>
 #include <nrf_soc.h>
-#endif
 
 #include <bm/storage/bm_storage.h>
 
@@ -232,13 +230,11 @@ int main(void)
 
 	LOG_INF("Storage sample started");
 
-#if defined(CONFIG_SOFTDEVICE)
 	err = nrf_sdh_enable_request();
 	if (err) {
 		LOG_ERR("Failed to enable SoftDevice, err %d", err);
 		goto idle;
 	}
-#endif
 
 	err = storage_inits();
 	if (err) {
@@ -264,17 +260,11 @@ int main(void)
 		goto idle;
 	}
 
-#if defined(CONFIG_SOFTDEVICE)
-	/* When targeting SoftDevice, the storage backend will behave synchronously or
-	 * asynchronously if the SoftDevice is respectively disabled or enabled, at runtime.
-	 * Disable the SoftDevice here to showcase this dynamic functionality.
-	 */
 	err = nrf_sdh_disable_request();
 	if (err) {
 		LOG_ERR("Failed to disable SoftDevice, err %d", err);
 		goto idle;
 	}
-#endif
 
 	err = storage_writes();
 	if (err) {
