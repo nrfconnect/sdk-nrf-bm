@@ -41,6 +41,10 @@ int bm_storage_init(struct bm_storage *storage, const struct bm_storage_config *
 		return -EFAULT;
 	}
 
+	if (bm_storage_info.program_unit == 0) {
+		return -EIO;
+	}
+
 	storage->nvm_info = &bm_storage_info;
 	storage->evt_handler = config->evt_handler;
 	storage->start_addr = config->start_addr;
@@ -131,6 +135,14 @@ int bm_storage_erase(const struct bm_storage *storage, uint32_t addr, uint32_t l
 
 	if (!storage->initialized || !storage->nvm_info) {
 		return -EPERM;
+	}
+
+	if (storage->nvm_info->no_explicit_erase) {
+		return -ENOTSUP;
+	}
+
+	if (storage->nvm_info->erase_unit == 0) {
+		return -EIO;
 	}
 
 	if (len == 0 || len % storage->nvm_info->erase_unit != 0) {

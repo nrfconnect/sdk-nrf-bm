@@ -224,6 +224,8 @@ Libraries
     * To use errno instead of nrf_errors.
     * The :c:func:`bm_storage_init` function to expect an additional input parameter of type pointer to struct :c:struct:`bm_storage_config` for configuring the storage instance that is being initialized.
 
+  * Fixed an issue where the :c:func:`bm_storage_erase` function caused a division-by-0 fault using the SD or RRAM backend.
+
 Bluetooth LE Services
 ---------------------
 

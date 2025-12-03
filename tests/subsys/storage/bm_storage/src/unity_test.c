@@ -53,7 +53,7 @@ bool bm_storage_backend_is_busy(const struct bm_storage *storage)
 const struct bm_storage_info bm_storage_info = {
 	.erase_unit = BLOCK_SIZE,
 	.program_unit = BLOCK_SIZE,
-	.no_explicit_erase = true
+	.no_explicit_erase = false
 };
 
 static void bm_storage_evt_handler(struct bm_storage_evt *evt)

@@ -247,6 +247,7 @@ int bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void
  * @retval -EINVAL If @p len is zero or not a multiple of @ref bm_storage_info.erase_unit.
  * @retval -EBUSY If the implementation-specific backend is busy with an ongoing operation.
  * @retval -ENOTSUP If the implementation-specific backend does not implement this function.
+ * @retval -EIO If an implementation-specific internal error occurred.
  */
 int bm_storage_erase(const struct bm_storage *storage, uint32_t addr, uint32_t len, void *ctx);
 
