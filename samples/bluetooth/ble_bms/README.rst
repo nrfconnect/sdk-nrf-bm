@@ -70,8 +70,14 @@ Testing
 =======
 
 1. Compile and program the application.
+#. Connect to the kit that runs this sample with a terminal emulator (for example, the `Serial Terminal app`_).
+#. Reset the kit.
 #. In the Serial Terminal, observe that the ``BLE BMS sample started`` message is printed.
 #. Observe that the ``Advertising as nRF_BM_BMS`` message is printed.
+#. Open `nRF Connect for Desktop`_.
+#. Open the `Bluetooth Low Energy app`_ and select the connected device that is used for communication.
+#. Connect to the device from the app.
+   The device is advertising as ``nRF_BM_BMS``.
 #. Bind with the device:
 
    a. Click the :guilabel:`Settings` button for the device in the app.
@@ -93,9 +99,15 @@ Testing
 #. Write ``03`` to the Bond Management Service Control Point Characteristic.
    ``03`` is the command to delete the current bond.
 #. Disconnect the device to trigger the bond deletion procedures.
+#. Delete the bond information of the central device in the app:
+
+   a. Click the :guilabel:`Settings` button for the device in the app.
+   #. Click :guilabel:`Delete bond information`.
+
 #. Reconnect the devices and verify that the connection security is not updated.
 #. Bond both devices again.
 #. Write ``06 41 42 43 44`` to the Bond Management Service Control Point Characteristic.
    ``06`` is the command to delete all bonds on the server, followed by the authorization code ``ABCD``.
 #. Disconnect the device to trigger the bond deletion procedures.
+#. Delete the bond information of the central device again.
 #. Reconnect the devices again and verify that the connection security is not updated.
