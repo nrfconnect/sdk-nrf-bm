@@ -67,24 +67,9 @@ The sample supports the following development kits:
 Overview
 ********
 
-When the application starts, three timers are started.
-These timers control the generation of various parts of the Heart Rate Measurement characteristic value:
-
-* Heart Rate
-* RR Interval
-* Sensor Contact Detected
-
-A timer for generating battery measurements is also started.
-
-The following sensor measurements are simulated:
-
-* Heart Rate
-* RR Interval
-* Sensor Contact
-* Battery Level
-
-When the notification of Heart Rate Measurement characteristic is enabled, the Heart Rate Measurement, containing the current value for all the components of the Heart Rate Measurement characteristic, is notified each time the Heart Rate measurement timer expires.
-When the notification of Battery Level characteristic is enabled, the Battery Level is notified each time the Battery Level measurement timer expires.
+This sample scans for devices that advertise with the :ref:`lib_ble_service_hrs` UUID (0x180D) and initiates a connection when a device is found.
+When a device is connected, the sample starts the service discovery procedure.
+If this succeeds, the sample subscribes to the Heart Rate Measurement characteristic to receive heart rate notifications.
 
 Programming the S115 SoftDevice
 *******************************
@@ -107,16 +92,13 @@ This sample can be found under :file:`samples/bluetooth/ble_hrs/` in the |BMshor
 Testing
 =======
 
-You can test this sample using `nRF Connect for Desktop`_ with the `Bluetooth Low Energy app`_ and the `Serial Terminal app`_.
-Make sure that these are installed before starting the testing procedure.
+This sample requires two devices to test, one running this sample and another one running the :ref:`ble_hrs_sample` sample.
+
+Complete the following steps to test the sample:
 
 1. Compile and program the application.
-#. In the Serial Terminal, observe that the ``BLE HRS sample started`` message is printed.
-#. Observe that the ``Advertising as nRF_BM_HRS`` message is printed.
-#. In nRF Connect for Desktop, scan for advertising devices.
-   Your device should be advertising as ``nRF_BM_HRS``.
-   If the device is not advertising, you might need to use the :guilabel:`Reset Board` option in |VSC|.
-#. Click :guilabel:`Connect` to connect your device.
-   The terminal output in |VSC| indicates ``Peer connected``.
-#. Observe that the services are shown in the connected device and you can start receiving values for the Heart Rate and the Battery Service when you click the :guilabel:`Play` button.
-   Heart Rate notifications are received every second, and Battery Level notifications every two seconds.
+#. In the Serial Terminal, observe that the ``BLE HRS Central sample started`` message is printed.
+#. Program the other development kit with the :ref:`ble_hrs_sample` sample and reset it.
+#. Observe that the ``Scan filter match`` message is printed, followed by ``Connecting to target`` and ``Connected``.
+#. Observe that the ``Heart rate service discovered.`` message is printed.
+#. Observe that the device starts receiving heart rate measurement notifications.
