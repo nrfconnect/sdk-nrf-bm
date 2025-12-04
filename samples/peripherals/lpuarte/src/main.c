@@ -7,6 +7,7 @@
 #include <nrfx_uarte.h>
 #include <bm/drivers/bm_lpuarte.h>
 #include <bm/bm_timer.h>
+#include <bm/softdevice_handler/nrf_sdh.h>
 
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
@@ -136,6 +137,15 @@ int main(void)
 
 	LOG_INF("LPUARTE sample started");
 	LOG_INF("Disable console and logging for minimal power consumption");
+
+	/* Enable the SoftDevice to be able to request the HFCLK for LPUARTE. */
+	err = nrf_sdh_enable_request();
+	if (err) {
+		LOG_ERR("Failed to enable SoftDevice, err %d", err);
+		goto idle;
+	}
+
+	LOG_INF("SoftDevice enabled");
 
 	err = lpuarte_init();
 	if (err) {
