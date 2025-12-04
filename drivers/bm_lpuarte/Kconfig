@@ -13,6 +13,16 @@ config BM_SW_LPUARTE
 
 if BM_SW_LPUARTE
 
+config BM_SW_LPUARTE_HFXO
+	bool "Turn on HFXO for RX and TX"
+	default y
+	depends on SOFTDEVICE
+	help
+	  According to the UART specification high frequency RC oscillator is
+	  not accurate enough. However, in normal conditions and accurate clock
+	  on the transmitter side it may be accepted to disable it. Turning on
+	  HFXO prolongs receiver activation for up to 3 milliseconds.
+
 module = BM_SW_LPUARTE
 module-str = Low Power UARTE
 source "subsys/logging/Kconfig.template.log_config"
