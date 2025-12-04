@@ -97,22 +97,22 @@ endobj
 endobj
 19 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 56 0 R /XYZ 57.02362 499.0236 0 ] /Rect [ 77.02362 627.6236 117.6451 637.8236 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 56 0 R /XYZ 57.02362 189.0236 0 ] /Rect [ 77.02362 627.6236 117.6451 637.8236 ] /Subtype /Link /Type /Annot
 >>
 endobj
 20 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 56 0 R /XYZ 57.02362 499.0236 0 ] /Rect [ 533.526 628.2611 538.252 638.4611 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 56 0 R /XYZ 57.02362 189.0236 0 ] /Rect [ 533.526 628.2611 538.252 638.4611 ] /Subtype /Link /Type /Annot
 >>
 endobj
 21 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 56 0 R /XYZ 57.02362 175.0236 0 ] /Rect [ 77.02362 611.4236 129.9361 621.6236 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 57 0 R /XYZ 57.02362 549.0236 0 ] /Rect [ 77.02362 611.4236 129.9361 621.6236 ] /Subtype /Link /Type /Annot
 >>
 endobj
 22 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 56 0 R /XYZ 57.02362 175.0236 0 ] /Rect [ 533.526 612.0611 538.252 622.2611 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 57 0 R /XYZ 57.02362 549.0236 0 ] /Rect [ 533.526 612.0611 538.252 622.2611 ] /Subtype /Link /Type /Annot
 >>
 endobj
 23 0 obj
@@ -401,7 +401,7 @@ endobj
 endobj
 67 0 obj
 <<
-/Author () /CreationDate (D:20251120101653-01'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20251120101653-01'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
+/Author () /CreationDate (D:20251204092735-01'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20251204092735-01'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
   /Subject (\(unspecified\)) /Title (s145 release notes) /Trapped /False
 >>
 endobj
@@ -444,12 +444,12 @@ endobj
 endobj
 75 0 obj
 <<
-/Dest [ 56 0 R /XYZ 57.02362 499.0236 0 ] /Next 76 0 R /Parent 71 0 R /Prev 74 0 R /Title (Limitations)
+/Dest [ 56 0 R /XYZ 57.02362 189.0236 0 ] /Next 76 0 R /Parent 71 0 R /Prev 74 0 R /Title (Limitations)
 >>
 endobj
 76 0 obj
 <<
-/Dest [ 56 0 R /XYZ 57.02362 175.0236 0 ] /Parent 71 0 R /Prev 75 0 R /Title (Known Issues)
+/Dest [ 57 0 R /XYZ 57.02362 549.0236 0 ] /Parent 71 0 R /Prev 75 0 R /Title (Known Issues)
 >>
 endobj
 77 0 obj
@@ -726,7 +726,7 @@ q
 1 0 0 1 409.2283 246 cm
 q
 0 .4 .6 rg
-BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (4) Tj T* -67.274 0 Td ET
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (5) Tj T* -67.274 0 Td ET
 Q
 Q
 q
@@ -942,7 +942,7 @@ endstream
 endobj
 95 0 obj
 <<
-/Length 9112
+/Length 9326
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
@@ -1292,7 +1292,7 @@ q
 1 0 0 1 23 -3 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The Firmware ID of this SoftDevice is 0x3011.) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The Firmware ID of this SoftDevice is 0x301F.) Tj T* ET
 Q
 Q
 q
@@ -1321,32 +1321,173 @@ q
 1 0 0 1 57.02362 320.0236 cm
 Q
 q
-1 0 0 1 57.02362 126.0236 cm
+1 0 0 1 57.02362 80.69291 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
 q
-1 0 0 1 6 179 cm
+1 0 0 1 6 224.3307 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
 Q
 Q
 q
-1 0 0 1 23 179 cm
+1 0 0 1 23 224.3307 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (SoftDevice) Tj T* ET
 Q
 Q
 q
-1 0 0 1 23 173 cm
+1 0 0 1 23 218.3307 cm
 Q
 q
-1 0 0 1 23 173 cm
+1 0 0 1 23 218.3307 cm
 Q
 q
-1 0 0 1 23 91 cm
+1 0 0 1 23 90.33071 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 113 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 113 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Scheduler improvements \(DRGN-24450\):) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 107 cm
+Q
+q
+1 0 0 1 23 107 cm
+Q
+q
+1 0 0 1 23 83 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (The scheduler can now manage events that are scheduled less than 100 microseconds) Tj T* (apart.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 77 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 61 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 61 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Updated Radio Timeslot implementation:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 55 cm
+Q
+q
+1 0 0 1 23 55 cm
+Q
+q
+1 0 0 1 23 19 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F1 10 Tf 0 0 0 rg (The events ) Tj /F5 10 Tf (NRF_EVT_RADIO_BLOCKED) Tj /F1 10 Tf ( and ) Tj /F5 10 Tf (NRF_EVT_RADIO_CANCELED) Tj /F1 10 Tf ( are now) Tj T* (sent immediately after the specified timeout or start time, instead of being sent early if) Tj T* (the scheduler predicted the timeslot could not be scheduled.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 13 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Timeslot events can now run for longer than 128 seconds.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 84.33071 cm
+Q
+q
+1 0 0 1 23 2.330709 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1453,8 +1594,33 @@ Q
 Q
 Q
 q
-1 0 0 1 23 85 cm
+1 0 0 1 23 -3 cm
 Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F3 10 Tf 0 0 0 rg (Page 3) Tj T* -230.7692 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+96 0 obj
+<<
+/Length 9465
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 677.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+BT 1 0 0 1 6 75 Tm  T* ET
 q
 1 0 0 1 23 61 cm
 q
@@ -1535,60 +1701,35 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 120.0236 cm
+1 0 0 1 57.02362 671.0236 cm
 Q
 q
-1 0 0 1 57.02362 102.0236 cm
+1 0 0 1 57.02362 205.0236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
 q
-1 0 0 1 6 3 cm
+1 0 0 1 6 451 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
 Q
 Q
 q
-1 0 0 1 23 3 cm
+1 0 0 1 23 451 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GAP) Tj T* ET
 Q
 Q
 q
-1 0 0 1 23 -3 cm
+1 0 0 1 23 445 cm
 Q
 q
-1 0 0 1 23 -3 cm
+1 0 0 1 23 445 cm
 Q
 q
-Q
-Q
-Q
-q
-1 0 0 1 51.02362 42.51969 cm
-q
-BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F3 10 Tf 0 0 0 rg (Page 3) Tj T* -230.7692 0 Td ET
-Q
-Q
- 
-endstream
-endobj
-96 0 obj
-<<
-/Length 8442
->>
-stream
-1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
-q
-1 0 0 1 57.02362 515.0236 cm
-q
-0 0 0 rg
-BT /F1 10 Tf 12 TL ET
-BT 1 0 0 1 6 237 Tm  T* ET
-q
-1 0 0 1 23 223 cm
+1 0 0 1 23 421 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1610,10 +1751,10 @@ Q
 Q
 Q
 q
-1 0 0 1 23 217 cm
+1 0 0 1 23 415 cm
 Q
 q
-1 0 0 1 23 169 cm
+1 0 0 1 23 367 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1635,10 +1776,10 @@ Q
 Q
 Q
 q
-1 0 0 1 23 163 cm
+1 0 0 1 23 361 cm
 Q
 q
-1 0 0 1 23 127 cm
+1 0 0 1 23 325 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1660,10 +1801,10 @@ Q
 Q
 Q
 q
-1 0 0 1 23 121 cm
+1 0 0 1 23 319 cm
 Q
 q
-1 0 0 1 23 97 cm
+1 0 0 1 23 295 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1686,10 +1827,10 @@ Q
 Q
 Q
 q
-1 0 0 1 23 91 cm
+1 0 0 1 23 289 cm
 Q
 q
-1 0 0 1 23 67 cm
+1 0 0 1 23 265 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1712,10 +1853,10 @@ Q
 Q
 Q
 q
-1 0 0 1 23 61 cm
+1 0 0 1 23 259 cm
 Q
 q
-1 0 0 1 23 37 cm
+1 0 0 1 23 235 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1730,6 +1871,134 @@ q
 1 0 0 1 23 -3 cm
 q
 BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (Removed the ) Tj /F5 10 Tf (p_id_info) Tj /F1 10 Tf ( parameter from ) Tj /F5 10 Tf (sd_ble_gap_sec_info_reply) Tj /F1 10 Tf (. It was unused by) Tj T* (the SoftDevice \(DRGN-26752\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 229 cm
+Q
+q
+1 0 0 1 23 181 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 33 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 38 Tm 12 TL /F1 10 Tf 0 0 0 rg (The Connection Event Trigger API has changed \(DRGN-26336\).) Tj T* /F5 10 Tf (sd_ble_gap_conn_evt_trigger_start) Tj /F1 10 Tf ( and ) Tj /F5 10 Tf (sd_ble_gap_conn_evt_trigger_stop) Tj /F1 10 Tf  T* (have been replaced with a single function ) Tj /F5 10 Tf (sd_ble_gap_evt_trigger_set) Tj /F1 10 Tf (. Other roles than) Tj T* (connections can now trigger a task, see ) Tj /F5 10 Tf (BLE_GAP_LL_ROLES) Tj /F1 10 Tf (.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 175 cm
+Q
+q
+1 0 0 1 23 163 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The SoftDevice now supports advertising intervals longer than 10 seconds \(DRGN-9988\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 157 cm
+Q
+q
+1 0 0 1 23 133 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (In compliance with Bluetooth Core Specification v6.2, LE Legacy Pairing with Passkey Entry no) Tj T* (longer provides Authenticated man-in-the-middle \(MITM\) protection \(DRGN-26635\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 127 cm
+Q
+q
+1 0 0 1 23 91 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 26 Tm /F1 10 Tf 12 TL (In compliance with Bluetooth Core Specification v6.2, the SoftDevice will reject LE Legacy Pairing) Tj T* (attempts if it receives an LP_CONFIRM_R value equal to the LP_CONFIRM_I value it sent) Tj T* (\(DRGN-26776\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 85 cm
+Q
+q
+1 0 0 1 23 37 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 33 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 38 Tm 12 TL /F1 10 Tf 0 0 0 rg (Added ) Tj /F5 10 Tf (sec_status) Tj /F1 10 Tf ( parameter to ) Tj /F5 10 Tf (sd_ble_gap_lesc_dhkey_reply) Tj /F1 10 Tf ( so application can reject) Tj T* (pairing earlier if peer's public key validation failed. LE Secure Connections pairing now will not) Tj T* (proceed to authentication stage 1 until application calls ) Tj /F5 10 Tf (sd_ble_gap_lesc_dhkey_reply) Tj /F1 10 Tf  T* (\(DRGN-26190\).) Tj T* ET
 Q
 Q
 q
@@ -1796,47 +2065,47 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 511.0236 cm
+1 0 0 1 57.02362 201.0236 cm
 Q
 q
-1 0 0 1 57.02362 481.0236 cm
+1 0 0 1 57.02362 171.0236 cm
 q
 BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Limitations) Tj T* ET
 Q
 Q
 q
-1 0 0 1 57.02362 469.0236 cm
+1 0 0 1 57.02362 159.0236 cm
 Q
 q
-1 0 0 1 57.02362 469.0236 cm
+1 0 0 1 57.02362 159.0236 cm
 Q
 q
-1 0 0 1 57.02362 243.0236 cm
+1 0 0 1 57.02362 86.02362 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
 q
-1 0 0 1 6 211 cm
+1 0 0 1 6 58 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
 Q
 Q
 q
-1 0 0 1 23 211 cm
+1 0 0 1 23 58 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (SoftDevice) Tj T* ET
 Q
 Q
 q
-1 0 0 1 23 205 cm
+1 0 0 1 23 52 cm
 Q
 q
-1 0 0 1 23 205 cm
+1 0 0 1 23 52 cm
 Q
 q
-1 0 0 1 23 181 cm
+1 0 0 1 23 28 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1859,10 +2128,10 @@ Q
 Q
 Q
 q
-1 0 0 1 23 175 cm
+1 0 0 1 23 22 cm
 Q
 q
-1 0 0 1 23 151 cm
+1 0 0 1 23 -2 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -1885,8 +2154,33 @@ Q
 Q
 Q
 q
-1 0 0 1 23 145 cm
+1 0 0 1 23 -3 cm
 Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F3 10 Tf 0 0 0 rg (Page 4) Tj T* -230.7692 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+97 0 obj
+<<
+/Length 4183
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 617.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+BT 1 0 0 1 6 135 Tm  T* ET
 q
 1 0 0 1 23 109 cm
 q
@@ -1968,10 +2262,10 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 237.0236 cm
+1 0 0 1 57.02362 611.0236 cm
 Q
 q
-1 0 0 1 57.02362 191.0236 cm
+1 0 0 1 57.02362 565.0236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -2026,22 +2320,22 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 187.0236 cm
+1 0 0 1 57.02362 561.0236 cm
 Q
 q
-1 0 0 1 57.02362 157.0236 cm
+1 0 0 1 57.02362 531.0236 cm
 q
 BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Known Issues) Tj T* ET
 Q
 Q
 q
-1 0 0 1 57.02362 145.0236 cm
+1 0 0 1 57.02362 519.0236 cm
 Q
 q
-1 0 0 1 57.02362 145.0236 cm
+1 0 0 1 57.02362 519.0236 cm
 Q
 q
-1 0 0 1 57.02362 133.0236 cm
+1 0 0 1 57.02362 507.0236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -2064,58 +2358,33 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 127.0236 cm
+1 0 0 1 57.02362 501.0236 cm
 Q
 q
-1 0 0 1 57.02362 109.0236 cm
+1 0 0 1 57.02362 443.0236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
 q
-1 0 0 1 6 3 cm
+1 0 0 1 6 43 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
 Q
 Q
 q
-1 0 0 1 23 3 cm
+1 0 0 1 23 43 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (LL) Tj T* ET
 Q
 Q
 q
-1 0 0 1 23 -3 cm
+1 0 0 1 23 37 cm
 Q
 q
-1 0 0 1 23 -3 cm
+1 0 0 1 23 37 cm
 Q
-q
-Q
-Q
-Q
-q
-1 0 0 1 51.02362 42.51969 cm
-q
-BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F3 10 Tf 0 0 0 rg (Page 4) Tj T* -230.7692 0 Td ET
-Q
-Q
- 
-endstream
-endobj
-97 0 obj
-<<
-/Length 859
->>
-stream
-1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
-q
-1 0 0 1 57.02362 725.0236 cm
-q
-0 0 0 rg
-BT /F1 10 Tf 12 TL ET
-BT 1 0 0 1 6 27 Tm  T* ET
 q
 1 0 0 1 23 1 cm
 q
@@ -2146,10 +2415,10 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 721.0236 cm
+1 0 0 1 57.02362 439.0236 cm
 Q
 q
-1 0 0 1 57.02362 721.0236 cm
+1 0 0 1 57.02362 439.0236 cm
 Q
 q
 1 0 0 1 51.02362 42.51969 cm
@@ -5901,34 +6170,34 @@ xref
 0000015079 00000 n 
 0000016939 00000 n 
 0000022589 00000 n 
-0000031753 00000 n 
-0000040247 00000 n 
-0000041157 00000 n 
-0000049893 00000 n 
-0000058617 00000 n 
-0000067277 00000 n 
-0000076105 00000 n 
-0000077017 00000 n 
-0000085963 00000 n 
-0000095403 00000 n 
-0000098381 00000 n 
-0000098553 00000 n 
-0000098588 00000 n 
-0000098623 00000 n 
-0000098658 00000 n 
-0000098693 00000 n 
-0000098728 00000 n 
-0000098763 00000 n 
-0000098798 00000 n 
-0000098833 00000 n 
-0000098868 00000 n 
-0000098904 00000 n 
-0000098940 00000 n 
-0000098976 00000 n 
+0000031967 00000 n 
+0000041484 00000 n 
+0000045719 00000 n 
+0000054455 00000 n 
+0000063179 00000 n 
+0000071839 00000 n 
+0000080667 00000 n 
+0000081579 00000 n 
+0000090525 00000 n 
+0000099965 00000 n 
+0000102943 00000 n 
+0000103115 00000 n 
+0000103150 00000 n 
+0000103185 00000 n 
+0000103220 00000 n 
+0000103255 00000 n 
+0000103290 00000 n 
+0000103325 00000 n 
+0000103360 00000 n 
+0000103395 00000 n 
+0000103430 00000 n 
+0000103466 00000 n 
+0000103502 00000 n 
+0000103538 00000 n 
 trailer
 <<
 /ID 
-[<942b0543e8075f9566342144e47ad335><942b0543e8075f9566342144e47ad335>]
+[<acf3764b72a9dd084188e5cd3db12c9e><acf3764b72a9dd084188e5cd3db12c9e>]
 % ReportLab generated PDF document -- digest (http://www.reportlab.com)
 
 /Info 67 0 R
@@ -5936,5 +6205,5 @@ trailer
 /Size 120
 >>
 startxref
-99012
+103574
 %%EOF
