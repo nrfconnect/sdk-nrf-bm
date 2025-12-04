@@ -113,7 +113,7 @@ enum BLE_GAP_EVTS
   BLE_GAP_EVT_PASSKEY_DISPLAY             = BLE_GAP_EVT_BASE + 5,   /**< Request to display a passkey to the user.       \n In LESC Numeric Comparison, reply with @ref sd_ble_gap_auth_key_reply. \n See @ref ble_gap_evt_passkey_display_t. */
   BLE_GAP_EVT_KEY_PRESSED                 = BLE_GAP_EVT_BASE + 6,   /**< Notification of a keypress on the remote device.\n See @ref ble_gap_evt_key_pressed_t           */
   BLE_GAP_EVT_AUTH_KEY_REQUEST            = BLE_GAP_EVT_BASE + 7,   /**< Request to provide an authentication key.       \n Reply with @ref sd_ble_gap_auth_key_reply.    \n See @ref ble_gap_evt_auth_key_request_t.   */
-  BLE_GAP_EVT_LESC_DHKEY_REQUEST          = BLE_GAP_EVT_BASE + 8,   /**< Request to calculate an LE Secure Connections DHKey. \n Reply with @ref sd_ble_gap_lesc_dhkey_reply.  \n See @ref ble_gap_evt_lesc_dhkey_request_t */
+  BLE_GAP_EVT_LESC_DHKEY_REQUEST          = BLE_GAP_EVT_BASE + 8,   /**< Request to validate peer PK and calculate an LE Secure Connections DHKey. \n Reply with @ref sd_ble_gap_lesc_dhkey_reply.  \n See @ref ble_gap_evt_lesc_dhkey_request_t */
   BLE_GAP_EVT_AUTH_STATUS                 = BLE_GAP_EVT_BASE + 9,   /**< Authentication procedure completed with status. \n See @ref ble_gap_evt_auth_status_t.          */
   BLE_GAP_EVT_CONN_SEC_UPDATE             = BLE_GAP_EVT_BASE + 10,  /**< Connection security updated.                    \n See @ref ble_gap_evt_conn_sec_update_t.      */
   BLE_GAP_EVT_TIMEOUT                     = BLE_GAP_EVT_BASE + 11,  /**< Timeout expired.                                \n See @ref ble_gap_evt_timeout_t.              */
@@ -300,7 +300,7 @@ enum BLE_GAP_TX_POWER_ROLES
 /**@defgroup BLE_GAP_ADV_INTERVALS GAP Advertising interval max and min
  * @{ */
 #define BLE_GAP_ADV_INTERVAL_MIN        0x000020 /**< Minimum Advertising interval in 625 us units, i.e. 20 ms. */
-#define BLE_GAP_ADV_INTERVAL_MAX        0x004000 /**< Maximum Advertising interval in 625 us units, i.e. 10.24 s. */
+#define BLE_GAP_ADV_INTERVAL_MAX        0xFFFFFF /**< Maximum Advertising interval in 625 us units, i.e. 10 485.759 375 s. */
  /**@}  */
 
 
@@ -381,26 +381,24 @@ enum BLE_GAP_TX_POWER_ROLES
 /**@defgroup BLE_GAP_SEC_STATUS GAP Security status
  * @{ */
 #define BLE_GAP_SEC_STATUS_SUCCESS                0x00  /**< Procedure completed with success. */
-#define BLE_GAP_SEC_STATUS_TIMEOUT                0x01  /**< Procedure timed out. */
-#define BLE_GAP_SEC_STATUS_PDU_INVALID            0x02  /**< Invalid PDU received. */
-#define BLE_GAP_SEC_STATUS_RFU_RANGE1_BEGIN       0x03  /**< Reserved for Future Use range #1 begin. */
-#define BLE_GAP_SEC_STATUS_RFU_RANGE1_END         0x80  /**< Reserved for Future Use range #1 end. */
-#define BLE_GAP_SEC_STATUS_PASSKEY_ENTRY_FAILED   0x81  /**< Passkey entry failed (user canceled or other). */
-#define BLE_GAP_SEC_STATUS_OOB_NOT_AVAILABLE      0x82  /**< Out of Band Key not available. */
-#define BLE_GAP_SEC_STATUS_AUTH_REQ               0x83  /**< Authentication requirements not met. */
-#define BLE_GAP_SEC_STATUS_CONFIRM_VALUE          0x84  /**< Confirm value failed. */
-#define BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP       0x85  /**< Pairing not supported.  */
-#define BLE_GAP_SEC_STATUS_ENC_KEY_SIZE           0x86  /**< Encryption key size. */
-#define BLE_GAP_SEC_STATUS_SMP_CMD_UNSUPPORTED    0x87  /**< Unsupported SMP command. */
-#define BLE_GAP_SEC_STATUS_UNSPECIFIED            0x88  /**< Unspecified reason. */
-#define BLE_GAP_SEC_STATUS_REPEATED_ATTEMPTS      0x89  /**< Too little time elapsed since last attempt. */
-#define BLE_GAP_SEC_STATUS_INVALID_PARAMS         0x8A  /**< Invalid parameters. */
-#define BLE_GAP_SEC_STATUS_DHKEY_FAILURE          0x8B  /**< DHKey check failure. */
-#define BLE_GAP_SEC_STATUS_NUM_COMP_FAILURE       0x8C  /**< Numeric Comparison failure. */
-#define BLE_GAP_SEC_STATUS_BR_EDR_IN_PROG         0x8D  /**< BR/EDR pairing in progress. */
-#define BLE_GAP_SEC_STATUS_X_TRANS_KEY_DISALLOWED 0x8E  /**< BR/EDR Link Key cannot be used for LE keys. */
-#define BLE_GAP_SEC_STATUS_RFU_RANGE2_BEGIN       0x8F  /**< Reserved for Future Use range #2 begin. */
-#define BLE_GAP_SEC_STATUS_RFU_RANGE2_END         0xFF  /**< Reserved for Future Use range #2 end. */
+#define BLE_GAP_SEC_STATUS_PASSKEY_ENTRY_FAILED   0x01  /**< Passkey entry failed (user canceled or other). */
+#define BLE_GAP_SEC_STATUS_OOB_NOT_AVAILABLE      0x02  /**< Out of Band Key not available. */
+#define BLE_GAP_SEC_STATUS_AUTH_REQ               0x03  /**< Authentication requirements not met. */
+#define BLE_GAP_SEC_STATUS_CONFIRM_VALUE          0x04  /**< Confirm value failed. */
+#define BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP       0x05  /**< Pairing not supported.  */
+#define BLE_GAP_SEC_STATUS_ENC_KEY_SIZE           0x06  /**< Encryption key size. */
+#define BLE_GAP_SEC_STATUS_SMP_CMD_UNSUPPORTED    0x07  /**< Unsupported SMP command. */
+#define BLE_GAP_SEC_STATUS_UNSPECIFIED            0x08  /**< Unspecified reason. */
+#define BLE_GAP_SEC_STATUS_REPEATED_ATTEMPTS      0x09  /**< Too little time elapsed since last attempt. */
+#define BLE_GAP_SEC_STATUS_INVALID_PARAMS         0x0A  /**< Invalid parameters. */
+#define BLE_GAP_SEC_STATUS_DHKEY_FAILURE          0x0B  /**< DHKey check failure. */
+#define BLE_GAP_SEC_STATUS_NUM_COMP_FAILURE       0x0C  /**< Numeric Comparison failure. */
+#define BLE_GAP_SEC_STATUS_BR_EDR_IN_PROG         0x0D  /**< BR/EDR pairing in progress. */
+#define BLE_GAP_SEC_STATUS_X_TRANS_KEY_DISALLOWED 0x0E  /**< BR/EDR Link Key cannot be used for LE keys. */
+#define BLE_GAP_SEC_STATUS_KEY_REJECTED           0x0F  /**< Device chose not to accept a distributed key. */
+#define BLE_GAP_SEC_STATUS_BUSY                   0x10  /**< Device is not ready to perform a pairing procedure. */
+#define BLE_GAP_SEC_STATUS_TIMEOUT                0x81  /**< Procedure timed out. */
+#define BLE_GAP_SEC_STATUS_PDU_INVALID            0x82  /**< Invalid PDU received. */
 /**@} */
 
 
@@ -1183,7 +1181,6 @@ typedef struct
                                 See @ref BLE_GAP_CHAR_INCL_CONFIG. Default is @ref BLE_GAP_CAR_INCL_CONFIG_DEFAULT. */
 } ble_gap_cfg_car_incl_cfg_t;
 
-
 /**@brief Configuration structure for GAP configurations. */
 typedef union
 {
@@ -1767,7 +1764,6 @@ SVCALL(SD_BLE_GAP_AUTHENTICATE, uint32_t, sd_ble_gap_authenticate(uint16_t conn_
 /**@brief Reply with GAP security parameters.
  *
  * @details This function is only used to reply to a @ref BLE_GAP_EVT_SEC_PARAMS_REQUEST, calling it at other times will result in an @ref NRF_ERROR_INVALID_STATE.
- * @note    If the call returns an error code, the request is still pending, and the reply call may be repeated with corrected parameters.
  *
  * @events
  * @event{This function is used during authentication procedures, see the list of events in the documentation of @ref sd_ble_gap_authenticate.}
@@ -1776,8 +1772,9 @@ SVCALL(SD_BLE_GAP_AUTHENTICATE, uint32_t, sd_ble_gap_authenticate(uint16_t conn_
  * @mscs
  * @mmsc{@ref BLE_GAP_PERIPH_PAIRING_JW_MSC}
  * @mmsc{@ref BLE_GAP_PERIPH_BONDING_JW_MSC}
- * @mmsc{@ref BLE_GAP_PERIPH_BONDING_PK_PERIPH_MSC}
- * @mmsc{@ref BLE_GAP_PERIPH_BONDING_PK_CENTRAL_OOB_MSC}
+ * @mmsc{@ref BLE_GAP_PERIPH_BONDING_PK_DISPLAY_MSC}
+ * @mmsc{@ref BLE_GAP_PERIPH_BONDING_PK_INPUT_MSC}
+ * @mmsc{@ref BLE_GAP_PERIPH_BONDING_OOB_MSC}
  * @mmsc{@ref BLE_GAP_PERIPH_BONDING_APP_PK_MSC}
  * @mmsc{@ref BLE_GAP_PERIPH_PAIRING_CONFIRM_FAIL_MSC}
  * @mmsc{@ref BLE_GAP_PERIPH_LESC_PAIRING_JW_MSC}
@@ -1815,14 +1812,14 @@ SVCALL(SD_BLE_GAP_SEC_PARAMS_REPLY, uint32_t, sd_ble_gap_sec_params_reply(uint16
 /**@brief Reply with an authentication key.
  *
  * @details This function is only used to reply to a @ref BLE_GAP_EVT_AUTH_KEY_REQUEST or a @ref BLE_GAP_EVT_PASSKEY_DISPLAY, calling it at other times will result in an @ref NRF_ERROR_INVALID_STATE.
- * @note    If the call returns an error code, the request is still pending, and the reply call may be repeated with corrected parameters.
  *
  * @events
  * @event{This function is used during authentication procedures\, see the list of events in the documentation of @ref sd_ble_gap_authenticate.}
  * @endevents
  *
  * @mscs
- * @mmsc{@ref BLE_GAP_PERIPH_BONDING_PK_CENTRAL_OOB_MSC}
+ * @mmsc{@ref BLE_GAP_PERIPH_BONDING_PK_INPUT_MSC}
+ * @mmsc{@ref BLE_GAP_PERIPH_BONDING_OOB_MSC}
  * @mmsc{@ref BLE_GAP_PERIPH_LESC_BONDING_NC_MSC}
  * @mmsc{@ref BLE_GAP_PERIPH_LESC_BONDING_PKE_CD_MSC}
  * @endmscs
@@ -1846,7 +1843,9 @@ SVCALL(SD_BLE_GAP_AUTH_KEY_REPLY, uint32_t, sd_ble_gap_auth_key_reply(uint16_t c
 /**@brief Reply with an LE Secure connections DHKey.
  *
  * @details This function is only used to reply to a @ref BLE_GAP_EVT_LESC_DHKEY_REQUEST, calling it at other times will result in an @ref NRF_ERROR_INVALID_STATE.
- * @note    If the call returns an error code, the request is still pending, and the reply call may be repeated with corrected parameters.
+ *
+ * @note    Application is required to validate @ref ble_gap_evt_lesc_dhkey_request_t::p_pk_peer received in @ref BLE_GAP_EVT_LESC_DHKEY_REQUEST according to
+ *          Bluetooth Core Specification, Vol 3, Part H, Section 2.3.5.6.1.
  *
  * @events
  * @event{This function is used during authentication procedures\, see the list of events in the documentation of @ref sd_ble_gap_authenticate.}
@@ -1861,7 +1860,12 @@ SVCALL(SD_BLE_GAP_AUTH_KEY_REPLY, uint32_t, sd_ble_gap_auth_key_reply(uint16_t c
  * @endmscs
  *
  * @param[in] conn_handle Connection handle.
- * @param[in] p_dhkey LE Secure Connections DHKey.
+ * @param[in] sec_status Security status, see @ref BLE_GAP_SEC_STATUS
+ *                       - @ref BLE_GAP_SEC_STATUS_SUCCESS if @ref ble_gap_evt_lesc_dhkey_request_t::p_pk_peer validation passed and DHKey generated successfully
+ *                       - @ref BLE_GAP_SEC_STATUS_DHKEY_FAILURE if @ref ble_gap_evt_lesc_dhkey_request_t::p_pk_peer validation failed
+ *                       - @ref BLE_GAP_SEC_STATUS_INVALID_PARAMS if @ref ble_gap_evt_lesc_dhkey_request_t::p_pk_peer is debug key
+ *                         and application is in a mode in which it cannot accept the debug key
+ * @param[in] p_dhkey LE Secure Connections DHKey. This parameter is ignored if @p sec_status is not set to @ref BLE_GAP_SEC_STATUS_SUCCESS.
  *
  * @retval ::NRF_SUCCESS DHKey successfully set.
  * @retval ::NRF_ERROR_INVALID_ADDR Invalid pointer supplied.
@@ -1871,7 +1875,7 @@ SVCALL(SD_BLE_GAP_AUTH_KEY_REPLY, uint32_t, sd_ble_gap_auth_key_reply(uint16_t c
  *                                   - The application has not pulled a @ref BLE_GAP_EVT_LESC_DHKEY_REQUEST event.
  * @retval ::BLE_ERROR_INVALID_CONN_HANDLE Invalid connection handle supplied.
  */
-SVCALL(SD_BLE_GAP_LESC_DHKEY_REPLY, uint32_t, sd_ble_gap_lesc_dhkey_reply(uint16_t conn_handle, ble_gap_lesc_dhkey_t const *p_dhkey));
+SVCALL(SD_BLE_GAP_LESC_DHKEY_REPLY, uint32_t, sd_ble_gap_lesc_dhkey_reply(uint16_t conn_handle, uint8_t sec_status, ble_gap_lesc_dhkey_t const *p_dhkey));
 
 
 /**@brief Notify the peer of a local keypress.
@@ -1949,7 +1953,6 @@ SVCALL(SD_BLE_GAP_LESC_OOB_DATA_SET, uint32_t, sd_ble_gap_lesc_oob_data_set(uint
 /**@brief Reply with GAP security information.
  *
  * @details This function is only used to reply to a @ref BLE_GAP_EVT_SEC_INFO_REQUEST, calling it at other times will result in @ref NRF_ERROR_INVALID_STATE.
- * @note    If the call returns an error code, the request is still pending, and the reply call may be repeated with corrected parameters.
  *
  * @mscs
  * @mmsc{@ref BLE_GAP_PERIPH_ENC_MSC}

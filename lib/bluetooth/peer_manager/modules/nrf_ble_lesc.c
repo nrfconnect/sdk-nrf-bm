@@ -27,12 +27,6 @@ struct lesc_peer_pub_key {
 	uint16_t conn_handle;
 	/** @brief Flag indicating that the public key has been requested to compute DH key. */
 	bool is_requested;
-	/** @brief Flag indicating that the public key is valid. */
-	bool is_valid;
-	/** @brief Flag indicating that the passkey key has been requested. */
-	bool passkey_requested;
-	/** @brief Flag indicating that the passkey display event has been received. */
-	bool passkey_displayed;
 };
 
 /**
@@ -108,7 +102,7 @@ uint32_t nrf_ble_lesc_keypair_generate(void)
 
 	/* Check if any DH computation is pending */
 	for (uint16_t i = 0; i < ARRAY_SIZE(peer_keys); i++) {
-		if (peer_keys[i].is_valid) {
+		if (peer_keys[i].is_requested) {
 			return NRF_ERROR_BUSY;
 		}
 	}
@@ -246,14 +240,20 @@ static uint32_t compute_and_give_dhkey(struct lesc_peer_pub_key *peer_public_key
 	uint8_t *shared_secret = lesc_dh_key.key;
 	size_t shared_secret_size;
 	uint8_t pub_key[ECC_PUB_KEY_EXPORT_SIZE];
+	ble_gap_lesc_dhkey_t *p_dh_key = NULL;
+	uint8_t sec_status = BLE_GAP_SEC_STATUS_DHKEY_FAILURE;
 
 	/* Check if there is a valid generated and set a local ECDH public key. */
 	if (!keypair_generated) {
 		return NRF_ERROR_INTERNAL;
 	}
 
-	/* Check if the public_key is valid */
-	if (peer_public_key->is_valid) {
+	/* Don't allow to pair with remote peer which uses the same public key.
+	 * Compare only X cordinate of the public key, bytes from 0 to 31.
+	 */
+	if (memcmp(lesc_public_key.pk, peer_public_key->value, BLE_GAP_LESC_P256_PK_LEN / 2) == 0) {
+		LOG_WRN("Remote peer is using identical public key.");
+	} else {
 		/* Add the uncompressed format marker. */
 		pub_key[0] = ECC_PUB_KEY_UNCOMPRESSED_FORMAT_MARKER;
 
@@ -268,21 +268,16 @@ static uint32_t compute_and_give_dhkey(struct lesc_peer_pub_key *peer_public_key
 	if ((status == PSA_SUCCESS) && (shared_secret_size == BLE_GAP_LESC_DHKEY_LEN)) {
 		/* Convert secret from big-endian to little-endian. */
 		sys_mem_swap(shared_secret, BLE_GAP_LESC_DHKEY_LEN);
+		p_dh_key = &lesc_dh_key;
+		sec_status = BLE_GAP_SEC_STATUS_SUCCESS;
 	} else {
 		LOG_ERR("psa_raw_key_agreement() returned status %d", status);
-
-		LOG_WRN("Creating invalid shared secret to make LESC fail.");
-		status = psa_generate_random(shared_secret, BLE_GAP_LESC_DHKEY_LEN);
-		if (status != PSA_SUCCESS) {
-			LOG_ERR("psa_generate_random() returned status %d", status);
-			return NRF_ERROR_INTERNAL;
-		}
 	}
 
-	LOG_INF("Calling sd_ble_gap_lesc_dhkey_reply on conn_handle: %d",
-		peer_public_key->conn_handle);
+	LOG_INF("Calling sd_ble_gap_lesc_dhkey_reply(sec_status=0x%x) on conn_handle: %d",
+		sec_status, peer_public_key->conn_handle);
 
-	return sd_ble_gap_lesc_dhkey_reply(peer_public_key->conn_handle, &lesc_dh_key);
+	return sd_ble_gap_lesc_dhkey_reply(peer_public_key->conn_handle, sec_status, p_dh_key);
 }
 
 uint32_t nrf_ble_lesc_request_handler(void)
@@ -298,9 +293,6 @@ uint32_t nrf_ble_lesc_request_handler(void)
 		if (peer_keys[i].is_requested) {
 			nrf_err = compute_and_give_dhkey(&peer_keys[i]);
 			peer_keys[i].is_requested = false;
-			peer_keys[i].is_valid = false;
-			peer_keys[i].passkey_requested = false;
-			peer_keys[i].passkey_displayed = false;
 
 			if (nrf_err) {
 				return nrf_err;
@@ -317,60 +309,15 @@ uint32_t nrf_ble_lesc_request_handler(void)
  * @param[in]  conn_handle    Connection handle.
  * @param[in]  idx            Data index assigned to the connection handle.
  * @param[in]  dhkey_request  DH key request descriptor.
- *
- * @retval NRF_SUCCESS If the operation was successful.
- * @returns Other error codes might be returned by @ref sd_ble_gap_auth_key_reply, and
- *          @ref sd_ble_gap_disconnect.
  */
-static uint32_t on_dhkey_request(uint16_t conn_handle, int idx,
-				 const ble_gap_evt_lesc_dhkey_request_t *dhkey_request)
+static void on_dhkey_request(uint16_t conn_handle, int idx,
+			     const ble_gap_evt_lesc_dhkey_request_t *dhkey_request)
 {
-	uint32_t nrf_err = NRF_SUCCESS;
 	const uint8_t *const public_raw = dhkey_request->p_pk_peer->pk;
 
-	/* Don't allow to pair with remote peer which uses the same public key.
-	 * Compare only X cordinate of the public key, bytes from 0 to 31.
-	 */
-	if (memcmp(lesc_public_key.pk, public_raw, BLE_GAP_LESC_P256_PK_LEN / 2) == 0) {
-		LOG_WRN("Remote peer is using identical public key.");
-		peer_keys[idx].is_valid = false;
-
-		/* In case when we have gotten passkey requested then we will respond to it with the
-		 * "NONE" key type to prevent us from going through Authentication Stage 1.
-		 */
-		if (peer_keys[idx].passkey_requested) {
-			peer_keys[idx].passkey_requested = false;
-
-			nrf_err = sd_ble_gap_auth_key_reply(conn_handle,
-							    BLE_GAP_AUTH_KEY_TYPE_NONE, NULL);
-
-			return nrf_err;
-
-		}
-		/* In case we have gotten passkey display event then we need to disconnect a link
-		 * to prevent us from going through Authentication Stage 1.
-		 */
-		else if (peer_keys[idx].passkey_displayed) {
-			peer_keys[idx].passkey_displayed = false;
-
-			nrf_err = sd_ble_gap_disconnect(conn_handle,
-							BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
-			if ((nrf_err != NRF_SUCCESS) &&
-			    (nrf_err != NRF_ERROR_INVALID_STATE)) {
-				return nrf_err;
-			}
-
-			return NRF_SUCCESS;
-		}
-	} else {
-		memcpy(peer_keys[idx].value, public_raw, BLE_GAP_LESC_P256_PK_LEN);
-		peer_keys[idx].conn_handle = conn_handle;
-		peer_keys[idx].is_valid = true;
-	}
-
+	memcpy(peer_keys[idx].value, public_raw, BLE_GAP_LESC_P256_PK_LEN);
+	peer_keys[idx].conn_handle = conn_handle;
 	peer_keys[idx].is_requested = true;
-
-	return NRF_SUCCESS;
 }
 
 /**
@@ -404,23 +351,7 @@ void nrf_ble_lesc_on_ble_evt(const ble_evt_t *ble_evt)
 
 	switch (ble_evt->header.evt_id) {
 	case BLE_GAP_EVT_DISCONNECTED:
-		peer_keys[idx].is_valid = false;
 		peer_keys[idx].is_requested = false;
-		peer_keys[idx].passkey_requested = false;
-		peer_keys[idx].passkey_displayed = false;
-
-		break;
-
-	case BLE_GAP_EVT_AUTH_KEY_REQUEST:
-		if (ble_evt->evt.gap_evt.params.auth_key_request.key_type ==
-		    BLE_GAP_AUTH_KEY_TYPE_PASSKEY) {
-			peer_keys[idx].passkey_requested = true;
-		}
-
-		break;
-
-	case BLE_GAP_EVT_PASSKEY_DISPLAY:
-		peer_keys[idx].passkey_displayed = true;
 
 		break;
 
@@ -436,11 +367,7 @@ void nrf_ble_lesc_on_ble_evt(const ble_evt_t *ble_evt)
 			}
 		}
 
-		nrf_err = on_dhkey_request(conn_handle, idx,
-					   &ble_evt->evt.gap_evt.params.lesc_dhkey_request);
-		if (nrf_err) {
-			ble_lesc_internal_error = true;
-		}
+		on_dhkey_request(conn_handle, idx, &ble_evt->evt.gap_evt.params.lesc_dhkey_request);
 		break;
 
 #if defined(CONFIG_PM_LESC_GENERATE_NEW_KEYS)

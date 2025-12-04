@@ -38,7 +38,7 @@ SoftDevice properties
 
   * nRF54L15: 0x158c00 (``s145_nrf54l15_9.0.0-4.prototype_softdevice.hex``).
 
-* The Firmware ID of this SoftDevice is 0x3011.
+* The Firmware ID of this SoftDevice is 0x301F.
 
 New Features
 -------------
@@ -47,6 +47,17 @@ Changes
 -------
 
 * SoftDevice
+
+  * Scheduler improvements (DRGN-24450):
+
+    * The scheduler can now manage events that are scheduled less than 100 microseconds apart.
+
+    * Updated Radio Timeslot implementation:
+
+      * The events ``NRF_EVT_RADIO_BLOCKED`` and ``NRF_EVT_RADIO_CANCELED`` are now sent immediately after the specified timeout or start time,
+        instead of being sent early if the scheduler predicted the timeslot could not be scheduled.
+
+      * Timeslot events can now run for longer than 128 seconds.
 
   * Deprecated wrapper functions defined in the SoftDevice headers have been removed (DRGN-26817).
 
@@ -81,10 +92,26 @@ Changes
 
   * Removed the ``p_id_info`` parameter from ``sd_ble_gap_sec_info_reply``. It was unused by the SoftDevice (DRGN-26752).
 
+  * The Connection Event Trigger API has changed (DRGN-26336).
+    ``sd_ble_gap_conn_evt_trigger_start`` and ``sd_ble_gap_conn_evt_trigger_stop`` have been replaced
+    with a single function ``sd_ble_gap_evt_trigger_set``. Other roles than connections can now trigger a task,
+    see ``BLE_GAP_LL_ROLES``.
+
+  * The SoftDevice now supports advertising intervals longer than 10 seconds (DRGN-9988).
+
+  * In compliance with Bluetooth Core Specification v6.2, LE Legacy Pairing with Passkey Entry no longer
+    provides Authenticated man-in-the-middle (MITM) protection (DRGN-26635).
+
+  * In compliance with Bluetooth Core Specification v6.2, the SoftDevice will reject LE Legacy Pairing
+    attempts if it receives an LP_CONFIRM_R value equal to the LP_CONFIRM_I value it sent (DRGN-26776).
+
+  * Added ``sec_status`` parameter to ``sd_ble_gap_lesc_dhkey_reply``
+    so application can reject pairing earlier if peer's public key validation failed.
+    LE Secure Connections pairing now will not proceed to authentication stage 1 until application calls ``sd_ble_gap_lesc_dhkey_reply`` (DRGN-26190).
+
   * Removed support for the Quality of Service (QoS) channel survey module (DRGN-26027).
 
   * Removed support for the LE Coded PHY (DRGN-26027).
-
 
 Limitations
 -----------

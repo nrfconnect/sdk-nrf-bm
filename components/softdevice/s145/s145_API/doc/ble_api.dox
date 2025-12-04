@@ -403,7 +403,7 @@
  * @defgroup BLE_GAP_PERIPH_LEGACY_MSC Peripheral Legacy Pairing
  * @{
  *
- * @defgroup BLE_GAP_PERIPH_PAIRING_JW_MSC Pairing: Just Works
+ * @defgroup BLE_GAP_PERIPH_PAIRING_JW_MSC Peripheral Legacy Pairing: Just Works
  * @msc
  * hscale = "2";
  * APP,SD,CENTRAL;
@@ -419,11 +419,11 @@
  * SD abox CENTRAL [label="Legacy Pairing Phase 2", textbgcolor="#7f7fff"];
  * |||;
  * APP rbox CENTRAL [label = "Encrypted with STK"];
- * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {ENC_NO_MITM}"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {mode 1 level 2}"];
  * APP<<=SD [label = "BLE_GAP_EVT_AUTH_STATUS {SUCCESS}"];
  * @endmsc
  *
- * @defgroup BLE_GAP_PERIPH_BONDING_JW_MSC Bonding: Just Works
+ * @defgroup BLE_GAP_PERIPH_BONDING_JW_MSC Peripheral Legacy Bonding: Just Works
  * @msc
  * hscale = "2";
  * APP,SD,CENTRAL;
@@ -439,7 +439,7 @@
  * SD abox CENTRAL [label="Legacy Pairing Phase 2", textbgcolor="#7f7fff"];
  * |||;
  * APP rbox CENTRAL [label = "Encrypted with STK"];
- * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {ENC_NO_MITM}"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {mode 1 level 2}"];
  * |||;
  * SD abox CENTRAL [label="SMP Pairing Phase 3", textbgcolor="#7f7fff"];
  * |||;
@@ -447,7 +447,7 @@
  * APP rbox APP [label = "Keys stored in keyset"];
  * @endmsc
  *
- * @defgroup BLE_GAP_PERIPH_BONDING_PK_PERIPH_MSC Bonding: Passkey Entry, Peripheral displays
+ * @defgroup BLE_GAP_PERIPH_BONDING_PK_DISPLAY_MSC Peripheral Legacy Bonding: Passkey Entry, Peripheral displays
  * @msc
  * hscale = "2";
  * APP,SD,CENTRAL;
@@ -465,7 +465,7 @@
  * SD abox CENTRAL [label="Legacy Pairing Phase 2", textbgcolor="#7f7fff"];
  * |||;
  * APP rbox CENTRAL [label = "Encrypted with STK"];
- * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {ENC_MITM}"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {mode 1 level 2}"];
  * |||;
  * SD abox CENTRAL [label="SMP Pairing Phase 3", textbgcolor="#7f7fff"];
  * |||;
@@ -473,7 +473,7 @@
  * APP rbox APP [label = "Keys stored in keyset"];
  * @endmsc
  *
- * @defgroup BLE_GAP_PERIPH_BONDING_PK_CENTRAL_OOB_MSC Bonding: Passkey Entry, User Inputs on Peripheral or OOB
+ * @defgroup BLE_GAP_PERIPH_BONDING_PK_INPUT_MSC Peripheral Legacy Bonding: Passkey Entry, User Inputs on Peripheral
  * @msc
  * hscale = "2";
  * APP,SD,CENTRAL;
@@ -485,15 +485,15 @@
  * APP=>SD [label = "sd_ble_gap_sec_params_reply(SUCCESS, own_params: bond, mitm, keyboard, p_keyset)"];
  * APP<<SD [label = "NRF_SUCCESS"];
  * SD:>CENTRAL [label = "SMP Pairing Response", textcolor="#000080", linecolor="#000080"];
- * APP<<=SD [label = "BLE_GAP_EVT_AUTH_KEY_REQUEST {type}"];
- * APP rbox APP [label="User enters Passkey or data received Out Of Band"];
- * APP=>SD [label = "sd_ble_gap_auth_key_reply(passkey or OOB)"];
+ * APP<<=SD [label = "BLE_GAP_EVT_AUTH_KEY_REQUEST {passkey}"];
+ * APP rbox APP [label="User enters Passkey"];
+ * APP=>SD [label = "sd_ble_gap_auth_key_reply(passkey)"];
  * APP<<SD [label = "NRF_SUCCESS"];
  * |||;
  * SD abox CENTRAL [label="Legacy Pairing Phase 2", textbgcolor="#7f7fff"];
  * |||;
  * APP rbox CENTRAL [label = "Encrypted with STK"];
- * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {ENC_MITM}"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {mode 1 level 2}"];
  * |||;
  * SD abox CENTRAL [label="SMP Pairing Phase 3", textbgcolor="#7f7fff"];
  * |||;
@@ -501,7 +501,35 @@
  * APP rbox APP [label = "Keys stored in keyset"];
  * @endmsc
  *
- * @defgroup BLE_GAP_PERIPH_BONDING_APP_PK_MSC Bonding: Passkey Entry with application-provided passkey
+ * @defgroup BLE_GAP_PERIPH_BONDING_OOB_MSC Peripheral Legacy Bonding: Out of Band
+ * @msc
+ * hscale = "2";
+ * APP,SD,CENTRAL;
+ * |||;
+ * APP rbox CENTRAL [label="Connection Established"];
+ * |||;
+ * SD<:CENTRAL [label = "SMP Pairing Request", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_SEC_PARAMS_REQUEST {peer_params: bond, oob}"];
+ * APP=>SD [label = "sd_ble_gap_sec_params_reply(SUCCESS, own_params: bond, oob, p_keyset)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD:>CENTRAL [label = "SMP Pairing Response", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_AUTH_KEY_REQUEST {OOB}"];
+ * APP rbox APP [label="data received Out Of Band"];
+ * APP=>SD [label = "sd_ble_gap_auth_key_reply(OOB)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * SD abox CENTRAL [label="Legacy Pairing Phase 2", textbgcolor="#7f7fff"];
+ * |||;
+ * APP rbox CENTRAL [label = "Encrypted with STK"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {mode 1 level 3}"];
+ * |||;
+ * SD abox CENTRAL [label="SMP Pairing Phase 3", textbgcolor="#7f7fff"];
+ * |||;
+ * APP<<=SD [label = "BLE_GAP_EVT_AUTH_STATUS {SUCCESS}"];
+ * APP rbox APP [label = "Keys stored in keyset"];
+ * @endmsc
+ *
+ * @defgroup BLE_GAP_PERIPH_BONDING_APP_PK_MSC Peripheral Legacy Bonding: Passkey Entry with application-provided passkey
  * @msc
  * hscale = "2";
  * APP,SD,CENTRAL;
@@ -521,7 +549,7 @@
  * SD abox CENTRAL [label="Legacy Pairing Phase 2", textbgcolor="#7f7fff"];
  * |||;
  * APP rbox CENTRAL [label = "Encrypted with STK"];
- * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {ENC_MITM}"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {mode 1 level 2}"];
  * |||;
  * SD abox CENTRAL [label="SMP Pairing Phase 3", textbgcolor="#7f7fff"];
  * |||;
@@ -529,7 +557,7 @@
  * APP rbox APP [label = "Keys stored in keyset"];
  * @endmsc
  *
- * @defgroup BLE_GAP_PERIPH_PAIRING_CONFIRM_FAIL_MSC Pairing failure: Confirm failed
+ * @defgroup BLE_GAP_PERIPH_PAIRING_CONFIRM_FAIL_MSC Peripheral Legacy Pairing failure: Confirm failed
  * This occurs if the random value doesn't match, usually because the user entered a wrong pin
  * or out of band data was missing.
  * @msc
@@ -555,7 +583,7 @@
  * @defgroup BLE_GAP_PERIPH_LESC_MSC Peripheral LESC Pairing
  * @{
  *
- * @defgroup BLE_GAP_PERIPH_LESC_PAIRING_JW_MSC Pairing: Just Works
+ * @defgroup BLE_GAP_PERIPH_LESC_PAIRING_JW_MSC Peripheral LESC Pairing: Just Works
  * @msc
  * hscale = "2";
  * APP,SD,CENTRAL;
@@ -572,23 +600,28 @@
  * APP<<=SD [label = "BLE_GAP_EVT_LESC_DHKEY_REQUEST {p_peer_pk}"];
  * SD:>CENTRAL [label = "SMP Pairing Public Key: PKb", textcolor="#000080", linecolor="#000080"];
  * |||;
- * APP abox APP [label="App starts DHKey calculation"];
+ * --- [label = " Variant #1 Peer PK validation failed "];
+ * APP=>SD [label = "sd_ble_gap_lesc_dhkey_reply(BLE_GAP_SEC_STATUS_DHKEY_FAILURE)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD:>CENTRAL [label = "SMP Pairing failed", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_AUTH_STATUS {auth_status: BLE_GAP_SEC_STATUS_DHKEY_FAILURE, error_src: local}"];
+ * |||;
+ * --- [label = " Variant #2 Peer PK validation passed "];
+ * APP=>SD [label = "sd_ble_gap_lesc_dhkey_reply(BLE_GAP_SEC_STATUS_SUCCESS, p_dhkey)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
  * |||;
  * SD abox CENTRAL [label="LESC Authentication Stage 1", textbgcolor="#7f7fff"];
  * |||;
  * SD<:CENTRAL [label = "SMP Pairing DHKey Check: Ea", textcolor="#000080", linecolor="#000080"];
  * |||;
- * APP abox APP [label="App completes DHKey calculation"];
- * APP=>SD [label = "sd_ble_gap_lesc_dhkey_reply(p_dhkey)"];
- * APP<<SD [label = "NRF_SUCCESS"];
  * SD:>CENTRAL [label = "SMP Pairing DHKey Check: Eb", textcolor="#000080", linecolor="#000080"];
  * |||;
  * APP rbox CENTRAL [label = "Encrypted with LTK"];
- * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {ENC_NO_MITM}"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {mode 1 level 2}"];
  * APP<<=SD [label = "BLE_GAP_EVT_AUTH_STATUS {SUCCESS}"];
  * @endmsc
  *
- * @defgroup BLE_GAP_PERIPH_LESC_BONDING_NC_MSC Bonding: Numeric Comparison
+ * @defgroup BLE_GAP_PERIPH_LESC_BONDING_NC_MSC Peripheral LESC Bonding: Numeric Comparison
  * @msc
  * hscale = "2";
  * APP,SD,CENTRAL;
@@ -605,7 +638,8 @@
  * APP<<=SD [label = "BLE_GAP_EVT_LESC_DHKEY_REQUEST {p_peer_pk}"];
  * SD:>CENTRAL [label = "SMP Pairing Public Key: PKb", textcolor="#000080", linecolor="#000080"];
  * |||;
- * APP abox APP [label="App starts DHKey calculation"];
+ * APP=>SD [label = "sd_ble_gap_lesc_dhkey_reply(BLE_GAP_SEC_STATUS_SUCCESS, p_dhkey)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
  * |||;
  * SD abox CENTRAL [label="LESC Authentication Stage 1", textbgcolor="#7f7fff"];
  * |||;
@@ -618,13 +652,10 @@
  * |||;
  * SD<:CENTRAL [label = "SMP Pairing DHKey Check: Ea", textcolor="#000080", linecolor="#000080"];
  * |||;
- * APP abox APP [label="App completes DHKey calculation"];
- * APP=>SD [label = "sd_ble_gap_lesc_dhkey_reply(p_dhkey)"];
- * APP<<SD [label = "NRF_SUCCESS"];
  * SD:>CENTRAL [label = "SMP Pairing DHKey Check: Eb", textcolor="#000080", linecolor="#000080"];
  * |||;
  * APP rbox CENTRAL [label = "Encrypted with LTK"];
- * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {LESC_ENC_MITM}"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {mode 1 level 4}"];
  * |||;
  * SD abox CENTRAL [label="SMP Pairing Phase 3", textbgcolor="#7f7fff"];
  * |||;
@@ -640,7 +671,7 @@
  * APP<<=SD [label = "BLE_GAP_EVT_AUTH_STATUS {auth_status: num comp failure, error_src: remote}"];
  * @endmsc
  *
- * @defgroup BLE_GAP_PERIPH_LESC_BONDING_PKE_PD_MSC Bonding: Passkey Entry, Peripheral Displays
+ * @defgroup BLE_GAP_PERIPH_LESC_BONDING_PKE_PD_MSC Peripheral LESC Bonding: Passkey Entry, Peripheral Displays
  * @msc
  * hscale = "2";
  * APP,SD,CENTRAL;
@@ -660,7 +691,8 @@
  * APP<<=SD [label = "BLE_GAP_EVT_LESC_DHKEY_REQUEST {p_peer_pk}"];
  * SD:>CENTRAL [label = "SMP Pairing Public Key: PKb", textcolor="#000080", linecolor="#000080"];
  * |||;
- * APP abox APP [label="App starts DHKey calculation"];
+ * APP=>SD [label = "sd_ble_gap_lesc_dhkey_reply(BLE_GAP_SEC_STATUS_SUCCESS, p_dhkey)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
  * |||;
  * --- [label = " Optional keypresses from peer "];
  * SD<:CENTRAL [label = "Keypress Notification", textcolor="#000080", linecolor="#000080"];
@@ -675,13 +707,10 @@
  * |||;
  * SD<:CENTRAL [label = "SMP Pairing DHKey Check: Ea", textcolor="#000080", linecolor="#000080"];
  * |||;
- * APP abox APP [label="App completes DHKey calculation"];
- * APP=>SD [label = "sd_ble_gap_lesc_dhkey_reply(p_dhkey)"];
- * APP<<SD [label = "NRF_SUCCESS"];
  * SD:>CENTRAL [label = "SMP Pairing DHKey Check: Eb", textcolor="#000080", linecolor="#000080"];
  * |||;
  * APP rbox CENTRAL [label = "Encrypted with LTK"];
- * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {LESC_ENC_MITM}"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {mode 1 level 4}"];
  * |||;
  * SD abox CENTRAL [label="SMP Pairing Phase 3", textbgcolor="#7f7fff"];
  * |||;
@@ -689,7 +718,7 @@
  * APP rbox APP [label = "Keys stored in keyset"];
  * @endmsc
  *
- * @defgroup BLE_GAP_PERIPH_LESC_BONDING_PKE_CD_MSC Bonding: Passkey Entry, User Inputs on Peripheral
+ * @defgroup BLE_GAP_PERIPH_LESC_BONDING_PKE_CD_MSC Peripheral LESC Bonding: Passkey Entry, User Inputs on Peripheral
  * @msc
  * hscale = "2";
  * APP,SD,CENTRAL;
@@ -709,7 +738,8 @@
  * APP<<=SD [label = "BLE_GAP_EVT_LESC_DHKEY_REQUEST {p_peer_pk}"];
  * SD:>CENTRAL [label = "SMP Pairing Public Key: PKb", textcolor="#000080", linecolor="#000080"];
  * |||;
- * APP abox APP [label="App starts DHKey calculation"];
+ * APP=>SD [label = "sd_ble_gap_lesc_dhkey_reply(BLE_GAP_SEC_STATUS_SUCCESS, p_dhkey)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
  * |||;
  * --- [label = " Optional keypresses sent to peer "];
  * APP=>SD [label = "sd_ble_gap_keypress_notify(type)"];
@@ -726,13 +756,10 @@
  * |||;
  * SD<:CENTRAL [label = "SMP Pairing DHKey Check: Ea", textcolor="#000080", linecolor="#000080"];
  * |||;
- * APP abox APP [label="App completes DHKey calculation"];
- * APP=>SD [label = "sd_ble_gap_lesc_dhkey_reply(p_dhkey)"];
- * APP<<SD [label = "NRF_SUCCESS"];
  * SD:>CENTRAL [label = "SMP Pairing DHKey Check: Eb", textcolor="#000080", linecolor="#000080"];
  * |||;
  * APP rbox CENTRAL [label = "Encrypted with LTK"];
- * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {LESC_ENC_MITM}"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {mode 1 level 4}"];
  * |||;
  * SD abox CENTRAL [label="SMP Pairing Phase 3", textbgcolor="#7f7fff"];
  * |||;
@@ -740,7 +767,7 @@
  * APP rbox APP [label = "Keys stored in keyset"];
  * @endmsc
  *
- * @defgroup BLE_GAP_PERIPH_LESC_BONDING_OOB_MSC Bonding: Out of Band
+ * @defgroup BLE_GAP_PERIPH_LESC_BONDING_OOB_MSC Peripheral LESC Bonding: Out of Band
  * @msc
  * hscale = "2";
  * APP,SD,CENTRAL;
@@ -764,22 +791,20 @@
  * APP<<=SD [label = "BLE_GAP_EVT_LESC_DHKEY_REQUEST {p_peer_pk, oobd_req=1}"];
  * SD:>CENTRAL [label = "SMP Pairing Public Key: PKb", textcolor="#000080", linecolor="#000080"];
  * |||;
- * APP abox APP [label="App starts DHKey calculation"];
- * |||;
  * APP=>SD [label = "sd_ble_gap_lesc_oob_data_set(p_oobd_own, p_oobd_peer)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_lesc_dhkey_reply(BLE_GAP_SEC_STATUS_SUCCESS, p_dhkey)"];
  * APP<<SD [label = "NRF_SUCCESS"];
  * |||;
  * SD abox CENTRAL [label="LESC Authentication Stage 1", textbgcolor="#7f7fff"];
  * |||;
  * SD<:CENTRAL [label = "SMP Pairing DHKey Check: Ea", textcolor="#000080", linecolor="#000080"];
  * |||;
- * APP abox APP [label="App completes DHKey calculation"];
- * APP=>SD [label = "sd_ble_gap_lesc_dhkey_reply(p_dhkey)"];
- * APP<<SD [label = "NRF_SUCCESS"];
  * SD:>CENTRAL [label = "SMP Pairing DHKey Check: Eb", textcolor="#000080", linecolor="#000080"];
  * |||;
  * APP rbox CENTRAL [label = "Encrypted with LTK"];
- * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {LESC_ENC_MITM}"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {mode 1 level 4}"];
  * |||;
  * SD abox CENTRAL [label="SMP Pairing Phase 3", textbgcolor="#7f7fff"];
  * |||;
@@ -827,7 +852,7 @@
  * SMP Pairing failed to the peer.
  *
  * When the stack handles the response from the application it will also validate
- * the passkey (SMP_STC_PASSKEY_ENTRY_FAILED). If any error is detected it will be
+ * the passkey (BLE_GAP_SEC_STATUS_PASSKEY_ENTRY_FAILED). If any error is detected it will be
  * reported when sd_ble_gap_sec_params_reply() is called.
  * @msc
  * hscale = "2";
@@ -1197,7 +1222,7 @@
  * @defgroup BLE_GAP_CENTRAL_LEGACY_MSC Central Legacy Pairing
  * @{
  *
- * @defgroup BLE_GAP_CENTRAL_PAIRING_JW_MSC Pairing: Just Works
+ * @defgroup BLE_GAP_CENTRAL_PAIRING_JW_MSC Central Legacy Pairing: Just Works
  * @msc
  * hscale = "2";
  * APP,SD,PERIPHERAL;
@@ -1218,7 +1243,7 @@
  * SD abox PERIPHERAL [label="Legacy Pairing Phase 2", textbgcolor="#7f7fff"];
  * |||;
  * APP rbox PERIPHERAL [label = "Encrypted with STK"];
- * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {ENC_NO_MITM}"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {mode 1 level 2}"];
  * APP<<=SD [label = "BLE_GAP_EVT_AUTH_STATUS {SUCCESS}"];
  * |||;
  * --- [label = " Variant #2 Central Rejects Peripheral parameters "];
@@ -1230,7 +1255,7 @@
  * APP<<=SD [label = "BLE_GAP_EVT_AUTH_STATUS {FAILURE}"];
  * @endmsc
  *
- * @defgroup BLE_GAP_CENTRAL_BONDING_JW_MSC Bonding: Just Works
+ * @defgroup BLE_GAP_CENTRAL_BONDING_JW_MSC Central Legacy Bonding: Just Works
  * @msc
  * hscale = "2";
  * APP,SD,PERIPHERAL;
@@ -1248,7 +1273,7 @@
  * SD abox PERIPHERAL [label="Legacy Pairing Phase 2", textbgcolor="#7f7fff"];
  * |||;
  * APP rbox PERIPHERAL [label = "Encrypted with STK"];
- * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {ENC_NO_MITM}"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {mode 1 level 2}"];
  * |||;
  * SD abox PERIPHERAL [label="SMP Pairing Phase 3", textbgcolor="#7f7fff"];
  * |||;
@@ -1256,7 +1281,7 @@
  * APP rbox APP [label = "Keys stored in keyset"];
  * @endmsc
  *
- * @defgroup BLE_GAP_CENTRAL_BONDING_PK_PERIPH_MSC Bonding: Passkey Entry, Central displays
+ * @defgroup BLE_GAP_CENTRAL_BONDING_PK_DISPLAY_MSC Central Legacy Bonding: Passkey Entry, Central displays
  * @msc
  * hscale = "2";
  * APP,SD,PERIPHERAL;
@@ -1277,7 +1302,7 @@
  * SD abox PERIPHERAL [label="Legacy Pairing Phase 2", textbgcolor="#7f7fff"];
  * |||;
  * APP rbox PERIPHERAL [label = "Encrypted with STK"];
- * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {ENC_MITM}"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {mode 1 level 2}"];
  * |||;
  * SD abox PERIPHERAL [label="SMP Pairing Phase 3", textbgcolor="#7f7fff"];
  * |||;
@@ -1285,7 +1310,7 @@
  * APP rbox APP [label = "Keys stored in keyset"];
  * @endmsc
  *
- * @defgroup BLE_GAP_CENTRAL_BONDING_PK_PERIPH_OOB_MSC Bonding: Passkey Entry, User Inputs on Central or OOB
+ * @defgroup BLE_GAP_CENTRAL_BONDING_PK_INPUT_MSC Central Legacy Bonding: Passkey Entry, User Inputs on Central
  * @msc
  * hscale = "2";
  * APP,SD,PERIPHERAL;
@@ -1300,15 +1325,46 @@
  * APP<<=SD [label = "BLE_GAP_EVT_SEC_PARAMS_REQUEST {peer_params: bond, mitm, display}"];
  * APP=>SD [label = "sd_ble_gap_sec_params_reply(SUCCESS, own_params: NULL, p_keyset)"];
  * |||;
- * APP<<=SD [label = "BLE_GAP_EVT_AUTH_KEY_REQUEST {type}"];
- * APP rbox APP [label="User enters Passkey or data received Out Of Band"];
- * APP=>SD [label = "sd_ble_gap_auth_key_reply(passkey or OOB)"];
+ * APP<<=SD [label = "BLE_GAP_EVT_AUTH_KEY_REQUEST {passkey}"];
+ * APP rbox APP [label="User enters Passkey"];
+ * APP=>SD [label = "sd_ble_gap_auth_key_reply(passkey)"];
  * APP<<SD [label = "NRF_SUCCESS"];
  * |||;
  * SD abox PERIPHERAL [label="Legacy Pairing Phase 2", textbgcolor="#7f7fff"];
  * |||;
  * APP rbox PERIPHERAL [label = "Encrypted with STK"];
- * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {ENC_MITM}"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {mode 1 level 2}"];
+ * |||;
+ * SD abox PERIPHERAL [label="SMP Pairing Phase 3", textbgcolor="#7f7fff"];
+ * |||;
+ * APP<<=SD [label = "BLE_GAP_EVT_AUTH_STATUS {SUCCESS}"];
+ * APP rbox APP [label = "Keys stored in keyset"];
+ * @endmsc
+ *
+ * @defgroup BLE_GAP_CENTRAL_BONDING_OOB_MSC Central Legacy Bonding: Out Of Band
+ * @msc
+ * hscale = "2";
+ * APP,SD,PERIPHERAL;
+ * |||;
+ * APP rbox PERIPHERAL [label="Connection Established"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_authenticate(bond, mitm, oob)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD:>PERIPHERAL [label = "SMP Pairing Request", textcolor="#000080", linecolor="#000080"];
+ * |||;
+ * SD<:PERIPHERAL [label = "SMP Pairing Response", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_SEC_PARAMS_REQUEST {peer_params: bond, oob}"];
+ * APP=>SD [label = "sd_ble_gap_sec_params_reply(SUCCESS, own_params: NULL, p_keyset)"];
+ * |||;
+ * APP<<=SD [label = "BLE_GAP_EVT_AUTH_KEY_REQUEST {OOB}"];
+ * APP rbox APP [label="Data received Out Of Band"];
+ * APP=>SD [label = "sd_ble_gap_auth_key_reply(OOB)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * SD abox PERIPHERAL [label="Legacy Pairing Phase 2", textbgcolor="#7f7fff"];
+ * |||;
+ * APP rbox PERIPHERAL [label = "Encrypted with STK"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {mode 1 level 3}"];
  * |||;
  * SD abox PERIPHERAL [label="SMP Pairing Phase 3", textbgcolor="#7f7fff"];
  * |||;
@@ -1320,7 +1376,7 @@
  *
  * @defgroup BLE_GAP_CENTRAL_LESC_MSC Central LESC Pairing
  * @{
- * @defgroup BLE_GAP_CENTRAL_LESC_PAIRING_JW_MSC Pairing: Just Works
+ * @defgroup BLE_GAP_CENTRAL_LESC_PAIRING_JW_MSC Central LESC Pairing: Just Works
  * @msc
  * hscale = "2";
  * APP,SD,PERIPHERAL;
@@ -1341,23 +1397,28 @@
  * SD<:PERIPHERAL [label = "SMP Pairing Public Key: PKb", textcolor="#000080", linecolor="#000080"];
  * APP<<=SD [label = "BLE_GAP_EVT_LESC_DHKEY_REQUEST {p_peer_pk}"];
  * |||;
- * APP abox APP [label="App starts DHKey calculation"];
+ * --- [label = " Variant #1 Peer PK validation failed "];
+ * APP=>SD [label = "sd_ble_gap_lesc_dhkey_reply(BLE_GAP_SEC_STATUS_DHKEY_FAILURE)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * SD:>PERIPHERAL [label = "SMP Pairing failed", textcolor="#000080", linecolor="#000080"];
+ * APP<<=SD [label = "BLE_GAP_EVT_AUTH_STATUS {auth_status: BLE_GAP_SEC_STATUS_DHKEY_FAILURE, error_src: local}"];
+ * |||;
+ * --- [label = " Variant #2 Peer PK validation passed "];
+ * APP=>SD [label = "sd_ble_gap_lesc_dhkey_reply(BLE_GAP_SEC_STATUS_SUCCESS, p_dhkey)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
  * |||;
  * SD abox PERIPHERAL [label="LESC Authentication Stage 1", textbgcolor="#7f7fff"];
  * |||;
- * APP abox APP [label="App completes DHKey calculation"];
- * APP=>SD [label = "sd_ble_gap_lesc_dhkey_reply(p_dhkey)"];
- * APP<<SD [label = "NRF_SUCCESS"];
  * SD:>PERIPHERAL [label = "SMP Pairing DHKey Check: Ea", textcolor="#000080", linecolor="#000080"];
  * |||;
  * SD<:PERIPHERAL [label = "SMP Pairing DHKey Check: Eb", textcolor="#000080", linecolor="#000080"];
  * |||;
  * APP rbox PERIPHERAL [label = "Encrypted with LTK"];
- * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {ENC_NO_MITM}"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {mode 1 level 2}"];
  * APP<<=SD [label = "BLE_GAP_EVT_AUTH_STATUS {SUCCESS}"];
  * @endmsc
  *
- * @defgroup BLE_GAP_CENTRAL_LESC_BONDING_NC_MSC Bonding: Numeric Comparison
+ * @defgroup BLE_GAP_CENTRAL_LESC_BONDING_NC_MSC Central LESC Bonding: Numeric Comparison
  * @msc
  * hscale = "2";
  * APP,SD,PERIPHERAL;
@@ -1378,7 +1439,8 @@
  * SD<:PERIPHERAL [label = "SMP Pairing Public Key: PKb", textcolor="#000080", linecolor="#000080"];
  * APP<<=SD [label = "BLE_GAP_EVT_LESC_DHKEY_REQUEST {p_peer_pk}"];
  * |||;
- * APP abox APP [label="App starts DHKey calculation"];
+ * APP=>SD [label = "sd_ble_gap_lesc_dhkey_reply(BLE_GAP_SEC_STATUS_SUCCESS, p_dhkey)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
  * |||;
  * SD abox PERIPHERAL [label="LESC Authentication Stage 1", textbgcolor="#7f7fff"];
  * |||;
@@ -1389,15 +1451,12 @@
  * APP=>SD [label = "sd_ble_gap_auth_key_reply(BLE_GAP_AUTH_KEY_TYPE_PASSKEY, NULL)"];
  * APP<<SD [label = "NRF_SUCCESS"];
  * |||;
- * APP abox APP [label="App completes DHKey calculation"];
- * APP=>SD [label = "sd_ble_gap_lesc_dhkey_reply(p_dhkey)"];
- * APP<<SD [label = "NRF_SUCCESS"];
  * SD:>PERIPHERAL [label = "SMP Pairing DHKey Check: Ea", textcolor="#000080", linecolor="#000080"];
  * |||;
  * SD<:PERIPHERAL [label = "SMP Pairing DHKey Check: Eb", textcolor="#000080", linecolor="#000080"];
  * |||;
  * APP rbox PERIPHERAL [label = "Encrypted with LTK"];
- * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {LESC_ENC_MITM}"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {mode 1 level 4}"];
  * |||;
  * SD abox PERIPHERAL [label="SMP Pairing Phase 3", textbgcolor="#7f7fff"];
  * |||;
@@ -1413,7 +1472,7 @@
  * APP<<=SD [label = "BLE_GAP_EVT_AUTH_STATUS {auth_status: num comp failure, error_src: remote}"];
  * @endmsc
  *
- * @defgroup BLE_GAP_CENTRAL_LESC_BONDING_PKE_PD_MSC Bonding: Passkey Entry: Central Displays
+ * @defgroup BLE_GAP_CENTRAL_LESC_BONDING_PKE_PD_MSC Central LESC Bonding: Passkey Entry, Central Displays
  * @msc
  * hscale = "2";
  * APP,SD,PERIPHERAL;
@@ -1437,7 +1496,8 @@
  * SD<:PERIPHERAL [label = "SMP Pairing Public Key: PKb", textcolor="#000080", linecolor="#000080"];
  * APP<<=SD [label = "BLE_GAP_EVT_LESC_DHKEY_REQUEST {p_peer_pk}"];
  * |||;
- * APP abox APP [label="App starts DHKey calculation"];
+ * APP=>SD [label = "sd_ble_gap_lesc_dhkey_reply(BLE_GAP_SEC_STATUS_SUCCESS, p_dhkey)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
  * |||;
  * --- [label = " Optional keypresses from peer "];
  * SD<:PERIPHERAL [label = "Keypress Notification", textcolor="#000080", linecolor="#000080"];
@@ -1450,15 +1510,12 @@
  * --- [label = ""];
  * SD abox PERIPHERAL [label="LESC Authentication Stage 1", textbgcolor="#7f7fff"];
  * |||;
- * APP abox APP [label="App completes DHKey calculation"];
- * APP=>SD [label = "sd_ble_gap_lesc_dhkey_reply(p_dhkey)"];
- * APP<<SD [label = "NRF_SUCCESS"];
  * SD:>PERIPHERAL [label = "SMP Pairing DHKey Check: Ea", textcolor="#000080", linecolor="#000080"];
  * |||;
  * SD<:PERIPHERAL [label = "SMP Pairing DHKey Check: Eb", textcolor="#000080", linecolor="#000080"];
  * |||;
  * APP rbox PERIPHERAL [label = "Encrypted with LTK"];
- * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {LESC_ENC_MITM}"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {mode 1 level 4}"];
  * |||;
  * SD abox PERIPHERAL [label="SMP Pairing Phase 3", textbgcolor="#7f7fff"];
  * |||;
@@ -1466,7 +1523,7 @@
  * APP rbox APP [label = "Keys stored in keyset"];
  * @endmsc
  *
- * @defgroup BLE_GAP_CENTRAL_LESC_BONDING_PKE_CD_MSC Bonding: Passkey Entry: User Inputs on Central
+ * @defgroup BLE_GAP_CENTRAL_LESC_BONDING_PKE_CD_MSC Central LESC Bonding: Passkey Entry, User Inputs on Central
  * @msc
  * hscale = "2";
  * APP,SD,PERIPHERAL;
@@ -1490,7 +1547,8 @@
  * SD<:PERIPHERAL [label = "SMP Pairing Public Key: PKb", textcolor="#000080", linecolor="#000080"];
  * APP<<=SD [label = "BLE_GAP_EVT_LESC_DHKEY_REQUEST {p_peer_pk}"];
  * |||;
- * APP abox APP [label="App starts DHKey calculation"];
+ * APP=>SD [label = "sd_ble_gap_lesc_dhkey_reply(BLE_GAP_SEC_STATUS_SUCCESS, p_dhkey)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
  * |||;
  * --- [label = " Optional keypresses sent to peer "];
  * APP=>SD [label = "sd_ble_gap_keypress_notify(type)"];
@@ -1505,15 +1563,12 @@
  * APP<<SD [label = "NRF_SUCCESS"];
  * SD abox PERIPHERAL [label="LESC Authentication Stage 1", textbgcolor="#7f7fff"];
  * |||;
- * APP abox APP [label="App completes DHKey calculation"];
- * APP=>SD [label = "sd_ble_gap_lesc_dhkey_reply(p_dhkey)"];
- * APP<<SD [label = "NRF_SUCCESS"];
  * SD:>PERIPHERAL [label = "SMP Pairing DHKey Check: Ea", textcolor="#000080", linecolor="#000080"];
  * |||;
  * SD<:PERIPHERAL [label = "SMP Pairing DHKey Check: Eb", textcolor="#000080", linecolor="#000080"];
  * |||;
  * APP rbox PERIPHERAL [label = "Encrypted with LTK"];
- * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {LESC_ENC_MITM}"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {mode 1 level 4}"];
  * |||;
  * SD abox PERIPHERAL [label="SMP Pairing Phase 3", textbgcolor="#7f7fff"];
  * |||;
@@ -1521,7 +1576,7 @@
  * APP rbox APP [label = "Keys stored in keyset"];
  * @endmsc
  *
- * @defgroup BLE_GAP_CENTRAL_LESC_BONDING_OOB_MSC Bonding: Out of Band
+ * @defgroup BLE_GAP_CENTRAL_LESC_BONDING_OOB_MSC Central LESC Bonding: Out of Band
  * @msc
  * hscale = "2";
  * APP,SD,PERIPHERAL;
@@ -1548,22 +1603,20 @@
  * SD<:PERIPHERAL [label = "SMP Pairing Public Key: PKb", textcolor="#000080", linecolor="#000080"];
  * APP<<=SD [label = "BLE_GAP_EVT_LESC_DHKEY_REQUEST {p_peer_pk, oobd_req=1}"];
  * |||;
- * APP abox APP [label="App starts DHKey calculation"];
- * |||;
  * APP=>SD [label = "sd_ble_gap_lesc_oob_data_set(p_oobd_own, p_oobd_peer)"];
+ * APP<<SD [label = "NRF_SUCCESS"];
+ * |||;
+ * APP=>SD [label = "sd_ble_gap_lesc_dhkey_reply(BLE_GAP_SEC_STATUS_SUCCESS, p_dhkey)"];
  * APP<<SD [label = "NRF_SUCCESS"];
  * |||;
  * SD abox PERIPHERAL [label="LESC Authentication Stage 1", textbgcolor="#7f7fff"];
  * |||;
- * APP abox APP [label="App completes DHKey calculation"];
- * APP=>SD [label = "sd_ble_gap_lesc_dhkey_reply(p_dhkey)"];
- * APP<<SD [label = "NRF_SUCCESS"];
  * SD:>PERIPHERAL [label = "SMP Pairing DHKey Check: Ea", textcolor="#000080", linecolor="#000080"];
  * |||;
  * SD<:PERIPHERAL [label = "SMP Pairing DHKey Check: Eb", textcolor="#000080", linecolor="#000080"];
  * |||;
  * APP rbox PERIPHERAL [label = "Encrypted with LTK"];
- * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {LESC_ENC_MITM}"];
+ * APP<<=SD [label = "BLE_GAP_EVT_CONN_SEC_UPDATE {mode 1 level 4}"];
  * |||;
  * SD abox PERIPHERAL [label="SMP Pairing Phase 3", textbgcolor="#7f7fff"];
  * |||;

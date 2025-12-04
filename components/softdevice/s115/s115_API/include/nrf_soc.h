@@ -91,7 +91,7 @@ extern "C" {
 
 #define NRF_RADIO_EARLIEST_TIMEOUT_MAX_US (256000000UL - 1UL) /**< The longest timeout, in microseconds, allowed when requesting the earliest possible timeslot. */
 
-#define NRF_RADIO_START_JITTER_US         (1)                 /**< The maximum jitter in @ref NRF_RADIO_CALLBACK_SIGNAL_TYPE_START relative to the requested start time. */
+#define NRF_RADIO_START_JITTER_US         (0)                 /**< The maximum jitter in @ref NRF_RADIO_CALLBACK_SIGNAL_TYPE_START relative to the requested start time. */
 
 #define SD_RAND_SEED_SIZE                 (32)                /**< Seed size for @ref sd_rand_seed_set. */
 
@@ -278,7 +278,7 @@ typedef struct
 {
   uint8_t       hfclk;                              /**< High frequency clock source, see @ref NRF_RADIO_HFCLK_CFG. */
   uint8_t       priority;                           /**< The radio timeslot priority, see @ref NRF_RADIO_PRIORITY. */
-  uint32_t      length_us;                          /**< The radio timeslot length (in the range 100 to 100,000] microseconds). */
+  uint32_t      length_us;                          /**< The radio timeslot length (in the range @ref NRF_RADIO_LENGTH_MIN_US to @ref NRF_RADIO_LENGTH_MAX_US). */
   uint32_t      timeout_us;                         /**< Longest acceptable delay until the start of the requested timeslot (up to @ref NRF_RADIO_EARLIEST_TIMEOUT_MAX_US microseconds). */
 } nrf_radio_request_earliest_t;
 
@@ -288,7 +288,7 @@ typedef struct
   uint8_t       hfclk;                              /**< High frequency clock source, see @ref NRF_RADIO_HFCLK_CFG. */
   uint8_t       priority;                           /**< The radio timeslot priority, see @ref NRF_RADIO_PRIORITY. */
   uint32_t      distance_us;                        /**< Distance from the start of the previous radio timeslot (up to @ref NRF_RADIO_DISTANCE_MAX_US microseconds). */
-  uint32_t      length_us;                          /**< The radio timeslot length (in the range [100..100,000] microseconds). */
+  uint32_t      length_us;                          /**< The radio timeslot length (in the range @ref NRF_RADIO_LENGTH_MIN_US to @ref NRF_RADIO_LENGTH_MAX_US). */
 } nrf_radio_request_normal_t;
 
 /**@brief Radio timeslot request parameters. */
@@ -672,7 +672,7 @@ SVCALL(SD_FLASH_WRITE, uint32_t, sd_flash_write(uint32_t * p_dst, uint32_t const
  * @note A too small p_request->distance_us will lead to a @ref NRF_EVT_RADIO_BLOCKED event.
  * @note Timeslots scheduled too close will lead to a @ref NRF_EVT_RADIO_BLOCKED event.
  * @note See the SoftDevice Specification for more on radio timeslot scheduling, distances and lengths.
- * @note If an opportunity for the first radio timeslot is not found before 100 ms after the call to this
+ * @note If an opportunity for the first radio timeslot is not found before @ref nrf_radio_request_earliest_t::timeout_us after the call to this
  *       function, it is not scheduled, and instead a @ref NRF_EVT_RADIO_BLOCKED event is sent.
  *       The application may then try to schedule the first radio timeslot again.
  * @note Successful requests will result in nrf_radio_signal_callback_t(@ref NRF_RADIO_CALLBACK_SIGNAL_TYPE_START).
