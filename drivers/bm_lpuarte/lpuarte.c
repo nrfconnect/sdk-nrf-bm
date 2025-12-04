@@ -8,6 +8,10 @@
 #include <nrfx_gpiote.h>
 #include <nrfx_uarte.h>
 #include <zephyr/irq.h>
+#if defined(CONFIG_SOFTDEVICE)
+#include <nrf_soc.h>
+#include <nrf_sdm.h>
+#endif /* CONFIG_SOFTDEVICE */
 #include <zephyr/logging/log.h>
 
 LOG_MODULE_REGISTER(lpuarte, CONFIG_BM_SW_LPUARTE_LOG_LEVEL);
@@ -231,10 +235,56 @@ static bool rdy_pin_blink(struct bm_lpuarte *lpu)
 	return ret;
 }
 
+static void hfclk_enable(void)
+{
+#if defined(CONFIG_BM_SW_LPUARTE_HFXO)
+	uint32_t nrf_err;
+	uint8_t sd_enabled;
+	uint32_t hfclk_running;
+
+	(void)sd_softdevice_is_enabled(&sd_enabled);
+
+	if (sd_enabled) {
+		/* We need to start HFCLK through SoftDevice API. As the code
+		 * executes from an IRQ it must be ensured that the GPIOTE IRQ priority
+		 * is acceptable to call SoftDevice API.
+		 */
+		nrf_err = sd_clock_hfclk_request();
+		if (nrf_err) {
+			LOG_ERR("Failed to request HFCLK, nrf_error %#x", nrf_err);
+			return;
+		}
+
+		do {
+			sd_clock_hfclk_is_running(&hfclk_running);
+		} while (!hfclk_running);
+
+	} else {
+		LOG_WRN("SoftDevice not running, HFCLK not enabled");
+	}
+#endif
+}
+
+static void hfclk_disable(void)
+{
+#if defined(CONFIG_BM_SW_LPUARTE_HFXO)
+	uint8_t sd_enabled;
+
+	(void)sd_softdevice_is_enabled(&sd_enabled);
+
+	if (sd_enabled) {
+		(void)sd_clock_hfclk_release();
+	}
+#endif
+}
+
+
 /* Set response pin to idle and disable RX. */
 static void deactivate_rx(struct bm_lpuarte *lpu)
 {
 	int err;
+
+	hfclk_disable();
 
 	/* abort rx */
 	LOG_DBG("RX: Deactivate");
@@ -278,6 +328,8 @@ static void activate_rx(struct bm_lpuarte *lpu)
 
 static void start_rx_activation(struct bm_lpuarte *lpu)
 {
+	hfclk_enable();
+
 	lpu->rx_state = RX_PREPARE;
 	activate_rx(lpu);
 }
@@ -290,6 +342,8 @@ static void tx_complete(struct bm_lpuarte *lpu)
 	} else {
 		req_pin_set(lpu);
 	}
+
+	hfclk_disable();
 
 	req_pin_idle(lpu);
 	lpu->tx_buf = NULL;
@@ -520,6 +574,8 @@ int bm_lpuarte_tx(struct bm_lpuarte *lpu, uint8_t const *data, size_t len, int32
 	if (!atomic_ptr_cas((atomic_ptr_t *)&lpu->tx_buf, NULL, (void *)data)) {
 		return -EBUSY;
 	}
+
+	hfclk_enable();
 
 	lpu->tx_len = len;
 	bm_timer_start(&lpu->tx_timer, BM_TIMER_MS_TO_TICKS(timeout), lpu);

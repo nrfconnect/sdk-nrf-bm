@@ -98,7 +98,9 @@ Logging
 Drivers
 =======
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* :ref:`driver_lpuarte` driver:
+
+  * Added the :kconfig:option:`CONFIG_BM_SW_LPUARTE_HFXO` Kconfig option to enable the HFCLK when the SoftDevice is enabled.
 
 Libraries
 =========
@@ -299,6 +301,10 @@ Peripheral samples
 ------------------
 
 * Added the :ref:`pwm_sample` sample.
+
+* :ref:`bm_lpuarte_sample` sample:
+
+  * Enabled the SoftDevice to request HFCLK in the :ref:`driver_lpuarte` driver.
 
 DFU samples
 -----------
