@@ -41,6 +41,7 @@ Overview
 After the application boots, it begins advertising as ``nRF_BM_Entry``, advertising the MCUmgr service.
 
 A mobile device can then connect and issue the OS mgmt reset command with the optional ``boot_mode`` parameter provided and set to 1.
+Before the reset, the mobile device can also set up the advertising name of the firmware loader using the MCUmgr settings management commands.
 The command sets the retention register for entering the firmware loader mode and reboots the device.
 It then starts advertising the MCUmgr service allowing for a firmware update to be loaded.
 
@@ -76,8 +77,9 @@ Testing
 #. Observe in the terminal that the device boots into application mode and then advertises with the default name ``nRF_BM_Entry``.
 #. Connect to your device using the `nRF Connect Device Manager`_ mobile application.
 #. Under the :guilabel:`image` tab, tap :guilabel:`Advanced`.
-   Then, in the reset control pane, select :guilabel:`Switch to bootloader mode` and tap :guilabel:`Send Reset Command`.
-   Observe in the terminal that the device reboots into Firmware Loader mode and advertises with the default Firmware Loader name ``nRF_BM_MCUmgr``.
+#. In the reset control panel, select :guilabel:`Switch to Firmware Loader mode`.
+   Optionally, specify the advertising name in the text field below and tap :guilabel:`Send Reset Command`.
+#. Observe in the terminal that the device reboots into the Firmware Loader mode and advertises with the advertising name specified or the default Firmware Loader name ``nRF_BM_MCUmgr``.
 #. Using the `nRF Connect Device Manager`_ mobile application, go back to the device list and refresh it by swiping down.
    Connect to your device that now advertises with the default firmware loader name ``nRF_BM_MCUmgr``.
 #. Under the :guilabel:`image` tab, tap :guilabel:`Advanced`.
