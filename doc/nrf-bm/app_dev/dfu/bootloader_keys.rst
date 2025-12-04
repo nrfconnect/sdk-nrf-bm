@@ -62,3 +62,23 @@ The configuration option :kconfig:option:`SB_CONFIG_BM_BOOTLOADER_MCUBOOT_GENERA
 This automation occurs when you use the ``west flash`` command with the ``--erase`` or ``--recover`` arguments.
 It is essential to run this command first after building the project to prepare the board for development.
 For more information about KMU on the nRF54L Series, see `Introduction to KMU key provisioning`_ and `Performing KMU provisioning`_.
+
+Runtime revocation
+==================
+
+.. note::
+   The support for this feature is currently experimental.
+
+MCUboot can invalidate image verification keys through the ``CONFIG_BOOT_KMU_KEYS_REVOCATION`` Kconfig option.
+Enable this option during the MCUboot build process if there is a risk that images signed with a compromised key might contain critical vulnerabilities.
+The revocation of keys is triggered when both the firmware loader and SoftDevice are using a newer key.
+
+Number of available key slots is set by ``CONFIG_BOOT_SIGNATURE_KMU_SLOTS`` Kconfig option. These slots has to be properly provisioned. For more information refer to `Performing KMU provisioning`_.
+
+.. caution::
+   You must enable the ``CONFIG_BOOT_KMU_KEYS_REVOCATION`` Kconfig option when creating your project.
+   If you have not activated this option initially, you cannot enable it later.
+   Without the option, this functionality unavailable and potentially exposes your project to security issues.
+
+A valid signature verification must precede any key invalidation.
+The last remaining key cannot be invalidated.
