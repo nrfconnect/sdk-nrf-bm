@@ -42,6 +42,14 @@ When connected, the sample waits for the client's requests to perform any bond-d
 User interface
 **************
 
+Button 0:
+   During bonding, press the button to confirm that the passkey is correct.
+   See `Testing`_.
+
+Button 1:
+   Keep the button pressed while resetting the board to delete bonding information for all peers stored on the device.
+   During bonding, press it to reject the passkey.
+
 LED 0:
    Lit when the device is advertising.
 
