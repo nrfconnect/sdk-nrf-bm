@@ -3,6 +3,9 @@
 Setting up DFU Device Bluetooth name remotely
 #############################################
 
+.. note::
+   The support for this feature is currently experimental.
+
 The Device Firmware Update (DFU) over Bluetooth® Low Energy in the single bank solution uses the loader application for firmware download support.
 The firmware loader is separate application to which the remote Bluetooth LE DFU client connects to perform the firmware update.
 To identify the firmware loader application over Bluetooth LE, it uses a specific advertising name provided by the remote client to the application.
