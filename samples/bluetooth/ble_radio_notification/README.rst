@@ -70,26 +70,16 @@ Overview
 The sample initializes the radio notification library and registers a handler that triggers both when the radio is enabled and when it is disabled.
 The handler then toggles **LED 0** based on the current state of the radio.
 
-Programming the S115 SoftDevice
-*******************************
-
-.. include:: /includes/softdevice_flash.txt
-
-.. _ble_radio_notification_sample_testing:
-
-Building and running
-********************
+Playing with the sample
+***********************
 
 This sample can be found under :file:`samples/bluetooth/ble_radio_notification/` in the |BMshort| folder structure.
 
-.. include:: /includes/create_sample.txt
+For details on how to create, configure and program a sample see :ref:`getting_started_with_the_samples`.
 
-.. include:: /includes/configure_and_build_sample.txt
-
-.. include:: /includes/program_sample.txt
 
 Testing
-=======
+*******
 
 You can test this sample using `nRF Connect for Desktop`_ with the `Serial Terminal app`_.
 Make sure that these are installed before starting the testing procedure.

@@ -101,26 +101,16 @@ LED 1:
 LED 3:
    Lit when Caps Lock is on.
 
-Programming the S115 SoftDevice
-*******************************
-
-.. include:: /includes/softdevice_flash.txt
-
-.. _ble_hids_keyboard_sample_testing:
-
-Building and running
-********************
+Playing with the sample
+***********************
 
 This sample can be found under :file:`samples/bluetooth/ble_hids_keyboard/` in the |BMshort| folder structure.
 
-.. include:: /includes/create_sample.txt
+For details on how to create, configure and program a sample see :ref:`getting_started_with_the_samples`.
 
-.. include:: /includes/configure_and_build_sample.txt
-
-.. include:: /includes/program_sample.txt
 
 Testing
-=======
+*******
 
 1. Compile and program the application.
 #. In the Serial Terminal, using the `Serial Terminal app`_ or |VSC|, observe that the ``BLE HIDS Keyboard sample started.`` message is printed.
