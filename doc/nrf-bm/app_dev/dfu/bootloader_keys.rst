@@ -3,7 +3,7 @@
 Bootloader keys
 ###############
 
-When MCUboot is used in a project, by default it uses a dummy ed25519 signing key.
+When MCUboot is used in a project, by default it uses a dummy ED25519 signing key.
 This key should only be used for development purposes.
 
 For testing and production use cases, unique signing keys must be generated and kept secure (one key per project) to ensure the integrity of firmware update security.
@@ -11,12 +11,17 @@ For testing and production use cases, unique signing keys must be generated and 
 Signature type
 **************
 
-MCUboot in |BMshort| supports the following signature types:
+MCUboot in |BMshort| allow a few signatures types.
+The ED25519 signature type is recommended as supported for nRF54L Series devices with cryptographic hardware support (CRACEN and KMU).
+It is recommended to use the pure version of the ED25519 signature (:kconfig:option:`SB_CONFIG_BM_BOOT_IMG_HASH_ALG_PURE`).
+The rest of the signature types are for evaluation purpose only and are inherited from the MCUboot project.
+
+The available signature types are listed in the following table:
 
 +------------+----------------------------------------------------------------------+-----------------------------------------------------------------------------+
 | Type       | Description                                                          | Sysbuild Kconfig                                                            |
 +============+======================================================================+=============================================================================+
-| None       | No signature verification (insecure)                                 | :kconfig:option:`SB_CONFIG_BM_BOOTLOADER_MCUBOOT_SIGNATURE_TYPE_NONE`       |
+| None       | No signature verification (insecure, for development only)           | :kconfig:option:`SB_CONFIG_BM_BOOTLOADER_MCUBOOT_SIGNATURE_TYPE_NONE`       |
 +------------+----------------------------------------------------------------------+-----------------------------------------------------------------------------+
 | RSA        | RSA-2048 or RSA-3072 signature                                       | :kconfig:option:`SB_CONFIG_BM_BOOTLOADER_MCUBOOT_SIGNATURE_TYPE_RSA`        |
 +------------+----------------------------------------------------------------------+-----------------------------------------------------------------------------+
