@@ -128,7 +128,7 @@ int nfc_platform_nfcid1_default_bytes_get(uint8_t * const buf,
 	uint32_t nfc_tag_header[3];
 
 	err = nfc_platform_tagheaders_get(nfc_tag_header);
-	if (err != NRFX_SUCCESS) {
+	if (err != 0) {
 		return err;
 	}
 
