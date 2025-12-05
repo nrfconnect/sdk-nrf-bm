@@ -24,6 +24,7 @@
 #include <bm/softdevice_handler/nrf_sdh.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
 
+#include <zephyr/irq.h>
 #include <zephyr/sys/ring_buffer.h>
 #include <zephyr/toolchain.h>
 #include <zephyr/logging/log.h>
@@ -299,6 +300,7 @@ static void bond_delete(uint16_t peer_id, void *ctx)
 {
 	uint32_t nrf_err;
 	uint16_t peer_conn_handle;
+	unsigned int key;
 
 	LOG_DBG("Attempting to delete bond.");
 	if (peer_id != PM_PEER_ID_INVALID) {
@@ -310,10 +312,10 @@ static void bond_delete(uint16_t peer_id, void *ctx)
 		}
 
 		if (peer_conn_handle == conn_handle) {
-			NRFX_CRITICAL_SECTION_ENTER();
+			key = irq_lock();
 			(void)ring_buf_put(&peers_to_delete_on_disconnect,
 					   (void *)&peer_id, sizeof(uint16_t));
-			NRFX_CRITICAL_SECTION_EXIT();
+			irq_unlock(key);
 			return;
 		}
 
@@ -329,15 +331,16 @@ static void delete_disconnected_bonds(void)
 	uint16_t peer_id;
 	uint32_t nrf_err;
 	bool peer_to_delete;
+	unsigned int key;
 
 	while (!ring_buf_is_empty(&peers_to_delete_on_disconnect)) {
-		NRFX_CRITICAL_SECTION_ENTER();
+		key = irq_lock();
 		if (!ring_buf_is_empty(&peers_to_delete_on_disconnect)) {
 			(void)ring_buf_get(&peers_to_delete_on_disconnect,
 					   (uint8_t *)&peer_id, sizeof(uint16_t));
 			peer_to_delete = true;
 		}
-		NRFX_CRITICAL_SECTION_EXIT();
+		irq_unlock(key);
 
 		if (!peer_to_delete) {
 			return;
@@ -355,6 +358,7 @@ static void delete_requesting_bond(const struct ble_bms *bms)
 {
 	uint32_t nrf_err;
 	uint16_t peer_id;
+	unsigned int key;
 
 	LOG_INF("Client requested that bond to current device deleted");
 	nrf_err = pm_peer_id_get(bms->conn_handle, &peer_id);
@@ -365,9 +369,9 @@ static void delete_requesting_bond(const struct ble_bms *bms)
 
 	LOG_INF("Adding peer id %d to list to delete", peer_id);
 
-	NRFX_CRITICAL_SECTION_ENTER();
+	key = irq_lock();
 	(void)ring_buf_put(&peers_to_delete_on_disconnect, (void *)&peer_id, sizeof(uint16_t));
-	NRFX_CRITICAL_SECTION_EXIT();
+	irq_unlock(key);
 }
 
 static void delete_all_bonds(const struct ble_bms *bms)
@@ -389,6 +393,7 @@ static void delete_all_except_requesting_bond(const struct ble_bms *bms)
 	uint32_t nrf_err;
 	uint16_t peer_conn_handle;
 	uint16_t peer_id;
+	unsigned int key;
 
 	LOG_INF("Client requested that all bonds except current bond be deleted");
 
@@ -402,10 +407,10 @@ static void delete_all_except_requesting_bond(const struct ble_bms *bms)
 		/* Do nothing if this is our own bond. */
 		if (peer_conn_handle != bms->conn_handle) {
 			if (peer_conn_handle == conn_handle) {
-				NRFX_CRITICAL_SECTION_ENTER();
+				key = irq_lock();
 				(void)ring_buf_put(&peers_to_delete_on_disconnect,
 						   (void *)&peer_id, sizeof(uint16_t));
-				NRFX_CRITICAL_SECTION_EXIT();
+				irq_unlock(key);
 			} else {
 				bond_delete(peer_id, NULL);
 			}
