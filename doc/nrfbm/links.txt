@@ -7,6 +7,8 @@
 
 .. _`GitHub`: https://github.com/
 .. _`sdk-nrf-bm`: https://github.com/nrfconnect/sdk-nrf-bm
+.. _`nrfx repository`: https://github.com/NordicSemiconductor/nrfx/tree/master/doc
+.. _`sdk-nrfxlib`: https://github.com/nrfconnect/sdk-nrfxlib
 
 .. ### Source: docs.nordicsemi
 
@@ -91,3 +93,4 @@
 .. ### Other links
 
 .. _`Bluetooth Core Specification`: https://www.bluetooth.org/en-us/specification/adopted-specifications
+.. _`Bond Management Service Specification`: https://www.bluetooth.com/specifications/specs/bond-management-service-1-0-1/
