@@ -5,6 +5,8 @@
 #
 menuconfig BM_SCHEDULER
 	bool "Event scheduler"
+	# Memory management is available without multi-threading
+	depends on KERNEL_MEM_POOL
 	help
 	  A library to defer event processing to main().
 
