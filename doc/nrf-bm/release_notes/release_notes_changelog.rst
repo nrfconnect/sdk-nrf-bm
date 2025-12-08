@@ -110,6 +110,13 @@ Peripheral samples
 Bluetooth LE samples
 --------------------
 
+* Updated the following samples and applications that do not support pairing to call the :c:func:`sd_ble_gatts_sys_attr_set` function only in response to the :c:macro:`BLE_GATTS_EVT_SYS_ATTR_MISSING` event and not as a response to a :c:macro:`BLE_GAP_EVT_CONNECTED` event:
+
+   * :ref:`ug_dfu_firmware_loader` (Bluetooth LE)
+   * :ref:`ble_lbs_sample`
+   * :ref:`ble_nus_sample`
+   * :ref:`ble_mcuboot_recovery_entry_sample`
+
 * :ref:`ble_cgms_sample` sample:
 
    * Removed the call to the :c:func:`sd_ble_gatts_sys_attr_set` function from the main source file.

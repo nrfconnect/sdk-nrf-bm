@@ -58,11 +58,6 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 	{
 		LOG_INF("Peer connected");
 		conn_handle = evt->evt.gap_evt.conn_handle;
-		nrf_err = sd_ble_gatts_sys_attr_set(evt->evt.gap_evt.conn_handle, NULL, 0, 0);
-
-		if (nrf_err) {
-			LOG_ERR("Failed to set system attributes, nrf_error %#x", nrf_err);
-		}
 		break;
 	}
 
