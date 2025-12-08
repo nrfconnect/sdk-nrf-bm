@@ -31,7 +31,8 @@ LINES_FOR_REVOCED_KEYS = [
     "*Unable to find bootable image*",
 ]
 LINES_FOR_KEY_VERIFICATION_FAIL = [
-    "*Starting bootloader*",
+    # First line is not always printed to the console
+    # "*Starting bootloader*",
     "*ED25519 signature verification failed -149*",
     "*Error: no bootable configuration found*",
     "*Unable to find bootable image*",
