@@ -43,6 +43,8 @@ Using a key in a project
 ************************
 
 Once a key has been generated, it can be used in a project by setting the :kconfig:option:`SB_CONFIG_BM_BOOTLOADER_MCUBOOT_SIGNATURE_KEY_FILE` sysbuild Kconfig option to the absolute path of the generated ``.pem`` key file.
+For most of the samples, you must create a :file:`sysbuild.conf` file in your application directory and add the sysbuild configuration here.
+You can also provide the sysbuild Kconfig option during compilation.
 
 .. _ug_bootloader_kmu:
 
@@ -78,12 +80,18 @@ MCUboot can invalidate image verification keys through the ``CONFIG_BOOT_KEYS_RE
 Enable this option during the MCUboot build process if there is a risk that images signed with a compromised key might contain critical vulnerabilities.
 The revocation of keys is triggered when both the firmware loader and SoftDevice are using a newer key.
 
-Number of available key slots is set by ``CONFIG_BOOT_SIGNATURE_KMU_SLOTS`` Kconfig option. These slots has to be properly provisioned. For more information refer to `Performing KMU provisioning`_.
+The number of available key slots is set by the ``CONFIG_BOOT_SIGNATURE_KMU_SLOTS`` Kconfig option.
+These slots have to be properly provisioned.
+For more information refer to `Performing KMU provisioning`_.
 
 .. caution::
    You must enable the ``CONFIG_BOOT_KEYS_REVOCATION`` Kconfig option when creating your project.
    If you have not activated this option initially, you cannot enable it later.
-   Without the option, this functionality unavailable and potentially exposes your project to security issues.
+   Without the option, this functionality is unavailable and will potentially expose your project to security issues.
 
 A valid signature verification must precede any key invalidation.
 The last remaining key cannot be invalidated.
+
+To enable the Kconfig options for the MCUboot image, edit the :file:`sysbuild/mcuboot.conf` file in your application directory.
+For most of the samples, you must create the :file:`sysbuild` folder and the :file:`sysbuild/mcuboot.conf` file.
+This file applies to the MCUboot image only and is edited the same way as the :file:`prj.conf` file is used for your application image.
