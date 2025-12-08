@@ -110,6 +110,11 @@ Peripheral samples
 Bluetooth LE samples
 --------------------
 
+* :ref:`ble_hrs_sample` sample:
+
+   * Removed redundant logging of authentication status from the main source file.
+     Authentication status is logged by :ref:`lib_peer_manager` library.
+
 * :ref:`ble_nus_central_sample` sample:
 
    * Fixed the disconnect button handler to only disconnect on button press, and not on button release.

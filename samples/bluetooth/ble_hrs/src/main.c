@@ -232,15 +232,6 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		nrf_gpio_pin_write(BOARD_PIN_LED_1, !BOARD_LED_ACTIVE_STATE);
 		break;
 
-	case BLE_GAP_EVT_AUTH_STATUS:
-		LOG_INF("Authentication status: %#x",
-		       evt->evt.gap_evt.params.auth_status.auth_status);
-		break;
-
-	case BLE_GAP_EVT_SEC_PARAMS_REQUEST:
-		LOG_INF("BLE_GAP_EVT_SEC_PARAMS_REQUEST");
-		break;
-
 	case BLE_GAP_EVT_PASSKEY_DISPLAY:
 		LOG_INF("Passkey: %.*s", BLE_GAP_PASSKEY_LEN,
 			evt->evt.gap_evt.params.passkey_display.passkey);
