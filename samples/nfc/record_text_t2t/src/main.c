@@ -19,7 +19,7 @@
 
 #include <board-config.h>
 
-LOG_MODULE_REGISTER(app, CONFIG_APP_NFC_TEXT_RECORD_LOG_LEVEL);
+LOG_MODULE_REGISTER(app, CONFIG_APP_NFC_TEXT_RECORD_T2T_LOG_LEVEL);
 
 #define MAX_REC_COUNT		3
 #define NDEF_MSG_BUF_SIZE	128
@@ -154,7 +154,7 @@ int main(void)
 {
 	uint32_t len = sizeof(ndef_msg_buf);
 
-	LOG_INF("Starting NFC Text Record sample");
+	LOG_INF("Starting NFC Text Record sample for Type 2 Tag");
 
 	/* Configure LED-pins as outputs */
 	led_init();

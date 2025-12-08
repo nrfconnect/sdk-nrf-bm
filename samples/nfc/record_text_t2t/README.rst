@@ -1,13 +1,13 @@
-.. _record_text_sample:
+.. _record_text_t2t_sample:
 
-NFC: Text record
-################
+NFC: Text record for Type 2 Tag
+###############################
 
 .. contents::
    :local:
    :depth: 2
 
-The NFC Text record sample shows how to use the NFC tag to expose a text record to NFC polling devices.
+The NFC Text record for Type 2 Tag sample shows how to use the NFC tag to expose a text record on a Type 2 Tag to NFC polling devices.
 It uses the :ref:`lib_nfc_ndef`.
 
 Requirements
