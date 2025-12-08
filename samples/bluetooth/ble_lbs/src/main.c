@@ -68,7 +68,6 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		break;
 
 	case BLE_GATTS_EVT_SYS_ATTR_MISSING:
-		LOG_INF("BLE_GATTS_EVT_SYS_ATTR_MISSING");
 		/* No system attributes have been stored */
 		nrf_err = sd_ble_gatts_sys_attr_set(conn_handle, NULL, 0, 0);
 		if (nrf_err) {
