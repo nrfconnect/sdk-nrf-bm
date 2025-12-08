@@ -201,10 +201,6 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		LOG_INF("Peer connected");
 		ble_nus_max_data_len = BLE_NUS_MAX_DATA_LEN_CALC(BLE_GATT_ATT_MTU_DEFAULT);
 		conn_handle = evt->evt.gap_evt.conn_handle;
-		nrf_err = sd_ble_gatts_sys_attr_set(conn_handle, NULL, 0, 0);
-		if (nrf_err) {
-			LOG_ERR("Failed to set system attributes, nrf_error %#x", nrf_err);
-		}
 
 		nrf_err = ble_qwr_conn_handle_assign(&ble_qwr, conn_handle);
 		if (nrf_err) {
