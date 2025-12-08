@@ -80,13 +80,6 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		break;
 	}
 
-	case BLE_GAP_EVT_AUTH_STATUS:
-	{
-		LOG_INF("Authentication status %#x",
-			evt->evt.gap_evt.params.auth_status.auth_status);
-		break;
-	}
-
 	case BLE_GAP_EVT_SEC_PARAMS_REQUEST:
 	{
 		/* Pairing not supported */
