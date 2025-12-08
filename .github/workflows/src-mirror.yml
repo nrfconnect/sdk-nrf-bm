@@ -39,4 +39,4 @@ jobs:
           artifactory-pass: ${{ secrets.COM_NORDICSEMI_FILES_PASSWORD }}
           stable: ${{ env.STABLE }}
           repository-type: 'nrf-bm'
-          toolchain-version: 'v3.2.0-rc1'
+          toolchain-version: 'v3.2.0-rc2'
