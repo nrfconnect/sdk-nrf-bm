@@ -362,12 +362,6 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		if (nrf_err) {
 			LOG_ERR("Failed to assign BLE CGMS conn handle, nrf_error %#x", nrf_err);
 		}
-
-		nrf_err = sd_ble_gatts_sys_attr_set(conn_handle, NULL, 0, 0);
-		if (nrf_err) {
-			LOG_ERR("Failed to set system attributes, nrf_error %#x", nrf_err);
-		}
-
 		break;
 	case BLE_GAP_EVT_DISCONNECTED:
 		LOG_INF("Disconnected");

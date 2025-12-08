@@ -110,6 +110,11 @@ Peripheral samples
 Bluetooth LE samples
 --------------------
 
+* :ref:`ble_cgms_sample` sample:
+
+   * Removed the call to the :c:func:`sd_ble_gatts_sys_attr_set` function from the main source file.
+     The :ref:`lib_peer_manager` library takes care of calling this function when :ref:`lib_peer_manager` is used.
+
 * :ref:`ble_hrs_sample` sample:
 
    * Removed redundant logging of authentication status from the main source file.
