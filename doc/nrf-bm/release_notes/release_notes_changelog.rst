@@ -117,6 +117,14 @@ Bluetooth LE samples
    * :ref:`ble_nus_sample`
    * :ref:`ble_mcuboot_recovery_entry_sample`
 
+* Removed the authentication status logging from the following samples and applications that do not support pairing (do not use the :ref:`lib_peer_manager` library):
+
+   * :ref:`ug_dfu_firmware_loader` (Bluetooth LE)
+   * :ref:`ble_lbs_sample`
+   * :ref:`ble_nus_sample`
+   * :ref:`ble_pwr_profiling_sample`
+   * :ref:`ble_mcuboot_recovery_entry_sample`
+
 * :ref:`ble_cgms_sample` sample:
 
    * Removed the call to the :c:func:`sd_ble_gatts_sys_attr_set` function from the main source file.
