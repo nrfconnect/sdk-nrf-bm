@@ -1,8 +1,8 @@
 sample:
-  description: NFC Records text sample
-  name: NFC Records text
+  description: NFC Records text sample for Type 2 Tag
+  name: NFC Records text for Type 2 Tag
 tests:
-  sample.nfc.record_text:
+  sample.nfc.record_text_t2t:
     sysbuild: true
     build_only: true
     integration_platforms:

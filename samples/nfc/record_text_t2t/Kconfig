@@ -4,12 +4,12 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-menu "NFC Text Record sample"
+menu "NFC Text Record sample for Type 2 Tag"
 
-module=APP_NFC_TEXT_RECORD
-module-str=NFC Text Record Sample
+module=APP_NFC_TEXT_RECORD_T2T
+module-str=NFC Text Record Sample for Type 2 Tag
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
-endmenu # "NFC Text Record sample"
+endmenu # "NFC Text Record sample for Type 2 Tag"
 
 source "Kconfig.zephyr"
