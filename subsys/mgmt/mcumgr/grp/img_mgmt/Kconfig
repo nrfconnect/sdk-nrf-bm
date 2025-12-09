@@ -24,6 +24,9 @@ menuconfig MCUMGR_GRP_IMG
 	help
 	  Enables MCUmgr handlers for image management
 
+config MCUMGR_GRP_IMG_USE_BUFFERED_WRITES
+	bool "split writes"
+
 if MCUMGR_GRP_IMG
 
 config MCUMGR_GRP_IMG_UPDATABLE_IMAGE_NUMBER
