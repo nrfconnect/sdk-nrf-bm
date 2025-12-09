@@ -85,9 +85,18 @@ Build system
 DFU
 ===
 
-* Support for KMU usage for MCUboot keys has been added, along with west auto-provisioning support (``west flash --erase`` or ``west flash --recover`` must be used during first programming of a board to program the KMU with the keys).
-  This feature can be controlled with sysbuild Kconfig options :kconfig:option:`SB_CONFIG_BM_BOOTLOADER_MCUBOOT_SIGNATURE_USING_KMU` to use KMU for key storage and :kconfig:option:`SB_CONFIG_BM_BOOTLOADER_MCUBOOT_GENERATE_DEFAULT_KMU_KEYFILE` to auto-provision the KMU when using the above west flash commands.
-* The code for the UART MCUmgr application has now been refactored into a separate library to facilitate reuse in other applications.
+* Added:
+
+  * Support for KMU usage for MCUboot keys has been added, along with west auto-provisioning support (``west flash --erase`` or ``west flash --recover`` must be used during first programming of a board to program the KMU with the keys).
+    You can control this feature with sysbuild Kconfig options :kconfig:option:`SB_CONFIG_BM_BOOTLOADER_MCUBOOT_SIGNATURE_USING_KMU` to use KMU for key storage and :kconfig:option:`SB_CONFIG_BM_BOOTLOADER_MCUBOOT_GENERATE_DEFAULT_KMU_KEYFILE` to auto-provision the KMU when using the mentioned ``west flash`` commands.
+  * Support for setting up the DFU Device Bluetooth name remotely using MCUmgr.
+    You can enable this feature using the :kconfig:option:`SB_CONFIG_BM_APP_CAN_SETUP_FIRMWARE_LOADER_NAME` Kconfig option.
+
+* Updated:
+
+  * By refactoring the code for the UART MCUmgr application into a separate library to facilitate reuse in other applications.
+  * The MCUmgr image management to prevent erasing of the firmware loader by itself.
+    Such operation would break the DFU functionality.
 
 Logging
 =======
