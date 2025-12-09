@@ -77,7 +77,7 @@ Testing
    Optionally, specify the advertising name in the text field below and tap :guilabel:`Send Reset Command`.
 #. Observe in the terminal that the device reboots into the Firmware Loader mode and advertises with the advertising name specified or the default Firmware Loader name ``nRF_BM_MCUmgr``.
 #. Using the `nRF Connect Device Manager`_ mobile application, go back to the device list and refresh it by swiping down.
-   Connect to your device that now advertises with the default firmware loader name ``nRF_BM_MCUmgr``.
+   Connect to your device that now advertises with the advertising name specified or the default firmware loader name ``nRF_BM_MCUmgr``.
 #. Under the :guilabel:`image` tab, tap :guilabel:`Advanced`.
    Then, in the image control pane, tap :guilabel:`Read`.
    Observe that the details of the currently loaded application are displayed.
