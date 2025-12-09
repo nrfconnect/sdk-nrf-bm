@@ -1,5 +1,5 @@
-s115_9.0.0-4.prototype
-======================
+s115_9.0.0
+==========
 
 This version is a major release, providing support for nRF54L series devices.
 
@@ -32,16 +32,13 @@ SoftDevice properties
 
 * SoftDevice base address:
 
-  * nRF54L05: 0x062000 (``s115_nrf54l05_9.0.0-4.prototype_softdevice.hex``).
+  * nRF54L05: 0x062000 (``s115_nrf54l05_9.0.0_softdevice.hex``).
 
-  * nRF54L10: 0x0E2000 (``s115_nrf54l10_9.0.0-4.prototype_softdevice.hex``).
+  * nRF54L10: 0x0E2000 (``s115_nrf54l10_9.0.0_softdevice.hex``).
 
-  * nRF54L15: 0x162000 (``s115_nrf54l15_9.0.0-4.prototype_softdevice.hex``).
+  * nRF54L15: 0x162000 (``s115_nrf54l15_9.0.0_softdevice.hex``).
 
-* The Firmware ID of this SoftDevice is 0x301F.
-
-New Features
--------------
+* The Firmware ID of this SoftDevice is 0x3024.
 
 Changes
 -------
@@ -135,8 +132,6 @@ Limitations
 
 Known Issues
 ------------
-
-* SoftDevice
 
 * LL
 
