@@ -125,6 +125,7 @@ int bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void
 	}
 
 	return bm_storage_backend_write(storage, dest, src, len, ctx);
+	//return 0;
 }
 
 int bm_storage_erase(const struct bm_storage *storage, uint32_t addr, uint32_t len, void *ctx)
