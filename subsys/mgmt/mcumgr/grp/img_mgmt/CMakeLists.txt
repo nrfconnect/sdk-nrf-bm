@@ -11,7 +11,7 @@ zephyr_library_named(mgmt_mcumgr_grp_img)
 zephyr_library_sources(
   ${ZEPHYR_BASE}/subsys/mgmt/mcumgr/grp/img_mgmt/src/zephyr_img_mgmt.c
   ${ZEPHYR_BASE}/subsys/mgmt/mcumgr/grp/img_mgmt/src/img_mgmt_util.c
-  ${ZEPHYR_BASE}/subsys/mgmt/mcumgr/grp/img_mgmt/src/img_mgmt_state.c
+  src/img_mgmt_state.c
   ${ZEPHYR_BASE}/subsys/mgmt/mcumgr/grp/img_mgmt/src/img_mgmt.c
 )
 
