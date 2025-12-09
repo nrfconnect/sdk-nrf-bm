@@ -45,8 +45,13 @@ static bool adv_mode_is_directed(enum ble_adv_mode mode)
 {
 	switch (mode) {
 	case BLE_ADV_MODE_DIRECTED_HIGH_DUTY:
+		if (IS_ENABLED(CONFIG_BLE_ADV_DIRECTED_ADVERTISING_HIGH_DUTY)) {
+			return true;
+		} __fallthrough;
 	case BLE_ADV_MODE_DIRECTED:
-		return true;
+		if (IS_ENABLED(CONFIG_BLE_ADV_DIRECTED_ADVERTISING)) {
+			return true;
+		} __fallthrough;
 	default:
 		return false;
 	}
@@ -55,6 +60,14 @@ static bool adv_mode_is_directed(enum ble_adv_mode mode)
 static bool adv_mode_has_allow_list(enum ble_adv_mode mode)
 {
 	switch (mode) {
+	case BLE_ADV_MODE_DIRECTED_HIGH_DUTY:
+		if (IS_ENABLED(CONFIG_BLE_ADV_DIRECTED_ADVERTISING_HIGH_DUTY)) {
+			return false;
+		} __fallthrough;
+	case BLE_ADV_MODE_DIRECTED:
+		if (IS_ENABLED(CONFIG_BLE_ADV_DIRECTED_ADVERTISING)) {
+			return false;
+		} __fallthrough;
 	case BLE_ADV_MODE_FAST:
 	case BLE_ADV_MODE_SLOW:
 		return true;
