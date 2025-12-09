@@ -57,6 +57,7 @@ Apache-2.0: |
   ^nrf-bm/subsys/mgmt/mcumgr/transport/src/smp.c
   ^nrf-bm/subsys/mgmt/mcumgr/util/CMakeLists.txt
   ^nrf-bm/sysbuild/Kconfig.bm
+  ^nrf-bm/subsys/mgmt/mcumgr/grp/img_mgmt/src/img_mgmt_state.c
   ^nrf-bm/subsys/mgmt/mcumgr/transport/src/bm_uart_mcumgr.c
   ^nrf-bm/subsys/mgmt/mcumgr/transport/src/smp_uart.c
   ^nrf-bm/subsys/fs/bm_zms/
