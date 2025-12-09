@@ -146,7 +146,7 @@ Libraries
 * ``ble_adv`` library:
 
   * Changed the default advertising name to ``nRF_BM_device``.
-  * Corrected the :kconfig:option:`BLE_ADV_DIRECTED_ADVERTISING_HIGH_DUTY` Kconfig option.
+  * Corrected the :kconfig:option:`CONFIG_BLE_ADV_DIRECTED_ADVERTISING_HIGH_DUTY` Kconfig option.
 
 ..
 
