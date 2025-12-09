@@ -89,6 +89,8 @@ struct bm_lpuarte_config {
  * @param[in] lpu Low Power UARTE driver instance structure.
  * @param[in] lpu_cfg Low Power UARTE driver instance configuration structure.
  * @param[in] event_handler Event handler provided by the user.
+ *
+ * @returns 0 on success. Otherwise a negative errno.
  */
 int bm_lpuarte_init(struct bm_lpuarte *lpu, struct bm_lpuarte_config *lpu_cfg,
 		    nrfx_uarte_event_handler_t  event_handler);
