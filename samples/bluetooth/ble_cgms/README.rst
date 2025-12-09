@@ -69,6 +69,23 @@ Overview
 
 The Continuous Glucose Monitoring Service (CGMS) is a service that exposes glucose and other data from a personal Continuous Glucose Monitoring sensor.
 
+User interface
+**************
+
+Button 0:
+   During bonding, press the button to confirm that the passkey is correct.
+   See `Testing`_.
+
+Button 1:
+   Increase the simulated glucose concentration.
+
+   Keep the button pressed while resetting the board to delete bonding information for all peers stored on the device.
+
+   During bonding, press it to reject the passkey.
+
+Button 3:
+   Decrease the simulated glucose concentration.
+
 Building and running
 ********************
 
@@ -89,6 +106,10 @@ Testing
    You can configure this name using the ``CONFIG_BLE_ADV_NAME`` Kconfig option.
    For information on how to do this, see `Configuring Kconfig`_.
 #. Connect to your device using the `nRF Toolbox`_ mobile application with the :guilabel:`Continuous Glucose` service.
+
+#. Your mobile phone should now attempt to pair with your device to encrypt the link.
+   When prompted, check that the passkeys are the same before confirming by pressing **Button 0** on the kit and confirming on the mobile phone.
+
 #. Observe that the text ``Connected`` and ``CGMS Start Session`` is printed in the COM listener.
 #. Observe that you receive the simulated battery status of the kit in the mobile application.
 #. Observe that you receive the CGMS records in the mobile application.
