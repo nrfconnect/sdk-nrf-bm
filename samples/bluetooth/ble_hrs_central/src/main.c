@@ -9,7 +9,7 @@
 #include <string.h>
 #include <nrf_soc.h>
 #include <hal/nrf_gpio.h>
-#include "ble.h"
+#include <ble.h>
 #include <bm/bm_buttons.h>
 
 #include <bm/bluetooth/ble_scan.h>
