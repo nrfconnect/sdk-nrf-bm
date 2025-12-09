@@ -361,34 +361,8 @@ img_mgmt_state_any_pending(void)
 int
 img_mgmt_slot_in_use(int slot)
 {
-	int image = img_mgmt_slot_to_image(slot);
-	int active_slot = img_mgmt_active_slot(image);
 
-#if !defined(CONFIG_MCUBOOT_BOOTLOADER_MODE_DIRECT_XIP) && \
-	!defined(CONFIG_MCUBOOT_BOOTLOADER_MODE_RAM_LOAD) && \
-	!defined(CONFIG_MCUBOOT_BOOTLOADER_MODE_RAM_LOAD_WITH_REVERT) && \
-	!defined(CONFIG_MCUBOOT_BOOTLOADER_MODE_FIRMWARE_UPDATER)
-	enum img_mgmt_next_boot_type type = NEXT_BOOT_TYPE_NORMAL;
-	int nbs = img_mgmt_get_next_boot_slot(image, &type);
-
-	if (slot == nbs && type == NEXT_BOOT_TYPE_REVERT) {
-		LOG_DBG("(%d) Refused erase revert", slot);
-		return 1;
-	}
-
-	if ((slot == nbs && type == NEXT_BOOT_TYPE_TEST) ||
-	    (active_slot != nbs && type == NEXT_BOOT_TYPE_NORMAL)) {
-#if defined(CONFIG_MCUMGR_GRP_IMG_ALLOW_ERASE_PENDING)
-		LOG_DBG("(%d) Allowed erase pending", slot);
-		/* Pass through to return (active_slot == slot) */
-#else
-		LOG_DBG("(%d) Refused erase pending", slot);
-		return 1;
-#endif
-	}
-#endif
-
-	return (active_slot == slot);
+	return true;
 }
 
 /**
