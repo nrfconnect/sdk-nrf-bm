@@ -179,6 +179,8 @@ enum img_mgmt_err_code_t {
 
 	/** Current active slot for image cannot be determined */
 	IMG_MGMT_ERR_ACTIVE_SLOT_NOT_KNOWN,
+
+	IMG_MGMT_ERR_BUSY,
 };
 
 /**

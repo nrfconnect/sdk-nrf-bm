@@ -59,14 +59,13 @@ int img_mgmt_write_confirmed(void);
 /**
  * @brief Reads the specified chunk of data from an image slot.
  *
- * @param slot		The index of the slot to read from.
  * @param offset	The offset within the slot to read from.
  * @param dst		On success, the read data gets written here.
  * @param num_bytes	The number of bytes to read.
  *
  * @return 0 on success, MGMT_ERR_[...] code on failure.
  */
-int img_mgmt_read(int slot, unsigned int offset, void *dst, unsigned int num_bytes);
+int img_mgmt_read(unsigned int offset, void *dst, unsigned int num_bytes);
 
 /**
  * @brief Writes the specified chunk of image data to slot 1.
