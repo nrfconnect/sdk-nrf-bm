@@ -283,6 +283,11 @@ Bluetooth LE Services
 
   * Fixed the GPIO trigger configuration when the ``active_state`` is ``BM_BUTTONS_ACTIVE_HIGH``
 
+Libraries for NFC
+-----------------
+
+* Added experimental support for Near Field Communication (NFC).
+
 Samples
 =======
 
@@ -301,6 +306,14 @@ Bluetooth LE samples
    * The :ref:`ble_cgms_sample` sample to require at least encryption without MITM tection to access the CGM service characteristics.
      This is done to conform to the CGMS specification.
    * The :ref:`ble_cgms_sample` sample to support pairing and bonding.
+
+NFC samples
+-----------
+
+* Added the following NFC samples:
+
+  * :ref:`record_text_t2t_sample` sample.
+  * :ref:`record_text_t4t_sample` sample.
 
 Peripheral samples
 ------------------
