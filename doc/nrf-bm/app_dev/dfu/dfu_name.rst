@@ -28,6 +28,7 @@ Otherwise, enable the following Kconfig options in both the application and the 
 * :kconfig:option:`CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME`- Enables setting handlers required for Bluetooth name sharing support.
 
 Additionally, the application must enable the MCUmgr settings group using the following Kconfig options:
+
 * :kconfig:option:`CONFIG_MCUMGR_GRP_SETTINGS`- Enables the MCUmgr settings group.
 * :kconfig:option:`CONFIG_SETTINGS_RUNTIME`- Allows runtime modification of settings.
 
