@@ -231,16 +231,18 @@ Libraries
 Bluetooth LE Services
 ---------------------
 
+* Added the :ref:`lib_ble_service_bms`.
+
 * Updated how to configure the characteristic security for the following Bluetooth LE services:
 
-  * :ref:`lib_ble_service_bas` service.
-  * :ref:`lib_ble_service_cgms` service.
-  * :ref:`lib_ble_service_dis` service.
-  * :ref:`lib_ble_service_hids` service.
-  * :ref:`lib_ble_service_hrs` service.
-  * :ref:`lib_ble_service_lbs` service.
-  * :ref:`lib_ble_service_mcumgr` service.
-  * :ref:`lib_ble_service_nus` service.
+  * :ref:`lib_ble_service_bas`
+  * :ref:`lib_ble_service_cgms`
+  * :ref:`lib_ble_service_dis`
+  * :ref:`lib_ble_service_hids`
+  * :ref:`lib_ble_service_hrs`
+  * :ref:`lib_ble_service_lbs`
+  * :ref:`lib_ble_service_mcumgr`
+  * :ref:`lib_ble_service_nus`
 
 * :ref:`lib_ble_service_bas` service:
 
@@ -286,10 +288,13 @@ Samples
 
 * Updated all sample Kconfig options to be prefixed with ``APP_``.
 
-Bluetooth samples
------------------
+Bluetooth LE samples
+--------------------
 
-* Added the :ref:`ble_radio_ntf_sample` sample.
+* Added the following Bluetooth LE samples:
+
+  * :ref:`ble_radio_ntf_sample` sample.
+  * :ref:`ble_bms_sample` sample.
 
 * Updated:
 
