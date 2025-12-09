@@ -15,8 +15,8 @@ S115 SoftDevice
    :glob:
    :caption: Subpages:
 
-   s115_9.0.0-4.prototype_release-notes.main.rst
-   s115_9.0.0-4.prototype_migration-document.main.rst
+   s115_9.0.0_release-notes.main.rst
+   s115_9.0.0_migration-document.main.rst
 
 .. _s145_docs:
 
@@ -28,5 +28,5 @@ S145 SoftDevice
    :glob:
    :caption: Subpages:
 
-   s145_9.0.0-4.prototype_release-notes.main.rst
-   s145_9.0.0-4.prototype_migration-document.main.rst
+   s145_9.0.0_release-notes.main.rst
+   s145_9.0.0_migration-document.main.rst

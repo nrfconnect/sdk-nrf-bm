@@ -65,8 +65,8 @@ if kconfig_mapping:
 external_content_contents = [
     (NRF_BM_BASE / "doc" / "nrf-bm", "*"),
     (NRF_BM_BASE, "samples/**/*.rst"),
-    (NRF_BM_BASE / "components" / "softdevice" / "s115" / "doc", "s115_9.0.0-4.*.main.rst"),
-    (NRF_BM_BASE / "components" / "softdevice" / "s145" / "doc", "s145_9.0.0-4.*.main.rst"),
+    (NRF_BM_BASE / "components" / "softdevice" / "s115" / "doc", "s115*.main.rst"),
+    (NRF_BM_BASE / "components" / "softdevice" / "s145" / "doc", "s145*.main.rst"),
 ]
 
 external_content_keep = ["versions.txt"]
