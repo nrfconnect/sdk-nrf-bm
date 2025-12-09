@@ -18,8 +18,8 @@
 #include <ble.h>
 #include <ble_gap.h>
 #include <ble_gatts.h>
+#include <bm/bluetooth/services/common.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
-#include "common.h"
 
 #ifdef __cplusplus
 extern "C" {
