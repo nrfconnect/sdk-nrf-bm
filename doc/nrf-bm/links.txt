@@ -44,6 +44,10 @@
 .. _`SoftDevice Controller`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrfxlib/softdevice_controller/doc/softdevice_controller.html#:~:text=For%20the%20nRF54L%20Series%3A
 .. _`Multiprotocol Service Layer`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrfxlib/mpsl/doc/mpsl.html#:~:text=For%20the%20nRF54L%20Series%3A
 .. _`SoftDevice Specification`: https://docs.nordicsemi.com/bundle/sds_s115/page/SDS/s1xx/s115.html
+.. _`S115 SoftDevice Specification`: https://docs.nordicsemi.com/bundle/sds_s115/page/SDS/s1xx/s115.html
+.. _`S145 SoftDevice Specification`: https://docs.nordicsemi.com/bundle/sds_s145/page/SDS/s1xx/s145.html
+.. _`S115 SoftDevice API Documentation`: https://docs.nordicsemi.com/bundle/s115_api/page/topics.html
+.. _`S145 SoftDevice API Documentation`: https://docs.nordicsemi.com/bundle/s145_api/page/topics.html
 
 .. ### Samples
 

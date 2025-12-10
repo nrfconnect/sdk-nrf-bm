@@ -7,6 +7,15 @@ API documentation
    :local:
    :depth: 2
 
+.. _api_softdevice:
+
+SoftDevice
+**********
+
+`S115 SoftDevice API Documentation`_
+
+`S145 SoftDevice API Documentation`_
+
 .. _api_libs:
 
 Libraries
