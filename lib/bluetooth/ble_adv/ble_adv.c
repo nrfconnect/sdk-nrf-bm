@@ -337,6 +337,8 @@ uint32_t ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 {
 	uint32_t nrf_err;
 	struct ble_adv_evt adv_evt;
+	ble_gap_adv_data_t *adv_data;
+
 	if (!ble_adv) {
 		return NRF_ERROR_NULL;
 	}
@@ -354,6 +356,8 @@ uint32_t ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 	/* Reset peer address */
 	memset(&ble_adv->peer_address, 0, sizeof(ble_adv->peer_address));
 
+	adv_data = &ble_adv->adv_data;
+
 	/* If `mode` is initially directed advertising (and that's supported)
 	 * ask the application for a peer address
 	 */
@@ -362,6 +366,16 @@ uint32_t ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 			ble_adv->peer_addr_reply_expected = true;
 			adv_evt.evt_type = BLE_ADV_EVT_PEER_ADDR_REQUEST;
 			ble_adv->evt_handler(ble_adv, &adv_evt);
+
+			if (ble_adv->peer_addr_reply_expected == false) {
+				/* Peer address was set by the application. Use it. */
+				ble_adv->adv_params.p_peer_addr = &ble_adv->peer_address;
+				adv_data = NULL;
+			} else {
+				/* No peer address was supplied. Skip directed advertising. */
+				ble_adv->peer_addr_reply_expected = false;
+				mode = BLE_ADV_MODE_FAST;
+			}
 		}
 	}
 
@@ -436,7 +450,7 @@ uint32_t ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 	}
 
 	if (mode != BLE_ADV_MODE_IDLE) {
-		nrf_err = sd_ble_gap_adv_set_configure(&ble_adv->adv_handle, &ble_adv->adv_data,
+		nrf_err = sd_ble_gap_adv_set_configure(&ble_adv->adv_handle, adv_data,
 						       &ble_adv->adv_params);
 		if (nrf_err) {
 			LOG_ERR("Failed to set advertising data, nrf_error %#x", nrf_err);

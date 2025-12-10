@@ -18,9 +18,23 @@
 #define  MAX_ADV_MODES 5
 uint16_t ble_adv_evt_type;
 
+const ble_gap_addr_t test_addr = {
+	.addr_id_peer = false,
+	.addr_type = BLE_GAP_ADDR_TYPE_RANDOM_STATIC,
+	.addr = {0x66, 0x55, 0x44, 0x33, 0x22, 0x11},
+};
+
 static void ble_adv_evt_handler(struct ble_adv *adv, const struct ble_adv_evt *adv_evt)
 {
 	ble_adv_evt_type = adv_evt->evt_type;
+
+	switch (adv_evt->evt_type) {
+	case BLE_ADV_EVT_PEER_ADDR_REQUEST:
+		ble_adv_peer_addr_reply(adv, &test_addr);
+		break;
+	default:
+		break;
+	}
 }
 
 void test_ble_adv_conn_cfg_tag_set(void)
@@ -233,11 +247,11 @@ void test_ble_adv_start(void)
 			TEST_ASSERT_TRUE(ble_adv_evt_type == BLE_ADV_EVT_IDLE);
 		}
 		if (mode[i] == BLE_ADV_MODE_DIRECTED_HIGH_DUTY) {
-			TEST_ASSERT_TRUE(ble_adv.peer_addr_reply_expected == true);
+			TEST_ASSERT_TRUE(ble_adv.peer_addr_reply_expected == false);
 			TEST_ASSERT_TRUE(ble_adv_evt_type == BLE_ADV_EVT_DIRECTED_HIGH_DUTY);
 		}
 		if (mode[i] == BLE_ADV_MODE_DIRECTED) {
-			TEST_ASSERT_TRUE(ble_adv.peer_addr_reply_expected == true);
+			TEST_ASSERT_TRUE(ble_adv.peer_addr_reply_expected == false);
 			TEST_ASSERT_TRUE(ble_adv_evt_type == BLE_ADV_EVT_DIRECTED);
 		}
 		if (mode[i] == BLE_ADV_MODE_FAST) {

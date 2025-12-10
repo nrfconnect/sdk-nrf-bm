@@ -139,7 +139,10 @@ Libraries
      * The ``slave_conn_int`` member in the :c:struct:`ble_adv_data` structure to :c:member:`ble_adv_data.periph_conn_int`.
      * The ``CONFIG_BLE_ADV_USE_WHITELIST`` Kconfig option to :kconfig:option:`CONFIG_BLE_ADV_USE_ALLOW_LIST`.
 
-   * Fixed an issue with the allow list functionality that made it possible for non-allow-listed devices to connect if advertising was started in either directed or directed high duty mode, but the directed modes had been disabled with Kconfig options.
+   * Fixed:
+
+     * An issue with the allow list functionality that made it possible for non-allow-listed devices to connect if advertising was started in either directed or directed high duty mode, but the directed modes had been disabled with Kconfig options.
+     * Two minor issues with the directed advertising set configuration that caused directed advertising to not work as intended.
 
 * :ref:`lib_ble_conn_params` library:
 
