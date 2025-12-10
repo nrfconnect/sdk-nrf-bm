@@ -94,6 +94,7 @@ doxyrunner_projects = {
 doxybridge_projects = {
     "nrf-bm": _doxyrunner_outdir,
     "s115": utils.get_builddir() / "html" / "s115",
+    "s145": utils.get_builddir() / "html" / "s145",
 }
 
 # Options for html_redirect ----------------------------------------------------

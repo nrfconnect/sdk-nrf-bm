@@ -25,7 +25,7 @@ They will not be available for application to use.
 The SoftDevice is reusing both the `SoftDevice Controller`_ and the `Multiprotocol Service Layer`_ from the nRF Connect SDK.
 See the Integration Notes documentation for these libraries to get an overview of the resource it will be using.
 
-For details on SoftDevice behavior, see the `SoftDevice Specification`_.
+For details on SoftDevice behavior, see the `S115 SoftDevice Specification`_.
 
 nrfx
 ****
