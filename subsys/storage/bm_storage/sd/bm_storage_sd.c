@@ -229,11 +229,21 @@ int bm_storage_backend_init(struct bm_storage *storage)
 	return 0;
 }
 
+int bm_storage_backend_uninit(struct bm_storage *storage)
+{
+	if ((bm_storage_sd.current_operation.storage == storage) &&
+	    (bm_storage_sd.queue_state != QUEUE_IDLE)) {
+		return -EBUSY;
+	}
+
+	memset(storage, 0x00, sizeof(*storage));
+
+	return 0;
+}
+
 int bm_storage_backend_read(const struct bm_storage *storage, uint32_t src, void *dest,
 			    uint32_t len)
 {
-	}
-
 	/* SoftDevice expects this alignment. */
 	if (!is_aligned32(src)) {
 		return -EFAULT;
