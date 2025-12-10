@@ -64,6 +64,16 @@ Drivers
 
 No changes since the latest nRF Connect SDK Bare Metal release.
 
+Subsystems
+==========
+
+Storage
+=======
+
+* :ref:`lib_storage`:
+
+   * Updated the :c:func:`bm_storage_init` function to return an error when the instance is already initialized.
+
 Libraries
 =========
 
