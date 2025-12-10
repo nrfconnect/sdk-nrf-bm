@@ -79,6 +79,87 @@ jobs:
 
           zip -rq "${ARCHIVE}" .
 
+      - name: Prepare Zoomin upload
+        if: ${{ github.event_name == 'push' }}
+        working-directory: sdk-nrf-bm/nrf-bm
+        run: |
+          PUBLISH="$PWD/publish"
+          mkdir -p "$PUBLISH"
+
+          # Doxygen APIs combined with Sphinx
+          declare -a SPHINX_DOXYGEN=("nrf-bm")
+
+          # Doxygen APIs standalone
+          declare -a DOXYGEN=("s115")
+
+          mkdir doc/_build/html-doxygen
+
+          for docset in "${SPHINX_DOXYGEN[@]}"; do
+            OUTDIR=doc/_build/html-doxygen/$docset-apis
+            mv doc/_build/html/$docset/doxygen/html "$OUTDIR"
+
+            # Populate custom.properties, tags.yml
+            cp doc/_zoomin/$docset.apis.custom.properties "$OUTDIR/custom.properties"
+            sed -i 's/__VERSION__/'"$VERSION"'/g' "$OUTDIR/custom.properties"
+
+            cp doc/_zoomin/$docset.apis.tags.yml "$OUTDIR/tags.yml"
+            sed -i 's/__VERSION__/'"$VERSION"'/g' "$OUTDIR/tags.yml"
+
+            # Patch links from Sphinx to other Doxygen APIs (combined)
+            find doc/_build/html/$docset -type f -name "*.html" -exec \
+              sed -ri "/href=\"([^\"]+)\/([a-z]+)\/doxygen\/html\/([^\"]+)\"/{s//href=\"..\/..\/\1\/\2-apis-$VERSION\/page\/\3\"/g; :a s/__/_/g;ta; }" {} \;
+
+            for doxset in "${DOXYGEN[@]}"; do
+              # Patch links from Sphinx to other Doxygen APIs (standalone)
+              find doc/_build/html/$docset -type f -name "*.html" -exec \
+                sed -ri "/href=\"([^\"]+)\/$doxset\/html\/([^\"]+)\"/{s//href=\"..\/..\/\1\/$doxset-apis-$VERSION\/page\/\2\"/g; :a s/__/_/g;ta; }" {} \;
+            done
+
+            # Patch links from Sphinx to same docset Doxygen APIs
+            find doc/_build/html/$docset -type f -name "*.html" -exec \
+              sed -ri "/href=\"([^\"]+)\/doxygen\/html\/([^\"]+)\"/{s//href=\"\1\/..\/..\/..\/$docset-apis-$VERSION\/page\/\2\"/g; :a s/__/_/g;ta; }" {} \;
+
+            pushd "$OUTDIR"
+            ARCHIVE="$docset-apis-$VERSION.zip"
+            zip -rq "$ARCHIVE" .
+            mv "$ARCHIVE" "$PUBLISH"
+            popd
+          done
+
+          for docset in "${DOXYGEN[@]}"; do
+            OUTDIR=doc/_build/html-doxygen/$docset-apis
+            mv doc/_build/html/$docset/html "$OUTDIR"
+
+            # Populate custom.properties, tags.yml
+            cp doc/_zoomin/$docset.apis.custom.properties "$OUTDIR/custom.properties"
+            sed -i 's/__VERSION__/'"$VERSION"'/g' "$OUTDIR/custom.properties"
+
+            cp doc/_zoomin/$docset.apis.tags.yml "$OUTDIR/tags.yml"
+            sed -i 's/__VERSION__/'"$VERSION"'/g' "$OUTDIR/tags.yml"
+
+            pushd "$OUTDIR"
+            ARCHIVE="$docset-apis-$VERSION.zip"
+            zip -rq "$ARCHIVE" .
+            mv "$ARCHIVE" "$PUBLISH"
+            popd
+          done
+
+          # nRF Bare Metal
+          OUTDIR=doc/_build/html
+
+          # Populate custom.properties, tags.yml
+          cp doc/_zoomin/nrf-bm.custom.properties "$OUTDIR/custom.properties"
+          sed -i 's/__VERSION__/'"$VERSION"'/g' "$OUTDIR/custom.properties"
+
+          cp doc/_zoomin/nrf-bm.tags.yml "$OUTDIR/tags.yml"
+          sed -i 's/__VERSION__/'"$VERSION"'/g' "$OUTDIR/tags.yml"
+
+          ARCHIVE="nrf-bm-$VERSION.zip"
+          pushd "$OUTDIR"
+          zip -rq "$ARCHIVE" .
+          mv "$ARCHIVE" "$PUBLISH"
+          popd
+
       - name: Find nRF Connect SDK Bare Metal Edited Documents
         working-directory: sdk-nrf-bm/nrf-bm
         run: |
@@ -90,7 +171,7 @@ jobs:
       - name: Stage files for publish
         working-directory: sdk-nrf-bm/nrf-bm
         run: |
-          mkdir publish
+          mkdir -p publish
           cp doc/_build/html/monitor_*.txt publish/
           cp doc/_build/html/*.zip publish/
           if [[ -f doc/_build/html/pr.txt ]]; then cp doc/_build/html/pr.txt publish/; fi
