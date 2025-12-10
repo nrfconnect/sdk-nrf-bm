@@ -72,7 +72,9 @@ Storage
 
 * :ref:`lib_storage`:
 
-   * Updated the :c:func:`bm_storage_init` function to return an error when the instance is already initialized.
+   Updated:
+     * The :c:func:`bm_storage_init` function to return an error when the instance is already initialized.
+     * The SoftDevice backend to support deinitialization.
 
 Libraries
 =========
