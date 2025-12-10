@@ -253,7 +253,12 @@ add_doxygen_docset(nrf-bm ${NRF_BM_BASE} ${NRF_BM_VERSION})
 #-------------------------------------------------------------------------------
 # docset: s115
 
-add_doxygen_docset(s115 ${NRF_BM_BASE} "9.0.0-3.prototype" STANDALONE)
+add_doxygen_docset(s115 ${NRF_BM_BASE} "9.0.0" STANDALONE)
+
+#-------------------------------------------------------------------------------
+# docset: s145
+
+add_doxygen_docset(s145 ${NRF_BM_BASE} "9.0.0" STANDALONE)
 
 #-------------------------------------------------------------------------------
 # docset: kconfig
@@ -290,7 +295,7 @@ function(add_doc_dependencies docset)
   endif()
 endfunction()
 
-add_doc_dependencies(nrf-bm kconfig-all s115)
+add_doc_dependencies(nrf-bm kconfig-all s115 s145)
 
 add_custom_target(build-all ALL)
 add_dependencies(build-all
@@ -299,6 +304,7 @@ add_dependencies(build-all
     nrf-bm-all
     kconfig-all
     s115
+    s145
 )
 
 add_custom_target(linkcheck)
