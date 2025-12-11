@@ -90,7 +90,7 @@ jobs:
           declare -a SPHINX_DOXYGEN=("nrf-bm")
 
           # Doxygen APIs standalone
-          declare -a DOXYGEN=("s115")
+          declare -a DOXYGEN=("s115" "s145")
 
           mkdir doc/_build/html-doxygen
 
