@@ -3,7 +3,7 @@
 NFC samples
 ###########
 
-This section lists the available samples for the NFC.
+This section lists the available samples for the Near Field Communication (NFC) protocol.
 
 .. toctree::
    :maxdepth: 1

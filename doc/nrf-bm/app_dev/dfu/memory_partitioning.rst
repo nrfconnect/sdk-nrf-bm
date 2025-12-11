@@ -103,48 +103,55 @@ The placement of the SoftDevice in memory is predetermined and must align with s
 
 - **System Metadata**: Reserves 0.5 kB at the top of the memory.
 - **MCUboot_SD - TLV Area**: Also reserves 0.5 kB.
-- **SD_StartAddr**: Must align on a 2 kB memory boundary as specified in the SoftDevice release notes.
+- **SD_StartAddr**: See the SoftDevice release notes for details on size and start address.
 
 The size of the SoftDevice is adjusted taking into account the above alignment and space reservations.
 
 Partition size reference
 ************************
 
-The following table shows the recommended sizes for each partition when using the single-bank Device Firmware Update (DFU) process.
+The table below lists the partition size information for configuration setup with single-bank Device Firmware Update (DFU).
+The recommended sizes are based on the configuration used in |BMshort|.
 
-+--------------------------+---------------------+-----------------------+-------------------------+
-| Partition name           | Content             | Recommended size |br| | Minimum size |br|       |
-|                          |                     | (Development)         | (Release)               |
-+==========================+=====================+=======================+=========================+
-| ``boot_partition``       | MCUboot             | 31 kB                 | 21 kB (using KMU) |br|  |
-|                          |                     |                       | 26 kB (without KMU)     |
-+--------------------------+---------------------+-----------------------+-------------------------+
-| ``slot0_partition``      | Main application    |                       |                         |
-+--------------------------+---------------------+-----------------------+-------------------------+
-| ``slot1_partition``      | Firmware loader     | 48 kB (Minimum)       | 32 kB (recommended)     |
-+--------------------------+---------------------+-----------------------+-------------------------+
-| ``softdevice_partition`` | SoftDevice          |                       |                         |
-+--------------------------+---------------------+-----------------------+-------------------------+
-| ``metadata_partition``   | Stores metadata     | 0.5 kB                | 0.5 kB                  |
-+--------------------------+---------------------+-----------------------+-------------------------+
++--------------------------+---------------------+-----------------------+-----------------------+-------------------------+
+| Partition name           | Content             | DK board              | Development           | Release                 |
++==========================+=====================+=======================+=======================+=========================+
+| ``boot_partition``       | MCUboot             | 31 kB                 | 24 kB                 | 21 kB (using KMU) |br|  |
+|                          |                     |                       |                       | 26 kB (without KMU)     |
++--------------------------+---------------------+-----------------------+-----------------------+-------------------------+
+| ``storage_partition``    | App data storage    | 8 kB                  | \-                    | \-                      |
++--------------------------+---------------------+-----------------------+-----------------------+-------------------------+
+| ``slot0_partition``      | Main application    | \-                    | \-                    | \-                      |
++--------------------------+---------------------+-----------------------+-----------------------+-------------------------+
+| ``slot1_partition``      | Firmware loader     | 64 kB                 | 48 kB                 | 32 kB                   |
++--------------------------+---------------------+-----------------------+-----------------------+-------------------------+
+| ``softdevice_partition`` | SoftDevice          | \-                    | \-                    | \-                      |
++--------------------------+---------------------+-----------------------+-----------------------+-------------------------+
+| ``metadata_partition``   | Stores metadata     | 0.5 kB                | \-                    | \-                      |
++--------------------------+---------------------+-----------------------+-----------------------+-------------------------+
 
 .. note::
    The sizes and configurations of slot0 and slot1 are asymmetrical.
 
-The boards in |BMshort| have a reserved size of 31 kB for MCUboot and 64 kB for FW loader (including MCUboot meta data).
-The sizes are set large enough to include logging and other debugging information required for development.
-If you want to keep optimization and log level equal to the default in the sample but want to maximize the size available for application and storage, you can adjust the partition as recommended in Development column.
-The Release column shows the recommended size to be used, given that the project is optimized as described.
-You cannot update the ``boot_partition`` after release.
-Set the size to match the size given by the project.
-Set the size for the ``slot1_partition`` to accommodate for updates.
-There is a recommended size for both partitions, but you need to consider how much space is needed for each partition in your project.
+* **DK board** - Represents the partition size that you can find in the board definition files (.dts) that have been defined for the MCUboot board target in |BMshort|.
+  These sizes are not optimized but set large enough to provide enough memory to do development on multiple domains without having to adjust the partition size.
 
-If you are not using a DK board target, refer to :ref:`ug_dfu_preparing_dfu_board` for how to partition the memory using the devicetree.
+* **Development** - Represents the partition size that can be used to maximize the application space (``slot0_partition`` and ``storage_partition``) when running with default configuration of the MCUboot and firmware loader project.
+  This setting does not include extra space in the ``slot1_partition`` to accommodate for updates without the risk of having to adjust the partition size.
 
-Reference sizes of the MCUboot and the Firmware loader can be achieved using the default configuration of :ref:`ble_mcuboot_recovery_entry_sample`
+* **Release** - Represents the partition size recommended when the MCUboot and firmware loader projects are optimized for release.
+  See :ref:`dfu_memory_partitioning_optimize` for details.
+  The ``boot_partition`` (MCUboot) cannot be updated after the release and the size should be set to match the project.
+  The partition size set for ``slot1_partition`` (firmware loader) must contain extra space to accommodate for later updates.
 
-For minimal size, amend the Firmware loader configuration using the following Kconfig options:
+.. _dfu_memory_partitioning_optimize:
+
+Optimizing your project for release
+***********************************
+
+Reference sizes of the MCUboot and the firmware loader can be achieved using the default configuration of :ref:`ble_mcuboot_recovery_entry_sample`.
+
+For minimal size, amend the firmware loader configuration using the following Kconfig options:
 
 * Enable :kconfig:option:`CONFIG_LTO`
 * Enable :kconfig:option:`CONFIG_ISR_TABLES_LOCAL_DECLARATION`
@@ -164,5 +171,7 @@ For minimal size, amend the MCUboot configuration using the following Kconfig op
 * Disable :kconfig:option:`CONFIG_BM_UARTE_CONSOLE`
 
 .. note::
-   Applying these configurations to the project might cause a few warnings on log's Kconfig assignments.
+   Applying these configurations to the project might cause a few warnings on the log's Kconfig assignments.
    You can ignore these warnings.
+
+If you are not using a DK board target, refer to :ref:`ug_dfu_preparing_dfu_board` for how to partition the memory using the devicetree.

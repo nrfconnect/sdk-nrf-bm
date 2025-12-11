@@ -1,6 +1,8 @@
-.. _nrf_bm_release_notes_0999:
+:orphan:
 
-Release Notes for |BMlong| v0.9.99
+.. _nrf_bm_release_notes_1099:
+
+Release Notes for |BMlong| v1.0.99
 ##################################
 
 The most relevant changes that are present on the main branch of the nRF Connect SDK Bare Metal, as compared to the latest official release, are tracked in this file.
@@ -27,327 +29,87 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 S145 SoftDevice
 ===============
 
-* Added the S145 SoftDevice for central support.
+No changes since the latest nRF Connect SDK Bare Metal release.
 
 SoftDevice Handler
 ==================
 
-* Added:
-
-  * The :kconfig:option:`CONFIG_NRF_SDH_CLOCK_HFINT_CALIBRATION_INTERVAL` Kconfig option to control the HFINT calibration interval.
-  * The :kconfig:option:`CONFIG_NRF_SDH_CLOCK_HFCLK_LATENCY` Kconfig option to inform the SoftDevice about the ramp-up time of the high-frequency crystal oscillator.
-  * The :kconfig:option:`CONFIG_NRF_SDH_SOC_RAND_SEED` Kconfig option to control whether to automatically respond to SoftDevice random seed requests.
-  * Priority levels for SoftDevice event observers: HIGHEST, HIGH, USER, USER_LOW, LOWEST.
-  * The :c:func:`nrf_sdh_ble_evt_to_str` function to stringify a BLE event.
-  * The :c:func:`nrf_sdh_soc_evt_to_str` function to stringify a SoC event.
-  * The :c:func:`nrf_sdh_observer_ready` function to ready an observer for a SoftDevice state change.
-
-* Updated:
-
-  * The return type of the :c:type:`nrf_sdh_state_evt_handler_t` event handler to ``int``.
-  * The LF clock source selection with a choice and tied it to the choice of GRTC timer source :kconfig:option:`CONFIG_NRF_GRTC_TIMER_SOURCE`.
-    The default GRTC timer source of the ``bm_nrf54l15dk`` board target is LFXO (:kconfig:option:`CONFIG_NRF_GRTC_TIMER_SOURCE_LFXO`).
-    Select the :kconfig:option:`CONFIG_NRF_GRTC_TIMER_SOURCE_LFLPRC` Kconfig option if it is desired to run the GRTC from RC.
-  * The :kconfig:option:`CONFIG_NRF_SDH_CLOCK_LF_RC_CTIV` and :kconfig:option:`CONFIG_NRF_SDH_CLOCK_LF_RC_TEMP_CTIV` Kconfig options with ranges, default values, help text, and conditional prompt.
-    These Kconfig options are zero if the LF clock source is XO and are only user-configurable when the LF clock source is RC.
-  * The :kconfig:option:`CONFIG_NRF_SDH_CLOCK_LF_ACCURACY` Kconfig option with a Kconfig choice to limit the selection to valid values.
-
-* Removed:
-
-  * The ``nrf_sdh_ble_app_ram_start_get`` function, use ``DT_REG_ADDR(DT_CHOSEN(zephyr_sram))`` instead.
-  * The ``NRF_SDH_STATE_REQ_OBSERVER`` macro and relative data types.
-    Register a state event observer and return non-zero to :c:enum:`NRF_SDH_STATE_EVT_ENABLE_PREPARE`
-    or :c:enum:`NRF_SDH_STATE_EVT_DISABLE_PREPARE` to abort state changes instead.
-  * The ``nrf_sdh_request_continue`` function.
-  * The ``nrf_sdh_is_enabled`` function, use the SoftDevice native function :c:func:`sd_softdevice_is_enabled` instead.
+No changes since the latest nRF Connect SDK Bare Metal release.
 
 Boards
 ======
 
-* Added
-
-  * The nRF54L15 DK board variants for the S145 SoftDevice.
-  * The :file:`bm_nrf54l15dk_nrf54l051015_oscillator.dtsi` file with HF and LF external oscillator configuration choices for the nRF54L05, nRF54L10, and nRF54L15.
-
-* MCUboot partition size has been reduced from 36 KiB to 31 KiB for the following board targets:
-
-  * ``bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot``
-  * ``bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot``
-  * ``bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot``
-
-* Removed unused peripheral nodes from Devicetree.
+No changes since the latest nRF Connect SDK Bare Metal release.
 
 Build system
 ============
 
-* Added automatic flashing of SoftDevice files for projects that do not use MCUboot when ``west flash`` is invoked.
+No changes since the latest nRF Connect SDK Bare Metal release.
 
 DFU
 ===
 
-* Added:
+No changes since the latest nRF Connect SDK Bare Metal release.
 
-  * Support for KMU usage for MCUboot keys has been added, along with west auto-provisioning support (``west flash --erase`` or ``west flash --recover`` must be used during first programming of a board to program the KMU with the keys).
-    You can control this feature with sysbuild Kconfig options :kconfig:option:`SB_CONFIG_BM_BOOTLOADER_MCUBOOT_SIGNATURE_USING_KMU` to use KMU for key storage and :kconfig:option:`SB_CONFIG_BM_BOOTLOADER_MCUBOOT_GENERATE_DEFAULT_KMU_KEYFILE` to auto-provision the KMU when using the mentioned ``west flash`` commands.
-  * Support for setting up the DFU Device Bluetooth name remotely using MCUmgr.
-    You can enable this feature using the :kconfig:option:`SB_CONFIG_BM_APP_CAN_SETUP_FIRMWARE_LOADER_NAME` Kconfig option.
+Interrupts
+==========
 
-* Updated:
-
-  * By refactoring the code for the UART MCUmgr application into a separate library to facilitate reuse in other applications.
-  * The MCUmgr image management to prevent erasing of the firmware loader by itself.
-    Such operation would break the DFU functionality.
+No changes since the latest nRF Connect SDK Bare Metal release.
 
 Logging
 =======
 
-* Removed ``module-dep=LOG`` in Kconfig files.
-  This is no longer defined.
+No changes since the latest nRF Connect SDK Bare Metal release.
 
 Drivers
 =======
 
-* :ref:`driver_lpuarte` driver:
-
-  * Added the :kconfig:option:`CONFIG_BM_SW_LPUARTE_HFXO` Kconfig option to enable the HFCLK when the SoftDevice is enabled.
+No changes since the latest nRF Connect SDK Bare Metal release.
 
 Libraries
 =========
 
-* Added the :ref:`lib_ble_radio_notification` library.
-
-* Updated the following libraries and Bluetooth LE services to return ``nrf_errors`` instead of ``errnos``:
-
-  * :ref:`lib_ble_adv` library.
-  * :ref:`lib_ble_conn_params` library.
-  * :ref:`lib_ble_gatt_queue` library.
-  * :ref:`lib_ble_queued_writes` library.
-  * :ref:`lib_ble_service_bas` service.
-  * :ref:`lib_ble_service_dis` service.
-  * :ref:`lib_ble_service_hrs` service.
-  * :ref:`lib_ble_service_lbs` service.
-  * :ref:`lib_ble_service_mcumgr` service.
-  * :ref:`lib_ble_service_nus` service.
-  * Bluetooth LE Record Access Control Point library.
-
-* :ref:`lib_ble_adv` library:
-
-   * Updated the advertising and scan response data encoder provided in the :file:`include/bm/bluetooth/ble_adv_data.h` file so that it can be used by enabling the :kconfig:option:`CONFIG_BLE_ADV_DATA` Kconfig option.
-     You can enable this without using the :kconfig:option:`CONFIG_BLE_ADV` Kconfig option.
-
-   * Renamed:
-
-     * The ``ble_adv_whitelist_reply`` function to :c:func:`ble_adv_allow_list_reply`.
-     * The ``ble_adv_restart_without_whitelist`` function to :c:func:`ble_adv_restart_without_allow_list`.
-     * The ``BLE_ADV_EVT_FAST_WHITELIST`` enumerator in the :c:enum:`ble_adv_evt_type` enumeration to :c:enumerator:`BLE_ADV_EVT_FAST_ALLOW_LIST`.
-     * The ``BLE_ADV_EVT_SLOW_WHITELIST`` enumerator in the :c:enum:`ble_adv_evt_type` enumeration to :c:enumerator:`BLE_ADV_EVT_SLOW_ALLOW_LIST`.
-     * The ``BLE_ADV_EVT_WHITELIST_REQUEST`` enumerator in the :c:enum:`ble_adv_evt_type` enumeration to :c:enumerator:`BLE_ADV_EVT_ALLOW_LIST_REQUEST`.
-     * The ``whitelist_reply_expected`` member in the :c:struct:`ble_adv` structure to :c:member:`ble_adv.allow_list_reply_expected`.
-     * The ``whitelist_temporarily_disabled`` member in the :c:struct:`ble_adv` structure to :c:member:`ble_adv.allow_list_temporarily_disabled`.
-     * The ``whitelist_in_use`` member in the :c:struct:`ble_adv` structure to :c:member:`ble_adv.allow_list_in_use`.
-     * The ``slave_conn_int`` member in the :c:struct:`ble_adv_data` structure to :c:member:`ble_adv_data.periph_conn_int`.
-     * The ``CONFIG_BLE_ADV_USE_WHITELIST`` Kconfig option to :kconfig:option:`CONFIG_BLE_ADV_USE_ALLOW_LIST`.
-
-   * Fixed:
-
-     * An issue with the allow list functionality that made it possible for non-allow-listed devices to connect if advertising was started in either directed or directed high duty mode, but the directed modes had been disabled with Kconfig options.
-     * Two minor issues with the directed advertising set configuration that caused directed advertising to not work as intended.
-
-* :ref:`lib_ble_conn_params` library:
-
-   * Added:
-
-    * Missing Kconfig dependencies.
-    * Error event.
-
-   * Updated the name of the ``id`` member in the :c:struct:`ble_conn_params_evt` structure to :c:member:`ble_conn_params_evt.evt_type`.
-
-* :ref:`lib_bm_zms` library:
-
-   * Added the struct :c:struct:`bm_zms_fs_config` for configuring a Zephyr Memory Storage file system instance at initialization.
-
-   * Updated:
-
-     * The :c:func:`bm_zms_mount` function to return ``-EFAULT`` when the input parameter ``fs`` is ``NULL``.
-     * The :c:func:`bm_zms_clear` function to return ``-EFAULT`` when the input parameter ``fs`` is ``NULL``.
-     * The :c:func:`bm_zms_write` function to return ``-EFAULT`` when the input parameter ``fs`` is ``NULL``.
-     * The :c:func:`bm_zms_delete` function to return ``-EFAULT`` when the input parameter ``fs`` is ``NULL``.
-     * The :c:func:`bm_zms_read` function to return ``-EFAULT`` when the input parameter ``fs`` is ``NULL``.
-     * The :c:func:`bm_zms_read_hist` function to return ``-EFAULT`` when the input parameter ``fs`` is ``NULL``.
-     * The :c:func:`bm_zms_get_data_length` function to return ``-EFAULT`` when the input parameter ``fs`` is ``NULL``.
-     * The :c:func:`bm_zms_calc_free_space` function to return ``-EFAULT`` when the input parameter ``fs`` is ``NULL``.
-     * The :c:func:`bm_zms_active_sector_free_space` function to return ``-EFAULT`` when the input parameter ``fs`` is ``NULL``.
-     * The :c:func:`bm_zms_mount` function to expect an additional input parameter of type pointer to struct :c:struct:`bm_zms_fs_config` for configuring a Zephyr Memory Storage file system instance at initialization.
-     * By renaming the type ``bm_zms_evt_id_t`` to enum :c:enum:`bm_zms_evt_type`.
-     * By renaming the type ``bm_zms_evt_t`` to struct :c:struct:`bm_zms_evt`.
-     * By renaming the event ``BM_ZMS_EVT_INIT`` to :c:enum:`BM_ZMS_EVT_MOUNT`.
-
-   * Removed:
-
-     * The ``CONFIG_BM_ZMS_MAX_USERS`` Kconfig option.
-       Now the library expects at most one callback for each instance of the struct :c:struct:`bm_zms_fs`.
-     * The ``bm_zms_init_flags.cb_registred`` member as it was not used anymore.
-     * The ``bm_zms_register`` function.
-       The event handler configuration is now done with the struct :c:struct:`bm_zms_fs_config`.
-     * The selection of the :kconfig:option:`CONFIG_EXPERIMENTAL` Kconfig option.
-
-* :ref:`lib_peer_manager` library:
-
-   * Updated:
-
-     * The ``CONFIG_PM_SERVICE_CHANGED_ENABLED`` Kconfig option is renamed to :kconfig:option:`CONFIG_PM_SERVICE_CHANGED`.
-     * The ``CONFIG_PM_PEER_RANKS_ENABLED`` Kconfig option is renamed to :kconfig:option:`CONFIG_PM_PEER_RANKS`.
-     * The ``CONFIG_PM_LESC_ENABLED`` Kconfig option is renamed to :kconfig:option:`CONFIG_PM_LESC`.
-     * The ``CONFIG_PM_RA_PROTECTION_ENABLED`` Kconfig option is renamed to :kconfig:option:`CONFIG_PM_RA_PROTECTION`.
-     * The :kconfig:option:`CONFIG_PM_SERVICE_CHANGED` Kconfig option to depend on the :kconfig:option:`CONFIG_NRF_SDH_BLE_SERVICE_CHANGED` Kconfig option.
-     * All instances of ``pm_peer_id_t`` to ``uint16_t`` and removed the ``pm_peer_id_t`` type.
-     * All instances of ``pm_store_token_t`` to ``uint32_t`` and removed the ``pm_store_token_t`` type.
-     * All instances of ``pm_sec_error_code_t`` to ``uint16_t`` and removed the ``pm_sec_error_code_t`` type.
-     * All instances of ``ble_gatt_db_srv_t`` to struct :c:struct:`ble_gatt_db_srv` and removed the ``ble_gatt_db_srv_t`` type.
-     * All instances of ``ble_gatt_db_char_t`` to struct :c:struct:`ble_gatt_db_char` and removed the ``ble_gatt_db_char_t`` type.
-     * All instances of ``pm_peer_id_list_skip_t`` to enum :c:enum:`pm_peer_id_list_skip` and removed the ``pm_peer_id_list_skip_t`` type.
-     * All instances of ``pm_peer_data_id_t`` to enum :c:enum:`pm_peer_data_id` and removed the ``pm_peer_data_id_t`` type.
-     * All instances of ``pm_conn_sec_procedure_t`` to enum :c:enum:`pm_conn_sec_procedure` and removed the ``pm_conn_sec_procedure_t`` type.
-     * All instances of ``pm_conn_sec_config_t`` to struct :c:struct:`pm_conn_sec_config` and removed the ``pm_conn_sec_config_t`` type.
-     * All instances of ``pm_peer_data_bonding_t`` to struct :c:struct:`pm_peer_data_bonding` and removed the ``pm_peer_data_bonding_t`` type.
-     * All instances of ``pm_peer_data_local_gatt_db_t`` to struct :c:struct:`pm_peer_data_local_gatt_db` and removed the ``pm_peer_data_local_gatt_db_t`` type.
-     * All instances of ``pm_privacy_params_t`` to :c:type:`ble_gap_privacy_params_t` and removed the ``pm_privacy_params_t`` type.
-     * All instances of ``pm_conn_sec_status_t`` to struct :c:struct:`pm_conn_sec_status` and removed the ``pm_conn_sec_status_t`` type.
-     * All instances of ``pm_evt_id_t`` to enum :c:enum:`pm_evt_id` and removed the ``pm_evt_id_t`` type.
-     * All instances of ``pm_conn_config_req_evt_t`` to struct :c:struct:`pm_conn_config_req_evt` and removed the ``pm_conn_config_req_evt_t`` type.
-     * All instances of ``pm_conn_sec_start_evt_t`` to struct :c:struct:`pm_conn_sec_start_evt` and removed the ``pm_conn_sec_start_evt_t`` type.
-     * All instances of ``pm_conn_secured_evt_t`` to struct :c:struct:`pm_conn_secured_evt` and removed the ``pm_conn_secured_evt_t`` type.
-     * All instances of ``pm_conn_secure_failed_evt_t`` to struct :c:struct:`pm_conn_secure_failed_evt` and removed the ``pm_conn_secure_failed_evt_t`` type.
-     * All instances of ``pm_conn_sec_params_req_evt_t`` to struct :c:struct:`pm_conn_sec_params_req_evt` and removed the ``pm_conn_sec_params_req_evt_t`` type.
-     * All instances of ``pm_peer_data_op_t`` to enum :c:enum:`pm_peer_data_op` and removed the ``pm_peer_data_op_t`` type.
-     * All instances of ``pm_peer_data_update_succeeded_evt_t`` to struct :c:struct:`pm_peer_data_update_succeeded_evt` and removed the ``pm_peer_data_update_succeeded_evt_t`` type.
-     * All instances of ``pm_peer_data_update_failed_t`` to struct :c:struct:`pm_peer_data_update_failed_evt` and removed the ``pm_peer_data_update_failed_t`` type.
-     * All instances of ``pm_failure_evt_t`` to struct :c:struct:`pm_failure_evt` and removed the ``pm_failure_evt_t`` type.
-     * All instances of ``pm_evt_t`` to struct :c:struct:`pm_evt` and removed the ``pm_evt_t`` type.
-     * The name of the ``pm_whitelist_get`` function to :c:func:`pm_allow_list_get`.
-     * The name of the ``pm_whitelist_set`` function to :c:func:`pm_allow_list_set`.
-     * The name of the ``PM_EVT_SLAVE_SECURITY_REQ`` enumerator in the :c:enum:`pm_evt_id` enumeration to :c:enumerator:`PM_EVT_PERIPHERAL_SECURITY_REQ`.
-     * The name of the ``slave_security_req`` member in the :c:struct:`pm_evt` structure to :c:member:`pm_evt.peripheral_security_req`.
-
-   * Removed the selection of the :kconfig:option:`CONFIG_EXPERIMENTAL` Kconfig option.
-
-* :ref:`lib_storage` library:
-
-  * Added the struct :c:struct:`bm_storage_config` for configuring a storage instance at initialization.
-
-  * Updated:
-
-    * To use errno instead of nrf_errors.
-    * The :c:func:`bm_storage_init` function to expect an additional input parameter of type pointer to struct :c:struct:`bm_storage_config` for configuring the storage instance that is being initialized.
-
-  * Fixed an issue where the :c:func:`bm_storage_erase` function caused a division-by-0 fault using the SD or RRAM backend.
+No changes since the latest nRF Connect SDK Bare Metal release.
 
 Bluetooth LE Services
 ---------------------
 
-* Added the :ref:`lib_ble_service_bms`.
-
-* Updated how to configure the characteristic security for the following Bluetooth LE services:
-
-  * :ref:`lib_ble_service_bas`
-  * :ref:`lib_ble_service_cgms`
-  * :ref:`lib_ble_service_dis`
-  * :ref:`lib_ble_service_hids`
-  * :ref:`lib_ble_service_hrs`
-  * :ref:`lib_ble_service_lbs`
-  * :ref:`lib_ble_service_mcumgr`
-  * :ref:`lib_ble_service_nus`
-
-* :ref:`lib_ble_service_bas` service:
-
-  * Added the error event to align event handling with other services.
-    The event is currently unused.
-
-* :ref:`lib_ble_service_hrs` service:
-
-  * Added the error event to align event handling with other services.
-    The event is currently unused.
-
-* :ref:`lib_ble_service_lbs` service:
-
-  * Added the error event to align event handling with other services.
-    The event is currently unused.
-
-* :ref:`lib_ble_service_nus` service:
-
-  * Fixed an issue where the client context was shared between all instances.
-  * Added the error event to align event handling with other services.
-  * Updated the name of the ``type`` member in the :c:struct:`ble_nus_evt` structure to :c:member:`ble_nus_evt.evt_type`.
-
-* :ref:`lib_ble_service_cgms` service:
-
-  * Updated the default characteristic security to encryption without MITM protection.
-    This is done to conform to the CGMS specification.
-
-* BLE Gatt Queue library:
-
-  * Updated the event handling to align with other libraries.
-    The :c:struct:`ble_gq_req` now takes an :c:type:`ble_gq_evt_handler_t` event handler and the :c:member:`ble_gq_req.ctx` context.
-
-* :ref:`lib_bm_scheduler` library:
-
-  * Renamed library from ``event_scheduler`` to ``bm_scheduler``.
-
-* :ref:`lib_bm_buttons` library:
-
-  * Fixed the GPIO trigger configuration when the ``active_state`` is ``BM_BUTTONS_ACTIVE_HIGH``
+No changes since the latest nRF Connect SDK Bare Metal release.
 
 Libraries for NFC
 -----------------
 
-* Added experimental support for Near Field Communication (NFC).
+No changes since the latest nRF Connect SDK Bare Metal release.
 
 Samples
 =======
 
-* Updated all sample Kconfig options to be prefixed with ``APP_``.
+No changes since the latest nRF Connect SDK Bare Metal release.
 
 Bluetooth LE samples
 --------------------
 
-* Added the following Bluetooth LE samples:
-
-  * :ref:`ble_radio_ntf_sample` sample.
-  * :ref:`ble_bms_sample` sample.
-
-* Updated:
-
-   * The :ref:`ble_cgms_sample` sample to require at least encryption without MITM tection to access the CGM service characteristics.
-     This is done to conform to the CGMS specification.
-   * The :ref:`ble_cgms_sample` sample to support pairing and bonding.
+No changes since the latest nRF Connect SDK Bare Metal release.
 
 NFC samples
 -----------
 
-* Added the following NFC samples:
-
-  * :ref:`record_text_t2t_sample` sample.
-  * :ref:`record_text_t4t_sample` sample.
+No changes since the latest nRF Connect SDK Bare Metal release.
 
 Peripheral samples
 ------------------
 
-* Added the :ref:`pwm_sample` sample.
-
-* :ref:`bm_lpuarte_sample` sample:
-
-  * Enabled the SoftDevice to request HFCLK in the :ref:`driver_lpuarte` driver.
+No changes since the latest nRF Connect SDK Bare Metal release.
 
 DFU samples
 -----------
 
-* Moved the MCUmgr samples to the :file:`applications/firmware_loader` folder.
+No changes since the latest nRF Connect SDK Bare Metal release.
 
 Subsystem samples
 -----------------
 
-* Moved the :ref:`bm_storage_sample` and :ref:`bm_zms_sample` samples to the :file:`samples/subsys` folder.
-* Removed the RRAM storage backend from the :ref:`bm_storage_sample` and :ref:`bm_zms_sample` samples.
+No changes since the latest nRF Connect SDK Bare Metal release.
 
 Known issues and limitations
 ============================
@@ -357,59 +119,4 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Documentation
 =============
 
-* Added:
-
-  * Documentation for the following libraries:
-
-    * :ref:`lib_bm_buttons`
-    * :ref:`lib_bm_timer`
-    * :ref:`lib_ble_adv`
-    * :ref:`lib_ble_gatt_queue`
-    * :ref:`lib_ble_queued_writes`
-    * :ref:`lib_bm_scheduler`
-    * :ref:`lib_sensorsim`
-    * :ref:`lib_storage`
-
-  * :ref:`S145 SoftDevice release notes and migration documents <s145_docs>`.
-
-Interrupts
-==========
-
-* Interrupts in nRF Connect SDK Bare Metal now use the IRQ vector table directly instead of the
-  software ISR table. This saves 8 bytes of memory per IRQ, which is approximately 2kB for the
-  nRF54L05, nRF54L10 and nRF54L15 Application core. This change requires applications change
-  from using :c:macro:`IRQ_CONNECT` to :c:macro:`IRQ_DIRECT_CONNECT` and
-  :c:macro:`ISR_DIRECT_DECLARE` when defining an ISR.
-
-  An ISR defined with :c:macro:`IRQ_CONNECT`, like:
-
-  .. code-block:: c
-
-     int main(void)
-     {
-             IRQ_CONNECT(
-                     NRFX_IRQ_NUMBER_GET(NRF_GPIOTE_INST_GET(20)),
-                     10,
-                     NRFX_GPIOTE_INST_HANDLER_GET(20),
-                     0,
-                     0
-             );
-
-  Must be defined like this:
-
-  .. code-block:: c
-
-     ISR_DIRECT_DECLARE(gpiote_20_direct_isr)
-     {
-             NRFX_GPIOTE_INST_HANDLER_GET(20)();
-             return 0;
-     }
-
-     int main(void)
-     {
-             IRQ_DIRECT_CONNECT(
-                     NRFX_IRQ_NUMBER_GET(NRF_GPIOTE_INST_GET(20)),
-                     10,
-                     gpiote_20_direct_isr,
-                     0
-             );
+No changes since the latest nRF Connect SDK Bare Metal release.

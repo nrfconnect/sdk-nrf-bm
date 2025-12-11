@@ -1,7 +1,7 @@
 .. _release_notes_bm:
 
-Release notes
-#############
+Releases and maturity
+#####################
 
 The following is a list of all release notes documents for various releases of the |BMlong|.
 
@@ -9,7 +9,8 @@ The following is a list of all release notes documents for various releases of t
    :maxdepth: 1
    :caption: Subpages:
 
-   release_notes/release_notes_changelog
+   release_notes/bm_software_maturity
+   release_notes/release_notes_1.0.0
    release_notes/release_notes_0.9.0
    release_notes/release_notes_0.8.0
    release_notes/release_notes_0.7.0

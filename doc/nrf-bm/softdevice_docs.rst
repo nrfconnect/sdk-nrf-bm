@@ -5,6 +5,8 @@ SoftDevice release notes and migration documents
 
 See the following documentation for the details regarding new releases of the SoftDevice.
 
+For additional documentation, see `S115 SoftDevice Specification`_.
+
 .. _s115_docs:
 
 S115 SoftDevice

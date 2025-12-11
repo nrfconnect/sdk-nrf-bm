@@ -13,13 +13,20 @@
 
 .. ### Source: docs.nordicsemi
 
+.. _`Nordic Semiconductor TechDocs`: https://docs.nordicsemi.com
+
 .. _`nRF Connect SDK NFC libraries`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/libraries/nfc/index.html
 .. _`Type 2 Tag nrfxlib documentation`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrfxlib/nfc/doc/type_2_tag.html
 .. _`Type 4 Tag nrfxlib documentation`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrfxlib/nfc/doc/type_4_tag.html
 .. _`NDEF library`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/libraries/nfc/ndef/index.html
 
 .. _`nRF54L15 DK`: https://docs.nordicsemi.com/bundle/ncs-latest/page/zephyr/boards/nordic/nrf54l15dk/doc/index.html#nrf54l15dk-nrf54l15
+.. _`nRF54L15 DK v1.0.0`: https://docs.nordicsemi.com/bundle/comp_matrix_nrf54l15/page/COMP/nrf54l15/nrf54l15_ic_rev_comp_with_dev_hw.html
 .. _`nRF54L15 DK v0.9.3`: https://docs.nordicsemi.com/bundle/comp_matrix_nrf54l15/page/COMP/nrf54l15/nrf54l15_ic_rev_comp_with_dev_hw.html
+
+.. _`v3.2.0 software maturity levels`: https://docs.nordicsemi.com/bundle/ncs-3.2.0/page/nrf/releases_and_maturity/software_maturity.html
+
+.. _`nRF54L15 Compatibility Matrix`: https://docs.nordicsemi.com/bundle/comp_matrix_nrf54l15/page/COMP/nrf54l15/nrf54l15_ble_qdid_qual_matrix.html
 
 .. ### Installation
 
@@ -95,7 +102,8 @@
 
 .. ### Release notes and migration
 
-.. _`nrfx migration guides`: https://github.com/NordicSemiconductor/nrfx/wiki/nrfx-2.11.0-to-3.0.0
+.. _`nrfx 3.0 migration guide`: https://github.com/NordicSemiconductor/nrfx/wiki/nrfx-2.11.0-to-3.0.0
+.. _`nrfx 4.0 migration guide`: https://github.com/NordicSemiconductor/nrfx/wiki/nrfx-3.14.0-to-4.0.0
 .. _`Migration notes - nRF5 SDK to nRF Connect SDK Bare Metal option`: https://docs.nordicsemi.com/bundle/nrf-bm-latest/page/migration/nrf5_bm_migration.html
 .. _`S115 9.0.0-3.prototype API reference`: https://docs.nordicsemi.com/bundle/s115_9.0.0-3.prototype_api/page/topics.html
 .. _`nRF5 SDK DFU memory layout`: https://docs.nordicsemi.com/bundle/sdk_nrf5_v17.1.0/page/lib_bootloader.html
