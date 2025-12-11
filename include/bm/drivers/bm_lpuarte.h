@@ -120,6 +120,8 @@ int bm_lpuarte_tx(struct bm_lpuarte *lpu, uint8_t const *data, size_t length, in
 /**
  * @brief Check if TX is in progress.
  *
+ * @param[in] lpu Low Power UARTE driver instance structure.
+ *
  * @retval true  if transfer in progress.
  * @retval false if no transfer in progress.
  */

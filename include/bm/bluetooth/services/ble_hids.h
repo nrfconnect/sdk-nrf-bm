@@ -720,13 +720,13 @@ void ble_hids_on_ble_evt(ble_evt_t const *ble_evt, void *context);
  * @param[out] hids HID Service structure. This structure will have to be supplied by the
  *                  application. It will be initialized by this function, and will later be
  *                  used to identify this particular service instance.
- * @param[in] hids_init Information needed to initialize the service.
+ * @param[in] hids_cfg Information needed to initialize the service.
  *
  * @retval NRF_SUCCESS On success.
  * @retval NRF_ERROR_NULL If @p hids or @p hids_config are @c NULL.
  * @retval NRF_ERROR_INVALID_PARAM Invalid parameters.
  */
-uint32_t ble_hids_init(struct ble_hids *hids, const struct ble_hids_config *hids_init);
+uint32_t ble_hids_init(struct ble_hids *hids, const struct ble_hids_config *hids_cfg);
 
 /**
  * @brief Function for sending Input Report.
@@ -752,9 +752,8 @@ uint32_t ble_hids_inp_rep_send(struct ble_hids *hids, uint16_t conn_handle,
  * @details Sends data on an Boot Keyboard Input Report characteristic.
  *
  * @param[in] hids HID Service structure.
- * @param[in] len Length of data to be sent.
- * @param[in] data Data to be sent.
- * @param[in] conn_handle  Connection handle, where the notification will be sent.
+ * @param[in] conn_handle Connection handle, where the notification will be sent.
+ * @param[in] report Boot keyboard input report.
  *
  * @retval NRF_SUCCESS On success.
  * @retval NRF_ERROR_NULL If @p hids or @p report are @c NULL.
@@ -769,7 +768,7 @@ uint32_t ble_hids_boot_kb_inp_rep_send(struct ble_hids *hids, uint16_t conn_hand
  * @details Sends data on an Boot Mouse Input Report characteristic.
  *
  * @param[in] hids HID Service structure.
- * @param[in] conn_handle Connection handle.
+ * @param[in] conn_handle Connection handle, where the notification will be sent.
  * @param[in] report Boot Mouse input report.
  *
  * @retval NRF_SUCCESS On success.

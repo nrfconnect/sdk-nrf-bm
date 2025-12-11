@@ -205,7 +205,7 @@ static void on_user_mem_release(struct ble_qwr *qwr, ble_common_evt_t const *evt
  * @brief Handle a prepare write event.
  *
  * @param[in] qwr QWR structure.
- * @param[in] evt WRITE event to be handled.
+ * @param[in] write_evt WRITE event to be handled.
  */
 static void on_prepare_write(struct ble_qwr *qwr, ble_gatts_evt_write_t const *write_evt)
 {
@@ -252,7 +252,7 @@ static void on_prepare_write(struct ble_qwr *qwr, ble_gatts_evt_write_t const *w
  * @brief Handle an execute write event.
  *
  * @param[in] qwr QWR structure.
- * @param[in] evt EXEC WRITE event to be handled.
+ * @param[in] write_evt EXEC WRITE event to be handled.
  */
 static void on_execute_write(struct ble_qwr *qwr, ble_gatts_evt_write_t const *write_evt)
 {
@@ -314,7 +314,7 @@ static void on_execute_write(struct ble_qwr *qwr, ble_gatts_evt_write_t const *w
  * @brief Handle a cancel write event.
  *
  * @param[in] qwr QWR structure.
- * @param[in] evt EXEC WRITE event to be handled.
+ * @param[in] write_evt EXEC WRITE event to be handled.
  */
 static void on_cancel_write(struct ble_qwr *qwr, ble_gatts_evt_write_t const *write_evt)
 {

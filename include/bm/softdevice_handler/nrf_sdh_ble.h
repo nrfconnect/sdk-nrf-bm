@@ -68,7 +68,7 @@ struct nrf_sdh_ble_evt_observer {
 /**
  * @brief Enable the SoftDevice Bluetooth stack.
  *
- * @param[in] conn_tag Connection configuration tag.
+ * @param[in] conn_cfg_tag Connection configuration tag.
  *
  * @retval 0 On success.
  */

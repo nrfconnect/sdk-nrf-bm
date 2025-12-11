@@ -187,7 +187,7 @@ uint32_t ble_conn_params_att_mtu_get(uint16_t conn_handle, uint16_t *att_mtu);
  * is signalled by the @ref BLE_CONN_PARAMS_EVT_DATA_LENGTH_UPDATED event.
  *
  * @param conn_handle Handle to the connection.
- * @param data_length Desired GAP data length.
+ * @param dl Desired GAP data length.
  *
  * @retval NRF_SUCCESS On success.
  * @retval NRF_ERROR_INVALID_PARAM Invalid data length or connection handle.
@@ -199,7 +199,7 @@ uint32_t ble_conn_params_data_length_set(uint16_t conn_handle,
  * @brief Retrieve the current GAP data length for a given connection.
  *
  * @param conn_handle Handle to the connection.
- * @param[out] data_length The data length value.
+ * @param[out] dl The data length value.
  *
  * @retval NRF_SUCCESS On success.
  * @retval NRF_ERROR_INVALID_PARAM Invalid connection handle.

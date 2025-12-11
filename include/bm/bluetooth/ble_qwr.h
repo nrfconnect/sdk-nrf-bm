@@ -158,7 +158,7 @@ struct ble_qwr_config {
  * @param[out] qwr Queued Writes structure. This structure must be supplied by the application. It
  *                 is initialized by this function and is later used to identify the particular
  *                 Queued Writes instance.
- * @param[in] qwr_init Initialization structure.
+ * @param[in] qwr_config Configuration structure.
  *
  * @retval NRF_SUCCESS If the Queued Writes module was initialized successfully.
  * @retval NRF_ERROR_NULL If @p qwr or @p qwr_init is @c NULL.
