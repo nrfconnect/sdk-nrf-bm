@@ -667,9 +667,9 @@ uint32_t pm_peer_data_delete(uint16_t peer_id, enum pm_peer_data_id data_id);
  * @details This function allocates a new peer ID and stores bonding data for the new peer. The
  *          bonding data is necessary to prevent ambiguity/inconsistency in peer data.
  *
+ * @param[out] new_peer_id   Peer ID for the new peer, or an existing peer if a match was found.
  * @param[in]  bonding_data  The bonding data of the new peer (must contain a public/static
  *                           address or a non-zero IRK).
- * @param[out] new_peer_id   Peer ID for the new peer, or an existing peer if a match was found.
  * @param[out] token         A token that identifies this particular store operation (storing the
  *                           bonding data). The token can be used to identify events that pertain
  *                           to this operation. This parameter can be NULL.
