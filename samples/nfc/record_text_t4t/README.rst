@@ -8,7 +8,7 @@ NFC: Text record for Type 4 Tag
    :depth: 2
 
 The NFC Text record for Type 4 Tag sample shows how to use the NFC tag to expose a text record on a Type 4 Tag to NFC polling devices.
-It uses the ``lib_nfc_ndef``.
+It uses the NFC Data Exchange Format (NDEF).
 
 Requirements
 ************
@@ -77,9 +77,9 @@ Dependencies
 
 This sample uses the following |NCS| libraries:
 
-* ``nfc_ndef_msg``
-* ``nfc_text``
-* ``nfc_t4t_ndef_file_readme``
+* NDEF messages
+* Text records
+* NDEF file
 
 In addition, it uses the :ref:`lib_nfc_t4t` from `sdk-nrfxlib`_.
 

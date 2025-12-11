@@ -3,6 +3,9 @@
 Integration notes
 #################
 
+When integrating the NFC libraries in your application, there are a few things to be aware of.
+See the following notes.
+
 .. contents::
    :local:
    :depth: 2
@@ -34,7 +37,7 @@ When integrating the NFC libraries in your application, be aware of the followin
 * The libraries require the NFCT driver from the `nrfx`_ repository.
 * The NFCT driver uses one Timer peripheral.
   To configure the timer instance, change ``NRFX_NFCT_CONFIG_TIMER_INSTANCE_ID`` in the :file:`nrfx_config.h` file.
-* Each library must be the only user of the NFCT peripheral and the chosen TIMER instance.
+* Each library must be the only user of the NFCT peripheral and of the chosen TIMER instance.
 * The libraries use an NFC Platform software module that handles clock control and interrupt routing.
   See the :ref:`lib_nfc_platform` section for details.
 

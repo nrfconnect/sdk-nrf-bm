@@ -47,9 +47,9 @@ Usage
 The library uses a callback function to handle write authorization.
 When it receives an Execute Write request, it calls the callback function with a :c:enum:`BLE_QWR_EVT_AUTH_REQUEST` event to determine whether the request should be accepted:
 
-* To authorize the request, the callback function must return :c:macro:`BLE_GATT_STATUS_SUCCESS`.
+* To authorize the request, the callback function must return ``BLE_GATT_STATUS_SUCCESS``.
   The module then writes all received data and notifies the GATT server that the data is ready to use by calling the callback function again, this time with a :c:enum:`BLE_QWR_EVT_EXECUTE_WRITE` event.
-* To reject the request (for example, because the received data is not valid or the application is busy), the callback function must return a BLE GATT status code other than :c:macro:`BLE_GATT_STATUS_SUCCESS`.
+* To reject the request (for example, because the received data is not valid or the application is busy), the callback function must return a BLE GATT status code other than ``BLE_GATT_STATUS_SUCCESS``.
   The module then deletes the received data.
 
 Dependencies
