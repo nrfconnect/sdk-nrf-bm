@@ -62,9 +62,7 @@ jobs:
             cd ../../../nordic-be-dev.zoominsoftware.io/doxygen/incoming
             put ${file}
             quit
-            EOF
-
-            rm ${file}
+          EOF
           done
 
           for file in docs/nrf-bm-*.zip; do
@@ -74,9 +72,7 @@ jobs:
             cd ../../../nordic-be-dev.zoominsoftware.io/sphinx-html/incoming
             put ${file}
             quit
-            EOF
-
-            rm ${file}
+          EOF
           done
 
       - name: Find Comment
