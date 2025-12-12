@@ -970,7 +970,8 @@ INPUT                  = @DOCSET_SOURCE_BASE@/include/ \
                          @DOCSET_SOURCE_BASE@/include/bm/fs \
                          @DOCSET_SOURCE_BASE@/include/bm/softdevice_handler \
                          @DOCSET_SOURCE_BASE@/include/bm/storage \
-                         @DOCSET_SOURCE_BASE@/doc/nrf-bm/doxygen/mainpage.dox
+                         @DOCSET_SOURCE_BASE@/doc/nrf-bm/doxygen/mainpage.dox \
+                         @DOCSET_SOURCE_BASE@/../nrfxlib/nfc/include
 
 # This tag can be used to specify the character encoding of the source files
 # that Doxygen parses. Internally Doxygen uses the UTF-8 encoding. Doxygen uses
