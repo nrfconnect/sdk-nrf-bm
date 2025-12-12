@@ -47,8 +47,8 @@
 .. _`SoftDevice Specification`: https://docs.nordicsemi.com/bundle/sds_s115/page/SDS/s1xx/s115.html
 .. _`S115 SoftDevice Specification`: https://docs.nordicsemi.com/bundle/sds_s115/page/SDS/s1xx/s115.html
 .. _`S145 SoftDevice Specification`: https://docs.nordicsemi.com/bundle/sds_s145/page/SDS/s1xx/s145.html
-.. _`S115 SoftDevice API Documentation`: https://docs.nordicsemi.com/bundle/s115_api/page/topics.html
-.. _`S145 SoftDevice API Documentation`: https://docs.nordicsemi.com/bundle/s145_api/page/topics.html
+.. _`S115 SoftDevice API Documentation`: https://docs.nordicsemi.com/bundle/s115-latest/page/index.html
+.. _`S145 SoftDevice API Documentation`: https://docs.nordicsemi.com/bundle/s145-latest/page/index.html
 
 .. ### Samples
 
