@@ -81,6 +81,6 @@ This sample uses the following |NCS| libraries:
 * ``nfc_text``
 * ``nfc_t4t_ndef_file_readme``
 
-In addition, it uses the Type 4 Tag library from `sdk-nrfxlib`_:
+In addition, it uses the :ref:`lib_nfc_t4t` from `sdk-nrfxlib`_.
 
-* ``nfc_api_type4``
+See :ref:`lib_nfc` for more information about the NFC libraries.

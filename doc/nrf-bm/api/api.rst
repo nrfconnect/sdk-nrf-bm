@@ -157,6 +157,23 @@ Sensor data simulator library
 
 .. doxygengroup:: sensorsim
 
+NFC
+***
+
+.. _nfc_api_type2:
+
+NFC Type 2 Tag library
+======================
+
+.. doxygengroup:: nfc_t2t_lib
+
+.. _nfc_api_type4:
+
+NFC Type 4 Tag library
+======================
+
+.. doxygengroup:: nfc_t4t_lib
+
 Services
 ********
 
