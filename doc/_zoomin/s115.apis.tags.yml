@@ -2,9 +2,7 @@
 
 # Tags for all topics:
 mapping_global:
-  - s115
   - s115-__VERSION__
-  - cluster-s115-__VERSION__
 
 # Tags for individual topics:
 mapping_topics: []
