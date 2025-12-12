@@ -168,7 +168,7 @@ INLINE_INHERITED_MEMB  = YES
 # shortest path that makes the file name unique will be used
 # The default value is: YES.
 
-FULL_PATH_NAMES        = YES
+FULL_PATH_NAMES        = NO
 
 # The STRIP_FROM_PATH tag can be used to strip a user-defined part of the path.
 # Stripping is only done if one of the specified strings matches the left-hand
@@ -189,7 +189,7 @@ STRIP_FROM_PATH        = @DOCSET_SOURCE_BASE@
 # specify the list of include paths that are normally passed to the compiler
 # using the -I flag.
 
-STRIP_FROM_INC_PATH    =
+STRIP_FROM_INC_PATH    = @DOCSET_SOURCE_BASE@/include/
 
 # If the SHORT_NAMES tag is set to YES, Doxygen will generate much shorter (but
 # less readable) file names. This can be useful is your file systems doesn't
@@ -786,7 +786,7 @@ SHOW_USED_FILES        = YES
 # (if specified).
 # The default value is: YES.
 
-SHOW_FILES             = YES
+SHOW_FILES             = NO
 
 # Set the SHOW_NAMESPACES tag to NO to disable the generation of the Namespaces
 # page. This will remove the Namespaces entry from the Quick Index and from the
@@ -1016,7 +1016,7 @@ FILE_PATTERNS          = *.h, *.dox
 # be searched for input files as well.
 # The default value is: NO.
 
-RECURSIVE              = NO
+RECURSIVE              = YES
 
 # The EXCLUDE tag can be used to specify files and/or directories that should be
 # excluded from the INPUT source files. This way you can easily exclude a
@@ -1137,7 +1137,7 @@ FILTER_SOURCE_PATTERNS =
 # (index.html). This can be useful if you have a project on for instance GitHub
 # and want to reuse the introduction page also for the Doxygen output.
 
-USE_MDFILE_AS_MAINPAGE = YES
+USE_MDFILE_AS_MAINPAGE =
 
 # The Fortran standard specifies that for fixed formatted Fortran code all
 # characters from position 72 are to be considered as comment. A common
@@ -1348,7 +1348,6 @@ HTML_EXTRA_STYLESHEET  = @NRF_BM_BASE@/doc/_doxygen/doxygen-awesome.css
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
 HTML_EXTRA_FILES       = @NRF_BM_BASE@/doc/_doxygen/doxygen-awesome-darkmode-toggle.js \
-                         @NRF_BM_BASE@/doc/_doxygen/doxygen-awesome-fragment-copy-button.js \
                          @NRF_BM_BASE@/doc/_doxygen/doxygen-awesome-paragraph-link.js \
                          @NRF_BM_BASE@/doc/_doxygen/doxygen-awesome-interactive-toc.js
 
@@ -2408,6 +2407,21 @@ INCLUDE_FILE_PATTERNS  =
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
 PREDEFINED             = __DOXYGEN__ \
+                         CONFIG_BLE_QWR_MAX_ATTR=1 \
+                         CONFIG_BLE_SCAN_FILTER=1 \
+                         CONFIG_BLE_SCAN_NAME_COUNT=1 \
+                         CONFIG_BLE_SCAN_SHORT_NAME_COUNT=1 \
+                         CONFIG_BLE_SCAN_ADDRESS_COUNT=1 \
+                         CONFIG_BLE_SCAN_UUID_COUNT=1 \
+                         CONFIG_BLE_SCAN_APPEARANCE_COUNT=1 \
+                         __cplusplus \
+                         "SVCALL(number, return_type, signature):= return_type signature" \
+                         BLE_STACK_SUPPORT_REQD \
+                         ENABLE_DEBUG_LOG_SUPPORT \
+                         SPI_MASTER_0_ENABLE \
+                         SPI_MASTER_1_ENABLE \
+                         ENABLE_DEBUG_LOG_SUPPORT \
+                         SUPPRESS_INLINE_IMPLEMENTATION
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
 # tag can be used to specify a list of macro names that should be expanded. The
