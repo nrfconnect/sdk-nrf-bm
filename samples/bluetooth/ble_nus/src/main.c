@@ -281,11 +281,6 @@ void on_conn_params_evt(const struct ble_conn_params_evt *evt)
 	}
 }
 
-/**
- * @brief BLE advertising event handler
- *
- * @param[in] evt BLE advertising event type.
- */
 static void ble_adv_evt_handler(struct ble_adv *adv, const struct ble_adv_evt *adv_evt)
 {
 	switch (adv_evt->evt_type) {
@@ -316,8 +311,6 @@ uint16_t ble_qwr_evt_handler(struct ble_qwr *qwr, const struct ble_qwr_evt *qwr_
 
 /**
  * @brief BLE NUS data handler
- *
- * @param[in] evt NUS event parameters.
  */
 static void ble_nus_evt_handler(struct ble_nus *nus, const struct ble_nus_evt *evt)
 {

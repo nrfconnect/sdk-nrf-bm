@@ -201,7 +201,7 @@ struct ble_nus {
  * @param[out] nus Nordic UART Service structure. This structure must be supplied
  *                 by the application. It is initialized by this function and will
  *                 later be used to identify this particular service instance.
- * @param[in] nus_init Information needed to initialize the service.
+ * @param[in] nus_config Information needed to initialize the service.
  *
  * @retval NRF_SUCCESS On success.
  * @retval NRF_ERROR_NULL If @p nus or @p nus_config is @c NULL.

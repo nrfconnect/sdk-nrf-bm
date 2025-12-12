@@ -32,4 +32,4 @@ Additionally, the application must enable the MCUmgr settings group using the fo
 * :kconfig:option:`CONFIG_MCUMGR_GRP_SETTINGS`- Enables the MCUmgr settings group.
 * :kconfig:option:`CONFIG_SETTINGS_RUNTIME`- Allows runtime modification of settings.
 
-This feature is used in the :ref:`ble_mcuboot_recovery_entry_sample`.
+This feature is used in the :ref:`ble_mcuboot_recovery_entry_sample` sample.

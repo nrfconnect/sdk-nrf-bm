@@ -30,6 +30,7 @@ extern "C" {
  * @brief Add CGM Specific Ops Control Point characteristic.
  *
  * @param[in] cgms Instance of the CGM Service.
+ * @param[in] cgms_cfg Configuration structure.
  *
  * @retval NRF_SUCCESS If the characteristic was successfully added.
  * @return If functions from other modules return errors to this function,

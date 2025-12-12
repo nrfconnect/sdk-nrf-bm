@@ -258,7 +258,7 @@ bool ble_conn_state_user_flag_get(uint16_t conn_handle, uint16_t flag_index);
  * @brief Set the value of a user flag.
  *
  * @param[in] conn_handle Handle of connection to set the flag state for.
- * @param[in] flag_id Which flag to set the state for.
+ * @param[in] flag_index Which flag to set the state for.
  * @param[in] value Value to set the flag state to.
  */
 void ble_conn_state_user_flag_set(uint16_t conn_handle, uint16_t flag_index, bool value);
@@ -281,13 +281,12 @@ uint32_t ble_conn_state_for_each_connected(ble_conn_state_user_function_t user_f
  * @param[in] user_function The function to run when a flag is set.
  * @param[in] ctx Arbitrary context to be passed to @p user_function.
  *
- * @return  The number of times @p user_function was run.
+ * @return The number of times @p user_function was run.
  */
 uint32_t ble_conn_state_for_each_set_user_flag(uint16_t flag_index,
 					       ble_conn_state_user_function_t user_function,
 					       void *ctx);
 
-/** @} */
 /** @} */
 
 #ifdef __cplusplus
@@ -295,3 +294,5 @@ uint32_t ble_conn_state_for_each_set_user_flag(uint16_t flag_index,
 #endif
 
 #endif /* BLE_CONN_STATE_H__ */
+
+/** @} */

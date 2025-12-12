@@ -234,7 +234,7 @@ int bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void
  * @brief Erase data in a storage instance.
  *
  * @param[in] storage Storage instance to erase data in.
- * @param[in] dest Address in non-volatile memory where to erase the data.
+ * @param[in] addr Address in non-volatile memory where to erase the data.
  * @param[in] len Length of the data to be erased (in bytes).
  * @param[in] ctx Pointer to user data, passed to the implementation-specific API function call.
  *                Can be NULL.

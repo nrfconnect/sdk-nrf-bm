@@ -156,9 +156,9 @@ void ble_lbs_on_ble_evt(const ble_evt_t *ble_evt, void *lbs_instance);
 /**
  * @brief Function for sending a button state notification.
  *
+ * @param[in] lbs           LED Button Service structure.
  * @param[in] conn_handle   Handle of the peripheral connection to which the button state
  *                          notification will be sent.
- * @param[in] lbs           LED Button Service structure.
  * @param[in] button_state  New button state.
  *
  * @retval NRF_SUCCESS If the notification was sent successfully.
