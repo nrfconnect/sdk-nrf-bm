@@ -106,3 +106,63 @@ The placement of the SoftDevice in memory is predetermined and must align with s
 - **SD_StartAddr**: Must align on a 2 kB memory boundary as specified in the SoftDevice release notes.
 
 The size of the SoftDevice is adjusted taking into account the above alignment and space reservations.
+
+Partition size reference
+************************
+
+The following table shows the recommended sizes for each partition when using the single-bank Device Firmware Update (DFU) process.
+
++--------------------------+---------------------+-----------------------+-------------------------+
+| Partition name           | Content             | Recommended size |br| | Minimum size |br|       |
+|                          |                     | (Development)         | (Release)               |
++==========================+=====================+=======================+=========================+
+| ``boot_partition``       | MCUboot             | 31 kB                 | 21 kB (using KMU) |br|  |
+|                          |                     |                       | 26 kB (without KMU)     |
++--------------------------+---------------------+-----------------------+-------------------------+
+| ``slot0_partition``      | Main application    |                       |                         |
++--------------------------+---------------------+-----------------------+-------------------------+
+| ``slot1_partition``      | Firmware loader     | 48 kB (Minimum)       | 32 kB (recommended)     |
++--------------------------+---------------------+-----------------------+-------------------------+
+| ``softdevice_partition`` | SoftDevice          |                       |                         |
++--------------------------+---------------------+-----------------------+-------------------------+
+| ``metadata_partition``   | Stores metadata     | 0.5 kB                | 0.5 kB                  |
++--------------------------+---------------------+-----------------------+-------------------------+
+
+.. note::
+   The sizes and configurations of slot0 and slot1 are asymmetrical.
+
+The boards in |BMshort| have a reserved size of 31 kB for MCUboot and 64 kB for FW loader (including MCUboot meta data).
+The sizes are set large enough to include logging and other debugging information required for development.
+If you want to keep optimization and log level equal to the default in the sample but want to maximize the size available for application and storage, you can adjust the partition as recommended in Development column.
+The Release column shows the recommended size to be used, given that the project is optimized as described.
+You cannot update the ``boot_partition`` after release.
+Set the size to match the size given by the project.
+Set the size for the ``slot1_partition`` to accommodate for updates.
+There is a recommended size for both partitions, but you need to consider how much space is needed for each partition in your project.
+
+If you are not using a DK board target, refer to :ref:`ug_dfu_preparing_dfu_board` for how to partition the memory using the devicetree.
+
+Reference sizes of the MCUboot and the Firmware loader can be achieved using the default configuration of :ref:`ble_mcuboot_recovery_entry_sample`
+
+For minimal size, amend the Firmware loader configuration using the following Kconfig options:
+
+* Enable :kconfig:option:`CONFIG_LTO`
+* Enable :kconfig:option:`CONFIG_ISR_TABLES_LOCAL_DECLARATION`
+* Disable :kconfig:option:`CONFIG_LOG`
+* Disable :kconfig:option:`CONFIG_CONSOLE`
+* Disable :kconfig:option:`CONFIG_BM_UARTE_CONSOLE`
+* Disable :kconfig:option:`CONFIG_CRACEN_LIB_KMU`
+* Disable :kconfig:option:`CONFIG_PSA_WANT_ALG_CTR_DRBG`
+* Disable :kconfig:option:`PSA_USE_CRACEN_MAC_DRIVER`
+* Disable :kconfig:option:`PSA_USE_CRACEN_AEAD_DRIVER`
+* Disable :kconfig:option:`PSA_USE_CRACEN_CIPHER_DRIVER`
+
+For minimal size, amend the MCUboot configuration using the following Kconfig options:
+
+* Disable :kconfig:option:`CONFIG_LOG`
+* Disable :kconfig:option:`CONFIG_CONSOLE`
+* Disable :kconfig:option:`CONFIG_BM_UARTE_CONSOLE`
+
+.. note::
+   Applying these configurations to the project might cause a few warnings on log's Kconfig assignments.
+   You can ignore these warnings.
