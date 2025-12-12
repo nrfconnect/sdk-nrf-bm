@@ -211,7 +211,8 @@ This sample can be found under :file:`samples/bluetooth/ble_pwr_profiling/` in t
 For details on how to create, configure, and program a sample, see :ref:`getting_started_with_the_samples`.
 
 .. note::
-   To remove terminal messages (at the benefit of a very small decrease in power consumption), disable the following Kconfig options:
+   The sample has logging disabled as default.
+   To enable terminal messages (at the cost of a small increase in power consumption), enable the following Kconfig options:
    * :kconfig:option:`CONFIG_LOG`
    * :kconfig:option:`CONFIG_CONSOLE`
    * :kconfig:option:`CONFIG_LOG_BACKEND_BM_UARTE`
