@@ -120,15 +120,19 @@ The Bluetooth LE services currently offered in |BMshort| are the following:
 
 * Peripheral services:
 
+  * Battery (peripheral)
+  * Bond Management (peripheral, experimental)
+  * Continuous Glucose Monitor (peripheral, experimental)
+  * Device Information (peripheral)
   * Heart Rate Monitor (peripheral)
+  * Human Interface Device (peripheral)
+  * MCUmgr (peripheral)
   * Nordic UART (NUS) (peripheral)
   * Nordic LED Button (LBS) (peripheral)
-  * Continuous Glucose Monitor (peripheral)
-  * Battery (peripheral)
 
-* MCUMgr service (DFU service)
-* Bond Management
-* Device Information
+* Central services:
+
+  * Heart Rate Service (central, experimental)
 
 Utility libraries for Bluetooth LE are available in |BMshort|, though their collection may not be as complete, and their functionality and API may be slightly different than their respective nRF5 implementation.
 
@@ -153,10 +157,10 @@ See table below for a summary of supported libraries.
      -
      -
    * - ``ble_db_discovery``
-     - No
-     -
      - Yes
      -
+     -
+     - Experimental
    * - ``ble_conn_params``
      - Yes
      - Name unchanged
@@ -198,19 +202,19 @@ See table below for a summary of supported libraries.
      -
      -
    * - ``nrf_ble_scan``
-     - No
-     -
      - Yes
+     - ``ble_scan``
      -
+     - Experimental
    * - ``ble_link_ctx_manager``
      - No
      -
      - No
      - Functionality implemented manually where needed
    * - ``ble_radio_notification``
-     - No
-     -
      - Yes
+     - Name unchanged
+     -
      -
    * - ``peer_manager``
      - Yes
@@ -222,7 +226,7 @@ SoftDevice integration
 **********************
 
 The SoftDevice, serving as a Bluetooth Low Energy protocol stack, maintains a consistent API from the nRF5 SDK to the |BMshort| environment.
-For instance, the API functionalities in SoftDevice S115 are comparable to those in S113.
+For instance, the API functionalities in SoftDevice S115 and S145 are comparable to those in S113 and S140, respectively.
 
 However, notable changes have occurred in how the SoftDevice is integrated within the system.
 
@@ -240,7 +244,7 @@ Interrupt Handling
 The responsibility for interrupt handling has shifted in |BMshort| - the application must now manage interrupts and forward them to the SoftDevice as needed.
 
 It is important to note that while the API remains compatible, the SoftDevices themselves are not binary-compatible between the two environments.
-SoftDevices from the nRF5 SDK cannot be reused in |BMshort|, and similarly, the S115 SoftDevice is not compatible with the nRF5 SDK.
+SoftDevices from the nRF5 SDK cannot be reused in |BMshort|, and similarly, the S115 and S145 SoftDevices are not compatible with the nRF5 SDK.
 
 Other libraries
 ***************
@@ -254,6 +258,30 @@ This is due to several factors, including:
 * Large set of API, developed over the course of several years with little overall consistency with regards to error spaces, asynchronous events.
 * Different project configuration mechanism, inherently affecting how libraries are configured.
 * Different coding standard in the |NCS| (for example, limited use of ``typedef``).
+
+Error codes
+***********
+
+nRF5 mainly used the unsigned nRF errors defined in ``nrf_error.h`` for error handling, with ``NRF_SUCCESS`` for successful operations and errors such as ``NRF_ERROR_NO_MEM`` and ``NRF_ERROR_FORBIDDEN``.
+In addition to the generic nRF errors, the nRF5 also used BLE SoftDevice errors defined in ``nrf_error_soc.h`` and ``nrf_error_sdm.h``, and the errors from the nrfx header within the same error scope, but with a diffeent base offset.
+
+|BMshort| uses the nRF errors for BLE related libraries and services, including the SoftDevice APIs.
+For other libraries and drivers, including nRFX, the signed ``errno`` error space is used.
+Defined as a signed integer (``int``) with ``0`` reprecenting a successful operation and errors returned as negative values, e.g. ``-ENOMEM`` and ``-EPERM``.
+
+In |BMshort| the return type of a function can be a good indication of the error space used, together with the header location:
+
+* If the header resides within a ``bluetooth`` folder it is likely using the nRF error space.
+  Else it is using the ``errno`` error space.
+* If the return type is ``uint32_t`` it is likely using the nRF error space.
+  If the return type is ``int`` it is likely using the ``errno`` error space.
+* For return values using the nRF error space, the variable is typically named ``nrf_error``.
+  If the variable used to store the return variable is named ``err``, ``retval`` or ``ret`` it is more likely to use the ``errno`` error space.
+
+.. note::
+
+  In |BMshort| ``NRF_SUCCESS`` is defined as ``0``.
+  You will therefore find checks such as ``if (nrf_error)`` in the code, though the generic solution would be ``if (nrf_error != NRF_SUCCESS)``.
 
 .. _nrf5_bm_migration_dfu:
 
