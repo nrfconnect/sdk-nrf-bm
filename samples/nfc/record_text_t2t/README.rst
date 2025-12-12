@@ -80,4 +80,6 @@ This sample uses the following |NCS| libraries:
 * NDEF messages
 * Text records
 
-In addition, it uses the Type 2 Tag library from `sdk-nrfxlib`_.
+In addition, it uses the :ref:`lib_nfc_t2t` from `sdk-nrfxlib`_.
+
+See :ref:`lib_nfc` for more information about the NFC libraries.

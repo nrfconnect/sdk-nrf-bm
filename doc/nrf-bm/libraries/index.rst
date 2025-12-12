@@ -15,6 +15,12 @@ Here you can find documentation for these libraries, including API documentation
    bluetooth/index.rst
 
 .. toctree::
+   :maxdepth: 2
+   :caption: NFC libraries:
+
+   nfc/index.rst
+
+.. toctree::
    :maxdepth: 1
    :glob:
    :caption: Other libraries:
