@@ -18,28 +18,8 @@ Partition Configuration
 The memory of your device must be partitioned appropriately to accommodate the bootloader, application, and firmware update mechanisms.
 |BMshort| uses Zephyr's `DTS`_ system for memory partitioning.
 
-+--------------------------+---------------------------------------------------------------+--------------------+-------------------------+
-| Partition Name           | Description                                                   | Minimum size  |br| | Minimum size |br|       |
-|                          |                                                               | (Development)      | (Release)               |
-+==========================+===============================================================+====================+=========================+
-| ``boot_partition``       | Bootloader (MCUboot)                                          | 31 KiB             | 21 KiB (using KMU) |br| |
-|                          |                                                               |                    | 26 KiB (without KMU)    |
-+--------------------------+---------------------------------------------------------------+--------------------+-------------------------+
-| ``slot0_partition``      | Main application slot                                         |                    |                         |
-+--------------------------+---------------------------------------------------------------+--------------------+-------------------------+
-| ``slot1_partition``      | `Firmware loader`_                                            | 44 KiB             | 28 KiB                  |
-+--------------------------+---------------------------------------------------------------+--------------------+-------------------------+
-| ``softdevice_partition`` | For the SoftDevice, including an MCUboot header of size 0x800 |                                              |
-+--------------------------+---------------------------------------------------------------+--------------------+-------------------------+
-| ``metadata_partition``   | Stores metadata, placed at the last 0x200 of NVM              |                    |                         |
-+--------------------------+---------------------------------------------------------------+--------------------+-------------------------+
-
-.. note::
-   The sizes and configurations of slot0 and slot1 are asymmetrical.
-
+For details on memory partitioning and related concepts, see :ref:`dfu_memory_partitioning`.
 If you are not using a DK board target, refer to `Preparing the DFU-ready variant of your board`_ for an example of how to partition the memory using DTS.
-
-For more details on memory partitioning and related concepts, see :ref:`dfu_memory_partitioning`.
 
 .. _ug_dfu_firmware_loader:
 
