@@ -106,3 +106,46 @@ The placement of the SoftDevice in memory is predetermined and must align with s
 - **SD_StartAddr**: Must align on a 2 kB memory boundary as specified in the SoftDevice release notes.
 
 The size of the SoftDevice is adjusted taking into account the above alignment and space reservations.
+
+Partitions sizes reference
+**************************
+
+The following table shows the recommended sizes for each partition when using the Single-Bank Device Firmware Update (DFU) Process.
+
++--------------------------+----------------------------------------------------------+--------------------+-------------------------+
+| Partition Name           | Content                                                  | Recomended size    | Minimum siz             |
+|                          |                                                          | (Development)      | (Release)               |                          |
++==========================+==========================================================+====================+=========================+
+| ``boot_partition``       | MCUboot                                                  | 31 KiB             | 21 KiB (using KMU)      |
+|                          |                                                          |                    | 26 KiB (without KMU)    |
++--------------------------+----------------------------------------------------------+--------------------+-------------------------+
+| ``slot0_partition``      | Main application                                         |                    |                         |
++--------------------------+----------------------------------------------------------+--------------------+-------------------------+
+| ``slot1_partition``      | `Firmware loader`_                                       | 48 KiB (Minimum)   | 28 KiB                  |
+|                          |                                                          |                    | 32 KiB (recommended)    |
++--------------------------+----------------------------------------------------------+--------------------+-------------------------+
+| ``softdevice_partition`` | SoftDevice                                               |                    |                         |
++--------------------------+----------------------------------------------------------+--------------------+-------------------------+
+| ``metadata_partition``   | Stores metadata                                          | 0.5 KiB            | 0.5 KiB                 |
++--------------------------+----------------------------------------------------------+--------------------+-------------------------+
+
+.. note::
+   The sizes and configurations of slot0 and slot1 are asymmetrical.
+
+If you are not using a DK board target, refer to `Preparing the DFU-ready variant of your board`_ for an example of how to partition the memory using DTS.
+
+Reference sizes of the MCUboot and the `Firmware loader`_ can be achieved using the default configuration of :ref:`ble_mcuboot_recovery_entry_sample`
+
+For minimal size, the `Firmware loader`_ configuration must be amended by following Kconfig options:
+
+* enable :kconfig:option:`CONFIG_LTO`
+* enable :kconfig:option:`CONFIG_ISR_TABLES_LOCAL_DECLARATION``
+* disable :kconfig:option:`CONFIG_LOG`
+* disable :kconfig:option:`CONFIG_CONSOLE`
+* disable :kconfig:option:`CONFIG_CRACEN_LIB_KMU`
+* disable :kconfig:option:`CONFIG_PSA_WANT_ALG_CTR_DRBG`
+
+For minimal size, the MCUboot configuration must be amended by following Kconfig options:
+
+* disable :kconfig:option:`CONFIG_LOG`
+* disable :kconfig:option:`CONFIG_CONSOLE`
