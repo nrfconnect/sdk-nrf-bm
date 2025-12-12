@@ -59,6 +59,7 @@ struct nrf_sdh_ble_evt_observer {
  */
 #define NRF_SDH_BLE_OBSERVER(_observer, _handler, _ctx, _prio)                                     \
 	PRIO_LEVEL_IS_VALID(_prio);                                                                \
+	static void _handler(const ble_evt_t *ble_evt, void *context);                             \
 	static const TYPE_SECTION_ITERABLE(struct nrf_sdh_ble_evt_observer, _observer,             \
 					   nrf_sdh_ble_evt_observers, PRIO_LEVEL_ORD(_prio)) = {   \
 		.handler = _handler,                                                               \
