@@ -56,7 +56,12 @@ logger = logging.getLogger(__name__)
 def test_if_kmu_keys_revocation_with_three_slots(
     dut: DeviceAdapter, config_reader: Callable, nrf_bm_path: Path, keys_order: tuple[str, ...]
 ):
-    """Verify if KMU keys are provisioned correctly."""
+    """Verify KMU Key Provisioning with Three Slots.
+
+    - Provision DUT with keys in specified order (valid and/or invalid keys)
+    - Reset DUT
+    - Verify that DUT boots correctly and `Hello World` is printed to UART console
+    """
     sysbuild_config = Path(dut.device_config.build_dir) / "zephyr" / ".config"
     valid_key_file = config_reader(sysbuild_config).read(
         "SB_CONFIG_BM_BOOTLOADER_MCUBOOT_SIGNATURE_KEY_FILE"
@@ -88,7 +93,12 @@ def test_if_kmu_keys_revocation_with_three_slots(
 def test_if_kmu_keys_revocation_with_two_slots(
     dut: DeviceAdapter, config_reader: Callable, nrf_bm_path: Path, keys_order: tuple[str, ...]
 ):
-    """Verify if KMU keys are provisioned correctly."""
+    """Verify KMU Key Provisioning with Two Slots.
+
+    - Provision DUT with 2 keys where valid key is in first or second slot
+    - Reset DUT
+    - Verify that DUT boots correctly and `Hello World` is printed to UART console
+    """
     sysbuild_config = Path(dut.device_config.build_dir) / "zephyr" / ".config"
     valid_key_file = config_reader(sysbuild_config).read(
         "SB_CONFIG_BM_BOOTLOADER_MCUBOOT_SIGNATURE_KEY_FILE"
@@ -112,7 +122,12 @@ def test_if_kmu_keys_revocation_with_two_slots(
 def test_if_kmu_keys_revocation_with_two_slots_third_key_valid(
     dut: DeviceAdapter, config_reader: Callable, nrf_bm_path: Path
 ):
-    """Verify if KMU keys are provisioned correctly."""
+    """Verify Boot Failure When Valid Key is in Third Slot.
+
+    - Provision DUT with 2 keys where valid key is in third slot (not provisioned)
+    - Reset DUT
+    - Verify that DUT does not boot and key verification failure is reported
+    """
     sysbuild_config = Path(dut.device_config.build_dir) / "zephyr" / ".config"
     valid_key_file = config_reader(sysbuild_config).read(
         "SB_CONFIG_BM_BOOTLOADER_MCUBOOT_SIGNATURE_KEY_FILE"
@@ -139,7 +154,17 @@ def test_if_kmu_keys_revocation_with_two_slots_third_key_valid(
 def test_if_previous_key_is_revoked_when_flashing_new_image(
     dut: DeviceAdapter, config_reader: Callable, nrf_bm_path: Path, request: pytest.FixtureRequest
 ):
-    """Test if previous key is revoked when flashing with new image."""
+    """Verify Key Revocation When Flashing New Image.
+
+    - Build second image signed with key2
+    - Provision DUT with all keys (key1, key2, key3)
+    - Flash device with the first image (signed with key1) and reset
+    - Verify that DUT boots correctly and `Hello World` is printed
+    - Flash device with the second image (signed with key2) and reset
+    - Verify that DUT boots correctly and `Hello World` is printed
+    - Flash device with the first image (signed with key1) and reset
+    - Verify that DUT does not boot because key1 was revoked in previous step
+    """
     sysbuild_config = Path(dut.device_config.build_dir) / "zephyr" / ".config"
     valid_key_file = config_reader(sysbuild_config).read(
         "SB_CONFIG_BM_BOOTLOADER_MCUBOOT_SIGNATURE_KEY_FILE"
@@ -309,7 +334,13 @@ def test_boot_failure_when_kmu_key_is_missing(
 def test_dut_does_not_boot_when_flashed_with_image_signed_with_wrong_key(
     dut: DeviceAdapter, nrf_bm_path: Path
 ):
-    """Verify if DUT does not boot when flashed with an image signed with wrong key."""
+    """Verify Boot Failure When Image is Signed with Wrong Key.
+
+    - Build image signed with a default key
+    - Provision DUT with keys that was not used to sign the image (ed25519-1, ed25519-2, ed25519-3)
+    - Reset DUT
+    - Verify that DUT does not boot because the image is not signed with any of the provisioned keys
+    """
     keys_dict = {
         1: nrf_bm_path / "tests/subsys/kmu/keys/ed25519-1.pem",
         2: nrf_bm_path / "tests/subsys/kmu/keys/ed25519-2.pem",
