@@ -2,9 +2,7 @@
 
 # Tags for all topics:
 mapping_global:
-  - nrf-bm-apis
   - nrf-bm-apis-__VERSION__
-  - cluster-nrf-bm-apis-__VERSION__
 
 # Tags for individual topics:
 mapping_topics: []
