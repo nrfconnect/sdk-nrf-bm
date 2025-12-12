@@ -12,8 +12,12 @@
 #include <strings.h>
 #include <bm/bluetooth/ble_qwr.h>
 
+#include <observers.h>
+
 #include "cmock_ble.h"
 #include "cmock_ble_gatts.h"
+
+BLE_QWR_DEF(qwr);
 
 static uint16_t ble_qwr_evt_handler(struct ble_qwr *qwr, const struct ble_qwr_evt *evt)
 {
@@ -23,7 +27,6 @@ static uint16_t ble_qwr_evt_handler(struct ble_qwr *qwr, const struct ble_qwr_ev
 void test_ble_qwr_init_error_null(void)
 {
 	uint32_t nrf_err;
-	struct ble_qwr qwr;
 	struct ble_qwr_config qwr_config = {0};
 
 	nrf_err = ble_qwr_init(&qwr, NULL);
@@ -36,7 +39,6 @@ void test_ble_qwr_init_error_null(void)
 void test_ble_qwr_init_error_invalid_state(void)
 {
 	uint32_t nrf_err;
-	struct ble_qwr qwr;
 	struct ble_qwr_config qwr_config = {0};
 
 	nrf_err = ble_qwr_init(&qwr, &qwr_config);
@@ -51,7 +53,6 @@ void test_ble_qwr_init(void)
 {
 	uint32_t nrf_err;
 	uint8_t mem[10];
-	struct ble_qwr qwr;
 	struct ble_qwr_config qwr_config = {
 		.mem_buffer = {
 			.p_mem = mem,
@@ -95,7 +96,6 @@ void test_ble_qwr_attr_register_error_invalid_param(void)
 {
 	uint32_t nrf_err;
 	uint8_t mem[10];
-	struct ble_qwr qwr;
 	struct ble_qwr_config qwr_config = {
 		.mem_buffer = {
 			.p_mem = mem,
@@ -115,7 +115,6 @@ void test_ble_qwr_attr_register_error_no_mem(void)
 {
 	uint32_t nrf_err;
 	uint8_t mem[10];
-	struct ble_qwr qwr;
 	struct ble_qwr_config qwr_config = {
 		.mem_buffer = {
 			.p_mem = mem,
@@ -168,7 +167,6 @@ void test_ble_qwr_attr_register(void)
 {
 	uint32_t nrf_err;
 	uint8_t mem[10];
-	struct ble_qwr qwr;
 	struct ble_qwr_config qwr_config = {
 		.mem_buffer = {
 			.p_mem = mem,
@@ -194,7 +192,6 @@ void test_ble_qwr_attr_register(void)
 void test_ble_qwr_value_get_error_null(void)
 {
 	uint32_t nrf_err;
-	struct ble_qwr qwr;
 	uint8_t mem[1];
 	uint16_t len = sizeof(mem);
 
@@ -313,17 +310,6 @@ void test_ble_qwr_conn_handle_assign(void)
 	TEST_ASSERT_EQUAL(0xC044, qwr.conn_handle);
 }
 
-void test_ble_qwr_on_ble_evt_do_nothing(void)
-{
-	ble_evt_t const ble_evt = {0};
-	struct ble_qwr qwr = {0};
-
-	/* We expect these to return immediately */
-	ble_qwr_on_ble_evt(&ble_evt, NULL);
-	ble_qwr_on_ble_evt(NULL, &qwr);
-	ble_qwr_on_ble_evt(&ble_evt, &qwr);
-}
-
 void test_ble_qwr_on_ble_evt_mem_req_sd_busy(void)
 {
 	uint32_t nrf_err;
@@ -433,6 +419,7 @@ void test_ble_qwr_on_ble_evt_mem_req(void)
 
 void setUp(void)
 {
+	memset(&qwr, 0x00, sizeof(qwr));
 }
 
 void tearDown(void)

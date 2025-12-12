@@ -11,9 +11,11 @@
 #include <bm/bluetooth/services/ble_hrs.h>
 #include <bm/bluetooth/services/uuid.h>
 
+#include <observers.h>
+
 #include "cmock_ble_gatts.h"
 
-void ble_hrs_on_ble_evt(const ble_evt_t *evt, struct ble_hrs *hrs);
+BLE_HRS_DEF(hrs);
 
 uint32_t stub_sd_ble_gatts_hvx(
 	uint16_t conn_handle, const ble_gatts_hvx_params_t *p_hvx_params, int cmock_num_calls)
@@ -56,7 +58,6 @@ uint32_t stub_sd_ble_gatts_characteristic_add(uint16_t service_handle,
 void test_ble_hrs_rr_interval_add_success(void)
 {
 	uint32_t nrf_err;
-	struct ble_hrs hrs = {0};
 
 	/* Add RR interval measurement. */
 	nrf_err = ble_hrs_rr_interval_add(&hrs, 100);
@@ -111,7 +112,6 @@ void test_ble_hrs_rr_interval_add_overflow(void)
 void test_ble_hrs_rr_interval_buffer_is_full(void)
 {
 	uint32_t nrf_err;
-	struct ble_hrs hrs = {0};
 
 	/* Check if buffer is empty */
 	TEST_ASSERT_FALSE(ble_hrs_rr_interval_buffer_is_full(&hrs));
@@ -129,7 +129,6 @@ void test_ble_hrs_rr_interval_buffer_is_full(void)
 void test_ble_hrs_sensor_contact_supported_set(void)
 {
 	uint32_t nrf_err;
-	struct ble_hrs hrs = {0};
 
 	hrs.conn_handle = BLE_CONN_HANDLE_INVALID;
 	/* Set sensor contact supported to true */
@@ -141,7 +140,6 @@ void test_ble_hrs_sensor_contact_supported_set(void)
 void test_ble_hrs_sensor_contact_supported_set_invalid_state(void)
 {
 	uint32_t nrf_err;
-	struct ble_hrs hrs = {0};
 
 	/* Try to set sensor contact supported while in connection
 	 * Simulate being in a connection
@@ -149,7 +147,7 @@ void test_ble_hrs_sensor_contact_supported_set_invalid_state(void)
 	const ble_evt_t evt = {
 		.header.evt_id = BLE_GAP_EVT_CONNECTED
 	};
-	ble_hrs_on_ble_evt(&evt, &hrs);
+	ble_evt_send(&evt);
 	nrf_err = ble_hrs_sensor_contact_supported_set(&hrs, true);
 	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, nrf_err);
 }
@@ -166,7 +164,6 @@ void test_ble_hrs_sensor_contact_supported_set_null(void)
 void test_ble_hrs_sensor_contact_detected_update_success(void)
 {
 	uint32_t nrf_err;
-	struct ble_hrs hrs = {0};
 
 	/* Update sensor contact detected state */
 	nrf_err = ble_hrs_sensor_contact_detected_update(&hrs, true);
@@ -186,7 +183,6 @@ void test_ble_hrs_sensor_contact_detected_update_null(void)
 void test_ble_hrs_body_sensor_location_set_success(void)
 {
 	uint32_t nrf_err;
-	struct ble_hrs hrs = {0};
 	uint8_t body_sensor_location = BLE_HRS_BODY_SENSOR_LOCATION_FINGER;
 
 	__cmock_sd_ble_gatts_value_set_ExpectAndReturn(hrs.conn_handle,
@@ -201,7 +197,6 @@ void test_ble_hrs_body_sensor_location_set_success(void)
 void test_ble_hrs_body_sensor_location_set_invalid_param(void)
 {
 	uint32_t nrf_err;
-	struct ble_hrs hrs = {0};
 	uint8_t body_sensor_location = BLE_HRS_BODY_SENSOR_LOCATION_FINGER;
 
 	__cmock_sd_ble_gatts_value_set_ExpectAndReturn(hrs.conn_handle,
@@ -301,7 +296,6 @@ void test_ble_hrs_heart_rate_measurement_send_null(void)
 void test_ble_hrs_init_success(void)
 {
 	uint32_t nrf_err;
-	struct ble_hrs hrs = {0};
 	struct ble_hrs_config hrs_config = {
 		.is_sensor_contact_supported = true,
 		.body_sensor_location = (uint8_t[]){ BLE_HRS_BODY_SENSOR_LOCATION_FINGER }
@@ -325,7 +319,6 @@ void test_ble_hrs_init_null(void)
 void test_ble_hrs_init_invalid_param(void)
 {
 	uint32_t nrf_err;
-	struct ble_hrs hrs = {0};
 	struct ble_hrs_config hrs_config = {
 		.is_sensor_contact_supported = true,
 		.body_sensor_location = (uint8_t[]){ BLE_HRS_BODY_SENSOR_LOCATION_FINGER }
@@ -335,6 +328,15 @@ void test_ble_hrs_init_invalid_param(void)
 
 	nrf_err = ble_hrs_init(&hrs, &hrs_config);
 	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, nrf_err);
+}
+
+void setUp(void)
+{
+	memset(&hrs, 0x00, sizeof(hrs));
+}
+
+void tearDown(void)
+{
 }
 
 extern int unity_main(void);

@@ -9,8 +9,8 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <bm/bluetooth/ble_scan.h>
-#include <bm/softdevice_handler/nrf_sdh.h>
-#include <zephyr/sys/iterable_sections.h>
+
+#include <observers.h>
 
 #include "cmock_ble_gap.h"
 #include "cmock_ble_gatts.h"
@@ -27,14 +27,6 @@ BLE_SCAN_DEF(ble_scan);
 
 static struct ble_scan_evt scan_event;
 static struct ble_scan_evt scan_event_prev;
-
-/* Invoke the BLE event handlers in ble_conn_params, passing BLE event 'evt'. */
-void ble_evt_send(const ble_evt_t *evt)
-{
-	TYPE_SECTION_FOREACH(struct nrf_sdh_ble_evt_observer, nrf_sdh_ble_evt_observers, obs) {
-		obs->handler(evt, obs->context);
-	}
-}
 
 void scan_event_handler_func(struct ble_scan_evt const *scan_evt)
 {

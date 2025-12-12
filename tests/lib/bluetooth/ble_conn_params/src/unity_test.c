@@ -10,8 +10,8 @@
 #include <string.h>
 #include <stddef.h>
 #include <bm/bluetooth/ble_conn_params.h>
-#include <bm/softdevice_handler/nrf_sdh.h>
-#include <zephyr/sys/iterable_sections.h>
+
+#include <observers.h>
 
 #include "cmock_ble_gap.h"
 #include "cmock_ble_gattc.h"
@@ -25,22 +25,6 @@
 #define ATT_MTU_INVALID (BLE_GATT_ATT_MTU_DEFAULT - 1)
 
 struct ble_conn_params_evt app_evt;
-
-/* Invoke the BLE event handlers in ble_conn_params, passing BLE event 'evt'. */
-void ble_evt_send(const ble_evt_t *evt)
-{
-	TYPE_SECTION_FOREACH(struct nrf_sdh_ble_evt_observer, nrf_sdh_ble_evt_observers, obs) {
-		obs->handler(evt, obs->context);
-	}
-}
-
-/* Invoke the state event handlers in ble_conn_params, passing state event. */
-void state_evt_send(enum nrf_sdh_state_evt state)
-{
-	TYPE_SECTION_FOREACH(struct nrf_sdh_state_evt_observer, nrf_sdh_state_evt_observers, obs) {
-		obs->handler(state, obs->context);
-	}
-}
 
 /* Event handler for conn params */
 void conn_params_evt_handler(const struct ble_conn_params_evt *evt)
