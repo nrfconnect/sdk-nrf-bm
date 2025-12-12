@@ -313,4 +313,5 @@ The desktop and mobile tools available for the |NCS| are also compatible with th
 Drivers
 *******
 
-For migration of nrfx drivers, see `nrfx migration guides`_.
+For migration of nrfx drivers, see the `nrfx 3.0 migration guide`_ and the `nrfx 4.0 migration guide`_.
+|BMshort| is using nRFX 4.0, though details from `nrfx 3.0 migration guide`_ might be required when migrating from nRF5.
