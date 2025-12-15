@@ -212,6 +212,13 @@ Heart Rate Service
 
 .. doxygengroup:: ble_hrs
 
+.. _api_ble_hrs_central:
+
+Heart Rate Service Central
+==========================
+
+.. doxygengroup:: ble_hrs_central
+
 .. _api_human_interface_device_service:
 
 Human Interface Device Service

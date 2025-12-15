@@ -159,15 +159,14 @@ struct ble_hrs_central_config {
  *          when a discovery is started.
  *
  * @param[in] ble_hrs_central Heart Rate Client structure.
- * @param[in] ble_hrs_central_init Heart Rate initialization structure that
- * contains the initialization information.
+ * @param[in] ble_hrs_central_config Heart rate service central configuration.
  *
  * @retval NRF_SUCCESS On successful initialization.
  * @return Otherwise, this function propagates the error code returned by the
  *         Database Discovery module API @ref ble_db_discovery_service_register.
  */
 uint32_t ble_hrs_central_init(struct ble_hrs_central *ble_hrs_central,
-			      struct ble_hrs_central_config *ble_hrs_central_init);
+			      struct ble_hrs_central_config *ble_hrs_central_config);
 
 /**
  * @brief Handle Bluetooth LE events from the SoftDevice.
