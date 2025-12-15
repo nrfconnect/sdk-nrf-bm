@@ -15,3 +15,27 @@ tests:
       - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
     tags:
       - sysbuild
+  sample.boot.mcuboot_recovery_entry.size_optimized:
+    sysbuild: true
+    build_only: true
+    integration_platforms:
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+    platform_allow:
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+    tags:
+      - sysbuild
+    extra_configs:
+      - firmware_loader_CONFIG_LTO=y
+      - firmware_loader_CONFIG_ISR_TABLES_LOCAL_DECLARATION=y
+      - firmware_loader_CONFIG_LOG=n
+      - firmware_loader_CONFIG_CONSOLE=n
+      - firmware_loader_CONFIG_BM_UARTE_CONSOLE=n
+      - firmware_loader_CONFIG_CRACEN_LIB_KMU=n
+      - firmware_loader_CONFIG_PSA_WANT_ALG_CTR_DRBG=n
+      - mcuboot_CONFIG_LOG=n
+      - mcuboot_CONFIG_CONSOLE=n
+      - mcuboot_CONFIG_BM_UARTE_CONSOLE=n
