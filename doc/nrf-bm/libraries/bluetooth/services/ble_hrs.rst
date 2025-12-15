@@ -7,13 +7,13 @@ Heart Rate Service (HRS)
    :local:
    :depth: 2
 
-This module implements the Heart Rate Service with the Heart Rate Measurement, Body Sensor Location, and Heart Rate Control Point characteristics.
+This module implements the Heart Rate Service with the Heart Rate Measurement and Body Sensor Location characteristics.
 
 Overview
 ********
 
-During initialization, the module adds the Heart Rate Service and Heart Rate Measurement characteristic to the Bluetooth LE stack database.
-Optionally, it also adds the Body Sensor Location and Heart Rate Control Point characteristics.
+During initialization, the module adds the Heart Rate Service, the Heart Rate Measurement and Body Sensor Location characteristics to the Bluetooth LE stack database.
+Optionally, it also adds the Body Sensor Location characteristics.
 
 If enabled, a notification of the Heart Rate Measurement characteristic is sent when the application calls the :c:func:`ble_hrs_heart_rate_measurement_send` function.
 
