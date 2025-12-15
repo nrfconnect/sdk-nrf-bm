@@ -241,4 +241,3 @@ uint32_t ble_hrs_client_handles_assign(struct ble_hrs_client *ble_hrs_client,
 
 	return ble_gq_conn_handle_register(ble_hrs_client->gatt_queue, conn_handle);
 }
-/** @} */
