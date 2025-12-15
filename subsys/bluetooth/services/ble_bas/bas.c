@@ -224,16 +224,14 @@ uint32_t ble_bas_battery_level_notify(struct ble_bas *bas, uint16_t conn_handle)
 {
 	uint32_t nrf_err;
 	ble_gatts_hvx_params_t hvx = {0};
-	uint16_t len = sizeof(uint8_t);
 
 	if (!bas) {
 		return NRF_ERROR_NULL;
 	}
 
-	hvx.handle = bas->battery_level_handles.value_handle;
 	hvx.type = BLE_GATT_HVX_NOTIFICATION;
-	hvx.offset = 0;
-	hvx.p_len = &len;
+	hvx.handle = bas->battery_level_handles.value_handle;
+	hvx.p_len = &(uint16_t){sizeof(bas->battery_level)};
 	hvx.p_data = &bas->battery_level;
 
 	nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx);
