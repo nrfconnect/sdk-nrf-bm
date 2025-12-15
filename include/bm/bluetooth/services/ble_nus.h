@@ -202,7 +202,11 @@ struct ble_nus {
  *
  * @retval NRF_SUCCESS On success.
  * @retval NRF_ERROR_NULL If @p nus or @p nus_config is @c NULL.
- * @retval NRF_ERROR_INVALID_PARAM Invalid parameters.
+ * @return In addition, this function may return any error
+ *	   returned by the following SoftDevice functions:
+ *	   - @ref sd_ble_gatts_service_add()
+ *	   - @ref sd_ble_gatts_characteristic_add()
+ *	   - @ref sd_ble_uuid_vs_add()
  */
 uint32_t ble_nus_init(struct ble_nus *nus, const struct ble_nus_config *nus_config);
 
@@ -231,7 +235,10 @@ void ble_nus_on_ble_evt(const ble_evt_t *ble_evt, void *context);
  * @param[in] conn_handle Connection handle of the destination client.
  *
  * @retval NRF_SUCCESS On success.
- * @return nrf_error on failure.
+ * @retval NRF_ERROR_NULL If @p nus, @p data or @p length are @c NULL.
+ * @return In addition, this function may return any error
+ *	   returned by the following SoftDevice functions:
+ *	   - @ref sd_ble_gatts_hvx()
  */
 uint32_t ble_nus_data_send(struct ble_nus *nus, uint8_t *data, uint16_t *length,
 			   uint16_t conn_handle);

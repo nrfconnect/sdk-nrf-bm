@@ -204,7 +204,10 @@ struct ble_hrs {
  *
  * @retval NRF_SUCCESS On success.
  * @retval NRF_ERROR_NULL If @p hrs or @p hrs_config are @c NULL.
- * @retval NRF_ERROR_INVALID_PARAM Invalid parameters.
+ * @return In addition, this function may return any error
+ *	   returned by the following SoftDevice functions:
+ *	   - @ref sd_ble_gatts_service_add()
+ *	   - @ref sd_ble_gatts_characteristic_add()
  */
 uint32_t ble_hrs_init(struct ble_hrs *hrs, const struct ble_hrs_config *hrs_config);
 
@@ -230,9 +233,9 @@ void ble_hrs_conn_params_evt(struct ble_hrs *hrs, const struct ble_conn_params_e
  *
  * @retval NRF_SUCCESS On success.
  * @retval NRF_ERROR_NULL If @p hrs is @c NULL.
- * @retval NRF_ERROR_INVALID_PARAM Failed to send notification.
- * @retval NRF_ERROR_NOT_FOUND Invalid connection handle.
- * @retval NRF_ERROR_INVALID_STATE Notifications not enabled in the CCCD.
+ * @return In addition, this function may return any error
+ *	   returned by the following SoftDevice functions:
+ *	   - @ref sd_ble_gatts_hvx()
  */
 uint32_t ble_hrs_heart_rate_measurement_send(struct ble_hrs *hrs, uint16_t heart_rate);
 
@@ -298,7 +301,9 @@ uint32_t ble_hrs_sensor_contact_detected_update(struct ble_hrs *hrs,
  *
  * @retval NRF_SUCCESS On success.
  * @retval NRF_ERROR_NULL If @p hrs is @c NULL.
- * @retval NRF_ERROR_INVALID_PARAM Failed to set new value.
+ * @return In addition, this function may return any error
+ *	   returned by the following SoftDevice functions:
+ *	   - @ref sd_ble_gatts_value_set()
  */
 uint32_t ble_hrs_body_sensor_location_set(struct ble_hrs *hrs, uint8_t body_sensor_location);
 

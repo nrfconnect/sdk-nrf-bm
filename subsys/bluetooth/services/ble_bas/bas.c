@@ -144,14 +144,14 @@ uint32_t ble_bas_init(struct ble_bas *bas, const struct ble_bas_config *cfg)
 					   &bas->service_handle);
 	if (nrf_err) {
 		LOG_ERR("Failed to add battery service, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
+		return nrf_err;
 	}
 
 	/* Add battery level characteristic */
 	nrf_err = battery_level_char_add(bas, cfg);
 	if (nrf_err) {
 		LOG_ERR("Failed to add battery service characteristic, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
+		return nrf_err;
 	}
 
 	/* Add reference descriptor if present */
@@ -160,7 +160,7 @@ uint32_t ble_bas_init(struct ble_bas *bas, const struct ble_bas_config *cfg)
 		if (nrf_err) {
 			LOG_ERR("Failed to add report reference descriptor, nrf_error %#x",
 				nrf_err);
-			return NRF_ERROR_INVALID_PARAM;
+			return nrf_err;
 		}
 	}
 
@@ -182,7 +182,7 @@ uint32_t ble_bas_battery_level_update(
 
 	if (bas->battery_level == battery_level) {
 		/* Nothing to do */
-		return 0;
+		return NRF_SUCCESS;
 	}
 
 	/* Update database */
@@ -193,7 +193,7 @@ uint32_t ble_bas_battery_level_update(
 					 bas->battery_level_handles.value_handle, &gatts_value);
 	if (nrf_err) {
 		LOG_ERR("Failed to update battery level, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
+		return nrf_err;
 	}
 
 	LOG_DBG("Battery level: %d%%", battery_level);
@@ -212,18 +212,12 @@ uint32_t ble_bas_battery_level_update(
 	hvx.p_data = gatts_value.p_value;
 
 	nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx);
-	switch (nrf_err) {
-	case NRF_SUCCESS:
-		return NRF_SUCCESS;
-	case BLE_ERROR_INVALID_CONN_HANDLE:
-		return NRF_ERROR_NOT_FOUND;
-	case NRF_ERROR_INVALID_STATE:
-	case BLE_ERROR_GATTS_SYS_ATTR_MISSING:
-		return NRF_ERROR_INVALID_STATE;
-	default:
+	if (nrf_err) {
 		LOG_ERR("Failed to notify battery level, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
+		return nrf_err;
 	}
+
+	return NRF_SUCCESS;
 }
 
 uint32_t ble_bas_battery_level_notify(struct ble_bas *bas, uint16_t conn_handle)
@@ -246,15 +240,10 @@ uint32_t ble_bas_battery_level_notify(struct ble_bas *bas, uint16_t conn_handle)
 	hvx.p_data = &bas->battery_level;
 
 	nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx);
-	switch (nrf_err) {
-	case NRF_SUCCESS:
-		return NRF_SUCCESS;
-	case BLE_ERROR_INVALID_CONN_HANDLE:
-		return NRF_ERROR_NOT_FOUND;
-	case NRF_ERROR_INVALID_STATE:
-		return NRF_ERROR_INVALID_STATE;
-	default:
+	if (nrf_err) {
 		LOG_ERR("Failed to notify battery level, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
+		return nrf_err;
 	}
+
+	return NRF_SUCCESS;
 }

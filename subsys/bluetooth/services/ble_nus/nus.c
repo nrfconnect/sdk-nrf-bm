@@ -262,7 +262,7 @@ uint32_t ble_nus_init(struct ble_nus *nus, const struct ble_nus_config *cfg)
 	nrf_err = sd_ble_uuid_vs_add(&uuid_base, &nus->uuid_type);
 	if (nrf_err) {
 		LOG_ERR("sd_ble_uuid_vs_add failed, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
+		return nrf_err;
 	}
 
 	ble_uuid.type = nus->uuid_type;
@@ -274,21 +274,21 @@ uint32_t ble_nus_init(struct ble_nus *nus, const struct ble_nus_config *cfg)
 					   &nus->service_handle);
 	if (nrf_err) {
 		LOG_ERR("Failed to add NUS service, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
+		return nrf_err;
 	}
 
 	/* Add NUS RX characteristic. */
 	nrf_err = nus_rx_char_add(nus, cfg);
 	if (nrf_err) {
 		LOG_ERR("nus_rx_char_add failed, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
+		return nrf_err;
 	}
 
 	/* Add NUS TX characteristic. */
 	nrf_err = nus_tx_char_add(nus, cfg);
 	if (nrf_err) {
 		LOG_ERR("nus_tx_char_add failed, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
+		return nrf_err;
 	}
 
 	return 0;
@@ -297,35 +297,16 @@ uint32_t ble_nus_init(struct ble_nus *nus, const struct ble_nus_config *cfg)
 uint32_t ble_nus_data_send(struct ble_nus *nus, uint8_t *data,
 			   uint16_t *len, uint16_t conn_handle)
 {
-	ble_gatts_hvx_params_t hvx_params = {
-		.p_data = data,
-		.p_len = len,
-		.type = BLE_GATT_HVX_NOTIFICATION
-	};
-	struct ble_nus_client_context *ctx;
+	ble_gatts_hvx_params_t hvx = { 0 };
 
 	if (!nus || !data || !len) {
 		return NRF_ERROR_NULL;
 	}
 
-	if (*len > BLE_NUS_MAX_DATA_LEN) {
-		return NRF_ERROR_INVALID_PARAM;
-	}
+	hvx.type = BLE_GATT_HVX_NOTIFICATION;
+	hvx.handle = nus->tx_handles.value_handle;
+	hvx.p_data = data;
+	hvx.p_len = len;
 
-	if (conn_handle == BLE_CONN_HANDLE_INVALID) {
-		return NRF_ERROR_NOT_FOUND;
-	}
-
-	ctx = ble_nus_client_context_get(nus, conn_handle);
-	if (ctx == NULL) {
-		return NRF_ERROR_NOT_FOUND;
-	}
-
-	if (!ctx->is_notification_enabled) {
-		return NRF_ERROR_INVALID_PARAM;
-	}
-
-	hvx_params.handle = nus->tx_handles.value_handle;
-
-	return sd_ble_gatts_hvx(conn_handle, &hvx_params);
+	return sd_ble_gatts_hvx(conn_handle, &hvx);
 }
