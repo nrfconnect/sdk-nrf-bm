@@ -191,7 +191,7 @@ int main(void)
 
 	/* Set up NFC */
 	if (nfc_t4t_setup(nfc_callback, NULL) < 0) {
-		LOG_ERR("Cannot setup NFC T2T library!");
+		LOG_ERR("Cannot setup NFC T4T library!");
 		goto fail;
 	}
 
