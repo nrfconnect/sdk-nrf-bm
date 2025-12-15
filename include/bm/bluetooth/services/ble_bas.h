@@ -215,7 +215,6 @@ uint32_t ble_bas_battery_level_update(struct ble_bas *bas, uint16_t conn_handle,
  *
  * @retval NRF_SUCCESS On success.
  * @retval NRF_ERROR_NULL If @p bas is @c NULL.
- * @retval NRF_ERROR_INVALID_PARAM Invalid parameters.
  * @return In addition, this function may return any error
  *	   returned by the following SoftDevice functions:
  *	   - @ref sd_ble_gatts_hvx()
