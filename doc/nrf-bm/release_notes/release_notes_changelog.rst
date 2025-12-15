@@ -32,7 +32,7 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 SoftDevice Handler
 ==================
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Updated the :c:macro:`NRF_SDH_STATE_EVT_OBSERVER` and :c:macro:`NRF_SDH_STACK_EVT_OBSERVER` macros to not declare the handler prototype.
 
 Boards
 ======
