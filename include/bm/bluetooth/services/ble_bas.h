@@ -205,10 +205,6 @@ uint32_t ble_bas_battery_level_update(struct ble_bas *bas, uint16_t conn_handle,
 /**
  * @brief Notify battery level.
  *
- * @note For the requirements in the BAS specification to be fulfilled,
- *       this function must be called upon reconnection if the battery level has changed
- *       while the service has been disconnected from a bonded client.
- *
  * @param bas Battery service.
  * @param conn_handle Connection handle.
  *
