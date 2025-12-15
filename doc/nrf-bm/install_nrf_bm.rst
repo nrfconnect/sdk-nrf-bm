@@ -30,19 +30,10 @@ Install the following software tools:
          On Ubuntu you might be required to install ``libfuse2``.
          To do so, open a terminal and execute: ``sudo apt install libfuse2``.
 
-  * After installation, type **Quick Start** in the :guilabel:`Search...` box.
-  * In the results, select the :guilabel:`Quick Start` app. Click :guilabel:`Install`, then click :guilabel:`Open`.
-  * The Quick Start app opens.
-  * On the :guilabel:`Select a kit` page, select your :guilabel:`nRF54L15 DK`, then click :guilabel:`Continue`.
-  * A wizard guides you through the initial steps for using your DK. Review the content, then click :guilabel:`Continue`.
-  * At the :guilabel:`Develop` step, select :guilabel:`VS Code IDE`, then click :guilabel:`Continue`. The :guilabel:`Open VS Code` page appears.
-
-  .. important::
-
-     Click :guilabel:`Skip`. Do not click :guilabel:`Open VS Code with extension`.
-
-  * At the :guilabel:`Apps` step, select :guilabel:`Serial Terminal`, click :guilabel:`Install`, then click :guilabel:`Skip`.
-  * At the :guilabel:`Finish` step, click :guilabel:`Close`.
+  * With the nRF54L15 DK connected to your PC, launch the Quick Start app from nRF Connect for Desktop.
+    The kit will be detected by the app and it will guide you through initial configuration.
+  * Complete the steps of the Quick Start wizard.
+    Make sure to select :guilabel:`VS Code IDE` as the development environment and to install the `Serial Terminal app`_.
 
 * |VSC|:
 

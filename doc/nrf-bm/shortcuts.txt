@@ -10,7 +10,7 @@
 .. |ncs_release| replace:: v3.1.0
 .. |release| replace:: v0.9.0
 
-.. |jlink_ver| replace:: v8.18
+.. |jlink_ver| replace:: v8.76
 
 .. ### Other shortcuts
 
