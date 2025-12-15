@@ -148,7 +148,6 @@ The application must reply to the :c:enum:`BLE_ADV_EVT_PEER_ADDR_REQUEST` event 
 
    When setting connection-specific configurations using the :c:func:`sd_ble_cfg_set` function, you must create a tag for each configuration.
    This tag must be provided when calling the :c:func:`sd_ble_gap_adv_start` function and the :c:func:`sd_ble_gap_connect` function.
-   If your application uses the advertising library, you must call the :c:func:`ble_advertising_conn_cfg_tag_set` function before starting advertising.
 
 Dependencies
 ************
