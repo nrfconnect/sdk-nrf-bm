@@ -229,9 +229,6 @@ uint32_t ble_bas_battery_level_notify(struct ble_bas *bas, uint16_t conn_handle)
 	if (!bas) {
 		return NRF_ERROR_NULL;
 	}
-	if (!bas->can_notify) {
-		return NRF_ERROR_INVALID_PARAM;
-	}
 
 	hvx.handle = bas->battery_level_handles.value_handle;
 	hvx.type = BLE_GATT_HVX_NOTIFICATION;
