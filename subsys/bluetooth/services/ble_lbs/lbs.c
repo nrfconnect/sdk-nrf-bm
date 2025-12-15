@@ -40,11 +40,9 @@ void ble_lbs_on_ble_evt(const ble_evt_t *ble_evt, void *lbs_instance)
 	__ASSERT(ble_evt, "BLE event is NULL");
 	__ASSERT(lbs_instance, "LBS instance is NULL");
 
-	struct ble_lbs *lbs = (struct ble_lbs *)lbs_instance;
-
 	switch (ble_evt->header.evt_id) {
 	case BLE_GATTS_EVT_WRITE:
-		on_write(lbs, ble_evt);
+		on_write(lbs_instance, ble_evt);
 		break;
 	default:
 		break;
