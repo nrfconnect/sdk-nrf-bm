@@ -219,8 +219,6 @@ static void on_hvx_tx_complete(struct ble_nus *nus, const ble_evt_t *ble_evt)
 
 void ble_nus_on_ble_evt(const ble_evt_t *ble_evt, void *ctx)
 {
-	struct ble_nus *nus = (struct ble_nus *)ctx;
-
 	__ASSERT(ble_evt, "BLE event is NULL");
 	__ASSERT(ctx, "context is NULL");
 
@@ -230,15 +228,15 @@ void ble_nus_on_ble_evt(const ble_evt_t *ble_evt, void *ctx)
 
 	switch (ble_evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:
-		on_connect(nus, ble_evt);
+		on_connect(ctx, ble_evt);
 		break;
 
 	case BLE_GATTS_EVT_WRITE:
-		on_write(nus, ble_evt);
+		on_write(ctx, ble_evt);
 		break;
 
 	case BLE_GATTS_EVT_HVN_TX_COMPLETE:
-		on_hvx_tx_complete(nus, ble_evt);
+		on_hvx_tx_complete(ctx, ble_evt);
 		break;
 
 	default:
