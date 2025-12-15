@@ -36,6 +36,5 @@ tests:
       - firmware_loader_CONFIG_BM_UARTE_CONSOLE=n
       - firmware_loader_CONFIG_CRACEN_LIB_KMU=n
       - firmware_loader_CONFIG_PSA_WANT_ALG_CTR_DRBG=n
-      - mcuboot_CONFIG_LOG=n
-      - mcuboot_CONFIG_CONSOLE=n
-      - mcuboot_CONFIG_BM_UARTE_CONSOLE=n
+    extra_args:
+      - FILE_SUFFIX=size_opt
