@@ -237,7 +237,7 @@ uint32_t ble_hrs_init(struct ble_hrs *hrs, const struct ble_hrs_config *cfg)
 					   &hrs->service_handle);
 	if (nrf_err) {
 		LOG_ERR("Failed to add heart rate service, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
+		return nrf_err;
 	}
 
 	/* Add Heart rate measurement characteristic. */
@@ -245,7 +245,7 @@ uint32_t ble_hrs_init(struct ble_hrs *hrs, const struct ble_hrs_config *cfg)
 	if (nrf_err) {
 		LOG_ERR("Failed to add heart rate measurement characteristic, nrf_error %#x",
 			nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
+		return nrf_err;
 	}
 
 	/* Add Body sensor location characteristic. */
@@ -253,7 +253,7 @@ uint32_t ble_hrs_init(struct ble_hrs *hrs, const struct ble_hrs_config *cfg)
 	if (nrf_err) {
 		LOG_ERR("Failed to add body sensor location characteristic, nrf_error %#x",
 			nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
+		return nrf_err;
 	}
 
 	return NRF_SUCCESS;
@@ -262,9 +262,9 @@ uint32_t ble_hrs_init(struct ble_hrs *hrs, const struct ble_hrs_config *cfg)
 uint32_t ble_hrs_heart_rate_measurement_send(struct ble_hrs *hrs, uint16_t heart_rate)
 {
 	uint32_t nrf_err;
+	ble_gatts_hvx_params_t hvx = {0};
 	uint8_t encoded_hrm[MAX_HRM_LEN_CALC(CONFIG_NRF_SDH_BLE_GATT_MAX_MTU_SIZE)];
 	uint16_t len;
-	uint16_t hvx_len;
 
 	if (!hrs) {
 		return NRF_ERROR_NULL;
@@ -274,34 +274,20 @@ uint32_t ble_hrs_heart_rate_measurement_send(struct ble_hrs *hrs, uint16_t heart
 
 	/* Prepare heart rate measurement notification data */
 	len = hrm_encode(hrs, heart_rate, encoded_hrm);
-	hvx_len = len;
 
 	/* Notify */
-	ble_gatts_hvx_params_t hvx = {
-		.handle = hrs->hrm_handles.value_handle,
-		.type = BLE_GATT_HVX_NOTIFICATION,
-		.offset = 0,
-		.p_len = &hvx_len,
-		.p_data = encoded_hrm,
-	};
+	hvx.type = BLE_GATT_HVX_NOTIFICATION;
+	hvx.handle = hrs->hrm_handles.value_handle;
+	hvx.p_len = &len;
+	hvx.p_data = encoded_hrm;
 
 	nrf_err = sd_ble_gatts_hvx(hrs->conn_handle, &hvx);
-	switch (nrf_err) {
-	case NRF_SUCCESS:
-		if (hvx_len != len) {
-			LOG_ERR("Notified %d of %d bytes", hvx_len, len);
-			return NRF_ERROR_INVALID_PARAM;
-		}
-		return NRF_SUCCESS;
-	case BLE_ERROR_INVALID_CONN_HANDLE:
-		return NRF_ERROR_NOT_FOUND;
-	case NRF_ERROR_INVALID_STATE:
-	case BLE_ERROR_GATTS_SYS_ATTR_MISSING:
-		return NRF_ERROR_INVALID_STATE;
-	default:
+	if (nrf_err) {
 		LOG_ERR("Failed to notify heart rate measurement, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
+		return nrf_err;
 	}
+
+	return NRF_SUCCESS;
 }
 
 uint32_t ble_hrs_rr_interval_add(struct ble_hrs *hrs, uint16_t rr_interval)
@@ -358,7 +344,6 @@ uint32_t ble_hrs_body_sensor_location_set(struct ble_hrs *hrs, uint8_t body_sens
 	uint32_t nrf_err;
 	ble_gatts_value_t gatts_value = {
 		.len = sizeof(uint8_t),
-		.offset = 0,
 		.p_value = &body_sensor_location,
 	};
 
@@ -370,7 +355,7 @@ uint32_t ble_hrs_body_sensor_location_set(struct ble_hrs *hrs, uint8_t body_sens
 					 &gatts_value);
 	if (nrf_err) {
 		LOG_ERR("Failed to update body sensor location, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
+		return nrf_err;
 	}
 
 	return NRF_SUCCESS;
