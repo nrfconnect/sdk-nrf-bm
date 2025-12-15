@@ -419,16 +419,13 @@ void test_ble_bas_battery_level_notify_error_invalid_param(void)
 	uint16_t conn_handle = 0x0001;
 	struct ble_bas_config bas_cfg = bas_cfg_template;
 
+	/* We don't check whether this is set, just try to notify */
 	bas_cfg.can_notify = false;
 	bas_init(&bas_cfg);
 
-	nrf_err = ble_bas_battery_level_notify(&ble_bas, conn_handle);
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, nrf_err);
-
-	bas_cfg.can_notify = true;
-	bas_init(&bas_cfg);
-
 	__cmock_sd_ble_gatts_hvx_ExpectAnyArgsAndReturn(ERROR);
+
+	/* Forward whatever error we get */
 	nrf_err = ble_bas_battery_level_notify(&ble_bas, conn_handle);
 	TEST_ASSERT_EQUAL(ERROR, nrf_err);
 }
