@@ -222,9 +222,6 @@ void ble_nus_on_ble_evt(const ble_evt_t *ble_evt, void *ctx)
 	__ASSERT(ble_evt, "BLE event is NULL");
 	__ASSERT(ctx, "context is NULL");
 
-	if ((ctx == NULL) || (ble_evt == NULL)) {
-		return;
-	}
 
 	switch (ble_evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:
