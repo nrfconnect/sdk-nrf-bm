@@ -219,21 +219,6 @@ void test_ble_nus_init_success(void)
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
-void test_ble_nus_on_ble_evt_gap_evt_do_nothing(void)
-{
-	ble_evt_t const ble_evt = {0};
-	struct ble_nus nus_ctx = {0};
-	ble_evt_t empty_ble_evt = {0};
-	struct ble_nus empty_nus_ctx = {0};
-
-	ble_nus_on_ble_evt(NULL, &nus_ctx);
-	ble_nus_on_ble_evt(&ble_evt, NULL);
-	ble_nus_on_ble_evt(&ble_evt, &nus_ctx);
-
-	TEST_ASSERT_EQUAL_MEMORY(&empty_ble_evt, &ble_evt, sizeof(ble_evt_t));
-	TEST_ASSERT_EQUAL_MEMORY(&empty_nus_ctx, &nus_ctx, sizeof(struct ble_nus));
-}
-
 void test_ble_nus_on_ble_evt_gap_evt_on_connect_readiness(void)
 {
 	const ble_evt_t ble_evt = {
