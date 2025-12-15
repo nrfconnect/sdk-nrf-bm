@@ -13,22 +13,16 @@
 
 #include "cmock_ble_gatts.h"
 
+/* An arbitrary error, to test forwarding of errors from SoftDevice calls */
+#define ERROR 0xbaadf00d
+
 void ble_hrs_on_ble_evt(const ble_evt_t *evt, struct ble_hrs *hrs);
 
-uint32_t stub_sd_ble_gatts_hvx(
-	uint16_t conn_handle, const ble_gatts_hvx_params_t *p_hvx_params, int cmock_num_calls)
-{
-	if (p_hvx_params && p_hvx_params->p_len) {
-		*(p_hvx_params->p_len) = 0;
-	}
-	return NRF_SUCCESS;
-}
-
-uint32_t stub_sd_ble_gatts_characteristic_add(uint16_t service_handle,
-					      const ble_gatts_char_md_t *p_char_md,
-					      const ble_gatts_attr_t *p_attr_char_value,
-					      ble_gatts_char_handles_t *p_handles,
-					      int cmock_num_calls)
+static uint32_t stub_sd_ble_gatts_characteristic_add(uint16_t service_handle,
+						     const ble_gatts_char_md_t *p_char_md,
+						     const ble_gatts_attr_t *p_attr_char_value,
+						     ble_gatts_char_handles_t *p_handles,
+						     int cmock_num_calls)
 {
 	TEST_ASSERT_NOT_NULL(p_char_md);
 	TEST_ASSERT_NOT_NULL(p_attr_char_value);
@@ -142,14 +136,15 @@ void test_ble_hrs_sensor_contact_supported_set_invalid_state(void)
 {
 	uint32_t nrf_err;
 	struct ble_hrs hrs = {0};
-
 	/* Try to set sensor contact supported while in connection
 	 * Simulate being in a connection
 	 */
 	const ble_evt_t evt = {
 		.header.evt_id = BLE_GAP_EVT_CONNECTED
 	};
+
 	ble_hrs_on_ble_evt(&evt, &hrs);
+
 	nrf_err = ble_hrs_sensor_contact_supported_set(&hrs, true);
 	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, nrf_err);
 }
@@ -194,6 +189,7 @@ void test_ble_hrs_body_sensor_location_set_success(void)
 						       NULL,
 						       NRF_SUCCESS);
 	__cmock_sd_ble_gatts_value_set_IgnoreArg_p_value();
+
 	nrf_err = ble_hrs_body_sensor_location_set(&hrs, body_sensor_location);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
@@ -207,11 +203,11 @@ void test_ble_hrs_body_sensor_location_set_invalid_param(void)
 	__cmock_sd_ble_gatts_value_set_ExpectAndReturn(hrs.conn_handle,
 						       hrs.bsl_handles.value_handle,
 						       NULL,
-						       NRF_ERROR_INVALID_ADDR);
+						       ERROR);
 	__cmock_sd_ble_gatts_value_set_IgnoreArg_p_value();
 
 	nrf_err = ble_hrs_body_sensor_location_set(&hrs, body_sensor_location);
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, nrf_err);
+	TEST_ASSERT_EQUAL(ERROR, nrf_err);
 }
 
 void test_ble_hrs_body_sensor_location_set_null(void)
@@ -236,10 +232,10 @@ void test_ble_hrs_heart_rate_measurement_send_enotfound(void)
 	};
 	uint16_t heart_rate_measurement = 72;
 
-	__cmock_sd_ble_gatts_hvx_IgnoreAndReturn(BLE_ERROR_INVALID_CONN_HANDLE);
+	__cmock_sd_ble_gatts_hvx_IgnoreAndReturn(ERROR);
 
 	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, heart_rate_measurement);
-	TEST_ASSERT_EQUAL(NRF_ERROR_NOT_FOUND, nrf_err);
+	TEST_ASSERT_EQUAL(ERROR, nrf_err);
 }
 
 void test_ble_hrs_heart_rate_measurement_send_invalid_state(void)
@@ -255,11 +251,11 @@ void test_ble_hrs_heart_rate_measurement_send_invalid_state(void)
 	};
 	uint16_t heart_rate_measurement = 72;
 
-	__cmock_sd_ble_gatts_hvx_ExpectAndReturn(hrs.conn_handle, NULL, NRF_ERROR_INVALID_STATE);
+	__cmock_sd_ble_gatts_hvx_ExpectAndReturn(hrs.conn_handle, NULL, ERROR);
 	__cmock_sd_ble_gatts_hvx_IgnoreArg_p_hvx_params();
 
 	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, heart_rate_measurement);
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, nrf_err);
+	TEST_ASSERT_EQUAL(ERROR, nrf_err);
 }
 
 void test_ble_hrs_heart_rate_measurement_send_invalid_param(void)
@@ -275,17 +271,11 @@ void test_ble_hrs_heart_rate_measurement_send_invalid_param(void)
 	};
 	uint16_t heart_rate_measurement = 72;
 
-	__cmock_sd_ble_gatts_hvx_ExpectAndReturn(hrs.conn_handle, NULL, NRF_ERROR_BUSY);
+	__cmock_sd_ble_gatts_hvx_ExpectAndReturn(hrs.conn_handle, NULL, ERROR);
 	__cmock_sd_ble_gatts_hvx_IgnoreArg_p_hvx_params();
 
 	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, heart_rate_measurement);
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, nrf_err);
-
-	/* Set up the stub to manipulate p_len */
-	__cmock_sd_ble_gatts_hvx_Stub(stub_sd_ble_gatts_hvx);
-
-	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, heart_rate_measurement);
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, nrf_err);
+	TEST_ASSERT_EQUAL(ERROR, nrf_err);
 }
 
 void test_ble_hrs_heart_rate_measurement_send_null(void)
@@ -331,10 +321,10 @@ void test_ble_hrs_init_invalid_param(void)
 		.body_sensor_location = (uint8_t[]){ BLE_HRS_BODY_SENSOR_LOCATION_FINGER }
 	};
 
-	__cmock_sd_ble_gatts_service_add_IgnoreAndReturn(NRF_ERROR_INVALID_ADDR);
+	__cmock_sd_ble_gatts_service_add_IgnoreAndReturn(ERROR);
 
 	nrf_err = ble_hrs_init(&hrs, &hrs_config);
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, nrf_err);
+	TEST_ASSERT_EQUAL(ERROR, nrf_err);
 }
 
 extern int unity_main(void);
