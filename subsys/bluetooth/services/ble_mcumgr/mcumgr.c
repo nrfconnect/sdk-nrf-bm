@@ -182,8 +182,6 @@ static uint32_t ble_mcumgr_data_send(uint8_t *data, uint16_t *len)
 
 	if (!data || !len) {
 		return NRF_ERROR_NULL;
-	} else if (*len > BLE_GATT_MAX_DATA_LEN) {
-		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx_params);
