@@ -42,16 +42,6 @@ LOG_MODULE_REGISTER(mcumgr, CONFIG_BLE_MCUMGR_LOG_LEVEL);
 #define BLE_GATT_MAX_DATA_LEN BLE_GATT_MAX_DATA_LEN_CALC(CONFIG_NRF_SDH_BLE_GATT_MAX_MTU_SIZE)
 
 /**
- * @brief MCUmgr Bluetooth service client context structure.
- *
- * @details This structure contains state context related to hosts.
- */
-struct ble_mcumgr_client_context {
-	/** Indicate if the peer has enabled notification of the RX characteristic */
-	bool is_notification_enabled;
-};
-
-/**
  * @brief MCUmgr Bluetooth service structure.
  *
  * @details This structure contains status information related to the service.
@@ -70,14 +60,6 @@ struct ble_mcumgr {
 static uint16_t conn_handle = BLE_CONN_HANDLE_INVALID;
 static struct ble_mcumgr ble_mcumgr;
 static struct smp_transport smp_ncs_bm_bt_transport;
-static struct ble_mcumgr_client_context contexts[CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT];
-
-static struct ble_mcumgr_client_context *ble_mcumgr_client_context_get(uint16_t conn_handle)
-{
-	const int idx = nrf_sdh_ble_idx_get(conn_handle);
-
-	return ((idx >= 0) ? &contexts[idx] : NULL);
-}
 
 static uint32_t mcumgr_characteristic_add(struct ble_mcumgr *service,
 					  const struct ble_mcumgr_config *cfg)
@@ -121,41 +103,6 @@ static uint32_t mcumgr_characteristic_add(struct ble_mcumgr *service,
 }
 
 /**
- * @brief Function for handling the @ref BLE_GAP_EVT_CONNECTED event from the SoftDevice.
- *
- * @param[in] service MCUmgr service structure.
- * @param[in] ble_evt Pointer to the event received from BLE stack.
- */
-static void on_connect(struct ble_mcumgr *service, const ble_evt_t *ble_evt)
-{
-	uint32_t nrf_err;
-	uint8_t cccd_value[2];
-	ble_gatts_value_t gatts_val = {
-		.p_value = cccd_value,
-		.len = sizeof(cccd_value),
-		.offset = 0,
-	};
-	struct ble_mcumgr_client_context *ctx;
-
-	ctx = ble_mcumgr_client_context_get(conn_handle);
-
-	if (ctx == NULL) {
-		LOG_ERR("Could not fetch MCUmgr context for connection handle %#x", conn_handle);
-		return;
-	}
-
-	/* Check the hosts CCCD value to inform of readiness to send data using the
-	 * RX characteristic
-	 */
-	nrf_err = sd_ble_gatts_value_get(conn_handle, service->characteristic_handle.cccd_handle,
-					 &gatts_val);
-
-	if (nrf_err == NRF_SUCCESS && is_notification_enabled(gatts_val.p_value)) {
-		ctx->is_notification_enabled = true;
-	}
-}
-
-/**
  * @brief Function for handling the @ref BLE_GATTS_EVT_WRITE event from the SoftDevice.
  *
  * @param[in] service MCUmgr service structure.
@@ -163,27 +110,9 @@ static void on_connect(struct ble_mcumgr *service, const ble_evt_t *ble_evt)
  */
 static void on_write(struct ble_mcumgr *service, const ble_evt_t *ble_evt)
 {
-	const uint16_t conn_handle = ble_evt->evt.gatts_evt.conn_handle;
 	const ble_gatts_evt_write_t *evt_write = &ble_evt->evt.gatts_evt.params.write;
-	struct ble_mcumgr_client_context *ctx;
 
-	ctx = ble_mcumgr_client_context_get(conn_handle);
-
-	if (ctx == NULL) {
-		LOG_ERR("Could not fetch MCUmgr context for connection handle %#x", conn_handle);
-		return;
-	}
-
-	LOG_DBG("Link ctx %p", ctx);
-
-	if (evt_write->handle == service->characteristic_handle.cccd_handle &&
-	    evt_write->len == 2) {
-		if (is_notification_enabled(evt_write->data)) {
-			ctx->is_notification_enabled = true;
-		} else {
-			ctx->is_notification_enabled = false;
-		}
-	} else if (evt_write->handle == service->characteristic_handle.value_handle) {
+	if (evt_write->handle == service->characteristic_handle.value_handle) {
 #ifdef CONFIG_MCUMGR_TRANSPORT_REASSEMBLY
 		int ret;
 		bool started;
@@ -241,7 +170,7 @@ static void on_write(struct ble_mcumgr *service, const ble_evt_t *ble_evt)
 	}
 }
 
-uint32_t ble_mcumgr_data_send(uint8_t *data, uint16_t *len, struct ble_mcumgr_client_context *ctx)
+static uint32_t ble_mcumgr_data_send(uint8_t *data, uint16_t *len)
 {
 	uint32_t nrf_err;
 	ble_gatts_hvx_params_t hvx_params = {
@@ -254,8 +183,6 @@ uint32_t ble_mcumgr_data_send(uint8_t *data, uint16_t *len, struct ble_mcumgr_cl
 	if (!data || !len) {
 		return NRF_ERROR_NULL;
 	} else if (*len > BLE_GATT_MAX_DATA_LEN) {
-		return NRF_ERROR_INVALID_PARAM;
-	} else if (!ctx->is_notification_enabled) {
 		return NRF_ERROR_INVALID_PARAM;
 	}
 
@@ -294,7 +221,6 @@ uint32_t ble_mcumgr_data_send(uint8_t *data, uint16_t *len, struct ble_mcumgr_cl
 static int smp_ncs_bm_bt_tx_pkt(struct net_buf *nb)
 {
 	uint32_t nrf_err;
-	struct ble_mcumgr_client_context *ctx;
 	uint16_t notification_size;
 	uint8_t *send_pos = nb->data;
 	uint16_t send_size = 0;
@@ -303,7 +229,6 @@ static int smp_ncs_bm_bt_tx_pkt(struct net_buf *nb)
 		return -ENOENT;
 	}
 
-	ctx = &contexts[0];
 	nrf_err = ble_conn_params_att_mtu_get(conn_handle, &notification_size);
 	if (nrf_err) {
 		goto finish;
@@ -318,7 +243,7 @@ static int smp_ncs_bm_bt_tx_pkt(struct net_buf *nb)
 			send_size = notification_size;
 		}
 
-		nrf_err = ble_mcumgr_data_send(send_pos, &send_size, ctx);
+		nrf_err = ble_mcumgr_data_send(send_pos, &send_size);
 
 		if (nrf_err) {
 			break;
@@ -354,7 +279,6 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 	case BLE_GAP_EVT_CONNECTED:
 	{
 		conn_handle = evt->evt.gap_evt.conn_handle;
-		on_connect(mcumgr_data, evt);
 		break;
 	}
 
