@@ -117,7 +117,7 @@ struct ble_racp_value {
  * @retval NRF_SUCCESS on success.
  * @retval NRF_ERROR_NULL if @p data or @p racp_val is NULL.
  */
-uint32_t ble_racp_decode(uint8_t const *data, size_t data_len, struct ble_racp_value *racp_val);
+uint32_t ble_racp_decode(const uint8_t *data, size_t data_len, struct ble_racp_value *racp_val);
 
 /**
  * @brief Encode a Record Access Control Point response.

@@ -118,7 +118,7 @@ struct ble_scan_short_name {
 	/**
 	 * @brief Pointer to the short name.
 	 */
-	char const *short_name;
+	const char *short_name;
 	/**
 	 * @brief Minimum length of the short name.
 	 */
@@ -150,14 +150,14 @@ struct ble_scan_evt {
 	/** Type of event. */
 	enum ble_scan_evt_type evt_type;
 	/** GAP scanning parameters. These parameter are needed to establish connection. */
-	ble_gap_scan_params_t const *scan_params;
+	const ble_gap_scan_params_t *scan_params;
 	union {
 		/** Scan filter match. */
 		struct {
 			/** Event structure for @ref BLE_GAP_EVT_ADV_REPORT. This data
 			 * allows the main application to establish connection.
 			 */
-			ble_gap_evt_adv_report_t const *adv_report;
+			const ble_gap_evt_adv_report_t *adv_report;
 			/** Matching filters. Information about matched filters. */
 			struct ble_scan_filter_match filter_match;
 		} filter_match;
@@ -166,17 +166,17 @@ struct ble_scan_evt {
 		/** Advertising report event parameters for allow list. */
 		struct {
 			/** Advertising report */
-			ble_gap_evt_adv_report_t const *report;
+			const ble_gap_evt_adv_report_t *report;
 		} allow_list_adv_report;
 		/** Advertising report event parameters	when filter is not found. */
 		struct {
 			/** Advertising report */
-			ble_gap_evt_adv_report_t const *report;
+			const ble_gap_evt_adv_report_t *report;
 		} not_found;
 		/** Connected event parameters. */
 		struct {
 			/** Connected event parameters. */
-			ble_gap_evt_connected_t const *connected;
+			const ble_gap_evt_connected_t *connected;
 			/** Connection handle of the device on which the event occurred. */
 			uint16_t conn_handle;
 		} connected;
@@ -201,7 +201,7 @@ struct ble_scan_evt {
 /**
  * @brief BLE Scan event handler type.
  */
-typedef void (*ble_scan_evt_handler_t)(struct ble_scan_evt const *scan_evt);
+typedef void (*ble_scan_evt_handler_t)(const struct ble_scan_evt *scan_evt);
 
 #if defined(CONFIG_BLE_SCAN_FILTER)
 
@@ -392,7 +392,7 @@ struct ble_scan {
  *
  * @return true if allow list is used.
  */
-bool is_allow_list_used(struct ble_scan const *const scan_ctx);
+bool is_allow_list_used(const struct ble_scan *const scan_ctx);
 
 /**
  * @brief Initialize the Scan library.
@@ -422,14 +422,14 @@ int ble_scan_init(struct ble_scan *scan, struct ble_scan_config *config);
  * @return This API propagates the error code returned by the
  *         SoftDevice API @ref sd_ble_gap_scan_start.
  */
-int ble_scan_start(struct ble_scan const *const scan_ctx);
+int ble_scan_start(const struct ble_scan *const scan_ctx);
 
 /**
  * @brief Stop scanning.
  *
  * @param[in] scan_ctx Scan library instance.
  */
-void ble_scan_stop(struct ble_scan const *const scan_ctx);
+void ble_scan_stop(const struct ble_scan *const scan_ctx);
 
 #if defined(CONFIG_BLE_SCAN_FILTER)
 
@@ -504,7 +504,7 @@ int ble_scan_filter_get(struct ble_scan *const scan_ctx, struct ble_scan_filters
  * @retval BLE_ERROR_GAP_INVALID_BLE_ADDR If the BLE address type is invalid.
  */
 int ble_scan_filter_add(struct ble_scan *const scan_ctx, uint8_t type,
-			void const *data);
+			const void *data);
 
 /**
  * @brief Remove all filters.
@@ -533,7 +533,7 @@ int ble_scan_all_filter_remove(struct ble_scan *const scan_ctx);
  * @retval NRF_SUCCESS If parameters are changed successfully.
  * @retval NRF_ERROR_NULL If a NULL pointer is passed as input.
  */
-int ble_scan_params_set(struct ble_scan *const scan_ctx, ble_gap_scan_params_t const *scan_params);
+int ble_scan_params_set(struct ble_scan *const scan_ctx, const ble_gap_scan_params_t *scan_params);
 
 /**
  * @brief Handler for BLE stack events.
@@ -541,7 +541,7 @@ int ble_scan_params_set(struct ble_scan *const scan_ctx, ble_gap_scan_params_t c
  * @param[in] ble_evt BLE event.
  * @param[in,out] scan Scan library instance.
  */
-void ble_scan_on_ble_evt(ble_evt_t const *ble_evt, void *scan);
+void ble_scan_on_ble_evt(const ble_evt_t *ble_evt, void *scan);
 
 /**
  * @brief Convert the raw address to the SoftDevice GAP address.
@@ -559,7 +559,7 @@ void ble_scan_on_ble_evt(ble_evt_t const *ble_evt, void *scan);
  * @retval NRF_SUCCESS If the address is copied and converted successfully.
  */
 int ble_scan_copy_addr_to_sd_gap_addr(ble_gap_addr_t *gap_addr,
-				      uint8_t const addr[BLE_GAP_ADDR_LEN]);
+				      const uint8_t addr[BLE_GAP_ADDR_LEN]);
 
 #ifdef __cplusplus
 }

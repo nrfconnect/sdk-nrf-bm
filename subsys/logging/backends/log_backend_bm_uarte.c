@@ -77,7 +77,7 @@ static void process(const struct log_backend *const backend, union log_msg_gener
 	log_output_func(&bm_lbu_output, &msg->log, flags);
 }
 
-static void log_backend_uart_init(struct log_backend const *const backend)
+static void log_backend_uart_init(const struct log_backend *const backend)
 {
 	(void)uarte_init();
 }
@@ -94,7 +94,7 @@ static int format_set(const struct log_backend *const backend, uint32_t log_type
 	return 0;
 }
 
-static void panic(struct log_backend const *const backend)
+static void panic(const struct log_backend *const backend)
 {
 	/* Empty until backend uses interrupts */
 }

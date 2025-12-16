@@ -22,7 +22,7 @@ uint16_t test_case_conn_handle = 0x1000;
 bool evt_handler_called;
 struct ble_nus_client_context *last_link_ctx;
 
-static uint32_t stub_sd_ble_gatts_service_add(uint8_t type, ble_uuid_t const *p_uuid,
+static uint32_t stub_sd_ble_gatts_service_add(uint8_t type, const ble_uuid_t *p_uuid,
 					      uint16_t *p_handle, int calls)
 {
 	ble_uuid_t expected_uuid = {

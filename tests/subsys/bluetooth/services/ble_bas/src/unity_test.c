@@ -53,7 +53,7 @@ static struct ble_bas_config bas_cfg_template = {
 	}
 };
 
-uint32_t stub_sd_ble_gatts_service_add_success(uint8_t type, ble_uuid_t const *p_uuid,
+uint32_t stub_sd_ble_gatts_service_add_success(uint8_t type, const ble_uuid_t *p_uuid,
 					       uint16_t *p_handle, int cmock_num_calls)
 {
 	TEST_ASSERT_EQUAL(BLE_GATTS_SRVC_TYPE_PRIMARY, type);
@@ -69,8 +69,8 @@ uint32_t stub_sd_ble_gatts_service_add_success(uint8_t type, ble_uuid_t const *p
 }
 
 static uint32_t stub_sd_ble_gatts_characteristic_add_success(
-	uint16_t service_handle, ble_gatts_char_md_t const *p_char_md,
-	ble_gatts_attr_t const *p_attr_char_value, ble_gatts_char_handles_t *p_handles, int calls)
+	uint16_t service_handle, const ble_gatts_char_md_t *p_char_md,
+	const ble_gatts_attr_t *p_attr_char_value, ble_gatts_char_handles_t *p_handles, int calls)
 {
 	const uint8_t expected_bat_lvl = BATTERY_REFERENCE_VALUE;
 	const ble_gap_conn_sec_mode_t perm_12 = {.lv = 1, .sm = 2};
@@ -140,7 +140,7 @@ static uint32_t stub_sd_ble_gatts_descriptor_add_success(uint16_t char_handle,
 }
 
 static uint32_t stub_sd_ble_gatts_hvx_param_check(uint16_t conn_handle,
-						  ble_gatts_hvx_params_t const *p_hvx_params,
+						  const ble_gatts_hvx_params_t *p_hvx_params,
 						  int num_calls)
 {
 	hvx_stub_called++;

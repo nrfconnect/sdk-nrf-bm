@@ -61,7 +61,7 @@ uint16_t nrf_sdh_ble_conn_handle_get(int idx)
 	return conn_handles_registered[idx];
 }
 
-extern void ble_evt_handler(ble_evt_t const *ble_evt, void *ctx);
+extern void ble_evt_handler(const ble_evt_t *ble_evt, void *ctx);
 
 static uint32_t arbitrary_context;
 /* Conn handle that will cause flag operations to overflow into next flag if not checked. */

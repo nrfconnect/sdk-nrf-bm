@@ -21,13 +21,13 @@ struct ble_dis_config dis_config = {
 		.sec_mode = BLE_DIS_CONFIG_SEC_MODE_DEFAULT,
 };
 
-uint32_t stub_sd_ble_gatts_service_add_invalid_param(uint8_t type, ble_uuid_t const *p_uuid,
+uint32_t stub_sd_ble_gatts_service_add_invalid_param(uint8_t type, const ble_uuid_t *p_uuid,
 						     uint16_t *p_handle, int cmock_num_calls)
 {
 	return NRF_ERROR_INVALID_PARAM;
 }
 
-uint32_t stub_sd_ble_gatts_service_add(uint8_t type, ble_uuid_t const *p_uuid, uint16_t *p_handle,
+uint32_t stub_sd_ble_gatts_service_add(uint8_t type, const ble_uuid_t *p_uuid, uint16_t *p_handle,
 				       int cmock_num_calls)
 {
 	TEST_ASSERT_EQUAL(BLE_GATTS_SRVC_TYPE_PRIMARY, type);
@@ -40,16 +40,16 @@ uint32_t stub_sd_ble_gatts_service_add(uint8_t type, ble_uuid_t const *p_uuid, u
 }
 
 uint32_t stub_sd_ble_gatts_characteristic_add_invalid_param(
-	uint16_t service_handle, ble_gatts_char_md_t const *p_char_md,
-	ble_gatts_attr_t const *p_attr_char_value, ble_gatts_char_handles_t *p_handles,
+	uint16_t service_handle, const ble_gatts_char_md_t *p_char_md,
+	const ble_gatts_attr_t *p_attr_char_value, ble_gatts_char_handles_t *p_handles,
 	int cmock_num_calls)
 {
 	return NRF_ERROR_INVALID_PARAM;
 }
 
 uint32_t stub_sd_ble_gatts_characteristic_add(
-	uint16_t service_handle, ble_gatts_char_md_t const *p_char_md,
-	ble_gatts_attr_t const *p_attr_char_value, ble_gatts_char_handles_t *p_handles,
+	uint16_t service_handle, const ble_gatts_char_md_t *p_char_md,
+	const ble_gatts_attr_t *p_attr_char_value, ble_gatts_char_handles_t *p_handles,
 	int cmock_num_calls)
 {
 	ble_gatts_char_md_t char_md_expected = {

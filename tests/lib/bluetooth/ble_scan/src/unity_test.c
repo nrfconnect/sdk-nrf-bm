@@ -36,7 +36,7 @@ void ble_evt_send(const ble_evt_t *evt)
 	}
 }
 
-void scan_event_handler_func(struct ble_scan_evt const *scan_evt)
+void scan_event_handler_func(const struct ble_scan_evt *scan_evt)
 {
 	scan_event_prev = scan_event;
 	scan_event = *scan_evt;

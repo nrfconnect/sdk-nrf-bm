@@ -22,7 +22,7 @@
 
 LOG_MODULE_REGISTER(ble_bms, CONFIG_BLE_BMS_LOG_LEVEL);
 
-static uint32_t ctrlpt_char_add(struct ble_bms *bms, struct ble_bms_config const *bms_config)
+static uint32_t ctrlpt_char_add(struct ble_bms *bms, const struct ble_bms_config *bms_config)
 {
 	uint32_t nrf_err;
 	ble_uuid_t char_uuid = {
@@ -61,7 +61,7 @@ static uint32_t ctrlpt_char_add(struct ble_bms *bms, struct ble_bms_config const
 	return NRF_SUCCESS;
 }
 
-static uint8_t feature_encode(struct ble_bms_features const *feature, uint8_t *encoded_feature)
+static uint8_t feature_encode(const struct ble_bms_features *feature, uint8_t *encoded_feature)
 {
 	uint32_t data = 0;
 
@@ -93,7 +93,7 @@ static uint8_t feature_encode(struct ble_bms_features const *feature, uint8_t *e
 	return 3;
 }
 
-static uint32_t feature_char_add(struct ble_bms *bms, struct ble_bms_config const *bms_config)
+static uint32_t feature_char_add(struct ble_bms *bms, const struct ble_bms_config *bms_config)
 {
 	uint32_t nrf_err;
 	uint8_t encoded_feature[BLE_BMS_FEATURE_LEN];
@@ -167,7 +167,7 @@ static void ctrlpt_auth(struct ble_bms *bms, struct ble_bms_ctrlpt *ctrlpt)
 	}
 }
 
-static uint32_t ctrlpt_decode(uint8_t const *rcvd_val, uint16_t len, struct ble_bms_ctrlpt *ctrlpt)
+static uint32_t ctrlpt_decode(const uint8_t *rcvd_val, uint16_t len, struct ble_bms_ctrlpt *ctrlpt)
 {
 	uint16_t pos = 0;
 
@@ -241,7 +241,7 @@ static bool ctrlpt_validate(struct ble_bms_ctrlpt *ctrlpt, struct ble_bms_featur
 	return false;
 }
 
-static uint16_t ctrlpt_process(struct ble_bms *bms, uint8_t const *rcvd_val, uint16_t len,
+static uint16_t ctrlpt_process(struct ble_bms *bms, const uint8_t *rcvd_val, uint16_t len,
 			       struct ble_bms_ctrlpt *ctrlpt)
 {
 	uint32_t nrf_err;
@@ -273,7 +273,7 @@ static uint16_t ctrlpt_process(struct ble_bms *bms, uint8_t const *rcvd_val, uin
 	return BLE_GATT_STATUS_SUCCESS;
 }
 
-static void on_ctrlpt_write(struct ble_bms *bms, ble_gatts_evt_write_t const *evt_write,
+static void on_ctrlpt_write(struct ble_bms *bms, const ble_gatts_evt_write_t *evt_write,
 			    ble_gatts_authorize_params_t *auth_params)
 {
 	uint32_t nrf_err;
@@ -300,7 +300,7 @@ static void on_ctrlpt_write(struct ble_bms *bms, ble_gatts_evt_write_t const *ev
 	ctrlpt_execute(bms, ctrlpt.op_code);
 }
 
-static void on_rw_auth_req(struct ble_bms *bms, ble_gatts_evt_t const *gatts_evt)
+static void on_rw_auth_req(struct ble_bms *bms, const ble_gatts_evt_t *gatts_evt)
 {
 	uint32_t nrf_err;
 
@@ -311,7 +311,7 @@ static void on_rw_auth_req(struct ble_bms *bms, ble_gatts_evt_t const *gatts_evt
 		.type = BLE_GATTS_AUTHORIZE_TYPE_WRITE,
 	};
 
-	ble_gatts_evt_rw_authorize_request_t const *auth_req =
+	const ble_gatts_evt_rw_authorize_request_t *auth_req =
 		&gatts_evt->params.authorize_request;
 
 	if ((auth_req->type == BLE_GATTS_AUTHORIZE_TYPE_WRITE) &&
@@ -417,7 +417,7 @@ uint16_t ble_bms_on_qwr_evt(struct ble_bms *bms, struct ble_qwr *qwr,
 	return BLE_GATT_STATUS_SUCCESS;
 }
 
-void ble_bms_on_ble_evt(ble_evt_t const *ble_evt, void *context)
+void ble_bms_on_ble_evt(const ble_evt_t *ble_evt, void *context)
 {
 	struct ble_bms *bms;
 

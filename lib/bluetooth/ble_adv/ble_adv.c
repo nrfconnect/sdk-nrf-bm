@@ -76,14 +76,14 @@ static bool adv_mode_has_allow_list(enum ble_adv_mode mode)
 	}
 }
 
-static void on_connected(struct ble_adv *ble_adv, ble_evt_t const *ble_evt)
+static void on_connected(struct ble_adv *ble_adv, const ble_evt_t *ble_evt)
 {
 	if (ble_evt->evt.gap_evt.params.connected.role == BLE_GAP_ROLE_PERIPH) {
 		ble_adv->conn_handle = ble_evt->evt.gap_evt.conn_handle;
 	}
 }
 
-static void on_disconnected(struct ble_adv *ble_adv, ble_evt_t const *ble_evt)
+static void on_disconnected(struct ble_adv *ble_adv, const ble_evt_t *ble_evt)
 {
 	uint32_t nrf_err;
 	struct ble_adv_evt adv_evt;
@@ -103,7 +103,7 @@ static void on_disconnected(struct ble_adv *ble_adv, ble_evt_t const *ble_evt)
 	}
 }
 
-static void on_terminated(struct ble_adv *ble_adv, ble_evt_t const *ble_evt)
+static void on_terminated(struct ble_adv *ble_adv, const ble_evt_t *ble_evt)
 {
 	uint32_t nrf_err;
 	const uint8_t reason = ble_evt->evt.gap_evt.params.adv_set_terminated.reason;

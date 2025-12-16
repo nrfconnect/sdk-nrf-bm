@@ -315,7 +315,7 @@ void test_ble_qwr_conn_handle_assign(void)
 
 void test_ble_qwr_on_ble_evt_do_nothing(void)
 {
-	ble_evt_t const ble_evt = {0};
+	const ble_evt_t ble_evt = {0};
 	struct ble_qwr qwr = {0};
 
 	/* We expect these to return immediately */
@@ -337,7 +337,7 @@ void test_ble_qwr_on_ble_evt_mem_req_sd_busy(void)
 		.evt_handler = ble_qwr_evt_handler,
 	};
 
-	ble_evt_t const ble_evt_mem_req = {
+	const ble_evt_t ble_evt_mem_req = {
 		.header = {
 			.evt_id = BLE_EVT_USER_MEM_REQUEST,
 			.evt_len = 7,
@@ -353,7 +353,7 @@ void test_ble_qwr_on_ble_evt_mem_req_sd_busy(void)
 		},
 	};
 
-	ble_evt_t const ble_evt_common_evt = {
+	const ble_evt_t ble_evt_common_evt = {
 		.evt = {
 			.common_evt = {
 				.conn_handle = 0xC044,
@@ -389,7 +389,7 @@ void test_ble_qwr_on_ble_evt_mem_req(void)
 		.evt_handler = ble_qwr_evt_handler,
 	};
 
-	ble_evt_t const ble_evt_mem_req = {
+	const ble_evt_t ble_evt_mem_req = {
 		.header = {
 			.evt_id = BLE_EVT_USER_MEM_REQUEST,
 			.evt_len = 7,
@@ -405,7 +405,7 @@ void test_ble_qwr_on_ble_evt_mem_req(void)
 		},
 	};
 
-	ble_evt_t const ble_evt_common_evt = {
+	const ble_evt_t ble_evt_common_evt = {
 		.evt = {
 			.common_evt = {
 				.conn_handle = 0xC044,

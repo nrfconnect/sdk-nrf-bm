@@ -259,11 +259,11 @@ static void poweroff_timeout_handler(void *ctx)
  * If notifications are enabled, this will start a timer to send a notification on each connection
  * interval. In addition a connection timer is started, that disconnects the peripheral on timeout.
  */
-static void on_write(ble_evt_t const *ble_evt)
+static void on_write(const ble_evt_t *ble_evt)
 {
 	int err;
 	bool notif_enabled;
-	ble_gatts_evt_write_t const *evt_write = &ble_evt->evt.gatts_evt.params.write;
+	const ble_gatts_evt_write_t *evt_write = &ble_evt->evt.gatts_evt.params.write;
 
 	if ((evt_write->handle == char_handles.cccd_handle) && (evt_write->len == 2)) {
 		/* CCCD written. Start notifications */

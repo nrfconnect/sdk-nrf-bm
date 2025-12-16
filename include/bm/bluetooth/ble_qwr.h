@@ -164,7 +164,7 @@ struct ble_qwr_config {
  * @retval NRF_ERROR_NULL If @p qwr or @p qwr_init is @c NULL.
  * @retval NRF_ERROR_INVALID_STATE If the given @p qwr instance has already been initialized.
  */
-uint32_t ble_qwr_init(struct ble_qwr *qwr, struct ble_qwr_config const *qwr_config);
+uint32_t ble_qwr_init(struct ble_qwr *qwr, const struct ble_qwr_config *qwr_config);
 
 /**
  * @brief Function for assigning a connection handle to an instance of the Queued Writes module.
@@ -190,7 +190,7 @@ uint32_t ble_qwr_conn_handle_assign(struct ble_qwr *qwr, uint16_t conn_handle);
  * @param[in] ble_evt Event received from the BLE stack.
  * @param[in] context Queued Writes structure.
  */
-void ble_qwr_on_ble_evt(ble_evt_t const *ble_evt, void *context);
+void ble_qwr_on_ble_evt(const ble_evt_t *ble_evt, void *context);
 
 #if (CONFIG_BLE_QWR_MAX_ATTR > 0)
 /**

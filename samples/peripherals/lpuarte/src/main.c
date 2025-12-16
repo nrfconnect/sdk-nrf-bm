@@ -35,7 +35,7 @@ static void uarte_rx_handler(char *data, size_t data_len)
 }
 
 /* UARTE event handler */
-static void lpuarte_event_handler(nrfx_uarte_event_t const *event, void *ctx)
+static void lpuarte_event_handler(const nrfx_uarte_event_t *event, void *ctx)
 {
 	struct bm_lpuarte *lpu = ctx;
 

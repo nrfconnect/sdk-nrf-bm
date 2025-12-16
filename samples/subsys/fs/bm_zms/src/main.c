@@ -29,7 +29,7 @@ static volatile bool clear_notif;
 
 LOG_MODULE_REGISTER(app, CONFIG_APP_BM_ZMS_LOG_LEVEL);
 
-void bm_zms_sample_handler(struct bm_zms_evt const *evt)
+void bm_zms_sample_handler(const struct bm_zms_evt *evt)
 {
 	switch (evt->evt_type) {
 	case BM_ZMS_EVT_MOUNT:

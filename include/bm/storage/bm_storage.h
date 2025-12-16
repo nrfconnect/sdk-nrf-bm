@@ -62,7 +62,7 @@ struct bm_storage_evt {
 	/* Pointer to the data that was written to non-volatile memory.
 	 * Used by @ref BM_STORAGE_EVT_WRITE_RESULT events.
 	 */
-	void const *src;
+	const void *src;
 	/* Length (in bytes) of the operation that was performed. */
 	size_t len;
 	/* Pointer to user data, passed to the implementation-specific API function call. */

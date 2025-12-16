@@ -66,7 +66,7 @@ You can use the simple initialization with the default scanning and connection p
 
    BLE_SCAN_DEF(ble_scan);
 
-   void scan_event_handler_func(struct ble_scan_evt const *scan_evt);
+   void scan_event_handler_func(const struct ble_scan_evt *scan_evt);
 
    uint32_t nrf_err;
    struct ble_scan_config scan_cfg = {
@@ -91,7 +91,7 @@ Example code:
 
    BLE_SCAN_DEF(ble_scan);
 
-   void scan_event_handler_func(struct ble_scan_evt const *scan_evt);
+   void scan_event_handler_func(const struct ble_scan_evt *scan_evt);
 
    uint32_t nrf_err;
    struct ble_scan_config scan_cfg = {

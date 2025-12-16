@@ -110,7 +110,7 @@ struct char_write {
 	/* Length of the incoming data. */
 	uint16_t len;
 	/* Incoming data, variable length */
-	uint8_t const *data;
+	const uint8_t *data;
 };
 
 static struct ble_hids_report_config input_report[2];
@@ -132,7 +132,7 @@ static struct char_write char_write_evt;
 ble_gatts_hvx_params_t hvx_params;
 
 uint32_t stub_sd_ble_gatts_hvx_different_len(uint16_t conn_handle,
-					     ble_gatts_hvx_params_t const *p_hvx_params,
+					     const ble_gatts_hvx_params_t *p_hvx_params,
 					     int cmock_num_calls)
 {
 	TEST_ASSERT_EQUAL(CONN_HANDLE, conn_handle);

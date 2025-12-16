@@ -374,9 +374,9 @@ uint32_t ble_conn_state_for_each_set_user_flag(uint16_t flag_index,
 }
 
 #ifdef CONFIG_UNITY
-void ble_evt_handler(ble_evt_t const *ble_evt, void *ctx)
+void ble_evt_handler(const ble_evt_t *ble_evt, void *ctx)
 #else
-static void ble_evt_handler(ble_evt_t const *ble_evt, void *ctx)
+static void ble_evt_handler(const ble_evt_t *ble_evt, void *ctx)
 #endif
 {
 	int idx = nrf_sdh_ble_idx_get(ble_evt->evt.gap_evt.conn_handle);

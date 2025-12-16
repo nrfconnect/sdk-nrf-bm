@@ -36,7 +36,7 @@ extern "C" {
 #define BLE_UUID_NUS_TX_CHARACTERISTIC 0x0003
 
 /* Forward declaration */
-void ble_nus_on_ble_evt(ble_evt_t const *ble_evt, void *context);
+void ble_nus_on_ble_evt(const ble_evt_t *ble_evt, void *context);
 
 /**
  * @brief Macro for defining a ble_nus instance.
@@ -129,7 +129,7 @@ struct ble_nus_evt {
 		/** @ref BLE_NUS_EVT_RX_DATA event data. */
 		struct {
 			/** Pointer to the buffer with received data. */
-			uint8_t const *data;
+			const uint8_t *data;
 			/** Length of received data. */
 			uint16_t length;
 		} rx_data;
@@ -207,7 +207,7 @@ struct ble_nus {
  * @retval NRF_ERROR_NULL If @p nus or @p nus_config is @c NULL.
  * @retval NRF_ERROR_INVALID_PARAM Invalid parameters.
  */
-uint32_t ble_nus_init(struct ble_nus *nus, struct ble_nus_config const *nus_config);
+uint32_t ble_nus_init(struct ble_nus *nus, const struct ble_nus_config *nus_config);
 
 /**
  * @brief Function for handling the Nordic UART Service's BLE events.
@@ -220,7 +220,7 @@ uint32_t ble_nus_init(struct ble_nus *nus, struct ble_nus_config const *nus_conf
  * @param[in] ble_evt Event received from the SoftDevice.
  * @param[in] context Nordic UART Service structure.
  */
-void ble_nus_on_ble_evt(ble_evt_t const *ble_evt, void *context);
+void ble_nus_on_ble_evt(const ble_evt_t *ble_evt, void *context);
 
 /**
  * @brief Function for sending data to the peer.

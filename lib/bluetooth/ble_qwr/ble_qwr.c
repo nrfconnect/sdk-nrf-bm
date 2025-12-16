@@ -27,7 +27,7 @@ static inline uint16_t uint16_decode(const uint8_t *encoded_data)
 	return sys_get_le16(encoded_data);
 }
 
-uint32_t ble_qwr_init(struct ble_qwr *qwr, struct ble_qwr_config const *qwr_config)
+uint32_t ble_qwr_init(struct ble_qwr *qwr, const struct ble_qwr_config *qwr_config)
 {
 	if (!qwr || !qwr_config) {
 		return NRF_ERROR_NULL;
@@ -153,7 +153,7 @@ static void user_mem_reply(struct ble_qwr *qwr)
 		nrf_err = sd_ble_user_mem_reply(qwr->conn_handle, NULL);
 #else
 		nrf_err = sd_ble_user_mem_reply(
-			qwr->conn_handle, (ble_user_mem_block_t const *)&qwr->mem_buffer);
+			qwr->conn_handle, (const ble_user_mem_block_t *)&qwr->mem_buffer);
 #endif
 		if (nrf_err == NRF_SUCCESS) {
 			qwr->is_user_mem_reply_pending = false;
@@ -174,7 +174,7 @@ static void user_mem_reply(struct ble_qwr *qwr)
  * @param[in] qwr QWR structure.
  * @param[in] evt User_mem_request event to be handled.
  */
-static void on_user_mem_request(struct ble_qwr *qwr, ble_common_evt_t const *evt)
+static void on_user_mem_request(struct ble_qwr *qwr, const ble_common_evt_t *evt)
 {
 	if ((evt->params.user_mem_request.type == BLE_USER_MEM_TYPE_GATTS_QUEUED_WRITES) &&
 	    (evt->conn_handle == qwr->conn_handle)) {
@@ -189,7 +189,7 @@ static void on_user_mem_request(struct ble_qwr *qwr, ble_common_evt_t const *evt
  * @param[in] qwr QWR structure.
  * @param[in] evt User_mem_release event to be handled.
  */
-static void on_user_mem_release(struct ble_qwr *qwr, ble_common_evt_t const *evt)
+static void on_user_mem_release(struct ble_qwr *qwr, const ble_common_evt_t *evt)
 {
 #if (CONFIG_BLE_QWR_MAX_ATTR > 0)
 	if ((evt->params.user_mem_release.type == BLE_USER_MEM_TYPE_GATTS_QUEUED_WRITES) &&
@@ -207,7 +207,7 @@ static void on_user_mem_release(struct ble_qwr *qwr, ble_common_evt_t const *evt
  * @param[in] qwr QWR structure.
  * @param[in] write_evt WRITE event to be handled.
  */
-static void on_prepare_write(struct ble_qwr *qwr, ble_gatts_evt_write_t const *write_evt)
+static void on_prepare_write(struct ble_qwr *qwr, const ble_gatts_evt_write_t *write_evt)
 {
 	uint32_t nrf_err;
 	ble_gatts_rw_authorize_reply_params_t auth_reply = {0};
@@ -254,7 +254,7 @@ static void on_prepare_write(struct ble_qwr *qwr, ble_gatts_evt_write_t const *w
  * @param[in] qwr QWR structure.
  * @param[in] write_evt EXEC WRITE event to be handled.
  */
-static void on_execute_write(struct ble_qwr *qwr, ble_gatts_evt_write_t const *write_evt)
+static void on_execute_write(struct ble_qwr *qwr, const ble_gatts_evt_write_t *write_evt)
 {
 	uint32_t nrf_err;
 	uint16_t ret_val;
@@ -316,7 +316,7 @@ static void on_execute_write(struct ble_qwr *qwr, ble_gatts_evt_write_t const *w
  * @param[in] qwr QWR structure.
  * @param[in] write_evt EXEC WRITE event to be handled.
  */
-static void on_cancel_write(struct ble_qwr *qwr, ble_gatts_evt_write_t const *write_evt)
+static void on_cancel_write(struct ble_qwr *qwr, const ble_gatts_evt_write_t *write_evt)
 {
 	uint32_t nrf_err;
 	ble_gatts_rw_authorize_reply_params_t auth_reply = {0};
@@ -342,7 +342,7 @@ static void on_cancel_write(struct ble_qwr *qwr, ble_gatts_evt_write_t const *wr
  * @param[in] qwr QWR structure.
  * @param[in] evt RW_authorize_request event to be handled.
  */
-static void on_rw_authorize_request(struct ble_qwr *qwr, ble_gatts_evt_t const *evt)
+static void on_rw_authorize_request(struct ble_qwr *qwr, const ble_gatts_evt_t *evt)
 {
 #if (CONFIG_BLE_QWR_MAX_ATTR == 0)
 	uint32_t nrf_err;
@@ -401,7 +401,7 @@ static void on_rw_authorize_request(struct ble_qwr *qwr, ble_gatts_evt_t const *
 #endif
 }
 
-void ble_qwr_on_ble_evt(ble_evt_t const *ble_evt, void *context)
+void ble_qwr_on_ble_evt(const ble_evt_t *ble_evt, void *context)
 {
 	struct ble_qwr *qwr;
 

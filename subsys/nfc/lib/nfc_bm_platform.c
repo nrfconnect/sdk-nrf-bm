@@ -174,7 +174,7 @@ void nfc_platform_buffer_free(uint8_t *p_buffer)
 	ARG_UNUSED(p_buffer);
 }
 
-void nfc_platform_event_handler(nrfx_nfct_evt_t const *event)
+void nfc_platform_event_handler(const nrfx_nfct_evt_t *event)
 {
 #if defined(CONFIG_SOFTDEVICE)
 	uint32_t sd_res;

@@ -126,7 +126,7 @@ static uint32_t mcumgr_characteristic_add(struct ble_mcumgr *service,
  * @param[in] service MCUmgr service structure.
  * @param[in] ble_evt Pointer to the event received from BLE stack.
  */
-static void on_connect(struct ble_mcumgr *service, ble_evt_t const *ble_evt)
+static void on_connect(struct ble_mcumgr *service, const ble_evt_t *ble_evt)
 {
 	uint32_t nrf_err;
 	uint8_t cccd_value[2];
@@ -161,7 +161,7 @@ static void on_connect(struct ble_mcumgr *service, ble_evt_t const *ble_evt)
  * @param[in] service MCUmgr service structure.
  * @param[in] ble_evt Pointer to the event received from BLE stack.
  */
-static void on_write(struct ble_mcumgr *service, ble_evt_t const *ble_evt)
+static void on_write(struct ble_mcumgr *service, const ble_evt_t *ble_evt)
 {
 	const uint16_t conn_handle = ble_evt->evt.gatts_evt.conn_handle;
 	const ble_gatts_evt_write_t *evt_write = &ble_evt->evt.gatts_evt.params.write;

@@ -23,7 +23,7 @@ static struct ble_nus_client_context *ble_nus_client_context_get(struct ble_nus 
 	return ((idx >= 0) ? &nus->contexts[idx] : NULL);
 }
 
-static uint32_t nus_rx_char_add(struct ble_nus *nus, struct ble_nus_config const *cfg)
+static uint32_t nus_rx_char_add(struct ble_nus *nus, const struct ble_nus_config *cfg)
 {
 	ble_uuid_t char_uuid = {
 		.type = nus->uuid_type,
@@ -54,7 +54,7 @@ static uint32_t nus_rx_char_add(struct ble_nus *nus, struct ble_nus_config const
 					       &nus->rx_handles);
 }
 
-static uint32_t nus_tx_char_add(struct ble_nus *nus, struct ble_nus_config const *cfg)
+static uint32_t nus_tx_char_add(struct ble_nus *nus, const struct ble_nus_config *cfg)
 {
 	ble_uuid_t char_uuid = {
 		.type = nus->uuid_type,
@@ -95,7 +95,7 @@ static uint32_t nus_tx_char_add(struct ble_nus *nus, struct ble_nus_config const
  * @param[in] nus Nordic UART Service structure.
  * @param[in] ble_evt Pointer to the event received from BLE stack.
  */
-static void on_connect(struct ble_nus *nus, ble_evt_t const *ble_evt)
+static void on_connect(struct ble_nus *nus, const ble_evt_t *ble_evt)
 {
 	uint32_t nrf_err;
 	const uint16_t conn_handle = ble_evt->evt.gap_evt.conn_handle;
@@ -142,7 +142,7 @@ static void on_connect(struct ble_nus *nus, ble_evt_t const *ble_evt)
  * @param[in] nus Nordic UART Service structure.
  * @param[in] ble_evt Pointer to the event received from BLE stack.
  */
-static void on_write(struct ble_nus *nus, ble_evt_t const *ble_evt)
+static void on_write(struct ble_nus *nus, const ble_evt_t *ble_evt)
 {
 	const uint16_t conn_handle = ble_evt->evt.gatts_evt.conn_handle;
 	const ble_gatts_evt_write_t *evt_write = &ble_evt->evt.gatts_evt.params.write;
@@ -196,7 +196,7 @@ static void on_write(struct ble_nus *nus, ble_evt_t const *ble_evt)
  * @param[in] nus Nordic UART Service structure.
  * @param[in] ble_evt Pointer to the event received from BLE stack.
  */
-static void on_hvx_tx_complete(struct ble_nus *nus, ble_evt_t const *ble_evt)
+static void on_hvx_tx_complete(struct ble_nus *nus, const ble_evt_t *ble_evt)
 {
 	const uint16_t conn_handle = ble_evt->evt.gatts_evt.conn_handle;
 	struct ble_nus_evt evt = {
@@ -217,7 +217,7 @@ static void on_hvx_tx_complete(struct ble_nus *nus, ble_evt_t const *ble_evt)
 	}
 }
 
-void ble_nus_on_ble_evt(ble_evt_t const *ble_evt, void *ctx)
+void ble_nus_on_ble_evt(const ble_evt_t *ble_evt, void *ctx)
 {
 	struct ble_nus *nus = (struct ble_nus *)ctx;
 
@@ -247,7 +247,7 @@ void ble_nus_on_ble_evt(ble_evt_t const *ble_evt, void *ctx)
 	}
 }
 
-uint32_t ble_nus_init(struct ble_nus *nus, struct ble_nus_config const *cfg)
+uint32_t ble_nus_init(struct ble_nus *nus, const struct ble_nus_config *cfg)
 {
 	uint32_t nrf_err;
 	ble_uuid_t ble_uuid;

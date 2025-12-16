@@ -69,7 +69,7 @@ uint32_t cgms_sst_set(struct ble_cgms *cgms, struct ble_cgms_sst *sst);
  * @param[in] auth_req Authorize request event to be handled.
  */
 void cgms_sst_on_rw_auth_req(struct ble_cgms *cgms,
-			     ble_gatts_evt_rw_authorize_request_t const *auth_req);
+			     const ble_gatts_evt_rw_authorize_request_t *auth_req);
 
 #ifdef __cplusplus
 }

@@ -78,7 +78,7 @@ struct bm_zms_init_flags {
  *
  * @param evt The event.
  */
-typedef void (*bm_zms_evt_handler_t)(struct bm_zms_evt const *evt);
+typedef void (*bm_zms_evt_handler_t)(const struct bm_zms_evt *evt);
 
 /** Zephyr Memory Storage file system structure */
 struct bm_zms_fs {
