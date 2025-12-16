@@ -13,7 +13,7 @@
 LOG_MODULE_REGISTER(ble_db_disc, CONFIG_BLE_DB_DISCOVERY_LOG_LEVEL);
 
 static ble_db_discovery_evt_handler registered_uuid_handler_get(
-	struct ble_db_discovery *db_discovery, ble_uuid_t const *srv_uuid)
+	struct ble_db_discovery *db_discovery, const ble_uuid_t *srv_uuid)
 {
 	for (uint32_t i = 0; i < db_discovery->num_registered_uuids; i++) {
 		if (BLE_UUID_EQ(&(db_discovery->registered_uuids[i]), srv_uuid)) {
@@ -25,7 +25,7 @@ static ble_db_discovery_evt_handler registered_uuid_handler_get(
 }
 
 static uint32_t uuid_register(struct ble_db_discovery *db_discovery,
-				       ble_uuid_t const *srv_uuid)
+				       const ble_uuid_t *srv_uuid)
 {
 	if (registered_uuid_handler_get(db_discovery, srv_uuid) != NULL) {
 		return NRF_SUCCESS;
@@ -53,7 +53,7 @@ static void pending_user_events_send(struct ble_db_discovery *db_discovery)
 }
 
 static void discovery_available_evt_trigger(struct ble_db_discovery *const db_discovery,
-					    uint16_t const conn_handle)
+					    const uint16_t conn_handle)
 {
 	struct ble_db_discovery_evt evt = {0};
 
@@ -363,7 +363,7 @@ static uint32_t descriptors_discover(struct ble_db_discovery *db_discovery,
 }
 
 static void on_primary_srv_discovery_rsp(struct ble_db_discovery *db_discovery,
-					 ble_gattc_evt_t const *ble_gattc_evt)
+					 const ble_gattc_evt_t *ble_gattc_evt)
 {
 	struct ble_gatt_db_srv *srv_being_discovered;
 
@@ -375,7 +375,7 @@ static void on_primary_srv_discovery_rsp(struct ble_db_discovery *db_discovery,
 
 	if (ble_gattc_evt->gatt_status == BLE_GATT_STATUS_SUCCESS) {
 		uint32_t nrf_err;
-		ble_gattc_evt_prim_srvc_disc_rsp_t const *prim_srvc_disc_rsp_evt;
+		const ble_gattc_evt_prim_srvc_disc_rsp_t *prim_srvc_disc_rsp_evt;
 
 		LOG_DBG("Found service UUID 0x%x.", srv_being_discovered->srv_uuid.uuid);
 
@@ -414,7 +414,7 @@ static void on_primary_srv_discovery_rsp(struct ble_db_discovery *db_discovery,
 }
 
 static void on_characteristic_discovery_rsp(struct ble_db_discovery *db_discovery,
-					    ble_gattc_evt_t const *ble_gattc_evt)
+					    const ble_gattc_evt_t *ble_gattc_evt)
 {
 	uint32_t nrf_err;
 	struct ble_gatt_db_srv *srv_being_discovered;
@@ -427,7 +427,7 @@ static void on_characteristic_discovery_rsp(struct ble_db_discovery *db_discover
 	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
 
 	if (ble_gattc_evt->gatt_status == BLE_GATT_STATUS_SUCCESS) {
-		ble_gattc_evt_char_disc_rsp_t const *char_disc_rsp_evt;
+		const ble_gattc_evt_char_disc_rsp_t *char_disc_rsp_evt;
 
 		char_disc_rsp_evt = &(ble_gattc_evt->params.char_disc_rsp);
 
@@ -698,7 +698,7 @@ uint32_t ble_db_discovery_start(struct ble_db_discovery *const db_discovery, uin
 }
 
 uint32_t ble_db_discovery_service_register(struct ble_db_discovery *db_discovery,
-				       ble_uuid_t const *uuid)
+				       const ble_uuid_t *uuid)
 {
 	if (!db_discovery || !uuid) {
 		return NRF_ERROR_NULL;
@@ -710,7 +710,7 @@ uint32_t ble_db_discovery_service_register(struct ble_db_discovery *db_discovery
 	return uuid_register(db_discovery, uuid);
 }
 
-static void on_disconnected(struct ble_db_discovery *db_discovery, ble_gap_evt_t const *evt)
+static void on_disconnected(struct ble_db_discovery *db_discovery, const ble_gap_evt_t *evt)
 {
 	if (evt->conn_handle == db_discovery->conn_handle) {
 		db_discovery->discovery_in_progress = false;
@@ -718,7 +718,7 @@ static void on_disconnected(struct ble_db_discovery *db_discovery, ble_gap_evt_t
 	}
 }
 
-void ble_db_discovery_on_ble_evt(ble_evt_t const *ble_evt, void *context)
+void ble_db_discovery_on_ble_evt(const ble_evt_t *ble_evt, void *context)
 {
 	struct ble_db_discovery *db_discovery = (struct ble_db_discovery *)context;
 

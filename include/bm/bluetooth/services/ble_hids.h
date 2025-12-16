@@ -209,11 +209,11 @@ struct ble_hids_link_ctx_storage {
 	/**
 	 * @brief Maximum number of concurrent links.
 	 */
-	uint8_t const max_links_cnt;
+	const uint8_t max_links_cnt;
 	/**
 	 * @brief Context size in bytes for a single link (word-aligned).
 	 */
-	uint16_t const link_ctx_size;
+	const uint16_t link_ctx_size;
 };
 
 /* Forward declaration of ble_hids structure. */
@@ -296,7 +296,7 @@ struct ble_hids_evt {
 	/**
 	 * @brief BLE event.
 	 */
-	ble_evt_t const *ble_evt;
+	const ble_evt_t *ble_evt;
 	/**
 	 * @brief Event parameters.
 	 */
@@ -331,7 +331,7 @@ struct ble_hids_evt {
 			/**
 			 * @brief Incoming data.
 			 */
-			uint8_t const *data;
+			const uint8_t *data;
 		} char_write;
 		/**
 		 * @brief Parameters for @ref BLE_HIDS_EVT_REPORT_READ.
@@ -412,7 +412,7 @@ struct ble_hids_rep_map_config {
 	/**
 	 * @brief Optional External Report Reference descriptor (will be added if != NULL).
 	 */
-	ble_uuid_t const *ext_rep_ref;
+	const ble_uuid_t *ext_rep_ref;
 };
 
 /** @brief HID Report characteristic structure. */
@@ -442,7 +442,7 @@ struct ble_hids_config {
 	/**
 	 * @brief Information about the Input Report characteristics.
 	 */
-	struct ble_hids_report_config const *input_report;
+	const struct ble_hids_report_config *input_report;
 	/**
 	 * @brief Number of Output Report characteristics.
 	 */
@@ -450,7 +450,7 @@ struct ble_hids_config {
 	/**
 	 * @brief Information about the Output Report characteristics.
 	 */
-	struct ble_hids_report_config const *output_report;
+	const struct ble_hids_report_config *output_report;
 	/**
 	 * @brief Number of Feature Report characteristics.
 	 */
@@ -458,7 +458,7 @@ struct ble_hids_config {
 	/**
 	 * @brief Information about the Feature Report characteristics.
 	 */
-	struct ble_hids_report_config const *feature_report;
+	const struct ble_hids_report_config *feature_report;
 	/**
 	 * @brief Information nedeed for initialization of the Report Map characteristic.
 	 */
@@ -690,15 +690,15 @@ struct ble_hids {
 	/**
 	 * @brief Information about the Input Report characteristics.
 	 */
-	struct ble_hids_report_config const *inp_rep_init_array;
+	const struct ble_hids_report_config *inp_rep_init_array;
 	/**
 	 * @brief Information about the Output Report characteristics.
 	 */
-	struct ble_hids_report_config const *outp_rep_init_array;
+	const struct ble_hids_report_config *outp_rep_init_array;
 	/**
 	 * @brief Information about the Feature Report characteristics.
 	 */
-	struct ble_hids_report_config const *feature_rep_init_array;
+	const struct ble_hids_report_config *feature_rep_init_array;
 };
 
 /**
@@ -712,7 +712,7 @@ struct ble_hids {
  * @param[in] ble_evt Event received from the BLE stack.
  * @param[in] context HID Service structure.
  */
-void ble_hids_on_ble_evt(ble_evt_t const *ble_evt, void *context);
+void ble_hids_on_ble_evt(const ble_evt_t *ble_evt, void *context);
 
 /**
  * @brief Function for initializing the HID Service.

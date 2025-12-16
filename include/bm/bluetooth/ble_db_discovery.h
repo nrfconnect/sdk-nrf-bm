@@ -261,7 +261,7 @@ uint32_t ble_db_discovery_service_register(struct ble_db_discovery *db_discovery
  * @param[in] ble_evt BLE event received.
  * @param[in,out] context BLE DB discovery instance.
  */
-void ble_db_discovery_on_ble_evt(ble_evt_t const *ble_evt, void *context);
+void ble_db_discovery_on_ble_evt(const ble_evt_t *ble_evt, void *context);
 
 #endif /* BLE_DB_DISCOVERY_H__ */
 

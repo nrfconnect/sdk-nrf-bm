@@ -98,7 +98,7 @@ static void wait_for_clear(void)
 #endif
 }
 
-void bm_zms_test_evt_handler(struct bm_zms_evt const *evt)
+void bm_zms_test_evt_handler(const struct bm_zms_evt *evt)
 {
 	switch (evt->evt_type) {
 	case BM_ZMS_EVT_MOUNT:

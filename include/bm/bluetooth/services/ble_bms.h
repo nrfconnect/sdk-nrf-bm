@@ -309,7 +309,7 @@ uint32_t ble_bms_init(struct ble_bms *bms, struct ble_bms_config *bms_config);
  * @param[in] ble_evt Event received from the BLE stack.
  * @param[in] context BMS structure.
  */
-void ble_bms_on_ble_evt(ble_evt_t const *ble_evt, void *context);
+void ble_bms_on_ble_evt(const ble_evt_t *ble_evt, void *context);
 
 /**
  * @brief Handle events from the @ref nrf_ble_qwr.

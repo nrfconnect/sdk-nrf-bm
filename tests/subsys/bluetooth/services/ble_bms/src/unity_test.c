@@ -68,7 +68,7 @@ void bms_evt_handler(struct ble_bms *bms, struct ble_bms_evt *evt)
 	}
 }
 
-uint32_t stub_sd_ble_gatts_service_add(uint8_t type, ble_uuid_t const *p_uuid, uint16_t *p_handle,
+uint32_t stub_sd_ble_gatts_service_add(uint8_t type, const ble_uuid_t *p_uuid, uint16_t *p_handle,
 				       int cmock_calls)
 {
 	TEST_ASSERT_EQUAL(BLE_GATTS_SRVC_TYPE_PRIMARY, type);
@@ -81,8 +81,8 @@ uint32_t stub_sd_ble_gatts_service_add(uint8_t type, ble_uuid_t const *p_uuid, u
 }
 
 uint32_t stub_sd_ble_gatts_characteristic_add_feature_char_error_no_mem(
-	uint16_t service_handle, ble_gatts_char_md_t const *p_char_md,
-	ble_gatts_attr_t const *p_attr_char_value, ble_gatts_char_handles_t *p_handles,
+	uint16_t service_handle, const ble_gatts_char_md_t *p_char_md,
+	const ble_gatts_attr_t *p_attr_char_value, ble_gatts_char_handles_t *p_handles,
 	int cmock_calls)
 {
 	/* Encoded expected feature of delete_all_auth, delete_requesting and
@@ -108,8 +108,8 @@ uint32_t stub_sd_ble_gatts_characteristic_add_feature_char_error_no_mem(
 }
 
 uint32_t stub_sd_ble_gatts_characteristic_add_ctrlpt_char_error_no_mem(
-	uint16_t service_handle, ble_gatts_char_md_t const *p_char_md,
-	ble_gatts_attr_t const *p_attr_char_value, ble_gatts_char_handles_t *p_handles,
+	uint16_t service_handle, const ble_gatts_char_md_t *p_char_md,
+	const ble_gatts_attr_t *p_attr_char_value, ble_gatts_char_handles_t *p_handles,
 	int cmock_calls)
 {
 	if (cmock_calls < 1) {
@@ -136,8 +136,8 @@ uint32_t stub_sd_ble_gatts_characteristic_add_ctrlpt_char_error_no_mem(
 }
 
 uint32_t stub_sd_ble_gatts_characteristic_add(
-	uint16_t service_handle, ble_gatts_char_md_t const *p_char_md,
-	ble_gatts_attr_t const *p_attr_char_value, ble_gatts_char_handles_t *p_handles,
+	uint16_t service_handle, const ble_gatts_char_md_t *p_char_md,
+	const ble_gatts_attr_t *p_attr_char_value, ble_gatts_char_handles_t *p_handles,
 	int cmock_calls)
 {
 	if (cmock_calls < 1) {
@@ -152,7 +152,7 @@ uint32_t stub_sd_ble_gatts_characteristic_add(
 
 uint32_t stub_sd_ble_gatts_rw_authorize_reply_accepted(
 	uint16_t conn_handle,
-	ble_gatts_rw_authorize_reply_params_t const *p_rw_authorize_reply_params, int cmock_calls)
+	const ble_gatts_rw_authorize_reply_params_t *p_rw_authorize_reply_params, int cmock_calls)
 {
 	TEST_ASSERT_EQUAL(1, p_rw_authorize_reply_params->params.write.update);
 
@@ -161,7 +161,7 @@ uint32_t stub_sd_ble_gatts_rw_authorize_reply_accepted(
 
 uint32_t stub_sd_ble_gatts_rw_authorize_reply_rejected(
 	uint16_t conn_handle,
-	ble_gatts_rw_authorize_reply_params_t const *p_rw_authorize_reply_params, int cmock_calls)
+	const ble_gatts_rw_authorize_reply_params_t *p_rw_authorize_reply_params, int cmock_calls)
 {
 	TEST_ASSERT_EQUAL(0, p_rw_authorize_reply_params->params.write.update);
 
@@ -170,7 +170,7 @@ uint32_t stub_sd_ble_gatts_rw_authorize_reply_rejected(
 
 uint32_t stub_sd_ble_gatts_rw_authorize_reply_error(
 	uint16_t conn_handle,
-	ble_gatts_rw_authorize_reply_params_t const *p_rw_authorize_reply_params, int cmock_calls)
+	const ble_gatts_rw_authorize_reply_params_t *p_rw_authorize_reply_params, int cmock_calls)
 {
 	return NRF_ERROR_BUSY;
 }

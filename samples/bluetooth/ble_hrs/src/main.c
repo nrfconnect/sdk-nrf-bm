@@ -382,7 +382,7 @@ static void advertising_start(bool erase_bonds)
 	}
 }
 
-static void pm_evt_handler(struct pm_evt const *p_evt)
+static void pm_evt_handler(const struct pm_evt *p_evt)
 {
 	pm_handler_on_pm_evt(p_evt);
 	pm_handler_disconnect_on_sec_failure(p_evt);

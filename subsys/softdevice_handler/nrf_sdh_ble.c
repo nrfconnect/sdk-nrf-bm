@@ -240,7 +240,7 @@ int nrf_sdh_ble_enable(uint8_t conn_cfg_tag)
 {
 	int err;
 	uint32_t app_ram_minimum = APP_RAM_START;
-	uint32_t const app_ram_start_link = APP_RAM_START;
+	const uint32_t app_ram_start_link = APP_RAM_START;
 
 	default_cfg_set();
 

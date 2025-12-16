@@ -42,8 +42,8 @@ LOG_MODULE_REGISTER(ble_hids, CONFIG_BLE_HIDS_LOG_LEVEL);
  */
 #define BOOT_MOUSE_INPUT_REPORT_MIN_SIZE 3
 
-static uint32_t link_ctx_get(struct ble_hids *hids, uint16_t const conn_handle,
-			     void const **ctx_data)
+static uint32_t link_ctx_get(struct ble_hids *hids, const uint16_t conn_handle,
+			     const void **ctx_data)
 {
 	int conn_id;
 
@@ -109,7 +109,7 @@ static struct ble_hids_char_id make_char_id(uint16_t uuid, uint8_t report_type,
 	return char_id;
 }
 
-static void on_connect(struct ble_hids *hids, ble_evt_t const *ble_evt)
+static void on_connect(struct ble_hids *hids, const ble_evt_t *ble_evt)
 {
 	uint32_t nrf_err;
 	ble_gatts_value_t gatts_value;
@@ -160,11 +160,11 @@ static void on_connect(struct ble_hids *hids, ble_evt_t const *ble_evt)
 	}
 }
 
-static void on_control_point_write(struct ble_hids *hids, ble_evt_t const *ble_evt)
+static void on_control_point_write(struct ble_hids *hids, const ble_evt_t *ble_evt)
 {
 	uint32_t nrf_err;
 	struct ble_hids_client_context *host;
-	ble_gatts_evt_write_t const *evt_write = &ble_evt->evt.gatts_evt.params.write;
+	const ble_gatts_evt_write_t *evt_write = &ble_evt->evt.gatts_evt.params.write;
 
 	nrf_err = link_ctx_get(hids, ble_evt->evt.gatts_evt.conn_handle, (void *)&host);
 	if (nrf_err) {
@@ -212,11 +212,11 @@ static void on_control_point_write(struct ble_hids *hids, ble_evt_t const *ble_e
 	}
 }
 
-static void on_protocol_mode_write(struct ble_hids *hids, ble_evt_t const *ble_evt)
+static void on_protocol_mode_write(struct ble_hids *hids, const ble_evt_t *ble_evt)
 {
 	uint32_t nrf_err;
 	struct ble_hids_client_context *host;
-	ble_gatts_evt_write_t const *evt_write = &ble_evt->evt.gatts_evt.params.write;
+	const ble_gatts_evt_write_t *evt_write = &ble_evt->evt.gatts_evt.params.write;
 
 	nrf_err = link_ctx_get(hids, ble_evt->evt.gatts_evt.conn_handle, (void *)&host);
 	if (nrf_err) {
@@ -264,12 +264,12 @@ static void on_protocol_mode_write(struct ble_hids *hids, ble_evt_t const *ble_e
 	}
 }
 
-void on_protocol_mode_read_auth(struct ble_hids *hids, ble_evt_t const *ble_evt)
+void on_protocol_mode_read_auth(struct ble_hids *hids, const ble_evt_t *ble_evt)
 {
 	uint32_t nrf_err;
 	ble_gatts_rw_authorize_reply_params_t auth_read_params;
 	struct ble_hids_client_context *host;
-	ble_gatts_evt_rw_authorize_request_t const *read_auth =
+	const ble_gatts_evt_rw_authorize_request_t *read_auth =
 		&ble_evt->evt.gatts_evt.params.authorize_request;
 
 	nrf_err = link_ctx_get(hids, ble_evt->evt.gatts_evt.conn_handle, (void *)&host);
@@ -311,9 +311,9 @@ void on_protocol_mode_read_auth(struct ble_hids *hids, ble_evt_t const *ble_evt)
 }
 
 static void on_report_cccd_write(struct ble_hids *hids, struct ble_hids_char_id *char_id,
-				 ble_evt_t const *ble_evt)
+				 const ble_evt_t *ble_evt)
 {
-	ble_gatts_evt_write_t const *evt_write = &ble_evt->evt.gatts_evt.params.write;
+	const ble_gatts_evt_write_t *evt_write = &ble_evt->evt.gatts_evt.params.write;
 
 	if (evt_write->len == 2) {
 		/* CCCD written, update notification state */
@@ -335,7 +335,7 @@ static void on_report_cccd_write(struct ble_hids *hids, struct ble_hids_char_id 
 	}
 }
 
-static void on_report_value_write(struct ble_hids *hids, ble_evt_t const *ble_evt,
+static void on_report_value_write(struct ble_hids *hids, const ble_evt_t *ble_evt,
 				  struct ble_hids_char_id *char_id, uint16_t rep_offset,
 				  uint16_t rep_max_len)
 {
@@ -343,7 +343,7 @@ static void on_report_value_write(struct ble_hids *hids, ble_evt_t const *ble_ev
 	uint32_t nrf_err;
 	uint8_t *report;
 	struct ble_hids_client_context *host;
-	ble_gatts_evt_write_t const *write = &ble_evt->evt.gatts_evt.params.write;
+	const ble_gatts_evt_write_t *write = &ble_evt->evt.gatts_evt.params.write;
 
 	nrf_err = link_ctx_get(hids, ble_evt->evt.gatts_evt.conn_handle, (void *)&host);
 	if (nrf_err) {
@@ -383,7 +383,7 @@ static void on_report_value_write(struct ble_hids *hids, ble_evt_t const *ble_ev
 }
 
 static void on_report_value_read_auth(struct ble_hids *hids, struct ble_hids_char_id *char_id,
-				      ble_evt_t const *ble_evt, uint16_t rep_offset,
+				      const ble_evt_t *ble_evt, uint16_t rep_offset,
 				      uint16_t rep_max_len)
 {
 	ble_gatts_rw_authorize_reply_params_t auth_read_params;
@@ -512,10 +512,10 @@ static bool rep_value_identify(struct ble_hids *hids, uint16_t handle,
 	return false;
 }
 
-static void on_write(struct ble_hids *hids, ble_evt_t const *ble_evt)
+static void on_write(struct ble_hids *hids, const ble_evt_t *ble_evt)
 {
 	struct ble_hids_char_id char_id;
-	ble_gatts_evt_write_t const *evt_write = &ble_evt->evt.gatts_evt.params.write;
+	const ble_gatts_evt_write_t *evt_write = &ble_evt->evt.gatts_evt.params.write;
 	uint16_t rep_data_offset = sizeof(struct ble_hids_client_context);
 	uint16_t max_rep_len = 0;
 
@@ -554,9 +554,9 @@ static void on_write(struct ble_hids *hids, ble_evt_t const *ble_evt)
 	}
 }
 
-static void on_rw_authorize_request(struct ble_hids *hids, ble_evt_t const *ble_evt)
+static void on_rw_authorize_request(struct ble_hids *hids, const ble_evt_t *ble_evt)
 {
-	ble_gatts_evt_rw_authorize_request_t const *evt_rw_auth =
+	const ble_gatts_evt_rw_authorize_request_t *evt_rw_auth =
 		&ble_evt->evt.gatts_evt.params.authorize_request;
 
 	struct ble_hids_char_id char_id;
@@ -596,7 +596,7 @@ static void on_rw_authorize_request(struct ble_hids *hids, ble_evt_t const *ble_
 	}
 }
 
-void ble_hids_on_ble_evt(ble_evt_t const *ble_evt, void *context)
+void ble_hids_on_ble_evt(const ble_evt_t *ble_evt, void *context)
 {
 	struct ble_hids *hids = (struct ble_hids *)context;
 
@@ -657,7 +657,7 @@ static uint32_t protocol_mode_char_add(struct ble_hids *hids, ble_gap_conn_sec_m
 }
 
 static uint32_t rep_char_add(struct ble_hids *hids, ble_gatt_char_props_t *properties,
-			     struct ble_hids_report_config const *rep_cfg,
+			     const struct ble_hids_report_config *rep_cfg,
 			     struct ble_hids_rep_char *rep_char)
 {
 	uint32_t nrf_err;
@@ -942,7 +942,7 @@ static uint32_t inp_rep_characteristics_add(struct ble_hids *hids,
 
 	if ((hids_cfg->input_report_count != 0) && (hids_cfg->input_report != NULL)) {
 		for (uint8_t i = 0; i < hids_cfg->input_report_count; i++) {
-			struct ble_hids_report_config const *rep_init = &hids_cfg->input_report[i];
+			const struct ble_hids_report_config *rep_init = &hids_cfg->input_report[i];
 			ble_gatt_char_props_t properties = {
 				.read = true,
 				.write = (rep_init->sec_mode.write.sm &&
@@ -969,7 +969,7 @@ static uint32_t outp_rep_characteristics_add(struct ble_hids *hids,
 	if ((hids_cfg->output_report_count != 0) && (hids_cfg->output_report != NULL)) {
 		for (uint8_t i = 0; i < hids_cfg->output_report_count; i++) {
 
-			struct ble_hids_report_config const *rep_init = &hids_cfg->output_report[i];
+			const struct ble_hids_report_config *rep_init = &hids_cfg->output_report[i];
 			ble_gatt_char_props_t properties = {
 				.read = true,
 				.write = true,
@@ -995,7 +995,7 @@ static uint32_t feature_rep_characteristics_add(struct ble_hids *hids,
 	if ((hids_cfg->feature_report_count != 0) && (hids_cfg->feature_report != NULL)) {
 		for (uint8_t i = 0; i < hids_cfg->feature_report_count; i++) {
 
-			struct ble_hids_report_config const *rep_init =
+			const struct ble_hids_report_config *rep_init =
 				&hids_cfg->feature_report[i];
 			ble_gatt_char_props_t properties = {
 				.read = true,

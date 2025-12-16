@@ -179,7 +179,7 @@ uint32_t ble_hrs_central_init(struct ble_hrs_central *ble_hrs_central,
  * @param[in] ble_evt Bluetooth LE event.
  * @param[in] ctx Heart Rate Client structure.
  */
-void ble_hrs_central_on_ble_evt(ble_evt_t const *ble_evt, void *ctx);
+void ble_hrs_central_on_ble_evt(const ble_evt_t *ble_evt, void *ctx);
 
 /**
  * @brief Request the peer to start sending notification of Heart Rate Measurement.

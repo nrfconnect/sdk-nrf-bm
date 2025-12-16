@@ -138,7 +138,7 @@ struct bm_buttons_state {
 	uint32_t pin_active;
 	uint32_t detection_delay;
 	struct bm_timer timer;
-	struct bm_buttons_config const *configs;
+	const struct bm_buttons_config *configs;
 	uint8_t num_configs;
 	bool is_init;
 	uint8_t pin_states[((NUM_PINS + 1) * BITS_PER_PIN) / 8];
@@ -154,10 +154,10 @@ static enum button_state state_get(uint8_t pin_index)
 	return (enum button_state)state;
 }
 
-static struct bm_buttons_config const *button_get(uint8_t pin)
+static const struct bm_buttons_config *button_get(uint8_t pin)
 {
 	for (int i = 0; i < global.num_configs; i++) {
-		struct bm_buttons_config const *config = &global.configs[i];
+		const struct bm_buttons_config *config = &global.configs[i];
 
 		if (pin == config->pin_number) {
 			return config;
@@ -178,7 +178,7 @@ static void state_set(uint8_t pin_index, uint8_t state)
 
 static void user_event(uint8_t pin, enum bm_buttons_evt_type type)
 {
-	struct bm_buttons_config const *config = button_get(pin);
+	const struct bm_buttons_config *config = button_get(pin);
 
 	if (config && config->handler) {
 		LOG_DBG("Pin %d %s", pin, (type == BM_BUTTONS_PRESS) ? "pressed" : "released");
@@ -278,7 +278,7 @@ static void detection_delay_timeout_handler(void *ctx)
 {
 	bool is_set;
 	bool is_active;
-	struct bm_buttons_config const *config;
+	const struct bm_buttons_config *config;
 
 	for (int i = 0; i < global.num_configs; i++) {
 		config = &global.configs[i];
@@ -297,7 +297,7 @@ static void detection_delay_timeout_handler(void *ctx)
 
 static void gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrfx_gpiote_trigger_t action, void *ctx)
 {
-	struct bm_buttons_config const *config = button_get(pin);
+	const struct bm_buttons_config *config = button_get(pin);
 	bool is_set = nrfx_gpiote_in_is_set(config->pin_number);
 	bool is_active = !((config->active_state == BM_BUTTONS_ACTIVE_HIGH) ^ is_set);
 
@@ -310,7 +310,7 @@ static void gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrfx_gpiote_trigger_t acti
 	}
 }
 
-int bm_buttons_init(struct bm_buttons_config const *configs, uint8_t num_configs,
+int bm_buttons_init(const struct bm_buttons_config *configs, uint8_t num_configs,
 		    uint32_t detection_delay)
 {
 	int err;
@@ -435,7 +435,7 @@ bool bm_buttons_is_pressed(uint8_t pin)
 		return false;
 	}
 
-	struct bm_buttons_config const *config = button_get(pin);
+	const struct bm_buttons_config *config = button_get(pin);
 
 	if (config) {
 		bool is_set = nrfx_gpiote_in_is_set(config->pin_number);

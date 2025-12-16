@@ -115,7 +115,7 @@ void bm_lpuarte_uninit(struct bm_lpuarte *lpu);
  * @retval -EFAULT If @p lpu or @p data is NULL.
  * @retval -EINVAL Length is zero.
  */
-int bm_lpuarte_tx(struct bm_lpuarte *lpu, uint8_t const *data, size_t length, int32_t timeout);
+int bm_lpuarte_tx(struct bm_lpuarte *lpu, const uint8_t *data, size_t length, int32_t timeout);
 
 /**
  * @brief Check if TX is in progress.

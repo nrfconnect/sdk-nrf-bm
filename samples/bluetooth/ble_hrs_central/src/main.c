@@ -95,7 +95,7 @@ static void db_disc_handler(struct ble_db_discovery *db_discovery,
 	ble_hrs_on_db_disc_evt(&ble_hrs_central, evt);
 }
 
-static void pm_evt_handler(struct pm_evt const *evt)
+static void pm_evt_handler(const struct pm_evt *evt)
 {
 	pm_handler_on_pm_evt(evt);
 	pm_handler_disconnect_on_sec_failure(evt);
@@ -111,10 +111,10 @@ static void pm_evt_handler(struct pm_evt const *evt)
 	}
 }
 
-static void on_ble_evt(ble_evt_t const *ble_evt, void *ctx)
+static void on_ble_evt(const ble_evt_t *ble_evt, void *ctx)
 {
 	uint32_t nrf_err;
-	ble_gap_evt_t const *gap_evt = &ble_evt->evt.gap_evt;
+	const ble_gap_evt_t *gap_evt = &ble_evt->evt.gap_evt;
 
 	switch (ble_evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:
@@ -446,7 +446,7 @@ static void conn_params_evt_handler(const struct ble_conn_params_evt *evt)
 	}
 }
 
-static void scan_evt_handler(struct ble_scan_evt const *scan_evt)
+static void scan_evt_handler(const struct ble_scan_evt *scan_evt)
 {
 	uint32_t nrf_err;
 
@@ -480,7 +480,7 @@ static void scan_evt_handler(struct ble_scan_evt const *scan_evt)
 		break;
 
 	case BLE_SCAN_EVT_CONNECTED: {
-		ble_gap_evt_connected_t const *p_connected = scan_evt->params.connected.connected;
+		const ble_gap_evt_connected_t *p_connected = scan_evt->params.connected.connected;
 
 		LOG_INF("Connecting to target %02x%02x%02x%02x%02x%02x",
 			p_connected->peer_addr.addr[0], p_connected->peer_addr.addr[1],

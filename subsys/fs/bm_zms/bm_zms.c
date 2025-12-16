@@ -90,7 +90,7 @@ static void event_prepare(struct bm_zms_evt *evt)
 	}
 }
 
-static void event_send(struct bm_zms_evt const *const evt, struct bm_zms_fs *fs)
+static void event_send(const struct bm_zms_evt *const evt, struct bm_zms_fs *fs)
 {
 	if (fs->evt_handler != NULL) {
 		fs->evt_handler(evt);

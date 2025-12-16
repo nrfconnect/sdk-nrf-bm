@@ -462,7 +462,7 @@ static void tx_timeout(void *context)
 	lpu->callback(&tx_done_aborted_evt, lpu);
 }
 
-static void nrfx_uarte_evt_handler(nrfx_uarte_event_t const *event, void *ctx)
+static void nrfx_uarte_evt_handler(const nrfx_uarte_event_t *event, void *ctx)
 {
 	struct bm_lpuarte *lpu = ctx;
 
@@ -563,7 +563,7 @@ void bm_lpuarte_uninit(struct bm_lpuarte *lpu)
 	/* Don't uninitialize gpiote instances as they can be used by other drivers and libraries */
 }
 
-int bm_lpuarte_tx(struct bm_lpuarte *lpu, uint8_t const *data, size_t len, int32_t timeout)
+int bm_lpuarte_tx(struct bm_lpuarte *lpu, const uint8_t *data, size_t len, int32_t timeout)
 {
 	if (!lpu || !data) {
 		return -EFAULT;

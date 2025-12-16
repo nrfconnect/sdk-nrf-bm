@@ -52,7 +52,7 @@ static void ble_gq_error_handler(const struct ble_gq_req *req, struct ble_gq_evt
 }
 
 static uint32_t stub_sd_ble_gattc_write_success(
-	uint16_t conn_handle, ble_gattc_write_params_t const *p_write_params, int cmock_num_calls)
+	uint16_t conn_handle, const ble_gattc_write_params_t *p_write_params, int cmock_num_calls)
 {
 	TEST_ASSERT_EQUAL(CONN_HANDLE_1, conn_handle);
 	TEST_ASSERT_NOT_NULL(p_write_params);
@@ -66,7 +66,7 @@ static uint32_t stub_sd_ble_gattc_write_success(
 }
 
 static uint32_t stub_sd_ble_gattc_write_busy_busy_success(
-	uint16_t conn_handle, ble_gattc_write_params_t const *p_write_params, int cmock_num_calls)
+	uint16_t conn_handle, const ble_gattc_write_params_t *p_write_params, int cmock_num_calls)
 {
 	stub_sd_ble_gattc_write_busy_busy_success_num_calls = cmock_num_calls + 1;
 
@@ -90,7 +90,7 @@ static uint32_t stub_sd_ble_gattc_write_busy_busy_success(
 }
 
 static uint32_t stub_sd_ble_gatts_hvx_busy_busy_success(
-	uint16_t conn_handle, ble_gatts_hvx_params_t const *p_hvx_params, int cmock_num_calls)
+	uint16_t conn_handle, const ble_gatts_hvx_params_t *p_hvx_params, int cmock_num_calls)
 {
 	stub_sd_ble_gatts_hvx_busy_busy_success_num_calls = cmock_num_calls + 1;
 

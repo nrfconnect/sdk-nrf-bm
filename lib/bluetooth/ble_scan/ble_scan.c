@@ -28,8 +28,8 @@ int ble_scan_copy_addr_to_sd_gap_addr(ble_gap_addr_t *gap_addr,
 	return NRF_SUCCESS;
 }
 
-static void ble_scan_connect_with_target(struct ble_scan const *const scan,
-					 ble_gap_evt_adv_report_t const *const adv_report)
+static void ble_scan_connect_with_target(const struct ble_scan *const scan,
+					 const ble_gap_evt_adv_report_t *const adv_report)
 {
 	uint32_t nrf_err;
 	struct ble_scan_evt scan_evt = {
@@ -59,10 +59,10 @@ static void ble_scan_connect_with_target(struct ble_scan const *const scan,
 #if CONFIG_BLE_SCAN_FILTER
 
 #if (CONFIG_BLE_SCAN_ADDRESS_COUNT > 0)
-static bool find_peer_addr(ble_gap_evt_adv_report_t const *const adv_report,
-			   ble_gap_addr_t const *addr)
+static bool find_peer_addr(const ble_gap_evt_adv_report_t *const adv_report,
+			   const ble_gap_addr_t *addr)
 {
-	ble_gap_addr_t const *peer_addr = &adv_report->peer_addr;
+	const ble_gap_addr_t *peer_addr = &adv_report->peer_addr;
 
 	/* Compare addresses. */
 	if (memcmp(addr->addr, peer_addr->addr, sizeof(peer_addr->addr)) == 0) {
@@ -72,10 +72,10 @@ static bool find_peer_addr(ble_gap_evt_adv_report_t const *const adv_report,
 	return false;
 }
 
-static bool adv_addr_compare(ble_gap_evt_adv_report_t const *const adv_report,
-			     struct ble_scan const *const scan)
+static bool adv_addr_compare(const ble_gap_evt_adv_report_t *const adv_report,
+			     const struct ble_scan *const scan)
 {
-	ble_gap_addr_t const *addr = scan->scan_filters.addr_filter.target_addr;
+	const ble_gap_addr_t *addr = scan->scan_filters.addr_filter.target_addr;
 
 	for (uint8_t i = 0; i < scan->scan_filters.addr_filter.addr_cnt; i++) {
 		/* Search for address. */
@@ -87,7 +87,7 @@ static bool adv_addr_compare(ble_gap_evt_adv_report_t const *const adv_report,
 	return false;
 }
 
-static int ble_scan_addr_filter_add(struct ble_scan *const scan, uint8_t const *addr)
+static int ble_scan_addr_filter_add(struct ble_scan *const scan, const uint8_t *addr)
 {
 	ble_gap_addr_t *addr_filter = scan->scan_filters.addr_filter.target_addr;
 	uint8_t *counter = &scan->scan_filters.addr_filter.addr_cnt;
@@ -121,7 +121,7 @@ static int ble_scan_addr_filter_add(struct ble_scan *const scan, uint8_t const *
 #endif /* CONFIG_BLE_SCAN_ADDRESS_COUNT */
 
 #if (CONFIG_BLE_SCAN_NAME_COUNT > 0)
-static uint16_t advdata_search(uint8_t const *encoded_data, uint16_t data_len, uint16_t *offset,
+static uint16_t advdata_search(const uint8_t *encoded_data, uint16_t data_len, uint16_t *offset,
 			       uint8_t ad_type)
 {
 	uint16_t i = 0;
@@ -154,11 +154,11 @@ static uint16_t advdata_search(uint8_t const *encoded_data, uint16_t data_len, u
 	return len;
 }
 
-static bool advdata_name_find(uint8_t const *encoded_data, uint16_t data_len,
-			      char const *target_name)
+static bool advdata_name_find(const uint8_t *encoded_data, uint16_t data_len,
+			      const char *target_name)
 {
 	uint16_t parsed_name_len;
-	uint8_t const *parsed_name;
+	const uint8_t *parsed_name;
 	uint16_t data_offset = 0;
 
 	if (!target_name) {
@@ -179,10 +179,10 @@ static bool advdata_name_find(uint8_t const *encoded_data, uint16_t data_len,
 	return false;
 }
 
-static bool adv_name_compare(ble_gap_evt_adv_report_t const *adv_report,
-			     struct ble_scan const *const scan)
+static bool adv_name_compare(const ble_gap_evt_adv_report_t *adv_report,
+			     const struct ble_scan *const scan)
 {
-	struct ble_scan_name_filter const *name_filter = &scan->scan_filters.name_filter;
+	const struct ble_scan_name_filter *name_filter = &scan->scan_filters.name_filter;
 	uint16_t data_len = adv_report->data.len;
 
 	/* Compare the name found with the name filter. */
@@ -196,7 +196,7 @@ static bool adv_name_compare(ble_gap_evt_adv_report_t const *adv_report,
 	return false;
 }
 
-static int ble_scan_name_filter_add(struct ble_scan *const scan, char const *name)
+static int ble_scan_name_filter_add(struct ble_scan *const scan, const char *name)
 {
 	uint8_t *counter = &scan->scan_filters.name_filter.name_cnt;
 	uint8_t name_len = strlen(name);
@@ -228,10 +228,10 @@ static int ble_scan_name_filter_add(struct ble_scan *const scan, char const *nam
 #endif /* CONFIG_BLE_SCAN_NAME_COUNT */
 
 #if (CONFIG_BLE_SCAN_SHORT_NAME_COUNT > 0)
-static bool adv_short_name_compare(ble_gap_evt_adv_report_t const *const adv_report,
-				   struct ble_scan const *const scan)
+static bool adv_short_name_compare(const ble_gap_evt_adv_report_t *const adv_report,
+				   const struct ble_scan *const scan)
 {
-	struct ble_scan_short_name_filter const *name_filter =
+	const struct ble_scan_short_name_filter *name_filter =
 		&scan->scan_filters.short_name_filter;
 	uint16_t data_len = adv_report->data.len;
 
@@ -249,7 +249,7 @@ static bool adv_short_name_compare(ble_gap_evt_adv_report_t const *const adv_rep
 }
 
 static int ble_scan_short_name_filter_add(struct ble_scan *const scan,
-					  struct ble_scan_short_name const *short_name)
+					  const struct ble_scan_short_name *short_name)
 {
 	uint8_t *counter = &scan->scan_filters.short_name_filter.name_cnt;
 	struct ble_scan_short_name_filter *short_name_filter =
@@ -287,11 +287,11 @@ static int ble_scan_short_name_filter_add(struct ble_scan *const scan,
 #endif /* CONFIG_BLE_SCAN_SHORT_NAME_COUNT */
 
 #if (CONFIG_BLE_SCAN_UUID_COUNT > 0)
-static bool adv_uuid_compare(ble_gap_evt_adv_report_t const *const adv_report,
-			     struct ble_scan const *const scan)
+static bool adv_uuid_compare(const ble_gap_evt_adv_report_t *const adv_report,
+			     const struct ble_scan *const scan)
 {
-	struct ble_scan_uuid_filter const *uuid_filter = &scan->scan_filters.uuid_filter;
-	bool const all_filters_mode = scan->scan_filters.all_filters_mode;
+	const struct ble_scan_uuid_filter *uuid_filter = &scan->scan_filters.uuid_filter;
+	const bool all_filters_mode = scan->scan_filters.all_filters_mode;
 	uint16_t data_len = adv_report->data.len;
 	uint8_t uuid_match_cnt = 0;
 
@@ -319,7 +319,7 @@ static bool adv_uuid_compare(ble_gap_evt_adv_report_t const *const adv_report,
 	return false;
 }
 
-static int ble_scan_uuid_filter_add(struct ble_scan *const scan, ble_uuid_t const *uuid)
+static int ble_scan_uuid_filter_add(struct ble_scan *const scan, const ble_uuid_t *uuid)
 {
 	ble_uuid_t *uuid_filter = scan->scan_filters.uuid_filter.uuid;
 	uint8_t *counter = &scan->scan_filters.uuid_filter.uuid_cnt;
@@ -345,10 +345,10 @@ static int ble_scan_uuid_filter_add(struct ble_scan *const scan, ble_uuid_t cons
 #endif /* CONFIG_BLE_SCAN_UUID_COUNT */
 
 #if (CONFIG_BLE_SCAN_APPEARANCE_COUNT)
-static bool adv_appearance_compare(ble_gap_evt_adv_report_t const *const adv_report,
-				   struct ble_scan const *const scan)
+static bool adv_appearance_compare(const ble_gap_evt_adv_report_t *const adv_report,
+				   const struct ble_scan *const scan)
 {
-	struct ble_scan_appearance_filter const *appearance_filter =
+	const struct ble_scan_appearance_filter *appearance_filter =
 		&scan->scan_filters.appearance_filter;
 	uint16_t data_len = adv_report->data.len;
 
@@ -387,7 +387,7 @@ static int ble_scan_appearance_filter_add(struct ble_scan *const scan, uint16_t 
 #endif /* CONFIG_BLE_SCAN_APPEARANCE_COUNT */
 
 int ble_scan_filter_add(struct ble_scan *const scan, uint8_t type,
-			void const *data)
+			const void *data)
 {
 	if (!scan || !data) {
 		return NRF_ERROR_NULL;
@@ -588,7 +588,7 @@ int ble_scan_filter_get(struct ble_scan *const scan, struct ble_scan_filters *st
 
 #endif /* CONFIG_BLE_SCAN_FILTER */
 
-bool is_allow_list_used(struct ble_scan const *const scan)
+bool is_allow_list_used(const struct ble_scan *const scan)
 {
 	if (scan->scan_params.filter_policy == BLE_GAP_SCAN_FP_WHITELIST ||
 	    scan->scan_params.filter_policy ==
@@ -625,7 +625,7 @@ int ble_scan_init(struct ble_scan *scan, struct ble_scan_config *config)
 }
 
 int ble_scan_params_set(struct ble_scan *const scan,
-			ble_gap_scan_params_t const *const scan_params)
+			const ble_gap_scan_params_t *const scan_params)
 {
 	if (!scan | !scan_params) {
 		return NRF_ERROR_NULL;
@@ -641,7 +641,7 @@ int ble_scan_params_set(struct ble_scan *const scan,
 	return NRF_SUCCESS;
 }
 
-int ble_scan_start(struct ble_scan const *const scan)
+int ble_scan_start(const struct ble_scan *const scan)
 {
 	uint32_t nrf_err;
 	struct ble_scan_evt scan_evt = {
@@ -676,7 +676,7 @@ int ble_scan_start(struct ble_scan const *const scan)
 	return NRF_SUCCESS;
 }
 
-void ble_scan_stop(struct ble_scan const *const scan)
+void ble_scan_stop(const struct ble_scan *const scan)
 {
 	ARG_UNUSED(scan);
 	/** It is ok to ignore the function return value here, because this function can return
@@ -685,8 +685,8 @@ void ble_scan_stop(struct ble_scan const *const scan)
 	(void)sd_ble_gap_scan_stop();
 }
 
-static void ble_scan_on_adv_report(struct ble_scan const *const scan,
-				   ble_gap_evt_adv_report_t const *const adv_report)
+static void ble_scan_on_adv_report(const struct ble_scan *const scan,
+				   const ble_gap_evt_adv_report_t *const adv_report)
 {
 	struct ble_scan_evt scan_evt = {
 		.scan_params = &scan->scan_params,
@@ -710,28 +710,28 @@ static void ble_scan_on_adv_report(struct ble_scan const *const scan,
 	}
 
 #if CONFIG_BLE_SCAN_FILTER
-	bool const all_filter_mode = scan->scan_filters.all_filters_mode;
+	const bool all_filter_mode = scan->scan_filters.all_filters_mode;
 	bool is_filter_matched = false;
 
 #if (CONFIG_BLE_SCAN_ADDRESS_COUNT > 0)
-	bool const addr_filter_enabled = scan->scan_filters.addr_filter.addr_filter_enabled;
+	const bool addr_filter_enabled = scan->scan_filters.addr_filter.addr_filter_enabled;
 #endif
 
 #if (CONFIG_BLE_SCAN_NAME_COUNT > 0)
-	bool const name_filter_enabled = scan->scan_filters.name_filter.name_filter_enabled;
+	const bool name_filter_enabled = scan->scan_filters.name_filter.name_filter_enabled;
 #endif
 
 #if (CONFIG_BLE_SCAN_SHORT_NAME_COUNT > 0)
-	bool const short_name_filter_enabled =
+	const bool short_name_filter_enabled =
 		scan->scan_filters.short_name_filter.short_name_filter_enabled;
 #endif
 
 #if (CONFIG_BLE_SCAN_UUID_COUNT > 0)
-	bool const uuid_filter_enabled = scan->scan_filters.uuid_filter.uuid_filter_enabled;
+	const bool uuid_filter_enabled = scan->scan_filters.uuid_filter.uuid_filter_enabled;
 #endif
 
 #if (CONFIG_BLE_SCAN_APPEARANCE_COUNT > 0)
-	bool const appearance_filter_enabled =
+	const bool appearance_filter_enabled =
 		scan->scan_filters.appearance_filter.appearance_filter_enabled;
 #endif
 
@@ -836,10 +836,10 @@ static void ble_scan_on_adv_report(struct ble_scan const *const scan,
 	(void)sd_ble_gap_scan_start(NULL, &scan->scan_buffer);
 }
 
-static void ble_scan_on_timeout(struct ble_scan const *const scan,
-				ble_gap_evt_t const *const gap)
+static void ble_scan_on_timeout(const struct ble_scan *const scan,
+				const ble_gap_evt_t *const gap)
 {
-	ble_gap_evt_timeout_t const *timeout = &gap->params.timeout;
+	const ble_gap_evt_timeout_t *timeout = &gap->params.timeout;
 	struct ble_scan_evt scan_evt = {
 		.evt_type = BLE_SCAN_EVT_SCAN_TIMEOUT,
 		.scan_params = &scan->scan_params,
@@ -854,8 +854,8 @@ static void ble_scan_on_timeout(struct ble_scan const *const scan,
 	}
 }
 
-static void ble_scan_on_connected_evt(struct ble_scan const *const scan,
-				      ble_gap_evt_t const *const gap_evt)
+static void ble_scan_on_connected_evt(const struct ble_scan *const scan,
+				      const ble_gap_evt_t *const gap_evt)
 {
 	struct ble_scan_evt scan_evt = {
 		.evt_type = BLE_SCAN_EVT_CONNECTED,
@@ -869,11 +869,11 @@ static void ble_scan_on_connected_evt(struct ble_scan const *const scan,
 	}
 }
 
-void ble_scan_on_ble_evt(ble_evt_t const *ble_evt, void *contex)
+void ble_scan_on_ble_evt(const ble_evt_t *ble_evt, void *contex)
 {
 	struct ble_scan *scan_data = (struct ble_scan *)contex;
-	ble_gap_evt_adv_report_t const *adv_report = &ble_evt->evt.gap_evt.params.adv_report;
-	ble_gap_evt_t const *gap_evt = &ble_evt->evt.gap_evt;
+	const ble_gap_evt_adv_report_t *adv_report = &ble_evt->evt.gap_evt.params.adv_report;
+	const ble_gap_evt_t *gap_evt = &ble_evt->evt.gap_evt;
 
 	switch (ble_evt->header.evt_id) {
 	case BLE_GAP_EVT_ADV_REPORT:
