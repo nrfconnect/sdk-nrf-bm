@@ -185,34 +185,12 @@ static uint32_t ble_mcumgr_data_send(uint8_t *data, uint16_t *len)
 	}
 
 	nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx_params);
-
-	switch (nrf_err) {
-	case NRF_SUCCESS:
-	{
-		return NRF_SUCCESS;
-	}
-	case BLE_ERROR_INVALID_CONN_HANDLE:
-	{
-		return NRF_ERROR_NOT_FOUND;
-	}
-	case NRF_ERROR_INVALID_STATE:
-	{
-		return NRF_ERROR_INVALID_STATE;
-	}
-	case NRF_ERROR_RESOURCES:
-	{
-		return NRF_ERROR_RESOURCES;
-	}
-	case NRF_ERROR_NOT_FOUND:
-	{
-		return NRF_ERROR_NOT_FOUND;
-	}
-	default:
-	{
+	if (nrf_err) {
 		LOG_ERR("Failed to send MCUmgr data, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INTERNAL;
+		return nrf_err;
 	}
-	};
+
+	return NRF_SUCCESS;
 }
 
 /* Return errno! */
