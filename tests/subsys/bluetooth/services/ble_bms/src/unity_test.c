@@ -17,6 +17,8 @@
 #include <bm/bluetooth/services/ble_bms.h>
 #include <bm/bluetooth/services/uuid.h>
 
+#include <observers.h>
+
 #include "cmock_ble_gatts.h"
 #include "cmock_ble_qwr.h"
 
@@ -502,12 +504,8 @@ void test_ble_bms_on_ble_evt_rw_authorize_req_uninitialized(void)
 	memcpy(evt.evt.gatts_evt.params.authorize_request.request.write.data,
 	       data, sizeof(data));
 
-	/* These should return immediately. */
-	ble_bms_on_ble_evt(&evt, NULL);
-	ble_bms_on_ble_evt(NULL, &ble_bms);
-
 	/* Unhandled as ctrlpt handle is not registered. */
-	ble_bms_on_ble_evt(&evt, &ble_bms);
+	ble_evt_send(&evt);
 }
 
 void test_ble_bms_on_ble_evt_rw_authorize_req_error(void)
@@ -541,7 +539,7 @@ void test_ble_bms_on_ble_evt_rw_authorize_req_error(void)
 
 	__cmock_sd_ble_gatts_rw_authorize_reply_Stub(stub_sd_ble_gatts_rw_authorize_reply_error);
 
-	ble_bms_on_ble_evt(&evt, &ble_bms);
+	ble_evt_send(&evt);
 
 	TEST_ASSERT_EQUAL(BLE_BMS_EVT_ERROR, last_evt.evt_type);
 }
@@ -566,13 +564,9 @@ void test_ble_bms_on_ble_evt_rw_authorize_req(void)
 
 	test_ble_bms_init();
 
-	/* These should return immediately. */
-	ble_bms_on_ble_evt(&evt, NULL);
-	ble_bms_on_ble_evt(NULL, &ble_bms);
-
 	/* Empty data is rejected */
 	__cmock_sd_ble_gatts_rw_authorize_reply_Stub(stub_sd_ble_gatts_rw_authorize_reply_rejected);
-	ble_bms_on_ble_evt(&evt, &ble_bms);
+	ble_evt_send(&evt);
 
 	/* evt.evt.gatts_evt.params.authorize_request.request.write.data is set as an array of
 	 * length 1, so the variable data cannot be set above.
@@ -585,7 +579,7 @@ void test_ble_bms_on_ble_evt_rw_authorize_req(void)
 
 	__cmock_sd_ble_gatts_rw_authorize_reply_Stub(stub_sd_ble_gatts_rw_authorize_reply_rejected);
 
-	ble_bms_on_ble_evt(&evt, &ble_bms);
+	ble_evt_send(&evt);
 
 	/* evt.evt.gatts_evt.params.authorize_request.request.write.data is set as an array of
 	 * length 1, so the variable data cannot be set above.
@@ -598,11 +592,11 @@ void test_ble_bms_on_ble_evt_rw_authorize_req(void)
 
 	__cmock_sd_ble_gatts_rw_authorize_reply_Stub(stub_sd_ble_gatts_rw_authorize_reply_accepted);
 
-	ble_bms_on_ble_evt(&evt, &ble_bms);
+	ble_evt_send(&evt);
 
 	__cmock_sd_ble_gatts_rw_authorize_reply_Stub(stub_sd_ble_gatts_rw_authorize_reply_accepted);
 
-	ble_bms_on_ble_evt(&evt, &ble_bms);
+	ble_evt_send(&evt);
 
 	/* This is allowed without valid passkey in init config */
 	uint8_t data_device_only[] = { BLE_BMS_OP_DEL_BOND_REQ_DEVICE_LE_ONLY };
@@ -613,7 +607,7 @@ void test_ble_bms_on_ble_evt_rw_authorize_req(void)
 
 	__cmock_sd_ble_gatts_rw_authorize_reply_Stub(stub_sd_ble_gatts_rw_authorize_reply_accepted);
 
-	ble_bms_on_ble_evt(&evt, &ble_bms);
+	ble_evt_send(&evt);
 
 	uint8_t data_other_only[] = { BLE_BMS_OP_DEL_ALL_BUT_ACTIVE_BOND_LE_ONLY, 'a', 'b', 'c'};
 
@@ -622,7 +616,7 @@ void test_ble_bms_on_ble_evt_rw_authorize_req(void)
 	evt.evt.gatts_evt.params.authorize_request.request.write.len = sizeof(data);
 	__cmock_sd_ble_gatts_rw_authorize_reply_Stub(stub_sd_ble_gatts_rw_authorize_reply_accepted);
 
-	ble_bms_on_ble_evt(&evt, &ble_bms);
+	ble_evt_send(&evt);
 
 	uint8_t data_inval[] = { BLE_BMS_OP_DEL_ALL_BONDS_ON_SERVER_LE_ONLY, 'b', 'a', 'd' };
 
@@ -631,7 +625,7 @@ void test_ble_bms_on_ble_evt_rw_authorize_req(void)
 	evt.evt.gatts_evt.params.authorize_request.request.write.len = sizeof(data);
 	__cmock_sd_ble_gatts_rw_authorize_reply_Stub(stub_sd_ble_gatts_rw_authorize_reply_rejected);
 
-	ble_bms_on_ble_evt(&evt, &ble_bms);
+	ble_evt_send(&evt);
 }
 
 void test_ble_bms_on_qwr_evt_authorize_req_error_op_failed(void)

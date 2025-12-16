@@ -149,7 +149,6 @@ struct nrf_sdh_state_evt_observer {
  */
 #define NRF_SDH_STATE_EVT_OBSERVER(_observer, _handler, _ctx, _prio)                               \
 	PRIO_LEVEL_IS_VALID(_prio);                                                                \
-	static int _handler(enum nrf_sdh_state_evt, void *);                                       \
 	static TYPE_SECTION_ITERABLE(struct nrf_sdh_state_evt_observer, _observer,                 \
 				     nrf_sdh_state_evt_observers, PRIO_LEVEL_ORD(_prio)) = {       \
 		.handler = _handler,                                                               \
@@ -190,7 +189,6 @@ struct nrf_sdh_stack_evt_observer {
  */
 #define NRF_SDH_STACK_EVT_OBSERVER(_observer, _handler, _ctx, _prio)                               \
 	PRIO_LEVEL_IS_VALID(_prio);                                                                \
-	static void _handler(void *);                                                              \
 	static const TYPE_SECTION_ITERABLE(struct nrf_sdh_stack_evt_observer, _observer,           \
 					   nrf_sdh_stack_evt_observers, PRIO_LEVEL_ORD(_prio)) = { \
 		.handler = _handler,                                                               \

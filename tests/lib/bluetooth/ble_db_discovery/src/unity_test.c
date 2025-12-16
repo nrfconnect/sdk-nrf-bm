@@ -9,6 +9,8 @@
 #include <bm/bluetooth/ble_db_discovery.h>
 #include <bm/bluetooth/services/uuid.h>
 
+#include <observers.h>
+
 #include "cmock_ble.h"
 #include "cmock_ble_gap.h"
 #include "cmock_ble_gattc.h"
@@ -19,14 +21,6 @@ BLE_DB_DISCOVERY_DEF(db_discovery)
 
 static struct ble_db_discovery_evt db_evt;
 static struct ble_db_discovery_evt db_evt_prev;
-
-void ble_evt_send(const ble_evt_t *evt)
-{
-	TYPE_SECTION_FOREACH(struct nrf_sdh_ble_evt_observer, nrf_sdh_ble_evt_observers, obs)
-	{
-		obs->handler(evt, obs->context);
-	}
-}
 
 static void db_discovery_evt_handler(struct ble_db_discovery *db_discovery,
 				     struct ble_db_discovery_evt *evt)

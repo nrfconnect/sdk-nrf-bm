@@ -17,6 +17,8 @@
 #include <bm/bluetooth/services/ble_bas.h>
 #include <bm/bluetooth/services/uuid.h>
 
+#include <observers.h>
+
 #include "ble_gatts.h"
 #include "cmock_ble_gatts.h"
 
@@ -203,14 +205,14 @@ void test_ble_bas_on_ble_evt(void)
 	evt.evt.gatts_evt.params.write.data[0] = BLE_GATT_HVX_NOTIFICATION;
 	bas_cfg.evt_handler = ble_bas_evt_handler_notif_enabled;
 	bas_init(&bas_cfg);
-	ble_bas_on_ble_evt(&evt, &ble_bas);
+	ble_evt_send(&evt);
 	TEST_ASSERT_TRUE(evt_handler_called);
 
 	evt_handler_called = false;
 	evt.evt.gatts_evt.params.write.data[0] = 0x00;
 	bas_cfg.evt_handler = ble_bas_evt_handler_notif_disable;
 	bas_init(&bas_cfg);
-	ble_bas_on_ble_evt(&evt, &ble_bas);
+	ble_evt_send(&evt);
 	TEST_ASSERT_TRUE(evt_handler_called);
 
 	evt_handler_called = false;
@@ -218,20 +220,20 @@ void test_ble_bas_on_ble_evt(void)
 	bas_cfg.can_notify = false;
 	bas_cfg.evt_handler = ble_bas_evt_handler;
 	bas_init(&bas_cfg);
-	ble_bas_on_ble_evt(&evt, &ble_bas);
+	ble_evt_send(&evt);
 	TEST_ASSERT_FALSE(evt_handler_called);
 
 	bas_cfg.can_notify = true;
 	bas_cfg.evt_handler = ble_bas_evt_handler;
 	evt.evt.gatts_evt.params.write.handle = INVALID_HANDLE;
 	bas_init(&bas_cfg);
-	ble_bas_on_ble_evt(&evt, &ble_bas);
+	ble_evt_send(&evt);
 	TEST_ASSERT_FALSE(evt_handler_called);
 
 	evt.evt.gatts_evt.params.write.handle = CCCD_HANDLE;
 	evt.evt.gatts_evt.params.write.len = 1;
 	bas_init(&bas_cfg);
-	ble_bas_on_ble_evt(&evt, &ble_bas);
+	ble_evt_send(&evt);
 	TEST_ASSERT_FALSE(evt_handler_called);
 }
 

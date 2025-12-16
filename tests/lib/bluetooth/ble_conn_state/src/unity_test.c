@@ -12,6 +12,8 @@
 #include <bm/bluetooth/ble_conn_state.h>
 #include <zephyr/sys/util.h>
 
+#include <observers.h>
+
 static uint16_t conn_handle1;
 static uint16_t conn_handle2 = 1;
 static uint16_t conn_handle3 = 2;

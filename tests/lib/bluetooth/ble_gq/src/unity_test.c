@@ -10,6 +10,8 @@
 #include <bm/bluetooth/ble_gq.h>
 #include <zephyr/sys/util.h>
 
+#include <observers.h>
+
 #include "cmock_ble_gattc.h"
 #include "cmock_ble_gatts.h"
 
@@ -287,7 +289,7 @@ void test_ble_gq_item_add_req_gatt_read_busy_busy_success(void)
 		.evt.gatts_evt.conn_handle = CONN_HANDLE_1,
 	};
 
-	ble_gq_on_ble_evt(&ble_evt, (void *)&ble_gq);
+	ble_evt_send(&ble_evt);
 
 	TEST_ASSERT_EQUAL(BLE_CONN_HANDLE_INVALID, glob_conn_handle);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, glob_error);
@@ -374,7 +376,7 @@ void test_ble_gq_item_add_req_gatt_write_busy_busy_success(void)
 		.evt.gatts_evt.conn_handle = CONN_HANDLE_2,
 	};
 
-	ble_gq_on_ble_evt(&ble_evt, (void *)&ble_gq);
+	ble_evt_send(&ble_evt);
 
 	TEST_ASSERT_EQUAL(BLE_CONN_HANDLE_INVALID, glob_conn_handle);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, glob_error);
@@ -417,7 +419,7 @@ void test_ble_gq_item_add_req_srv_discovery_busy_busy_success(void)
 		.evt.gatts_evt.conn_handle = CONN_HANDLE_1,
 	};
 
-	ble_gq_on_ble_evt(&ble_evt, (void *)&ble_gq);
+	ble_evt_send(&ble_evt);
 
 	TEST_ASSERT_EQUAL(BLE_CONN_HANDLE_INVALID, glob_conn_handle);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, glob_error);
@@ -458,7 +460,7 @@ void test_ble_gq_item_add_req_char_discovery_busy_busy_success(void)
 		.evt.gatts_evt.conn_handle = CONN_HANDLE_1,
 	};
 
-	ble_gq_on_ble_evt(&ble_evt, (void *)&ble_gq);
+	ble_evt_send(&ble_evt);
 
 	TEST_ASSERT_EQUAL(BLE_CONN_HANDLE_INVALID, glob_conn_handle);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, glob_error);
@@ -499,7 +501,7 @@ void test_ble_gq_item_add_req_desc_discovery_busy_busy_success(void)
 		.evt.gatts_evt.conn_handle = CONN_HANDLE_1,
 	};
 
-	ble_gq_on_ble_evt(&ble_evt, (void *)&ble_gq);
+	ble_evt_send(&ble_evt);
 
 	TEST_ASSERT_EQUAL(BLE_CONN_HANDLE_INVALID, glob_conn_handle);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, glob_error);
@@ -535,7 +537,7 @@ void test_ble_gq_item_add_req_gatts_hvx_busy_busy_success(void)
 		.evt.gatts_evt.conn_handle = CONN_HANDLE_1,
 	};
 
-	ble_gq_on_ble_evt(&ble_evt, (void *)&ble_gq);
+	ble_evt_send(&ble_evt);
 
 	TEST_ASSERT_EQUAL(BLE_CONN_HANDLE_INVALID, glob_conn_handle);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, glob_error);
@@ -596,11 +598,6 @@ void test_ble_gq_item_add_req_gatts_hvx_error_invalid_param(void)
 	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, glob_error);
 }
 
-void test_ble_gq_on_ble_evt_null(void)
-{
-	ble_gq_on_ble_evt(NULL, NULL);
-}
-
 void test_ble_gq_on_ble_evt_disconnected_event_item_purge(void)
 {
 	uint32_t nrf_err;
@@ -631,7 +628,7 @@ void test_ble_gq_on_ble_evt_disconnected_event_item_purge(void)
 		.evt.gap_evt.conn_handle = CONN_HANDLE_2,
 	};
 
-	ble_gq_on_ble_evt(&ble_evt, (void *)&ble_gq);
+	ble_evt_send(&ble_evt);
 
 	/* Purge in progress. Receive an (arbitrary) GATT event to trigger queue processing.
 	 * The item in the queue should be purged, so expect no call to the SoftDevice.
@@ -641,7 +638,7 @@ void test_ble_gq_on_ble_evt_disconnected_event_item_purge(void)
 		.evt.gap_evt.conn_handle = CONN_HANDLE_2,
 	};
 
-	ble_gq_on_ble_evt(&ble_evt, (void *)&ble_gq);
+	ble_evt_send(&ble_evt);
 
 	TEST_ASSERT_EQUAL(BLE_CONN_HANDLE_INVALID, glob_conn_handle);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, glob_error);
@@ -656,7 +653,7 @@ void setUp(void)
 	/* Deregister all the registered connection handles by sending disconnect events. */
 	for (uint32_t i = 0; i < ARRAY_SIZE(conn_handles); ++i) {
 		ble_evt.evt.gap_evt.conn_handle = conn_handles[i];
-		ble_gq_on_ble_evt(&ble_evt, (void *)&ble_gq);
+		ble_evt_send(&ble_evt);
 	}
 
 	glob_conn_handle = BLE_CONN_HANDLE_INVALID;

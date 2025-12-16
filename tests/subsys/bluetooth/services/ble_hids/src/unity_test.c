@@ -12,6 +12,8 @@
 #include <bm/bluetooth/services/ble_hids.h>
 #include <bm/bluetooth/services/uuid.h>
 
+#include <observers.h>
+
 #include "cmock_ble_gatts.h"
 #include "cmock_ble.h"
 #include "cmock_nrf_sdh_ble.h"
@@ -207,7 +209,7 @@ static void emulate_ble_connected_evt(struct ble_hids *ble_hids)
 		.evt.gap_evt.conn_handle = CONN_HANDLE,
 	};
 
-	ble_hids_on_ble_evt(&ble_evt, ble_hids);
+	ble_evt_send(&ble_evt);
 }
 
 /* Emulate BLE_GATTS_EVT_WRITE event. */
@@ -232,7 +234,7 @@ static void emulate_ble_write_evt(struct ble_hids *ble_hids, enum on_write_evt o
 		memcpy(write_evt_data + offset, data, len);
 
 		ble_hids->hid_control_point_handles.value_handle = CONTROL_POINT_HANDLE;
-		ble_hids_on_ble_evt((ble_evt_t *)write_evt_data, ble_hids);
+		ble_evt_send((ble_evt_t *)write_evt_data);
 	break;
 
 	case ON_WRITE_PROTOCOLS_MODE:
@@ -244,7 +246,7 @@ static void emulate_ble_write_evt(struct ble_hids *ble_hids, enum on_write_evt o
 		memcpy(write_evt_data + offset, data, len);
 
 		ble_hids->protocol_mode_handles.value_handle = PROTOCOL_MODE_HANDLE;
-		ble_hids_on_ble_evt((ble_evt_t *)write_evt_data, ble_hids);
+		ble_evt_send((ble_evt_t *)write_evt_data);
 		break;
 
 	case ON_KB_INP_CCCD:
@@ -252,7 +254,7 @@ static void emulate_ble_write_evt(struct ble_hids *ble_hids, enum on_write_evt o
 		evt_write->len = len;
 
 		ble_hids->boot_kb_inp_rep_handles.cccd_handle = KB_INPUT_CCCD_HANDLE;
-		ble_hids_on_ble_evt(&ble_evt, ble_hids);
+		ble_evt_send(&ble_evt);
 		break;
 
 	case ON_KB_INP_VALUE:
@@ -263,7 +265,7 @@ static void emulate_ble_write_evt(struct ble_hids *ble_hids, enum on_write_evt o
 		memcpy(write_evt_data + offset, data, len);
 
 		ble_hids->boot_kb_inp_rep_handles.value_handle = KB_INPUT_REPORT_HANDLE;
-		ble_hids_on_ble_evt((ble_evt_t *)write_evt_data, ble_hids);
+		ble_evt_send((ble_evt_t *)write_evt_data);
 		break;
 
 	case ON_KB_OUTP_VALUE:
@@ -275,7 +277,7 @@ static void emulate_ble_write_evt(struct ble_hids *ble_hids, enum on_write_evt o
 
 		ble_hids->boot_kb_outp_rep_handles.value_handle = KB_OUTPUT_REPORT_HANDLE;
 
-		ble_hids_on_ble_evt((ble_evt_t *)write_evt_data, ble_hids);
+		ble_evt_send((ble_evt_t *)write_evt_data);
 		break;
 
 	case ON_MOUSE_INP_CCCD:
@@ -284,7 +286,7 @@ static void emulate_ble_write_evt(struct ble_hids *ble_hids, enum on_write_evt o
 
 		ble_hids->boot_mouse_inp_rep_handles.cccd_handle = MOUSE_INPUT_REPORT_CCCD_HANDLE;
 
-		ble_hids_on_ble_evt(&ble_evt, ble_hids);
+		ble_evt_send(&ble_evt);
 		break;
 
 	case ON_MOUSE_INP_VALUE:
@@ -297,7 +299,7 @@ static void emulate_ble_write_evt(struct ble_hids *ble_hids, enum on_write_evt o
 		memcpy(evt_write->data, data, len);
 		ble_hids->boot_mouse_inp_rep_handles.value_handle = MOUSE_INPUT_REPORT_HANDLE;
 
-		ble_hids_on_ble_evt((ble_evt_t *)write_evt_data, ble_hids);
+		ble_evt_send((ble_evt_t *)write_evt_data);
 		break;
 
 	case ON_INPUT_REPORT_CCCD:
@@ -309,7 +311,7 @@ static void emulate_ble_write_evt(struct ble_hids *ble_hids, enum on_write_evt o
 
 		ble_hids->inp_rep_array[0].char_handles.cccd_handle = INPUT_REPORT_CCCD_HANDLE;
 
-		ble_hids_on_ble_evt((ble_evt_t *)write_evt_data, ble_hids);
+		ble_evt_send((ble_evt_t *)write_evt_data);
 		break;
 
 	case ON_REP_VALUE_IDENTIFY:
@@ -335,7 +337,7 @@ static void emulate_ble_write_evt(struct ble_hids *ble_hids, enum on_write_evt o
 
 		ble_hids->feature_rep_array[2].char_handles.value_handle = REPORT_VALUE_HANDLE;
 
-		ble_hids_on_ble_evt((ble_evt_t *)write_evt_data, ble_hids);
+		ble_evt_send((ble_evt_t *)write_evt_data);
 		break;
 
 	default:
@@ -359,7 +361,7 @@ static void emulate_ble_rw_authorize_evt(struct ble_hids *ble_hids,
 	case ON_OTHER_TYPE:
 		evt_rw_auth->type = BLE_GATTS_AUTHORIZE_TYPE_WRITE;
 
-		ble_hids_on_ble_evt(&ble_evt, ble_hids);
+		ble_evt_send(&ble_evt);
 		break;
 
 	case ON_PROTOCOL_MODE_RW_AUTH:
@@ -367,7 +369,7 @@ static void emulate_ble_rw_authorize_evt(struct ble_hids *ble_hids,
 		evt_rw_auth->request.read.handle = PROTOCOL_MODE_HANDLE;
 		ble_hids->protocol_mode_handles.value_handle = PROTOCOL_MODE_HANDLE;
 
-		ble_hids_on_ble_evt(&ble_evt, ble_hids);
+		ble_evt_send(&ble_evt);
 		break;
 
 	case ON_BOOT_KB_INP_REP_RW_AUTH:
@@ -375,7 +377,7 @@ static void emulate_ble_rw_authorize_evt(struct ble_hids *ble_hids,
 		evt_rw_auth->request.read.handle = KB_INPUT_REPORT_HANDLE;
 		ble_hids->boot_kb_inp_rep_handles.value_handle = KB_INPUT_REPORT_HANDLE;
 
-		ble_hids_on_ble_evt(&ble_evt, ble_hids);
+		ble_evt_send(&ble_evt);
 		break;
 
 	case ON_BOOT_KB_OUTP_REP_RW_AUTH:
@@ -383,7 +385,7 @@ static void emulate_ble_rw_authorize_evt(struct ble_hids *ble_hids,
 		evt_rw_auth->request.read.handle = KB_OUTPUT_REPORT_HANDLE;
 		ble_hids->boot_kb_outp_rep_handles.value_handle = KB_OUTPUT_REPORT_HANDLE;
 
-		ble_hids_on_ble_evt(&ble_evt, ble_hids);
+		ble_evt_send(&ble_evt);
 		break;
 
 	case ON_BOOT_MOUSE_INP_REP_RW_AUTH:
@@ -391,7 +393,7 @@ static void emulate_ble_rw_authorize_evt(struct ble_hids *ble_hids,
 		evt_rw_auth->request.read.handle = MOUSE_INPUT_REPORT_HANDLE;
 		ble_hids->boot_mouse_inp_rep_handles.value_handle = MOUSE_INPUT_REPORT_HANDLE;
 
-		ble_hids_on_ble_evt(&ble_evt, ble_hids);
+		ble_evt_send(&ble_evt);
 		break;
 
 	case ON_REP_VALUE_IDEN_RW_AUTH:
@@ -409,7 +411,7 @@ static void emulate_ble_rw_authorize_evt(struct ble_hids *ble_hids,
 		feature_report[2].len = FEATURE_REPORT_3_LEN;
 
 		ble_hids->outp_rep_array[1].char_handles.value_handle = REPORT_VALUE_HANDLE;
-		ble_hids_on_ble_evt(&ble_evt, ble_hids);
+		ble_evt_send(&ble_evt);
 		break;
 
 	default:
@@ -422,12 +424,14 @@ void test_ble_hids_init_null(void)
 {
 	uint32_t err;
 	struct ble_hids_config ble_hids_init_obj = {0};
+	#if 0
 	struct ble_hids ble_hids = {
 		.link_ctx_storage = {
 			.max_links_cnt = CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT,
 			.link_ctx_size = sizeof(uint32_t) * BYTES_TO_WORDS(BLE_HIDS_LINK_CTX_SIZE),
 		},
 	};
+	#endif
 
 	err = ble_hids_init(NULL, NULL);
 	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, err);
@@ -444,12 +448,14 @@ void test_struct_ble_hids_config_too_much_rep(void)
 {
 	uint32_t err;
 	struct ble_hids_config ble_hids_init_obj = {0};
+	#if 0
 	struct ble_hids ble_hids = {
 		.link_ctx_storage = {
 			.max_links_cnt = CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT,
 			.link_ctx_size = sizeof(uint32_t) * BYTES_TO_WORDS(BLE_HIDS_LINK_CTX_SIZE),
 		},
 	};
+	#endif
 
 	/* Test to much input report characteristic. */
 	ble_hids_init_obj.input_report_count = CONFIG_BLE_HIDS_INPUT_REPORT_MAX_NUM + 1;
@@ -517,12 +523,14 @@ void test_ble_hids_init_kb_no_mem(void)
 		.included_services_array = NULL,
 		.sec_mode = BLE_HIDS_CONFIG_SEC_MODE_DEFAULT_KEYBOARD,
 	};
+	#if 0
 	struct ble_hids ble_hids = {
 		.link_ctx_storage = {
 			.max_links_cnt = CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT,
 			.link_ctx_size = sizeof(uint32_t) * BYTES_TO_WORDS(BLE_HIDS_LINK_CTX_SIZE),
 		},
 	};
+	#endif
 	struct ble_hids_report_config *p_input_report;
 	struct ble_hids_report_config *p_output_report;
 	struct ble_hids_report_config *p_feature_report;
@@ -1175,12 +1183,14 @@ void test_ble_hids_init_kb_correct(void)
 		.included_services_array = NULL,
 		.sec_mode = BLE_HIDS_CONFIG_SEC_MODE_DEFAULT_KEYBOARD,
 	};
+	#if 0
 	struct ble_hids ble_hids = {
 		.link_ctx_storage = {
 			.max_links_cnt = CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT,
 			.link_ctx_size = sizeof(uint32_t) * BYTES_TO_WORDS(BLE_HIDS_LINK_CTX_SIZE),
 		},
 	};
+	#endif
 	struct ble_hids_report_config *p_input_report;
 	struct ble_hids_report_config *p_output_report;
 	struct ble_hids_report_config *p_feature_report;
