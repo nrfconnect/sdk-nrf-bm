@@ -11,7 +11,7 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 
-LOG_MODULE_REGISTER(sdh_irq_connect, CONFIG_NRF_SDH_LOG_LEVEL);
+LOG_MODULE_DECLARE(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
 
 #if CONFIG_SOC_SERIES_NRF54LX
 #include "irq_connect.h"
