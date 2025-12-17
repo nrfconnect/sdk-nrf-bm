@@ -133,8 +133,8 @@ The recommended sizes are based on the configuration used in |BMshort|.
 .. note::
    The sizes and configurations of slot0 and slot1 are asymmetrical.
 
-* **DK board** - Represents the partition size that you can find in the board definition files (.dts) that have been defined for the MCUboot board target in |BMshort|.
-  These sizes are not optimized but set large enough to provide enough memory to do development on multiple domains without having to adjust the partition size.
+* **DK board** - Represents the partition size that you can find in the board definition files (:file:`.dts`) that have been defined for the MCUboot board target in |BMshort|.
+  These sizes are not optimized but set large enough to provide enough memory for development on multiple domains without having to adjust the partition size.
 
 * **Development** - Represents the partition size that can be used to maximize the application space (``slot0_partition`` and ``storage_partition``) when running with default configuration of the MCUboot and firmware loader project.
   This setting does not include extra space in the ``slot1_partition`` to accommodate for updates without the risk of having to adjust the partition size.
@@ -149,7 +149,7 @@ The recommended sizes are based on the configuration used in |BMshort|.
 Optimizing your project for release
 ***********************************
 
-Reference sizes of the MCUboot and the firmware loader can be achieved using the default configuration of :ref:`ble_mcuboot_recovery_entry_sample`.
+You can achieve the reference sizes of MCUboot and firmware loader using the default configuration of the :ref:`ble_mcuboot_recovery_entry_sample` sample.
 
 For minimal size, amend the firmware loader configuration using the following Kconfig options:
 
