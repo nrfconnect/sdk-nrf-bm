@@ -160,9 +160,9 @@ For minimal size, amend the firmware loader configuration using the following Kc
 * Disable :kconfig:option:`CONFIG_BM_UARTE_CONSOLE`
 * Disable :kconfig:option:`CONFIG_CRACEN_LIB_KMU`
 * Disable :kconfig:option:`CONFIG_PSA_WANT_ALG_CTR_DRBG`
-* Disable :kconfig:option:`PSA_USE_CRACEN_MAC_DRIVER`
-* Disable :kconfig:option:`PSA_USE_CRACEN_AEAD_DRIVER`
-* Disable :kconfig:option:`PSA_USE_CRACEN_CIPHER_DRIVER`
+* Disable :kconfig:option:`CONFIG_PSA_USE_CRACEN_MAC_DRIVER`
+* Disable :kconfig:option:`CONFIG_PSA_USE_CRACEN_AEAD_DRIVER`
+* Disable :kconfig:option:`CONFIG_PSA_USE_CRACEN_CIPHER_DRIVER`
 
 For minimal size, amend the MCUboot configuration using the following Kconfig options:
 
