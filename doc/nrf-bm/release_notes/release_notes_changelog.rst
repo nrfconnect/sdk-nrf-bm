@@ -1,9 +1,7 @@
-:orphan:
-
 .. _nrf_bm_release_notes_1099:
 
-Release Notes for |BMlong| v1.0.99
-##################################
+Changelog for |BMlong| v1.0.99
+##############################
 
 The most relevant changes that are present on the main branch of the nRF Connect SDK Bare Metal, as compared to the latest official release, are tracked in this file.
 
