@@ -147,7 +147,6 @@ static void on_write(struct ble_mcumgr *service, const ble_evt_t *ble_evt)
 			smp_reassembly_complete(&smp_ncs_bm_bt_transport, false);
 		}
 #else
-		struct smp_bt_user_data *ud;
 		struct net_buf *nb;
 
 		nb = smp_packet_alloc();
