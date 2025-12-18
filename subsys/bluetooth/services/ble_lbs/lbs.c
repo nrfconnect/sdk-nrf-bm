@@ -40,11 +40,9 @@ void ble_lbs_on_ble_evt(const ble_evt_t *ble_evt, void *lbs_instance)
 	__ASSERT(ble_evt, "BLE event is NULL");
 	__ASSERT(lbs_instance, "LBS instance is NULL");
 
-	struct ble_lbs *lbs = (struct ble_lbs *)lbs_instance;
-
 	switch (ble_evt->header.evt_id) {
 	case BLE_GATTS_EVT_WRITE:
-		on_write(lbs, ble_evt);
+		on_write(lbs_instance, ble_evt);
 		break;
 	default:
 		break;
@@ -69,7 +67,7 @@ uint32_t ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg)
 	nrf_err = sd_ble_uuid_vs_add(&base_uuid, &lbs->uuid_type);
 	if (nrf_err) {
 		LOG_ERR("Failed to add vendor UUID, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
+		return nrf_err;
 	}
 
 	ble_uuid = (ble_uuid_t) {
@@ -82,7 +80,7 @@ uint32_t ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg)
 					   &lbs->service_handle);
 	if (nrf_err) {
 		LOG_ERR("Failed to add GATT service, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
+		return nrf_err;
 	}
 
 	/* Add Button characteristic. */
@@ -118,7 +116,7 @@ uint32_t ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg)
 						  &lbs->button_char_handles);
 	if (nrf_err) {
 		LOG_ERR("Failed to add button GATT characteristic, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
+		return nrf_err;
 	}
 
 	/* Add LED characteristic. */
@@ -150,7 +148,7 @@ uint32_t ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg)
 						  &lbs->led_char_handles);
 	if (nrf_err) {
 		LOG_ERR("Failed to add LED GATT characteristic, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
+		return nrf_err;
 	}
 
 	return NRF_SUCCESS;
@@ -176,7 +174,7 @@ uint32_t ble_lbs_on_button_change(struct ble_lbs *lbs, uint16_t conn_handle, uin
 	nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx);
 	if (nrf_err) {
 		LOG_ERR("Failed to notify button change, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
+		return nrf_err;
 	}
 
 	return NRF_SUCCESS;

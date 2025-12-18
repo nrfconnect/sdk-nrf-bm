@@ -217,28 +217,22 @@ static void on_hvx_tx_complete(struct ble_nus *nus, const ble_evt_t *ble_evt)
 	}
 }
 
-void ble_nus_on_ble_evt(const ble_evt_t *ble_evt, void *ctx)
+void ble_nus_on_ble_evt(const ble_evt_t *ble_evt, void *nus_instance)
 {
-	struct ble_nus *nus = (struct ble_nus *)ctx;
-
 	__ASSERT(ble_evt, "BLE event is NULL");
 	__ASSERT(ctx, "context is NULL");
 
-	if ((ctx == NULL) || (ble_evt == NULL)) {
-		return;
-	}
-
 	switch (ble_evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:
-		on_connect(nus, ble_evt);
+		on_connect(nus_instance, ble_evt);
 		break;
 
 	case BLE_GATTS_EVT_WRITE:
-		on_write(nus, ble_evt);
+		on_write(nus_instance, ble_evt);
 		break;
 
 	case BLE_GATTS_EVT_HVN_TX_COMPLETE:
-		on_hvx_tx_complete(nus, ble_evt);
+		on_hvx_tx_complete(nus_instance, ble_evt);
 		break;
 
 	default:
@@ -265,7 +259,7 @@ uint32_t ble_nus_init(struct ble_nus *nus, const struct ble_nus_config *cfg)
 	nrf_err = sd_ble_uuid_vs_add(&uuid_base, &nus->uuid_type);
 	if (nrf_err) {
 		LOG_ERR("sd_ble_uuid_vs_add failed, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
+		return nrf_err;
 	}
 
 	ble_uuid.type = nus->uuid_type;
@@ -277,21 +271,21 @@ uint32_t ble_nus_init(struct ble_nus *nus, const struct ble_nus_config *cfg)
 					   &nus->service_handle);
 	if (nrf_err) {
 		LOG_ERR("Failed to add NUS service, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
+		return nrf_err;
 	}
 
 	/* Add NUS RX characteristic. */
 	nrf_err = nus_rx_char_add(nus, cfg);
 	if (nrf_err) {
 		LOG_ERR("nus_rx_char_add failed, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
+		return nrf_err;
 	}
 
 	/* Add NUS TX characteristic. */
 	nrf_err = nus_tx_char_add(nus, cfg);
 	if (nrf_err) {
 		LOG_ERR("nus_tx_char_add failed, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
+		return nrf_err;
 	}
 
 	return 0;
@@ -300,35 +294,16 @@ uint32_t ble_nus_init(struct ble_nus *nus, const struct ble_nus_config *cfg)
 uint32_t ble_nus_data_send(struct ble_nus *nus, uint8_t *data,
 			   uint16_t *len, uint16_t conn_handle)
 {
-	ble_gatts_hvx_params_t hvx_params = {
-		.p_data = data,
-		.p_len = len,
-		.type = BLE_GATT_HVX_NOTIFICATION
-	};
-	struct ble_nus_client_context *ctx;
+	ble_gatts_hvx_params_t hvx = { 0 };
 
 	if (!nus || !data || !len) {
 		return NRF_ERROR_NULL;
 	}
 
-	if (*len > BLE_NUS_MAX_DATA_LEN) {
-		return NRF_ERROR_INVALID_PARAM;
-	}
+	hvx.type = BLE_GATT_HVX_NOTIFICATION;
+	hvx.handle = nus->tx_handles.value_handle;
+	hvx.p_data = data;
+	hvx.p_len = len;
 
-	if (conn_handle == BLE_CONN_HANDLE_INVALID) {
-		return NRF_ERROR_NOT_FOUND;
-	}
-
-	ctx = ble_nus_client_context_get(nus, conn_handle);
-	if (ctx == NULL) {
-		return NRF_ERROR_NOT_FOUND;
-	}
-
-	if (!ctx->is_notification_enabled) {
-		return NRF_ERROR_INVALID_PARAM;
-	}
-
-	hvx_params.handle = nus->tx_handles.value_handle;
-
-	return sd_ble_gatts_hvx(conn_handle, &hvx_params);
+	return sd_ble_gatts_hvx(conn_handle, &hvx);
 }
