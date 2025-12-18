@@ -6,7 +6,8 @@ from collections.abc import Callable
 from pathlib import Path
 
 import pytest
-from pytest_plugins.utils.cli_commands import provision_keys_for_kmu, reset_board
+from pytest_plugins.adapters.nrfutil import reset_board
+from pytest_plugins.adapters.west import provision_keys_for_kmu
 from twister_harness import DeviceAdapter
 
 

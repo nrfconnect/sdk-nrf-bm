@@ -7,11 +7,10 @@ from collections.abc import Callable
 from pathlib import Path
 
 import pytest
-from pytest_plugins.utils.cli_commands import (
-    BuildDirector,
-    WestBuilder,
+from pytest_plugins.adapters.builder import BuildDirector, WestBuilder
+from pytest_plugins.adapters.nrfutil import reset_board
+from pytest_plugins.adapters.west import (
     provision_keys_for_kmu,
-    reset_board,
     west_flash,
 )
 from twister_harness import DeviceAdapter
@@ -270,7 +269,7 @@ def test_if_revocation_of_last_remaining_key_is_not_allowed(
 
     build_director = BuildDirector(builders)
     build_director.run()
-    assert not build_director.excptions, "Building samples failed"
+    assert not build_director.exceptions, "Building samples failed"
 
     logger.info("Provision DUT with two keys")
     provision_keys_for_kmu(
