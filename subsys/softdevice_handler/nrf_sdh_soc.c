@@ -51,6 +51,8 @@ const char *nrf_sdh_soc_evt_to_str(uint32_t evt)
 	}
 }
 
+void rrw_done(void);
+
 static void soc_evt_poll(void *context)
 {
 	uint32_t nrf_err;
@@ -64,6 +66,11 @@ static void soc_evt_poll(void *context)
 
 		LOG_DBG("%s", nrf_sdh_soc_evt_to_str(evt_id));
 
+		if (evt_id == NRF_EVT_FLASH_OPERATION_SUCCESS) {
+#if defined(CONFIG_SOC_FLASH_NRF_RRAM_BM)
+			rrw_done();
+#endif
+		}
 		/* Forward the event to SoC observers. */
 		TYPE_SECTION_FOREACH(
 			struct nrf_sdh_soc_evt_observer, nrf_sdh_soc_evt_observers, obs) {
