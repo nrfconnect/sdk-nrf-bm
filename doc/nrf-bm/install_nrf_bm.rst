@@ -62,6 +62,12 @@ Every |BMlong| release consists of:
          If you have installed an SDK or a Toolchain before, click on :guilabel:`Manage SDKs` in the extension's :guilabel:`Welcome View`.
          Then, select :guilabel:`Install SDK` from the quick pick menu that appears.
 
+      #. Select the region for download.
+
+         You only need to select the region for downloads once.
+         The selected region applies to all future SDK and toolchain downloads.
+         You can later change it in the |VSC| settings.
+
       #. In the next page you will be prompted to **Select SDK type**, click :guilabel:`nRF Connect SDK Bare Metal`.
 
       #. In the next page you will be prompted to **Select an SDK version (or enter the branch, tag or commit SHA) to install...**, click :guilabel:`v1.0.0` marked on the right by the label :guilabel:`Pre-packaged SDKs & Toolchains`.
@@ -71,7 +77,7 @@ Every |BMlong| release consists of:
 
    .. group-tab:: GitHub
 
-         1. Install the toolchain
+         1. Install the toolchain.
 
             The |BMshort| toolchain includes tools and modules required to build the samples and applications on top of it.
 
@@ -100,7 +106,7 @@ Every |BMlong| release consists of:
 
             When you install the toolchain for the first time, the installed version is automatically selected for your project.
 
-         #. Install the SDK
+         #. Install the SDK.
 
             Complete the following steps to get the |BMshort| code using the |nRFVSC|.
 
