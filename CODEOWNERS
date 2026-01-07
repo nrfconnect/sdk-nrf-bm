@@ -99,20 +99,20 @@
 /sysbuild/                                @nrfconnect/ncs-co-build-system
 
 # Tests
-/tests/lib/                               @nrfconnect/ncs-bm
-/tests/lib/bluetooth/ble_adv/             @nrfconnect/ncs-bm-test
-/tests/lib/bluetooth/ble_conn_params/     @nrfconnect/ncs-bm
-/tests/lib/bluetooth/ble_conn_state/      @nrfconnect/ncs-bm
-/tests/lib/bluetooth/ble_gq/              @nrfconnect/ncs-bm
-/tests/lib/bluetooth/ble_db_discovery/    @nrfconnect/ncs-bm
-/tests/lib/bluetooth/ble_qwr/             @nrfconnect/ncs-bm
-/tests/lib/bluetooth/ble_racp/            @nrfconnect/ncs-bm
-/tests/lib/bluetooth/ble_radio_notif/     @nrfconnect/ncs-bm
-/tests/lib/bluetooth/ble_scan/            @nrfconnect/ncs-bm
-/tests/subsys/bluetooth/services/         @nrfconnect/ncs-bm @nrfconnect/ncs-bm-test
-/tests/subsys/fs/bm_zms/                  @nrfconnect/ncs-bm @rghaddab
-/tests/subsys/kmu/                        @nrfconnect/ncs-eris
-/tests/subsys/storage/bm_storage/         @nrfconnect/ncs-bm
+/tests/subsys/fs/bm_zms/                    @nrfconnect/ncs-bm @rghaddab
+/tests/subsys/kmu/                          @nrfconnect/ncs-eris
+/tests/unit/lib/                            @nrfconnect/ncs-bm
+/tests/unit/lib/bluetooth/ble_adv/          @nrfconnect/ncs-bm-test
+/tests/unit/lib/bluetooth/ble_conn_params/  @nrfconnect/ncs-bm
+/tests/unit/lib/bluetooth/ble_conn_state/   @nrfconnect/ncs-bm
+/tests/unit/lib/bluetooth/ble_gq/           @nrfconnect/ncs-bm
+/tests/unit/lib/bluetooth/ble_db_discovery/ @nrfconnect/ncs-bm
+/tests/unit/lib/bluetooth/ble_qwr/          @nrfconnect/ncs-bm
+/tests/unit/lib/bluetooth/ble_racp/         @nrfconnect/ncs-bm
+/tests/unit/lib/bluetooth/ble_radio_notif/  @nrfconnect/ncs-bm
+/tests/unit/lib/bluetooth/ble_scan/         @nrfconnect/ncs-bm
+/tests/unit/subsys/bluetooth/services/      @nrfconnect/ncs-bm @nrfconnect/ncs-bm-test
+/tests/unit/subsys/storage/bm_storage/      @nrfconnect/ncs-bm
 
 # Zephyr module
 /zephyr/                                  @nrfconnect/ncs-co-build-system
