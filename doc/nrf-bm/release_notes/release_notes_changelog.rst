@@ -82,7 +82,9 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Samples
 =======
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Removed the battery measurement simulation from the following samples:
+
+   * :ref:`ble_cgms_sample`
 
 Bluetooth LE samples
 --------------------

@@ -71,8 +71,6 @@ enum led_indicate {
 	LED_INDICATE_CONNECTED,
 };
 
-/** Battery timer. */
-static struct bm_timer battery_timer;
 /** Glucose measurement timer. */
 static struct bm_timer glucose_meas_timer;
 
@@ -94,50 +92,11 @@ static uint16_t peer_id;
 /* Flag for ongoing authentication request */
 static bool auth_key_request;
 
-/** Battery Level sensor simulator state. */
-static struct sensorsim_state battery_sim_state;
-
 static uint16_t current_time_offset;
 static uint16_t glucose_concentration = CONFIG_APP_GLUCOSE_CONCENTRATION_MIN;
 
 static uint8_t qwr_mem[CONFIG_APP_QWR_MEM_BUFF_SIZE];
 
-/** @brief Function for performing battery measurement and updating the Battery Level characteristic
- *         in Battery Service.
- */
-static void battery_level_update(void)
-{
-	int err;
-	uint32_t nrf_err;
-	uint32_t battery_level;
-
-	err = (uint8_t)sensorsim_measure(&battery_sim_state, &battery_level);
-	if (err) {
-		LOG_ERR("Sensorsim measure failed, err %d", err);
-	}
-
-	nrf_err = ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level);
-	if (nrf_err) {
-		/* Ignore if not in a connection or notifications disabled in CCCD. */
-		if (nrf_err != NRF_ERROR_NOT_FOUND && nrf_err != NRF_ERROR_INVALID_STATE) {
-			LOG_ERR("Failed to update battery level, nrf_error %#x", nrf_err);
-		}
-	}
-}
-
-/**
- * @brief Function for handling the Battery measurement timer timeout.
- *
- * @details This function will be called each time the battery level measurement timer expires.
- *
- * @param[in] context Pointer used for passing some arbitrary information (context) from the
- *                    bm_timer_start() call to the timeout handler.
- */
-static void battery_level_meas_timeout_handler(void *context)
-{
-	ARG_UNUSED(context);
-	battery_level_update();
-}
 
 /**
  * @brief Function for updating the glucose measurement and updating the glucose characteristic in
@@ -200,13 +159,6 @@ static void glucose_meas_timeout_handler(void *context)
 static int timers_init(void)
 {
 	int err;
-
-	err = bm_timer_init(&battery_timer, BM_TIMER_MODE_REPEATED,
-			      battery_level_meas_timeout_handler);
-	if (err) {
-		LOG_ERR("Failed to initialize battery timer, err %d", err);
-		return -1;
-	}
 
 	err = bm_timer_init(&glucose_meas_timer, BM_TIMER_MODE_REPEATED,
 			      glucose_meas_timeout_handler);
@@ -388,43 +340,6 @@ static uint32_t services_init(void)
 	return NRF_SUCCESS;
 }
 
-/** @brief Function for initializing the sensor simulators. */
-static int sensor_simulator_init(void)
-{
-	int err;
-	/** Battery Level sensor simulator configuration. */
-	static struct sensorsim_cfg battery_sim_cfg = {
-		.min = CONFIG_APP_BATTERY_LEVEL_MIN,
-		.max = CONFIG_APP_BATTERY_LEVEL_MAX,
-		.incr = CONFIG_APP_BATTERY_LEVEL_INCREMENT,
-		.start_at_max = true,
-	};
-
-	err = sensorsim_init(&battery_sim_state, &battery_sim_cfg);
-	if (err) {
-		LOG_ERR("Sensorsim init failed, err %d", err);
-		return err;
-	}
-
-	return 0;
-}
-
-/** @brief Function for starting application timers. */
-static int application_timers_start(void)
-{
-	int err;
-
-	/* Start application timers. */
-	err = bm_timer_start(&battery_timer,
-		BM_TIMER_MS_TO_TICKS(CONFIG_APP_BATTERY_LEVEL_MEAS_INTERVAL_MS),
-		NULL);
-	if (err) {
-		LOG_ERR("Failed to start app timer, err %d", err);
-		return err;
-	}
-
-	return 0;
-}
 
 /**
  * @brief Function for handling the Connection Parameter events.
@@ -991,7 +906,6 @@ int main(void)
 	if (nrf_err) {
 		goto idle;
 	}
-	(void)sensor_simulator_init();
 
 	nrf_err = ble_conn_params_evt_handler_set(on_conn_params_evt);
 	if (nrf_err) {
@@ -1000,10 +914,6 @@ int main(void)
 	}
 
 	LOG_INF("Continuous Glucose Monitoring sample started.");
-	err = application_timers_start();
-	if (err) {
-		goto idle;
-	}
 
 	nrf_err = advertising_start(erase_bonds);
 	if (nrf_err) {
