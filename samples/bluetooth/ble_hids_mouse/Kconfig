@@ -6,28 +6,6 @@
 
 menu "BLE HIDS Mouse sample"
 
-menu "Battery measurement simulation"
-
-config APP_BATTERY_LEVEL_MEAS_INTERVAL_MS
-	int "Battery level measurement interval in ms"
-	default 10000
-
-config APP_BATTERY_LEVEL_MIN
-	int "Minimum battery level as returned by the simulated measurement function"
-	default 81
-
-config APP_BATTERY_LEVEL_MAX
-	int "Maximum battery level as returned by the simulated measurement function"
-	default 100
-
-config APP_BATTERY_LEVEL_INCREMENT
-	int "Battery level increment value"
-	default 1
-	help
-	   Value by which the battery level is incremented/decremented for each call to
-	   the simulated measurement function.
-endmenu # Battery measurement simulation
-
 module=APP_BLE_HIDS_MOUSE
 module-str=BLE HIDS Mouse Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"

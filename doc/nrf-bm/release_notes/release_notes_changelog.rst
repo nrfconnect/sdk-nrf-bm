@@ -85,6 +85,7 @@ Samples
 * Removed the battery measurement simulation from the following samples:
 
    * :ref:`ble_cgms_sample`
+   * :ref:`ble_hids_mouse_sample`
 
 Bluetooth LE samples
 --------------------

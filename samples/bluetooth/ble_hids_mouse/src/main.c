@@ -76,11 +76,6 @@ LOG_MODULE_REGISTER(app, CONFIG_APP_BLE_HIDS_MOUSE_LOG_LEVEL);
 /* Maximum encryption key size. */
 #define SEC_PARAM_MAX_KEY_SIZE 16
 
-/** Battery Level sensor simulator state. */
-static struct sensorsim_state battery_sim_state;
-/** Battery timer. */
-static struct bm_timer battery_timer;
-
 /* HID service instance */
 BLE_HIDS_DEF(ble_hids);
 /* BLE Advertising library instance */
@@ -99,28 +94,6 @@ static void identities_set(enum pm_peer_id_list_skip skip);
 
 static bool boot_mode;
 static bool auth_key_request;
-
-static void battery_level_meas_timeout_handler(void *context)
-{
-	int err;
-	uint32_t nrf_err;
-	uint32_t battery_level;
-
-	ARG_UNUSED(context);
-
-	err = (uint8_t)sensorsim_measure(&battery_sim_state, &battery_level);
-	if (err) {
-		LOG_ERR("Sensorsim measure failed, err %d", err);
-	}
-
-	nrf_err = ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level);
-	if (nrf_err) {
-		/* Ignore if not in a connection or notifications disabled in CCCD. */
-		if (nrf_err != NRF_ERROR_NOT_FOUND && nrf_err != NRF_ERROR_INVALID_STATE) {
-			LOG_ERR("Failed to update battery level, nrf_error %#x", nrf_err);
-		}
-	}
-}
 
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {
@@ -687,13 +660,6 @@ int main(void)
 		}
 	};
 
-	struct sensorsim_cfg battery_sim_cfg = {
-		.min = CONFIG_APP_BATTERY_LEVEL_MIN,
-		.max = CONFIG_APP_BATTERY_LEVEL_MAX,
-		.incr = CONFIG_APP_BATTERY_LEVEL_INCREMENT,
-		.start_at_max = true,
-	};
-
 	struct ble_bas_config bas_config = {
 		.evt_handler = NULL,
 		.can_notify = true,
@@ -741,19 +707,6 @@ int main(void)
 
 	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
 	nrf_gpio_cfg_output(BOARD_PIN_LED_1);
-
-	err = sensorsim_init(&battery_sim_state, &battery_sim_cfg);
-	if (err) {
-		LOG_ERR("Sensorsim init failed, err %d", err);
-		goto idle;
-	}
-
-	err = bm_timer_init(&battery_timer, BM_TIMER_MODE_REPEATED,
-			      battery_level_meas_timeout_handler);
-	if (err) {
-		LOG_ERR("Failed to initialize battery timer, err %d", err);
-		goto idle;
-	}
 
 	err = bm_buttons_init(configs, ARRAY_SIZE(configs), BM_BUTTONS_DETECTION_DELAY_MIN_US);
 	if (err) {
@@ -820,13 +773,6 @@ int main(void)
 	nrf_err = ble_adv_init(&ble_adv, &ble_adv_cfg);
 	if (nrf_err) {
 		LOG_ERR("Failed to initialize BLE advertising, nrf_error %#x", nrf_err);
-		goto idle;
-	}
-
-	err = bm_timer_start(&battery_timer,
-			     BM_TIMER_MS_TO_TICKS(CONFIG_APP_BATTERY_LEVEL_MEAS_INTERVAL_MS), NULL);
-	if (err) {
-		LOG_ERR("Failed to start app timer, err %d", err);
 		goto idle;
 	}
 
