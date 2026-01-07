@@ -117,7 +117,7 @@ endchoice
 
 config BM_BOOT_BOOTCONF_LOCK_WRITES
 	bool "Protect bootloader's NVM from writes"
-	depends on SOC_NRF54L15_CPUAPP || SOC_NRF54L10_CPUAPP || SOC_NRF54L05_CPUAPP
+	depends on SOC_NRF54L15_CPUAPP || SOC_NRF54L10_CPUAPP || SOC_NRF54L05_CPUAPP || SOC_NRF54LV10A_ENGA_CPUAPP
 	help
 	  Sets RRAMC's BOOTCONF region protection to disable writes.
 
@@ -202,6 +202,8 @@ config SOFTDEVICE_FILE
 	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/components/softdevice/nrf54l/s145/s145_nrf54l05_10.0.0-1.prototype_softdevice.hex" if SOFTDEVICE_S145 && SOC_NRF54L05
 	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/components/softdevice/nrf54l/s145/s145_nrf54l10_10.0.0-1.prototype_softdevice.hex" if SOFTDEVICE_S145 && SOC_NRF54L10
 	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/components/softdevice/nrf54l/s145/s145_nrf54l15_10.0.0-1.prototype_softdevice.hex" if SOFTDEVICE_S145 && SOC_NRF54L15
+	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/components/softdevice/nrf54lv/s115/s115_nrf54lv10_10.0.0-1.prototype_softdevice.hex" if SOFTDEVICE_S115 && SOC_NRF54LV10A
+	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/components/softdevice/nrf54lv/s145/s145_nrf54lv10_10.0.0-1.prototype_softdevice.hex" if SOFTDEVICE_S145 && SOC_NRF54LV10A
 	help
 	  Specifies the path to the softdevice hex file.
 

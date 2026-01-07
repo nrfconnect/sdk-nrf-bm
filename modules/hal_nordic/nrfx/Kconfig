@@ -223,6 +223,9 @@ config NRFX_SPI2
 	bool "SPI2 driver instance"
 	select NRFX_SPI
 
+config NRFX_SPIS
+	bool "SPIS driver"
+
 config NRFX_SPIM
 	bool "SPIM driver"
 

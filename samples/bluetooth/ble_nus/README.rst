@@ -40,6 +40,10 @@ The sample supports the following development kits:
            - PCA10156
            - S115
            - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice
+         * - `nRF54LV10 DK`_
+           - PCA10188
+           - S115
+           - bm_nrf54lv10dk/nrf54lv10/cpuapp/s115_softdevice
 
    .. group-tab:: MCUboot board variants
 

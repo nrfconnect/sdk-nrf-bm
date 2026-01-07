@@ -46,6 +46,17 @@ config SOFTDEVICE_VARIANT_STR
 	string
 	default "s115" if SOFTDEVICE_S115
 	default "s145" if SOFTDEVICE_S145
+	help
+	  SoftDevice variant used to select the SoftDevice API include path
+	  `components/softdevice/<soctarget>/<softdevice>/<softdevice>_API/include`
+
+config SOFTDEVICE_SOC_VARIANT_STR
+	string
+	default "nrf54l" if SOC_NRF54L15 || SOC_NRF54L10 || SOC_NRF54L05
+	default "nrf54lv" if SOC_NRF54LV10A
+	help
+	  SoC series variant used to select the SoftDevice API include path
+	  `components/softdevice/<soctarget>/<softdevice>/<softdevice>_API/include`
 
 endif
 
