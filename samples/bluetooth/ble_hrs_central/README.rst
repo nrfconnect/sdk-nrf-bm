@@ -7,7 +7,7 @@ Bluetooth: Heart Rate Service Central
    :local:
    :depth: 2
 
-The Heart Rate Service Central sample demonstrates how you can implement the Heart Rate profile as a central using |BMlong|.
+The Heart Rate Service Central sample demonstrates how you can implement the Heart Rate profile as a client using |BMlong|.
 
 Requirements
 ************

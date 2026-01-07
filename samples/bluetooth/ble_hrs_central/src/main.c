@@ -23,7 +23,7 @@
 
 #include <bm/bluetooth/ble_gq.h>
 #include <bm/bluetooth/ble_conn_state.h>
-#include <bm/bluetooth/services/ble_hrs_central.h>
+#include <bm/bluetooth/services/ble_hrs_client.h>
 #include <bm/bluetooth/services/uuid.h>
 #include <bm/softdevice_handler/nrf_sdh.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
@@ -63,7 +63,7 @@ LOG_MODULE_REGISTER(app, CONFIG_APP_BLE_HRS_CENTRAL_SAMPLE_LOG_LEVEL);
 	} while (0)
 
 /* Structure used to identify the heart rate client module. */
-BLE_HRS_CENTRAL_DEF(ble_hrs_central);
+BLE_HRS_CLIENT_DEF(ble_hrs_client);
 /* Gatt queue instance. */
 BLE_GQ_DEF(ble_gq);
 /* DB discovery module instance. */
@@ -92,7 +92,7 @@ static uint32_t scan_start(bool erase_bonds);
 static void db_disc_handler(struct ble_db_discovery *db_discovery,
 			    struct ble_db_discovery_evt *evt)
 {
-	ble_hrs_on_db_disc_evt(&ble_hrs_central, evt);
+	ble_hrs_on_db_disc_evt(&ble_hrs_client, evt);
 }
 
 static void pm_evt_handler(const struct pm_evt *evt)
@@ -261,30 +261,30 @@ static void button_handler_disconnect(uint8_t pin, uint8_t action)
 	}
 }
 
-static void hrs_c_evt_handler(struct ble_hrs_central *hrs, struct ble_hrs_central_evt *evt)
+static void hrs_c_evt_handler(struct ble_hrs_client *hrs, struct ble_hrs_client_evt *evt)
 {
 
 	uint32_t nrf_err;
 
 	switch (evt->evt_type) {
-	case BLE_HRS_CENTRAL_EVT_DISCOVERY_COMPLETE:
+	case BLE_HRS_CLIENT_EVT_DISCOVERY_COMPLETE:
 		LOG_INF("Heart rate service discovered.");
 
-		nrf_err = ble_hrs_central_handles_assign(hrs, evt->conn_handle,
+		nrf_err = ble_hrs_client_handles_assign(hrs, evt->conn_handle,
 							 &evt->params.peer_db);
 		if (nrf_err != 0) {
-			LOG_ERR("ble_hrs_central_handles_assign failed, nrf_error %#x", nrf_err);
+			LOG_ERR("ble_hrs_client_handles_assign failed, nrf_error %#x", nrf_err);
 		}
 
 		/* Heart rate service discovered. Enable notification of Heart Rate Measurement. */
-		nrf_err = ble_hrs_central_hrm_notif_enable(hrs);
+		nrf_err = ble_hrs_client_hrm_notif_enable(hrs);
 		if (nrf_err != 0) {
-			LOG_ERR("ble_hrs_central_hrm_notif_enable failed, nrf_error %#x", nrf_err);
+			LOG_ERR("ble_hrs_client_hrm_notif_enable failed, nrf_error %#x", nrf_err);
 		}
 
 		break;
 
-	case BLE_HRS_CENTRAL_EVT_HRM_NOTIFICATION:
+	case BLE_HRS_CLIENT_EVT_HRM_NOTIFICATION:
 		LOG_INF("Heart Rate = %d.", evt->params.hrm.hr_value);
 		if (evt->params.hrm.rr_intervals_cnt != 0) {
 			uint32_t rr_avg = 0;
@@ -306,15 +306,15 @@ static void hrs_c_evt_handler(struct ble_hrs_central *hrs, struct ble_hrs_centra
 static uint32_t hrs_c_init(void)
 {
 	uint32_t nrf_err;
-	struct ble_hrs_central_config hrs_central_cfg = {
+	struct ble_hrs_client_config hrs_client_cfg = {
 		.evt_handler = hrs_c_evt_handler,
 		.gatt_queue = &ble_gq,
 		.db_discovery = &ble_db_disc
 	};
 
-	nrf_err = ble_hrs_central_init(&ble_hrs_central, &hrs_central_cfg);
+	nrf_err = ble_hrs_client_init(&ble_hrs_client, &hrs_client_cfg);
 	if (nrf_err) {
-		LOG_ERR("Failed to init HRS central, nrf_error %#x", nrf_err);
+		LOG_ERR("Failed to init HRS client, nrf_error %#x", nrf_err);
 	}
 
 	return nrf_err;
@@ -644,7 +644,7 @@ int main(void)
 
 	nrf_err = hrs_c_init();
 	if (nrf_err) {
-		LOG_ERR("Failed to initialize HRS central, nrf_error %#x", nrf_err);
+		LOG_ERR("Failed to initialize HRS Client, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 

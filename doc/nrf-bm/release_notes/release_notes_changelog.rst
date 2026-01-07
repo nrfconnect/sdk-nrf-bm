@@ -72,7 +72,7 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Bluetooth LE Services
 ---------------------
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Renamed the ``ble_hrs_central`` service to the :ref:`lib_ble_service_hrs_client` sample.
 
 Libraries for NFC
 -----------------
