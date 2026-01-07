@@ -86,6 +86,7 @@ Samples
 
    * :ref:`ble_cgms_sample`
    * :ref:`ble_hids_mouse_sample`
+   * :ref:`ble_hids_keyboard_sample`
 
 Bluetooth LE samples
 --------------------
