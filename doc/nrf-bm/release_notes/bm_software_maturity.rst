@@ -90,7 +90,7 @@ A device is considered supported if at least one sample or component has been de
    * - nRF54L05
      - Supported from v1.0.0
    * - nRF54LV10
-     - --
+     - Experimental
 
 .. note::
    Any device not listed is considered out of scope.
@@ -114,12 +114,12 @@ The following table indicates the software maturity levels of the support for ea
      - Supported
      - Supported
      - Supported
-     - --
+     - Experimental
    * - **NFC**
      - Experimental
      - Experimental
      - Experimental
-     - --
+     - n/a
    * - **ESB**
      - --
      - --
@@ -149,12 +149,12 @@ The following table indicates SoftDevice compatibility per SoC:
      - Supported
      - Supported
      - Supported
-     - --
+     - Experimental
    * - **SoftDevice S145**
      - Experimental
      - Experimental
      - Experimental
-     - --
+     - Experimental
 
 .. note::
    The Experimental status of the S145 SoftDevice refers to its integration in the |BMlong|.

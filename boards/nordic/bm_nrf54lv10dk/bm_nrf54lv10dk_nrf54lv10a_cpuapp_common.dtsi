@@ -1,0 +1,62 @@
+/*
+ * Copyright (c) 2026 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+ */
+
+/* Override NCS default. */
+#include "bm_nrf54lv10dk_nrf54lv10a_peripherals.dtsi"
+#include "bm_nrf54lv10dk_nrf54lv10a_oscillator.dtsi"
+
+/delete-node/ &cpuapp_sram;
+
+/ {
+	compatible = "nordic,bm_nrf54lv10dk_nrf54lv10a-cpuapp";
+	model = "Nordic Bare Metal nRF54LV10 DK nRF54LV10 Application MCU";
+
+	chosen {
+		zephyr,flash-controller = &rram_controller;
+		zephyr,boot-mode = &boot_mode0;
+	};
+
+	soc {
+		cpuapp_sram: memory@20000080 {
+			compatible = "mmio-sram";
+			#address-cells = <1>;
+			#size-cells = <1>;
+			/* Size reduced by 0x80 bytes to account for the start address offset.
+			 * As total size of SRAM is not 1kB aligned,
+			 * 0x140 bytes are added to the 191 kB.
+			 */
+			reg = <0x20000080 (DT_SIZE_K(191) - 0x80 + 0x140)>;
+			ranges = <0x0 0x20000080 (DT_SIZE_K(191) - 0x80 + 0x140)>;
+		};
+	};
+
+	reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		nrf_kmu_reserved_push_area: memory@20000000 {
+			compatible = "zephyr,memory-region", "mmio-sram";
+			reg = <0x20000000 0x80>;
+			zephyr,memory-region = "nrf_kmu_reserved_push_area";
+		};
+	};
+};
+
+/* Override NCS default to use entire RRAM for application CPU. */
+&cpuapp_rram {
+	reg = <0x0 DT_SIZE_K(1012)>;
+};
+
+&gpregret1 {
+	status = "okay";
+
+	boot_mode0: boot_mode@0 {
+		compatible = "zephyr,retention";
+		status = "okay";
+		reg = <0x0 0x1>;
+	};
+};
