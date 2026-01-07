@@ -1,0 +1,8 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+zephyr_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+zephyr_library_sources(init.c)
