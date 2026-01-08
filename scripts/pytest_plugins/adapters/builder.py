@@ -46,7 +46,10 @@ class WestBuilder(Builder):
 
     @duration
     def build(self) -> tuple[Path, Path]:
-        """Run west build for the required build configuration."""
+        """Run west build for the required build configuration.
+
+        :raises WestBuildException: raises when build failed
+        """
         return west_build(
             source_dir=self.source_dir,
             board=self.board,

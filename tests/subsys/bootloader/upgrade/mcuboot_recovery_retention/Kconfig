@@ -1,0 +1,15 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "MCUboot recovery retention test"
+
+module=APP
+module-str=MCUboot recovery retention
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endmenu # "MCUboot recovery retention test"
+
+source "Kconfig.zephyr"

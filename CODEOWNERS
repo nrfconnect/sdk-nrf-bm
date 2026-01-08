@@ -113,6 +113,7 @@
 /tests/unit/lib/bluetooth/ble_radio_notif/  @nrfconnect/ncs-bm
 /tests/unit/lib/bluetooth/ble_scan/         @nrfconnect/ncs-bm
 /tests/unit/subsys/bluetooth/services/      @nrfconnect/ncs-bm @nrfconnect/ncs-bm-test
+/tests/subsys/bootloader/upgrade/           @nrfconnect/ncs-eris
 /tests/unit/subsys/storage/bm_storage/      @nrfconnect/ncs-bm
 
 # Zephyr module

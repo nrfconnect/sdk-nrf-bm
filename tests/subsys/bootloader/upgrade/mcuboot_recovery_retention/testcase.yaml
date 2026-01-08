@@ -1,0 +1,17 @@
+tests:
+  boot.mcuboot_recovery_retention.uart:
+    sysbuild: true
+    integration_platforms:
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+    platform_allow:
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+    extra_args:
+      - SB_CONFIG_BM_FIRMWARE_LOADER_UART_MCUMGR=y
+    tags:
+      - pytest
+      - dfu
+    timeout: 300
+    harness: pytest
+    harness_config:
+      pytest_root:
+        - "../pytest/test_dfu.py"
