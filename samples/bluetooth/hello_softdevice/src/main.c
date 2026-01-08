@@ -7,6 +7,7 @@
 #include <bm/softdevice_handler/nrf_sdh.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
 #include <bm/softdevice_handler/nrf_sdh_soc.h>
+
 #include <zephyr/kernel.h> /* k_busy_wait() */
 #include <zephyr/sys_clock.h> /* USEC_PER_SEC */
 #include <zephyr/logging/log.h>
@@ -75,12 +76,7 @@ idle:
 		while (LOG_PROCESS()) {
 		}
 
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
+		k_cpu_idle();
 	}
 
 	return 0;

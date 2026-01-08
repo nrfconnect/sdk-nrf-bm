@@ -37,6 +37,7 @@
 #include <bm/bm_buttons.h>
 #include <bm/bluetooth/ble_qwr.h>
 
+#include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 #include <zephyr/sys/util.h>
@@ -1028,12 +1029,7 @@ idle:
 		while (LOG_PROCESS()) {
 		}
 
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
+		k_cpu_idle();
 	}
 
 	return 0;

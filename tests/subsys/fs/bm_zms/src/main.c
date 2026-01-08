@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
+#include <zephyr/kernel.h>
 #include <zephyr/sys/crc.h>
 #include <zephyr/sys/atomic.h>
 #include <zephyr/sys/crc.h>
@@ -55,12 +56,7 @@ static void wait_for_write(void)
 	k_sem_take(&write_sem, K_FOREVER);
 #elif defined(CONFIG_SOFTDEVICE)
 	while (!write_notif) {
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
+		k_cpu_idle();
 	}
 	write_notif = false;
 #endif
@@ -72,12 +68,7 @@ static void wait_for_mount(void)
 	k_sem_take(&mount_sem, K_FOREVER);
 #elif defined(CONFIG_SOFTDEVICE)
 	while (!is_init) {
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
+		k_cpu_idle();
 	}
 #endif
 }
@@ -88,12 +79,7 @@ static void wait_for_clear(void)
 	k_sem_take(&clear_sem, K_FOREVER);
 #elif defined(CONFIG_SOFTDEVICE)
 	while (fs_is_init) {
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
+		k_cpu_idle();
 	}
 #endif
 }

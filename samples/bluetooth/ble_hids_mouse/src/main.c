@@ -26,6 +26,8 @@
 #include <bm/bm_buttons.h>
 #include <bm/bm_timer.h>
 #include <bm/sensorsim.h>
+
+#include <zephyr/kernel.h>
 #include <zephyr/toolchain.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
@@ -846,12 +848,7 @@ idle:
 			/* Empty. */
 		}
 
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
+		k_cpu_idle();
 	}
 
 	return 0;

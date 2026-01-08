@@ -5,8 +5,11 @@
  */
 
 #include <bm/bm_buttons.h>
+
+#include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
+
 #include <board-config.h>
 
 LOG_MODULE_REGISTER(app, CONFIG_APP_BUTTONS_LOG_LEVEL);
@@ -75,12 +78,7 @@ int main(void)
 		while (LOG_PROCESS()) {
 		}
 
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
+		k_cpu_idle();
 	}
 
 	err = bm_buttons_deinit();
@@ -96,12 +94,7 @@ idle:
 		while (LOG_PROCESS()) {
 		}
 
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
+		k_cpu_idle();
 	}
 
 	return 0;

@@ -24,6 +24,7 @@
 #include <bm/softdevice_handler/nrf_sdh.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
 
+#include <zephyr/kernel.h>
 #include <zephyr/irq.h>
 #include <zephyr/sys/ring_buffer.h>
 #include <zephyr/toolchain.h>
@@ -733,12 +734,7 @@ idle:
 			/* Empty. */
 		}
 
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
+		k_cpu_idle();
 	}
 
 	return 0;
