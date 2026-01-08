@@ -42,7 +42,7 @@ def duration(func: Callable) -> Any:
     return _inner
 
 
-def run_command(command: list[str], timeout: int = 30) -> None:
+def run_command(command: list[str], timeout: int = 30) -> subprocess.CompletedProcess:
     """Run command in subprocess."""
     logger.info(f"CMD: {shlex.join(command)}")
     ret: subprocess.CompletedProcess = subprocess.run(
@@ -56,3 +56,4 @@ def run_command(command: list[str], timeout: int = 30) -> None:
         logger.error(f"Failed command: {shlex.join(command)}")
         logger.info(ret.stdout)
         raise subprocess.CalledProcessError(ret.returncode, command)
+    return ret

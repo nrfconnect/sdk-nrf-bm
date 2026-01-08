@@ -1,0 +1,19 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+cmake_minimum_required(VERSION 3.20.0)
+find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
+project(test_mcuboot_recovery_retention)
+
+if(NOT SYSBUILD)
+  message(FATAL_ERROR "This must be built with sysbuild.")
+endif()
+
+if(NOT CONFIG_MCUBOOT_BOOTLOADER_MODE_FIRMWARE_UPDATER)
+  message(FATAL_ERROR "Invalid MCUboot mode selected.")
+endif()
+
+target_sources(app PRIVATE src/main.c)
