@@ -57,6 +57,8 @@ Building and running
 ********************
 
 This sample can be found under :file:`samples/boot/mcuboot_recovery_entry/` in the |BMshort| folder structure.
+The sample supports the default configuration for evaluation purposes and the DFU components size-optimized configuration for reference.
+To enable size optimized configuration, set :makevar:`FILE_SUFFIX` to ``size_opt`` when building the sample.
 
 For details on how to create, configure, and program a sample, see :ref:`getting_started_with_the_samples`.
 
