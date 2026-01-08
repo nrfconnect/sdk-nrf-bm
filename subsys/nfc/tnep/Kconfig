@@ -1,0 +1,19 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+if NFC_TNEP_TAG
+
+choice NFC_TNEP_TAG_SIGNALLING
+	prompt "NFC TNEP Tag signalling method"
+	default NFC_TNEP_TAG_SIGNALLING_BM if NCS_BM
+
+config NFC_TNEP_TAG_SIGNALLING_BM
+	bool "NFC TNEP Tag signalling using Bare Metal primitives"
+	select POLL
+
+endchoice
+
+endif # NFC_TNEP_TAG

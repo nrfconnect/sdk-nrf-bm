@@ -1,0 +1,15 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "NFC TNEP Tag sample"
+
+module=APP_NFC_TNEP_TAG
+module-str=NFC TNEP Tag Sample
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endmenu # "NFC TNEP Tag sample"
+
+source "Kconfig.zephyr"
