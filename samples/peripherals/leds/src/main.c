@@ -38,8 +38,7 @@ int main(void)
 	led_init();
 
 	while (true) {
-		while (LOG_PROCESS()) {
-		}
+		log_flush();
 
 		/* Turn the LED on */
 		led_on();

@@ -549,8 +549,7 @@ int main(void)
 
 idle:
 	while (true) {
-		while (LOG_PROCESS()) {
-		}
+		log_flush();
 
 		/* Wait for an event. */
 		__WFE();

@@ -229,8 +229,7 @@ int main(void)
 	LOG_INF("Advertising as: %s", CONFIG_BLE_ADV_NAME);
 
 	while (notification_sent == false && device_disconnected == false) {
-		while (LOG_PROCESS()) {
-		}
+		log_flush();
 
 		/* Wait for an event. */
 		__WFE();
@@ -249,8 +248,7 @@ int main(void)
 		}
 
 		while (device_disconnected == false) {
-			while (LOG_PROCESS()) {
-			}
+			log_flush();
 
 			/* Wait for an event. */
 			__WFE();

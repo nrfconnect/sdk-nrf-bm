@@ -40,8 +40,7 @@ static void sd_enable_irq_forwarding(void)
 
 	LOG_INF("SoftDevice forward address: 0x%x", softdevice_vector_forward_address);
 
-	while (LOG_PROCESS()) {
-	}
+	log_flush();
 
 	CallSoftDeviceResetHandler();
 	irq_forwarding_enabled_magic_number_holder = IRQ_FORWARDING_ENABLED_MAGIC_NUMBER;

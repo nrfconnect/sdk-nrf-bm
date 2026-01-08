@@ -173,8 +173,7 @@ int main(void)
 	}
 
 	LOG_INF("SoftDevice enabled");
-	while (LOG_PROCESS()) {
-	}
+	log_flush();
 #endif /* defined(CONFIG_SOFTDEVICE) */
 
 	/* Set up NFC */
@@ -208,8 +207,7 @@ int main(void)
 fail:
 	/* Main loop */
 	while (true) {
-		while (LOG_PROCESS()) {
-		}
+		log_flush();
 
 		/* Wait for an event. */
 		__WFE();

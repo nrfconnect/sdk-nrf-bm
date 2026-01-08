@@ -354,9 +354,7 @@ int main(void)
 idle:
 	/* Enter main loop. */
 	while (true) {
-		while (LOG_PROCESS()) {
-			/* Empty. */
-		}
+		log_flush();
 
 		/* Wait for an event. */
 		__WFE();

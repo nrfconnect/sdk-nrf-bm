@@ -928,8 +928,7 @@ idle:
 	while (true) {
 		(void)nrf_ble_lesc_request_handler();
 
-		while (LOG_PROCESS()) {
-		}
+		log_flush();
 
 		/* Wait for an event. */
 		__WFE();
