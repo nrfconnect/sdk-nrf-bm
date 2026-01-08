@@ -6,7 +6,8 @@
 
 menuconfig BLE_ADV
 	bool "Bluetooth LE Advertising"
-	depends on SOFTDEVICE
+	depends on SOFTDEVICE_PERIPHERAL
+	depends on NRF_SDH_BLE
 	select BLE_ADV_DATA
 
 if BLE_ADV

@@ -5,6 +5,8 @@
 #
 menuconfig BLE_GATT_QUEUE
 	bool "BLE GATT Queue"
+	depends on SOFTDEVICE
+	depends on NRF_SDH_BLE
 
 if BLE_GATT_QUEUE
 

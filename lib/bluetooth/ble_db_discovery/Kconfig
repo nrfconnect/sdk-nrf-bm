@@ -6,7 +6,8 @@
 
 menuconfig BLE_DB_DISCOVERY
 	bool "BLE DB discovery [EXPERIMENTAL]"
-	depends on SOFTDEVICE
+	depends on SOFTDEVICE_CENTRAL
+	depends on NRF_SDH_BLE
 	depends on BLE_GATT_QUEUE
 	select EXPERIMENTAL
 

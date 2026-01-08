@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
+#include <bm/bm_timer.h>
 #include <bm/drivers/bm_lpuarte.h>
 #include <nrfx_gpiote.h>
 #include <nrfx_uarte.h>

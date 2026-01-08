@@ -5,6 +5,7 @@
 #
 menuconfig BLE_DIS
 	bool "Device Information service"
+	depends on SOFTDEVICE
 
 if BLE_DIS
 

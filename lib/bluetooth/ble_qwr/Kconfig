@@ -5,6 +5,8 @@
 #
 menuconfig BLE_QWR
 	bool "Queued writes"
+	depends on SOFTDEVICE
+	depends on NRF_SDH_BLE
 
 if BLE_QWR
 
