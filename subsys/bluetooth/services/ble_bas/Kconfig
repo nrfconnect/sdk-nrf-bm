@@ -5,6 +5,8 @@
 #
 menuconfig BLE_BAS
 	bool "Battery service"
+	depends on SOFTDEVICE_PERIPHERAL
+	depends on NRF_SDH_BLE
 
 if BLE_BAS
 

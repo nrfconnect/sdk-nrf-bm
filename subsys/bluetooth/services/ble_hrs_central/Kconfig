@@ -6,7 +6,10 @@
 
 menuconfig BLE_HRS_CENTRAL
 	bool "BLE Heart rate service central [EXPERIMENTAL]"
-	depends on SOFTDEVICE
+	depends on SOFTDEVICE_CENTRAL
+	depends on NRF_SDH_BLE
+	depends on BLE_DB_DISCOVERY
+	depends on BLE_GATT_QUEUE
 	select EXPERIMENTAL
 	help
 	  Heart rate service central library.

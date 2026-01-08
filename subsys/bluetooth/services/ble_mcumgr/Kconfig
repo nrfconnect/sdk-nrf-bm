@@ -6,6 +6,10 @@
 
 menuconfig BLE_MCUMGR
 	bool "MCUmgr service"
+	depends on SOFTDEVICE_PERIPHERAL
+	depends on NRF_SDH_BLE
+	depends on BLE_CONN_PARAMS
+	depends on NCS_BM_MCUMGR
 
 if BLE_MCUMGR
 
