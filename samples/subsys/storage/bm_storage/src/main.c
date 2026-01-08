@@ -6,6 +6,8 @@
 
 #include <errno.h>
 #include <string.h>
+
+#include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 #include <zephyr/sys/util.h>
@@ -79,12 +81,7 @@ static void wait_for_outstanding_writes(void)
 {
 	LOG_INF("Waiting for writes to complete...");
 	while (outstanding_writes > 0) {
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
+		k_cpu_idle();
 	}
 }
 
@@ -290,11 +287,6 @@ idle:
 	while (true) {
 		log_flush();
 
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
+		k_cpu_idle();
 	}
 }

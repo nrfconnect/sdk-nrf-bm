@@ -5,6 +5,7 @@
  */
 
 #include <bm/bm_timer.h>
+#include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 
@@ -103,12 +104,7 @@ idle:
 	while (true) {
 		log_flush();
 
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
+		k_cpu_idle();
 	}
 
 	return 0;

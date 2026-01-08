@@ -9,6 +9,8 @@
 #include <bm/bluetooth/ble_adv.h>
 #include <bm/bluetooth/ble_conn_params.h>
 #include <bm/bluetooth/ble_radio_notification.h>
+
+#include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 
@@ -134,12 +136,7 @@ idle:
 	while (true) {
 		log_flush();
 
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
+		k_cpu_idle();
 	}
 
 	return 0;

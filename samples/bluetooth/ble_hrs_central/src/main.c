@@ -29,6 +29,7 @@
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
 #include <bm/softdevice_handler/nrf_sdh_soc.h>
 
+#include <zephyr/kernel.h>
 #include <zephyr/bluetooth/uuid.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
@@ -663,11 +664,6 @@ int main(void)
 idle:
 		log_flush();
 
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
+		k_cpu_idle();
 	}
 }

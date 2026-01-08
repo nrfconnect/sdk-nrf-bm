@@ -232,12 +232,7 @@ int main(void)
 	while (notification_sent == false && device_disconnected == false) {
 		log_flush();
 
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
+		k_cpu_idle();
 	}
 
 	if (device_disconnected == false) {
