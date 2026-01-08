@@ -310,12 +310,7 @@ int main(void)
 		while (LOG_PROCESS()) {
 		}
 
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
+		k_cpu_idle();
 	}
 
 	if (device_disconnected == false) {

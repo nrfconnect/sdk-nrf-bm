@@ -280,12 +280,7 @@ static void bm_zms_evt_handler(const struct bm_zms_evt *evt)
 static void wait_for_init(void)
 {
 	while (!fs.init_flags.initialized) {
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
+		k_cpu_idle();
 	}
 }
 
