@@ -1,0 +1,14 @@
+s145_10.0.0-1.prototype
+=======================
+
+This section describes how to adapt to changes and use the new features of
+s145_10.0.0-1.prototype when migrating from s145_9.0.0.
+
+Required changes
+----------------
+
+Recommended changes
+-------------------
+
+New functionality
+-----------------

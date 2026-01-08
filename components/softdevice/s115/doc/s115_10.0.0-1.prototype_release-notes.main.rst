@@ -39,6 +39,11 @@ Copyright © Nordic Semiconductor ASA. All rights reserved.
 
    PageBreak
 
+.. include:: s115_10.0.0-1.prototype_release-notes.rst
+.. raw:: pdf
+
+   PageBreak
+
 .. include:: s115_9.0.0_release-notes.rst
 .. raw:: pdf
 

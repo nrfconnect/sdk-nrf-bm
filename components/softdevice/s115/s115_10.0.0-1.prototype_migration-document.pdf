@@ -2,8 +2,8 @@
 %“Œ‹ž ReportLab Generated PDF document http://www.reportlab.com
 1 0 obj
 <<
-/F1 2 0 R /F2 3 0 R /F3 4 0 R /F4 5 0 R /F5 6 0 R /F6 25 0 R 
-  /F7 26 0 R
+/F1 2 0 R /F2 3 0 R /F3 4 0 R /F4 5 0 R /F5 6 0 R /F6 34 0 R 
+  /F7 35 0 R
 >>
 endobj
 2 0 obj
@@ -33,7 +33,7 @@ endobj
 endobj
 7 0 obj
 <<
-/Contents 46 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 45 0 R /Resources <<
+/Contents 59 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 58 0 R /Resources <<
 /Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
 >> /Rotate 0 /Trans <<
 
@@ -63,68 +63,109 @@ endobj
 endobj
 12 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 27 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 57.02362 692.4236 99.55762 702.6236 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 33 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 57.02362 692.4236 153.3966 702.6236 ] /Subtype /Link /Type /Annot
 >>
 endobj
 13 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 27 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 533.526 693.0611 538.252 703.2611 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 33 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 533.526 693.0611 538.252 703.2611 ] /Subtype /Link /Type /Annot
 >>
 endobj
 14 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 27 0 R /XYZ 57.02362 702.0236 0 ] /Rect [ 77.02362 676.2236 146.0011 686.4236 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 33 0 R /XYZ 57.02362 702.0236 0 ] /Rect [ 77.02362 676.2236 146.0011 686.4236 ] /Subtype /Link /Type /Annot
 >>
 endobj
 15 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 27 0 R /XYZ 57.02362 702.0236 0 ] /Rect [ 533.526 676.8611 538.252 687.0611 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 33 0 R /XYZ 57.02362 702.0236 0 ] /Rect [ 533.526 676.8611 538.252 687.0611 ] /Subtype /Link /Type /Annot
 >>
 endobj
 16 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 28 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 57.02362 660.0236 148.6706 670.2236 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 33 0 R /XYZ 57.02362 672.0236 0 ] /Rect [ 77.02362 660.0236 169.1466 670.2236 ] /Subtype /Link /Type /Annot
 >>
 endobj
 17 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 28 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 533.526 660.6611 538.252 670.8611 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 33 0 R /XYZ 57.02362 672.0236 0 ] /Rect [ 533.526 660.6611 538.252 670.8611 ] /Subtype /Link /Type /Annot
 >>
 endobj
 18 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 28 0 R /XYZ 57.02362 702.0236 0 ] /Rect [ 77.02362 643.8236 146.0011 654.0236 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 33 0 R /XYZ 57.02362 642.0236 0 ] /Rect [ 77.02362 643.8236 141.2666 654.0236 ] /Subtype /Link /Type /Annot
 >>
 endobj
 19 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 28 0 R /XYZ 57.02362 702.0236 0 ] /Rect [ 533.526 644.4611 538.252 654.6611 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 33 0 R /XYZ 57.02362 642.0236 0 ] /Rect [ 533.526 644.4611 538.252 654.6611 ] /Subtype /Link /Type /Annot
 >>
 endobj
 20 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 29 0 R /XYZ 57.02362 529.8236 0 ] /Rect [ 77.02362 627.6236 169.1466 637.8236 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 36 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 57.02362 627.6236 99.55762 637.8236 ] /Subtype /Link /Type /Annot
 >>
 endobj
 21 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 29 0 R /XYZ 57.02362 529.8236 0 ] /Rect [ 533.526 628.2611 538.252 638.4611 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 36 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 533.526 628.2611 538.252 638.4611 ] /Subtype /Link /Type /Annot
 >>
 endobj
 22 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 29 0 R /XYZ 57.02362 335.4236 0 ] /Rect [ 77.02362 611.4236 141.2666 621.6236 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 36 0 R /XYZ 57.02362 702.0236 0 ] /Rect [ 77.02362 611.4236 146.0011 621.6236 ] /Subtype /Link /Type /Annot
 >>
 endobj
 23 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 29 0 R /XYZ 57.02362 335.4236 0 ] /Rect [ 533.526 612.0611 538.252 622.2611 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 36 0 R /XYZ 57.02362 702.0236 0 ] /Rect [ 533.526 612.0611 538.252 622.2611 ] /Subtype /Link /Type /Annot
 >>
 endobj
 24 0 obj
 <<
+/Border [ 0 0 0 ] /Contents () /Dest [ 37 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 57.02362 595.2236 148.6706 605.4236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+25 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 37 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 533.526 595.8611 538.252 606.0611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+26 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 37 0 R /XYZ 57.02362 702.0236 0 ] /Rect [ 77.02362 579.0236 146.0011 589.2236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+27 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 37 0 R /XYZ 57.02362 702.0236 0 ] /Rect [ 533.526 579.6611 538.252 589.8611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+28 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 38 0 R /XYZ 57.02362 529.8236 0 ] /Rect [ 77.02362 562.8236 169.1466 573.0236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+29 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 38 0 R /XYZ 57.02362 529.8236 0 ] /Rect [ 533.526 563.4611 538.252 573.6611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+30 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 38 0 R /XYZ 57.02362 335.4236 0 ] /Rect [ 77.02362 546.6236 141.2666 556.8236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+31 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 38 0 R /XYZ 57.02362 335.4236 0 ] /Rect [ 533.526 547.2611 538.252 557.4611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+32 0 obj
+<<
 /Annots [ 8 0 R 9 0 R 10 0 R 11 0 R 12 0 R 13 0 R 14 0 R 15 0 R 16 0 R 17 0 R 
-  18 0 R 19 0 R 20 0 R 21 0 R 22 0 R 23 0 R ] /Contents 47 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 45 0 R /Resources <<
+  18 0 R 19 0 R 20 0 R 21 0 R 22 0 R 23 0 R 24 0 R 25 0 R 26 0 R 27 0 R 
+  28 0 R 29 0 R 30 0 R 31 0 R ] /Contents 60 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 58 0 R /Resources <<
 /Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
 >> /Rotate 0 
   /Trans <<
@@ -132,137 +173,168 @@ endobj
 >> /Type /Page
 >>
 endobj
-25 0 obj
-<<
-/BaseFont /Courier-Bold /Encoding /WinAnsiEncoding /Name /F6 /Subtype /Type1 /Type /Font
->>
-endobj
-26 0 obj
-<<
-/BaseFont /Courier-Oblique /Encoding /WinAnsiEncoding /Name /F7 /Subtype /Type1 /Type /Font
->>
-endobj
-27 0 obj
-<<
-/Contents 48 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 45 0 R /Resources <<
-/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
->> /Rotate 0 /Trans <<
-
->> 
-  /Type /Page
->>
-endobj
-28 0 obj
-<<
-/Contents 49 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 45 0 R /Resources <<
-/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
->> /Rotate 0 /Trans <<
-
->> 
-  /Type /Page
->>
-endobj
-29 0 obj
-<<
-/Contents 50 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 45 0 R /Resources <<
-/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
->> /Rotate 0 /Trans <<
-
->> 
-  /Type /Page
->>
-endobj
-30 0 obj
-<<
-/Contents 51 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 45 0 R /Resources <<
-/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
->> /Rotate 0 /Trans <<
-
->> 
-  /Type /Page
->>
-endobj
-31 0 obj
-<<
-/Outlines 33 0 R /PageLabels 52 0 R /PageMode /UseNone /Pages 45 0 R /Type /Catalog
->>
-endobj
-32 0 obj
-<<
-/Author () /CreationDate (D:20251209131221-01'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20251209131221-01'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
-  /Subject (\(unspecified\)) /Title (s115 migration document) /Trapped /False
->>
-endobj
 33 0 obj
 <<
-/Count 13 /First 34 0 R /Last 38 0 R /Type /Outlines
+/Contents 61 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 58 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
 >>
 endobj
 34 0 obj
 <<
-/Count 1 /Dest [ 7 0 R /XYZ 57.02362 705.0236 0 ] /First 35 0 R /Last 35 0 R /Next 36 0 R /Parent 33 0 R 
-  /Title (Introduction to the s115 migration document)
+/BaseFont /Courier-Bold /Encoding /WinAnsiEncoding /Name /F6 /Subtype /Type1 /Type /Font
 >>
 endobj
 35 0 obj
 <<
-/Dest [ 7 0 R /XYZ 57.02362 672.0236 0 ] /Parent 34 0 R /Title (About the document)
+/BaseFont /Courier-Oblique /Encoding /WinAnsiEncoding /Name /F7 /Subtype /Type1 /Type /Font
 >>
 endobj
 36 0 obj
 <<
-/Count 1 /Dest [ 27 0 R /XYZ 57.02362 765.0236 0 ] /First 37 0 R /Last 37 0 R /Next 38 0 R /Parent 33 0 R 
-  /Prev 34 0 R /Title (s115_9.0.0)
+/Contents 62 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 58 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
 >>
 endobj
 37 0 obj
 <<
-/Dest [ 27 0 R /XYZ 57.02362 702.0236 0 ] /Parent 36 0 R /Title (Required changes)
+/Contents 63 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 58 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
 >>
 endobj
 38 0 obj
 <<
-/Count 3 /Dest [ 28 0 R /XYZ 57.02362 765.0236 0 ] /First 39 0 R /Last 41 0 R /Parent 33 0 R /Prev 36 0 R 
-  /Title (s115_9.0.0-3.prototype)
+/Contents 64 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 58 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
 >>
 endobj
 39 0 obj
 <<
-/Dest [ 28 0 R /XYZ 57.02362 702.0236 0 ] /Next 40 0 R /Parent 38 0 R /Title (Required changes)
+/Contents 65 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 58 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
 >>
 endobj
 40 0 obj
 <<
-/Dest [ 29 0 R /XYZ 57.02362 529.8236 0 ] /Next 41 0 R /Parent 38 0 R /Prev 39 0 R /Title (Recommended changes)
+/Outlines 42 0 R /PageLabels 66 0 R /PageMode /UseNone /Pages 58 0 R /Type /Catalog
 >>
 endobj
 41 0 obj
 <<
-/Count -1 /Dest [ 29 0 R /XYZ 57.02362 335.4236 0 ] /First 42 0 R /Last 42 0 R /Parent 38 0 R /Prev 40 0 R 
-  /Title (New functionality)
+/Author () /CreationDate (D:20260108143412-01'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20260108143412-01'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
+  /Subject (\(unspecified\)) /Title (s115 migration document) /Trapped /False
 >>
 endobj
 42 0 obj
 <<
-/Count -2 /Dest [ 29 0 R /XYZ 57.02362 305.4236 0 ] /First 43 0 R /Last 44 0 R /Parent 41 0 R /Title (LE Data Packet Length Extension \(DLE\))
+/Count 18 /First 43 0 R /Last 51 0 R /Type /Outlines
 >>
 endobj
 43 0 obj
 <<
-/Dest [ 29 0 R /XYZ 57.02362 236.4236 0 ] /Next 44 0 R /Parent 42 0 R /Title (API updates)
+/Count 1 /Dest [ 7 0 R /XYZ 57.02362 705.0236 0 ] /First 44 0 R /Last 44 0 R /Next 45 0 R /Parent 42 0 R 
+  /Title (Introduction to the s115 migration document)
 >>
 endobj
 44 0 obj
 <<
-/Dest [ 29 0 R /XYZ 57.02362 100.4236 0 ] /Parent 42 0 R /Prev 43 0 R /Title (Usage)
+/Dest [ 7 0 R /XYZ 57.02362 672.0236 0 ] /Parent 43 0 R /Title (About the document)
 >>
 endobj
 45 0 obj
 <<
-/Count 6 /Kids [ 7 0 R 24 0 R 27 0 R 28 0 R 29 0 R 30 0 R ] /Type /Pages
+/Count 3 /Dest [ 33 0 R /XYZ 57.02362 765.0236 0 ] /First 46 0 R /Last 48 0 R /Next 49 0 R /Parent 42 0 R 
+  /Prev 43 0 R /Title (s115_10.0.0-1.prototype)
 >>
 endobj
 46 0 obj
+<<
+/Dest [ 33 0 R /XYZ 57.02362 702.0236 0 ] /Next 47 0 R /Parent 45 0 R /Title (Required changes)
+>>
+endobj
+47 0 obj
+<<
+/Dest [ 33 0 R /XYZ 57.02362 672.0236 0 ] /Next 48 0 R /Parent 45 0 R /Prev 46 0 R /Title (Recommended changes)
+>>
+endobj
+48 0 obj
+<<
+/Dest [ 33 0 R /XYZ 57.02362 642.0236 0 ] /Parent 45 0 R /Prev 47 0 R /Title (New functionality)
+>>
+endobj
+49 0 obj
+<<
+/Count 1 /Dest [ 36 0 R /XYZ 57.02362 765.0236 0 ] /First 50 0 R /Last 50 0 R /Next 51 0 R /Parent 42 0 R 
+  /Prev 45 0 R /Title (s115_9.0.0)
+>>
+endobj
+50 0 obj
+<<
+/Dest [ 36 0 R /XYZ 57.02362 702.0236 0 ] /Parent 49 0 R /Title (Required changes)
+>>
+endobj
+51 0 obj
+<<
+/Count 3 /Dest [ 37 0 R /XYZ 57.02362 765.0236 0 ] /First 52 0 R /Last 54 0 R /Parent 42 0 R /Prev 49 0 R 
+  /Title (s115_9.0.0-3.prototype)
+>>
+endobj
+52 0 obj
+<<
+/Dest [ 37 0 R /XYZ 57.02362 702.0236 0 ] /Next 53 0 R /Parent 51 0 R /Title (Required changes)
+>>
+endobj
+53 0 obj
+<<
+/Dest [ 38 0 R /XYZ 57.02362 529.8236 0 ] /Next 54 0 R /Parent 51 0 R /Prev 52 0 R /Title (Recommended changes)
+>>
+endobj
+54 0 obj
+<<
+/Count -1 /Dest [ 38 0 R /XYZ 57.02362 335.4236 0 ] /First 55 0 R /Last 55 0 R /Parent 51 0 R /Prev 53 0 R 
+  /Title (New functionality)
+>>
+endobj
+55 0 obj
+<<
+/Count -2 /Dest [ 38 0 R /XYZ 57.02362 305.4236 0 ] /First 56 0 R /Last 57 0 R /Parent 54 0 R /Title (LE Data Packet Length Extension \(DLE\))
+>>
+endobj
+56 0 obj
+<<
+/Dest [ 38 0 R /XYZ 57.02362 236.4236 0 ] /Next 57 0 R /Parent 55 0 R /Title (API updates)
+>>
+endobj
+57 0 obj
+<<
+/Dest [ 38 0 R /XYZ 57.02362 100.4236 0 ] /Parent 55 0 R /Prev 56 0 R /Title (Usage)
+>>
+endobj
+58 0 obj
+<<
+/Count 7 /Kids [ 7 0 R 32 0 R 33 0 R 36 0 R 37 0 R 38 0 R 39 0 R ] /Type /Pages
+>>
+endobj
+59 0 obj
 <<
 /Length 2973
 >>
@@ -390,9 +462,9 @@ Q
  
 endstream
 endobj
-47 0 obj
+60 0 obj
 <<
-/Length 2228
+/Length 3146
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
@@ -403,34 +475,86 @@ BT 1 0 0 1 0 3.5 Tm 21 TL /F2 17.5 Tf .133333 .133333 .133333 rg (Contents) Tj T
 Q
 Q
 q
-1 0 0 1 57.02362 608.4236 cm
+1 0 0 1 57.02362 543.6236 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
 q
-1 0 0 1 0 116.4 cm
+1 0 0 1 0 181.2 cm
 q
 BT 1 0 0 1 0 1.7 Tm 10.2 TL /F4 8.5 Tf 0 .4 .6 rg (Introduction to the s115 migration document) Tj T* ET
 Q
 Q
 q
-1 0 0 1 409.2283 116.4 cm
+1 0 0 1 409.2283 181.2 cm
 q
 0 .4 .6 rg
 BT 1 0 0 1 0 1.7 Tm /F4 8.5 Tf 10.2 TL 67.274 0 Td (1) Tj T* -67.274 0 Td ET
 Q
 Q
 q
-1 0 0 1 0 100.2 cm
+1 0 0 1 0 165 cm
 q
 BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (About the document) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 165 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (1) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 148.8 cm
+q
+BT 1 0 0 1 0 1.7 Tm 10.2 TL /F4 8.5 Tf 0 .4 .6 rg (s115_10.0.0-1.prototype) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 148.8 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F4 8.5 Tf 10.2 TL 67.274 0 Td (3) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 132.6 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (Required changes) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 132.6 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (3) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 116.4 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (Recommended changes) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 116.4 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (3) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 100.2 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (New functionality) Tj T* ET
 Q
 Q
 q
 1 0 0 1 409.2283 100.2 cm
 q
 0 .4 .6 rg
-BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (1) Tj T* -67.274 0 Td ET
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (3) Tj T* -67.274 0 Td ET
 Q
 Q
 q
@@ -443,7 +567,7 @@ q
 1 0 0 1 409.2283 84 cm
 q
 0 .4 .6 rg
-BT 1 0 0 1 0 1.7 Tm /F4 8.5 Tf 10.2 TL 67.274 0 Td (3) Tj T* -67.274 0 Td ET
+BT 1 0 0 1 0 1.7 Tm /F4 8.5 Tf 10.2 TL 67.274 0 Td (4) Tj T* -67.274 0 Td ET
 Q
 Q
 q
@@ -456,7 +580,7 @@ q
 1 0 0 1 409.2283 67.8 cm
 q
 0 .4 .6 rg
-BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (3) Tj T* -67.274 0 Td ET
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (4) Tj T* -67.274 0 Td ET
 Q
 Q
 q
@@ -469,7 +593,7 @@ q
 1 0 0 1 409.2283 51.6 cm
 q
 0 .4 .6 rg
-BT 1 0 0 1 0 1.7 Tm /F4 8.5 Tf 10.2 TL 67.274 0 Td (4) Tj T* -67.274 0 Td ET
+BT 1 0 0 1 0 1.7 Tm /F4 8.5 Tf 10.2 TL 67.274 0 Td (5) Tj T* -67.274 0 Td ET
 Q
 Q
 q
@@ -482,7 +606,7 @@ q
 1 0 0 1 409.2283 35.4 cm
 q
 0 .4 .6 rg
-BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (4) Tj T* -67.274 0 Td ET
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (5) Tj T* -67.274 0 Td ET
 Q
 Q
 q
@@ -495,7 +619,7 @@ q
 1 0 0 1 409.2283 19.2 cm
 q
 0 .4 .6 rg
-BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (5) Tj T* -67.274 0 Td ET
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (6) Tj T* -67.274 0 Td ET
 Q
 Q
 q
@@ -508,7 +632,7 @@ q
 1 0 0 1 409.2283 3 cm
 q
 0 .4 .6 rg
-BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (5) Tj T* -67.274 0 Td ET
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (6) Tj T* -67.274 0 Td ET
 Q
 Q
 q
@@ -516,7 +640,7 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 608.4236 cm
+1 0 0 1 57.02362 543.6236 cm
 Q
 q
 1 0 0 1 51.02362 42.51969 cm
@@ -527,7 +651,56 @@ Q
  
 endstream
 endobj
-48 0 obj
+61 0 obj
+<<
+/Length 952
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 744.0236 cm
+q
+BT 1 0 0 1 0 3.5 Tm 21 TL /F2 17.5 Tf .133333 .133333 .133333 rg (s115_10.0.0-1.prototype) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 714.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (This section describes how to adapt to changes and use the new features of s115_10.0.0-1.prototype when) Tj T* (migrating from s115_9.0.0.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 684.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Required changes) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 654.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Recommended changes) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 624.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (New functionality) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 618.0236 cm
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F5 10 Tf 0 0 0 rg (Page 3) Tj T* -230.7692 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+62 0 obj
 <<
 /Length 3581
 >>
@@ -608,13 +781,13 @@ Q
 q
 1 0 0 1 51.02362 42.51969 cm
 q
-BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F5 10 Tf 0 0 0 rg (Page 3) Tj T* -230.7692 0 Td ET
+BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F5 10 Tf 0 0 0 rg (Page 4) Tj T* -230.7692 0 Td ET
 Q
 Q
  
 endstream
 endobj
-49 0 obj
+63 0 obj
 <<
 /Length 9882
 >>
@@ -1052,13 +1225,13 @@ Q
 q
 1 0 0 1 51.02362 42.51969 cm
 q
-BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F5 10 Tf 0 0 0 rg (Page 4) Tj T* -230.7692 0 Td ET
+BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F5 10 Tf 0 0 0 rg (Page 5) Tj T* -230.7692 0 Td ET
 Q
 Q
  
 endstream
 endobj
-50 0 obj
+64 0 obj
 <<
 /Length 7477
 >>
@@ -1342,13 +1515,13 @@ Q
 q
 1 0 0 1 51.02362 42.51969 cm
 q
-BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F5 10 Tf 0 0 0 rg (Page 5) Tj T* -230.7692 0 Td ET
+BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F5 10 Tf 0 0 0 rg (Page 6) Tj T* -230.7692 0 Td ET
 Q
 Q
  
 endstream
 endobj
-51 0 obj
+65 0 obj
 <<
 /Length 6376
 >>
@@ -1428,50 +1601,55 @@ Q
 q
 1 0 0 1 51.02362 42.51969 cm
 q
-BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F5 10 Tf 0 0 0 rg (Page 6) Tj T* -230.7692 0 Td ET
+BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F5 10 Tf 0 0 0 rg (Page 7) Tj T* -230.7692 0 Td ET
 Q
 Q
  
 endstream
 endobj
-52 0 obj
+66 0 obj
 <<
-/Nums [ 0 53 0 R 1 54 0 R 2 55 0 R 3 56 0 R 4 57 0 R 
-  5 58 0 R ]
+/Nums [ 0 67 0 R 1 68 0 R 2 69 0 R 3 70 0 R 4 71 0 R 
+  5 72 0 R 6 73 0 R ]
 >>
 endobj
-53 0 obj
+67 0 obj
 <<
 /S /D /St 1
 >>
 endobj
-54 0 obj
+68 0 obj
 <<
 /S /D /St 2
 >>
 endobj
-55 0 obj
+69 0 obj
 <<
 /S /D /St 3
 >>
 endobj
-56 0 obj
+70 0 obj
 <<
 /S /D /St 4
 >>
 endobj
-57 0 obj
+71 0 obj
 <<
 /S /D /St 5
 >>
 endobj
-58 0 obj
+72 0 obj
 <<
 /S /D /St 6
 >>
 endobj
+73 0 obj
+<<
+/S /D /St 7
+>>
+endobj
 xref
-0 59
+0 74
 0000000000 65535 f 
 0000000073 00000 n 
 0000000169 00000 n 
@@ -1497,50 +1675,65 @@ xref
 0000003268 00000 n 
 0000003437 00000 n 
 0000003604 00000 n 
-0000003935 00000 n 
-0000004046 00000 n 
-0000004160 00000 n 
-0000004366 00000 n 
-0000004572 00000 n 
-0000004778 00000 n 
-0000004984 00000 n 
-0000005090 00000 n 
-0000005371 00000 n 
-0000005446 00000 n 
-0000005629 00000 n 
-0000005735 00000 n 
-0000005899 00000 n 
-0000006004 00000 n 
-0000006167 00000 n 
-0000006285 00000 n 
-0000006419 00000 n 
-0000006578 00000 n 
-0000006743 00000 n 
-0000006856 00000 n 
-0000006963 00000 n 
-0000007058 00000 n 
-0000010083 00000 n 
-0000012363 00000 n 
-0000015996 00000 n 
-0000025930 00000 n 
-0000033459 00000 n 
-0000039887 00000 n 
-0000039976 00000 n 
-0000040010 00000 n 
-0000040044 00000 n 
-0000040078 00000 n 
-0000040112 00000 n 
-0000040146 00000 n 
+0000003773 00000 n 
+0000003940 00000 n 
+0000004109 00000 n 
+0000004276 00000 n 
+0000004445 00000 n 
+0000004612 00000 n 
+0000004781 00000 n 
+0000004948 00000 n 
+0000005338 00000 n 
+0000005544 00000 n 
+0000005655 00000 n 
+0000005769 00000 n 
+0000005975 00000 n 
+0000006181 00000 n 
+0000006387 00000 n 
+0000006593 00000 n 
+0000006699 00000 n 
+0000006980 00000 n 
+0000007055 00000 n 
+0000007238 00000 n 
+0000007344 00000 n 
+0000007521 00000 n 
+0000007639 00000 n 
+0000007773 00000 n 
+0000007892 00000 n 
+0000008056 00000 n 
+0000008161 00000 n 
+0000008324 00000 n 
+0000008442 00000 n 
+0000008576 00000 n 
+0000008735 00000 n 
+0000008900 00000 n 
+0000009013 00000 n 
+0000009120 00000 n 
+0000009222 00000 n 
+0000012247 00000 n 
+0000015445 00000 n 
+0000016448 00000 n 
+0000020081 00000 n 
+0000030015 00000 n 
+0000037544 00000 n 
+0000043972 00000 n 
+0000044070 00000 n 
+0000044104 00000 n 
+0000044138 00000 n 
+0000044172 00000 n 
+0000044206 00000 n 
+0000044240 00000 n 
+0000044274 00000 n 
 trailer
 <<
 /ID 
-[<8e0fa29214fc444dcfbbd1375090a4a3><8e0fa29214fc444dcfbbd1375090a4a3>]
+[<e0035b700217b947edf4d944d53a5591><e0035b700217b947edf4d944d53a5591>]
 % ReportLab generated PDF document -- digest (http://www.reportlab.com)
 
-/Info 32 0 R
-/Root 31 0 R
-/Size 59
+/Info 41 0 R
+/Root 40 0 R
+/Size 74
 >>
 startxref
-40180
+44308
 %%EOF
