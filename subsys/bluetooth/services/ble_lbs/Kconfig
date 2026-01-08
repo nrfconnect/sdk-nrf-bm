@@ -6,6 +6,8 @@
 
 menuconfig BLE_LBS
 	bool "Nordic LED Button Service"
+	depends on SOFTDEVICE_PERIPHERAL
+	depends on NRF_SDH_BLE
 
 if BLE_LBS
 

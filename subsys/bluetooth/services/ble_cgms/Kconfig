@@ -5,6 +5,10 @@
 #
 menuconfig BLE_CGMS
 	bool "Continuous glucose monitoring service [EXPERIMENTAL]"
+	depends on SOFTDEVICE_PERIPHERAL
+	depends on NRF_SDH_BLE
+	depends on BLE_GATT_QUEUE
+	depends on BLE_RACP
 	select EXPERIMENTAL
 
 if BLE_CGMS

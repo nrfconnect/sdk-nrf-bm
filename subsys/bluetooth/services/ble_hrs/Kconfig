@@ -5,6 +5,8 @@
 #
 menuconfig BLE_HRS
 	bool "Heart rate service"
+	depends on SOFTDEVICE_PERIPHERAL
+	depends on NRF_SDH_BLE
 	depends on BLE_CONN_PARAMS_AUTO_ATT_MTU
 
 if BLE_HRS

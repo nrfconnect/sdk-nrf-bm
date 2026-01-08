@@ -6,6 +6,7 @@
 menuconfig BLE_HIDS
 	bool "HID service"
 	depends on SOFTDEVICE_PERIPHERAL
+	depends on NRF_SDH_BLE
 
 if BLE_HIDS
 
