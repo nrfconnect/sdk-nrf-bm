@@ -149,7 +149,7 @@ The recommended sizes are based on the configuration used in |BMshort|.
 Optimizing your project for release
 ***********************************
 
-You can achieve the reference sizes of MCUboot and firmware loader using the default configuration of the :ref:`ble_mcuboot_recovery_entry_sample` sample.
+You can achieve the reference sizes of MCUboot and firmware loader using the size-optimized configuration available in the :ref:`ble_mcuboot_recovery_entry_sample` sample.
 
 For minimal size, amend the firmware loader configuration using the following Kconfig options:
 
