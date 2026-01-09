@@ -17,12 +17,6 @@
 #include <zephyr/sys/atomic.h>
 #include <zephyr/sys/ring_buffer.h>
 
-/* 128-bit word line. This is the optimal size to fully utilize RRAM 128-bit word line with ECC
- * (error correction code) and minimize ECC updates overhead, due to these updates happening
- * per-line.
- */
-#define SD_WRITE_BLOCK_SIZE 16
-
 struct bm_storage_sd_op {
 	/* The bm_storage instance that requested the operation. */
 	const struct bm_storage *storage;
@@ -130,20 +124,21 @@ static void event_send(const struct bm_storage_sd_op *op, bool is_sync, uint32_t
 
 static uint32_t write_execute(const struct bm_storage_sd_op *op)
 {
-	__ASSERT(op->len % bm_storage_info.program_unit == 0,
-		 "Data length is expected to be a multiple of the program unit.");
+	uint32_t *dest;
+	uint32_t *src;
+	uint32_t chunk_len;
 
-	__ASSERT(op->offset % bm_storage_info.program_unit == 0,
-		 "Offset is expected to be a multiple of the program unit.");
+	dest = (uint32_t *)(op->write.dest + op->write.offset);
+	src  = (uint32_t *)((uintptr_t)op->write.src + op->write.offset);
 
-	/* Calculate number of 32-bit words for sd_flash_write(). */
-	uint32_t chunk_len_words = (op->write.len - op->write.offset) / sizeof(uint32_t);
+	/* Limit by _MAX_WRITE_SIZE */
+	chunk_len =
+		MIN(op->write.len - op->write.offset, CONFIG_BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE);
 
-	/* src and dest are word-aligned. */
-	uint32_t *dest = (uint32_t *)(op->write.dest + op->write.offset);
-	const uint32_t *src  = (const uint32_t *)((uint32_t)op->write.src + op->write.offset);
+	/* Calculate number of 32-bit words for sd_flash_write() */
+	chunk_len = MAX(1, chunk_len / bm_storage_info.program_unit);
 
-	return sd_flash_write(dest, src, chunk_len_words);
+	return sd_flash_write(dest, src, chunk_len);
 }
 
 static uint32_t erase_execute(struct bm_storage_sd_op *op)
@@ -238,14 +233,9 @@ static bool on_operation_success(struct bm_storage_sd_op *op)
 
 	switch (op->id) {
 	case WRITE:
-		__ASSERT(op->len % bm_storage_info.program_unit == 0,
-			 "Data length is expected to be a multiple of the program unit.");
+		op->write.offset += MIN(op->write.len - op->write.offset,
+					CONFIG_BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE);
 
-		__ASSERT(op->offset % bm_storage_info.program_unit == 0,
-			 "Offset is expected to be a multiple of the program unit.");
-
-		op->write.offset += op->write.len - op->write.offset;
-		/* Avoid missing the last chunk by rounding */
 		if (op->write.offset >= op->write.len) {
 			return true;
 		}
@@ -479,7 +469,7 @@ void bm_storage_sd_on_soc_evt(uint32_t evt, void *ctx)
 NRF_SDH_SOC_OBSERVER(sdh_soc, bm_storage_sd_on_soc_evt, NULL, HIGH);
 
 const struct bm_storage_info bm_storage_info = {
-	.program_unit = SD_WRITE_BLOCK_SIZE,
+	.program_unit = 4,
 	.no_explicit_erase = true,
 	.erase_unit = 4,
 	.erase_value = 0xFFFFFFFF,

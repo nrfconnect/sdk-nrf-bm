@@ -15,5 +15,7 @@ config BM_STORAGE_BACKEND_SD_QUEUE_SIZE
 	default 4
 config BM_STORAGE_BACKEND_SD_MAX_RETRIES
 	default 8
+config BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE
+	default 32
 
 source "Kconfig.zephyr"
