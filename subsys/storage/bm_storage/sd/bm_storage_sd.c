@@ -38,8 +38,6 @@ struct bm_storage_sd_op {
 };
 
 struct {
-	/* Ensures atomic access to various states. */
-	atomic_t operation_ongoing;
 	/* Internal storage state. */
 	union {
 		enum {
@@ -136,8 +134,6 @@ static void queue_process(void)
 
 	if (bm_storage_sd.operation_state == OP_NONE) {
 		if (!queue_load_next()) {
-			/* No more operations left to be processed, unlock the resource. */
-			atomic_set(&bm_storage_sd.operation_ongoing, 0);
 			bm_storage_sd.queue_state = QUEUE_IDLE;
 			return;
 		}
@@ -170,8 +166,6 @@ static void queue_process(void)
 	default:
 		/* An error has occurred. We cannot proceed further with this operation. */
 		event_send(&bm_storage_sd.current_operation, true, -EIO);
-		/* Reset the internal state so we can accept other operations. */
-		atomic_set(&bm_storage_sd.operation_ongoing, 0);
 		bm_storage_sd.queue_state = QUEUE_IDLE;
 		/* Decision: do not retry this operation again when the queue is processed */
 		bm_storage_sd.operation_state = OP_NONE;
@@ -224,14 +218,7 @@ static bool on_operation_failure(const struct bm_storage_sd_op *op)
 
 int bm_storage_backend_init(struct bm_storage *storage)
 {
-	/* Initialize the SoftDevice storage backend from one context only. */
-	if (!atomic_cas(&bm_storage_sd.operation_ongoing, 0, 1)) {
-		return -EBUSY;
-	}
-
 	sd_softdevice_is_enabled((uint8_t *)&bm_storage_sd.sd_enabled);
-
-	atomic_set(&bm_storage_sd.operation_ongoing, 0);
 
 	return 0;
 }
