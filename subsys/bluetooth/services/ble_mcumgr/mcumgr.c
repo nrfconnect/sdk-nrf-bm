@@ -253,41 +253,15 @@ uint32_t ble_mcumgr_data_send(uint8_t *data, uint16_t *len, struct ble_mcumgr_cl
 
 	if (!data || !len) {
 		return NRF_ERROR_NULL;
-	} else if (*len > BLE_GATT_MAX_DATA_LEN) {
-		return NRF_ERROR_INVALID_PARAM;
-	} else if (!ctx->is_notification_enabled) {
-		return NRF_ERROR_INVALID_PARAM;
 	}
 
 	nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx_params);
-
-	switch (nrf_err) {
-	case NRF_SUCCESS:
-	{
-		return NRF_SUCCESS;
-	}
-	case BLE_ERROR_INVALID_CONN_HANDLE:
-	{
-		return NRF_ERROR_NOT_FOUND;
-	}
-	case NRF_ERROR_INVALID_STATE:
-	{
-		return NRF_ERROR_INVALID_STATE;
-	}
-	case NRF_ERROR_RESOURCES:
-	{
-		return NRF_ERROR_RESOURCES;
-	}
-	case NRF_ERROR_NOT_FOUND:
-	{
-		return NRF_ERROR_NOT_FOUND;
-	}
-	default:
-	{
+	if (nrf_err) {
 		LOG_ERR("Failed to send MCUmgr data, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INTERNAL;
+		return nrf_err;
 	}
-	};
+
+	return NRF_SUCCESS;
 }
 
 /* Return errno! */

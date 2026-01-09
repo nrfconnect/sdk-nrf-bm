@@ -72,7 +72,7 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Bluetooth LE Services
 ---------------------
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Updated all services to return errors from the SoftDevice directly.
 
 Libraries for NFC
 -----------------

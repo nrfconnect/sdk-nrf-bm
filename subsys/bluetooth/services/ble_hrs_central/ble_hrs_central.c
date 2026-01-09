@@ -172,20 +172,17 @@ uint32_t ble_hrs_central_init(struct ble_hrs_central *ble_hrs_central,
 	return ble_db_discovery_service_register(ble_hrs_central_init->db_discovery, &hrs_uuid);
 }
 
-void ble_hrs_central_on_ble_evt(const ble_evt_t *ble_evt, void *ctx)
+void ble_hrs_central_on_ble_evt(const ble_evt_t *ble_evt, void *hrs_central_instance)
 {
-	struct ble_hrs_central *ble_hrs_central = (struct ble_hrs_central *)ctx;
-
-	if (!ble_hrs_central || !ble_evt) {
-		return;
-	}
+	__ASSERT(ble_evt, "BLE event is NULL");
+	__ASSERT(hrs_central_instance, "HRS central instance is NULL");
 
 	switch (ble_evt->header.evt_id) {
 	case BLE_GATTC_EVT_HVX:
-		on_hvx(ble_hrs_central, ble_evt);
+		on_hvx(hrs_central_instance, ble_evt);
 		break;
 	case BLE_GAP_EVT_DISCONNECTED:
-		on_disconnected(ble_hrs_central, ble_evt);
+		on_disconnected(hrs_central_instance, ble_evt);
 		break;
 	default:
 		break;
@@ -241,4 +238,3 @@ uint32_t ble_hrs_central_handles_assign(struct ble_hrs_central *ble_hrs_central,
 
 	return ble_gq_conn_handle_register(ble_hrs_central->gatt_queue, conn_handle);
 }
-/** @} */
