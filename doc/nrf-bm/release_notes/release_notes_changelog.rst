@@ -76,6 +76,7 @@ Storage
      * The :c:func:`bm_storage_init` function to return an error when the instance is already initialized.
      * The SoftDevice backend to support deinitialization.
      * The SoftDevice backend to support the erase operation.
+     * The SoftDevice backend to support chunking of write operations.
 
 Libraries
 =========
