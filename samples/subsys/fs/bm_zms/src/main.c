@@ -65,12 +65,7 @@ void bm_zms_sample_handler(const struct bm_zms_evt *evt)
 static void wait_for_write(void)
 {
 	while (!write_notif) {
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
+		k_cpu_idle();
 	}
 	write_notif = false;
 }
@@ -78,12 +73,7 @@ static void wait_for_write(void)
 static void wait_for_mount(void)
 {
 	while (!mount_notif) {
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
+		k_cpu_idle();
 	}
 	mount_notif = false;
 }
@@ -91,12 +81,7 @@ static void wait_for_mount(void)
 static void wait_for_clear(void)
 {
 	while (!clear_notif) {
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
+		k_cpu_idle();
 	}
 	clear_notif = false;
 }
@@ -358,12 +343,7 @@ idle:
 			/* Empty. */
 		}
 
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
+		k_cpu_idle();
 	}
 
 	return 0;

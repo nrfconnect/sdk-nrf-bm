@@ -79,12 +79,7 @@ static void wait_for_outstanding_writes(void)
 {
 	LOG_INF("Waiting for writes to complete...");
 	while (outstanding_writes > 0) {
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
+		k_cpu_idle();
 	}
 }
 
@@ -291,11 +286,6 @@ idle:
 		while (LOG_PROCESS()) {
 		}
 
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
+		k_cpu_idle();
 	}
 }

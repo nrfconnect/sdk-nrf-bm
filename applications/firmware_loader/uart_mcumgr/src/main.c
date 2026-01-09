@@ -51,12 +51,7 @@ int main(void)
 	mgmt_callback_register(&os_mgmt_reboot_callback);
 
 	while (should_reboot == false) {
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
+		k_cpu_idle();
 
 		smp_uart_process_rx_queue();
 	}
