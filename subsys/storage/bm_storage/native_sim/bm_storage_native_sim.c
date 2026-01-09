@@ -149,7 +149,28 @@ int bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest, co
 #endif
 }
 
+int bm_storage_backend_erase(const struct bm_storage *storage, uint32_t addr, uint32_t len,
+			     void *ctx)
+{
+	memset((void *)addr, (int)(bm_storage_info.erase_value & 0xFF), len);
+
+	struct bm_storage_evt evt = {
+		.id = BM_STORAGE_EVT_ERASE_RESULT,
+		.dispatch_type = BM_STORAGE_EVT_DISPATCH_SYNC,
+		.result = 0,
+		.addr = addr,
+		.len = len,
+		.ctx = ctx
+	};
+
+	event_send(storage, &evt);
+
+	return 0;
+}
+
 const struct bm_storage_info bm_storage_info = {
+	.erase_unit = 16,
+	.erase_value = 0xFF,
 	.program_unit = 16,
 	.no_explicit_erase = true
 };

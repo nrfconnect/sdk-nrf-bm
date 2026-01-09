@@ -6,6 +6,7 @@
 
 #include <errno.h>
 #include <stdint.h>
+#include <string.h>
 #include <zephyr/sys/atomic.h>
 #include <nrfx_rramc.h>
 #include <bm/storage/bm_storage.h>
@@ -122,6 +123,42 @@ int bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest,
 	return 0;
 }
 
+int bm_storage_backend_erase(const struct bm_storage *storage, uint32_t addr, uint32_t len,
+			     void *ctx)
+{
+	static uint8_t erase_buf[RRAMC_WRITE_BLOCK_SIZE];
+
+	if (!state.is_rramc_init) {
+		return -EPERM;
+	}
+
+	if (!atomic_cas(&state.operation_ongoing, 0, 1)) {
+		return -EBUSY;
+	}
+
+	(void)memset(erase_buf, (int)(bm_storage_info.erase_value & 0xFF),
+		    sizeof(erase_buf));
+
+	for (uint32_t offset = 0; offset < len; offset += RRAMC_WRITE_BLOCK_SIZE) {
+		nrfx_rramc_bytes_write(addr + offset, erase_buf, RRAMC_WRITE_BLOCK_SIZE);
+	}
+
+	atomic_set(&state.operation_ongoing, 0);
+
+	struct bm_storage_evt evt = {
+		.id = BM_STORAGE_EVT_ERASE_RESULT,
+		.dispatch_type = BM_STORAGE_EVT_DISPATCH_SYNC,
+		.result = 0,
+		.addr = addr,
+		.len = len,
+		.ctx = ctx
+	};
+
+	event_send(storage, &evt);
+
+	return 0;
+}
+
 bool bm_storage_backend_is_busy(const struct bm_storage *storage)
 {
 	/* Always appear as busy if driver is not initialized. */
@@ -133,6 +170,8 @@ bool bm_storage_backend_is_busy(const struct bm_storage *storage)
 }
 
 const struct bm_storage_info bm_storage_info = {
+	.erase_unit = RRAMC_WRITE_BLOCK_SIZE,
+	.erase_value = 0xFF,
 	.program_unit = RRAMC_WRITE_BLOCK_SIZE,
 	.no_explicit_erase = true
 };
