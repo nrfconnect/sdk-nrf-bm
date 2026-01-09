@@ -7,7 +7,7 @@
 menuconfig PEER_MANAGER
 	bool "Peer Manager"
 	depends on SOFTDEVICE
-	depends on NRF_SDH
+	depends on NRF_SDH_BLE
 	depends on BLE_CONN_STATE
 	depends on BM_TIMER
 	depends on BM_ZMS

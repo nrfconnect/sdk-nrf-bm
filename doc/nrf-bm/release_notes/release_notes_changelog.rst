@@ -42,7 +42,7 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Build system
 ============
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Updated the Kconfig dependencies for e.g. drivers, libraries and bluetooth LE services.
 
 DFU
 ===

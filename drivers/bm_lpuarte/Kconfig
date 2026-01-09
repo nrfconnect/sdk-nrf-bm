@@ -7,6 +7,8 @@
 config BM_SW_LPUARTE
 	bool "Low Power UARTE using REQ/RDY lines"
 	depends on BM_TIMER
+	depends on NRFX_GPIOTE
+	depends on NRFX_UARTE
 	help
 	  Low Power UARTE implements UARTE API and extends standard UARTE
 	  communication with a 2-pin protocol for receiver wake-up and flow control.
