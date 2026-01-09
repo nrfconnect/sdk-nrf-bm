@@ -212,12 +212,12 @@ Heart Rate Service
 
 .. doxygengroup:: ble_hrs
 
-.. _api_ble_hrs_central:
+.. _api_ble_hrs_client:
 
-Heart Rate Service Central
+Heart Rate Service Client
 ==========================
 
-.. doxygengroup:: ble_hrs_central
+.. doxygengroup:: ble_hrs_client
 
 .. _api_human_interface_device_service:
 
