@@ -230,8 +230,7 @@ erase_header:
 		LOG_ERR("Clear installer header OK");
 	}
 
-	while (LOG_PROCESS()) {
-	}
+	log_flush();
 
 	sys_reboot(SYS_REBOOT_WARM);
 

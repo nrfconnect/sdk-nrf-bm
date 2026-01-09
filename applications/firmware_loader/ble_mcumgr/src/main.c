@@ -302,8 +302,7 @@ int main(void)
 #endif /* CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME */
 
 	while (notification_sent == false && device_disconnected == false) {
-		while (LOG_PROCESS()) {
-		}
+		log_flush();
 
 		/* Wait for an event. */
 		__WFE();
@@ -322,8 +321,7 @@ int main(void)
 		}
 
 		while (device_disconnected == false) {
-			while (LOG_PROCESS()) {
-			}
+			log_flush();
 
 			/* Wait for an event. */
 			__WFE();

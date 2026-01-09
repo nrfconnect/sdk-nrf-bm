@@ -89,8 +89,7 @@ static uint8_t enc_scan_rsp_data[2][BLE_GAP_ADV_SET_DATA_SIZE_MAX];
 static void poweroff(void)
 {
 	LOG_INF("Power off");
-	while (LOG_PROCESS()) {
-	}
+	log_flush();
 
 #if defined(CONFIG_APP_BLE_PWR_PROFILING_LED)
 	nrf_gpio_pin_write(BOARD_PIN_LED_0, !BOARD_LED_ACTIVE_STATE);
@@ -718,9 +717,7 @@ int main(void)
 
 idle:
 	while (true) {
-		while (LOG_PROCESS()) {
-			/* Empty. */
-		}
+		log_flush();
 
 		/* Wait for an event. */
 		__WFE();

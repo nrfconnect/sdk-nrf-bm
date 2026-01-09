@@ -72,8 +72,7 @@ int main(void)
 	LOG_INF("Buttons initialized, press button 3 to terminate");
 
 	while (running) {
-		while (LOG_PROCESS()) {
-		}
+		log_flush();
 
 		/* Wait for an event. */
 		__WFE();
@@ -93,8 +92,7 @@ int main(void)
 
 idle:
 	while (true) {
-		while (LOG_PROCESS()) {
-		}
+		log_flush();
 
 		/* Wait for an event. */
 		__WFE();

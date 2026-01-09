@@ -56,8 +56,7 @@ int main(void)
 
 	LOG_INF("Bluetooth enabled");
 
-	while (LOG_PROCESS()) {
-	}
+	log_flush();
 
 	k_busy_wait(2 * USEC_PER_SEC);
 
@@ -72,8 +71,7 @@ int main(void)
 
 idle:
 	while (true) {
-		while (LOG_PROCESS()) {
-		}
+		log_flush();
 
 		/* Wait for an event. */
 		__WFE();
