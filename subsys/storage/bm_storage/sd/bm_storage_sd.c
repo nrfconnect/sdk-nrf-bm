@@ -173,6 +173,18 @@ static bool queue_load_next(void)
 	return (bytes == sizeof(struct bm_storage_sd_op));
 }
 
+static bool queue_store(const struct bm_storage_sd_op *op)
+{
+	uint32_t bytes;
+	unsigned int key;
+
+	key = irq_lock();
+	bytes = ring_buf_put(&sd_fifo, (uint8_t *)op, sizeof(*op));
+	irq_unlock(key);
+
+	return (bytes == sizeof(*op));
+}
+
 static void queue_process(void)
 {
 	uint32_t ret;
@@ -315,15 +327,8 @@ int bm_storage_backend_read(const struct bm_storage *storage, uint32_t src, void
 int bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest,
 			     const void *src, uint32_t len, void *ctx)
 {
-	uint32_t written;
-	unsigned int key;
-
-	/* SoftDevice expects this alignment. */
-	if (!is_aligned32((uint32_t)src) || !is_aligned32(dest)) {
-		return -EFAULT;
-	}
-
-	struct bm_storage_sd_op op = {
+	bool queued;
+	const struct bm_storage_sd_op op = {
 		.storage = storage,
 		.id = WRITE,
 		.ctx = ctx,
@@ -332,31 +337,25 @@ int bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest,
 		.write.dest = dest,
 	};
 
-	key = irq_lock();
-	written = ring_buf_put(&sd_fifo, (void *)&op, sizeof(struct bm_storage_sd_op));
-	irq_unlock(key);
+	/* SoftDevice expects this alignment. */
+	if (!is_aligned32((uint32_t)src) || !is_aligned32(dest)) {
+		return -EFAULT;
+	}
 
-	if (written != sizeof(struct bm_storage_sd_op)) {
+	queued = queue_store(&op);
+	if (!queued) {
 		return -EIO;
 	}
 
 	queue_start();
-
 	return 0;
 }
 
 int bm_storage_backend_erase(const struct bm_storage *storage, uint32_t addr, uint32_t len,
 			     void *ctx)
 {
-	uint32_t written;
-	unsigned int key;
-
-	/* SoftDevice expects this alignment. */
-	if ((addr % bm_storage_info.erase_unit) || (len % bm_storage_info.erase_unit)) {
-		return -EFAULT;
-	}
-
-	struct bm_storage_sd_op op = {
+	bool queued;
+	const struct bm_storage_sd_op op = {
 		.storage = storage,
 		.id = ERASE,
 		.ctx = ctx,
@@ -364,16 +363,17 @@ int bm_storage_backend_erase(const struct bm_storage *storage, uint32_t addr, ui
 		.erase.len = len,
 	};
 
-	key = irq_lock();
-	written = ring_buf_put(&sd_fifo, (void *)&op, sizeof(struct bm_storage_sd_op));
-	irq_unlock(key);
+	/* SoftDevice expects this alignment. */
+	if ((addr % bm_storage_info.erase_unit) || (len % bm_storage_info.erase_unit)) {
+		return -EFAULT;
+	}
 
-	if (written != sizeof(struct bm_storage_sd_op)) {
+	queued = queue_store(&op);
+	if (!queued) {
 		return -EIO;
 	}
 
 	queue_start();
-
 	return 0;
 }
 
