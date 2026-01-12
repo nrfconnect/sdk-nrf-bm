@@ -95,6 +95,7 @@
 /subsys/softdevice/                       @nrfconnect/ncs-bm
 /subsys/softdevice_handler/               @nrfconnect/ncs-bm
 /subsys/storage/bm_storage/               @nrfconnect/ncs-bm
+/subsys/storage/ble_rmem/                 @nrfconnect/ncs-eris
 /subsys/storage/bm_rmem/                  @nrfconnect/ncs-eris
 /subsys/storage/flash_map/                @nrfconnect/ncs-eris
 

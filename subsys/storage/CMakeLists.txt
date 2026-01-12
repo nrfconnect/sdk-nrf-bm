@@ -5,6 +5,7 @@
 #
 
 # zephyr-keep-sorted-start
+add_subdirectory_ifdef(CONFIG_BM_FLAT_SETTINGS_BLUETOOTH_NAME ble_rmem)
 add_subdirectory_ifdef(CONFIG_BM_RMEM_CLIPBOARD bm_rmem)
 add_subdirectory_ifdef(CONFIG_BM_STORAGE bm_storage)
 add_subdirectory_ifdef(CONFIG_FLASH_MAP flash_map)
