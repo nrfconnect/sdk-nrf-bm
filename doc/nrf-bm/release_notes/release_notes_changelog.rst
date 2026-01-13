@@ -67,6 +67,8 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Libraries
 =========
 
+* Added the :ref:`lib_bm_gpiote` library.
+
 * :ref:`lib_ble_scan`:
 
    * Updated functions to use the ``uint32_t`` type instead of ``int`` when returning nrf_errors.
