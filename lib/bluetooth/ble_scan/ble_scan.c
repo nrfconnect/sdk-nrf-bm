@@ -868,9 +868,9 @@ static void ble_scan_on_connected_evt(const struct ble_scan *const scan,
 	}
 }
 
-void ble_scan_on_ble_evt(const ble_evt_t *ble_evt, void *contex)
+void ble_scan_on_ble_evt(const ble_evt_t *ble_evt, void *context)
 {
-	struct ble_scan *scan_data = (struct ble_scan *)contex;
+	struct ble_scan *scan_data = (struct ble_scan *)context;
 	const ble_gap_evt_adv_report_t *adv_report = &ble_evt->evt.gap_evt.params.adv_report;
 	const ble_gap_evt_t *gap_evt = &ble_evt->evt.gap_evt;
 
