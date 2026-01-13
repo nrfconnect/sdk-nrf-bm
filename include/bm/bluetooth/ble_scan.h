@@ -400,7 +400,6 @@ bool is_allow_list_used(const struct ble_scan *const scan_ctx);
  * @param[out] scan Scan library instance. This structure must be supplied by the application.
  *                  It is initialized by this function and is later used to identify this
  *                  particular library instance.
- *
  * @param[in] config Configuration parameters.
  *
  * @retval NRF_SUCCESS If initialization was successful.
@@ -440,12 +439,12 @@ void ble_scan_stop(const struct ble_scan *const scan_ctx);
  *          several filters. For example, (BLE_SCAN_NAME_FILTER | BLE_SCAN_UUID_FILTER)
  *          enables UUID and name filters.
  *
+ * @param[in] scan_ctx Scan library instance.
  * @param[in] mode Filter mode: @c ble_scan_filter_type.
  * @param[in] match_all If this flag is set, all types of enabled filters must be
  *                      matched before generating @ref BLE_SCAN_EVT_FILTER_MATCH to the main
  *                      application. Otherwise, it is enough to match one filter to trigger the
  *                      filter match event.
- * @param[in] scan_ctx Scan library instance.
  *
  * @retval NRF_SUCCESS If the filters are enabled successfully.
  * @retval NRF_ERROR_INVALID_PARAM  If the filter mode is invalid.
@@ -472,9 +471,9 @@ uint32_t ble_scan_filters_disable(struct ble_scan *const scan_ctx);
  * @brief Get filter status.
  *
  * @details This function returns the filter setting and whether it is enabled or disabled.
-
+ *
+ * @param[in] scan_ctx Scan library instance.
  * @param[out] status Filter status.
- * @param[in]  scan_ctx Scan library instance.
  *
  * @retval NRF_SUCCESS If filter status is returned.
  * @retval NRF_ERROR_NULL If a NULL pointer is passed as input.
