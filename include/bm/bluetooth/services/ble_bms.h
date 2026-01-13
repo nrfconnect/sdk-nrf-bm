@@ -20,8 +20,8 @@
  *          Bond Management Control Point.
  */
 
-#ifndef NRFBM_BLE_BMS_H__
-#define NRFBM_BLE_BMS_H__
+#ifndef BLE_BMS_H__
+#define BLE_BMS_H__
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -332,6 +332,6 @@ uint16_t ble_bms_on_qwr_evt(struct ble_bms *bms, struct ble_qwr *qwr,
 }
 #endif
 
-#endif /* NRFBM_BLE_BMS_H__ */
+#endif /* BLE_BMS_H__ */
 
 /** @} */
