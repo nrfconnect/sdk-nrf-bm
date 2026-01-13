@@ -15,10 +15,6 @@ Overview
 During initialization, the module adds the Device Information Service to the Bluetooth LE stack database.
 It then encodes the supplied information, and adds the corresponding characteristics.
 
-.. caution::
-
-   To maintain compliance with Nordic Semiconductor Bluetooth profile qualification listings, this section of source code must not be modified.
-
 Configuration
 *************
 
