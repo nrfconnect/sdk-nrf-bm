@@ -148,7 +148,7 @@ uint32_t ble_bas_init(struct ble_bas *bas, const struct ble_bas_config *cfg)
 	}
 
 	/* Add battery level characteristic */
-	nrf_err =  battery_level_char_add(bas, cfg);
+	nrf_err = battery_level_char_add(bas, cfg);
 	if (nrf_err) {
 		LOG_ERR("Failed to add battery service characteristic, nrf_error %#x", nrf_err);
 		return NRF_ERROR_INVALID_PARAM;

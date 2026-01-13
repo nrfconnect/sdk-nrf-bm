@@ -40,10 +40,8 @@ extern "C" {
  * @hideinitializer
  */
 #define BLE_BMS_DEF(_name)                                                                         \
-static struct ble_bms _name;                                                                       \
-	NRF_SDH_BLE_OBSERVER(_name ## _obs,                                                        \
-			     ble_bms_on_ble_evt, &_name,                                           \
-			     HIGH)
+	static struct ble_bms _name;                                                               \
+	NRF_SDH_BLE_OBSERVER(_name##_obs, ble_bms_on_ble_evt, &_name, HIGH)
 
 /** Maximum length of the Bond Management Control Point Characteristic (in bytes). */
 #define BLE_BMS_CTRLPT_MAX_LEN 128

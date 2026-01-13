@@ -46,10 +46,7 @@ void ble_nus_on_ble_evt(const ble_evt_t *ble_evt, void *context);
  */
 #define BLE_NUS_DEF(_name)                                                                         \
 	static struct ble_nus _name;                                                               \
-	NRF_SDH_BLE_OBSERVER(_name ## _obs,                                                        \
-			     ble_nus_on_ble_evt,                                                   \
-			     &_name,                                                               \
-			     HIGH)
+	NRF_SDH_BLE_OBSERVER(_name##_obs, ble_nus_on_ble_evt, &_name, HIGH)
 
 /** @brief Default security configuration. */
 #define BLE_NUS_CONFIG_SEC_MODE_DEFAULT                                                            \

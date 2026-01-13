@@ -422,5 +422,4 @@ static void ble_evt_handler(const ble_evt_t *ble_evt, void *ctx)
 	}
 }
 
-NRF_SDH_BLE_OBSERVER(ble_evt_observer, ble_evt_handler, NULL,
-		     HIGHEST);
+NRF_SDH_BLE_OBSERVER(ble_evt_observer, ble_evt_handler, NULL, HIGHEST);
