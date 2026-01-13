@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <errno.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
@@ -17,7 +16,6 @@
 #include <bm/bluetooth/services/ble_bas.h>
 #include <bm/bluetooth/services/uuid.h>
 
-#include "ble_gatts.h"
 #include "cmock_ble_gatts.h"
 
 #define SERVICE_HANDLE		0x1234

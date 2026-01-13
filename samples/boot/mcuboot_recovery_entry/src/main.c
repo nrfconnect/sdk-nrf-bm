@@ -5,6 +5,7 @@
  */
 
 #include <bm/softdevice_handler/nrf_sdh.h>
+#include <bm/softdevice_handler/nrf_sdh_ble.h>
 #include <bm/bluetooth/ble_adv.h>
 #include <bm/bluetooth/services/ble_mcumgr.h>
 

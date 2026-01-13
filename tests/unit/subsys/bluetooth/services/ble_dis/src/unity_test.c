@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
-#include <errno.h>
+
 #include <unity.h>
 #include <stdint.h>
 #include <string.h>
