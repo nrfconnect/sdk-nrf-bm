@@ -8,23 +8,6 @@
 #include <zephyr/kernel.h>
 #include <sys/types.h>
 #include <bm/storage/bm_storage.h>
-#include <bm/storage/bm_storage_backend.h>
-
-__weak int bm_storage_backend_uninit(struct bm_storage *storage)
-{
-	return -ENOTSUP;
-}
-
-__weak int bm_storage_backend_erase(const struct bm_storage *storage, uint32_t addr,
-					uint32_t len, void *ctx)
-{
-	return -ENOTSUP;
-}
-
-__weak bool bm_storage_backend_is_busy(const struct bm_storage *storage)
-{
-	return false;
-}
 
 static inline bool is_within_bounds(off_t addr, size_t len, off_t boundary_start,
 				    size_t boundary_size)
@@ -44,20 +27,21 @@ int bm_storage_init(struct bm_storage *storage, const struct bm_storage_config *
 	if (storage->initialized) {
 		return -EPERM;
 	}
-
-	if (bm_storage_info.program_unit == 0) {
-		return -EIO;
+	if (!config->api) {
+		return -EFAULT;
 	}
 
-	storage->nvm_info = &bm_storage_info;
+	storage->api = config->api;
 	storage->evt_handler = config->evt_handler;
 	storage->start_addr = config->start_addr;
 	storage->end_addr = config->end_addr;
 
-	err = bm_storage_backend_init(storage);
+	err = storage->api->init(storage, config);
 	if (err) {
 		return err;
 	}
+
+	__ASSERT(storage->nvm_info, "NVM info not provided by backend");
 
 	storage->initialized = true;
 
@@ -76,7 +60,7 @@ int bm_storage_uninit(struct bm_storage *storage)
 		return -EPERM;
 	}
 
-	err = bm_storage_backend_uninit(storage);
+	err = storage->api->uninit(storage);
 
 	if (err == 0) {
 		/* Prevent further operations */
@@ -105,7 +89,7 @@ int bm_storage_read(const struct bm_storage *storage, uint32_t src, void *dest, 
 		return -EFAULT;
 	}
 
-	return bm_storage_backend_read(storage, src, dest, len);
+	return storage->api->read(storage, src, dest, len);
 }
 
 int bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void *src,
@@ -128,7 +112,7 @@ int bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void
 		return -EFAULT;
 	}
 
-	return bm_storage_backend_write(storage, dest, src, len, ctx);
+	return storage->api->write(storage, dest, src, len, ctx);
 }
 
 int bm_storage_erase(const struct bm_storage *storage, uint32_t addr, uint32_t len, void *ctx)
@@ -154,7 +138,7 @@ int bm_storage_erase(const struct bm_storage *storage, uint32_t addr, uint32_t l
 		return -EFAULT;
 	}
 
-	return bm_storage_backend_erase(storage, addr, len, ctx);
+	return storage->api->erase(storage, addr, len, ctx);
 }
 
 bool bm_storage_is_busy(const struct bm_storage *storage)
@@ -167,5 +151,5 @@ bool bm_storage_is_busy(const struct bm_storage *storage)
 		return false;
 	}
 
-	return bm_storage_backend_is_busy(storage);
+	return storage->api->is_busy(storage);
 }
