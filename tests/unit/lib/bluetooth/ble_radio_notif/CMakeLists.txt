@@ -8,26 +8,26 @@ cmake_minimum_required(VERSION 3.20.0)
 
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 
-project(test_ble_radio_notif)
+project(unit_test_ble_radio_notif)
 
 set(SOFTDEVICE_VARIANT "s115")
 set(SOFTDEVICE_INCLUDE_DIR "${ZEPHYR_NRF_BM_MODULE_DIR}/components/softdevice/\
 ${SOFTDEVICE_VARIANT}/${SOFTDEVICE_VARIANT}_API/include")
 
+cmock_handle(mocks/cmsis.h)
+cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/nrf_soc.h)
+
 zephyr_compile_definitions(
+  NRF54L15_XXAA
   SVCALL_AS_NORMAL_FUNCTION
   SUPPRESS_INLINE_IMPLEMENTATION
-  NRF54L15_XXAA
   SWI02_IRQn=30
 )
 
-cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/nrf_soc.h)
-cmock_handle(mocks/cmsis.h)
-
 zephyr_include_directories(
   mocks
-  ${ZEPHYR_NRF_BM_MODULE_DIR}/include
   ${SOFTDEVICE_INCLUDE_DIR}
+  ${ZEPHYR_NRF_BM_MODULE_DIR}/include
 )
 
 # Generate and add test file

@@ -14,19 +14,19 @@ set(SOFTDEVICE_VARIANT "s115")
 set(SOFTDEVICE_INCLUDE_DIR "${ZEPHYR_NRF_BM_MODULE_DIR}/components/softdevice/\
 ${SOFTDEVICE_VARIANT}/${SOFTDEVICE_VARIANT}_API/include")
 
-zephyr_compile_definitions(
-  SVCALL_AS_NORMAL_FUNCTION
-  SUPPRESS_INLINE_IMPLEMENTATION
-  NRF54L15_XXAA
-)
-
 cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble.h)
 cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble_gatts.h)
 cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble_gattc.h)
 
+zephyr_compile_definitions(
+  NRF54L15_XXAA
+  SVCALL_AS_NORMAL_FUNCTION
+  SUPPRESS_INLINE_IMPLEMENTATION
+)
+
 zephyr_include_directories(
-  ${ZEPHYR_NRF_BM_MODULE_DIR}/include
   ${SOFTDEVICE_INCLUDE_DIR}
+  ${ZEPHYR_NRF_BM_MODULE_DIR}/include
 )
 
 # Generate and add test file

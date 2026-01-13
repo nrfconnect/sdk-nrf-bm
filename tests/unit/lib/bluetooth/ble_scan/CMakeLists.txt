@@ -10,12 +10,6 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 
 project(unit_test_ble_scan)
 
-zephyr_compile_definitions(
-  SVCALL_AS_NORMAL_FUNCTION
-  SUPPRESS_INLINE_IMPLEMENTATION
-  NRF54L15_XXAA
-)
-
 set(SOFTDEVICE_VARIANT "s145")
 set(SOFTDEVICE_INCLUDE_DIR "${ZEPHYR_NRF_BM_MODULE_DIR}/components/softdevice/\
 ${SOFTDEVICE_VARIANT}/${SOFTDEVICE_VARIANT}_API/include")
@@ -26,10 +20,19 @@ cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble_gattc.h)
 cmock_handle(${ZEPHYR_NRF_BM_MODULE_DIR}/include/bm/softdevice_handler/nrf_sdh_ble.h)
 cmock_handle(${ZEPHYR_NRF_BM_MODULE_DIR}/include/bm/bluetooth/ble_adv_data.h)
 
+zephyr_compile_definitions(
+  NRF54L15_XXAA
+  SVCALL_AS_NORMAL_FUNCTION
+  SUPPRESS_INLINE_IMPLEMENTATION
+)
+
+zephyr_include_directories(
+  ${SOFTDEVICE_INCLUDE_DIR}
+  ${ZEPHYR_NRF_BM_MODULE_DIR}/include
+)
+
 zephyr_linker_sources(SECTIONS evt_obs.ld)
 
-zephyr_include_directories(${ZEPHYR_NRF_BM_MODULE_DIR}/include)
-zephyr_include_directories(${SOFTDEVICE_INCLUDE_DIR})
-
+# Generate and add test file
 test_runner_generate(src/unity_test.c)
 target_sources(app PRIVATE src/unity_test.c)
