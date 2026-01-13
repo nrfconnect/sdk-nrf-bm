@@ -62,6 +62,8 @@ static uint8_t char_value[CONFIG_APP_BLE_PWR_PROFILING_CHAR_VALUE_LEN];
 static uint16_t conn_handle = BLE_CONN_HANDLE_INVALID;
 /** Connection interval. */
 static uint16_t conn_interval_ms = (CONFIG_BLE_CONN_PARAMS_MIN_CONN_INTERVAL * 5) / 4;
+/** Attribute handle of power profiling service. */
+static uint16_t service_handle;
 /** Attribute handles related to power profiling characteristic. */
 static ble_gatts_char_handles_t char_handles;
 
@@ -685,7 +687,7 @@ int main(void)
 		goto idle;
 	}
 
-	nrf_err = ble_service_init(&conn_handle, &uuid_type, &char_handles);
+	nrf_err = ble_service_init(&service_handle, &uuid_type, &char_handles);
 	if (nrf_err) {
 		LOG_ERR("Failed to initialize pwr profiling service, nrf_error %#x", nrf_err);
 		goto idle;
