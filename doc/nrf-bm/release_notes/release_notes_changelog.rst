@@ -93,7 +93,9 @@ Samples
 Bluetooth LE samples
 --------------------
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* :ref:`ble_pwr_profiling_sample`:
+
+   * Updated to use a dedicated variable to hold the service attribute handle instead of incorrectly using the connection handle variable for this during service initialization.
 
 NFC samples
 -----------
