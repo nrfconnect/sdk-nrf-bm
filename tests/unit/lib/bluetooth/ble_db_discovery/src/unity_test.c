@@ -15,7 +15,7 @@
 #include "cmock_ble_gq.h"
 
 BLE_GQ_DEF(ble_gatt_queue);
-BLE_DB_DISCOVERY_DEF(db_discovery)
+BLE_DB_DISCOVERY_DEF(db_discovery);
 
 static struct ble_db_discovery_evt db_evt;
 static struct ble_db_discovery_evt db_evt_prev;
