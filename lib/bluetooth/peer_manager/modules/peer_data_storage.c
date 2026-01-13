@@ -341,6 +341,7 @@ bool pds_peer_data_iterate(enum pm_peer_data_id data_id, uint16_t *const peer_id
 uint32_t pds_init(void)
 {
 	int err;
+	extern struct bm_storage_api bm_storage_sd_api;
 
 	/* Check for re-initialization if debugging. */
 	__ASSERT_NO_MSG(!module_initialized);
@@ -350,6 +351,7 @@ uint32_t pds_init(void)
 		.sector_size = CONFIG_PM_BM_ZMS_SECTOR_SIZE,
 		.sector_count = (PEER_MANAGER_PARTITION_SIZE / CONFIG_PM_BM_ZMS_SECTOR_SIZE),
 		.evt_handler = bm_zms_evt_handler,
+		.storage_api = &bm_storage_sd_api,
 	};
 
 	err = bm_zms_mount(&fs, &config);

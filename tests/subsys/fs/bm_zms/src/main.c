@@ -141,12 +141,14 @@ void bm_zms_test_evt_handler(const struct bm_zms_evt *evt)
 static void *setup(void)
 {
 	static struct bm_zms_fixture fixture;
+	extern const struct bm_storage_api bm_storage_native_sim_api;
 
 	memset(&fixture, 0, sizeof(struct bm_zms_fixture));
 	fixture.config.offset = TEST_PARTITION_START;
 	fixture.config.sector_size = TEST_SECTOR_SIZE;
 	fixture.config.sector_count = TEST_SECTOR_COUNT;
 	fixture.config.evt_handler = bm_zms_test_evt_handler;
+	fixture.config.storage_api = &bm_storage_native_sim_api;
 
 	return &fixture;
 }
