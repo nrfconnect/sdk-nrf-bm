@@ -28,7 +28,7 @@ extern "C" {
 #include <stdint.h>
 #include <stdbool.h>
 #include <ble.h>
-#include <ble_gatts.h>
+#include <bm/softdevice_handler/nrf_sdh_ble.h>
 
 /**
  * @brief Macro for defining a ble_qwr instance.

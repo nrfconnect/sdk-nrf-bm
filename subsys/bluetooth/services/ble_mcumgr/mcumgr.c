@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <ble_gap.h>
+#include <nrf_error.h>
 #include <nrf_soc.h>
 #include <bm/softdevice_handler/nrf_sdh.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>

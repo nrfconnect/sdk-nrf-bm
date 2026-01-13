@@ -14,6 +14,7 @@
 #include <nrf_sdm.h>
 #endif /* CONFIG_SOFTDEVICE */
 #include <zephyr/logging/log.h>
+#include <zephyr/sys/atomic.h>
 
 LOG_MODULE_REGISTER(lpuarte, CONFIG_BM_SW_LPUARTE_LOG_LEVEL);
 

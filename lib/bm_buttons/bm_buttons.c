@@ -7,7 +7,6 @@
 #include <bm/bm_timer.h>
 #include <bm/bm_buttons.h>
 #include <nrfx_gpiote.h>
-#include <nrfx_glue.h>
 #include <zephyr/irq.h>
 #include <zephyr/logging/log.h>
 

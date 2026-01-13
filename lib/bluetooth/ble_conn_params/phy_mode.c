@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
-#include <errno.h>
+
 #include <ble_gap.h>
 #include <bm/bluetooth/ble_conn_params.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>

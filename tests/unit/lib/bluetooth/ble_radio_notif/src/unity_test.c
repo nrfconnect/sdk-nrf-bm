@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stddef.h>
-#include <errno.h>
+#include <nrf_error.h>
 
 #include <bm/bluetooth/ble_radio_notification.h>
 

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <errno.h>
+#include <nrf_error.h>
 #include <string.h>
 #include <ble_gap.h>
 #include <bm/softdevice_handler/nrf_sdh.h>

@@ -7,6 +7,7 @@
 #include <nrf_error.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <ble.h>
 #include <bm/bluetooth/ble_gq.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
 #include <zephyr/kernel.h>
