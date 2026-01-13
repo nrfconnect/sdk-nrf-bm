@@ -10,7 +10,6 @@
 #include <zephyr/sys/atomic.h>
 #include <nrfx_rramc.h>
 #include <bm/storage/bm_storage.h>
-#include <bm/storage/bm_storage_backend.h>
 
 /* 128-bit word line. This is the optimal size to fully utilize RRAM 128-bit word line with ECC
  * (error correction code) and minimize ECC updates overhead, due to these updates happening
@@ -19,6 +18,13 @@
 #define RRAMC_WRITE_BLOCK_SIZE 16
 
 static nrfx_rramc_config_t rramc_config = NRFX_RRAMC_DEFAULT_CONFIG(RRAMC_WRITE_BLOCK_SIZE);
+
+static const struct bm_storage_info bm_storage_info = {
+	.erase_unit = RRAMC_WRITE_BLOCK_SIZE,
+	.erase_value = 0xFF,
+	.program_unit = RRAMC_WRITE_BLOCK_SIZE,
+	.no_explicit_erase = true
+};
 
 struct bm_storage_rram_state {
 	atomic_t refcount;
@@ -37,7 +43,7 @@ static void event_send(const struct bm_storage *storage, struct bm_storage_evt *
 	storage->evt_handler(evt);
 }
 
-int bm_storage_backend_init(struct bm_storage *storage)
+static int bm_storage_rramc_init(struct bm_storage *storage, const struct bm_storage_config *config)
 {
 	int err;
 
@@ -54,12 +60,13 @@ int bm_storage_backend_init(struct bm_storage *storage)
 		}
 
 		state.is_rramc_init = true;
+		storage->nvm_info = &bm_storage_info;
 	}
 
 	return 0;
 }
 
-int bm_storage_backend_uninit(struct bm_storage *storage)
+static int bm_storage_rramc_uninit(struct bm_storage *storage)
 {
 	if (atomic_get(&state.refcount) == 0) {
 		return -EPERM;
@@ -80,8 +87,8 @@ int bm_storage_backend_uninit(struct bm_storage *storage)
 	return 0;
 }
 
-int bm_storage_backend_read(const struct bm_storage *storage, uint32_t src, void *dest,
-			    uint32_t len)
+static int bm_storage_rramc_read(const struct bm_storage *storage, uint32_t src, void *dest,
+				 uint32_t len)
 {
 	if (!state.is_rramc_init) {
 		return -EPERM;
@@ -92,8 +99,8 @@ int bm_storage_backend_read(const struct bm_storage *storage, uint32_t src, void
 	return 0;
 }
 
-int bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest,
-			     const void *src, uint32_t len, void *ctx)
+static int bm_storage_rramc_write(const struct bm_storage *storage, uint32_t dest, const void *src,
+				  uint32_t len, void *ctx)
 {
 	if (!state.is_rramc_init) {
 		return -EPERM;
@@ -123,8 +130,8 @@ int bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest,
 	return 0;
 }
 
-int bm_storage_backend_erase(const struct bm_storage *storage, uint32_t addr, uint32_t len,
-			     void *ctx)
+static int bm_storage_rramc_erase(const struct bm_storage *storage, uint32_t addr, uint32_t len,
+				  void *ctx)
 {
 	static uint8_t erase_buf[RRAMC_WRITE_BLOCK_SIZE];
 
@@ -159,7 +166,7 @@ int bm_storage_backend_erase(const struct bm_storage *storage, uint32_t addr, ui
 	return 0;
 }
 
-bool bm_storage_backend_is_busy(const struct bm_storage *storage)
+static bool bm_storage_rramc_is_busy(const struct bm_storage *storage)
 {
 	/* Always appear as busy if driver is not initialized. */
 	if (!state.is_rramc_init) {
@@ -169,9 +176,11 @@ bool bm_storage_backend_is_busy(const struct bm_storage *storage)
 	return (atomic_get(&state.operation_ongoing) == 1);
 }
 
-const struct bm_storage_info bm_storage_info = {
-	.erase_unit = RRAMC_WRITE_BLOCK_SIZE,
-	.erase_value = 0xFF,
-	.program_unit = RRAMC_WRITE_BLOCK_SIZE,
-	.no_explicit_erase = true
+const struct bm_storage_api bm_storage_rram_api = {
+	.init = bm_storage_rramc_init,
+	.uninit = bm_storage_rramc_uninit,
+	.read = bm_storage_rramc_read,
+	.write = bm_storage_rramc_write,
+	.erase = bm_storage_rramc_erase,
+	.is_busy = bm_storage_rramc_is_busy,
 };

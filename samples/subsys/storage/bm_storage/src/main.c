@@ -35,6 +35,8 @@ LOG_MODULE_REGISTER(app, CONFIG_APP_BM_STORAGE_LOG_LEVEL);
 #define STORAGE_B_START STORAGE_A_END
 #define STORAGE_B_END (STORAGE_B_START + BUFFER_BLOCK_SIZE)
 
+extern const struct bm_storage_api bm_storage_sd_api;
+
 /* Forward declarations. */
 static void bm_storage_evt_handler_a(struct bm_storage_evt *evt);
 static void bm_storage_evt_handler_b(struct bm_storage_evt *evt);
@@ -91,6 +93,7 @@ static int storage_inits(void)
 
 	struct bm_storage_config storage_config_a = {
 		.evt_handler = bm_storage_evt_handler_a,
+		.api = &bm_storage_sd_api,
 		.start_addr = STORAGE_A_START,
 		.end_addr = STORAGE_A_END,
 	};
@@ -103,6 +106,7 @@ static int storage_inits(void)
 
 	struct bm_storage_config storage_config_b = {
 		.evt_handler = bm_storage_evt_handler_b,
+		.api = &bm_storage_sd_api,
 		.start_addr = STORAGE_B_START,
 		.end_addr = STORAGE_B_END,
 	};

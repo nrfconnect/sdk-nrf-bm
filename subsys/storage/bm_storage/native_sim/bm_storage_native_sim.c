@@ -7,7 +7,13 @@
 #include <string.h>
 #include <stdint.h>
 #include <bm/storage/bm_storage.h>
-#include <bm/storage/bm_storage_backend.h>
+
+static const struct bm_storage_info bm_storage_info = {
+	.erase_unit = 16,
+	.erase_value = 0xFF,
+	.program_unit = 16,
+	.no_explicit_erase = true
+};
 
 static void event_send(const struct bm_storage *storage, struct bm_storage_evt *evt)
 {
@@ -63,7 +69,8 @@ static void write_work_handler(struct k_work *work)
 }
 #endif
 
-int bm_storage_backend_init(struct bm_storage *storage)
+static int bm_storage_native_sim_init(struct bm_storage *storage,
+				      const struct bm_storage_config *config)
 {
 #if defined(CONFIG_BM_STORAGE_BACKEND_NATIVE_SIM_ASYNC)
 	atomic_inc(&refcount);
@@ -77,10 +84,12 @@ int bm_storage_backend_init(struct bm_storage *storage)
 		is_queue_init = true;
 	}
 #endif
+
+	storage->nvm_info = &bm_storage_info;
 	return 0;
 }
 
-int bm_storage_backend_uninit(struct bm_storage *storage)
+static int bm_storage_native_sim_uninit(struct bm_storage *storage)
 {
 #if defined(CONFIG_BM_STORAGE_BACKEND_NATIVE_SIM_ASYNC)
 	if (atomic_get(&refcount) == 0) {
@@ -95,16 +104,16 @@ int bm_storage_backend_uninit(struct bm_storage *storage)
 	return 0;
 }
 
-int bm_storage_backend_read(const struct bm_storage *storage, uint32_t src, void *dest,
-			    uint32_t len)
+static int bm_storage_native_sim_read(const struct bm_storage *storage, uint32_t src, void *dest,
+				      uint32_t len)
 {
 	memcpy(dest, (void *)src, len);
 
 	return 0;
 }
 
-int bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest, const void *src,
-			     uint32_t len, void *ctx)
+static int bm_storage_native_sim_write(const struct bm_storage *storage, uint32_t dest,
+				       const void *src, uint32_t len, void *ctx)
 {
 #if defined(CONFIG_BM_STORAGE_BACKEND_NATIVE_SIM_ASYNC)
 	int err;
@@ -149,8 +158,8 @@ int bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest, co
 #endif
 }
 
-int bm_storage_backend_erase(const struct bm_storage *storage, uint32_t addr, uint32_t len,
-			     void *ctx)
+static int bm_storage_native_sim_erase(const struct bm_storage *storage, uint32_t addr,
+				       uint32_t len, void *ctx)
 {
 	memset((void *)addr, (int)(bm_storage_info.erase_value & 0xFF), len);
 
@@ -168,9 +177,9 @@ int bm_storage_backend_erase(const struct bm_storage *storage, uint32_t addr, ui
 	return 0;
 }
 
-const struct bm_storage_info bm_storage_info = {
-	.erase_unit = 16,
-	.erase_value = 0xFF,
-	.program_unit = 16,
-	.no_explicit_erase = true
+const struct bm_storage_api bm_storage_native_sim_api = {
+	.init = bm_storage_native_sim_init,
+	.read = bm_storage_native_sim_read,
+	.write = bm_storage_native_sim_write,
+	.erase = bm_storage_native_sim_erase,
 };

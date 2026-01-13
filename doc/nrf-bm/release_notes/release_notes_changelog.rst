@@ -75,6 +75,9 @@ Storage
 
 * :ref:`lib_storage`:
 
+   Added:
+     * The capability to compile more than one backend.
+
    Updated:
      * The :c:func:`bm_storage_init` function to return an error when the instance is already initialized.
      * The SoftDevice, RRAM, and native_sim backends to support deinitialization.
