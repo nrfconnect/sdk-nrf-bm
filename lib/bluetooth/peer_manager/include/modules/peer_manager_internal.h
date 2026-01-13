@@ -129,7 +129,7 @@ typedef void (*pm_evt_handler_internal_t)(struct pm_evt *event);
  *
  * @param[in]  n_bytes  The number of bytes.
  *
- * @returns The number of words needed to hold @p n_bytes bytes.
+ * @return The number of words needed to hold @p n_bytes bytes.
  */
 #define BYTES_TO_WORDS(n_bytes) DIV_ROUND_UP((n_bytes), BYTES_PER_WORD)
 

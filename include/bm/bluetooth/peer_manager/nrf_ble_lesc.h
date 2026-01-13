@@ -34,7 +34,7 @@ typedef ble_gap_lesc_oob_data_t *(*nrf_ble_lesc_peer_oob_data_handler)(uint16_t 
  *
  * @retval NRF_SUCCESS         If the operation was successful.
  * @retval NRF_ERROR_INTERNAL  If @ref psa_crypto_init failed.
- * @returns Other error codes might be returned by the @ref nrf_ble_lesc_keypair_generate function.
+ * @return Other error codes might be returned by the @ref nrf_ble_lesc_keypair_generate function.
  */
 uint32_t nrf_ble_lesc_init(void);
 
@@ -49,7 +49,7 @@ uint32_t nrf_ble_lesc_init(void);
  * @retval NRF_ERROR_BUSY      If any pending request needs to be processed by @ref
  *                             nrf_ble_lesc_request_handler.
  * @retval NRF_ERROR_INTERNAL  If @ref psa_generate_key, or @ref psa_export_public_key failed.
- * @returns Other error codes might be returned.
+ * @return Other error codes might be returned.
  */
 uint32_t nrf_ble_lesc_keypair_generate(void);
 
@@ -107,7 +107,7 @@ void nrf_ble_lesc_peer_oob_data_handler_set(nrf_ble_lesc_peer_oob_data_handler h
  * @retval NRF_SUCCESS         If the operation was successful.
  * @retval NRF_ERROR_INTERNAL  If the LESC module encountered an internal error. The only way to
  *                             recover from this type of error is to reset the application.
- * @returns Other error codes might be returned by the @ref sd_ble_gap_lesc_dhkey_reply function.
+ * @return Other error codes might be returned by the @ref sd_ble_gap_lesc_dhkey_reply function.
  */
 uint32_t nrf_ble_lesc_request_handler(void);
 

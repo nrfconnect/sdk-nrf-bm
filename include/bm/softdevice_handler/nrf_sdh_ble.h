@@ -81,7 +81,7 @@ int nrf_sdh_ble_enable(uint8_t conn_cfg_tag);
  * Otherwise, returns the supplied integer as a string.
  *
  * @param evt A @ref BLE_GAP_EVTS, @ref BLE_GATTS_EVTS, or @ref BLE_GATTC_EVTS enumeration value.
- * @returns A statically allocated string containing the event name or numerical value.
+ * @return A statically allocated string containing the event name or numerical value.
  */
 const char *nrf_sdh_ble_evt_to_str(uint32_t evt);
 
@@ -93,8 +93,8 @@ const char *nrf_sdh_ble_evt_to_str(uint32_t evt);
  *
  * @param[in] conn_handle Connection handle.
  *
- * @returns An integer in the range from 0 to (CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT - 1) if the
- *          connection handle has been assigned to an index, otherwise -1.
+ * @return An integer in the range from 0 to (CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT - 1) if the
+ *         connection handle has been assigned to an index, otherwise -1.
  */
 int nrf_sdh_ble_idx_get(uint16_t conn_handle);
 
@@ -103,7 +103,7 @@ int nrf_sdh_ble_idx_get(uint16_t conn_handle);
  *
  * @param[in] idx Assigned index.
  *
- * @returns The connection handle for the given index or @c BLE_CONN_HANDLE_INVALID if not found.
+ * @return The connection handle for the given index or @c BLE_CONN_HANDLE_INVALID if not found.
  */
 uint16_t nrf_sdh_ble_conn_handle_get(int idx);
 

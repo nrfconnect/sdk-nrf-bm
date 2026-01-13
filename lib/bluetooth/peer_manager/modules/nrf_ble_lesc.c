@@ -231,7 +231,7 @@ void nrf_ble_lesc_peer_oob_data_handler_set(nrf_ble_lesc_peer_oob_data_handler h
  *
  * @retval NRF_SUCCESS        If the operation was successful.
  * @retval NRF_ERROR_INTERNAL If @ref psa_raw_key_agreement, or @ref psa_generate_random failed.
- * @returns Other error codes might be returned by @ref sd_ble_gap_lesc_dhkey_reply.
+ * @return Other error codes might be returned by @ref sd_ble_gap_lesc_dhkey_reply.
  * functions.
  */
 static uint32_t compute_and_give_dhkey(struct lesc_peer_pub_key *peer_public_key)
@@ -326,7 +326,7 @@ static void on_dhkey_request(uint16_t conn_handle, int idx,
  * @param[in]  conn_handle      Connection handle.
  *
  * @retval NRF_SUCCESS If the operation was successful.
- * @returns Other error codes might be returned by @ref sd_ble_gap_lesc_oob_data_set.
+ * @return Other error codes might be returned by @ref sd_ble_gap_lesc_oob_data_set.
  */
 static uint32_t lesc_oob_data_set(uint16_t conn_handle)
 {
