@@ -8,20 +8,20 @@ cmake_minimum_required(VERSION 3.20.0)
 
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 
-project(test_ble_gq)
+project(unit_test_ble_gq)
 
 set(SOFTDEVICE_VARIANT "s115")
 set(SOFTDEVICE_INCLUDE_DIR "${ZEPHYR_NRF_BM_MODULE_DIR}/components/softdevice/\
 ${SOFTDEVICE_VARIANT}/${SOFTDEVICE_VARIANT}_API/include")
+
+cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble_gattc.h)
+cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble_gatts.h)
 
 zephyr_compile_definitions(
   NRF54L15_XXAA
   SVCALL_AS_NORMAL_FUNCTION
   SUPPRESS_INLINE_IMPLEMENTATION
 )
-
-cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble_gattc.h)
-cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble_gatts.h)
 
 zephyr_include_directories(
   ${SOFTDEVICE_INCLUDE_DIR}

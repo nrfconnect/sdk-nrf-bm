@@ -20,16 +20,16 @@ cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble_gattc.h)
 cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble_gap.h)
 
 zephyr_compile_definitions(
+  NRF54L15_XXAA
   SVCALL_AS_NORMAL_FUNCTION
   SUPPRESS_INLINE_IMPLEMENTATION
-  NRF54L15_XXAA
+)
+
+zephyr_include_directories(
+  ${SOFTDEVICE_INCLUDE_DIR}
+  ${ZEPHYR_NRF_BM_MODULE_DIR}/include
 )
 
 # Generate and add test file
 test_runner_generate(src/unity_test.c)
 target_sources(app PRIVATE src/unity_test.c)
-
-zephyr_include_directories(
-  ${ZEPHYR_NRF_BM_MODULE_DIR}/include
-  ${SOFTDEVICE_INCLUDE_DIR}
-)
