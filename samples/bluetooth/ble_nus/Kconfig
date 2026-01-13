@@ -18,10 +18,6 @@ config APP_NUS_LPUARTE
 
 if APP_NUS_LPUARTE
 
-config APP_GPIOTE_IRQ_PRIO
-	int "GPIOTE IRQ priority"
-	default 3
-
 endif # APP_NUS_LPUARTE
 
 config APP_NUS_UART_HWFC

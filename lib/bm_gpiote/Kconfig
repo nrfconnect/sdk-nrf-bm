@@ -1,0 +1,23 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menuconfig BM_GPIOTE
+	bool "GPIOTE library"
+	depends on NRFX_GPIOTE
+	help
+	  A library to manage GPIOTE.
+
+if BM_GPIOTE
+
+config BM_GPIOTE_IRQ_PRIO
+	int "GPIOTE IRQ priority"
+	default 3
+
+module=BM_GPIOTE
+module-str=GPIOTE library
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endif

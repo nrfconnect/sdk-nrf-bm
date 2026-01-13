@@ -84,6 +84,13 @@ Bare Metal Buttons library
 
 .. doxygengroup:: bm_buttons
 
+.. _api_bm_gpiote:
+
+Bare Metal GPIOTE library
+=========================
+
+.. doxygengroup:: bm_gpiote
+
 .. _api_bm_scheduler:
 
 Bare Metal Event Scheduler library
