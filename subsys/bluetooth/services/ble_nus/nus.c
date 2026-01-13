@@ -259,7 +259,6 @@ uint32_t ble_nus_init(struct ble_nus *nus, const struct ble_nus_config *cfg)
 
 	/* Initialize the service structure. */
 	nus->evt_handler = cfg->evt_handler;
-	nus->service_handle = BLE_CONN_HANDLE_INVALID;
 
 	/* Add a custom base UUID. */
 	nrf_err = sd_ble_uuid_vs_add(&uuid_base, &nus->uuid_type);

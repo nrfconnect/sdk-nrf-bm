@@ -314,9 +314,6 @@ uint32_t ble_mcumgr_init(const struct ble_mcumgr_config *cfg)
 		return NRF_ERROR_NULL;
 	}
 
-	/* Initialize the service structure */
-	ble_mcumgr.service_handle = BLE_CONN_HANDLE_INVALID;
-
 	/* Add MCUmgr service/characteristic UUIDs */
 	nrf_err = sd_ble_uuid_vs_add(&uuid_base_service, &ble_mcumgr.uuid_type_service);
 

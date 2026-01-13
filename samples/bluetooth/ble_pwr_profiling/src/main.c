@@ -426,9 +426,6 @@ static uint32_t ble_service_init(uint16_t *service_handle, uint8_t *uuid_type,
 		return NRF_ERROR_NULL;
 	}
 
-	/* Initialize the service structure. */
-	*service_handle = BLE_CONN_HANDLE_INVALID;
-
 	/* Add a custom base UUID. */
 	nrf_err = sd_ble_uuid_vs_add(&uuid_base, uuid_type);
 	if (nrf_err) {

@@ -29,12 +29,11 @@ static uint32_t stub_sd_ble_gatts_service_add(uint8_t type, const ble_uuid_t *p_
 		.type = 123,
 		.uuid = BLE_UUID_NUS_SERVICE,
 	};
-	uint16_t expected_conn_handle = BLE_CONN_HANDLE_INVALID;
 
 	TEST_ASSERT_EQUAL(BLE_GATTS_SRVC_TYPE_PRIMARY, type);
 	TEST_ASSERT_EQUAL(expected_uuid.type, p_uuid->type);
 	TEST_ASSERT_EQUAL(expected_uuid.uuid, p_uuid->uuid);
-	TEST_ASSERT_EQUAL(expected_conn_handle, *p_handle);
+	TEST_ASSERT_NOT_NULL(p_handle);
 	*p_handle = test_case_conn_handle;
 
 	return NRF_SUCCESS;
