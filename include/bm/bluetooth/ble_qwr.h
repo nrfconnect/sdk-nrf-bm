@@ -18,8 +18,8 @@
  *       @ref ble_qwr_on_ble_evt().
  */
 
-#ifndef NRF_BLE_QUEUED_WRITES_H__
-#define NRF_BLE_QUEUED_WRITES_H__
+#ifndef BLE_QWR_H__
+#define BLE_QWR_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -232,6 +232,6 @@ uint32_t ble_qwr_value_get(struct ble_qwr *qwr, uint16_t attr_handle, uint8_t *m
 }
 #endif
 
-#endif /* NRF_BLE_QUEUED_WRITES_H__ */
+#endif /* BLE_QWR_H__ */
 
 /** @} */
