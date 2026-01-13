@@ -626,7 +626,7 @@ uint32_t ble_scan_init(struct ble_scan *scan, struct ble_scan_config *config)
 uint32_t ble_scan_params_set(struct ble_scan *const scan,
 			     const ble_gap_scan_params_t *const scan_params)
 {
-	if (!scan | !scan_params) {
+	if (!scan || !scan_params) {
 		return NRF_ERROR_NULL;
 	}
 
