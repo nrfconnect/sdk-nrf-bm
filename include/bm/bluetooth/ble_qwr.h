@@ -38,10 +38,7 @@ extern "C" {
  */
 #define BLE_QWR_DEF(_name)                                                                         \
 	static struct ble_qwr _name;                                                               \
-	NRF_SDH_BLE_OBSERVER(_name ## _obs,                                                        \
-			     ble_qwr_on_ble_evt,                                                   \
-			     &_name,                                                               \
-			     HIGH)
+	NRF_SDH_BLE_OBSERVER(_name##_obs, ble_qwr_on_ble_evt, &_name, HIGH)
 
 /* Error code used by the module to reject prepare write requests on non-registered attributes. */
 #define BLE_QWR_REJ_REQUEST_ERR_CODE BLE_GATT_STATUS_ATTERR_APP_BEGIN + 0

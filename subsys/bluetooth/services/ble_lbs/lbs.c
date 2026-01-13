@@ -159,7 +159,6 @@ uint32_t ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg)
 uint32_t ble_lbs_on_button_change(struct ble_lbs *lbs, uint16_t conn_handle, uint8_t button_state)
 {
 	uint32_t nrf_err;
-
 	uint16_t len = sizeof(button_state);
 
 	if (!lbs) {

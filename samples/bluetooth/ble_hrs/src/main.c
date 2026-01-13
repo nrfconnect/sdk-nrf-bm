@@ -222,7 +222,7 @@ static void simulated_meas_start(void)
 			     BM_TIMER_MS_TO_TICKS(CONFIG_APP_RR_INTERVAL_MEAS_INTERVAL), NULL);
 	(void)bm_timer_start(&sensor_contact_timer,
 			     BM_TIMER_MS_TO_TICKS(CONFIG_APP_SENSOR_CONTACT_DETECTED_INTERVAL),
-						  NULL);
+			     NULL);
 }
 
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)

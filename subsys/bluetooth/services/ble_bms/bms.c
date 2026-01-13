@@ -458,7 +458,7 @@ uint32_t ble_bms_init(struct ble_bms *bms, struct ble_bms_config *bms_config)
 	bms->conn_handle = BLE_CONN_HANDLE_INVALID;
 
 	nrf_err = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY,
-				       &ble_uuid, &bms->service_handle);
+					   &ble_uuid, &bms->service_handle);
 	if (nrf_err) {
 		return nrf_err;
 	}

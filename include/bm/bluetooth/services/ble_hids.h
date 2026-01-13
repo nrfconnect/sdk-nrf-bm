@@ -34,12 +34,10 @@ extern "C" {
  */
 #define BLE_HIDS_DEF(_name)                                                                        \
 	static struct ble_hids _name = {                                                           \
-		.link_ctx_storage =                                                                \
-			{                                                                          \
-				.max_links_cnt = CONFIG_BLE_HIDS_MAX_CLIENTS,                      \
-				.link_ctx_size =                                                   \
-					sizeof(uint32_t) * BYTES_TO_WORDS(BLE_HIDS_LINK_CTX_SIZE), \
-			},                                                                         \
+		.link_ctx_storage = {                                                              \
+			.max_links_cnt = CONFIG_BLE_HIDS_MAX_CLIENTS,                              \
+			.link_ctx_size = sizeof(uint32_t) * BYTES_TO_WORDS(BLE_HIDS_LINK_CTX_SIZE),\
+		},                                                                                 \
 	};                                                                                         \
 	NRF_SDH_BLE_OBSERVER(_name##_obs, ble_hids_on_ble_evt, &_name, HIGH)
 

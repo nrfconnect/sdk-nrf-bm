@@ -42,9 +42,7 @@ extern "C" {
  */
 #define BLE_CGMS_DEF(_name)                                                                        \
 	static struct ble_cgms _name;                                                              \
-	NRF_SDH_BLE_OBSERVER(_name ## _obs,                                                        \
-			     ble_cgms_on_ble_evt, &_name,                                          \
-			     HIGH)
+	NRF_SDH_BLE_OBSERVER(_name##_obs, ble_cgms_on_ble_evt, &_name, HIGH)
 
 /** @brief Default security configuration. */
 #define BLE_CGMS_CONFIG_SEC_MODE_DEFAULT                                                           \
@@ -336,8 +334,7 @@ struct ble_cgms;
  * @param cgms CGMS instance.
  * @param evt CGMS Event.
  */
-typedef void (*ble_cgms_evt_handler_t)(struct ble_cgms *cgms,
-					   const struct ble_cgms_evt *evt);
+typedef void (*ble_cgms_evt_handler_t)(struct ble_cgms *cgms, const struct ble_cgms_evt *evt);
 
 /** @} */ /* ble_cgms_types */
 

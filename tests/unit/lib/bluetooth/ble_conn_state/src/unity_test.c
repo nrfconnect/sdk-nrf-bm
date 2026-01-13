@@ -27,7 +27,7 @@ static uint16_t conn_handles_registered[CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT] = {
 
 void conn_handle_register(uint16_t conn_handle)
 {
-	for (int i = 0; i < ARRAY_SIZE(conn_handles_registered) ; i++) {
+	for (int i = 0; i < ARRAY_SIZE(conn_handles_registered); i++) {
 		if (conn_handles_registered[i] == BLE_CONN_HANDLE_INVALID) {
 			conn_handles_registered[i] = conn_handle;
 			return;
@@ -37,7 +37,7 @@ void conn_handle_register(uint16_t conn_handle)
 
 void conn_handle_deregister(uint16_t conn_handle)
 {
-	for (int i = 0; i < ARRAY_SIZE(conn_handles_registered) ; i++) {
+	for (int i = 0; i < ARRAY_SIZE(conn_handles_registered); i++) {
 		if (conn_handles_registered[i] == conn_handle) {
 			conn_handles_registered[i] = BLE_CONN_HANDLE_INVALID;
 			return;
@@ -47,7 +47,7 @@ void conn_handle_deregister(uint16_t conn_handle)
 
 int nrf_sdh_ble_idx_get(uint16_t conn_handle)
 {
-	for (int i = 0; i < ARRAY_SIZE(conn_handles_registered) ; i++) {
+	for (int i = 0; i < ARRAY_SIZE(conn_handles_registered); i++) {
 		if (conn_handles_registered[i] == conn_handle) {
 			return i;
 		}

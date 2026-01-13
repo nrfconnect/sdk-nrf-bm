@@ -38,7 +38,7 @@ struct ble_lbs;
 #define BLE_LBS_DEF(_name)                                                                         \
 	static struct ble_lbs _name;                                                               \
 	extern void ble_lbs_on_ble_evt(const ble_evt_t *ble_evt, void *lbs_instance);              \
-	NRF_SDH_BLE_OBSERVER(_name ## _obs, ble_lbs_on_ble_evt, &_name, HIGH)
+	NRF_SDH_BLE_OBSERVER(_name##_obs, ble_lbs_on_ble_evt, &_name, HIGH)
 
 /** @brief Default security configuration. */
 #define BLE_LBS_CONFIG_SEC_MODE_DEFAULT                                                            \
