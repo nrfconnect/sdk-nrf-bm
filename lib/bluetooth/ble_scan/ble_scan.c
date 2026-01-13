@@ -14,8 +14,8 @@
 
 LOG_MODULE_REGISTER(ble_scan, CONFIG_BLE_SCAN_LOG_LEVEL);
 
-int ble_scan_copy_addr_to_sd_gap_addr(ble_gap_addr_t *gap_addr,
-				      const uint8_t addr[BLE_GAP_ADDR_LEN])
+uint32_t ble_scan_copy_addr_to_sd_gap_addr(ble_gap_addr_t *gap_addr,
+					   const uint8_t addr[BLE_GAP_ADDR_LEN])
 {
 	if (!gap_addr) {
 		return NRF_ERROR_NULL;
@@ -386,8 +386,7 @@ static int ble_scan_appearance_filter_add(struct ble_scan *const scan, uint16_t 
 }
 #endif /* CONFIG_BLE_SCAN_APPEARANCE_COUNT */
 
-int ble_scan_filter_add(struct ble_scan *const scan, uint8_t type,
-			const void *data)
+uint32_t ble_scan_filter_add(struct ble_scan *const scan, uint8_t type, const void *data)
 {
 	if (!scan || !data) {
 		return NRF_ERROR_NULL;
@@ -439,7 +438,7 @@ int ble_scan_filter_add(struct ble_scan *const scan, uint8_t type,
 	}
 }
 
-int ble_scan_all_filter_remove(struct ble_scan *const scan)
+uint32_t ble_scan_all_filter_remove(struct ble_scan *const scan)
 {
 #if (CONFIG_BLE_SCAN_NAME_COUNT > 0)
 	struct ble_scan_name_filter *name_filter = &scan->scan_filters.name_filter;
@@ -481,7 +480,7 @@ int ble_scan_all_filter_remove(struct ble_scan *const scan)
 	return NRF_SUCCESS;
 }
 
-int ble_scan_filters_enable(struct ble_scan *const scan, uint8_t mode, bool match_all)
+uint32_t ble_scan_filters_enable(struct ble_scan *const scan, uint8_t mode, bool match_all)
 {
 	int nrf_err;
 	struct ble_scan_filters *filters;
@@ -544,7 +543,7 @@ int ble_scan_filters_enable(struct ble_scan *const scan, uint8_t mode, bool matc
 	return NRF_SUCCESS;
 }
 
-int ble_scan_filters_disable(struct ble_scan *const scan)
+uint32_t ble_scan_filters_disable(struct ble_scan *const scan)
 {
 	if (!scan) {
 		return NRF_ERROR_NULL;
@@ -575,7 +574,7 @@ int ble_scan_filters_disable(struct ble_scan *const scan)
 	return NRF_SUCCESS;
 }
 
-int ble_scan_filter_get(struct ble_scan *const scan, struct ble_scan_filters *status)
+uint32_t ble_scan_filter_get(struct ble_scan *const scan, struct ble_scan_filters *status)
 {
 	if (!scan || !status) {
 		return NRF_ERROR_NULL;
@@ -599,7 +598,7 @@ bool is_allow_list_used(const struct ble_scan *const scan)
 	return false;
 }
 
-int ble_scan_init(struct ble_scan *scan, struct ble_scan_config *config)
+uint32_t ble_scan_init(struct ble_scan *scan, struct ble_scan_config *config)
 {
 	if (!scan || !config) {
 		return NRF_ERROR_NULL;
@@ -624,8 +623,8 @@ int ble_scan_init(struct ble_scan *scan, struct ble_scan_config *config)
 	return NRF_SUCCESS;
 }
 
-int ble_scan_params_set(struct ble_scan *const scan,
-			const ble_gap_scan_params_t *const scan_params)
+uint32_t ble_scan_params_set(struct ble_scan *const scan,
+			     const ble_gap_scan_params_t *const scan_params)
 {
 	if (!scan | !scan_params) {
 		return NRF_ERROR_NULL;
@@ -641,7 +640,7 @@ int ble_scan_params_set(struct ble_scan *const scan,
 	return NRF_SUCCESS;
 }
 
-int ble_scan_start(const struct ble_scan *const scan)
+uint32_t ble_scan_start(const struct ble_scan *const scan)
 {
 	uint32_t nrf_err;
 	struct ble_scan_evt scan_evt = {

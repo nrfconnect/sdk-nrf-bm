@@ -67,7 +67,9 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Libraries
 =========
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* :ref:`lib_ble_scan`:
+
+   * Updated functions to use the ``uint32_t`` type instead of ``int`` when returning nrf_errors.
 
 Bluetooth LE Services
 ---------------------
