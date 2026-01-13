@@ -227,8 +227,8 @@ uint32_t ble_adv_data_encode(const struct ble_adv_data *ble_adv_data, uint8_t *b
  *			The offset the data type can be found at, on output.
  * @param[in] ad_type The type of data to search for.
  *
- * @returns The length of the data if found, or 0 if no data was found with the type @p ad_type,
- *          or if @p buf or @p offset were @c NULL.
+ * @return The length of the data if found, or 0 if no data was found with the type @p ad_type,
+ *         or if @p buf or @p offset were @c NULL.
  */
 uint16_t ble_adv_data_search(const uint8_t *buf, uint16_t len, uint16_t *offset, uint8_t ad_type);
 
@@ -245,8 +245,8 @@ uint16_t ble_adv_data_search(const uint8_t *buf, uint16_t len, uint16_t *offset,
  * @param[in] len Buffer length.
  * @param[in] ad_type Type of data to search for.
  *
- * @returns A pointer to the data if found, or @c NULL if no data was found with the type
- *          @p ad_type, or if @p buf was @c NULL.
+ * @return A pointer to the data if found, or @c NULL if no data was found with the type
+ *         @p ad_type, or if @p buf was @c NULL.
  */
 uint8_t *ble_adv_data_parse(const uint8_t *buf, uint16_t len, uint8_t ad_type);
 
