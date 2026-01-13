@@ -406,7 +406,7 @@ bool is_allow_list_used(const struct ble_scan *const scan_ctx);
  * @retval NRF_SUCCESS If initialization was successful.
  * @retval NRF_ERROR_NULL When a NULL pointer is passed as input.
  */
-int ble_scan_init(struct ble_scan *scan, struct ble_scan_config *config);
+uint32_t ble_scan_init(struct ble_scan *scan, struct ble_scan_config *config);
 
 /**
  * @brief Start scanning.
@@ -422,7 +422,7 @@ int ble_scan_init(struct ble_scan *scan, struct ble_scan_config *config);
  * @return This API propagates the error code returned by the
  *         SoftDevice API @ref sd_ble_gap_scan_start.
  */
-int ble_scan_start(const struct ble_scan *const scan_ctx);
+uint32_t ble_scan_start(const struct ble_scan *const scan_ctx);
 
 /**
  * @brief Stop scanning.
@@ -451,7 +451,7 @@ void ble_scan_stop(const struct ble_scan *const scan_ctx);
  * @retval NRF_ERROR_INVALID_PARAM  If the filter mode is invalid.
  * @retval NRF_ERROR_NULL If a NULL pointer is passed as input.
  */
-int ble_scan_filters_enable(struct ble_scan *const scan_ctx, uint8_t mode, bool match_all);
+uint32_t ble_scan_filters_enable(struct ble_scan *const scan_ctx, uint8_t mode, bool match_all);
 
 /**
  * @brief Disable filtering.
@@ -466,7 +466,7 @@ int ble_scan_filters_enable(struct ble_scan *const scan_ctx, uint8_t mode, bool 
  * @retval NRF_SUCCESS If filters are disabled successfully.
  * @retval NRF_ERROR_NULL If a NULL pointer is passed as input.
  */
-int ble_scan_filters_disable(struct ble_scan *const scan_ctx);
+uint32_t ble_scan_filters_disable(struct ble_scan *const scan_ctx);
 
 /**
  * @brief Get filter status.
@@ -479,7 +479,7 @@ int ble_scan_filters_disable(struct ble_scan *const scan_ctx);
  * @retval NRF_SUCCESS If filter status is returned.
  * @retval NRF_ERROR_NULL If a NULL pointer is passed as input.
  */
-int ble_scan_filter_get(struct ble_scan *const scan_ctx, struct ble_scan_filters *status);
+uint32_t ble_scan_filter_get(struct ble_scan *const scan_ctx, struct ble_scan_filters *status);
 
 /**
  * @brief Add scan filter.
@@ -503,8 +503,7 @@ int ble_scan_filter_get(struct ble_scan *const scan_ctx, struct ble_scan_filters
  *                                 @ref ble_scan_filter_type_t.
  * @retval BLE_ERROR_GAP_INVALID_BLE_ADDR If the BLE address type is invalid.
  */
-int ble_scan_filter_add(struct ble_scan *const scan_ctx, uint8_t type,
-			const void *data);
+uint32_t ble_scan_filter_add(struct ble_scan *const scan_ctx, uint8_t type, const void *data);
 
 /**
  * @brief Remove all filters.
@@ -517,7 +516,7 @@ int ble_scan_filter_add(struct ble_scan *const scan_ctx, uint8_t type,
  *
  * @retval NRF_SUCCESS If all filters are removed successfully.
  */
-int ble_scan_all_filter_remove(struct ble_scan *const scan_ctx);
+uint32_t ble_scan_all_filter_remove(struct ble_scan *const scan_ctx);
 
 #endif /* CONFIG_BLE_SCAN_FILTER */
 
@@ -533,7 +532,8 @@ int ble_scan_all_filter_remove(struct ble_scan *const scan_ctx);
  * @retval NRF_SUCCESS If parameters are changed successfully.
  * @retval NRF_ERROR_NULL If a NULL pointer is passed as input.
  */
-int ble_scan_params_set(struct ble_scan *const scan_ctx, const ble_gap_scan_params_t *scan_params);
+uint32_t ble_scan_params_set(struct ble_scan *const scan_ctx,
+			     const ble_gap_scan_params_t *scan_params);
 
 /**
  * @brief Handler for BLE stack events.
@@ -558,8 +558,8 @@ void ble_scan_on_ble_evt(const ble_evt_t *ble_evt, void *scan);
  * @retval NRF_ERROR_NULL If a NULL pointer is passed as input.
  * @retval NRF_SUCCESS If the address is copied and converted successfully.
  */
-int ble_scan_copy_addr_to_sd_gap_addr(ble_gap_addr_t *gap_addr,
-				      const uint8_t addr[BLE_GAP_ADDR_LEN]);
+uint32_t ble_scan_copy_addr_to_sd_gap_addr(ble_gap_addr_t *gap_addr,
+					   const uint8_t addr[BLE_GAP_ADDR_LEN]);
 
 #ifdef __cplusplus
 }
