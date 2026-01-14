@@ -98,6 +98,10 @@ Bluetooth LE samples
 
    * Added support for boot mode.
 
+* :ref:`ble_hids_mouse_sample`:
+
+   * Fixed an issue where the sample did not enter or exit boot mode properly based on the HID events.
+
 * :ref:`ble_pwr_profiling_sample`:
 
    * Updated to use a dedicated variable to hold the service attribute handle instead of incorrectly using the connection handle variable for this during service initialization.

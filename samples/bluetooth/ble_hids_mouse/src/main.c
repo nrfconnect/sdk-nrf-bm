@@ -239,9 +239,11 @@ static void on_hids_evt(struct ble_hids *hids, const struct ble_hids_evt *hids_e
 		break;
 	case BLE_HIDS_EVT_BOOT_MODE_ENTERED:
 		LOG_DBG("Entered boot mode");
+		boot_mode = true;
 		break;
 	case BLE_HIDS_EVT_REPORT_MODE_ENTERED:
 		LOG_DBG("Entered report mode");
+		boot_mode = false;
 		break;
 	case BLE_HIDS_EVT_REPORT_READ:
 		LOG_DBG("Read report event");
