@@ -66,8 +66,13 @@ static bool adv_mode_has_allow_list(enum ble_adv_mode mode)
 			return false;
 		} __fallthrough;
 	case BLE_ADV_MODE_FAST:
+		if (IS_ENABLED(CONFIG_BLE_ADV_FAST_ADVERTISING)) {
+			return true;
+		} __fallthrough;
 	case BLE_ADV_MODE_SLOW:
-		return true;
+		if (IS_ENABLED(CONFIG_BLE_ADV_SLOW_ADVERTISING)) {
+			return true;
+		} __fallthrough;
 	default:
 		return false;
 	}
