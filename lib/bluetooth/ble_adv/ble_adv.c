@@ -268,7 +268,7 @@ uint32_t ble_adv_conn_cfg_tag_set(struct ble_adv *ble_adv, uint8_t ble_cfg_tag)
 	return NRF_SUCCESS;
 }
 
-uint32_t ble_adv_init(struct ble_adv *ble_adv, struct ble_adv_config *ble_adv_config)
+uint32_t ble_adv_init(struct ble_adv *ble_adv, const struct ble_adv_config *ble_adv_config)
 {
 	uint32_t nrf_err;
 	ble_gap_conn_sec_mode_t sec_mode = {0};

@@ -76,6 +76,10 @@ Libraries
 
    * Updated to use the :ref:`lib_bm_gpiote` library.
 
+* :ref:`lib_ble_adv`:
+
+   * Added the ``const`` keyword to the configuration structure parameter of the :c:func:`ble_adv_init` function to reflect that the function only reads from the configuration and does not modify it.
+
 * :ref:`lib_ble_scan`:
 
    * Updated functions to use the ``uint32_t`` type instead of ``int`` when returning nrf_errors.

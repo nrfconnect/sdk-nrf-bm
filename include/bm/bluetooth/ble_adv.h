@@ -255,7 +255,7 @@ void ble_adv_on_ble_evt(const ble_evt_t *ble_evt, void *ble_adv);
  * @retval NRF_ERROR_NULL If @p ble_adv or @p ble_adv_config are @c NULL.
  * @retval NRF_ERROR_INVALID_PARAM If the configuration @p ble_adv_config is invalid.
  */
-uint32_t ble_adv_init(struct ble_adv *ble_adv, struct ble_adv_config *ble_adv_config);
+uint32_t ble_adv_init(struct ble_adv *ble_adv, const struct ble_adv_config *ble_adv_config);
 
 /**
  * @brief Set the connection configuration tag used for connections.
