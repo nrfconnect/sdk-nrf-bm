@@ -15,8 +15,6 @@ set(SOFTDEVICE_INCLUDE_DIR "${ZEPHYR_NRF_BM_MODULE_DIR}/components/softdevice/\
 ${SOFTDEVICE_VARIANT}/${SOFTDEVICE_VARIANT}_API/include")
 
 cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble.h)
-cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble_gatts.h)
-cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble_gattc.h)
 cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble_gap.h)
 
 zephyr_compile_definitions(
