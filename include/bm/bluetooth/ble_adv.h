@@ -78,7 +78,7 @@ enum ble_adv_evt_type {
 	 */
 	BLE_ADV_EVT_IDLE,
 	/**
-	 * @brief Directed advertising mode ((high duty cycle) has started.
+	 * @brief Directed advertising mode (high duty cycle) has started.
 	 */
 	BLE_ADV_EVT_DIRECTED_HIGH_DUTY,
 	/**
@@ -295,9 +295,9 @@ uint32_t ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode);
  * @param[in] peer_addr Pointer to a peer address.
  *
  * @retval NRF_SUCCESS On success.
- * @retval NRF_ERROR_INVALID_STATE Library is not initialized.
+ * @retval NRF_ERROR_INVALID_STATE Unexpected reply. No ongoing request for peer address.
  * @retval NRF_ERROR_NULL @p ble_adv is @c NULL.
- * @retval NRF_ERROR_INVALID_PARAM Invalid parameters.
+ * @retval NRF_ERROR_INVALID_PARAM Invalid peer address.
  */
 uint32_t ble_adv_peer_addr_reply(struct ble_adv *ble_adv, const ble_gap_addr_t *peer_addr);
 
@@ -314,9 +314,8 @@ uint32_t ble_adv_peer_addr_reply(struct ble_adv *ble_adv, const ble_gap_addr_t *
  * @param[in] irk_cnt The number of peer IRKs.
  *
  * @retval NRF_SUCCESS On success.
- * @retval NRF_ERROR_INVALID_STATE Library is not initialized.
+ * @retval NRF_ERROR_INVALID_STATE Unexpected allow list reply. No ongoing request for allow list.
  * @retval NRF_ERROR_NULL @p ble_adv is @c NULL.
- * @retval NRF_ERROR_INVALID_PARAM Invalid parameters.
  */
 uint32_t ble_adv_allow_list_reply(struct ble_adv *ble_adv,
 				  const ble_gap_addr_t *gap_addrs, uint32_t addr_cnt,
