@@ -91,7 +91,9 @@ Samples
 Bluetooth LE samples
 --------------------
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* :ref:`ble_hids_keyboard_sample`:
+
+   * Added support for boot mode.
 
 NFC samples
 -----------
