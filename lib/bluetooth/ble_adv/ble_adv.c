@@ -522,6 +522,13 @@ uint32_t ble_adv_restart_without_allow_list(struct ble_adv *ble_adv)
 {
 	uint32_t nrf_err;
 
+	if (!ble_adv) {
+		return NRF_ERROR_NULL;
+	}
+	if (!ble_adv->is_initialized) {
+		return NRF_ERROR_INVALID_STATE;
+	}
+
 	(void)sd_ble_gap_adv_stop(ble_adv->adv_handle);
 
 	ble_adv->allow_list_temporarily_disabled = true;
