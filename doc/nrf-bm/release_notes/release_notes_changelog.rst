@@ -80,6 +80,11 @@ Libraries
 
    * Added the ``const`` keyword to the configuration structure parameter of the :c:func:`ble_adv_init` function to reflect that the function only reads from the configuration and does not modify it.
 
+   * Fixed:
+
+      * An issue causing fast advertising with allow list to incorrectly send event :c:enumerator:`BLE_ADV_EVT_FAST` when it should have sent event :c:enumerator:`BLE_ADV_EVT_FAST_ALLOW_LIST`.
+      * An issue causing slow advertising with allow list to incorrectly send event :c:enumerator:`BLE_ADV_EVT_SLOW` when it should have sent event :c:enumerator:`BLE_ADV_EVT_SLOW_ALLOW_LIST`.
+
 * :ref:`lib_ble_scan`:
 
    * Updated functions to use the ``uint32_t`` type instead of ``int`` when returning nrf_errors.

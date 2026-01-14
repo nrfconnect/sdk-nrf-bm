@@ -410,7 +410,8 @@ uint32_t ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 		if (IS_ENABLED(CONFIG_BLE_ADV_FAST_ADVERTISING)) {
 			LOG_INF("Fast advertising");
 			mode = BLE_ADV_MODE_FAST;
-			adv_evt.evt_type = BLE_ADV_EVT_FAST;
+			adv_evt.evt_type = ble_adv->allow_list_in_use ? BLE_ADV_EVT_FAST_ALLOW_LIST
+								      : BLE_ADV_EVT_FAST;
 			nrf_err = set_adv_mode_fast(ble_adv);
 			if (nrf_err) {
 				LOG_ERR("Failed to set fast advertising params, nrf_error %#x",
@@ -424,7 +425,8 @@ uint32_t ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 		if (IS_ENABLED(CONFIG_BLE_ADV_SLOW_ADVERTISING)) {
 			LOG_INF("Slow advertising");
 			mode = BLE_ADV_MODE_SLOW;
-			adv_evt.evt_type = BLE_ADV_EVT_SLOW;
+			adv_evt.evt_type = ble_adv->allow_list_in_use ? BLE_ADV_EVT_SLOW_ALLOW_LIST
+								      : BLE_ADV_EVT_SLOW;
 			nrf_err = set_adv_mode_slow(ble_adv);
 			if (nrf_err) {
 				LOG_ERR("Failed to set slow advertising params, nrf_error %#x",
