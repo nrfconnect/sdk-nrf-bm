@@ -96,6 +96,8 @@ static uint16_t peer_id;
 static bool auth_key_request;
 /* State of caps lock */
 static bool caps_on;
+/* Boot protocol mode */
+static bool boot_mode;
 
 /* Forward declaration */
 static void identities_set(enum pm_peer_id_list_skip skip);
@@ -135,6 +137,7 @@ void report_fifo_process(void)
 	uint32_t nrf_err;
 	uint32_t written;
 	struct ble_hids_input_report report;
+	struct ble_hids_boot_keyboard_input_report boot_report;
 	uint8_t keys[CONFIG_BLE_HIDS_INPUT_REPORT_MAX_LEN];
 	unsigned int key;
 
@@ -156,7 +159,14 @@ void report_fifo_process(void)
 	}
 
 	report.data = keys;
-	nrf_err = ble_hids_inp_rep_send(&ble_hids, conn_handle, &report);
+	if (boot_mode) {
+		boot_report.data = report.data;
+		boot_report.len = report.len;
+		nrf_err = ble_hids_boot_kb_inp_rep_send(&ble_hids, conn_handle, &boot_report);
+	} else {
+		nrf_err = ble_hids_inp_rep_send(&ble_hids, conn_handle, &report);
+	}
+
 	if (nrf_err && nrf_err != BLE_ERROR_GATTS_SYS_ATTR_MISSING) {
 		LOG_ERR("Failed to send queued input report, nrf_error %#x", nrf_err);
 	}
@@ -357,9 +367,11 @@ static void on_hids_evt(struct ble_hids *hids, const struct ble_hids_evt *hids_e
 		break;
 	case BLE_HIDS_EVT_BOOT_MODE_ENTERED:
 		LOG_DBG("Entered boot mode");
+		boot_mode = true;
 		break;
 	case BLE_HIDS_EVT_REPORT_MODE_ENTERED:
 		LOG_DBG("Entered report mode");
+		boot_mode = false;
 		break;
 	case BLE_HIDS_EVT_REPORT_READ:
 		LOG_DBG("Read report event");
@@ -537,6 +549,10 @@ static int on_key_press(struct ble_hids *hids, const char key, bool pressed)
 		.data = keys_report,
 		.len = sizeof(keys_report),
 	};
+	struct ble_hids_boot_keyboard_input_report boot_inp_rep = {
+		.data = keys_report,
+		.len = sizeof(keys_report),
+	};
 
 	if (pressed) {
 		key_set(hids, keys_report, sizeof(keys_report), key);
@@ -548,7 +564,12 @@ static int on_key_press(struct ble_hids *hids, const char key, bool pressed)
 		return report_fifo_put(&inp_rep);
 	}
 
-	nrf_err = ble_hids_inp_rep_send(hids, conn_handle, &inp_rep);
+	if (boot_mode) {
+		nrf_err = ble_hids_boot_kb_inp_rep_send(hids, conn_handle, &boot_inp_rep);
+	} else {
+		nrf_err = ble_hids_inp_rep_send(hids, conn_handle, &inp_rep);
+	}
+
 	if (nrf_err && nrf_err != BLE_ERROR_GATTS_SYS_ATTR_MISSING) {
 		if (nrf_err == NRF_ERROR_RESOURCES) {
 			return report_fifo_put(&inp_rep);
