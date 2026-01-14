@@ -94,6 +94,10 @@ Samples
 Bluetooth LE samples
 --------------------
 
+* :ref:`ble_hids_keyboard_sample`:
+
+   * Added support for boot mode.
+
 * :ref:`ble_pwr_profiling_sample`:
 
    * Updated to use a dedicated variable to hold the service attribute handle instead of incorrectly using the connection handle variable for this during service initialization.
