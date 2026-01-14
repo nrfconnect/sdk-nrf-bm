@@ -15,16 +15,13 @@ LOG_MODULE_REGISTER(ble_adv, CONFIG_BLE_ADV_LOG_LEVEL);
 /* Total number of possible advertising modes  */
 #define BLE_ADV_MODES (5)
 
-static bool allow_list_has_entries(struct ble_adv *ble_adv)
-{
-	return ble_adv->allow_list_in_use;
-}
-
+#if defined(CONFIG_BLE_ADV_FAST_ADVERTISING) || defined(CONFIG_BLE_ADV_SLOW_ADVERTISING)
 static bool use_allow_list(struct ble_adv *ble_adv)
 {
-	return (IS_ENABLED(CONFIG_BLE_ADV_USE_ALLOW_LIST) &&
-		!ble_adv->allow_list_temporarily_disabled && allow_list_has_entries(ble_adv));
+	return (IS_ENABLED(CONFIG_BLE_ADV_USE_ALLOW_LIST) && ble_adv->allow_list_in_use &&
+		!ble_adv->allow_list_temporarily_disabled);
 }
+#endif /* CONFIG_BLE_ADV_FAST_ADVERTISING || CONFIG_BLE_ADV_SLOW_ADVERTISING */
 
 static bool peer_addr_is_valid(const ble_gap_addr_t *addr)
 {
