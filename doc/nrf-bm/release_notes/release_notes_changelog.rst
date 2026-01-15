@@ -144,6 +144,10 @@ Bluetooth LE samples
 
    * Updated to use a dedicated variable to hold the service attribute handle instead of incorrectly using the connection handle variable for this during service initialization.
 
+* :ref:`peripheral_nfc_pairing_sample`:
+
+   * Added the new sample.
+
 NFC samples
 -----------
 
