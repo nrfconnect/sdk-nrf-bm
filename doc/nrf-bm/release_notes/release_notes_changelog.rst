@@ -91,7 +91,9 @@ Samples
 Bluetooth LE samples
 --------------------
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* :ref:`ble_hids_mouse_sample`:
+
+   * Fixed an issue where the sample did not enter or exit boot mode properly based on the HID events.
 
 NFC samples
 -----------
