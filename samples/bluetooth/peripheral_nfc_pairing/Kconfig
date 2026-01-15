@@ -1,0 +1,15 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "BLE Peripheral NFC Pairing sample"
+
+module=APP_BLE_PERIPHERAL_NFC_PAIRING
+module-str=BLE Peripheral NFC Pairing sample
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endmenu # "BLE Peripheral NFC Pairing sample"
+
+source "Kconfig.zephyr"
