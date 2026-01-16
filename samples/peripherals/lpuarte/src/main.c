@@ -17,9 +17,6 @@
 
 LOG_MODULE_REGISTER(app, CONFIG_APP_LPUARTE_LOG_LEVEL);
 
-static nrfx_gpiote_t gpiote_inst[] = {
-	NRFX_GPIOTE_INSTANCE(NRF_GPIOTE30), NRFX_GPIOTE_INSTANCE(NRF_GPIOTE20),
-};
 static nrfx_uarte_t uarte_inst = NRFX_UARTE_INSTANCE(BOARD_APP_LPUARTE_INST);
 
 /** Application Low Power UARTE instance */
@@ -59,18 +56,6 @@ static void lpuarte_event_handler(const nrfx_uarte_event_t *event, void *ctx)
 	}
 }
 
-ISR_DIRECT_DECLARE(gpiote_20_direct_isr)
-{
-	nrfx_gpiote_irq_handler(&gpiote_inst[1]);
-	return 0;
-}
-
-ISR_DIRECT_DECLARE(gpiote_30_direct_isr)
-{
-	nrfx_gpiote_irq_handler(&gpiote_inst[0]);
-	return 0;
-}
-
 ISR_DIRECT_DECLARE(lpuarte_direct_isr)
 {
 	nrfx_uarte_irq_handler(&uarte_inst);
@@ -84,8 +69,6 @@ static int lpuarte_init(void)
 
 	struct bm_lpuarte_config lpu_cfg = {
 		.uarte_inst = &uarte_inst,
-		.gpiote_inst = gpiote_inst,
-		.gpiote_inst_num = ARRAY_SIZE(gpiote_inst),
 		.uarte_cfg = NRFX_UARTE_DEFAULT_CONFIG(BOARD_APP_LPUARTE_PIN_TX,
 						       BOARD_APP_LPUARTE_PIN_RX),
 		.req_pin = BOARD_APP_LPUARTE_PIN_REQ,
@@ -97,12 +80,6 @@ static int lpuarte_init(void)
 #endif
 
 	lpu_cfg.uarte_cfg.interrupt_priority = CONFIG_APP_LPUARTE_IRQ_PRIO;
-
-	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_GPIOTE20) + NRF_GPIOTE_IRQ_GROUP,
-			   CONFIG_APP_LPUARTE_GPIOTE_IRQ_PRIO, gpiote_20_direct_isr, 0);
-
-	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_GPIOTE30) + NRF_GPIOTE_IRQ_GROUP,
-			   CONFIG_APP_LPUARTE_GPIOTE_IRQ_PRIO, gpiote_30_direct_isr, 0);
 
 	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(BOARD_APP_LPUARTE_INST),
 			   CONFIG_APP_LPUARTE_IRQ_PRIO, lpuarte_direct_isr, 0);

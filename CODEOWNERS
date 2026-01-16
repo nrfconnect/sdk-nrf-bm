@@ -58,6 +58,7 @@
 /lib/bluetooth/ble_scan/                  @nrfconnect/ncs-bm
 /lib/bluetooth/peer_manager/              @nrfconnect/ncs-bm
 /lib/bm_buttons/                          @nrfconnect/ncs-bm
+/lib/bm_gpiote/                           @nrfconnect/ncs-bm
 /lib/bm_timer/                            @nrfconnect/ncs-bm
 /lib/boot_banner/                         @nrfconnect/ncs-bm
 /lib/bm_scheduler/                        @nrfconnect/ncs-bm
