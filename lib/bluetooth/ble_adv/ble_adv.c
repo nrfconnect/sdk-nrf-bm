@@ -378,6 +378,9 @@ uint32_t ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 		ble_adv->allow_list_reply_expected = true;
 		adv_evt.evt_type = BLE_ADV_EVT_ALLOW_LIST_REQUEST;
 		ble_adv->evt_handler(ble_adv, &adv_evt);
+
+		/* Allow list reply is only expected inside the handler. */
+		ble_adv->allow_list_reply_expected = false;
 	}
 
 	ble_adv->adv_params.primary_phy = CONFIG_BLE_ADV_PRIMARY_PHY;
@@ -514,7 +517,6 @@ uint32_t ble_adv_allow_list_reply(struct ble_adv *ble_adv,
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	ble_adv->allow_list_reply_expected = false;
 	ble_adv->allow_list_in_use = (addr_cnt > 0 || irk_cnt > 0);
 
 	return NRF_SUCCESS;
