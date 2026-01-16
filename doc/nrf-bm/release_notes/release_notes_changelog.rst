@@ -62,7 +62,10 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Drivers
 =======
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* :ref:`driver_lpuarte`:
+
+   * Updated to use the :ref:`lib_bm_gpiote` library.
+   * Removed the `gpiote_inst` and `gpiote_inst_num` members from the :c:struct:`bm_lpuarte_config` struct.
 
 Libraries
 =========
@@ -108,6 +111,10 @@ Bluetooth LE samples
 
    * Fixed an issue where the sample did not enter or exit boot mode properly based on the HID events.
 
+* :ref:`ble_nus_sample` sample:
+
+   * Updated to align with changes to the :ref:`driver_lpuarte` driver.
+
 * :ref:`ble_pwr_profiling_sample`:
 
    * Updated to use a dedicated variable to hold the service attribute handle instead of incorrectly using the connection handle variable for this during service initialization.
@@ -120,7 +127,9 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Peripheral samples
 ------------------
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* :ref:`bm_lpuarte_sample` sample:
+
+   * Updated to align with changes to the :ref:`driver_lpuarte` driver.
 
 DFU samples
 -----------

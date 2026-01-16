@@ -44,9 +44,6 @@ static uint16_t conn_handle = BLE_CONN_HANDLE_INVALID;
 #define NUS_UARTE_PIN_REQ BOARD_APP_LPUARTE_PIN_REQ
 
 struct bm_lpuarte lpu;
-static nrfx_gpiote_t gpiote_inst[] = {
-	NRFX_GPIOTE_INSTANCE(NRF_GPIOTE30), NRFX_GPIOTE_INSTANCE(NRF_GPIOTE20),
-};
 #else
 #define NUS_UARTE_INST BOARD_APP_UARTE_INST
 #define NUS_UARTE_PIN_TX BOARD_APP_UARTE_PIN_TX
@@ -359,20 +356,6 @@ ISR_DIRECT_DECLARE(uarte_direct_isr)
 	return 0;
 }
 
-#if defined(CONFIG_APP_NUS_LPUARTE)
-ISR_DIRECT_DECLARE(gpiote_20_direct_isr)
-{
-	nrfx_gpiote_irq_handler(&gpiote_inst[1]);
-	return 0;
-}
-
-ISR_DIRECT_DECLARE(gpiote_30_direct_isr)
-{
-	nrfx_gpiote_irq_handler(&gpiote_inst[0]);
-	return 0;
-}
-#endif
-
 /**
  * @brief Initalize UARTE driver.
  */
@@ -383,8 +366,6 @@ static int uarte_init(void)
 #if defined(CONFIG_APP_NUS_LPUARTE)
 	struct bm_lpuarte_config lpu_cfg = {
 		.uarte_inst = &nus_uarte_inst,
-		.gpiote_inst = gpiote_inst,
-		.gpiote_inst_num = ARRAY_SIZE(gpiote_inst),
 		.uarte_cfg = NRFX_UARTE_DEFAULT_CONFIG(NUS_UARTE_PIN_TX,
 						       NUS_UARTE_PIN_RX),
 		.req_pin = BOARD_APP_LPUARTE_PIN_REQ,
@@ -419,12 +400,6 @@ static int uarte_init(void)
 	irq_enable(NRFX_IRQ_NUMBER_GET(NUS_UARTE_INST));
 
 #if defined(CONFIG_APP_NUS_LPUARTE)
-	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_GPIOTE20) + NRF_GPIOTE_IRQ_GROUP,
-			   CONFIG_APP_GPIOTE_IRQ_PRIO, gpiote_20_direct_isr, 0);
-
-	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_GPIOTE30) + NRF_GPIOTE_IRQ_GROUP,
-			   CONFIG_APP_GPIOTE_IRQ_PRIO, gpiote_30_direct_isr, 0);
-
 	err = bm_lpuarte_init(&lpu, &lpu_cfg, uarte_evt_handler);
 	if (err) {
 		LOG_ERR("Failed to initialize UART, err %d", err);
