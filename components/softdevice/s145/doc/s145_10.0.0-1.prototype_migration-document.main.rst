@@ -9,15 +9,15 @@
    *Page ###Page###*
 
 
-s115 migration document
+s145 migration document
 #######################
 
-Introduction to the s115 migration document
+Introduction to the s145 migration document
 ===========================================
 
 About the document
 ------------------
-This document describes how to migrate to new versions of the s115 SoftDevice. The s115 release notes should be read in conjunction with this document.
+This document describes how to migrate to new versions of the s145 SoftDevice. The s145 release notes should be read in conjunction with this document.
 
 For each version, we have the following sections:
 
@@ -41,9 +41,14 @@ Copyright © Nordic Semiconductor ASA. All rights reserved.
 
    PageBreak
 
-.. include:: s115_9.0.0_migration-document.rst
+.. include:: s145_10.0.0-1.prototype_migration-document.rst
 .. raw:: pdf
 
    PageBreak
 
-.. include:: s115_9.0.0-3.prototype_migration-document.rst
+.. include:: s145_9.0.0_migration-document.rst
+.. raw:: pdf
+
+   PageBreak
+
+.. include:: s145_9.0.0-3.prototype_migration-document.rst
