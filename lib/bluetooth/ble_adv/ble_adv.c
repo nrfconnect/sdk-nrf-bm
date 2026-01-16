@@ -54,7 +54,7 @@ static bool adv_mode_is_directed(enum ble_adv_mode mode)
 	}
 }
 
-static bool adv_mode_has_allow_list(enum ble_adv_mode mode)
+static bool adv_mode_supports_allow_list(enum ble_adv_mode mode)
 {
 	switch (mode) {
 	case BLE_ADV_MODE_DIRECTED_HIGH_DUTY:
@@ -356,31 +356,28 @@ uint32_t ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 	/* If `mode` is initially directed advertising (and that's supported)
 	 * ask the application for a peer address
 	 */
-	if (IS_ENABLED(CONFIG_BLE_ADV_DIRECTED_ADVERTISING)) {
-		if (adv_mode_is_directed(mode)) {
-			ble_adv->peer_addr_reply_expected = true;
-			adv_evt.evt_type = BLE_ADV_EVT_PEER_ADDR_REQUEST;
-			ble_adv->evt_handler(ble_adv, &adv_evt);
+	if (IS_ENABLED(CONFIG_BLE_ADV_DIRECTED_ADVERTISING) && adv_mode_is_directed(mode)) {
+		ble_adv->peer_addr_reply_expected = true;
+		adv_evt.evt_type = BLE_ADV_EVT_PEER_ADDR_REQUEST;
+		ble_adv->evt_handler(ble_adv, &adv_evt);
 
-			if (ble_adv->peer_addr_reply_expected == false) {
-				/* Peer address was set by the application. Use it. */
-				ble_adv->adv_params.p_peer_addr = &ble_adv->peer_address;
-				adv_data = NULL;
-			} else {
-				/* No peer address was supplied. Skip directed advertising. */
-				ble_adv->peer_addr_reply_expected = false;
-				mode = BLE_ADV_MODE_FAST;
-			}
+		if (ble_adv->peer_addr_reply_expected) {
+			/* No peer address was supplied. Skip directed advertising. */
+			ble_adv->peer_addr_reply_expected = false;
+			mode = BLE_ADV_MODE_FAST;
+		} else {
+			/* Peer address was set by the application. Use it. */
+			ble_adv->adv_params.p_peer_addr = &ble_adv->peer_address;
+			adv_data = NULL;
 		}
 	}
 
 	/* Fetch the allow list */
-	if (IS_ENABLED(CONFIG_BLE_ADV_USE_ALLOW_LIST)) {
-		if (adv_mode_has_allow_list(mode) && !ble_adv->allow_list_temporarily_disabled) {
-			ble_adv->allow_list_reply_expected = true;
-			adv_evt.evt_type = BLE_ADV_EVT_ALLOW_LIST_REQUEST;
-			ble_adv->evt_handler(ble_adv, &adv_evt);
-		}
+	if (IS_ENABLED(CONFIG_BLE_ADV_USE_ALLOW_LIST) &&
+	    !ble_adv->allow_list_temporarily_disabled && adv_mode_supports_allow_list(mode)) {
+		ble_adv->allow_list_reply_expected = true;
+		adv_evt.evt_type = BLE_ADV_EVT_ALLOW_LIST_REQUEST;
+		ble_adv->evt_handler(ble_adv, &adv_evt);
 	}
 
 	ble_adv->adv_params.primary_phy = CONFIG_BLE_ADV_PRIMARY_PHY;
