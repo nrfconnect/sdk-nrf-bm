@@ -554,7 +554,7 @@ uint32_t ble_adv_restart_without_allow_list(struct ble_adv *ble_adv)
 }
 
 uint32_t ble_adv_data_update(struct ble_adv *ble_adv, const struct ble_adv_data *adv_data,
-			const struct ble_adv_data *sr_data)
+			     const struct ble_adv_data *sr_data)
 {
 	uint32_t nrf_err;
 	ble_gap_adv_data_t new_adv_data = {0};

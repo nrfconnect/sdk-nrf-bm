@@ -356,8 +356,7 @@ uint32_t ble_adv_restart_without_allow_list(struct ble_adv *ble_adv);
  * @retval NRF_ERROR_DATA_SIZE  Buffer is too small to encode all data.
  * @return Any error from @c sd_ble_gap_adv_set_configure on failure.
  */
-uint32_t ble_adv_data_update(struct ble_adv *ble_adv,
-			     const struct ble_adv_data *adv,
+uint32_t ble_adv_data_update(struct ble_adv *ble_adv, const struct ble_adv_data *adv,
 			     const struct ble_adv_data *sr);
 
 #ifdef __cplusplus
