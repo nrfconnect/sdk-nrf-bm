@@ -75,6 +75,7 @@ Bluetooth LE Services
 ---------------------
 
 * Renamed the ``ble_hrs_central`` service to the :ref:`lib_ble_service_hrs_client` sample.
+* Updated all services to return errors from the SoftDevice directly.
 
 Libraries for NFC
 -----------------
