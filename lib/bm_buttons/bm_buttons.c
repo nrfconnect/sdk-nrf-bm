@@ -6,13 +6,13 @@
 
 #include <bm/bm_timer.h>
 #include <bm/bm_buttons.h>
+#include <bm/bm_gpiote.h>
 #include <nrfx_gpiote.h>
 #include <zephyr/irq.h>
 #include <zephyr/logging/log.h>
 
 LOG_MODULE_REGISTER(bm_buttons, CONFIG_BM_BUTTONS_LOG_LEVEL);
 
-#define IRQ_PRIO     3
 #define BITS_PER_PIN 4
 #define NUM_PINS     CONFIG_BM_BUTTONS_NUM_PINS
 
@@ -48,73 +48,11 @@ enum button_state {
 	BUTTON_RELEASE_DETECTED
 };
 
-static nrfx_gpiote_t gpiote20_instance = NRFX_GPIOTE_INSTANCE(NRF_GPIOTE20);
-static nrfx_gpiote_t gpiote30_instance = NRFX_GPIOTE_INSTANCE(NRF_GPIOTE30);
-
-static inline nrfx_gpiote_t *gpiote_get(uint32_t port)
-{
-	switch (port) {
-	case 0:
-		return &gpiote30_instance;
-	case 1:
-		return &gpiote20_instance;
-	default:
-		return NULL;
-	}
-}
-
 static void gpiote_trigger_enable(nrfx_gpiote_pin_t pin, bool enable)
 {
-	const nrfx_gpiote_t *gpiote_inst = gpiote_get(NRF_PIN_NUMBER_TO_PORT(pin));
+	const nrfx_gpiote_t *gpiote_inst = bm_gpiote_instance_get(NRF_PIN_NUMBER_TO_PORT(pin));
 
 	nrfx_gpiote_trigger_enable(gpiote_inst, pin, enable);
-}
-
-static void gpiote_uninit(void)
-{
-	nrfx_gpiote_uninit(&gpiote20_instance);
-	nrfx_gpiote_uninit(&gpiote30_instance);
-}
-
-ISR_DIRECT_DECLARE(gpiote_20_direct_isr)
-{
-	nrfx_gpiote_irq_handler(&gpiote20_instance);
-	return 0;
-}
-
-ISR_DIRECT_DECLARE(gpiote_30_direct_isr)
-{
-	nrfx_gpiote_irq_handler(&gpiote30_instance);
-	return 0;
-}
-
-static int gpiote_init(void)
-{
-	int err;
-
-	if (!nrfx_gpiote_init_check(&gpiote20_instance)) {
-		err = nrfx_gpiote_init(&gpiote20_instance, 0);
-		if (err) {
-			LOG_ERR("Failed to initialize gpiote20, err %d", err);
-			return err;
-		}
-
-		IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_GPIOTE20) + NRF_GPIOTE_IRQ_GROUP,
-				   IRQ_PRIO, gpiote_20_direct_isr, 0);
-	}
-
-	if (!nrfx_gpiote_init_check(&gpiote30_instance)) {
-		err = nrfx_gpiote_init(&gpiote30_instance, 0);
-		if (err) {
-			LOG_ERR("Failed to initialize gpiote30, err %d", err);
-			return err;
-		}
-
-		IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_GPIOTE30) + NRF_GPIOTE_IRQ_GROUP,
-				   IRQ_PRIO, gpiote_30_direct_isr, 0);
-	}
-
-	return 0;
 }
 
 static int gpiote_input_configure(nrfx_gpiote_pin_t pin,
@@ -122,7 +60,7 @@ static int gpiote_input_configure(nrfx_gpiote_pin_t pin,
 {
 	int err;
 
-	nrfx_gpiote_t *gpiote_inst = gpiote_get(NRF_PIN_NUMBER_TO_PORT(pin));
+	nrfx_gpiote_t *gpiote_inst = bm_gpiote_instance_get(NRF_PIN_NUMBER_TO_PORT(pin));
 
 	err = nrfx_gpiote_input_configure(gpiote_inst, pin, input_config);
 	if (err) {
@@ -331,11 +269,6 @@ int bm_buttons_init(const struct bm_buttons_config *configs, uint8_t num_configs
 		return -EINVAL;
 	}
 
-	err = gpiote_init();
-	if (err) {
-		return err;
-	}
-
 	global.configs = configs;
 	global.num_configs = num_configs;
 	global.detection_delay = detection_delay;
@@ -380,17 +313,25 @@ int bm_buttons_init(const struct bm_buttons_config *configs, uint8_t num_configs
 int bm_buttons_deinit(void)
 {
 	int err;
+	nrfx_gpiote_t *gpiote;
 
 	if (!global.is_init) {
 		return -EPERM;
 	}
 
-	err = buttons_disable();
+	err = bm_timer_stop(&global.timer);
 	if (err) {
 		return -EIO;
 	}
 
-	gpiote_uninit();
+	for (int i = 0; i < global.num_configs; i++) {
+		gpiote = bm_gpiote_instance_get(
+			NRF_PIN_NUMBER_TO_PORT(global.configs[i].pin_number));
+		err = nrfx_gpiote_pin_uninit(gpiote, global.configs[i].pin_number);
+		if (err) {
+			return -EIO;
+		}
+	}
 
 	memset(&global, 0, sizeof(global));
 
