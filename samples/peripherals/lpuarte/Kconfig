@@ -21,10 +21,6 @@ config APP_LPUARTE_IRQ_PRIO
 	int "LPUARTE IRQ priority"
 	default 5
 
-config APP_LPUARTE_GPIOTE_IRQ_PRIO
-	int "GPIOTE IRQ priority"
-	default 3
-
 module=APP_LPUARTE
 module-str=Low Power UARTE Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"

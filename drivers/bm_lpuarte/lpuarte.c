@@ -6,6 +6,7 @@
 
 #include <bm/bm_timer.h>
 #include <bm/drivers/bm_lpuarte.h>
+#include <bm/bm_gpiote.h>
 #include <nrfx_gpiote.h>
 #include <nrfx_uarte.h>
 #include <zephyr/irq.h>
@@ -20,17 +21,6 @@ LOG_MODULE_REGISTER(lpuarte, CONFIG_BM_SW_LPUARTE_LOG_LEVEL);
 
 static void req_pin_handler(nrfx_gpiote_pin_t pin, nrfx_gpiote_trigger_t trigger, void *context);
 static void rdy_pin_handler(nrfx_gpiote_pin_t pin, nrfx_gpiote_trigger_t trigger, void *context);
-
-static nrfx_gpiote_t *gpiote_get(struct bm_lpuarte *lpu, uint32_t pin)
-{
-	const uint32_t port = NRF_PIN_NUMBER_TO_PORT(pin);
-
-	if (port >= lpu->gpiote_inst_num) {
-		return NULL;
-	}
-
-	return &lpu->gpiote_inst[port];
-}
 
 /* Called when UARTE transfer is finished to indicate to the receiver that it can be closed. */
 static void req_pin_idle(struct bm_lpuarte *lpu)
@@ -58,7 +48,8 @@ static void req_pin_set(struct bm_lpuarte *lpu)
 
 	nrf_gpio_reconfigure(lpu->req_pin, &dir, &input, NULL, NULL, NULL);
 
-	nrfx_gpiote_trigger_disable(gpiote_get(lpu, lpu->req_pin), lpu->req_pin);
+	nrfx_gpiote_trigger_disable(bm_gpiote_instance_get(NRF_PIN_NUMBER_TO_PORT(lpu->req_pin)),
+				    lpu->req_pin);
 }
 
 /* Reconfigure pin to input with pull up and high->low state detection.
@@ -71,7 +62,8 @@ static void req_pin_arm(struct bm_lpuarte *lpu)
 	/* Add pull up before reconfiguring to input. */
 	nrf_gpio_reconfigure(lpu->req_pin, NULL, NULL, &pull, NULL, NULL);
 
-	nrfx_gpiote_trigger_enable(gpiote_get(lpu, lpu->req_pin), lpu->req_pin, true);
+	nrfx_gpiote_trigger_enable(bm_gpiote_instance_get(NRF_PIN_NUMBER_TO_PORT(lpu->req_pin)),
+				   lpu->req_pin, true);
 }
 
 static int req_pin_init(struct bm_lpuarte *lpu, nrfx_gpiote_pin_t pin)
@@ -92,13 +84,14 @@ static int req_pin_init(struct bm_lpuarte *lpu, nrfx_gpiote_pin_t pin)
 		.p_trigger_config = &trigger_config,
 		.p_handler_config = &handler_config
 	};
+	nrfx_gpiote_t *gpiote = bm_gpiote_instance_get(NRF_PIN_NUMBER_TO_PORT(pin));
 
-	err = nrfx_gpiote_channel_alloc(gpiote_get(lpu, pin), &ch);
+	err = nrfx_gpiote_channel_alloc(gpiote, &ch);
 	if (err) {
 		return err;
 	}
 
-	err = nrfx_gpiote_input_configure(gpiote_get(lpu, pin), pin, &input_config);
+	err = nrfx_gpiote_input_configure(gpiote, pin, &input_config);
 	if (err) {
 		return err;
 	}
@@ -115,12 +108,13 @@ static int req_pin_init(struct bm_lpuarte *lpu, nrfx_gpiote_pin_t pin)
 
 static void req_pin_uninit(struct bm_lpuarte *lpu, nrfx_gpiote_pin_t pin)
 {
-	(void)nrfx_gpiote_pin_uninit(gpiote_get(lpu, pin), pin);
+	(void)nrfx_gpiote_pin_uninit(bm_gpiote_instance_get(NRF_PIN_NUMBER_TO_PORT(pin)), pin);
 }
 
 static void rdy_pin_suspend(struct bm_lpuarte *lpu)
 {
-	nrfx_gpiote_trigger_disable(gpiote_get(lpu, lpu->rdy_pin), lpu->rdy_pin);
+	nrfx_gpiote_trigger_disable(bm_gpiote_instance_get(NRF_PIN_NUMBER_TO_PORT(lpu->rdy_pin)),
+				    lpu->rdy_pin);
 }
 
 static int rdy_pin_init(struct bm_lpuarte *lpu, nrfx_gpiote_pin_t pin)
@@ -136,13 +130,14 @@ static int rdy_pin_init(struct bm_lpuarte *lpu, nrfx_gpiote_pin_t pin)
 		.p_trigger_config = NULL,
 		.p_handler_config = &handler_config
 	};
+	nrfx_gpiote_t *gpiote = bm_gpiote_instance_get(NRF_PIN_NUMBER_TO_PORT(pin));
 
-	err = nrfx_gpiote_channel_alloc(gpiote_get(lpu, pin), &lpu->rdy_ch);
+	err = nrfx_gpiote_channel_alloc(gpiote, &lpu->rdy_ch);
 	if (err) {
 		return err;
 	}
 
-	err = nrfx_gpiote_input_configure(gpiote_get(lpu, pin), pin, &input_config);
+	err = nrfx_gpiote_input_configure(gpiote, pin, &input_config);
 	if (err) {
 		return err;
 	}
@@ -155,7 +150,7 @@ static int rdy_pin_init(struct bm_lpuarte *lpu, nrfx_gpiote_pin_t pin)
 
 static void rdy_pin_uninit(struct bm_lpuarte *lpu, nrfx_gpiote_pin_t pin)
 {
-	(void)nrfx_gpiote_pin_uninit(gpiote_get(lpu, pin), pin);
+	(void)nrfx_gpiote_pin_uninit(bm_gpiote_instance_get(NRF_PIN_NUMBER_TO_PORT(pin)), pin);
 }
 
 /* Pin activated to detect high state (using SENSE). */
@@ -170,7 +165,7 @@ static void rdy_pin_idle(struct bm_lpuarte *lpu)
 		.p_trigger_config = &trigger_config,
 		.p_handler_config = NULL
 	};
-	nrfx_gpiote_t *gpiote = gpiote_get(lpu, lpu->rdy_pin);
+	nrfx_gpiote_t *gpiote = bm_gpiote_instance_get(NRF_PIN_NUMBER_TO_PORT(lpu->rdy_pin));
 
 	err = nrfx_gpiote_input_configure(gpiote, lpu->rdy_pin, &input_config);
 	__ASSERT(err == 0, "Unexpected err %d", err);
@@ -199,7 +194,7 @@ static bool rdy_pin_blink(struct bm_lpuarte *lpu)
 	};
 	const nrf_gpio_pin_dir_t dir_in = NRF_GPIO_PIN_DIR_INPUT;
 	const nrf_gpio_pin_dir_t dir_out = NRF_GPIO_PIN_DIR_OUTPUT;
-	nrfx_gpiote_t *gpiote = gpiote_get(lpu, lpu->rdy_pin);
+	nrfx_gpiote_t *gpiote = bm_gpiote_instance_get(NRF_PIN_NUMBER_TO_PORT(lpu->rdy_pin));
 	unsigned int key;
 	bool ret;
 
@@ -504,27 +499,11 @@ int bm_lpuarte_init(struct bm_lpuarte *lpu, struct bm_lpuarte_config *lpu_cfg,
 	lpu_cfg->uarte_cfg.p_context = lpu;
 
 	lpu->uarte_inst = lpu_cfg->uarte_inst;
-	lpu->gpiote_inst = lpu_cfg->gpiote_inst;
-	lpu->gpiote_inst_num = lpu_cfg->gpiote_inst_num;
 	lpu->req_pin = lpu_cfg->req_pin;
 	lpu->rdy_pin = lpu_cfg->rdy_pin;
 	lpu->rx_state = RX_OFF;
 
 	lpu->callback = event_handler;
-
-	for (uint8_t i = 0; i < lpu->gpiote_inst_num; i++) {
-		nrfx_gpiote_t *inst = &lpu->gpiote_inst[i];
-
-		if (inst == NULL || nrfx_gpiote_init_check(inst)) {
-			continue;
-		}
-
-		err = nrfx_gpiote_init(inst, 0);
-		if (err) {
-			LOG_ERR("Failed to initialize gpiote %#x, err %d", (uint32_t)inst, err);
-			return err;
-		}
-	}
 
 	err = req_pin_init(lpu, lpu_cfg->req_pin);
 	if (err) {
