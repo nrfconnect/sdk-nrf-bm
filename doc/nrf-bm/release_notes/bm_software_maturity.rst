@@ -229,6 +229,26 @@ The following table indicates the software maturity levels of the support for ea
      - Experimental
      - Experimental
      - --
+   * - **NDEF encoding and decoding**
+     - Supported
+     - Supported
+     - Supported
+     - --
+   * - **NFC Record Type Definition: URI, text**
+     - Experimental
+     - Experimental
+     - Experimental
+     - --
+   * - **NFC Connection Handover to Bluetooth carrier, Static and Negotiated Handover**
+     - In development
+     - In development
+     - In development
+     - --
+   * - **NFC Tag NDEF Exchange Protocol (TNEP)**
+     - In development
+     - In development
+     - In development
+     - --
 
 nRF Secure Immutable Bootloader
 *******************************
