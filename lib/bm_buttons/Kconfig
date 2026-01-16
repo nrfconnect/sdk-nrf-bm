@@ -7,7 +7,7 @@
 menuconfig BM_BUTTONS
 	bool "Buttons library"
 	depends on BM_TIMER
-	depends on NRFX_GPIOTE
+	depends on BM_GPIOTE
 	help
 	  A library to manage buttons.
 
