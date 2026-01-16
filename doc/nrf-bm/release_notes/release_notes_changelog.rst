@@ -69,6 +69,10 @@ Libraries
 
 * Added the :ref:`lib_bm_gpiote` library.
 
+* :ref:`lib_bm_buttons` library:
+
+   * Updated to use the :ref:`lib_bm_gpiote` library.
+
 * :ref:`lib_ble_scan`:
 
    * Updated functions to use the ``uint32_t`` type instead of ``int`` when returning nrf_errors.
