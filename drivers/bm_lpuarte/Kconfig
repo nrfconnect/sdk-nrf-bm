@@ -6,6 +6,7 @@
 
 config BM_SW_LPUARTE
 	bool "Low Power UARTE using REQ/RDY lines"
+	depends on BM_GPIOTE
 	depends on BM_TIMER
 	depends on NRFX_GPIOTE
 	depends on NRFX_UARTE

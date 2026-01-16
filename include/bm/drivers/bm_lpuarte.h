@@ -73,10 +73,6 @@ struct bm_lpuarte_config {
 	nrfx_uarte_t *uarte_inst;
 	/* Uarte instance configuration. */
 	nrfx_uarte_config_t uarte_cfg;
-	/* gpiote instances. */
-	nrfx_gpiote_t *gpiote_inst;
-	/* Number of gpiote instances. */
-	uint8_t gpiote_inst_num;
 	/* Request pin number. */
 	nrfx_gpiote_pin_t req_pin;
 	/* Ready pin number. */
