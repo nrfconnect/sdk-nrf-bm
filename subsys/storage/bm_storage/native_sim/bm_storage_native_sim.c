@@ -52,7 +52,7 @@ static void write_work_handler(struct k_work *work)
 
 	struct bm_storage_evt evt = {
 		.id = BM_STORAGE_EVT_WRITE_RESULT,
-		.dispatch_type = BM_STORAGE_EVT_DISPATCH_ASYNC,
+		.dispatch_mode = BM_STORAGE_EVT_DISPATCH_MODE_ASYNC,
 		.result = 0,
 		.addr = work_ctx->dest,
 		.src = work_ctx->src,
@@ -124,7 +124,7 @@ static int bm_storage_native_sim_write(const struct bm_storage *storage, uint32_
 
 	struct bm_storage_evt evt = {
 		.id = BM_STORAGE_EVT_WRITE_RESULT,
-		.dispatch_type = BM_STORAGE_EVT_DISPATCH_SYNC,
+		.dispatch_mode = BM_STORAGE_EVT_DISPATCH_MODE_SYNC,
 		.result = 0,
 		.addr = dest,
 		.src = src,
