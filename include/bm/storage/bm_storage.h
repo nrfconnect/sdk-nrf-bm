@@ -35,13 +35,13 @@ enum bm_storage_evt_type {
 };
 
 /**
- * @brief Event dispatch types.
+ * @brief Event dispatch modes.
  */
-enum bm_storage_evt_dispatch_type {
+enum bm_storage_evt_dispatch_mode {
 	/* The event was dispatched synchronously. */
-	BM_STORAGE_EVT_DISPATCH_SYNC,
+	BM_STORAGE_EVT_DISPATCH_MODE_SYNC,
 	/* The event was dispatched asynchronously. */
-	BM_STORAGE_EVT_DISPATCH_ASYNC
+	BM_STORAGE_EVT_DISPATCH_MODE_ASYNC
 };
 
 /**
@@ -51,7 +51,7 @@ struct bm_storage_evt {
 	/* Event ID. */
 	enum bm_storage_evt_type id;
 	/* Specifies if the operation was performed synchronously or asynchronously. */
-	enum bm_storage_evt_dispatch_type dispatch_type;
+	enum bm_storage_evt_dispatch_mode dispatch_mode;
 	/* Result of the operation.
 	 * 0 on success.
 	 * A negative errno otherwise.
@@ -65,7 +65,7 @@ struct bm_storage_evt {
 	const void *src;
 	/* Length (in bytes) of the operation that was performed. */
 	size_t len;
-	/* Pointer to user data, passed to the implementation-specific API function call. */
+	/* User-defined context */
 	void *ctx;
 };
 
@@ -239,8 +239,7 @@ int bm_storage_read(const struct bm_storage *storage, uint32_t src, void *dest, 
  * @param[in] dest Address in non-volatile memory where to write the data to.
  * @param[in] src Data to be written.
  * @param[in] len Length of the data to be written (in bytes).
- * @param[in] ctx Pointer to user data, passed to the implementation-specific API function call.
- *                Can be NULL.
+ * @param[in] ctx User-defined context sent to the event handler.
  *
  * @retval 0 on success.
  * @retval -EFAULT If @p storage is @c NULL or if @p dest or @p src are not 32-bit word aligned,
@@ -260,8 +259,7 @@ int bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void
  * @param[in] storage Storage instance to erase data in.
  * @param[in] addr Address in non-volatile memory where to erase the data.
  * @param[in] len Length of the data to be erased (in bytes).
- * @param[in] ctx Pointer to user data, passed to the implementation-specific API function call.
- *                Can be NULL.
+ * @param[in] ctx User-defined context sent to the event handler.
  *
  * @retval 0 on success.
  * @retval -EFAULT If @p storage is @c NULL or if @p addr is outside the bounds of the memory region
