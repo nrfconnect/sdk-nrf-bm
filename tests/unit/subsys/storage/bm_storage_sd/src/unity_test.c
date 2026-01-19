@@ -425,7 +425,7 @@ void test_bm_storage_write_queued(void)
 	TEST_ASSERT_EQUAL(0, err);
 }
 
-void test_bm_storage_write_eio(void)
+void test_bm_storage_write_enomem(void)
 {
 	int err;
 	uint8_t buf[BLOCK_SIZE];
@@ -458,7 +458,7 @@ void test_bm_storage_write_eio(void)
 	}
 
 	err = bm_storage_write(&storage, PARTITION_START, buf, sizeof(buf), NULL);
-	TEST_ASSERT_EQUAL(-EIO, err);
+	TEST_ASSERT_EQUAL(-ENOMEM, err);
 
 	for (size_t i = 0; i < CONFIG_BM_STORAGE_BACKEND_SD_QUEUE_SIZE + 1; i++) {
 		/* Each system events triggers the next operation in the queue */
@@ -1089,7 +1089,7 @@ void test_bm_storage_erase_odd(void)
 	TEST_ASSERT_FALSE(is_busy);
 }
 
-void test_bm_storage_erase_eio(void)
+void test_bm_storage_erase_enomem(void)
 {
 	int err;
 	struct bm_storage storage = {0};
@@ -1125,7 +1125,7 @@ void test_bm_storage_erase_eio(void)
 
 	err = bm_storage_erase(&storage, PARTITION_START,
 			       storage.nvm_info->erase_unit, NULL);
-	TEST_ASSERT_EQUAL(-EIO, err);
+	TEST_ASSERT_EQUAL(-ENOMEM, err);
 
 	for (size_t i = 0; i < CONFIG_BM_STORAGE_BACKEND_SD_QUEUE_SIZE + 1; i++) {
 		/* Each system events triggers the next operation in the queue */

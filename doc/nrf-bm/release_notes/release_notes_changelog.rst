@@ -83,6 +83,7 @@ Storage
      * The SoftDevice, RRAM, and native_sim backends to support deinitialization.
      * The SoftDevice, RRAM, and native_sim backends to support the erase operation.
      * The SoftDevice backend to support chunking of write operations.
+     * The :c:func:`bm_storage_write` and :c:func:`bm_storage_erase` functions to return ``-ENOMEM`` when out of memory, instead of ``-EIO``.
 
 Libraries
 =========

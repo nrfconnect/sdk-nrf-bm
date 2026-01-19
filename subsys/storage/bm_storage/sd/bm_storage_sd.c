@@ -372,7 +372,7 @@ static int bm_storage_sd_write(const struct bm_storage *storage, uint32_t dest, 
 
 	queued = queue_store(&op);
 	if (!queued) {
-		return -EIO;
+		return -ENOMEM;
 	}
 
 	queue_start();
@@ -398,7 +398,7 @@ static int bm_storage_sd_erase(const struct bm_storage *storage, uint32_t addr, 
 
 	queued = queue_store(&op);
 	if (!queued) {
-		return -EIO;
+		return -ENOMEM;
 	}
 
 	queue_start();

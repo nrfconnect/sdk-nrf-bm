@@ -247,6 +247,7 @@ int bm_storage_read(const struct bm_storage *storage, uint32_t src, void *dest, 
  * @retval -EPERM If @p storage is in an invalid state or if the implementation-specific backend
  *                has not been initialized.
  * @retval -EINVAL If @p len is zero or not a multiple of @ref bm_storage_info.program_unit.
+ * @retval -ENOMEM Out of memory to perform the requested operation.
  * @retval -EBUSY If the implementation-specific backend is busy with an ongoing operation.
  * @retval -EIO If an implementation-specific internal error occurred.
  */
@@ -267,6 +268,7 @@ int bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void
  * @retval -EPERM If @p storage is in an invalid state or if the implementation-specific backend
  *                has not been initialized.
  * @retval -EINVAL If @p len is zero or not a multiple of @ref bm_storage_info.erase_unit.
+ * @retval -ENOMEM Out of memory to perform the requested operation.
  * @retval -EBUSY If the implementation-specific backend is busy with an ongoing operation.
  * @retval -EIO If an implementation-specific internal error occurred.
  */
