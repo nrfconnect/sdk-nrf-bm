@@ -95,7 +95,7 @@ static const struct bm_storage_info bm_storage_info = {
 	/* Erase operation does not exist, so use same as program unit */
 	.erase_unit = SD_PROGRAM_UNIT_BYTES,
 	/* Similar to FLASH */
-	.erase_value = 0xFFFFFFFF,
+	.erase_value = 0xFF,
 };
 
 #ifndef CONFIG_UNITY

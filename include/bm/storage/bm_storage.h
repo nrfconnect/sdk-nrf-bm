@@ -94,17 +94,17 @@ typedef void (*bm_storage_evt_handler_t)(struct bm_storage_evt *evt);
  */
 struct bm_storage_info {
 	/**
+	 * @brief Size of the smallest unit of memory that can be programmed, in bytes.
+	 */
+	uint32_t program_unit;
+	/**
 	 * @brief Size of the smallest unit of memory that can be erased, in bytes.
 	 */
 	uint32_t erase_unit;
 	/**
 	 * @brief Value used to represent erased memory.
 	 */
-	uint32_t erase_value;
-	/**
-	 * @brief Size of the smallest unit of memory that can be programmed, in bytes.
-	 */
-	uint32_t program_unit;
+	uint8_t erase_value;
 	/**
 	 * @brief Whether the hardware requires memory to be erased, before it can be written.
 	 */

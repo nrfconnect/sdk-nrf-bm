@@ -14,7 +14,7 @@
 #define PARTITION_SIZE (BLOCK_SIZE * 16)
 
 static const struct bm_storage_info bm_storage_info = {
-	.erase_value = 0xFFFFFFFF,
+	.erase_value = 0xFF,
 	.erase_unit = BLOCK_SIZE,
 	.program_unit = BLOCK_SIZE,
 	.no_explicit_erase = false
