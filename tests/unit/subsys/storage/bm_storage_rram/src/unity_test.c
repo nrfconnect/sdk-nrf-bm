@@ -442,7 +442,7 @@ void test_bm_storage_read_efault(void)
 	TEST_ASSERT_EQUAL(0, err);
 
 	err = bm_storage_read(&storage, PARTITION_START - 1, buf, sizeof(buf));
-	TEST_ASSERT_EQUAL(-EFAULT, err);
+	TEST_ASSERT_EQUAL(-EINVAL, err);
 
 	__cmock_nrfx_rramc_uninit_Expect();
 
