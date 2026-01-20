@@ -225,8 +225,7 @@ int bm_storage_uninit(struct bm_storage *storage);
  *
  * @retval 0 on success.
  * @retval -EFAULT The storage instance @p storage or @p dest is @c NULL.
- * @retval -EPERM If @p storage is in an invalid state or if the implementation-specific backend
- *                has not been initialized.
+ * @retval -EPERM The storage instance @p storage is not initialized.
  * @retval -EINVAL If @p len is zero.
  */
 int bm_storage_read(const struct bm_storage *storage, uint32_t src, void *dest, uint32_t len);
@@ -244,8 +243,7 @@ int bm_storage_read(const struct bm_storage *storage, uint32_t src, void *dest, 
  *
  * @retval 0 on success.
  * @retval -EFAULT The storage instance @p storage or @p src is @c NULL.
- * @retval -EPERM If @p storage is in an invalid state or if the implementation-specific backend
- *                has not been initialized.
+ * @retval -EPERM The storage instance @p storage is not initialized.
  * @retval -EINVAL The @p dest or @p len parameters are unaligned.
  * @retval -ENOMEM Out of memory to perform the requested operation.
  * @retval -EBUSY If the implementation-specific backend is busy with an ongoing operation.
@@ -266,8 +264,7 @@ int bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void
  *
  * @retval 0 on success.
  * @retval -EFAULT The storage instance @p storage is @c NULL.
- * @retval -EPERM If @p storage is in an invalid state or if the implementation-specific backend
- *                has not been initialized.
+ * @retval -EPERM The storage instance @p storage is not initialized.
  * @retval -EINVAL The @p addr or @p len parameters are unaligned.
  * @retval -ENOMEM Out of memory to perform the requested operation.
  * @retval -EBUSY If the implementation-specific backend is busy with an ongoing operation.
