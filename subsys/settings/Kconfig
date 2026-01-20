@@ -13,5 +13,20 @@ config NCS_BM_SETTINGS_BLUETOOTH_NAME
 	help
 	  If enabled, settings handlers for support BLE advertising name
 	  sharing under `fw_loader/adv_name` key are included into the build.
-
 endmenu
+
+config NCS_BM_FLAT_SETTINGS_BLUETOOTH_NAME
+	bool "Bluetooth name [very EXPERIMENTAL]"
+	select EXPERIMENTAL
+	help
+	  If enabled, settings handlers for support BLE advertising name
+	  sharing under `fw_loader/adv_name` key are included into the build.
+
+if NCS_BM_FLAT_SETTINGS_BLUETOOTH_NAME
+
+module = NCS_BM_FLAT_SETTINGS
+module-str = ncs_bm_flat_settings
+source "subsys/logging/Kconfig.template.log_config"
+
+endif
+

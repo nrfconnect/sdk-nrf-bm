@@ -5,6 +5,7 @@
  */
 
 #include <stdint.h>
+#include <stddef.h>
 
 /**
  * @brief Retrieve the variable that holds the desired device advertising name.
