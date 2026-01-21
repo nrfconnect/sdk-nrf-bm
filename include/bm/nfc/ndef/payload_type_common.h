@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#ifndef NFC_NDEF_PAYLOAD_TYPE_COMMON_H_
-#define NFC_NDEF_PAYLOAD_TYPE_COMMON_H_
+#ifndef BM_NFC_NDEF_PAYLOAD_TYPE_COMMON_H_
+#define BM_NFC_NDEF_PAYLOAD_TYPE_COMMON_H_
 
 /**@file
  *
@@ -15,7 +15,7 @@
  *           specifications.
  *
  */
-#include <zephyr/types.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -82,4 +82,4 @@ extern const uint8_t nfc_ndef_ch_cr_rec_type_field[2];
 
 /** @} */
 
-#endif /* NFC_NDEF_PAYLOAD_TYPE_COMMON_H_ */
+#endif /* BM_NFC_NDEF_PAYLOAD_TYPE_COMMON_H_ */

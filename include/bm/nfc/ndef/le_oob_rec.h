@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#ifndef NFC_NDEF_LE_OOB_REC_H_
-#define NFC_NDEF_LE_OOB_REC_H_
+#ifndef BM_NFC_NDEF_LE_OOB_REC_H_
+#define BM_NFC_NDEF_LE_OOB_REC_H_
 
 /**@file
  *
@@ -16,10 +16,10 @@
  *
  */
 #include <stddef.h>
-#include <zephyr/types.h>
-#include <nfc/ndef/record.h>
-#include <nfc/ndef/payload_type_common.h>
-#include <zephyr/bluetooth/bluetooth.h>
+#include <errno.h>
+#include <bm/nfc/ndef/record.h>
+#include <bm/nfc/ndef/payload_type_common.h>
+#include <ble_gap.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -73,12 +73,37 @@ enum nfc_ndef_le_oob_rec_le_role {
  * @brief LE OOB record payload descriptor.
  */
 struct nfc_ndef_le_oob_rec_payload_desc {
-	bt_addr_le_t *addr;
+	/** @brief Pointer to a local Bluetooth device address. */
+	ble_gap_addr_t *addr;
+
+	/** @brief Role of the Blutetooth device.
+	 *
+	 *  Use @ref NFC_NDEF_LE_OOB_REC_LE_ROLE to encode this field.
+	 */
 	enum nfc_ndef_le_oob_rec_le_role *le_role;
-	struct bt_le_oob_sc_data *le_sc_data;
+
+	/** @brief Pointer to a local device LE Secure Connections OOB data. */
+	ble_gap_lesc_oob_data_t *le_sc_data;
+
+	/** @brief Pointer to a Temporary Key value.
+	 *
+	 * This field points to an array of @ref NFC_NDEF_LE_OOB_REC_TK_LEN bytes.
+	 */
 	uint8_t *tk_value;
+
+	/** @brief Pointer to a Bluetooth device appearance.
+	 *
+	 * Use @ref NFC_NDEF_LE_OOB_REC_APPEARANCE to encode this field.
+	 */
 	uint16_t *appearance;
+
+	/** @brief Pointer to Flags value.
+	 *
+	 * Use @ref NFC_NDEF_LE_OOB_REC_FLAGS to encode this field.
+	 */
 	uint8_t *flags;
+
+	/** @brief Pointer to a local name string of the Bluetooth device. */
 	const char *local_name;
 };
 
@@ -148,4 +173,4 @@ int nfc_ndef_le_oob_rec_payload_constructor(
 
 /** @} */
 
-#endif /* NFC_NDEF_LE_OOB_REC_H_ */
+#endif /* BM_NFC_NDEF_LE_OOB_REC_H_ */

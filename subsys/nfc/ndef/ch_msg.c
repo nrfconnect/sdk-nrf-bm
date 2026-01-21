@@ -4,11 +4,8 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <zephyr/drivers/entropy.h>
-#include <zephyr/sys/byteorder.h>
-
-#include <nfc/ndef/ch_msg.h>
-#include <nfc/ndef/msg.h>
+#include <bm/nfc/ndef/ch_msg.h>
+#include <bm/nfc/ndef/msg.h>
 
 static int alternate_rec_encode(struct nfc_ndef_record_desc *hc,
 				const struct nfc_ndef_record_desc *ac,
