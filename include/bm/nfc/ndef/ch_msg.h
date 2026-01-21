@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#ifndef NFC_NDEF_CH_MSG_H_
-#define NFC_NDEF_CH_MSG_H_
+#ifndef BM_NFC_NDEF_CH_MSG_H_
+#define BM_NFC_NDEF_CH_MSG_H_
 
 /**@file
  *
- * @defgroup nfc_ndef_ch_msg NFC Connection Hanover messages
+ * @defgroup nfc_ndef_ch_msg NFC Connection Handover messages
  * @{
  *
  * @brief Generation of The Connection Handover NDEF messages.
@@ -17,17 +17,16 @@
  */
 
 #include <stddef.h>
-#include <zephyr/types.h>
-#include <nfc/ndef/ch.h>
-#include <nfc/ndef/le_oob_rec.h>
+#include <stdint.h>
+#include <bm/nfc/ndef/ch.h>
+#include <bm/nfc/ndef/le_oob_rec.h>
 
 #ifdef _cplusplus
 extern "C" {
 #endif
 
-
-#define NFC_NDEF_CH_MSG_MAJOR_VER CONFIG_NFC_NDEF_CH_MAJOR_VERSION
-#define NFC_NDEF_CH_MSG_MINOR_VER CONFIG_NFC_NDEF_CH_MINOR_VERSION
+#define NFC_NDEF_CH_MSG_MAJOR_VER CONFIG_BM_NFC_NDEF_CH_MAJOR_VERSION
+#define NFC_NDEF_CH_MSG_MINOR_VER CONFIG_BM_NFC_NDEF_CH_MINOR_VERSION
 
 /** NFC NDEF Connection Handover message structure.
  *  This structure contains all needed records needed to
@@ -167,4 +166,4 @@ int nfc_ndef_ch_msg_hi_create(struct nfc_ndef_msg_desc *msg,
  * @}
  */
 
-#endif /* NFC_NDEF_CH_MSG_H_ */
+#endif /* BM_NFC_NDEF_CH_MSG_H_ */

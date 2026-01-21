@@ -5,14 +5,18 @@
  */
 
 #include <string.h>
-#include <errno.h>
-#include <zephyr/drivers/entropy.h>
-#include <nfc/ndef/le_oob_rec.h>
+#include <bm/nfc/ndef/le_oob_rec.h>
 
 #define AD_TYPE_FIELD_SIZE 1UL
 #define AD_LEN_FIELD_SIZE 1UL
 
 #define LE_ROLE_PAYLOAD_SIZE 1UL
+
+struct bt_data {
+	uint8_t type;
+	uint8_t data_len;
+	const uint8_t *data;
+};
 
 static int bt_data_encode(struct bt_data *ad, uint8_t **buff, size_t *size)
 {
@@ -37,8 +41,7 @@ static int bt_data_encode(struct bt_data *ad, uint8_t **buff, size_t *size)
 	return 0;
 }
 
-static int ble_device_addr_encode(const bt_addr_le_t *dev_addr, uint8_t **buff,
-				  size_t *size)
+static int ble_device_addr_encode(const ble_gap_addr_t *dev_addr, uint8_t **buff, size_t *size)
 {
 	int err;
 	struct bt_data dev_addr_ad;
@@ -48,10 +51,10 @@ static int ble_device_addr_encode(const bt_addr_le_t *dev_addr, uint8_t **buff,
 		return -EINVAL;
 	}
 
-	memcpy(dev_addr_buff, &dev_addr->a, sizeof(dev_addr->a));
-	dev_addr_buff[sizeof(dev_addr->a)] = dev_addr->type;
+	memcpy(dev_addr_buff, &dev_addr->addr[0], sizeof(dev_addr->addr));
+	dev_addr_buff[sizeof(dev_addr->addr)] = dev_addr->addr_type;
 
-	dev_addr_ad.type = BT_DATA_LE_BT_DEVICE_ADDRESS;
+	dev_addr_ad.type = BLE_GAP_AD_TYPE_LE_BLUETOOTH_DEVICE_ADDRESS;
 	dev_addr_ad.data_len = sizeof(dev_addr_buff);
 	dev_addr_ad.data = (const uint8_t *) dev_addr_buff;
 
@@ -73,7 +76,7 @@ static int le_role_encode(enum nfc_ndef_le_oob_rec_le_role le_role, uint8_t **bu
 		return -EINVAL;
 	}
 
-	le_role_ad.type = BT_DATA_LE_ROLE;
+	le_role_ad.type = BLE_GAP_AD_TYPE_LE_ROLE;
 	le_role_ad.data_len = LE_ROLE_PAYLOAD_SIZE;
 	le_role_ad.data = (const uint8_t *) &le_role;
 
@@ -109,7 +112,7 @@ int nfc_ndef_le_oob_rec_payload_constructor(
 	if (payload_desc->tk_value) {
 		struct bt_data tk;
 
-		tk.type = BT_DATA_SM_TK_VALUE;
+		tk.type = BLE_GAP_AD_TYPE_SECURITY_MANAGER_TK_VALUE;
 		tk.data_len = NFC_NDEF_LE_OOB_REC_TK_LEN;
 		tk.data = payload_desc->tk_value;
 
@@ -122,7 +125,7 @@ int nfc_ndef_le_oob_rec_payload_constructor(
 	if (payload_desc->le_sc_data) {
 		struct bt_data le_sc_ad;
 
-		le_sc_ad.type = BT_DATA_LE_SC_CONFIRM_VALUE;
+		le_sc_ad.type = BLE_GAP_AD_TYPE_LESC_CONFIRMATION_VALUE;
 		le_sc_ad.data_len =
 			sizeof(payload_desc->le_sc_data->c);
 		le_sc_ad.data = payload_desc->le_sc_data->c;
@@ -132,7 +135,7 @@ int nfc_ndef_le_oob_rec_payload_constructor(
 			return err;
 		}
 
-		le_sc_ad.type = BT_DATA_LE_SC_RANDOM_VALUE;
+		le_sc_ad.type = BLE_GAP_AD_TYPE_LESC_RANDOM_VALUE;
 		le_sc_ad.data_len =
 			sizeof(payload_desc->le_sc_data->r);
 		le_sc_ad.data = payload_desc->le_sc_data->r;
@@ -145,7 +148,7 @@ int nfc_ndef_le_oob_rec_payload_constructor(
 
 	if (payload_desc->appearance) {
 		struct bt_data appearance_ad = {
-			.type = BT_DATA_GAP_APPEARANCE,
+			.type = BLE_GAP_AD_TYPE_APPEARANCE,
 			.data_len = sizeof(*payload_desc->appearance),
 			.data = (const uint8_t *) payload_desc->appearance,
 		};
@@ -158,12 +161,12 @@ int nfc_ndef_le_oob_rec_payload_constructor(
 
 	if (payload_desc->flags) {
 		struct bt_data flags_ad = {
-			.type = BT_DATA_FLAGS,
+			.type = BLE_GAP_AD_TYPE_FLAGS,
 			.data_len = sizeof(*payload_desc->flags),
 			.data = payload_desc->flags,
 		};
 
-		if ((*payload_desc->flags & BT_LE_AD_NO_BREDR) == 0) {
+		if ((*payload_desc->flags & BLE_GAP_ADV_FLAG_BR_EDR_NOT_SUPPORTED) == 0) {
 			return -EINVAL;
 		}
 
@@ -175,7 +178,7 @@ int nfc_ndef_le_oob_rec_payload_constructor(
 
 	if (payload_desc->local_name) {
 		struct bt_data local_name = {
-			.type = BT_DATA_NAME_COMPLETE,
+			.type = BLE_GAP_AD_TYPE_COMPLETE_LOCAL_NAME,
 			.data_len = strlen(payload_desc->local_name),
 			.data = payload_desc->local_name,
 		};

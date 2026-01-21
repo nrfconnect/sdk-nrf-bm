@@ -114,6 +114,8 @@ Libraries for NFC
 
   Use ``#include <bm/nfc/..>`` to include NFC related header files provided by |BMshort| instead of ``#include <nfc/...>``.
 
+* Added NFC libraries for NFC Connection Handover and Bluetooth LE Out-of-Band (OOB) pairing.
+
 Samples
 =======
 

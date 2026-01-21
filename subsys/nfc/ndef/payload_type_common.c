@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <nfc/ndef/payload_type_common.h>
+#include <bm/nfc/ndef/payload_type_common.h>
 
 /* Record Payload Type for Bluetooth Carrier Configuration LE record */
 const uint8_t nfc_ndef_le_oob_rec_type_field[] = {

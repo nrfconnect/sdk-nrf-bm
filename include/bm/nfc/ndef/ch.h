@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#ifndef NFC_NDEF_CH_H_
-#define NFC_NDEF_CH_H_
+#ifndef BM_NFC_NDEF_CH_H_
+#define BM_NFC_NDEF_CH_H_
 
 /**@file
  *
@@ -18,10 +18,9 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <zephyr/types.h>
-#include <nfc/ndef/record.h>
-#include <nfc/ndef/msg.h>
-#include <nfc/ndef/payload_type_common.h>
+#include <bm/nfc/ndef/record.h>
+#include <bm/nfc/ndef/msg.h>
+#include <bm/nfc/ndef/payload_type_common.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -561,4 +560,4 @@ int nfc_ndef_ch_cr_rec_payload_encode(const struct nfc_ndef_ch_cr_rec *nfc_rec_c
  * @}
  */
 
-#endif /* NFC_NDEF_CH_H_ */
+#endif /* BM_NFC_NDEF_CH_H_ */
