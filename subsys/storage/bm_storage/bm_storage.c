@@ -172,4 +172,18 @@ bool bm_storage_is_busy(const struct bm_storage *storage)
 	return storage->api->is_busy(storage);
 }
 
+int bm_storage_nvm_info_get(const struct bm_storage *storage, struct bm_storage_info *info)
+{
+	if (!storage || !info) {
+		return -EFAULT;
+	}
+	if (!storage->flags.is_initialized) {
+		return -EPERM;
+	}
+
+	memcpy(info, storage->nvm_info, sizeof(struct bm_storage_info));
+
+	return 0;
+}
+
 TOOLCHAIN_ENABLE_WARNING("-Wdeprecated-declarations");
