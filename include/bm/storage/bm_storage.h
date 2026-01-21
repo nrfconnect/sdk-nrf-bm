@@ -313,6 +313,18 @@ int bm_storage_erase(const struct bm_storage *storage, uint32_t addr, uint32_t l
  */
 bool bm_storage_is_busy(const struct bm_storage *storage);
 
+/**
+ * @brief Retrieve NVM storage information.
+ *
+ * @param[in] storage The storage instance.
+ * @param[out] info The NVM information.
+ *
+ * @retval 0 On success.
+ * @retval -EFAULT The storage instance @p storage or @p info is @c NULL.
+ * @retval -EPERM The storage instance @p storage is not initialized.
+ */
+int bm_storage_nvm_info_get(const struct bm_storage *storage, struct bm_storage_info *info);
+
 #ifdef __cplusplus
 }
 #endif

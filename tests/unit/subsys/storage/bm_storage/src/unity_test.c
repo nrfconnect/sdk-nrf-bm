@@ -14,6 +14,7 @@
 #define PARTITION_SIZE (BLOCK_SIZE * 16)
 
 static const struct bm_storage_info bm_storage_info = {
+	.erase_value = 0xFFFFFFFF,
 	.erase_unit = BLOCK_SIZE,
 	.program_unit = BLOCK_SIZE,
 	.no_explicit_erase = false
@@ -434,6 +435,53 @@ void test_bm_storage_is_busy(void)
 
 	is_busy = bm_storage_is_busy(&storage);
 	TEST_ASSERT_FALSE(is_busy);
+}
+
+void test_bm_storage_nvm_info_get_efault(void)
+{
+	int err;
+	struct bm_storage storage = {0};
+	struct bm_storage_info info = {0};
+
+	err = bm_storage_nvm_info_get(NULL, NULL);
+	TEST_ASSERT_EQUAL(-EFAULT, err);
+
+	err = bm_storage_nvm_info_get(&storage, NULL);
+	TEST_ASSERT_EQUAL(-EFAULT, err);
+
+	err = bm_storage_nvm_info_get(NULL, &info);
+	TEST_ASSERT_EQUAL(-EFAULT, err);
+}
+
+void test_bm_storage_nvm_info_get_eperm(void)
+{
+	int err;
+	struct bm_storage storage = {0};
+	struct bm_storage_info info = {0};
+
+	err = bm_storage_nvm_info_get(&storage, &info);
+	TEST_ASSERT_EQUAL(-EPERM, err);
+}
+
+void test_bm_storage_nvm_info_get(void)
+{
+	int err;
+	struct bm_storage storage = {0};
+	struct bm_storage_info info = {0};
+	struct bm_storage_config config = {
+		.api = &bm_storage_test_api,
+		.evt_handler = bm_storage_evt_handler,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
+	};
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	err = bm_storage_nvm_info_get(&storage, &info);
+	TEST_ASSERT_EQUAL(0, err);
+
+	TEST_ASSERT_EQUAL_MEMORY(&bm_storage_info, &info, sizeof(struct bm_storage_info));
 }
 
 void setUp(void)
