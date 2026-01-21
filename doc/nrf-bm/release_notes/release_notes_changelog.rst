@@ -74,6 +74,8 @@ Storage
 
    Added:
      * The capability to compile more than one backend.
+     * The :c:member:`bm_storage_config.addr` and :c:member:`bm_storage_config.size` fields.
+       Setting these fields instead of :c:member:`bm_storage_config.start_addr` and :c:member:`bm_storage_config.end_addr` switches the API to relative addressing (instead of absolute).
 
    Updated:
      * The :c:func:`bm_storage_init` function to return an error when the instance is already initialized.
@@ -82,6 +84,10 @@ Storage
      * The SoftDevice backend to support chunking of write operations.
      * The :c:func:`bm_storage_write` and :c:func:`bm_storage_erase` functions to return ``-ENOMEM`` when out of memory, instead of ``-EIO``.
      * The :c:func:`bm_storage_read`, :c:func:`bm_storage_write`, and :c:func:`bm_storage_erase` functions to return ``-EINVAL`` on alignment errors, instead of ``-EFAULT``.
+
+   Deprecated:
+     * The :c:member:`bm_storage_config.start_addr` and :c:member:`bm_storage_config.end_addr` fields.
+       Use the newly added :c:member:`bm_storage_config.addr` and :c:member:`bm_storage_config.size` fields instead.
 
 Libraries
 =========

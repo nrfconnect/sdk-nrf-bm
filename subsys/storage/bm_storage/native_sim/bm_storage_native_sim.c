@@ -87,6 +87,10 @@ static int bm_storage_native_sim_init(struct bm_storage *storage,
 static int bm_storage_native_sim_read(const struct bm_storage *storage, uint32_t src, void *dest,
 				      uint32_t len)
 {
+	if (!storage->flags.has_absolute_addressing) {
+		src += storage->addr;
+	}
+
 	memcpy(dest, (void *)src, len);
 
 	return 0;
@@ -102,6 +106,10 @@ static int bm_storage_native_sim_write(const struct bm_storage *storage, uint32_
 
 	if (!work_ctx) {
 		return -ENOMEM;
+	}
+
+	if (!storage->flags.has_absolute_addressing) {
+		dest += storage->addr;
 	}
 
 	work_ctx->storage = storage;
@@ -120,6 +128,10 @@ static int bm_storage_native_sim_write(const struct bm_storage *storage, uint32_
 
 	return 0;
 #else
+	if (!storage->flags.has_absolute_addressing) {
+		dest += storage->addr;
+	}
+
 	memcpy((void *)dest, src, len);
 
 	struct bm_storage_evt evt = {

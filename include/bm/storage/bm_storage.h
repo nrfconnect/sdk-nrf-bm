@@ -19,6 +19,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
+#include <zephyr/toolchain.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -118,10 +119,6 @@ struct bm_storage_api {
  */
 struct bm_storage {
 	/**
-	 * @brief Tells whether the instance is initialized.
-	 */
-	bool initialized;
-	/**
 	 * @brief API implementation.
 	 */
 	const struct bm_storage_api *api;
@@ -135,19 +132,28 @@ struct bm_storage {
 	 */
 	bm_storage_evt_handler_t evt_handler;
 	/**
-	 * @brief The beginning of the non-volatile memory region where this storage instance
-	 *        can operate.
-	 *        All non-volatile memory operations must be within the boundary delimited by this
-	 *        field and @ref end_addr.
+	 * @brief The starting address of this instance's partition.
 	 */
-	uint32_t start_addr;
+	uint32_t addr;
 	/**
-	 * @brief The last address (exclusive) of non-volatile memory where this storage instance
-	 *        can operate.
-	 *        All non-volatile memory operations must be within the boundary delimited by this
-	 *        field and @ref start_addr.
+	 * @brief The size of this instance's partition.
 	 */
-	uint32_t end_addr;
+	uint32_t size;
+	/**
+	 * @brief Instance flags.
+	 */
+	struct {
+		/**
+		 * @brief The instance has been initialized.
+		 */
+		uint8_t is_initialized : 1;
+		/**
+		 * @brief The instance uses absolute addressing.
+		 *
+		 * When false, the instance uses relative addressing.
+		 */
+		uint8_t has_absolute_addressing : 1;
+	} flags;
 };
 
 /**
@@ -165,19 +171,29 @@ struct bm_storage_config {
 	 */
 	const struct bm_storage_api *api;
 	/**
-	 * @brief The beginning of the non-volatile memory region where this storage instance
-	 *        can operate.
-	 *        All non-volatile memory operations must be within the boundary delimited by this
-	 *        field and @ref end_addr.
+	 * @brief The starting address of this instance's partition.
 	 */
-	uint32_t start_addr;
+	uint32_t addr;
 	/**
-	 * @brief The last address (exclusive) of non-volatile memory where this storage instance
-	 *        can operate.
-	 *        All non-volatile memory operations must be within the boundary delimited by this
-	 *        field and @ref start_addr.
+	 * @brief The size of this instance's partition.
 	 */
-	uint32_t end_addr;
+	uint32_t size;
+	/**
+	 * @brief The beginning of the partition where this instance can operate.
+	 *
+	 * Setting this field alongside @ref end_addr implies absolute addressing in the API.
+	 *
+	 * @deprecated Set bm_storage_config::addr instead.
+	 */
+	__deprecated uint32_t start_addr;
+	/**
+	 * @brief The last address (exclusive) of the partition where this instance can operate.
+	 *
+	 * Setting this field alongside @ref end_addr implies absolute addressing in the API.
+	 *
+	 * @deprecated Set bm_storage_config::size instead.
+	 */
+	__deprecated uint32_t end_addr;
 };
 
 /**
