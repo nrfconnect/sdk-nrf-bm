@@ -94,6 +94,10 @@ static int bm_storage_rramc_read(const struct bm_storage *storage, uint32_t src,
 		return -EPERM;
 	}
 
+	if (!storage->flags.has_absolute_addressing) {
+		src += storage->addr;
+	}
+
 	(void)nrfx_rramc_buffer_read(dest, src, len);
 
 	return 0;
@@ -102,6 +106,8 @@ static int bm_storage_rramc_read(const struct bm_storage *storage, uint32_t src,
 static int bm_storage_rramc_write(const struct bm_storage *storage, uint32_t dest, const void *src,
 				  uint32_t len, void *ctx)
 {
+	uint32_t physical_dest = dest;
+
 	if (!state.is_rramc_init) {
 		return -EPERM;
 	}
@@ -110,11 +116,16 @@ static int bm_storage_rramc_write(const struct bm_storage *storage, uint32_t des
 		return -EBUSY;
 	}
 
-	nrfx_rramc_bytes_write(dest, src, len);
+	if (!storage->flags.has_absolute_addressing) {
+		physical_dest += storage->addr;
+	}
+
+	nrfx_rramc_bytes_write(physical_dest, src, len);
 
 	/* Clear the atomic before sending the event, to allow API calls in the event context. */
 	atomic_set(&state.operation_ongoing, 0);
 
+	/* Event reports the address as passed to the API (relative or absolute). */
 	struct bm_storage_evt evt = {
 		.id = BM_STORAGE_EVT_WRITE_RESULT,
 		.dispatch_mode = BM_STORAGE_EVT_DISPATCH_MODE_SYNC,
@@ -134,6 +145,7 @@ static int bm_storage_rramc_erase(const struct bm_storage *storage, uint32_t add
 				  void *ctx)
 {
 	static uint8_t erase_buf[RRAMC_WRITE_BLOCK_SIZE];
+	uint32_t physical_addr = addr;
 
 	if (!state.is_rramc_init) {
 		return -EPERM;
@@ -143,15 +155,20 @@ static int bm_storage_rramc_erase(const struct bm_storage *storage, uint32_t add
 		return -EBUSY;
 	}
 
+	if (!storage->flags.has_absolute_addressing) {
+		physical_addr += storage->addr;
+	}
+
 	(void)memset(erase_buf, (int)(bm_storage_info.erase_value & 0xFF),
 		    sizeof(erase_buf));
 
 	for (uint32_t offset = 0; offset < len; offset += RRAMC_WRITE_BLOCK_SIZE) {
-		nrfx_rramc_bytes_write(addr + offset, erase_buf, RRAMC_WRITE_BLOCK_SIZE);
+		nrfx_rramc_bytes_write(physical_addr + offset, erase_buf, RRAMC_WRITE_BLOCK_SIZE);
 	}
 
 	atomic_set(&state.operation_ongoing, 0);
 
+	/* Event reports the address as passed to the API (relative or absolute). */
 	struct bm_storage_evt evt = {
 		.id = BM_STORAGE_EVT_ERASE_RESULT,
 		.dispatch_mode = BM_STORAGE_EVT_DISPATCH_MODE_SYNC,

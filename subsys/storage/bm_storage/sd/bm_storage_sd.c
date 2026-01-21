@@ -149,12 +149,15 @@ static void event_send(const struct bm_storage_sd_op *op, uint32_t result)
 
 static uint32_t write_execute(const struct bm_storage_sd_op *op)
 {
-	uint32_t *dest;
-	uint32_t *src;
+	uintptr_t dest;
+	uintptr_t src;
 	uint32_t chunk_len;
 
-	dest = (uint32_t *)(op->write.dest + op->write.offset);
-	src  = (uint32_t *)((uintptr_t)op->write.src + op->write.offset);
+	dest = op->write.dest + op->write.offset;
+	if (!op->storage->flags.has_absolute_addressing) {
+		dest += op->storage->addr;
+	}
+	src  = (uintptr_t)op->write.src + op->write.offset;
 
 	/* Limit by _MAX_WRITE_SIZE */
 	chunk_len =
@@ -163,15 +166,18 @@ static uint32_t write_execute(const struct bm_storage_sd_op *op)
 	/* Calculate number of 32-bit words for sd_flash_write() */
 	chunk_len = MAX(1, chunk_len / bm_storage_info.program_unit);
 
-	return sd_flash_write(dest, src, chunk_len);
+	return sd_flash_write(UINT_TO_POINTER(dest), UINT_TO_POINTER(src), chunk_len);
 }
 
 static uint32_t erase_execute(struct bm_storage_sd_op *op)
 {
-	uint32_t *addr;
+	uintptr_t addr;
 	uint32_t chunk_len;
 
-	addr = UINT_TO_POINTER(op->erase.addr + op->erase.offset);
+	addr = op->erase.addr + op->erase.offset;
+	if (!op->storage->flags.has_absolute_addressing) {
+		addr += op->storage->addr;
+	}
 
 	/* Write up to _MAX_WRITE_SIZE bytes at once */
 	chunk_len =
@@ -182,7 +188,7 @@ static uint32_t erase_execute(struct bm_storage_sd_op *op)
 
 	__ASSERT_NO_MSG(chunk_len <= sizeof(erase_buf) / bm_storage_info.erase_unit);
 
-	return sd_flash_write(addr, (uint32_t *)erase_buf, chunk_len);
+	return sd_flash_write(UINT_TO_POINTER(addr), (uint32_t *)erase_buf, chunk_len);
 }
 
 static bool queue_load_next(void)
@@ -336,6 +342,10 @@ static int bm_storage_sd_uninit(struct bm_storage *storage)
 static int bm_storage_sd_read(const struct bm_storage *storage, uint32_t src, void *dest,
 			      uint32_t len)
 {
+	if (!storage->flags.has_absolute_addressing) {
+		src += storage->addr;
+	}
+
 	memcpy(dest, UINT_TO_POINTER(src), len);
 
 	return 0;
