@@ -652,8 +652,8 @@ uint32_t ble_scan_start(const struct ble_scan *scan)
 
 	ble_scan_stop(scan);
 
-	/** If the allow list is used and the event handler is not NULL, send the allow list request
-	 *  to the main application.
+	/** If the allow list is used and the event handler is not NULL,
+	 *  send the allow list request.
 	 */
 	if (is_allow_list_used(scan)) {
 		if (scan->evt_handler) {
