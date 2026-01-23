@@ -202,9 +202,15 @@ struct ble_scan_evt {
  */
 typedef void (*ble_scan_evt_handler_t)(const struct ble_scan_evt *scan_evt);
 
-#if defined(CONFIG_BLE_SCAN_FILTER)
+/**
+ * @defgroup ble_scan_filters Scan filters
+ *
+ * @brief Scan filters
+ *
+ * @details Available when CONFIG_BLE_SCAN_FILTER is enabled.
+ * @{
+ */
 
-#if CONFIG_BLE_SCAN_NAME_COUNT > 0
 /** Scan name filter */
 struct ble_scan_name_filter {
 	/** Names that the main application will scan for,
@@ -216,9 +222,7 @@ struct ble_scan_name_filter {
 	/** Flag to inform about enabling or disabling this filter. */
 	bool name_filter_enabled;
 };
-#endif
 
-#if CONFIG_BLE_SCAN_SHORT_NAME_COUNT > 0
 /** Scan short name filter. */
 struct ble_scan_short_name_filter {
 	struct {
@@ -234,9 +238,7 @@ struct ble_scan_short_name_filter {
 	/** Flag to inform about enabling or disabling this filter. */
 	bool short_name_filter_enabled;
 };
-#endif
 
-#if CONFIG_BLE_SCAN_ADDRESS_COUNT > 0
 /** Scan address filter */
 struct ble_scan_addr_filter {
 	/** Addresses in the same format as the format used by the SoftDevice that the
@@ -248,9 +250,7 @@ struct ble_scan_addr_filter {
 	/** Flag to inform about enabling or disabling this filter. */
 	bool addr_filter_enabled;
 };
-#endif
 
-#if CONFIG_BLE_SCAN_UUID_COUNT > 0
 /** Scan UUID filter */
 struct ble_scan_uuid_filter {
 	/** UUIDs that the main application will scan for, and that will be advertised by
@@ -262,9 +262,7 @@ struct ble_scan_uuid_filter {
 	/** Flag to inform about enabling or disabling this filter. */
 	bool uuid_filter_enabled;
 };
-#endif
 
-#if CONFIG_BLE_SCAN_APPEARANCE_COUNT > 0
 /** Scan appearance filter. */
 struct ble_scan_appearance_filter {
 	/** Apperances that the main application will scan for, and that will be advertised by the
@@ -276,7 +274,6 @@ struct ble_scan_appearance_filter {
 	/** Flag to inform about enabling or disabling this filter. */
 	bool appearance_filter_enabled;
 };
-#endif
 
 /**
  * @brief Filter data.
@@ -312,7 +309,7 @@ struct ble_scan_filters {
 	bool all_filters_mode;
 };
 
-#endif /* CONFIG_BLE_SCAN_FILTER */
+/** @} */
 
 /**
  * @defgroup ble_scan_config Scan configuration
@@ -445,12 +442,11 @@ uint32_t ble_scan_start(const struct ble_scan *scan);
  */
 void ble_scan_stop(const struct ble_scan *scan);
 
-#if defined(CONFIG_BLE_SCAN_FILTER)
-
 /**
  * @brief Enable filtering.
  *
- * @details The filters can be combined with each other. For example, you can enable one filter or
+ * @details Available when CONFIG_BLE_SCAN_FILTER is enabled.
+ *          The filters can be combined with each other. For example, you can enable one filter or
  *          several filters. For example, (BLE_SCAN_NAME_FILTER | BLE_SCAN_UUID_FILTER)
  *          enables UUID and name filters.
  *
@@ -473,7 +469,8 @@ uint32_t ble_scan_filters_enable(struct ble_scan *scan, uint8_t mode, bool match
 /**
  * @brief Disable filtering.
  *
- * @details Disable all filters.
+ * @details Available when CONFIG_BLE_SCAN_FILTER is enabled.
+ *          Disable all filters.
  *          Even if the automatic connection establishing is enabled, the connection will not be
  *          established with the first device found after this function is called.
  *
@@ -487,7 +484,8 @@ uint32_t ble_scan_filters_disable(struct ble_scan *scan);
 /**
  * @brief Get filter status.
  *
- * @details This function returns the filter setting and whether it is enabled or disabled.
+ * @details Available when CONFIG_BLE_SCAN_FILTER is enabled.
+ *          This function returns the filter setting and whether it is enabled or disabled.
  *
  * @param[in] scan Scan library instance.
  * @param[out] status Filter status.
@@ -500,7 +498,8 @@ uint32_t ble_scan_filter_get(const struct ble_scan *scan, struct ble_scan_filter
 /**
  * @brief Add scan filter.
  *
- * @details This function adds a new filter by type @ref ble_scan_filter_type_t.
+ * @details Available when CONFIG_BLE_SCAN_FILTER is enabled.
+ *          This function adds a new filter by type @ref ble_scan_filter_type_t.
  *          The filter will be added if the number of filters of a given type does not exceed @ref
  *          CONFIG_BLE_SCAN_UUID_COUNT, @ref CONFIG_BLE_SCAN_NAME_COUNT, @ref
  *          CONFIG_BLE_SCAN_ADDRESS_COUNT, or @ref CONFIG_BLE_SCAN_APPEARANCE_COUNT, depending on
@@ -523,7 +522,8 @@ uint32_t ble_scan_filter_add(struct ble_scan *scan, uint8_t type, const void *da
 /**
  * @brief Remove all filters.
  *
- * @details The function removes all previously set filters.
+ * @details Available when CONFIG_BLE_SCAN_FILTER is enabled.
+ *          The function removes all previously set filters.
  *
  * @note After using this function the filters are still enabled.
  *
@@ -532,8 +532,6 @@ uint32_t ble_scan_filter_add(struct ble_scan *scan, uint8_t type, const void *da
  * @retval NRF_SUCCESS If all filters are removed successfully.
  */
 uint32_t ble_scan_all_filter_remove(struct ble_scan *scan);
-
-#endif /* CONFIG_BLE_SCAN_FILTER */
 
 /**
  * @brief Set the scanning parameters.
