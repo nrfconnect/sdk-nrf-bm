@@ -202,9 +202,15 @@ struct ble_scan_evt {
  */
 typedef void (*ble_scan_evt_handler_t)(const struct ble_scan_evt *scan_evt);
 
-#if defined(CONFIG_BLE_SCAN_FILTER)
+/**
+ * @defgroup ble_scan_filters Scan filters
+ *
+ * @brief Scan filters
+ *
+ * @details Available when CONFIG_BLE_SCAN_FILTER is enabled.
+ * @{
+ */
 
-#if CONFIG_BLE_SCAN_NAME_COUNT > 0
 /** Scan name filter */
 struct ble_scan_name_filter {
 	/** Names that the main application will scan for,
@@ -216,9 +222,7 @@ struct ble_scan_name_filter {
 	/** Flag to inform about enabling or disabling this filter. */
 	bool name_filter_enabled;
 };
-#endif
 
-#if CONFIG_BLE_SCAN_SHORT_NAME_COUNT > 0
 /** Scan short name filter. */
 struct ble_scan_short_name_filter {
 	struct {
@@ -234,9 +238,7 @@ struct ble_scan_short_name_filter {
 	/** Flag to inform about enabling or disabling this filter. */
 	bool short_name_filter_enabled;
 };
-#endif
 
-#if CONFIG_BLE_SCAN_ADDRESS_COUNT > 0
 /** Scan address filter */
 struct ble_scan_addr_filter {
 	/** Addresses in the same format as the format used by the SoftDevice that the
@@ -248,9 +250,7 @@ struct ble_scan_addr_filter {
 	/** Flag to inform about enabling or disabling this filter. */
 	bool addr_filter_enabled;
 };
-#endif
 
-#if CONFIG_BLE_SCAN_UUID_COUNT > 0
 /** Scan UUID filter */
 struct ble_scan_uuid_filter {
 	/** UUIDs that the main application will scan for, and that will be advertised by
@@ -262,9 +262,7 @@ struct ble_scan_uuid_filter {
 	/** Flag to inform about enabling or disabling this filter. */
 	bool uuid_filter_enabled;
 };
-#endif
 
-#if CONFIG_BLE_SCAN_APPEARANCE_COUNT > 0
 /** Scan appearance filter. */
 struct ble_scan_appearance_filter {
 	/** Apperances that the main application will scan for, and that will be advertised by the
@@ -276,15 +274,15 @@ struct ble_scan_appearance_filter {
 	/** Flag to inform about enabling or disabling this filter. */
 	bool appearance_filter_enabled;
 };
-#endif
 
 /**
  * @brief Filter data.
  *
  * @details This contains all filter data and the information about enabling and disabling
- * any type of filters. Flag all_filter_mode informs about the filter mode. If this flag is set,
- * then all types of enabled filters must be matched for the library to send a notification to the
- * main application. Otherwise, it is enough to match one of the filters to send a notification.
+ *          any type of filters. Flag all_filter_mode informs about the filter mode. If this flag is
+ *          set, then all types of enabled filters must be matched for the library to send a
+ *          notification to the main application. Otherwise, it is enough to match one of the
+ *          filters to send a notification.
  */
 struct ble_scan_filters {
 #if CONFIG_BLE_SCAN_NAME_COUNT > 0
@@ -311,7 +309,7 @@ struct ble_scan_filters {
 	bool all_filters_mode;
 };
 
-#endif /* CONFIG_BLE_SCAN_FILTER */
+/** @} */
 
 /**
  * @defgroup ble_scan_config Scan configuration
@@ -444,12 +442,11 @@ uint32_t ble_scan_start(const struct ble_scan *scan_ctx);
  */
 void ble_scan_stop(const struct ble_scan *scan_ctx);
 
-#if defined(CONFIG_BLE_SCAN_FILTER)
-
 /**
  * @brief Enable filtering.
  *
- * @details The filters can be combined with each other. For example, you can enable one filter or
+ * @details Available when CONFIG_BLE_SCAN_FILTER is enabled.
+ *          The filters can be combined with each other. For example, you can enable one filter or
  *          several filters. For example, (BLE_SCAN_NAME_FILTER | BLE_SCAN_UUID_FILTER)
  *          enables UUID and name filters.
  *
@@ -472,7 +469,8 @@ uint32_t ble_scan_filters_enable(struct ble_scan *scan_ctx, uint8_t mode, bool m
 /**
  * @brief Disable filtering.
  *
- * @details Disable all filters.
+ * @details Available when CONFIG_BLE_SCAN_FILTER is enabled.
+ *          Disable all filters.
  *          Even if the automatic connection establishing is enabled, the connection will not be
  *          established with the first device found after this function is called.
  *
@@ -486,7 +484,8 @@ uint32_t ble_scan_filters_disable(struct ble_scan *scan_ctx);
 /**
  * @brief Get filter status.
  *
- * @details This function returns the filter setting and whether it is enabled or disabled.
+ * @details Available when CONFIG_BLE_SCAN_FILTER is enabled.
+ *          This function returns the filter setting and whether it is enabled or disabled.
  *
  * @param[in] scan_ctx Scan library instance.
  * @param[out] status Filter status.
@@ -497,7 +496,8 @@ uint32_t ble_scan_filters_disable(struct ble_scan *scan_ctx);
 uint32_t ble_scan_filter_get(struct ble_scan *scan_ctx, struct ble_scan_filters *status);
 
 /**
- * @brief Add scan filter.
+ * @brief Available when CONFIG_BLE_SCAN_FILTER is enabled.
+ *        Add scan filter.
  *
  * @details This function adds a new filter by type @ref ble_scan_filter_type_t.
  *          The filter will be added if the number of filters of a given type does not exceed @ref
@@ -522,7 +522,8 @@ uint32_t ble_scan_filter_add(struct ble_scan *scan_ctx, uint8_t type, const void
 /**
  * @brief Remove all filters.
  *
- * @details The function removes all previously set filters.
+ * @details Available when CONFIG_BLE_SCAN_FILTER is enabled.
+ *          The function removes all previously set filters.
  *
  * @note After using this function the filters are still enabled.
  *
@@ -531,8 +532,6 @@ uint32_t ble_scan_filter_add(struct ble_scan *scan_ctx, uint8_t type, const void
  * @retval NRF_SUCCESS If all filters are removed successfully.
  */
 uint32_t ble_scan_all_filter_remove(struct ble_scan *scan_ctx);
-
-#endif /* CONFIG_BLE_SCAN_FILTER */
 
 /**
  * @brief Set the scanning parameters.
