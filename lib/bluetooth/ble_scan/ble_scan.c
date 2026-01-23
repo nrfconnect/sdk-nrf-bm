@@ -36,14 +36,6 @@ static void ble_scan_connect_with_target(const struct ble_scan *scan,
 		.evt_type = BLE_SCAN_EVT_CONNECTING_ERROR,
 	};
 
-	/* Return if the automatic connection is disabled. */
-	if (!scan->connect_if_match) {
-		return;
-	}
-
-	/* Stop scanning. */
-	ble_scan_stop(scan);
-
 	/* Establish connection. */
 	nrf_err = sd_ble_gap_connect(&adv_report->peer_addr, &scan->scan_params,
 				     &scan->conn_params, scan->conn_cfg_tag);
@@ -118,7 +110,7 @@ static int ble_scan_addr_filter_add(struct ble_scan *scan, const uint8_t *addr)
 
 	return NRF_SUCCESS;
 }
-#endif /* CONFIG_BLE_SCAN_ADDRESS_COUNT */
+#endif /* CONFIG_BLE_SCAN_ADDRESS_COUNT > 0 */
 
 #if (CONFIG_BLE_SCAN_NAME_COUNT > 0)
 static uint16_t advdata_search(const uint8_t *encoded_data, uint16_t data_len, uint16_t *offset,
@@ -225,7 +217,7 @@ static int ble_scan_name_filter_add(struct ble_scan *scan, const char *name)
 
 	return NRF_SUCCESS;
 }
-#endif /* CONFIG_BLE_SCAN_NAME_COUNT */
+#endif /* CONFIG_BLE_SCAN_NAME_COUNT > 0 */
 
 #if (CONFIG_BLE_SCAN_SHORT_NAME_COUNT > 0)
 static bool adv_short_name_compare(const ble_gap_evt_adv_report_t *adv_report,
@@ -284,7 +276,7 @@ static int ble_scan_short_name_filter_add(struct ble_scan *scan,
 
 	return NRF_SUCCESS;
 }
-#endif /* CONFIG_BLE_SCAN_SHORT_NAME_COUNT */
+#endif /* CONFIG_BLE_SCAN_SHORT_NAME_COUNT > 0 */
 
 #if (CONFIG_BLE_SCAN_UUID_COUNT > 0)
 static bool adv_uuid_compare(const ble_gap_evt_adv_report_t *adv_report,
@@ -342,9 +334,9 @@ static int ble_scan_uuid_filter_add(struct ble_scan *scan, const ble_uuid_t *uui
 
 	return NRF_SUCCESS;
 }
-#endif /* CONFIG_BLE_SCAN_UUID_COUNT */
+#endif /* CONFIG_BLE_SCAN_UUID_COUNT > 0 */
 
-#if (CONFIG_BLE_SCAN_APPEARANCE_COUNT)
+#if (CONFIG_BLE_SCAN_APPEARANCE_COUNT > 0)
 static bool adv_appearance_compare(const ble_gap_evt_adv_report_t *adv_report,
 				   const struct ble_scan *scan)
 {
@@ -384,7 +376,7 @@ static int ble_scan_appearance_filter_add(struct ble_scan *scan, uint16_t appear
 	LOG_DBG("Added filter on appearance %#x", appearance);
 	return NRF_SUCCESS;
 }
-#endif /* CONFIG_BLE_SCAN_APPEARANCE_COUNT */
+#endif /* CONFIG_BLE_SCAN_APPEARANCE_COUNT > 0 */
 
 uint32_t ble_scan_filter_add(struct ble_scan *scan, uint8_t type, const void *data)
 {
@@ -585,7 +577,7 @@ uint32_t ble_scan_filter_get(struct ble_scan *scan, struct ble_scan_filters *sta
 	return NRF_SUCCESS;
 }
 
-#endif /* CONFIG_BLE_SCAN_FILTER */
+#endif /* CONFIG_BLE_SCAN_FILTER > 0 */
 
 bool is_allow_list_used(const struct ble_scan *scan)
 {
@@ -630,7 +622,7 @@ uint32_t ble_scan_params_set(struct ble_scan *scan,
 		return NRF_ERROR_NULL;
 	}
 
-	ble_scan_stop(scan);
+	(void)sd_ble_gap_scan_stop();
 
 	/* Assign new scanning parameters. */
 	scan->scan_params = *scan_params;
@@ -651,7 +643,7 @@ uint32_t ble_scan_start(const struct ble_scan *scan)
 		return NRF_ERROR_NULL;
 	}
 
-	ble_scan_stop(scan);
+	(void)sd_ble_gap_scan_stop();
 
 	/** If the allow list is used and the event handler is not NULL,
 	 *  send the allow list request.
@@ -691,134 +683,108 @@ static void ble_scan_on_adv_report(const struct ble_scan *scan,
 		.scan_params = &scan->scan_params,
 	};
 
-#if CONFIG_BLE_SCAN_FILTER
-	uint8_t filter_cnt = 0;
-	uint8_t filter_match_cnt = 0;
-#endif
-
 	/* If the allow list is used, do not check the filters and return. */
 	if (is_allow_list_used(scan)) {
 		scan_evt.evt_type = BLE_SCAN_EVT_ALLOW_LIST_ADV_REPORT;
 		scan_evt.params.allow_list_adv_report.report = adv_report;
 		scan->evt_handler(&scan_evt);
 
-		sd_ble_gap_scan_start(NULL, &scan->scan_buffer);
-		ble_scan_connect_with_target(scan, adv_report);
+		if (scan->connect_if_match) {
+			(void)sd_ble_gap_scan_stop();
+			ble_scan_connect_with_target(scan, adv_report);
+		} else {
+			(void)sd_ble_gap_scan_start(NULL, &scan->scan_buffer);
+		}
 
 		return;
 	}
 
 #if CONFIG_BLE_SCAN_FILTER
-	const bool all_filter_mode = scan->scan_filters.all_filters_mode;
-	bool is_filter_matched = false;
-
-#if (CONFIG_BLE_SCAN_ADDRESS_COUNT > 0)
-	const bool addr_filter_enabled = scan->scan_filters.addr_filter.addr_filter_enabled;
-#endif
-
-#if (CONFIG_BLE_SCAN_NAME_COUNT > 0)
-	const bool name_filter_enabled = scan->scan_filters.name_filter.name_filter_enabled;
-#endif
-
-#if (CONFIG_BLE_SCAN_SHORT_NAME_COUNT > 0)
-	const bool short_name_filter_enabled =
-		scan->scan_filters.short_name_filter.short_name_filter_enabled;
-#endif
-
-#if (CONFIG_BLE_SCAN_UUID_COUNT > 0)
-	const bool uuid_filter_enabled = scan->scan_filters.uuid_filter.uuid_filter_enabled;
-#endif
-
-#if (CONFIG_BLE_SCAN_APPEARANCE_COUNT > 0)
-	const bool appearance_filter_enabled =
-		scan->scan_filters.appearance_filter.appearance_filter_enabled;
-#endif
+	uint8_t filter_cnt = 0;
+	uint8_t filter_match_cnt = 0;
 
 #if (CONFIG_BLE_SCAN_ADDRESS_COUNT > 0)
 	/* Check the address filter. */
-	if (addr_filter_enabled) {
-		/* Number of active filters. */
+	if (scan->scan_filters.addr_filter.addr_filter_enabled) {
+		/* Increase number of active filters. */
 		filter_cnt++;
 		if (adv_addr_compare(adv_report, scan)) {
 			/* Number of filters matched. */
 			filter_match_cnt++;
 			/* Information about the filters matched. */
 			scan_evt.params.filter_match.filter_match.address_filter_match = true;
-			is_filter_matched = true;
 		}
 	}
-#endif
+#endif /* CONFIG_BLE_SCAN_ADDRESS_COUNT > 0 */
 
 #if (CONFIG_BLE_SCAN_NAME_COUNT > 0)
 	/* Check the name filter. */
-	if (name_filter_enabled) {
+	if (scan->scan_filters.name_filter.name_filter_enabled) {
 		filter_cnt++;
 		if (adv_name_compare(adv_report, scan)) {
 			filter_match_cnt++;
 
-			/* Information about the filters matched. */
 			scan_evt.params.filter_match.filter_match.name_filter_match = true;
-			is_filter_matched = true;
 		}
 	}
-#endif
+#endif /* CONFIG_BLE_SCAN_NAME_COUNT > 0 */
 
 #if (CONFIG_BLE_SCAN_SHORT_NAME_COUNT > 0)
-	if (short_name_filter_enabled) {
+	/* Check the short name filter. */
+	if (scan->scan_filters.short_name_filter.short_name_filter_enabled) {
 		filter_cnt++;
 		if (adv_short_name_compare(adv_report, scan)) {
 			filter_match_cnt++;
 
-			/* Information about the filters matched. */
 			scan_evt.params.filter_match.filter_match.short_name_filter_match = true;
-			is_filter_matched = true;
 		}
 	}
-#endif
+#endif /* CONFIG_BLE_SCAN_SHORT_NAME_COUNT > 0 */
 
 #if (CONFIG_BLE_SCAN_UUID_COUNT > 0)
 	/* Check the UUID filter. */
-	if (uuid_filter_enabled) {
+	if (scan->scan_filters.uuid_filter.uuid_filter_enabled) {
 		filter_cnt++;
 		if (adv_uuid_compare(adv_report, scan)) {
 			filter_match_cnt++;
-			/* Information about the filters matched. */
+
 			scan_evt.params.filter_match.filter_match.uuid_filter_match = true;
-			is_filter_matched = true;
 		}
 	}
-#endif
+#endif /* CONFIG_BLE_SCAN_UUID_COUNT > 0 */
 
 #if (CONFIG_BLE_SCAN_APPEARANCE_COUNT > 0)
 	/* Check the appearance filter. */
-	if (appearance_filter_enabled) {
+	if (scan->scan_filters.appearance_filter.appearance_filter_enabled) {
 		filter_cnt++;
 		if (adv_appearance_compare(adv_report, scan)) {
 			filter_match_cnt++;
-			/* Information about the filters matched. */
+
 			scan_evt.params.filter_match.filter_match.appearance_filter_match = true;
-			is_filter_matched = true;
 		}
 	}
-
-	scan_evt.evt_type = BLE_SCAN_EVT_NOT_FOUND;
-#endif
+#endif /* CONFIG_BLE_SCAN_APPEARANCE_COUNT > 0 */
 
 	scan_evt.params.filter_match.adv_report = adv_report;
 
 	/** In the multifilter mode, the number of the active filters must equal the number of the
 	 *  filters matched to generate the notification.
 	 */
-	if (all_filter_mode && (filter_match_cnt == filter_cnt)) {
+	if (scan->scan_filters.all_filters_mode && (filter_match_cnt == filter_cnt)) {
 		scan_evt.evt_type = BLE_SCAN_EVT_FILTER_MATCH;
-		ble_scan_connect_with_target(scan, adv_report);
-	}
-	/** In the normal filter mode, only one filter match is needed to generate the notification
-	 *  to the main application.
-	 */
-	else if ((!all_filter_mode) && is_filter_matched) {
+		if (scan->connect_if_match) {
+			(void)sd_ble_gap_scan_stop();
+			ble_scan_connect_with_target(scan, adv_report);
+		}
+	} else if ((!scan->scan_filters.all_filters_mode) && (filter_match_cnt > 0)) {
+		/** In the normal filter mode, only one filter match is needed to generate the
+		 *  notification to the main application.
+		 */
 		scan_evt.evt_type = BLE_SCAN_EVT_FILTER_MATCH;
-		ble_scan_connect_with_target(scan, adv_report);
+		if (scan->connect_if_match) {
+			(void)sd_ble_gap_scan_stop();
+			ble_scan_connect_with_target(scan, adv_report);
+		}
 	} else {
 		scan_evt.evt_type = BLE_SCAN_EVT_NOT_FOUND;
 		scan_evt.params.not_found.report = adv_report;
@@ -829,7 +795,7 @@ static void ble_scan_on_adv_report(const struct ble_scan *scan,
 		scan->evt_handler(&scan_evt);
 	}
 
-#endif /* CONFIG_BLE_SCAN_FILTER*/
+#endif /* CONFIG_BLE_SCAN_FILTER */
 
 	/* Resume the scanning. */
 	(void)sd_ble_gap_scan_start(NULL, &scan->scan_buffer);
