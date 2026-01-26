@@ -76,15 +76,12 @@ Erase
 =====
 
 Use the :c:func:`bm_storage_erase` function to erase a region in NVM.
-``len`` must be a multiple of the erase unit.
-If not supported by the backend, the call may return ``NRF_ERROR_NOT_SUPPORTED``.
-This means that the backend does not require the region to be erased before another write operation.
+When the erase operation is not supported by the hardware, the backend will emulate it by writing the memory's erased value to the NVM area.
 
 .. note::
 
    The erase unit is the minimum erasable block in NVM.
    Erase operations must start at an address aligned by the erase unit and use a length that is a multiple of this value.
-   The erase unit is reported by :c:member:`bm_storage_info.erase_unit`.
 
 Busy state
 ==========
