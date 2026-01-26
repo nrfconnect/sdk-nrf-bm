@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 - 2025 Nordic Semiconductor ASA
+ * Copyright (c) 2013 - 2026 Nordic Semiconductor ASA
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
@@ -55,10 +55,10 @@ static void pending_user_events_send(struct ble_db_discovery *db_discovery)
 static void discovery_available_evt_trigger(struct ble_db_discovery *const db_discovery,
 					    const uint16_t conn_handle)
 {
-	struct ble_db_discovery_evt evt = {0};
-
-	evt.conn_handle = conn_handle;
-	evt.evt_type = BLE_DB_DISCOVERY_AVAILABLE;
+	struct ble_db_discovery_evt evt = {
+		.evt_type = BLE_DB_DISCOVERY_AVAILABLE,
+		.conn_handle = conn_handle,
+	};
 
 	if (db_discovery->evt_handler) {
 		db_discovery->evt_handler(db_discovery, &evt);
@@ -77,8 +77,8 @@ static void discovery_error_evt_trigger(struct ble_db_discovery *db_discovery, u
 
 	if (evt_handler) {
 		struct ble_db_discovery_evt evt = {
-			.conn_handle = conn_handle,
 			.evt_type = BLE_DB_DISCOVERY_ERROR,
+			.conn_handle = conn_handle,
 			.params.error.reason = nrf_err,
 		};
 
@@ -178,7 +178,7 @@ static void on_srv_disc_completion(struct ble_db_discovery *db_discovery, uint16
 		 */
 		srv_being_discovered->char_count = 0;
 
-		LOG_DBG("Starting discovery of service with UUID 0x%x on connection handle 0x%x.",
+		LOG_DBG("Starting discovery of service with UUID %#x on connection handle %#x",
 			srv_being_discovered->srv_uuid.uuid, conn_handle);
 
 		db_srv_disc_req.type = BLE_GQ_REQ_SRV_DISCOVERY;
@@ -377,7 +377,7 @@ static void on_primary_srv_discovery_rsp(struct ble_db_discovery *db_discovery,
 		uint32_t nrf_err;
 		const ble_gattc_evt_prim_srvc_disc_rsp_t *prim_srvc_disc_rsp_evt;
 
-		LOG_DBG("Found service UUID 0x%x.", srv_being_discovered->srv_uuid.uuid);
+		LOG_DBG("Found service UUID %#x", srv_being_discovered->srv_uuid.uuid);
 
 		prim_srvc_disc_rsp_evt = &(ble_gattc_evt->params.prim_srvc_disc_rsp);
 
@@ -395,7 +395,7 @@ static void on_primary_srv_discovery_rsp(struct ble_db_discovery *db_discovery,
 		} else {
 			db_discovery->srv_count = CONFIG_BLE_DB_DISCOVERY_MAX_SRV;
 
-			LOG_WRN("Not enough space for services.");
+			LOG_WRN("Not enough space for services");
 			LOG_WRN("Increase CONFIG_BLE_DB_DISCOVERY_MAX_SRV to be able to store more "
 				"services!");
 		}
@@ -406,7 +406,7 @@ static void on_primary_srv_discovery_rsp(struct ble_db_discovery *db_discovery,
 			discovery_error_handler(ble_gattc_evt->conn_handle, nrf_err, db_discovery);
 		}
 	} else {
-		LOG_DBG("Service UUID 0x%x not found.", srv_being_discovered->srv_uuid.uuid);
+		LOG_DBG("Service UUID %#x not found", srv_being_discovered->srv_uuid.uuid);
 		/* Trigger Service Not Found event to the application. */
 		discovery_complete_evt_trigger(db_discovery, false, ble_gattc_evt->conn_handle);
 		on_srv_disc_completion(db_discovery, ble_gattc_evt->conn_handle);
@@ -454,7 +454,7 @@ static void on_characteristic_discovery_rsp(struct ble_db_discovery *db_discover
 			 */
 			srv_being_discovered->char_count = CONFIG_BLE_GATT_DB_MAX_CHARS;
 			LOG_WRN("Not enough space for characteristics associated with "
-				"service 0x%04X !",
+				"service %#x",
 				srv_being_discovered->srv_uuid.uuid);
 			LOG_WRN("Increase CONFIG_BLE_GATT_DB_MAX_CHARS to be able to store more "
 				"characteristics for each service!");
@@ -527,8 +527,8 @@ static void on_characteristic_discovery_rsp(struct ble_db_discovery *db_discover
 			/* No more characteristics and descriptors need to be discovered. Discovery
 			 * is complete. Send a discovery complete event to the user application.
 			 */
-			LOG_DBG("Discovery of service with UUID 0x%x completed with success"
-				" on connection handle 0x%x.",
+			LOG_DBG("Discovery of service with UUID %#x completed with success"
+				" on connection handle %#x",
 				srv_being_discovered->srv_uuid.uuid, ble_gattc_evt->conn_handle);
 
 			discovery_complete_evt_trigger(db_discovery, true,
@@ -617,8 +617,8 @@ static void on_descriptor_discovery_rsp(struct ble_db_discovery *const db_discov
 	}
 
 	if (raise_discov_complete) {
-		LOG_DBG("Discovery of service with UUID 0x%x completed with success"
-			" on connection handle 0x%x.",
+		LOG_DBG("Discovery of service with UUID %#x completed with success"
+			" on connection handle %#x",
 			srv_being_discovered->srv_uuid.uuid, ble_gattc_evt->conn_handle);
 
 		discovery_complete_evt_trigger(db_discovery, true, ble_gattc_evt->conn_handle);
@@ -630,7 +630,12 @@ static uint32_t discovery_start(struct ble_db_discovery *const db_discovery, uin
 {
 	int nrf_err;
 	struct ble_gatt_db_srv *srv_being_discovered;
-	struct ble_gq_req db_srv_disc_req = {0};
+	struct ble_gq_req db_srv_disc_req = {
+		.type = BLE_GQ_REQ_SRV_DISCOVERY,
+		.evt_handler = discovery_gq_event_handler,
+		.ctx = db_discovery,
+		.gattc_srv_disc.start_handle = CONFIG_BLE_DB_DISCOVERY_SRV_DISC_START_HANDLE,
+	};
 
 	nrf_err = ble_gq_conn_handle_register(db_discovery->gatt_queue, conn_handle);
 	if (nrf_err) {
@@ -640,17 +645,12 @@ static uint32_t discovery_start(struct ble_db_discovery *const db_discovery, uin
 	db_discovery->conn_handle = conn_handle;
 
 	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
-	srv_being_discovered->srv_uuid =
-		db_discovery->registered_uuids[db_discovery->curr_srv_ind];
+	srv_being_discovered->srv_uuid = db_discovery->registered_uuids[db_discovery->curr_srv_ind];
 
-	LOG_DBG("Starting discovery of service with UUID 0x%x on connection handle 0x%x.",
-		srv_being_discovered->srv_uuid.uuid, conn_handle);
-
-	db_srv_disc_req.type = BLE_GQ_REQ_SRV_DISCOVERY;
-	db_srv_disc_req.gattc_srv_disc.start_handle = CONFIG_BLE_DB_DISCOVERY_SRV_DISC_START_HANDLE;
 	db_srv_disc_req.gattc_srv_disc.srvc_uuid = srv_being_discovered->srv_uuid;
-	db_srv_disc_req.ctx = db_discovery;
-	db_srv_disc_req.evt_handler = discovery_gq_event_handler;
+
+	LOG_DBG("Starting discovery of service with UUID %#x on connection handle %#x",
+		srv_being_discovered->srv_uuid.uuid, conn_handle);
 
 	nrf_err = ble_gq_item_add(db_discovery->gatt_queue, &db_srv_disc_req, conn_handle);
 	if (nrf_err) {
@@ -665,7 +665,7 @@ static uint32_t discovery_start(struct ble_db_discovery *const db_discovery, uin
 uint32_t ble_db_discovery_init(struct ble_db_discovery *db_discovery,
 			       const struct ble_db_discovery_config *db_config)
 {
-	if (!db_discovery || !db_config || !(db_config->evt_handler) || !(db_config->gatt_queue)) {
+	if (!db_discovery || !db_config || !db_config->evt_handler || !db_config->gatt_queue) {
 		return NRF_ERROR_NULL;
 	}
 
@@ -686,7 +686,7 @@ uint32_t ble_db_discovery_start(struct ble_db_discovery *db_discovery, uint16_t 
 	}
 
 	if (db_discovery->num_registered_uuids == 0) {
-		/* No user modules were registered. There are no services to discover. */
+		/* No UUIDs have been registered. There are no services to discover. */
 		return NRF_ERROR_INVALID_STATE;
 	}
 
@@ -720,9 +720,9 @@ static void on_disconnected(struct ble_db_discovery *db_discovery, const ble_gap
 
 void ble_db_discovery_on_ble_evt(const ble_evt_t *ble_evt, void *context)
 {
-	struct ble_db_discovery *db_discovery = (struct ble_db_discovery *)context;
+	struct ble_db_discovery *const db_discovery = (struct ble_db_discovery *)context;
 
-	if (!ble_evt || !context || !db_discovery->gatt_queue) {
+	if (!ble_evt || !db_discovery || !db_discovery->gatt_queue) {
 		return;
 	}
 
