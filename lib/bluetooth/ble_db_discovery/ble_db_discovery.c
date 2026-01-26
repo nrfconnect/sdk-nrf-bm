@@ -12,22 +12,21 @@
 
 LOG_MODULE_REGISTER(ble_db_disc, CONFIG_BLE_DB_DISCOVERY_LOG_LEVEL);
 
-static ble_db_discovery_evt_handler registered_uuid_handler_get(
-	struct ble_db_discovery *db_discovery, const ble_uuid_t *srv_uuid)
+static bool is_uuid_registered(struct ble_db_discovery *db_discovery, const ble_uuid_t *uuid)
 {
 	for (uint32_t i = 0; i < db_discovery->num_registered_uuids; i++) {
-		if (BLE_UUID_EQ(&(db_discovery->registered_uuids[i]), srv_uuid)) {
-			return db_discovery->evt_handler;
+		if (BLE_UUID_EQ(&(db_discovery->registered_uuids[i]), uuid)) {
+			return true;
 		}
 	}
 
-	return NULL;
+	return false;
 }
 
 static uint32_t uuid_register(struct ble_db_discovery *db_discovery,
 				       const ble_uuid_t *srv_uuid)
 {
-	if (registered_uuid_handler_get(db_discovery, srv_uuid) != NULL) {
+	if (is_uuid_registered(db_discovery, srv_uuid)) {
 		return NRF_SUCCESS;
 	}
 
@@ -68,14 +67,11 @@ static void discovery_available_evt_trigger(struct ble_db_discovery *const db_di
 static void discovery_error_evt_trigger(struct ble_db_discovery *db_discovery, uint32_t nrf_err,
 					uint16_t conn_handle)
 {
-	ble_db_discovery_evt_handler evt_handler;
 	struct ble_gatt_db_srv *srv_being_discovered;
 
 	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
 
-	evt_handler = registered_uuid_handler_get(db_discovery, &(srv_being_discovered->srv_uuid));
-
-	if (evt_handler) {
+	if (is_uuid_registered(db_discovery, &(srv_being_discovered->srv_uuid))) {
 		struct ble_db_discovery_evt evt = {
 			.evt_type = BLE_DB_DISCOVERY_ERROR,
 			.conn_handle = conn_handle,
@@ -108,14 +104,11 @@ static void discovery_gq_event_handler(const struct ble_gq_req *req, struct ble_
 static void discovery_complete_evt_trigger(struct ble_db_discovery *db_discovery, bool is_srv_found,
 					   uint16_t conn_handle)
 {
-	ble_db_discovery_evt_handler evt_handler;
 	struct ble_gatt_db_srv *srv_being_discovered;
 
 	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
 
-	evt_handler = registered_uuid_handler_get(db_discovery, &(srv_being_discovered->srv_uuid));
-
-	if (evt_handler) {
+	if (is_uuid_registered(db_discovery, &(srv_being_discovered->srv_uuid))) {
 		if (db_discovery->pending_usr_evt_index < CONFIG_BLE_DB_DISCOVERY_MAX_SRV) {
 			/* Insert an event into the pending event list. */
 			db_discovery->pending_usr_evts[db_discovery->pending_usr_evt_index]
@@ -132,7 +125,7 @@ static void discovery_complete_evt_trigger(struct ble_db_discovery *db_discovery
 			}
 
 			db_discovery->pending_usr_evts[db_discovery->pending_usr_evt_index]
-				.evt_handler = evt_handler;
+				.evt_handler = db_discovery->evt_handler;
 			db_discovery->pending_usr_evt_index++;
 
 			if (db_discovery->pending_usr_evt_index ==
