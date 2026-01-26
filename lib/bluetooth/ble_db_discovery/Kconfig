@@ -18,7 +18,7 @@ config BLE_DB_DISCOVERY_MAX_SRV
 	range 1 6
 	default 6
 	help
-	  The total number of services that can be discovered by this module.
+	  The total number of services that can be discovered by this library.
 
 config BLE_DB_DISCOVERY_SRV_DISC_START_HANDLE
 	hex "Start handle value during discovery"
