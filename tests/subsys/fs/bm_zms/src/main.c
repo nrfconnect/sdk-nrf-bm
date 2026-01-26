@@ -67,7 +67,7 @@ static void wait_for_mount(void)
 #if defined(CONFIG_BOARD_NATIVE_SIM)
 	k_sem_take(&mount_sem, K_FOREVER);
 #elif defined(CONFIG_SOFTDEVICE)
-	while (!is_init) {
+	while (!fs_is_init) {
 		k_cpu_idle();
 	}
 #endif
