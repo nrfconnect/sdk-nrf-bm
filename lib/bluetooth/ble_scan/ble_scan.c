@@ -51,27 +51,16 @@ static void ble_scan_connect_with_target(const struct ble_scan *scan,
 #if defined(CONFIG_BLE_SCAN_FILTER)
 
 #if (CONFIG_BLE_SCAN_ADDRESS_COUNT > 0)
-static bool find_peer_addr(const ble_gap_evt_adv_report_t *adv_report,
-			   const ble_gap_addr_t *addr)
-{
-	const ble_gap_addr_t *peer_addr = &adv_report->peer_addr;
-
-	/* Compare addresses. */
-	if (memcmp(addr->addr, peer_addr->addr, sizeof(peer_addr->addr)) == 0) {
-		return true;
-	}
-
-	return false;
-}
-
 static bool adv_addr_compare(const ble_gap_evt_adv_report_t *adv_report,
 			     const struct ble_scan *scan)
 {
 	const ble_gap_addr_t *addr = scan->scan_filters.addr_filter.target_addr;
+	const ble_gap_addr_t *peer_addr;
 
+	/* Search for address. */
 	for (uint8_t i = 0; i < scan->scan_filters.addr_filter.addr_cnt; i++) {
-		/* Search for address. */
-		if (find_peer_addr(adv_report, &addr[i])) {
+		peer_addr = &adv_report->peer_addr;
+		if (memcmp(addr[i].addr, peer_addr->addr, sizeof(peer_addr->addr)) == 0) {
 			return true;
 		}
 	}
@@ -79,7 +68,7 @@ static bool adv_addr_compare(const ble_gap_evt_adv_report_t *adv_report,
 	return false;
 }
 
-static int ble_scan_addr_filter_add(struct ble_scan *scan, const uint8_t *addr)
+static int addr_filter_add(struct ble_scan *scan, const uint8_t *addr)
 {
 	ble_gap_addr_t *addr_filter = scan->scan_filters.addr_filter.target_addr;
 	uint8_t *counter = &scan->scan_filters.addr_filter.addr_cnt;
@@ -188,7 +177,7 @@ static bool adv_name_compare(const ble_gap_evt_adv_report_t *adv_report,
 	return false;
 }
 
-static int ble_scan_name_filter_add(struct ble_scan *scan, const char *name)
+static int name_filter_add(struct ble_scan *scan, const char *name)
 {
 	uint8_t *counter = &scan->scan_filters.name_filter.name_cnt;
 	uint8_t name_len = strlen(name);
@@ -240,8 +229,8 @@ static bool adv_short_name_compare(const ble_gap_evt_adv_report_t *adv_report,
 	return false;
 }
 
-static int ble_scan_short_name_filter_add(struct ble_scan *scan,
-					  const struct ble_scan_short_name *short_name)
+static int short_name_filter_add(struct ble_scan *scan,
+				 const struct ble_scan_short_name *short_name)
 {
 	uint8_t *counter = &scan->scan_filters.short_name_filter.name_cnt;
 	struct ble_scan_short_name_filter *short_name_filter =
@@ -311,7 +300,7 @@ static bool adv_uuid_compare(const ble_gap_evt_adv_report_t *adv_report,
 	return false;
 }
 
-static int ble_scan_uuid_filter_add(struct ble_scan *scan, const ble_uuid_t *uuid)
+static int uuid_filter_add(struct ble_scan *scan, const ble_uuid_t *uuid)
 {
 	ble_uuid_t *uuid_filter = scan->scan_filters.uuid_filter.uuid;
 	uint8_t *counter = &scan->scan_filters.uuid_filter.uuid_cnt;
@@ -354,7 +343,7 @@ static bool adv_appearance_compare(const ble_gap_evt_adv_report_t *adv_report,
 	return false;
 }
 
-static int ble_scan_appearance_filter_add(struct ble_scan *scan, uint16_t appearance)
+static int appearance_filter_add(struct ble_scan *scan, uint16_t appearance)
 {
 	uint16_t *appearance_filter = scan->scan_filters.appearance_filter.appearance;
 	uint8_t *counter = &scan->scan_filters.appearance_filter.appearance_cnt;
@@ -389,7 +378,7 @@ uint32_t ble_scan_filter_add(struct ble_scan *scan, uint8_t type, const void *da
 	case BLE_SCAN_NAME_FILTER: {
 		char *name = (char *)data;
 
-		return ble_scan_name_filter_add(scan, name);
+		return name_filter_add(scan, name);
 	}
 #endif
 
@@ -397,7 +386,7 @@ uint32_t ble_scan_filter_add(struct ble_scan *scan, uint8_t type, const void *da
 	case BLE_SCAN_SHORT_NAME_FILTER: {
 		struct ble_scan_short_name *short_name = (struct ble_scan_short_name *)data;
 
-		return ble_scan_short_name_filter_add(scan, short_name);
+		return short_name_filter_add(scan, short_name);
 	}
 #endif
 
@@ -405,7 +394,7 @@ uint32_t ble_scan_filter_add(struct ble_scan *scan, uint8_t type, const void *da
 	case BLE_SCAN_ADDR_FILTER: {
 		uint8_t *addr = (uint8_t *)data;
 
-		return ble_scan_addr_filter_add(scan, addr);
+		return addr_filter_add(scan, addr);
 	}
 #endif
 
@@ -413,7 +402,7 @@ uint32_t ble_scan_filter_add(struct ble_scan *scan, uint8_t type, const void *da
 	case BLE_SCAN_UUID_FILTER: {
 		ble_uuid_t *uuid = (ble_uuid_t *)data;
 
-		return ble_scan_uuid_filter_add(scan, uuid);
+		return uuid_filter_add(scan, uuid);
 	}
 #endif
 
@@ -421,7 +410,7 @@ uint32_t ble_scan_filter_add(struct ble_scan *scan, uint8_t type, const void *da
 	case BLE_SCAN_APPEARANCE_FILTER: {
 		uint16_t appearance = *((uint16_t *)data);
 
-		return ble_scan_appearance_filter_add(scan, appearance);
+		return appearance_filter_add(scan, appearance);
 	}
 #endif
 
