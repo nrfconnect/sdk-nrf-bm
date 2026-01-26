@@ -1,0 +1,55 @@
+board:
+  name: bm_nrf54lm20dk
+  full_name: Bare Metal nRF54LM20 DK
+  vendor: nordic
+  socs:
+    - name: nrf54lm20a
+      variants:
+        - name: s115_softdevice
+          cpucluster: cpuapp
+          variants:
+            - name: mcuboot
+        - name: s145_softdevice
+          cpucluster: cpuapp
+          variants:
+            - name: mcuboot
+runners:
+  run_once:
+    '--recover':
+      - runners:
+          - nrfjprog
+          - nrfutil
+        run: first
+        groups:
+          - boards:
+              - bm_nrf54lm20dk/nrf54lm20a/cpuapp
+              - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice
+              - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice/mcuboot
+              - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s145_softdevice
+              - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s145_softdevice/mcuboot
+    '--erase':
+      - runners:
+          - nrfjprog
+          - jlink
+          - nrfutil
+        run: first
+        groups:
+          - boards:
+              - bm_nrf54lm20dk/nrf54lm20a/cpuapp
+              - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice
+              - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice/mcuboot
+              - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s145_softdevice
+              - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s145_softdevice/mcuboot
+    '--reset':
+      - runners:
+          - nrfjprog
+          - jlink
+          - nrfutil
+        run: last
+        groups:
+          - boards:
+              - bm_nrf54lm20dk/nrf54lm20a/cpuapp
+              - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice
+              - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice/mcuboot
+              - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s145_softdevice
+              - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s145_softdevice/mcuboot
