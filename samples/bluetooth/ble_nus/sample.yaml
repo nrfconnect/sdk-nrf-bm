@@ -11,6 +11,8 @@ tests:
       - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice
       - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice
       - bm_nrf54lv10dk/nrf54lv10a/cpuapp/s115_softdevice
+      - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice
+      - bm_nrf54ls05dk/nrf54ls05b/cpuapp/s115_softdevice
     platform_allow:
       - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice
       - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice
@@ -26,6 +28,10 @@ tests:
       - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice/mcuboot
       - bm_nrf54lv10dk/nrf54lv10a/cpuapp/s115_softdevice
       - bm_nrf54lv10dk/nrf54lv10a/cpuapp/s145_softdevice
+      - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice
+      - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s145_softdevice
+      - bm_nrf54ls05dk/nrf54ls05b/cpuapp/s115_softdevice
+      - bm_nrf54ls05dk/nrf54ls05b/cpuapp/s145_softdevice
     tags: ci_build
   sample.ble_nus.lpuarte:
     build_only: true
@@ -37,6 +43,7 @@ tests:
       - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice
       - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice
       - bm_nrf54lv10dk/nrf54lv10a/cpuapp/s115_softdevice
+      - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice
     platform_allow:
       - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice
       - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice
@@ -52,5 +59,7 @@ tests:
       - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice/mcuboot
       - bm_nrf54lv10dk/nrf54lv10a/cpuapp/s115_softdevice
       - bm_nrf54lv10dk/nrf54lv10a/cpuapp/s145_softdevice
+      - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice
+      - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s145_softdevice
     extra_args: EXTRA_CONF_FILE="lpuarte.conf"
     tags: ci_build

@@ -1,0 +1,17 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+identifier: bm_nrf54lm20dk/nrf54lm20a/cpuapp/s145_softdevice/mcuboot
+name: Bare_Metal-nRF54LM20-DK-nRF54LM20A-Application-S145-SoftDevice-MCUboot
+type: mcu
+arch: arm
+toolchain:
+  - gnuarmemb
+  - xtools
+  - zephyr
+sysbuild: true
+ram: 492
+flash: 1788
