@@ -163,13 +163,13 @@ struct ble_db_discovery {
 	 *
 	 * This is intended for internal use during service discovery.
 	 */
-	uint8_t curr_char_ind;
+	uint8_t curr_char_idx;
 	/**
 	 * @brief Index of the current service being discovered.
 	 *
 	 * This is intended for internal use during service discovery.
 	 */
-	uint8_t curr_srv_ind;
+	uint8_t curr_srv_idx;
 	/**
 	 * @brief Number of service discoveries made, both successful and unsuccessful.
 	 */
@@ -186,7 +186,7 @@ struct ble_db_discovery {
 	 * @brief The index to the pending user event array, pointing to the last added pending
 	 *        user event.
 	 */
-	uint32_t pending_usr_evt_index;
+	uint32_t pending_usr_evt_idx;
 	/**
 	 * @brief Whenever a discovery related event is to be raised, it is stored in this array
 	 *        first. When all registered services have been attempted discovered, all pending
