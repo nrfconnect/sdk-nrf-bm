@@ -76,6 +76,7 @@ Storage
      * The capability to compile more than one backend.
      * The :c:member:`bm_storage_config.addr` and :c:member:`bm_storage_config.size` fields.
        Setting these fields instead of :c:member:`bm_storage_config.start_addr` and :c:member:`bm_storage_config.end_addr` switches the API to relative addressing (instead of absolute).
+     * The capability to automatically pad write operations up to the program unit.
 
    Updated:
      * The :c:func:`bm_storage_init` function to return an error when the instance is already initialized.

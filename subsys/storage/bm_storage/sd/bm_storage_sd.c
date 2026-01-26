@@ -15,6 +15,7 @@
 #include <zephyr/sys/util.h>
 #include <zephyr/sys/atomic.h>
 #include <zephyr/sys/ring_buffer.h>
+#include <zephyr/toolchain.h>
 
 #define SD_PROGRAM_UNIT_BYTES sizeof(uint32_t)
 
@@ -78,6 +79,9 @@ static struct {
 	uint8_t softdevice_is_enabled;
 	struct bm_storage_sd_op current_operation;
 } bm_storage_sd;
+
+__aligned(sizeof(uint32_t)) /* alignment requirement for sd_flash_write() */
+static uint8_t pad_buffer[SD_PROGRAM_UNIT_BYTES];
 
 /* This structure informs the upper layer of the capabilities of this specific API implementation.
  * These are affected not only by the hardware, but also by the software (e.g. the SoftDevice API).
@@ -161,6 +165,17 @@ static uint32_t write_execute(const struct bm_storage_sd_op *op)
 	/* Limit by _MAX_WRITE_SIZE */
 	chunk_len =
 		MIN(op->write.len - op->write.offset, CONFIG_BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE);
+
+	if (op->storage->flags.pad_write_operations) {
+		/* These are the last bytes to be written, fewer than the program unit */
+		if (chunk_len < bm_storage_info.program_unit) {
+			/* Copy what is in NVM into our buffer, then copy what is in the user buf */
+			memcpy(pad_buffer + chunk_len, UINT_TO_POINTER(dest),
+			       sizeof(pad_buffer) - chunk_len);
+			memcpy(pad_buffer, UINT_TO_POINTER(src), chunk_len);
+			src = POINTER_TO_UINT(pad_buffer);
+		}
+	}
 
 	/* Calculate number of 32-bit words for sd_flash_write() */
 	chunk_len = MAX(1, chunk_len / bm_storage_info.program_unit);
@@ -285,7 +300,8 @@ static bool on_operation_success(struct bm_storage_sd_op *op)
 		chunk_len = MIN(op->write.len - op->write.offset,
 				CONFIG_BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE);
 
-		op->write.offset += chunk_len;
+		op->write.offset += MAX(bm_storage_info.program_unit,
+					ROUND_DOWN(chunk_len, bm_storage_info.program_unit));
 
 		if (op->write.offset >= op->write.len) {
 			return true;
