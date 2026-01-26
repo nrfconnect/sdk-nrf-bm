@@ -525,13 +525,6 @@ static uint32_t scan_init(void)
 		.evt_handler = scan_evt_handler,
 	};
 
-	ble_gap_scan_params_t scan_params = BLE_SCAN_SCAN_PARAMS_DEFAULT;
-
-	nrf_err = ble_scan_params_set(&ble_scan, &scan_params);
-	if (nrf_err) {
-		LOG_ERR("nrf_ble_scan_params_set failed, nrf_error %#x", nrf_err);
-	}
-
 	nrf_err = ble_scan_init(&ble_scan, &scan_cfg);
 	if (nrf_err) {
 		LOG_ERR("nrf_ble_scan_init failed, nrf_error %#x", nrf_err);
