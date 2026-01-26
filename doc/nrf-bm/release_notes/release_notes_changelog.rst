@@ -37,7 +37,7 @@ SoftDevice Handler
 Boards
 ======
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+Added experimental support for PCA10184 (`nRF54LM20 DK`_)
 
 Build system
 ============
