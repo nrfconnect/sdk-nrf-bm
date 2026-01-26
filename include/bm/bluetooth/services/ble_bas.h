@@ -180,10 +180,10 @@ struct ble_bas {
  * @retval NRF_SUCCESS On success.
  * @retval NRF_ERROR_NULL If @p bas or @p bas_config are @c NULL.
  * @return In addition, this function may return any error
- *	   returned by the following SoftDevice functions:
- *	   - @ref sd_ble_gatts_service_add()
- *	   - @ref sd_ble_gatts_characteristic_add()
- *	   - @ref sd_ble_gatts_descriptor_add()
+ *         returned by the following SoftDevice functions:
+ *         - @ref sd_ble_gatts_service_add()
+ *         - @ref sd_ble_gatts_characteristic_add()
+ *         - @ref sd_ble_gatts_descriptor_add()
  */
 uint32_t ble_bas_init(struct ble_bas *bas, const struct ble_bas_config *bas_config);
 
@@ -200,9 +200,9 @@ uint32_t ble_bas_init(struct ble_bas *bas, const struct ble_bas_config *bas_conf
  * @retval NRF_SUCCESS On success.
  * @retval NRF_ERROR_NULL If @p bas is @c NULL.
  * @return In addition, this function may return any error
- *	   returned by the following SoftDevice functions:
- *	   - @ref sd_ble_gatts_value_set()
- *	   - @ref sd_ble_gatts_hvx()
+ *         returned by the following SoftDevice functions:
+ *         - @ref sd_ble_gatts_value_set()
+ *         - @ref sd_ble_gatts_hvx()
  */
 uint32_t ble_bas_battery_level_update(struct ble_bas *bas, uint16_t conn_handle,
 				      uint8_t battery_level);
@@ -216,8 +216,8 @@ uint32_t ble_bas_battery_level_update(struct ble_bas *bas, uint16_t conn_handle,
  * @retval NRF_SUCCESS On success.
  * @retval NRF_ERROR_NULL If @p bas is @c NULL.
  * @return In addition, this function may return any error
- *	   returned by the following SoftDevice functions:
- *	   - @ref sd_ble_gatts_hvx()
+ *         returned by the following SoftDevice functions:
+ *         - @ref sd_ble_gatts_hvx()
  */
 uint32_t ble_bas_battery_level_notify(struct ble_bas *bas, uint16_t conn_handle);
 
