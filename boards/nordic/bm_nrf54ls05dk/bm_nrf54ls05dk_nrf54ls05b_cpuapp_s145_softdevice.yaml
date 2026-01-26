@@ -1,0 +1,17 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+identifier: bm_nrf54ls05dk/nrf54ls05b/cpuapp/s145_softdevice
+name: Bare_Metal-nRF54LS05-DK-nRF54LS05B-Application-S145-SoftDevice
+type: mcu
+arch: arm
+toolchain:
+  - gnuarmemb
+  - xtools
+  - zephyr
+sysbuild: true
+ram: 78
+flash: 359
