@@ -202,7 +202,7 @@ struct ble_db_discovery {
 /**
  * @brief Initialize the DB Discovery module.
  *
- * @param[in] db_discovery BLE DB discovery instance.
+ * @param[out] db_discovery BLE DB discovery instance.
  * @param[in] db_config DB discovery initialization structure.
  *
  * @retval NRF_SUCCESS On successful initialization.
@@ -215,7 +215,7 @@ uint32_t ble_db_discovery_init(struct ble_db_discovery *db_discovery,
 /**
  * @brief Start the discovery of the GATT database at the server.
  *
- * @param[out] db_discovery BLE DB Discovery instance.
+ * @param[in,out] db_discovery BLE DB Discovery instance.
  * @param[in]  conn_handle The handle of the connection for which the discovery should be
  *                         started.
  *
@@ -238,7 +238,7 @@ uint32_t ble_db_discovery_start(struct ble_db_discovery *db_discovery, uint16_t 
  * @details The application can use this function to inform which service it is interested in
  *          discovering at the server.
  *
- * @param[in] db_discovery BLE DB discovery instance.
+ * @param[in,out] db_discovery BLE DB discovery instance.
  * @param[in] uuid UUID of the service to be discovered at the server.
  *
  * @note The total number of services that can be discovered by this module is @ref
