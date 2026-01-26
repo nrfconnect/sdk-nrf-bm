@@ -341,7 +341,6 @@ void test_bm_storage_write(void)
 {
 	int err;
 	bool is_busy;
-	/* Write buffer size must be a multiple of the program unit. */
 	uint8_t buf[BLOCK_SIZE];
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
@@ -416,7 +415,6 @@ void test_bm_storage_write_absolute(void)
 void test_bm_storage_write_retry_etimedout(void)
 {
 	int err;
-	/* Write buffer size must be a multiple of the program unit. */
 	uint8_t buf[BLOCK_SIZE];
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
@@ -520,7 +518,6 @@ void test_bm_storage_write_queued(void)
 void test_bm_storage_write_retry_queued(void)
 {
 	int err;
-	/* Write buffer size must be a multiple of the program unit. */
 	uint8_t buf[BLOCK_SIZE];
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
@@ -974,7 +971,7 @@ void test_bm_storage_write_softdevice_busy_retry(void)
 void test_bm_storage_write_chunk(void)
 {
 	int err;
-	uint8_t buf[BLOCK_SIZE * 2];
+	uint8_t buf[BLOCK_SIZE * 3];
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
@@ -990,22 +987,21 @@ void test_bm_storage_write_chunk(void)
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
-	/* First chunk, up to BLOCK_SIZE */
-	__cmock_sd_flash_write_ExpectAndReturn(
-		(uint32_t *)PARTITION_START, (uint32_t *)buf, WORD_SIZE(BLOCK_SIZE), 0);
+	for (size_t i = 0; i < (sizeof(buf) / BLOCK_SIZE); i++) {
+		/* The SoC event from the first operation will trigger the second */
+		__cmock_sd_flash_write_ExpectAndReturn(
+			(uint32_t *)(PARTITION_START + (BLOCK_SIZE * i)),
+			(uint32_t *)(buf + (BLOCK_SIZE * i)),
+			WORD_SIZE(CONFIG_BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE), 0);
+	}
 
 	err = bm_storage_write(&storage, ADDR, buf, sizeof(buf), NULL);
 	TEST_ASSERT_EQUAL(0, err);
 
-	/* The SoC event from the first operation will trigger the second */
-	__cmock_sd_flash_write_ExpectAndReturn(
-		(uint32_t *)(PARTITION_START + BLOCK_SIZE),
-		(uint32_t *)(buf + BLOCK_SIZE),
-		WORD_SIZE(sizeof(buf) - BLOCK_SIZE), 0);
-
-	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
-
-	TEST_ASSERT_FALSE(storage_event_received);
+	for (size_t i = 0; i < (sizeof(buf) / BLOCK_SIZE) - 1; i++) {
+		bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+		TEST_ASSERT_FALSE(storage_event_received);
+	}
 
 	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
 
@@ -1095,6 +1091,77 @@ void test_bm_storage_write_two_instances(void)
 	TEST_ASSERT_EQUAL_PTR(&storage2, storage_event.ctx);
 
 	TEST_ASSERT_EQUAL(2, storage_event_count);
+}
+
+static uint32_t stub_sd_flash_write(uint32_t *p_dst, uint32_t const *p_src, uint32_t size,
+				    int cmock_num_calls)
+{
+	memcpy(p_dst, p_src, size * sizeof(uint32_t));
+
+	switch (cmock_num_calls) {
+	case 0:
+		break;
+	case 1:
+		break;
+	default:
+		TEST_FAIL();
+	}
+
+	return 0;
+}
+
+void test_bm_storage_write_padded(void)
+{
+	int err;
+	uint8_t buf[BLOCK_SIZE + 3] __aligned(sizeof(uint32_t));
+	uint8_t dummy_partition[BLOCK_SIZE * 2];
+	struct bm_storage storage = {0};
+	struct bm_storage_config config = {
+		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
+		.addr = (uintptr_t)dummy_partition,
+		.size = sizeof(dummy_partition),
+		.flags.pad_write_operations = true,
+	};
+
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){true});
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	__cmock_sd_flash_write_Stub(stub_sd_flash_write);
+
+	memset(buf, 0xBB, sizeof(buf));
+	memset(dummy_partition, 0xA5, sizeof(dummy_partition));
+
+	err = bm_storage_write(&storage, ADDR, buf, sizeof(buf), NULL);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* One event for all the data up to the last word */
+	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+
+	TEST_ASSERT_FALSE(storage_event_received);
+
+	/* Last word being written separately, due to internal buffering */
+	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+
+	TEST_ASSERT_TRUE(storage_event_received);
+
+	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
+	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_DISPATCH_MODE_ASYNC, storage_event.dispatch_mode);
+	TEST_ASSERT_EQUAL(0, storage_event.result);
+	TEST_ASSERT_EQUAL(ADDR, storage_event.addr);
+	TEST_ASSERT_EQUAL_PTR(buf, storage_event.src);
+	TEST_ASSERT_EQUAL(sizeof(buf), storage_event.len);
+
+	TEST_ASSERT_EQUAL_MEMORY(buf, dummy_partition, sizeof(buf));
+
+	/* The remaining bytes within the last program unit are equal to the erase value */
+	TEST_ASSERT_EQUAL_MEMORY(&(uint32_t){0xA5A5A5A5}, dummy_partition + sizeof(buf),
+				 storage.nvm_info->program_unit -
+					 (sizeof(buf) % storage.nvm_info->program_unit));
 }
 
 void test_bm_storage_read_eperm(void)

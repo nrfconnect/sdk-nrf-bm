@@ -153,6 +153,10 @@ struct bm_storage {
 		 * When false, the instance uses relative addressing.
 		 */
 		uint8_t has_absolute_addressing : 1;
+		/**
+		 * @brief Automatically pad write operations.
+		 */
+		uint8_t pad_write_operations : 1;
 	} flags;
 };
 
@@ -194,6 +198,17 @@ struct bm_storage_config {
 	 * @deprecated Set bm_storage_config::size instead.
 	 */
 	__deprecated uint32_t end_addr;
+	/**
+	 * @brief Configuration flags.
+	 */
+	struct {
+		/**
+		 * @brief Automatically pad write operations up to the program unit.
+		 *
+		 * The padding value is the same the contents of the NVM address being written to.
+		 */
+		uint8_t pad_write_operations : 1;
+	} flags;
 };
 
 /**

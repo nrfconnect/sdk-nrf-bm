@@ -42,6 +42,8 @@ int bm_storage_init(struct bm_storage *storage, const struct bm_storage_config *
 	storage->api = config->api;
 	storage->evt_handler = config->evt_handler;
 
+	storage->flags.pad_write_operations = config->flags.pad_write_operations;
+
 	if (config->start_addr || config->end_addr) {
 		storage->addr = config->start_addr;
 		storage->size = config->end_addr - config->start_addr;
@@ -58,6 +60,7 @@ int bm_storage_init(struct bm_storage *storage, const struct bm_storage_config *
 	}
 
 	__ASSERT(storage->nvm_info, "NVM info not provided by backend");
+
 
 	storage->flags.is_initialized = true;
 
@@ -118,8 +121,12 @@ int bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void
 		return -EPERM;
 	}
 
-	if (!IS_ALIGNED(dest, storage->nvm_info->program_unit) ||
-	    !IS_ALIGNED(len,  storage->nvm_info->program_unit)) {
+	if (!IS_ALIGNED(dest, storage->nvm_info->program_unit)) {
+		return -EINVAL;
+	}
+
+	if (!IS_ALIGNED(len, storage->nvm_info->program_unit) &&
+	    !storage->flags.pad_write_operations) {
 		return -EINVAL;
 	}
 
