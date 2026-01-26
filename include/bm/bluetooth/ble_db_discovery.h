@@ -250,7 +250,7 @@ uint32_t ble_db_discovery_start(struct ble_db_discovery *db_discovery, uint16_t 
  * @retval NRF_ERROR_NO_MEM If the maximum number of allowed registrations has been reached.
  */
 uint32_t ble_db_discovery_service_register(struct ble_db_discovery *db_discovery,
-					   const ble_uuid_t *const uuid);
+					   const ble_uuid_t *uuid);
 
 /**
  * @brief Application's BLE Stack event handler.
