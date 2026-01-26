@@ -676,7 +676,7 @@ uint32_t ble_db_discovery_init(struct ble_db_discovery *db_discovery,
 	return NRF_SUCCESS;
 }
 
-uint32_t ble_db_discovery_start(struct ble_db_discovery *const db_discovery, uint16_t conn_handle)
+uint32_t ble_db_discovery_start(struct ble_db_discovery *db_discovery, uint16_t conn_handle)
 {
 	if (!db_discovery) {
 		return NRF_ERROR_NULL;
@@ -698,7 +698,7 @@ uint32_t ble_db_discovery_start(struct ble_db_discovery *const db_discovery, uin
 }
 
 uint32_t ble_db_discovery_service_register(struct ble_db_discovery *db_discovery,
-				       const ble_uuid_t *uuid)
+					   const ble_uuid_t *uuid)
 {
 	if (!db_discovery || !uuid) {
 		return NRF_ERROR_NULL;
