@@ -7,11 +7,13 @@
 menu "SoftDevice backend"
 
 config BM_STORAGE_BACKEND_SD_QUEUE_SIZE
-	int "SoftDevice storage backend queue size"
+	int "Queue size"
 	default 4
+	help
+	  Size of the operation queue.
 
 config BM_STORAGE_BACKEND_SD_MAX_RETRIES
-	int "Maximum number of attempts at executing an operation when the SoftDevice is busy"
+	int "Maximum number of retries when SoftDevice is busy"
 	range 0 255
 	default 8
 	help
