@@ -42,13 +42,13 @@ static uint32_t uuid_register(struct ble_db_discovery *db_discovery,
 
 static void pending_user_events_send(struct ble_db_discovery *db_discovery)
 {
-	for (uint32_t i = 0; i < db_discovery->pending_usr_evt_index; i++) {
+	for (uint32_t i = 0; i < db_discovery->pending_usr_evt_idx; i++) {
 		/* Pass the event to the corresponding event handler. */
 		db_discovery->pending_usr_evts[i].evt_handler(
 			db_discovery, &(db_discovery->pending_usr_evts[i].evt));
 	}
 
-	db_discovery->pending_usr_evt_index = 0;
+	db_discovery->pending_usr_evt_idx = 0;
 }
 
 static void discovery_available_evt_trigger(struct ble_db_discovery *const db_discovery,
@@ -69,7 +69,7 @@ static void discovery_error_evt_trigger(struct ble_db_discovery *db_discovery, u
 {
 	struct ble_gatt_db_srv *srv_being_discovered;
 
-	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
+	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_idx]);
 
 	if (is_uuid_registered(db_discovery, &(srv_being_discovered->srv_uuid))) {
 		struct ble_db_discovery_evt evt = {
@@ -106,29 +106,29 @@ static void discovery_complete_evt_trigger(struct ble_db_discovery *db_discovery
 {
 	struct ble_gatt_db_srv *srv_being_discovered;
 
-	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
+	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_idx]);
 
 	if (is_uuid_registered(db_discovery, &(srv_being_discovered->srv_uuid))) {
-		if (db_discovery->pending_usr_evt_index < CONFIG_BLE_DB_DISCOVERY_MAX_SRV) {
+		if (db_discovery->pending_usr_evt_idx < CONFIG_BLE_DB_DISCOVERY_MAX_SRV) {
 			/* Insert an event into the pending event list. */
-			db_discovery->pending_usr_evts[db_discovery->pending_usr_evt_index]
+			db_discovery->pending_usr_evts[db_discovery->pending_usr_evt_idx]
 				.evt.conn_handle = conn_handle;
-			db_discovery->pending_usr_evts[db_discovery->pending_usr_evt_index]
+			db_discovery->pending_usr_evts[db_discovery->pending_usr_evt_idx]
 				.evt.params.discovered_db = *srv_being_discovered;
 
 			if (is_srv_found) {
-				db_discovery->pending_usr_evts[db_discovery->pending_usr_evt_index]
+				db_discovery->pending_usr_evts[db_discovery->pending_usr_evt_idx]
 					.evt.evt_type = BLE_DB_DISCOVERY_COMPLETE;
 			} else {
-				db_discovery->pending_usr_evts[db_discovery->pending_usr_evt_index]
+				db_discovery->pending_usr_evts[db_discovery->pending_usr_evt_idx]
 					.evt.evt_type = BLE_DB_DISCOVERY_SRV_NOT_FOUND;
 			}
 
-			db_discovery->pending_usr_evts[db_discovery->pending_usr_evt_index]
+			db_discovery->pending_usr_evts[db_discovery->pending_usr_evt_idx]
 				.evt_handler = db_discovery->evt_handler;
-			db_discovery->pending_usr_evt_index++;
+			db_discovery->pending_usr_evt_idx++;
 
-			if (db_discovery->pending_usr_evt_index ==
+			if (db_discovery->pending_usr_evt_idx ==
 			    db_discovery->num_registered_uuids) {
 				/* All registered modules have pending events. Send all pending
 				 * events to the user modules.
@@ -155,15 +155,15 @@ static void on_srv_disc_completion(struct ble_db_discovery *db_discovery, uint16
 		/* Reset the current characteristic index since a new service discovery is about to
 		 * start.
 		 */
-		db_discovery->curr_char_ind = 0;
+		db_discovery->curr_char_idx = 0;
 
 		/* Initiate discovery of the next service. */
-		db_discovery->curr_srv_ind++;
+		db_discovery->curr_srv_idx++;
 
-		srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
+		srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_idx]);
 
 		srv_being_discovered->srv_uuid =
-			db_discovery->registered_uuids[db_discovery->curr_srv_ind];
+			db_discovery->registered_uuids[db_discovery->curr_srv_idx];
 
 		/* Reset the characteristic count in the current service to zero since a new
 		 * service discovery is about to start.
@@ -201,7 +201,7 @@ static bool is_char_discovery_reqd(struct ble_db_discovery *db_discovery,
 				   ble_gattc_char_t *after_char)
 {
 	if (after_char->handle_value <
-	    db_discovery->services[db_discovery->curr_srv_ind].handle_range.end_handle) {
+	    db_discovery->services[db_discovery->curr_srv_idx].handle_range.end_handle) {
 		/* Handle value of the characteristic being discovered is less than the end handle
 		 * of the service being discovered. There is a possibility of more characteristics
 		 * being present. Hence a characteristic discovery is required.
@@ -222,7 +222,7 @@ static bool is_desc_discovery_reqd(struct ble_db_discovery *db_discovery,
 		 * value handle of the current characteristic is equal to the service end handle.
 		 */
 		if (curr_char->characteristic.handle_value ==
-		    db_discovery->services[db_discovery->curr_srv_ind].handle_range.end_handle) {
+		    db_discovery->services[db_discovery->curr_srv_idx].handle_range.end_handle) {
 			/* No descriptors can be present for the current characteristic. curr_char
 			 * is the last characteristic with no descriptors.
 			 */
@@ -235,7 +235,7 @@ static bool is_desc_discovery_reqd(struct ble_db_discovery *db_discovery,
 		 * end handle should be the end handle of the service.
 		 */
 		handle_range->end_handle =
-			db_discovery->services[db_discovery->curr_srv_ind].handle_range.end_handle;
+			db_discovery->services[db_discovery->curr_srv_idx].handle_range.end_handle;
 
 		return true;
 	}
@@ -260,17 +260,17 @@ static uint32_t characteristics_discover(struct ble_db_discovery *db_discovery,
 	struct ble_gatt_db_srv *srv_being_discovered;
 	ble_gattc_handle_range_t handle_range = {0};
 
-	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
+	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_idx]);
 
-	if (db_discovery->curr_char_ind != 0) {
+	if (db_discovery->curr_char_idx != 0) {
 		/* This is not the first characteristic being discovered. Hence the 'start handle'
 		 * to be used must be computed using the handle_value of the previous
 		 * characteristic.
 		 */
 		ble_gattc_char_t *prev_char;
-		uint8_t prev_char_ind = db_discovery->curr_char_ind - 1;
+		uint8_t prev_char_ind = db_discovery->curr_char_idx - 1;
 
-		srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
+		srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_idx]);
 
 		prev_char = &(srv_being_discovered->characteristics[prev_char_ind].characteristic);
 
@@ -300,12 +300,12 @@ static uint32_t descriptors_discover(struct ble_db_discovery *db_discovery,
 	struct ble_gatt_db_srv *srv_being_discovered;
 	bool is_discovery_reqd = false;
 
-	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
+	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_idx]);
 
 	curr_char_being_discovered =
-		&(srv_being_discovered->characteristics[db_discovery->curr_char_ind]);
+		&(srv_being_discovered->characteristics[db_discovery->curr_char_idx]);
 
-	if ((db_discovery->curr_char_ind + 1) == srv_being_discovered->char_count) {
+	if ((db_discovery->curr_char_idx + 1) == srv_being_discovered->char_count) {
 		/* This is the last characteristic of this service. */
 		is_discovery_reqd = is_desc_discovery_reqd(db_discovery, curr_char_being_discovered,
 							   NULL, &handle_range);
@@ -313,7 +313,7 @@ static uint32_t descriptors_discover(struct ble_db_discovery *db_discovery,
 		uint8_t i;
 		struct ble_gatt_db_char *next_char;
 
-		for (i = db_discovery->curr_char_ind; i < srv_being_discovered->char_count; i++) {
+		for (i = db_discovery->curr_char_idx; i < srv_being_discovered->char_count; i++) {
 			if (i == (srv_being_discovered->char_count - 1)) {
 				/* The current characteristic is the last characteristic in the
 				 * service.
@@ -333,7 +333,7 @@ static uint32_t descriptors_discover(struct ble_db_discovery *db_discovery,
 			}
 			/* No descriptors can exist. */
 			curr_char_being_discovered = next_char;
-			db_discovery->curr_char_ind++;
+			db_discovery->curr_char_idx++;
 		}
 	}
 
@@ -363,7 +363,7 @@ static void on_primary_srv_discovery_rsp(struct ble_db_discovery *db_discovery,
 {
 	struct ble_gatt_db_srv *srv_being_discovered;
 
-	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
+	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_idx]);
 
 	if (ble_gattc_evt->conn_handle != db_discovery->conn_handle) {
 		return;
@@ -420,7 +420,7 @@ static void on_characteristic_discovery_rsp(struct ble_db_discovery *db_discover
 		return;
 	}
 
-	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
+	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_idx]);
 
 	if (ble_gattc_evt->gatt_status == BLE_GATT_STATUS_SUCCESS) {
 		const ble_gattc_evt_char_disc_rsp_t *char_disc_rsp_evt;
@@ -487,7 +487,7 @@ static void on_characteristic_discovery_rsp(struct ble_db_discovery *db_discover
 			perform_desc_discov = true;
 		} else {
 			/* Update the current characteristic index. */
-			db_discovery->curr_char_ind = srv_being_discovered->char_count;
+			db_discovery->curr_char_idx = srv_being_discovered->char_count;
 
 			/* Perform another round of characteristic discovery. */
 			nrf_err = characteristics_discover(db_discovery,
@@ -509,7 +509,7 @@ static void on_characteristic_discovery_rsp(struct ble_db_discovery *db_discover
 	if (perform_desc_discov) {
 		bool raise_discov_complete;
 
-		db_discovery->curr_char_ind = 0;
+		db_discovery->curr_char_idx = 0;
 
 		nrf_err = descriptors_discover(db_discovery, &raise_discov_complete,
 					       ble_gattc_evt->conn_handle);
@@ -544,12 +544,12 @@ static void on_descriptor_discovery_rsp(struct ble_db_discovery *const db_discov
 		return;
 	}
 
-	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
+	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_idx]);
 
 	desc_disc_rsp_evt = &(ble_gattc_evt->params.desc_disc_rsp);
 
 	struct ble_gatt_db_char *char_being_discovered =
-		&(srv_being_discovered->characteristics[db_discovery->curr_char_ind]);
+		&(srv_being_discovered->characteristics[db_discovery->curr_char_idx]);
 
 	if (ble_gattc_evt->gatt_status == BLE_GATT_STATUS_SUCCESS) {
 		/* The descriptor was found at the peer.
@@ -591,7 +591,7 @@ static void on_descriptor_discovery_rsp(struct ble_db_discovery *const db_discov
 
 	bool raise_discov_complete = false;
 
-	if ((db_discovery->curr_char_ind + 1) == srv_being_discovered->char_count) {
+	if ((db_discovery->curr_char_idx + 1) == srv_being_discovered->char_count) {
 		/* No more characteristics and descriptors need to be discovered. Discovery is
 		 * complete. Send a discovery complete event to the user application.
 		 */
@@ -600,7 +600,7 @@ static void on_descriptor_discovery_rsp(struct ble_db_discovery *const db_discov
 		/* Begin discovery of descriptors for the next characteristic.*/
 		uint32_t nrf_err;
 
-		db_discovery->curr_char_ind++;
+		db_discovery->curr_char_idx++;
 
 		nrf_err = descriptors_discover(db_discovery, &raise_discov_complete,
 					       ble_gattc_evt->conn_handle);
@@ -634,8 +634,8 @@ static uint32_t discovery_start(struct ble_db_discovery *const db_discovery, uin
 
 	db_discovery->conn_handle = conn_handle;
 
-	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
-	srv_being_discovered->srv_uuid = db_discovery->registered_uuids[db_discovery->curr_srv_ind];
+	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_idx]);
+	srv_being_discovered->srv_uuid = db_discovery->registered_uuids[db_discovery->curr_srv_idx];
 
 	LOG_DBG("Starting discovery of service with UUID %#x on connection handle %#x",
 		srv_being_discovered->srv_uuid.uuid, conn_handle);
