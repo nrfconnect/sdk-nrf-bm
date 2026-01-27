@@ -972,9 +972,9 @@ INPUT                  = @DOCSET_SOURCE_BASE@/include/ \
                          @DOCSET_SOURCE_BASE@/include/bm/storage \
                          @DOCSET_SOURCE_BASE@/doc/nrf-bm/doxygen/mainpage.dox \
                          @DOCSET_SOURCE_BASE@/../nrfxlib/nfc/include \
-                         @DOCSET_SOURCE_BASE@/../nrf/include/nfc/ndef/text_rec.h \
-                         @DOCSET_SOURCE_BASE@/../nrf/include/nfc/ndef/record.h \
-                         @DOCSET_SOURCE_BASE@/../nrf/include/nfc/t4t/ndef_file.h
+                         @DOCSET_SOURCE_BASE@/doc/nrf-bm/doxygen/sdk-nrf_imported_nfc/nfc_t4t_ndef_file.dox \
+                         @DOCSET_SOURCE_BASE@/doc/nrf-bm/doxygen/sdk-nrf_imported_nfc/nfc_ndef_record.dox \
+                         @DOCSET_SOURCE_BASE@/doc/nrf-bm/doxygen/sdk-nrf_imported_nfc/nfc_ndef_text_rec.dox
 
 # This tag can be used to specify the character encoding of the source files
 # that Doxygen parses. Internally Doxygen uses the UTF-8 encoding. Doxygen uses

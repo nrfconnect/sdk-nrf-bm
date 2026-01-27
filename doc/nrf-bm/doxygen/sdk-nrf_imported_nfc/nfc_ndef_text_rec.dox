@@ -1,0 +1,5 @@
+/**
+ * @file nfc/ndef/text_rec.h
+ */
+
+@include "../../../../../nrf/include/nfc/ndef/text_rec.h"
