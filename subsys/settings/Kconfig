@@ -18,6 +18,7 @@ endmenu
 config NCS_BM_FLAT_SETTINGS_BLUETOOTH_NAME
 	bool "Bluetooth name [very EXPERIMENTAL]"
 	select EXPERIMENTAL
+	select NCS_BM_RMEM_CLIPBOARD
 	help
 	  If enabled, settings handlers for support BLE advertising name
 	  sharing under `fw_loader/adv_name` key are included into the build.
