@@ -1,0 +1,62 @@
+.. role:: old
+.. role:: new
+.. role:: redtxt
+.. role:: greentxt
+.. role:: strike
+
+.. footer::
+
+   *Page ###Page###*
+
+
+s115 release notes
+##################
+
+Introduction to the s115 release notes
+======================================
+
+About the document
+------------------
+
+These release notes describe the changes in the s115 from version to version.
+
+The release notes are intended to list all relevant changes in a given version. They are kept brief to make it easy to get an overview of the changes. More details regarding changes and new features may be found in the s115 migration document (normally available for major releases only).
+
+This document may be updated for an already released version of SoftDevice.  The changes will be tagged with "Update X", where X is a number incremented each time the document has been revised.
+
+Issue numbers in parentheses are for internal use and should be disregarded by the customer.
+
+Copyright © Nordic Semiconductor ASA. All rights reserved.
+
+.. raw:: pdf
+
+   PageBreak
+
+.. contents::
+  :depth: 2
+
+.. raw:: pdf
+
+   PageBreak
+
+.. include:: s115_10.0.0-1.prototype_release-notes.rst
+.. raw:: pdf
+
+   PageBreak
+
+.. include:: s115_9.0.0_release-notes.rst
+.. raw:: pdf
+
+   PageBreak
+
+.. include:: s115_9.0.0-3.prototype_release-notes.rst
+.. raw:: pdf
+
+   PageBreak
+
+.. include:: s115_9.0.0-2.prototype_release-notes.rst
+.. raw:: pdf
+
+   PageBreak
+
+.. include:: s115_9.0.0-1.prototype_release-notes.rst

@@ -1,0 +1,22 @@
+s145_9.0.0
+==========
+
+This section describes how to adapt to changes and use the new features of
+s145_9.0.0 when migrating from s145_9.0.0-3.prototype.
+
+Required changes
+----------------
+
+- The fields :new:`hfclk_latency` and :new:`hfint_ctiv` have been added to ``nrf_clock_lf_cfg_t``.
+
+  .. code:: c
+
+    static const nrf_clock_lf_cfg_t clock_cfg = {
+      .source = NRF_CLOCK_LF_SRC_XTAL,
+      .rc_ctiv = 0,
+      .rc_temp_ctiv = 0,
+      .accuracy = NRF_CLOCK_LF_ACCURACY_250_PPM,
+      .hfint_ctiv = 60, /* Time between HFINT calibrations in seconds */
+      .hfclk_latency = 1500, /* Startup time of HFXO in microseconds */
+    };
+    sd_softdevice_enable(&clock_cfg, fault_handler);
