@@ -14,7 +14,7 @@
  * @details The Scan Library offers several criteria for filtering the devices available for
  *          connection, and it can also be used without filtering.
  *          If an event handler is provided, the library will generate an event on a filter match
- *          device detection and if further configuration as anallow list is required.
+ *          device detection and if further configuration as an allow list is required.
  *          The library can be configured to automatically connect to a device that matches the
  *          filter or a device from the allow list.
  *
@@ -110,17 +110,34 @@ enum ble_scan_evt_type {
 /** @} */
 
 /**
- * @brief Scan short name.
+ * @brief Scan filter data
  */
-struct ble_scan_short_name {
-	/**
-	 * @brief Pointer to the short name.
-	 */
-	const char *short_name;
-	/**
-	 * @brief Minimum length of the short name to be matched.
-	 */
-	uint8_t short_name_min_len;
+struct ble_scan_filter_data {
+	union {
+		/** Name filter data */
+		struct {
+			char *name;
+		} name_filter;
+		/** Address filter data */
+		struct {
+			uint8_t *addr;
+		} addr_filter;
+		/** UUID filter data */
+		struct {
+			ble_uuid_t uuid;
+		} uuid_filter;
+		/** Appearance filter data */
+		struct {
+			uint16_t appearance;
+		} appearance_filter;
+		/** Short name filter data */
+		struct {
+			/** Pointer to the short name. */
+			const char *short_name;
+			/** Minimum length of the short name to be matched. */
+			uint8_t short_name_min_len;
+		} short_name_filter;
+	};
 };
 
 /**
@@ -451,7 +468,7 @@ void ble_scan_stop(const struct ble_scan *scan_ctx);
  *          enables UUID and name filters.
  *
  * @param[in] scan_ctx Scan library instance.
- * @param[in] mode Filter mode: @c ble_scan_filter_type.
+ * @param[in] mode Filter mode: @ref ble_scan_filter_type.
  * @param[in] match_all If this flag is set, all types of enabled filters must be matched before
  *                      generating @ref BLE_SCAN_EVT_FILTER_MATCH to the main application.
  *                      Otherwise, it is enough to match one filter to trigger the filter match
@@ -499,7 +516,7 @@ uint32_t ble_scan_filter_get(struct ble_scan *scan_ctx, struct ble_scan_filters 
  * @brief Available when CONFIG_BLE_SCAN_FILTER is enabled.
  *        Add scan filter.
  *
- * @details This function adds a new filter by type @ref ble_scan_filter_type_t.
+ * @details This function adds a new filter by type @ref ble_scan_filter_type.
  *          The filter will be added if the number of filters of a given type does not exceed @ref
  *          CONFIG_BLE_SCAN_UUID_COUNT, @ref CONFIG_BLE_SCAN_NAME_COUNT, @ref
  *          CONFIG_BLE_SCAN_ADDRESS_COUNT, or @ref CONFIG_BLE_SCAN_APPEARANCE_COUNT, depending on
@@ -515,9 +532,10 @@ uint32_t ble_scan_filter_get(struct ble_scan *scan_ctx, struct ble_scan_filters 
  *                             length corresponds to @ref NRF_BLE_SCAN_NAME_MAX_LEN.
  * @retval NRF_ERROR_NO_MEM If the number of available filters is exceeded.
  * @retval NRF_ERROR_INVALID_PARAM If the filter type is incorrect. Available filter types:
- *                                 @ref ble_scan_filter_type_t.
+ *                                 @ref ble_scan_filter_type.
  */
-uint32_t ble_scan_filter_add(struct ble_scan *scan_ctx, uint8_t type, const void *data);
+uint32_t ble_scan_filter_add(struct ble_scan *scan_ctx, uint8_t type,
+			     const struct ble_scan_filter_data *data);
 
 /**
  * @brief Remove all filters.
