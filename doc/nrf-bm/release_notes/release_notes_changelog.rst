@@ -97,6 +97,7 @@ Libraries
 
 * :ref:`lib_ble_scan`:
 
+   * Added the :c:struct:`ble_scan_filter_data` structure as input to the :c:func:`ble_scan_filter_add` function.
    * Updated functions to use the ``uint32_t`` type instead of ``int`` when returning nrf_errors.
 
 Bluetooth LE Services

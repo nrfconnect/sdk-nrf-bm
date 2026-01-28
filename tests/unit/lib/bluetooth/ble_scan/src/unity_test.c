@@ -183,6 +183,7 @@ void test_ble_scan_filters_disable(void)
 void test_ble_scan_filter_add_get(void)
 {
 	uint32_t nrf_err;
+	struct ble_scan_filter_data filter_data;
 
 	struct ble_scan_filters ble_scan_filter_data = {0};
 	char *device_name = "generic_device";
@@ -205,7 +206,8 @@ void test_ble_scan_filter_add_get(void)
 	TEST_ASSERT_EQUAL(0, ble_scan_filter_data.name_filter.name_cnt);
 	TEST_ASSERT_TRUE(ble_scan_filter_data.name_filter.name_filter_enabled);
 
-	ble_scan_filter_add(&ble_scan, BLE_SCAN_NAME_FILTER, device_name);
+	filter_data.name_filter.name = device_name;
+	ble_scan_filter_add(&ble_scan, BLE_SCAN_NAME_FILTER, &filter_data);
 
 	nrf_err = ble_scan_filter_get(&ble_scan, &ble_scan_filter_data);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
@@ -218,13 +220,15 @@ void test_ble_scan_filter_add_get(void)
 void test_ble_scan_filter_add_error_null(void)
 {
 	uint32_t nrf_err;
-	char *device_name = "generic_device";
+	struct ble_scan_filter_data filter_data = {
+		.name_filter.name = "generic_device",
+	};
 
 	test_ble_scan_init();
 
 	ble_scan_filters_enable(&ble_scan, (BLE_SCAN_NAME_FILTER), true);
 
-	nrf_err = ble_scan_filter_add(NULL, (BLE_SCAN_NAME_FILTER), device_name);
+	nrf_err = ble_scan_filter_add(NULL, (BLE_SCAN_NAME_FILTER), &filter_data);
 	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 
 	nrf_err = ble_scan_filter_add(&ble_scan, (BLE_SCAN_NAME_FILTER), NULL);
@@ -234,26 +238,30 @@ void test_ble_scan_filter_add_error_null(void)
 void test_ble_scan_filter_add_error_invalid_param(void)
 {
 	uint32_t nrf_err;
-	char *device_name = DEVICE_NAME;
+	struct ble_scan_filter_data filter_data = {
+		.name_filter.name = DEVICE_NAME,
+	};
 
 	test_ble_scan_init();
 
 	ble_scan_filters_enable(&ble_scan, BLE_SCAN_NAME_FILTER, true);
 
-	nrf_err = ble_scan_filter_add(&ble_scan, 0, device_name);
+	nrf_err = ble_scan_filter_add(&ble_scan, 0, &filter_data);
 	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, nrf_err);
 }
 
 void test_ble_scan_filter_add_name(void)
 {
 	uint32_t nrf_err;
-	char *device_name = DEVICE_NAME;
+	struct ble_scan_filter_data filter_data = {
+		.name_filter.name = DEVICE_NAME,
+	};
 
 	test_ble_scan_init();
 
 	ble_scan_filters_enable(&ble_scan, BLE_SCAN_NAME_FILTER, true);
 
-	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_NAME_FILTER, device_name);
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_NAME_FILTER, &filter_data);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
@@ -261,12 +269,15 @@ void test_ble_scan_filter_add_addr(void)
 {
 	uint32_t nrf_err;
 	uint8_t addr[BLE_GAP_ADDR_LEN] = {0xa, 0xd, 0xd, 0x4, 0xe, 0x5};
+	struct ble_scan_filter_data filter_data = {
+		.addr_filter.addr = addr,
+	};
 
 	test_ble_scan_init();
 
 	ble_scan_filters_enable(&ble_scan, BLE_SCAN_ADDR_FILTER, true);
 
-	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_ADDR_FILTER, addr);
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_ADDR_FILTER, &filter_data);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
@@ -274,103 +285,123 @@ void test_ble_scan_filter_add_addr_enomem(void)
 {
 	uint32_t nrf_err;
 	uint8_t addr[BLE_GAP_ADDR_LEN] = {0xa, 0xd, 0xd, 0x4, 0xe, 0x5};
+	struct ble_scan_filter_data filter_data = {
+		.addr_filter.addr = addr,
+	};
 
 	test_ble_scan_filter_add_addr();
 
-	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_ADDR_FILTER, addr);
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_ADDR_FILTER, &filter_data);
 	TEST_ASSERT_EQUAL(NRF_ERROR_NO_MEM, nrf_err);
 }
 
 void test_ble_scan_filter_add_uuid(void)
 {
 	uint32_t nrf_err;
-	ble_uuid_t uuid = {
-		.uuid = UUID,
-		.type = BLE_UUID_TYPE_BLE,
+	struct ble_scan_filter_data filter_data = {
+		.uuid_filter.uuid = {
+			.uuid = UUID,
+			.type = BLE_UUID_TYPE_BLE,
+		},
 	};
 
 	test_ble_scan_init();
 
 	ble_scan_filters_enable(&ble_scan, BLE_SCAN_UUID_FILTER, true);
 
-	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_UUID_FILTER, &uuid);
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_UUID_FILTER, &filter_data);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
 void test_ble_scan_filter_add_uuid_error_no_mem(void)
 {
 	uint32_t nrf_err;
-	ble_uuid_t uuid;
+	struct ble_scan_filter_data filter_data = {
+		.uuid_filter.uuid = {
+			.uuid = UUID,
+			.type = BLE_UUID_TYPE_BLE,
+		},
+	};
 
 	test_ble_scan_filter_add_uuid();
 
-	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_UUID_FILTER, &uuid);
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_UUID_FILTER, &filter_data);
 	TEST_ASSERT_EQUAL(NRF_ERROR_NO_MEM, nrf_err);
 }
 
 void test_ble_scan_filter_add_appearance(void)
 {
 	uint32_t nrf_err;
-	uint16_t appearance = 0xa44e;
+	struct ble_scan_filter_data filter_data = {
+		.appearance_filter.appearance = 0xa44e,
+	};
 
 	test_ble_scan_init();
 
 	ble_scan_filters_enable(&ble_scan, BLE_SCAN_APPEARANCE_FILTER, true);
 
-	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_APPEARANCE_FILTER, &appearance);
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_APPEARANCE_FILTER, &filter_data);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
 void test_ble_scan_filter_add_appearance_error_no_mem(void)
 {
 	uint32_t nrf_err;
-	uint16_t appearance = 0xa44e;
+	struct ble_scan_filter_data filter_data = {
+		.appearance_filter.appearance = 0xa44e,
+	};
 
 	test_ble_scan_filter_add_appearance();
 
-	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_APPEARANCE_FILTER, &appearance);
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_APPEARANCE_FILTER, &filter_data);
 	TEST_ASSERT_EQUAL(NRF_ERROR_NO_MEM, nrf_err);
 }
 
 void test_ble_scan_filter_add_short_name(void)
 {
 	uint32_t nrf_err;
-	struct ble_scan_short_name short_name = {
-		.short_name = "dev",
-		.short_name_min_len = 2,
+	struct ble_scan_filter_data filter_data = {
+		.short_name_filter = {
+			.short_name = "dev",
+			.short_name_min_len = 2,
+		},
 	};
 
 	test_ble_scan_init();
 
 	ble_scan_filters_enable(&ble_scan, BLE_SCAN_SHORT_NAME_FILTER, true);
 
-	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_SHORT_NAME_FILTER, &short_name);
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_SHORT_NAME_FILTER, &filter_data);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
 void test_ble_scan_filter_add_short_name_error_no_mem(void)
 {
 	uint32_t nrf_err;
-	struct ble_scan_short_name short_name = {
-		.short_name = "dev",
-		.short_name_min_len = 2,
+	struct ble_scan_filter_data filter_data = {
+		.short_name_filter = {
+			.short_name = "dev",
+			.short_name_min_len = 2,
+		},
 	};
-	struct ble_scan_short_name short_name2 = {
-		.short_name = "dev2",
-		.short_name_min_len = 2,
+	struct ble_scan_filter_data filter_data2 = {
+		.short_name_filter = {
+			.short_name = "dev2",
+			.short_name_min_len = 2,
+		},
 	};
 
 	test_ble_scan_filter_add_short_name();
 
 	/* duplicate filter does not increase count, so the next will also succeed. */
-	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_SHORT_NAME_FILTER, &short_name);
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_SHORT_NAME_FILTER, &filter_data);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	/* We accept two short names so the second will succeed */
-	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_SHORT_NAME_FILTER, &short_name2);
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_SHORT_NAME_FILTER, &filter_data2);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_SHORT_NAME_FILTER, &short_name2);
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_SHORT_NAME_FILTER, &filter_data2);
 	TEST_ASSERT_EQUAL(NRF_ERROR_NO_MEM, nrf_err);
 
 }
@@ -839,9 +870,11 @@ void test_ble_scan_on_ble_evt_adv_report_device_uuid(void)
 void test_ble_scan_on_ble_evt_adv_report_device_uuid_connect(void)
 {
 	uint32_t nrf_err;
-	ble_uuid_t uuid = {
-		.uuid = UUID,
-		.type = BLE_UUID_TYPE_BLE,
+	struct ble_scan_filter_data filter_data = {
+		.uuid_filter.uuid = {
+			.uuid = UUID,
+			.type = BLE_UUID_TYPE_BLE,
+		},
 	};
 	const ble_uuid_t uuid_exp = {
 		.uuid = UUID,
@@ -893,7 +926,7 @@ void test_ble_scan_on_ble_evt_adv_report_device_uuid_connect(void)
 
 	ble_scan_filters_enable(&ble_scan, BLE_SCAN_UUID_FILTER, true);
 
-	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_UUID_FILTER, &uuid);
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_UUID_FILTER, &filter_data);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	__cmock_ble_adv_data_uuid_find_ExpectWithArrayAndReturn(
