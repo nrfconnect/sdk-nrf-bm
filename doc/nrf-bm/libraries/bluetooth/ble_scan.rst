@@ -205,7 +205,9 @@ Example code:
    BLE_SCAN_DEF(ble_scan);
 
    uint8_t addr[BLE_GAP_ADDR_LEN] = {0xa, 0xd, 0xd, 0x4, 0xe, 0x5};
-   char *device_name = "my_device";
+   struct ble_scan_filter_data filter_data = {
+           .addr_filter.addr = addr,
+   };
 
    /* See above code snippet for initialization */
 
@@ -216,13 +218,14 @@ Example code:
    }
 
    /* Add address to scan filter */
-	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_ADDR_FILTER, addr);
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_ADDR_FILTER, filter_data);
    if (nrf_err) {
            LOG_ERR("Failed to add address scan filter, nrf_error %#x", nrf_err);
    }
 
    /* Add name to scan filter */
-	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_NAME_FILTER, device_name);
+   filter_data.name_filter.name = "my_device";
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_NAME_FILTER, filter_data);
 	if (nrf_err) {
            LOG_ERR("Failed to add name scan filter, nrf_error %#x", nrf_err);
    }
