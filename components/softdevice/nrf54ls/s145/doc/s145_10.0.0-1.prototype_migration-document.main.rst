@@ -1,0 +1,54 @@
+.. role:: old
+.. role:: new
+.. role:: redtxt
+.. role:: greentxt
+.. role:: strike
+
+.. footer::
+
+   *Page ###Page###*
+
+
+s145 migration document
+#######################
+
+Introduction to the s145 migration document
+===========================================
+
+About the document
+------------------
+This document describes how to migrate to new versions of the s145 SoftDevice. The s145 release notes should be read in conjunction with this document.
+
+For each version, we have the following sections:
+
+- "Required changes" describes the changes that need to be done in the application when migrating from an older version of the SoftDevice.
+- "New functionality" describes how to use new features and functionality offered by this version of the SoftDevice. **Note** : Not all new functionality may be covered; the release notes will contain a full list of new features and functionality.
+
+Each section describes how to migrate to a given version from the previous version. If you are migrating to the current version from the previous version, follow the instructions in that section. To migrate between versions that are more than one version apart, follow the migration steps for all intermediate versions in order.
+
+**Example**: To migrate from version 5.0.0 to version 5.2.0, first follow the instructions to migrate to 5.1.0 from 5.0.0, then follow the instructions to migrate to 5.2.0 from 5.1.0.
+
+Copyright © Nordic Semiconductor ASA. All rights reserved.
+
+.. raw:: pdf
+
+   PageBreak
+
+.. contents::
+  :depth: 2
+
+.. raw:: pdf
+
+   PageBreak
+
+.. include:: s145_10.0.0-1.prototype_migration-document.rst
+.. raw:: pdf
+
+   PageBreak
+
+.. include:: s145_9.0.0_migration-document.rst
+.. raw:: pdf
+
+   PageBreak
+
+.. include:: s145_9.0.0-3.prototype_migration-document.rst

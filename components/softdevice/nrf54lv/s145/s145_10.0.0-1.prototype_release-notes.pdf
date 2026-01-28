@@ -1,0 +1,7080 @@
+%PDF-1.4
+%“Œ‹ž ReportLab Generated PDF document http://www.reportlab.com
+1 0 obj
+<<
+/F1 2 0 R /F2 3 0 R /F3 4 0 R /F4 6 0 R /F5 64 0 R
+>>
+endobj
+2 0 obj
+<<
+/BaseFont /Helvetica /Encoding /WinAnsiEncoding /Name /F1 /Subtype /Type1 /Type /Font
+>>
+endobj
+3 0 obj
+<<
+/BaseFont /Times-Roman /Encoding /WinAnsiEncoding /Name /F2 /Subtype /Type1 /Type /Font
+>>
+endobj
+4 0 obj
+<<
+/BaseFont /Helvetica-Oblique /Encoding /WinAnsiEncoding /Name /F3 /Subtype /Type1 /Type /Font
+>>
+endobj
+5 0 obj
+<<
+/Contents 110 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 109 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+6 0 obj
+<<
+/BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding /Name /F4 /Subtype /Type1 /Type /Font
+>>
+endobj
+7 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 5 0 R /XYZ 57.02362 705.0236 0 ] /Rect [ 57.02362 724.8236 210.0661 735.0236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+8 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 5 0 R /XYZ 57.02362 705.0236 0 ] /Rect [ 533.526 725.4611 538.252 735.6611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+9 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 5 0 R /XYZ 57.02362 672.0236 0 ] /Rect [ 77.02362 708.6236 153.0986 718.8236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+10 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 5 0 R /XYZ 57.02362 672.0236 0 ] /Rect [ 533.526 709.2611 538.252 719.4611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+11 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 65 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 57.02362 692.4236 153.3966 702.6236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+12 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 65 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 533.526 693.0611 538.252 703.2611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+13 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 65 0 R /XYZ 57.02362 656.0236 0 ] /Rect [ 77.02362 676.2236 158.2751 686.4236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+14 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 65 0 R /XYZ 57.02362 656.0236 0 ] /Rect [ 533.526 676.8611 538.252 687.0611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+15 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 65 0 R /XYZ 57.02362 380.0236 0 ] /Rect [ 77.02362 660.0236 129.9276 670.2236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+16 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 65 0 R /XYZ 57.02362 380.0236 0 ] /Rect [ 533.526 660.6611 538.252 670.8611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+17 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 65 0 R /XYZ 57.02362 350.0236 0 ] /Rect [ 77.02362 643.8236 111.0406 654.0236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+18 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 65 0 R /XYZ 57.02362 350.0236 0 ] /Rect [ 533.526 644.4611 538.252 654.6611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+19 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 65 0 R /XYZ 57.02362 320.0236 0 ] /Rect [ 77.02362 627.6236 117.6451 637.8236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+20 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 65 0 R /XYZ 57.02362 320.0236 0 ] /Rect [ 533.526 628.2611 538.252 638.4611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+21 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 66 0 R /XYZ 57.02362 669.0236 0 ] /Rect [ 77.02362 611.4236 129.9361 621.6236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+22 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 66 0 R /XYZ 57.02362 669.0236 0 ] /Rect [ 533.526 612.0611 538.252 622.2611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+23 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 67 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 57.02362 595.2236 99.55762 605.4236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+24 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 67 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 533.526 595.8611 538.252 606.0611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+25 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 67 0 R /XYZ 57.02362 656.0236 0 ] /Rect [ 77.02362 579.0236 158.2751 589.2236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+26 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 67 0 R /XYZ 57.02362 656.0236 0 ] /Rect [ 533.526 579.6611 538.252 589.8611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+27 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 67 0 R /XYZ 57.02362 380.0236 0 ] /Rect [ 77.02362 562.8236 111.0406 573.0236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+28 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 67 0 R /XYZ 57.02362 380.0236 0 ] /Rect [ 533.526 563.4611 538.252 573.6611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+29 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 68 0 R /XYZ 57.02362 219.0236 0 ] /Rect [ 77.02362 546.6236 117.6451 556.8236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+30 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 68 0 R /XYZ 57.02362 219.0236 0 ] /Rect [ 533.526 547.2611 538.252 557.4611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+31 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 69 0 R /XYZ 57.02362 549.0236 0 ] /Rect [ 77.02362 530.4236 129.9361 540.6236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+32 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 69 0 R /XYZ 57.02362 549.0236 0 ] /Rect [ 533.526 531.0611 538.252 541.2611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+33 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 70 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 57.02362 514.2236 148.6706 524.4236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+34 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 70 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 533.526 514.8611 538.252 525.0611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+35 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 70 0 R /XYZ 57.02362 656.0236 0 ] /Rect [ 77.02362 498.0236 158.2751 508.2236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+36 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 70 0 R /XYZ 57.02362 656.0236 0 ] /Rect [ 533.526 498.6611 538.252 508.8611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+37 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 70 0 R /XYZ 57.02362 416.0236 0 ] /Rect [ 77.02362 481.8236 111.0406 492.0236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+38 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 70 0 R /XYZ 57.02362 416.0236 0 ] /Rect [ 533.526 482.4611 538.252 492.6611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+39 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 70 0 R /XYZ 57.02362 134.0236 0 ] /Rect [ 77.02362 465.6236 117.6451 475.8236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+40 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 70 0 R /XYZ 57.02362 134.0236 0 ] /Rect [ 533.526 466.2611 538.252 476.4611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+41 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 71 0 R /XYZ 57.02362 449.0236 0 ] /Rect [ 77.02362 449.4236 129.9361 459.6236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+42 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 71 0 R /XYZ 57.02362 449.0236 0 ] /Rect [ 533.526 450.0611 538.252 460.2611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+43 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 72 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 57.02362 433.2236 148.6706 443.4236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+44 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 72 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 528.8 433.8611 538.252 444.0611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+45 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 72 0 R /XYZ 57.02362 656.0236 0 ] /Rect [ 77.02362 417.0236 158.2751 427.2236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+46 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 72 0 R /XYZ 57.02362 656.0236 0 ] /Rect [ 528.8 417.6611 538.252 427.8611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+47 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 72 0 R /XYZ 57.02362 416.0236 0 ] /Rect [ 77.02362 400.8236 111.0406 411.0236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+48 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 72 0 R /XYZ 57.02362 416.0236 0 ] /Rect [ 528.8 401.4611 538.252 411.6611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+49 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 72 0 R /XYZ 57.02362 214.0236 0 ] /Rect [ 77.02362 384.6236 117.6451 394.8236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+50 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 72 0 R /XYZ 57.02362 214.0236 0 ] /Rect [ 528.8 385.2611 538.252 395.4611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+51 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 73 0 R /XYZ 57.02362 509.0236 0 ] /Rect [ 77.02362 368.4236 129.9361 378.6236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+52 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 73 0 R /XYZ 57.02362 509.0236 0 ] /Rect [ 528.8 369.0611 538.252 379.2611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+53 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 75 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 57.02362 352.2236 148.6706 362.4236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+54 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 75 0 R /XYZ 57.02362 765.0236 0 ] /Rect [ 528.8 352.8611 538.252 363.0611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+55 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 75 0 R /XYZ 57.02362 656.0236 0 ] /Rect [ 77.02362 336.0236 158.2751 346.2236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+56 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 75 0 R /XYZ 57.02362 656.0236 0 ] /Rect [ 528.8 336.6611 538.252 346.8611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+57 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 75 0 R /XYZ 57.02362 456.0236 0 ] /Rect [ 77.02362 319.8236 111.0406 330.0236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+58 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 75 0 R /XYZ 57.02362 456.0236 0 ] /Rect [ 528.8 320.4611 538.252 330.6611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+59 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 75 0 R /XYZ 57.02362 148.0236 0 ] /Rect [ 77.02362 303.6236 117.6451 313.8236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+60 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 75 0 R /XYZ 57.02362 148.0236 0 ] /Rect [ 528.8 304.2611 538.252 314.4611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+61 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 76 0 R /XYZ 57.02362 449.0236 0 ] /Rect [ 77.02362 287.4236 129.9361 297.6236 ] /Subtype /Link /Type /Annot
+>>
+endobj
+62 0 obj
+<<
+/Border [ 0 0 0 ] /Contents () /Dest [ 76 0 R /XYZ 57.02362 449.0236 0 ] /Rect [ 528.8 288.0611 538.252 298.2611 ] /Subtype /Link /Type /Annot
+>>
+endobj
+63 0 obj
+<<
+/Annots [ 7 0 R 8 0 R 9 0 R 10 0 R 11 0 R 12 0 R 13 0 R 14 0 R 15 0 R 16 0 R 
+  17 0 R 18 0 R 19 0 R 20 0 R 21 0 R 22 0 R 23 0 R 24 0 R 25 0 R 26 0 R 
+  27 0 R 28 0 R 29 0 R 30 0 R 31 0 R 32 0 R 33 0 R 34 0 R 35 0 R 36 0 R 
+  37 0 R 38 0 R 39 0 R 40 0 R 41 0 R 42 0 R 43 0 R 44 0 R 45 0 R 46 0 R 
+  47 0 R 48 0 R 49 0 R 50 0 R 51 0 R 52 0 R 53 0 R 54 0 R 55 0 R 56 0 R 
+  57 0 R 58 0 R 59 0 R 60 0 R 61 0 R 62 0 R ] /Contents 111 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 109 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 
+  /Trans <<
+
+>> /Type /Page
+>>
+endobj
+64 0 obj
+<<
+/BaseFont /Courier /Encoding /WinAnsiEncoding /Name /F5 /Subtype /Type1 /Type /Font
+>>
+endobj
+65 0 obj
+<<
+/Contents 112 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 109 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+66 0 obj
+<<
+/Contents 113 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 109 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+67 0 obj
+<<
+/Contents 114 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 109 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+68 0 obj
+<<
+/Contents 115 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 109 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+69 0 obj
+<<
+/Contents 116 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 109 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+70 0 obj
+<<
+/Contents 117 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 109 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+71 0 obj
+<<
+/Contents 118 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 109 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+72 0 obj
+<<
+/Contents 119 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 109 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+73 0 obj
+<<
+/Contents 120 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 109 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+74 0 obj
+<<
+/Contents 121 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 109 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+75 0 obj
+<<
+/Contents 122 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 109 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+76 0 obj
+<<
+/Contents 123 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 109 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+77 0 obj
+<<
+/Contents 124 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 109 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+78 0 obj
+<<
+/Outlines 80 0 R /PageLabels 125 0 R /PageMode /UseNone /Pages 109 0 R /Type /Catalog
+>>
+endobj
+79 0 obj
+<<
+/Author () /CreationDate (D:20260128120049-01'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20260128120049-01'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
+  /Subject (\(unspecified\)) /Title (s145 release notes) /Trapped /False
+>>
+endobj
+80 0 obj
+<<
+/Count 34 /First 81 0 R /Last 104 0 R /Type /Outlines
+>>
+endobj
+81 0 obj
+<<
+/Count 1 /Dest [ 5 0 R /XYZ 57.02362 705.0236 0 ] /First 82 0 R /Last 82 0 R /Next 83 0 R /Parent 80 0 R 
+  /Title (Introduction to the s145 release notes)
+>>
+endobj
+82 0 obj
+<<
+/Dest [ 5 0 R /XYZ 57.02362 672.0236 0 ] /Parent 81 0 R /Title (About the document)
+>>
+endobj
+83 0 obj
+<<
+/Count 5 /Dest [ 65 0 R /XYZ 57.02362 765.0236 0 ] /First 84 0 R /Last 88 0 R /Next 89 0 R /Parent 80 0 R 
+  /Prev 81 0 R /Title (s145_10.0.0-1.prototype)
+>>
+endobj
+84 0 obj
+<<
+/Dest [ 65 0 R /XYZ 57.02362 656.0236 0 ] /Next 85 0 R /Parent 83 0 R /Title (SoftDevice properties)
+>>
+endobj
+85 0 obj
+<<
+/Dest [ 65 0 R /XYZ 57.02362 380.0236 0 ] /Next 86 0 R /Parent 83 0 R /Prev 84 0 R /Title (New Features)
+>>
+endobj
+86 0 obj
+<<
+/Dest [ 65 0 R /XYZ 57.02362 350.0236 0 ] /Next 87 0 R /Parent 83 0 R /Prev 85 0 R /Title (Changes)
+>>
+endobj
+87 0 obj
+<<
+/Dest [ 65 0 R /XYZ 57.02362 320.0236 0 ] /Next 88 0 R /Parent 83 0 R /Prev 86 0 R /Title (Limitations)
+>>
+endobj
+88 0 obj
+<<
+/Dest [ 66 0 R /XYZ 57.02362 669.0236 0 ] /Parent 83 0 R /Prev 87 0 R /Title (Known Issues)
+>>
+endobj
+89 0 obj
+<<
+/Count 4 /Dest [ 67 0 R /XYZ 57.02362 765.0236 0 ] /First 90 0 R /Last 93 0 R /Next 94 0 R /Parent 80 0 R 
+  /Prev 83 0 R /Title (s145_9.0.0)
+>>
+endobj
+90 0 obj
+<<
+/Dest [ 67 0 R /XYZ 57.02362 656.0236 0 ] /Next 91 0 R /Parent 89 0 R /Title (SoftDevice properties)
+>>
+endobj
+91 0 obj
+<<
+/Dest [ 67 0 R /XYZ 57.02362 380.0236 0 ] /Next 92 0 R /Parent 89 0 R /Prev 90 0 R /Title (Changes)
+>>
+endobj
+92 0 obj
+<<
+/Dest [ 68 0 R /XYZ 57.02362 219.0236 0 ] /Next 93 0 R /Parent 89 0 R /Prev 91 0 R /Title (Limitations)
+>>
+endobj
+93 0 obj
+<<
+/Dest [ 69 0 R /XYZ 57.02362 549.0236 0 ] /Parent 89 0 R /Prev 92 0 R /Title (Known Issues)
+>>
+endobj
+94 0 obj
+<<
+/Count 4 /Dest [ 70 0 R /XYZ 57.02362 765.0236 0 ] /First 95 0 R /Last 98 0 R /Next 99 0 R /Parent 80 0 R 
+  /Prev 89 0 R /Title (s145_9.0.0-3.prototype)
+>>
+endobj
+95 0 obj
+<<
+/Dest [ 70 0 R /XYZ 57.02362 656.0236 0 ] /Next 96 0 R /Parent 94 0 R /Title (SoftDevice properties)
+>>
+endobj
+96 0 obj
+<<
+/Dest [ 70 0 R /XYZ 57.02362 416.0236 0 ] /Next 97 0 R /Parent 94 0 R /Prev 95 0 R /Title (Changes)
+>>
+endobj
+97 0 obj
+<<
+/Dest [ 70 0 R /XYZ 57.02362 134.0236 0 ] /Next 98 0 R /Parent 94 0 R /Prev 96 0 R /Title (Limitations)
+>>
+endobj
+98 0 obj
+<<
+/Dest [ 71 0 R /XYZ 57.02362 449.0236 0 ] /Parent 94 0 R /Prev 97 0 R /Title (Known Issues)
+>>
+endobj
+99 0 obj
+<<
+/Count 4 /Dest [ 72 0 R /XYZ 57.02362 765.0236 0 ] /First 100 0 R /Last 103 0 R /Next 104 0 R /Parent 80 0 R 
+  /Prev 94 0 R /Title (s145_9.0.0-2.prototype)
+>>
+endobj
+100 0 obj
+<<
+/Dest [ 72 0 R /XYZ 57.02362 656.0236 0 ] /Next 101 0 R /Parent 99 0 R /Title (SoftDevice properties)
+>>
+endobj
+101 0 obj
+<<
+/Dest [ 72 0 R /XYZ 57.02362 416.0236 0 ] /Next 102 0 R /Parent 99 0 R /Prev 100 0 R /Title (Changes)
+>>
+endobj
+102 0 obj
+<<
+/Dest [ 72 0 R /XYZ 57.02362 214.0236 0 ] /Next 103 0 R /Parent 99 0 R /Prev 101 0 R /Title (Limitations)
+>>
+endobj
+103 0 obj
+<<
+/Dest [ 73 0 R /XYZ 57.02362 509.0236 0 ] /Parent 99 0 R /Prev 102 0 R /Title (Known Issues)
+>>
+endobj
+104 0 obj
+<<
+/Count 4 /Dest [ 75 0 R /XYZ 57.02362 765.0236 0 ] /First 105 0 R /Last 108 0 R /Parent 80 0 R /Prev 99 0 R 
+  /Title (s145_9.0.0-1.prototype)
+>>
+endobj
+105 0 obj
+<<
+/Dest [ 75 0 R /XYZ 57.02362 656.0236 0 ] /Next 106 0 R /Parent 104 0 R /Title (SoftDevice properties)
+>>
+endobj
+106 0 obj
+<<
+/Dest [ 75 0 R /XYZ 57.02362 456.0236 0 ] /Next 107 0 R /Parent 104 0 R /Prev 105 0 R /Title (Changes)
+>>
+endobj
+107 0 obj
+<<
+/Dest [ 75 0 R /XYZ 57.02362 148.0236 0 ] /Next 108 0 R /Parent 104 0 R /Prev 106 0 R /Title (Limitations)
+>>
+endobj
+108 0 obj
+<<
+/Dest [ 76 0 R /XYZ 57.02362 449.0236 0 ] /Parent 104 0 R /Prev 107 0 R /Title (Known Issues)
+>>
+endobj
+109 0 obj
+<<
+/Count 15 /Kids [ 5 0 R 63 0 R 65 0 R 66 0 R 67 0 R 68 0 R 69 0 R 70 0 R 71 0 R 72 0 R 
+  73 0 R 74 0 R 75 0 R 76 0 R 77 0 R ] /Type /Pages
+>>
+endobj
+110 0 obj
+<<
+/Length 1808
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 741.0236 cm
+q
+.133333 .133333 .133333 rg
+BT 1 0 0 1 0 4 Tm /F2 20 Tf 24 TL (s145 release notes) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 684.0236 cm
+q
+BT 1 0 0 1 0 3.5 Tm 21 TL /F2 17.5 Tf .133333 .133333 .133333 rg (Introduction to the s145 release notes) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 654.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (About the document) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 636.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (These release notes describe the changes in the s145 from version to version.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 594.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 26 Tm /F1 10 Tf 12 TL (The release notes are intended to list all relevant changes in a given version. They are kept brief to make it) Tj T* (easy to get an overview of the changes. More details regarding changes and new features may be found in) Tj T* (the s145 migration document \(normally available for major releases only\).) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 564.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (This document may be updated for an already released version of SoftDevice. The changes will be tagged) Tj T* (with "Update X", where X is a number incremented each time the document has been revised.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 546.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Issue numbers in parentheses are for internal use and should be disregarded by the customer.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 528.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Copyright \251 Nordic Semiconductor ASA. All rights reserved.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 528.0236 cm
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F3 10 Tf 0 0 0 rg (Page 1) Tj T* -230.7692 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+111 0 obj
+<<
+/Length 6720
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 744.0236 cm
+q
+BT 1 0 0 1 0 3.5 Tm 21 TL /F2 17.5 Tf .133333 .133333 .133333 rg (Contents) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 284.4236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 0 440.4 cm
+q
+BT 1 0 0 1 0 1.7 Tm 10.2 TL /F4 8.5 Tf 0 .4 .6 rg (Introduction to the s145 release notes) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 440.4 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F4 8.5 Tf 10.2 TL 67.274 0 Td (1) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 424.2 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (About the document) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 424.2 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (1) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 408 cm
+q
+BT 1 0 0 1 0 1.7 Tm 10.2 TL /F4 8.5 Tf 0 .4 .6 rg (s145_10.0.0-1.prototype) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 408 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F4 8.5 Tf 10.2 TL 67.274 0 Td (3) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 391.8 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (SoftDevice properties) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 391.8 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (3) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 375.6 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (New Features) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 375.6 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (3) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 359.4 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (Changes) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 359.4 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (3) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 343.2 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (Limitations) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 343.2 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (3) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 327 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (Known Issues) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 327 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (4) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 310.8 cm
+q
+BT 1 0 0 1 0 1.7 Tm 10.2 TL /F4 8.5 Tf 0 .4 .6 rg (s145_9.0.0) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 310.8 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F4 8.5 Tf 10.2 TL 67.274 0 Td (5) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 294.6 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (SoftDevice properties) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 294.6 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (5) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 278.4 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (Changes) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 278.4 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (5) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 262.2 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (Limitations) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 262.2 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (6) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 246 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (Known Issues) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 246 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (7) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 229.8 cm
+q
+BT 1 0 0 1 0 1.7 Tm 10.2 TL /F4 8.5 Tf 0 .4 .6 rg (s145_9.0.0-3.prototype) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 229.8 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F4 8.5 Tf 10.2 TL 67.274 0 Td (8) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 213.6 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (SoftDevice properties) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 213.6 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (8) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 197.4 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (Changes) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 197.4 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (8) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 181.2 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (Limitations) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 181.2 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (8) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 165 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (Known Issues) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 165 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 67.274 0 Td (9) Tj T* -67.274 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 148.8 cm
+q
+BT 1 0 0 1 0 1.7 Tm 10.2 TL /F4 8.5 Tf 0 .4 .6 rg (s145_9.0.0-2.prototype) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 148.8 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F4 8.5 Tf 10.2 TL 62.548 0 Td (10) Tj T* -62.548 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 132.6 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (SoftDevice properties) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 132.6 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 62.548 0 Td (10) Tj T* -62.548 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 116.4 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (Changes) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 116.4 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 62.548 0 Td (10) Tj T* -62.548 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 100.2 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (Limitations) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 100.2 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 62.548 0 Td (10) Tj T* -62.548 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 84 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (Known Issues) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 84 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 62.548 0 Td (11) Tj T* -62.548 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 67.8 cm
+q
+BT 1 0 0 1 0 1.7 Tm 10.2 TL /F4 8.5 Tf 0 .4 .6 rg (s145_9.0.0-1.prototype) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 67.8 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F4 8.5 Tf 10.2 TL 62.548 0 Td (13) Tj T* -62.548 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 51.6 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (SoftDevice properties) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 51.6 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 62.548 0 Td (13) Tj T* -62.548 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 35.4 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (Changes) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 35.4 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 62.548 0 Td (13) Tj T* -62.548 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 19.2 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (Limitations) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 19.2 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 62.548 0 Td (13) Tj T* -62.548 0 Td ET
+Q
+Q
+q
+1 0 0 1 0 3 cm
+q
+BT 1 0 0 1 20 1.7 Tm 10.2 TL /F1 8.5 Tf 0 .4 .6 rg (Known Issues) Tj T* ET
+Q
+Q
+q
+1 0 0 1 409.2283 3 cm
+q
+0 .4 .6 rg
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL 62.548 0 Td (14) Tj T* -62.548 0 Td ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 284.4236 cm
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F3 10 Tf 0 0 0 rg (Page 2) Tj T* -230.7692 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+112 0 obj
+<<
+/Length 8307
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 744.0236 cm
+q
+BT 1 0 0 1 0 3.5 Tm 21 TL /F2 17.5 Tf .133333 .133333 .133333 rg (s145_10.0.0-1.prototype) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 726.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (This version is a major release.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 708.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Notes:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 702.0236 cm
+Q
+q
+1 0 0 1 57.02362 702.0236 cm
+Q
+q
+1 0 0 1 57.02362 690.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (This release has changed the API. This requires changes to applications.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 684.0236 cm
+Q
+q
+1 0 0 1 57.02362 672.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The release notes list changes since s145_9.0.0.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 668.0236 cm
+Q
+q
+1 0 0 1 57.02362 638.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (SoftDevice properties) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 626.0236 cm
+Q
+q
+1 0 0 1 57.02362 626.0236 cm
+Q
+q
+1 0 0 1 57.02362 614.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (This SoftDevice variant is compatible with nRF54L05, nRF54L10, and nRF54L15.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 608.0236 cm
+Q
+q
+1 0 0 1 57.02362 490.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 103 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 103 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The SoftDevice memory requirements for this version are as follows:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 97 cm
+Q
+q
+1 0 0 1 23 97 cm
+Q
+q
+1 0 0 1 23 85 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (NVM: ) Tj /F4 10 Tf (144.0 kB) Tj /F1 10 Tf ( \(0x24000 bytes\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 79 cm
+Q
+q
+1 0 0 1 23 55 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (RAM: ) Tj /F4 10 Tf (5.9 kB) Tj /F1 10 Tf ( \(0x1780 bytes\). This is the minimum required memory. The actual requirements) Tj T* (depend on the configuration chosen at ) Tj /F5 10 Tf (sd_ble_enable\(\)) Tj /F1 10 Tf ( time.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 49 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 33 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 38 Tm 12 TL /F1 10 Tf 0 0 0 rg (Call stack: The SoftDevice uses a call stack combined with the application. The worst-case stack) Tj T* (usage for the SoftDevice is ) Tj /F4 10 Tf (1.8 kB) Tj /F1 10 Tf ( \(0x700 bytes\). Application writers should ensure that enough) Tj T* (stack space is reserved to cover the worst-case SoftDevice call stack usage combined with the) Tj T* (worst-case application call stack usage.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 484.0236 cm
+Q
+q
+1 0 0 1 57.02362 414.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 55 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 55 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (SoftDevice base address:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 49 cm
+Q
+q
+1 0 0 1 23 49 cm
+Q
+q
+1 0 0 1 23 37 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (nRF54L05: 0x058c00 \() Tj /F5 10 Tf (s145_nrf54l05_10.0.0-1.prototype_softdevice.hex) Tj /F1 10 Tf (\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 31 cm
+Q
+q
+1 0 0 1 23 19 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (nRF54L10: 0x0d8c00 \() Tj /F5 10 Tf (s145_nrf54l10_10.0.0-1.prototype_softdevice.hex) Tj /F1 10 Tf (\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 13 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (nRF54L15: 0x158c00 \() Tj /F5 10 Tf (s145_nrf54l15_10.0.0-1.prototype_softdevice.hex) Tj /F1 10 Tf (\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 408.0236 cm
+Q
+q
+1 0 0 1 57.02362 396.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The Firmware ID of this SoftDevice is 0x3056.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 392.0236 cm
+Q
+q
+1 0 0 1 57.02362 362.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (New Features) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 332.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Changes) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 302.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Limitations) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 290.0236 cm
+Q
+q
+1 0 0 1 57.02362 290.0236 cm
+Q
+q
+1 0 0 1 57.02362 92.02362 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 183 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 183 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (SoftDevice) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 177 cm
+Q
+q
+1 0 0 1 23 177 cm
+Q
+q
+1 0 0 1 23 153 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (If Radio Notifications are enabled, flash write and flash erase operations initiated through the) Tj T* (SoftDevice API will be notified to the application as Radio Events \(DRGN-5197\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 147 cm
+Q
+q
+1 0 0 1 23 123 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (Synthesized low frequency clock source is not tested or intended for use with the Bluetooth LE) Tj T* (stack.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 117 cm
+Q
+q
+1 0 0 1 23 81 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 26 Tm /F1 10 Tf 12 TL (Applications must not modify the SEVONPEND flag in the SCR register when running in priority) Tj T* (levels higher than 6 \(priority level numerical values lower than 6\) as this can lead to undefined) Tj T* (behavior.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 75 cm
+Q
+q
+1 0 0 1 23 3 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 57 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 62 Tm 12 TL /F1 10 Tf 0 0 0 rg (The SoftDevice may generate several events when connected, based on peer actions, meaning) Tj T* (without previous action from the application. The ) Tj /F5 10 Tf (BLE_GAP_EVT_PHY_UPDATE_REQUEST) Tj /F1 10 Tf ( event,) Tj T* (for instance, is generated when a connected peer sends a Phy Update Request, even when an) Tj T* (application does not include logic to change PHY. There are several such events that may require) Tj T* (action from an application if they are received. For more information, see the ) Tj /F5 10 Tf (sd_ble_enable\(\)) Tj /F1 10 Tf  T* (API in SoftDevice.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F3 10 Tf 0 0 0 rg (Page 3) Tj T* -230.7692 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+113 0 obj
+<<
+/Length 2570
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 737.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+BT 1 0 0 1 6 15 Tm  T* ET
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (Configuring multiple connection configurations \(see ) Tj /F5 10 Tf (ble_conn_cfg_t::conn_cfg_tag) Tj /F1 10 Tf (\) is not) Tj T* (supported \(DRGN-23839\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 731.0236 cm
+Q
+q
+1 0 0 1 57.02362 685.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 31 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 31 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GATT) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 25 cm
+Q
+q
+1 0 0 1 23 25 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (To conform to the Bluetooth Core Specification, there shall be no secondary service that is not) Tj T* (referenced somehow by a primary service. The SoftDevice does not enforce this \(DRGN-906\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 681.0236 cm
+Q
+q
+1 0 0 1 57.02362 651.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Known Issues) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 639.0236 cm
+Q
+q
+1 0 0 1 57.02362 639.0236 cm
+Q
+q
+1 0 0 1 57.02362 581.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 43 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 43 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (LL) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 37 cm
+Q
+q
+1 0 0 1 23 37 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F1 10 Tf 0 0 0 rg (If the application adds an all zeroes IRK with the ) Tj /F5 10 Tf (sd_ble_gap_device_identities_set\(\)) Tj /F1 10 Tf (, it) Tj T* (will be treated as a valid entry in the device identity list. An all zeroes IRK is invalid and must not) Tj T* (be added \(DRGN-9083\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 577.0236 cm
+Q
+q
+1 0 0 1 57.02362 577.0236 cm
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F3 10 Tf 0 0 0 rg (Page 4) Tj T* -230.7692 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+114 0 obj
+<<
+/Length 9613
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 744.0236 cm
+q
+BT 1 0 0 1 0 3.5 Tm 21 TL /F2 17.5 Tf .133333 .133333 .133333 rg (s145_9.0.0) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 726.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (This version is a major release, providing support for nRF54L series devices.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 708.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Notes:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 702.0236 cm
+Q
+q
+1 0 0 1 57.02362 702.0236 cm
+Q
+q
+1 0 0 1 57.02362 690.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (This release has changed the API. This requires changes to applications.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 684.0236 cm
+Q
+q
+1 0 0 1 57.02362 672.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The release notes list changes since s145_9.0.0-3.prototype.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 668.0236 cm
+Q
+q
+1 0 0 1 57.02362 638.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (SoftDevice properties) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 626.0236 cm
+Q
+q
+1 0 0 1 57.02362 626.0236 cm
+Q
+q
+1 0 0 1 57.02362 614.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (This SoftDevice variant is compatible with nRF54L05, nRF54L10, and nRF54L15.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 608.0236 cm
+Q
+q
+1 0 0 1 57.02362 490.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 103 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 103 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The SoftDevice memory requirements for this version are as follows:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 97 cm
+Q
+q
+1 0 0 1 23 97 cm
+Q
+q
+1 0 0 1 23 85 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (NVM: ) Tj /F4 10 Tf (144.0 kB) Tj /F1 10 Tf ( \(0x24000 bytes\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 79 cm
+Q
+q
+1 0 0 1 23 55 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (RAM: ) Tj /F4 10 Tf (5.9 kB) Tj /F1 10 Tf ( \(0x1780 bytes\). This is the minimum required memory. The actual requirements) Tj T* (depend on the configuration chosen at ) Tj /F5 10 Tf (sd_ble_enable\(\)) Tj /F1 10 Tf ( time.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 49 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 33 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 38 Tm 12 TL /F1 10 Tf 0 0 0 rg (Call stack: The SoftDevice uses a call stack combined with the application. The worst-case stack) Tj T* (usage for the SoftDevice is ) Tj /F4 10 Tf (1.8 kB) Tj /F1 10 Tf ( \(0x700 bytes\). Application writers should ensure that enough) Tj T* (stack space is reserved to cover the worst-case SoftDevice call stack usage combined with the) Tj T* (worst-case application call stack usage.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 484.0236 cm
+Q
+q
+1 0 0 1 57.02362 414.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 55 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 55 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (SoftDevice base address:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 49 cm
+Q
+q
+1 0 0 1 23 49 cm
+Q
+q
+1 0 0 1 23 37 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (nRF54L05: 0x058c00 \() Tj /F5 10 Tf (s145_nrf54l05_9.0.0_softdevice.hex) Tj /F1 10 Tf (\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 31 cm
+Q
+q
+1 0 0 1 23 19 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (nRF54L10: 0x0d8c00 \() Tj /F5 10 Tf (s145_nrf54l10_9.0.0_softdevice.hex) Tj /F1 10 Tf (\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 13 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (nRF54L15: 0x158c00 \() Tj /F5 10 Tf (s145_nrf54l15_9.0.0_softdevice.hex) Tj /F1 10 Tf (\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 408.0236 cm
+Q
+q
+1 0 0 1 57.02362 396.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The Firmware ID of this SoftDevice is 0x3024.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 392.0236 cm
+Q
+q
+1 0 0 1 57.02362 362.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Changes) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 350.0236 cm
+Q
+q
+1 0 0 1 57.02362 350.0236 cm
+Q
+q
+1 0 0 1 57.02362 80.69291 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 254.3307 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 254.3307 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (SoftDevice) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 248.3307 cm
+Q
+q
+1 0 0 1 23 248.3307 cm
+Q
+q
+1 0 0 1 23 120.3307 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 113 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 113 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Scheduler improvements \(DRGN-24450\):) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 107 cm
+Q
+q
+1 0 0 1 23 107 cm
+Q
+q
+1 0 0 1 23 83 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (The scheduler can now manage events that are scheduled less than 100 microseconds) Tj T* (apart.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 77 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 61 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 61 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Updated Radio Timeslot implementation:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 55 cm
+Q
+q
+1 0 0 1 23 55 cm
+Q
+q
+1 0 0 1 23 19 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F1 10 Tf 0 0 0 rg (The events ) Tj /F5 10 Tf (NRF_EVT_RADIO_BLOCKED) Tj /F1 10 Tf ( and ) Tj /F5 10 Tf (NRF_EVT_RADIO_CANCELED) Tj /F1 10 Tf ( are now) Tj T* (sent immediately after the specified timeout or start time, instead of being sent early if) Tj T* (the scheduler predicted the timeslot could not be scheduled.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 13 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Timeslot events can now run for longer than 128 seconds.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 114.3307 cm
+Q
+q
+1 0 0 1 23 32.33071 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 67 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 55 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (Deprecated wrapper functions defined in the SoftDevice headers have been removed) Tj T* (\(DRGN-26817\).) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 49 cm
+Q
+q
+1 0 0 1 23 49 cm
+Q
+q
+1 0 0 1 23 37 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL (sd_rand_application_pool_capacity_get) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 31 cm
+Q
+q
+1 0 0 1 23 19 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL (sd_rand_application_bytes_available_get) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 13 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL (sd_app_evt_wait) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 26.33071 cm
+Q
+q
+1 0 0 1 23 2.330709 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (The function ) Tj /F5 10 Tf (sd_flash_write) Tj /F1 10 Tf ( now uses buffered writes to RRAM, with WRITEBUFSIZE=1. This) Tj T* (reduces RRAM wear and improves performance \(DRGN-24675\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F3 10 Tf 0 0 0 rg (Page 5) Tj T* -230.7692 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+115 0 obj
+<<
+/Length 9019
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 707.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+BT 1 0 0 1 6 45 Tm  T* ET
+q
+1 0 0 1 23 31 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (A new field ) Tj /F5 10 Tf (hfint_ctiv) Tj /F1 10 Tf ( has been added to ) Tj /F5 10 Tf (nrf_clock_lf_cfg_t) Tj /F1 10 Tf ( to control how often HFINT) Tj T* (is calibrated \(DRGN-26506\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 25 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm -0.029304 Tw 12 TL /F1 10 Tf 0 0 0 rg (A new field ) Tj /F5 10 Tf (hfclk_latency) Tj /F1 10 Tf ( has been added to ) Tj /F5 10 Tf (nrf_clock_lf_cfg_t) Tj /F1 10 Tf ( to inform the SoftDevice) Tj T* 0 Tw (about the ramp-up time of the high-frequency crystal oscillator \(DRGN-26554\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 701.0236 cm
+Q
+q
+1 0 0 1 57.02362 235.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 451 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 451 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GAP) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 445 cm
+Q
+q
+1 0 0 1 23 445 cm
+Q
+q
+1 0 0 1 23 421 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (The SoftDevice no longer enforces the spec-required 1 second interval between channel map) Tj T* (updates \() Tj /F5 10 Tf (ble_gap_opt_ch_map_t) Tj /F1 10 Tf (\) \(DRGN-26253\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 415 cm
+Q
+q
+1 0 0 1 23 367 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 33 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 38 Tm 12 TL /F1 10 Tf 0 0 0 rg (The SoftDevice no longer allows an all-zeroes Identity Resolving Key \(IRK\) in the device identity) Tj T* (list when in network privacy mode \() Tj /F5 10 Tf (BLE_GAP_PRIVACY_MODE_NETWORK_PRIVACY) Tj /F1 10 Tf (\).) Tj T* /F5 10 Tf (sd_ble_gap_privacy_set) Tj /F1 10 Tf ( and ) Tj /F5 10 Tf (sd_ble_gap_device_identities_set) Tj /F1 10 Tf ( now return) Tj T* /F5 10 Tf (BLE_ERROR_GAP_ZERO_IRK_NOT_ALLOWED) Tj /F1 10 Tf ( in this case.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 361 cm
+Q
+q
+1 0 0 1 23 325 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F1 10 Tf 0 0 0 rg (The SoftDevice now uses an application-provided passkey \() Tj /F5 10 Tf (BLE_GAP_OPT_PASSKEY) Tj /F1 10 Tf (\) for only) Tj T* (one pairing attempt. Using a static or non-random passkey is insecure and not allowed by the) Tj T* (Bluetooth Core Specification \(DRGN-26638\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 319 cm
+Q
+q
+1 0 0 1 23 295 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (The API for Data Signing has been removed. This was never supported by the SoftDevice) Tj T* (\(DRGN-26752\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 289 cm
+Q
+q
+1 0 0 1 23 265 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (The API for BR/EDR Link Key has been removed. This was never supported by the SoftDevice) Tj T* (\(DRGN-26752\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 259 cm
+Q
+q
+1 0 0 1 23 235 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (Removed the ) Tj /F5 10 Tf (p_id_info) Tj /F1 10 Tf ( parameter from ) Tj /F5 10 Tf (sd_ble_gap_sec_info_reply) Tj /F1 10 Tf (. It was unused by) Tj T* (the SoftDevice \(DRGN-26752\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 229 cm
+Q
+q
+1 0 0 1 23 181 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 33 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 38 Tm 12 TL /F1 10 Tf 0 0 0 rg (The Connection Event Trigger API has changed \(DRGN-26336\).) Tj T* /F5 10 Tf (sd_ble_gap_conn_evt_trigger_start) Tj /F1 10 Tf ( and ) Tj /F5 10 Tf (sd_ble_gap_conn_evt_trigger_stop) Tj /F1 10 Tf  T* (have been replaced with a single function ) Tj /F5 10 Tf (sd_ble_gap_evt_trigger_set) Tj /F1 10 Tf (. Other roles than) Tj T* (connections can now trigger a task, see ) Tj /F5 10 Tf (BLE_GAP_LL_ROLES) Tj /F1 10 Tf (.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 175 cm
+Q
+q
+1 0 0 1 23 163 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The SoftDevice now supports advertising intervals longer than 10 seconds \(DRGN-9988\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 157 cm
+Q
+q
+1 0 0 1 23 133 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (In compliance with Bluetooth Core Specification v6.2, LE Legacy Pairing with Passkey Entry no) Tj T* (longer provides Authenticated man-in-the-middle \(MITM\) protection \(DRGN-26635\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 127 cm
+Q
+q
+1 0 0 1 23 91 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 26 Tm /F1 10 Tf 12 TL (In compliance with Bluetooth Core Specification v6.2, the SoftDevice will reject LE Legacy Pairing) Tj T* (attempts if it receives an LP_CONFIRM_R value equal to the LP_CONFIRM_I value it sent) Tj T* (\(DRGN-26776\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 85 cm
+Q
+q
+1 0 0 1 23 37 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 33 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 38 Tm 12 TL /F1 10 Tf 0 0 0 rg (Added ) Tj /F5 10 Tf (sec_status) Tj /F1 10 Tf ( parameter to ) Tj /F5 10 Tf (sd_ble_gap_lesc_dhkey_reply) Tj /F1 10 Tf ( so application can reject) Tj T* (pairing earlier if peer's public key validation failed. LE Secure Connections pairing now will not) Tj T* (proceed to authentication stage 1 until application calls ) Tj /F5 10 Tf (sd_ble_gap_lesc_dhkey_reply) Tj /F1 10 Tf  T* (\(DRGN-26190\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 31 cm
+Q
+q
+1 0 0 1 23 19 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Removed support for the Quality of Service \(QoS\) channel survey module \(DRGN-26027\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 13 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Removed support for the LE Coded PHY \(DRGN-26027\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 231.0236 cm
+Q
+q
+1 0 0 1 57.02362 201.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Limitations) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 189.0236 cm
+Q
+q
+1 0 0 1 57.02362 189.0236 cm
+Q
+q
+1 0 0 1 57.02362 111.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 63 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 63 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (SoftDevice) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 57 cm
+Q
+q
+1 0 0 1 23 57 cm
+Q
+q
+1 0 0 1 23 33 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (If Radio Notifications are enabled, flash write and flash erase operations initiated through the) Tj T* (SoftDevice API will be notified to the application as Radio Events \(DRGN-5197\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 27 cm
+Q
+q
+1 0 0 1 23 3 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (Synthesized low frequency clock source is not tested or intended for use with the Bluetooth LE) Tj T* (stack.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F3 10 Tf 0 0 0 rg (Page 6) Tj T* -230.7692 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+116 0 obj
+<<
+/Length 3890
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 617.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+BT 1 0 0 1 6 135 Tm  T* ET
+q
+1 0 0 1 23 109 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 26 Tm /F1 10 Tf 12 TL (Applications must not modify the SEVONPEND flag in the SCR register when running in priority) Tj T* (levels higher than 6 \(priority level numerical values lower than 6\) as this can lead to undefined) Tj T* (behavior.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 103 cm
+Q
+q
+1 0 0 1 23 31 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 57 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 62 Tm 12 TL /F1 10 Tf 0 0 0 rg (The SoftDevice may generate several events when connected, based on peer actions, meaning) Tj T* (without previous action from the application. The ) Tj /F5 10 Tf (BLE_GAP_EVT_PHY_UPDATE_REQUEST) Tj /F1 10 Tf ( event,) Tj T* (for instance, is generated when a connected peer sends a Phy Update Request, even when an) Tj T* (application does not include logic to change PHY. There are several such events that may require) Tj T* (action from an application if they are received. For more information, see the ) Tj /F5 10 Tf (sd_ble_enable\(\)) Tj /F1 10 Tf  T* (API in SoftDevice.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 25 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (Configuring multiple connection configurations \(see ) Tj /F5 10 Tf (ble_conn_cfg_t::conn_cfg_tag) Tj /F1 10 Tf (\) is not) Tj T* (supported \(DRGN-23839\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 611.0236 cm
+Q
+q
+1 0 0 1 57.02362 565.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 31 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 31 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GATT) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 25 cm
+Q
+q
+1 0 0 1 23 25 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (To conform to the Bluetooth Core Specification, there shall be no secondary service that is not) Tj T* (referenced somehow by a primary service. The SoftDevice does not enforce this \(DRGN-906\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 561.0236 cm
+Q
+q
+1 0 0 1 57.02362 531.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Known Issues) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 519.0236 cm
+Q
+q
+1 0 0 1 57.02362 519.0236 cm
+Q
+q
+1 0 0 1 57.02362 461.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 43 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 43 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (LL) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 37 cm
+Q
+q
+1 0 0 1 23 37 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F1 10 Tf 0 0 0 rg (If the application adds an all zeroes IRK with the ) Tj /F5 10 Tf (sd_ble_gap_device_identities_set\(\)) Tj /F1 10 Tf (, it) Tj T* (will be treated as a valid entry in the device identity list. An all zeroes IRK is invalid and must not) Tj T* (be added \(DRGN-9083\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 457.0236 cm
+Q
+q
+1 0 0 1 57.02362 457.0236 cm
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F3 10 Tf 0 0 0 rg (Page 7) Tj T* -230.7692 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+117 0 obj
+<<
+/Length 8684
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 744.0236 cm
+q
+BT 1 0 0 1 0 3.5 Tm 21 TL /F2 17.5 Tf .133333 .133333 .133333 rg (s145_9.0.0-3.prototype) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 726.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (This version is a major release, providing support for nRF54L series devices.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 708.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Notes:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 702.0236 cm
+Q
+q
+1 0 0 1 57.02362 702.0236 cm
+Q
+q
+1 0 0 1 57.02362 690.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (This release has changed the API. This requires changes to applications.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 684.0236 cm
+Q
+q
+1 0 0 1 57.02362 672.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The release notes list changes since s145_9.0.0-2.prototype.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 668.0236 cm
+Q
+q
+1 0 0 1 57.02362 638.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (SoftDevice properties) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 626.0236 cm
+Q
+q
+1 0 0 1 57.02362 626.0236 cm
+Q
+q
+1 0 0 1 57.02362 614.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (This SoftDevice variant is compatible with nRF54L15.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 608.0236 cm
+Q
+q
+1 0 0 1 57.02362 490.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 103 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 103 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The SoftDevice memory requirements for this version are as follows:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 97 cm
+Q
+q
+1 0 0 1 23 97 cm
+Q
+q
+1 0 0 1 23 85 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (NVM: ) Tj /F4 10 Tf (164.0 kB) Tj /F1 10 Tf ( \(0x29000 bytes\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 79 cm
+Q
+q
+1 0 0 1 23 55 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (RAM: ) Tj /F4 10 Tf (7.4 kB) Tj /F1 10 Tf ( \(0x1D80 bytes\). This is the minimum required memory. The actual requirements) Tj T* (depend on the configuration chosen at ) Tj /F5 10 Tf (sd_ble_enable\(\)) Tj /F1 10 Tf ( time.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 49 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 33 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 38 Tm 12 TL /F1 10 Tf 0 0 0 rg (Call stack: The SoftDevice uses a call stack combined with the application. The worst-case stack) Tj T* (usage for the SoftDevice is ) Tj /F4 10 Tf (1.8 kB) Tj /F1 10 Tf ( \(0x700 bytes\). Application writers should ensure that enough) Tj T* (stack space is reserved to cover the worst-case SoftDevice call stack usage combined with the) Tj T* (worst-case application call stack usage.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 484.0236 cm
+Q
+q
+1 0 0 1 57.02362 450.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 19 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 19 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (SoftDevice base address:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 13 cm
+Q
+q
+1 0 0 1 23 13 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (nRF54L15: 0x153C00 \() Tj /F5 10 Tf (s145_9.0.0-3.prototype_nrf54l15_softdevice.hex) Tj /F1 10 Tf (\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 444.0236 cm
+Q
+q
+1 0 0 1 57.02362 432.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The Firmware ID of this SoftDevice is 0x3072.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 428.0236 cm
+Q
+q
+1 0 0 1 57.02362 398.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Changes) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 386.0236 cm
+Q
+q
+1 0 0 1 57.02362 386.0236 cm
+Q
+q
+1 0 0 1 57.02362 268.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 103 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 103 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (SoftDevice) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 97 cm
+Q
+q
+1 0 0 1 23 97 cm
+Q
+q
+1 0 0 1 23 85 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (Support for PA/LNA \() Tj /F5 10 Tf (BLE_COMMON_OPT_PA_LNA) Tj /F1 10 Tf (\) has been removed \(DRGN-23876\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 79 cm
+Q
+q
+1 0 0 1 23 55 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (A new API for seeding the random number generator ) Tj /F5 10 Tf (sd_rand_seed_set) Tj /F1 10 Tf ( has been added) Tj T* (\(DRGN-25550\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 49 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 33 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 38 Tm 12 TL /F1 10 Tf 0 0 0 rg (The ) Tj /F5 10 Tf (sd_radio_notification_cfg_set) Tj /F1 10 Tf ( now accepts an uint16_t distance_us parameter) Tj T* (instead of enum. The valid range is [50, 5500] \265s. The enums can still be used for backwards) Tj T* (compatibility. The active notification distance is now from when the SoftDevice prepares to use the) Tj T* (radio, and not the actual radio activity \(DRGN-25879\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 262.0236 cm
+Q
+q
+1 0 0 1 57.02362 150.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 97 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 97 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GAP) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 91 cm
+Q
+q
+1 0 0 1 23 91 cm
+Q
+q
+1 0 0 1 23 43 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 33 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 38 Tm 12 TL /F1 10 Tf 0 0 0 rg (The Device IRK is no longer used as a fallback to generate Resolvable Private Addresses \(RPA\).) Tj T* (Applications that want to use RPA need to populate the device identity list) Tj T* (\() Tj /F5 10 Tf (sd_ble_gap_device_identities_set) Tj /F1 10 Tf (\). Otherwise the identity address will be used) Tj T* (\() Tj /F5 10 Tf (sd_ble_gap_addr_set) Tj /F1 10 Tf (\) \(DRGN-23358\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 37 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F1 10 Tf 0 0 0 rg (When privacy is enabled \() Tj /F5 10 Tf (sd_ble_gap_privacy_set) Tj /F1 10 Tf (\) the advertiser will refresh private) Tj T* (addresses whenever the advertising data or scan response data is changed) Tj T* (\() Tj /F5 10 Tf (sd_ble_gap_adv_set_configure) Tj /F1 10 Tf (\) \(DRGN-23358\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 146.0236 cm
+Q
+q
+1 0 0 1 57.02362 116.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Limitations) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 104.0236 cm
+Q
+q
+1 0 0 1 57.02362 104.0236 cm
+Q
+q
+1 0 0 1 57.02362 86.02362 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (SoftDevice) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F3 10 Tf 0 0 0 rg (Page 8) Tj T* -230.7692 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+118 0 obj
+<<
+/Length 8672
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 557.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+BT 1 0 0 1 6 195 Tm  T* ET
+q
+1 0 0 1 23 181 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (If Radio Notifications are enabled, flash write and flash erase operations initiated through the) Tj T* (SoftDevice API will be notified to the application as Radio Events \(DRGN-5197\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 175 cm
+Q
+q
+1 0 0 1 23 151 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (Synthesized low frequency clock source is not tested or intended for use with the Bluetooth LE) Tj T* (stack.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 145 cm
+Q
+q
+1 0 0 1 23 109 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 26 Tm /F1 10 Tf 12 TL (Applications must not modify the SEVONPEND flag in the SCR register when running in priority) Tj T* (levels higher than 6 \(priority level numerical values lower than 6\) as this can lead to undefined) Tj T* (behavior.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 103 cm
+Q
+q
+1 0 0 1 23 31 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 57 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 62 Tm 12 TL /F1 10 Tf 0 0 0 rg (The SoftDevice may generate several events when connected, based on peer actions, meaning) Tj T* (without previous action from the application. The ) Tj /F5 10 Tf (BLE_GAP_EVT_PHY_UPDATE_REQUEST) Tj /F1 10 Tf ( event,) Tj T* (for instance, is generated when a connected peer sends a Phy Update Request, even when an) Tj T* (application does not include logic to change PHY. There are several such events that may require) Tj T* (action from an application if they are received. For more information, see the ) Tj /F5 10 Tf (sd_ble_enable\(\)) Tj /F1 10 Tf  T* (API in SoftDevice.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 25 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (Configuring multiple connection configurations \(see ) Tj /F5 10 Tf (ble_conn_cfg_t::conn_cfg_tag) Tj /F1 10 Tf (\) is not) Tj T* (supported \(DRGN-23839\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 551.0236 cm
+Q
+q
+1 0 0 1 57.02362 505.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 31 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 31 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GATT) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 25 cm
+Q
+q
+1 0 0 1 23 25 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (To conform to the Bluetooth Core Specification, there shall be no secondary service that is not) Tj T* (referenced somehow by a primary service. The SoftDevice does not enforce this \(DRGN-906\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 499.0236 cm
+Q
+q
+1 0 0 1 57.02362 465.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 19 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 19 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (LL) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 13 cm
+Q
+q
+1 0 0 1 23 13 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL -0.066978 Tw (In connections, the Link Layer payload size is limited to 27 bytes on LE Coded PHY \(DRGN-8476\).) Tj T* 0 Tw ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 461.0236 cm
+Q
+q
+1 0 0 1 57.02362 431.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Known Issues) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 419.0236 cm
+Q
+q
+1 0 0 1 57.02362 419.0236 cm
+Q
+q
+1 0 0 1 57.02362 407.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (SoftDevice) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 401.0236 cm
+Q
+q
+1 0 0 1 57.02362 277.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 109 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 109 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GAP) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 103 cm
+Q
+q
+1 0 0 1 23 103 cm
+Q
+q
+1 0 0 1 23 43 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 45 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 50 Tm 12 TL /F1 10 Tf 0 0 0 rg (If the Peer Preferred Connection Parameters Characteristic \(PPCP\) contains "No specific values) Tj T* (indication \(0xFFFF\)", application should not perform a peripheral initiated connection parameter) Tj T* (update using PPCP. Otherwise invalid values will be used in) Tj T* /F5 10 Tf (L2CAP_CONNECTION_PARAMETER_UPDATE_REQ) Tj /F1 10 Tf (. A workaround is to always specify the) Tj T* (connection parameters in the ) Tj /F5 10 Tf (sd_ble_gap_conn_param_update) Tj /F1 10 Tf ( call \(DRGN-15111\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 37 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F1 10 Tf 0 0 0 rg (The ) Tj /F5 10 Tf (BLE_GAP_EVT_SEC_INFO_REQUEST) Tj /F1 10 Tf ( event will not report the identity address of the peer to) Tj T* (the application. A workaround is to do a mapping of the connection handle to the peer's identity) Tj T* (address \(DRGN-10340\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 271.0236 cm
+Q
+q
+1 0 0 1 57.02362 153.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 103 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 103 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GATTC) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 97 cm
+Q
+q
+1 0 0 1 23 97 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 81 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 86 Tm 12 TL /F1 10 Tf 0 0 0 rg (The ) Tj /F5 10 Tf (ble_gattc_service_t::uuid) Tj /F1 10 Tf ( field is incorrectly populated in the) Tj T* /F5 10 Tf (BLE_GATTC_EVT_PRIM_SRVC_DISC_RSP) Tj /F1 10 Tf ( event if) Tj T* /F5 10 Tf (sd_ble_gattc_primary_services_discover\(\)) Tj /F1 10 Tf ( or ) Tj /F5 10 Tf (sd_ble_gattc_read\(\)) Tj /F1 10 Tf ( is called when) Tj T* (a Primary Service Discovery by Service UUID is already ongoing. When the application has called) Tj T* /F5 10 Tf (sd_ble_gattc_primary_services_discover\(\)) Tj /F1 10 Tf (, it should wait for the) Tj T* /F5 10 Tf (BLE_GATTC_EVT_PRIM_SRVC_DISC_RSP) Tj /F1 10 Tf ( event before calling) Tj T* /F5 10 Tf (sd_ble_gattc_primary_services_discover\(\)) Tj /F1 10 Tf ( or ) Tj /F5 10 Tf (sd_ble_gattc_read\(\)) Tj /F1 10 Tf  T* (\(DRGN-11300\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 147.0236 cm
+Q
+q
+1 0 0 1 57.02362 89.02362 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 43 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 43 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (LL) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 37 cm
+Q
+q
+1 0 0 1 23 37 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F1 10 Tf 0 0 0 rg (If the application adds an all zeroes IRK with the ) Tj /F5 10 Tf (sd_ble_gap_device_identities_set\(\)) Tj /F1 10 Tf (, it) Tj T* (will be treated as a valid entry in the device identity list. An all zeroes IRK is invalid and must not) Tj T* (be added \(DRGN-9083\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 85.02362 cm
+Q
+q
+1 0 0 1 57.02362 85.02362 cm
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 230.7692 0 Td 12 TL /F3 10 Tf 0 0 0 rg (Page 9) Tj T* -230.7692 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+119 0 obj
+<<
+/Length 8608
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 744.0236 cm
+q
+BT 1 0 0 1 0 3.5 Tm 21 TL /F2 17.5 Tf .133333 .133333 .133333 rg (s145_9.0.0-2.prototype) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 726.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (This version is a major release, providing support for nRF54L series devices.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 708.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Notes:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 702.0236 cm
+Q
+q
+1 0 0 1 57.02362 702.0236 cm
+Q
+q
+1 0 0 1 57.02362 690.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (This release has changed the API. This requires changes to applications.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 684.0236 cm
+Q
+q
+1 0 0 1 57.02362 672.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The release notes list changes since s145_9.0.0-1.prototype.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 668.0236 cm
+Q
+q
+1 0 0 1 57.02362 638.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (SoftDevice properties) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 626.0236 cm
+Q
+q
+1 0 0 1 57.02362 626.0236 cm
+Q
+q
+1 0 0 1 57.02362 614.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (This SoftDevice variant is compatible with nRF54L15.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 608.0236 cm
+Q
+q
+1 0 0 1 57.02362 490.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 103 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 103 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The SoftDevice memory requirements for this version are as follows:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 97 cm
+Q
+q
+1 0 0 1 23 97 cm
+Q
+q
+1 0 0 1 23 85 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (NVM: ) Tj /F4 10 Tf (164.0 kB) Tj /F1 10 Tf ( \(0x29000 bytes\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 79 cm
+Q
+q
+1 0 0 1 23 55 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (RAM: ) Tj /F4 10 Tf (6.9 kB) Tj /F1 10 Tf ( \(0x1B80 bytes\). This is the minimum required memory. The actual requirements) Tj T* (depend on the configuration chosen at ) Tj /F5 10 Tf (sd_ble_enable\(\)) Tj /F1 10 Tf ( time.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 49 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 33 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 38 Tm 12 TL /F1 10 Tf 0 0 0 rg (Call stack: The SoftDevice uses a call stack combined with the application. The worst-case stack) Tj T* (usage for the SoftDevice is ) Tj /F4 10 Tf (1.8 kB) Tj /F1 10 Tf ( \(0x700 bytes\). Application writers should ensure that enough) Tj T* (stack space is reserved to cover the worst-case SoftDevice call stack usage combined with the) Tj T* (worst-case application call stack usage.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 484.0236 cm
+Q
+q
+1 0 0 1 57.02362 450.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 19 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 19 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (SoftDevice base address:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 13 cm
+Q
+q
+1 0 0 1 23 13 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (nRF54L15: 0x137000 \() Tj /F5 10 Tf (s145_9.0.0-2.prototype+offset-0x137000_softdevice.hex) Tj /F1 10 Tf (\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 444.0236 cm
+Q
+q
+1 0 0 1 57.02362 432.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The Firmware ID of this SoftDevice is 0x3106.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 428.0236 cm
+Q
+q
+1 0 0 1 57.02362 398.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Changes) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 386.0236 cm
+Q
+q
+1 0 0 1 57.02362 226.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+BT 1 0 0 1 0 2 Tm  T* ET
+q
+1 0 0 1 20 154 cm
+Q
+q
+1 0 0 1 20 154 cm
+Q
+q
+1 0 0 1 20 130 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (Application needs to do relevant ISR forwarding to SoftDevice. See ) Tj /F5 10 Tf (nrf_sd_isr.h) Tj /F1 10 Tf (.) Tj T* (\(DRGN-25185\)) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 20 124 cm
+Q
+q
+1 0 0 1 20 100 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (Connection handles generated by the SoftDevice are no longer restricted to the range) Tj T* ([0..) Tj (<) Tj (max_connections-1) Tj (>) Tj (], and must not be used as array indices.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 20 94 cm
+Q
+q
+1 0 0 1 20 22 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 57 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 62 Tm 12 TL /F1 10 Tf 0 0 0 rg (The functions ) Tj /F5 10 Tf (sd_nvic_EnableIRQ) Tj /F1 10 Tf (, ) Tj /F5 10 Tf (sd_nvic_DisableIRQ) Tj /F1 10 Tf (, ) Tj /F5 10 Tf (sd_nvic_GetPendingIRQ) Tj /F1 10 Tf (,) Tj T* /F5 10 Tf (sd_nvic_SetPendingIRQ) Tj /F1 10 Tf (, ) Tj /F5 10 Tf (sd_nvic_ClearPendingIRQ) Tj /F1 10 Tf (, ) Tj /F5 10 Tf (sd_nvic_SetPriority) Tj /F1 10 Tf (,) Tj T* /F5 10 Tf (sd_nvic_GetPriority) Tj /F1 10 Tf (, ) Tj /F5 10 Tf (sd_nvic_SystemReset) Tj /F1 10 Tf (, ) Tj /F5 10 Tf (sd_nvic_critical_region_enter) Tj /F1 10 Tf (,) Tj T* /F5 10 Tf (sd_nvic_critical_region_exit) Tj /F1 10 Tf ( have been removed. An application must use the CMSIS) Tj T* /F5 10 Tf (NVIC_*) Tj /F1 10 Tf ( functions instead. Make sure that the application does not use the interrupts and interrupt) Tj T* (priorities owned by the SoftDevice.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 20 16 cm
+Q
+q
+1 0 0 1 20 4 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Setting of RAM retention for the first memory blocks has been removed.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 20 0 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 226.0236 cm
+Q
+q
+1 0 0 1 57.02362 196.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Limitations) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 184.0236 cm
+Q
+q
+1 0 0 1 57.02362 184.0236 cm
+Q
+q
+1 0 0 1 57.02362 106.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 63 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 63 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (SoftDevice) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 57 cm
+Q
+q
+1 0 0 1 23 57 cm
+Q
+q
+1 0 0 1 23 33 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (If Radio Notifications are enabled, flash write and flash erase operations initiated through the) Tj T* (SoftDevice API will be notified to the application as Radio Events \(DRGN-5197\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 27 cm
+Q
+q
+1 0 0 1 23 3 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (Synthesized low frequency clock source is not tested or intended for use with the Bluetooth LE) Tj T* (stack.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 227.9892 0 Td 12 TL /F3 10 Tf 0 0 0 rg (Page 10) Tj T* -227.9892 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+120 0 obj
+<<
+/Length 8776
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 617.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+BT 1 0 0 1 6 135 Tm  T* ET
+q
+1 0 0 1 23 109 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 26 Tm /F1 10 Tf 12 TL (Applications must not modify the SEVONPEND flag in the SCR register when running in priority) Tj T* (levels higher than 6 \(priority level numerical values lower than 6\) as this can lead to undefined) Tj T* (behavior.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 103 cm
+Q
+q
+1 0 0 1 23 31 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 57 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 62 Tm 12 TL /F1 10 Tf 0 0 0 rg (The SoftDevice may generate several events when connected, based on peer actions, meaning) Tj T* (without previous action from the application. The ) Tj /F5 10 Tf (BLE_GAP_EVT_PHY_UPDATE_REQUEST) Tj /F1 10 Tf ( event,) Tj T* (for instance, is generated when a connected peer sends a Phy Update Request, even when an) Tj T* (application does not include logic to change PHY. There are several such events that may require) Tj T* (action from an application if they are received. For more information, see the ) Tj /F5 10 Tf (sd_ble_enable\(\)) Tj /F1 10 Tf  T* (API in SoftDevice.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 25 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (Configuring multiple connection configurations \(see ) Tj /F5 10 Tf (ble_conn_cfg_t::conn_cfg_tag) Tj /F1 10 Tf (\) is not) Tj T* (supported \(DRGN-23839\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 611.0236 cm
+Q
+q
+1 0 0 1 57.02362 565.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 31 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 31 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GATT) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 25 cm
+Q
+q
+1 0 0 1 23 25 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (To conform to the Bluetooth Core Specification, there shall be no secondary service that is not) Tj T* (referenced somehow by a primary service. The SoftDevice does not enforce this \(DRGN-906\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 559.0236 cm
+Q
+q
+1 0 0 1 57.02362 525.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 19 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 19 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (LL) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 13 cm
+Q
+q
+1 0 0 1 23 13 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL -0.066978 Tw (In connections, the Link Layer payload size is limited to 27 bytes on LE Coded PHY \(DRGN-8476\).) Tj T* 0 Tw ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 521.0236 cm
+Q
+q
+1 0 0 1 57.02362 491.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Known Issues) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 479.0236 cm
+Q
+q
+1 0 0 1 57.02362 479.0236 cm
+Q
+q
+1 0 0 1 57.02362 433.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 31 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 31 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (SoftDevice) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 25 cm
+Q
+q
+1 0 0 1 23 25 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (The Radio Notification signal is not yet supported. The function) Tj T* /F5 10 Tf (sd_radio_notification_cfg_set) Tj /F1 10 Tf ( must not be used \(DRGN-24324\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 427.0236 cm
+Q
+q
+1 0 0 1 57.02362 285.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 127 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 127 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GAP) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 121 cm
+Q
+q
+1 0 0 1 23 121 cm
+Q
+q
+1 0 0 1 23 109 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Privacy feature is not yet supported. \(DRGN-23358\)) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 103 cm
+Q
+q
+1 0 0 1 23 43 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 45 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 50 Tm 12 TL /F1 10 Tf 0 0 0 rg (If the Peer Preferred Connection Parameters Characteristic \(PPCP\) contains "No specific values) Tj T* (indication \(0xFFFF\)", application should not perform a peripheral initiated connection parameter) Tj T* (update using PPCP. Otherwise invalid values will be used in) Tj T* /F5 10 Tf (L2CAP_CONNECTION_PARAMETER_UPDATE_REQ) Tj /F1 10 Tf (. A workaround is to always specify the) Tj T* (connection parameters in the ) Tj /F5 10 Tf (sd_ble_gap_conn_param_update) Tj /F1 10 Tf ( call \(DRGN-15111\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 37 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F1 10 Tf 0 0 0 rg (The ) Tj /F5 10 Tf (BLE_GAP_EVT_SEC_INFO_REQUEST) Tj /F1 10 Tf ( event will not report the identity address of the peer to) Tj T* (the application. A workaround is to do a mapping of the connection handle to the peer's identity) Tj T* (address \(DRGN-10340\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 279.0236 cm
+Q
+q
+1 0 0 1 57.02362 233.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 31 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 31 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GATTS) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 25 cm
+Q
+q
+1 0 0 1 23 25 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (Queued Writes are not yet supported. Receiving the ) Tj /F5 10 Tf (ATT_PREPARE_WRITE_REQ) Tj /F1 10 Tf ( PDU will lead to) Tj T* (assert \(DRGN-23848\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 227.0236 cm
+Q
+q
+1 0 0 1 57.02362 109.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 103 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 103 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GATTC) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 97 cm
+Q
+q
+1 0 0 1 23 97 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 81 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 86 Tm 12 TL /F1 10 Tf 0 0 0 rg (The ) Tj /F5 10 Tf (ble_gattc_service_t::uuid) Tj /F1 10 Tf ( field is incorrectly populated in the) Tj T* /F5 10 Tf (BLE_GATTC_EVT_PRIM_SRVC_DISC_RSP) Tj /F1 10 Tf ( event if) Tj T* /F5 10 Tf (sd_ble_gattc_primary_services_discover\(\)) Tj /F1 10 Tf ( or ) Tj /F5 10 Tf (sd_ble_gattc_read\(\)) Tj /F1 10 Tf ( is called when) Tj T* (a Primary Service Discovery by Service UUID is already ongoing. When the application has called) Tj T* /F5 10 Tf (sd_ble_gattc_primary_services_discover\(\)) Tj /F1 10 Tf (, it should wait for the) Tj T* /F5 10 Tf (BLE_GATTC_EVT_PRIM_SRVC_DISC_RSP) Tj /F1 10 Tf ( event before calling) Tj T* /F5 10 Tf (sd_ble_gattc_primary_services_discover\(\)) Tj /F1 10 Tf ( or ) Tj /F5 10 Tf (sd_ble_gattc_read\(\)) Tj /F1 10 Tf  T* (\(DRGN-11300\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 103.0236 cm
+Q
+q
+1 0 0 1 57.02362 85.02362 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (LL) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 227.9892 0 Td 12 TL /F3 10 Tf 0 0 0 rg (Page 11) Tj T* -227.9892 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+121 0 obj
+<<
+/Length 860
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 725.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+BT 1 0 0 1 6 27 Tm  T* ET
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F1 10 Tf 0 0 0 rg (If the application adds an all zeroes IRK with the ) Tj /F5 10 Tf (sd_ble_gap_device_identities_set\(\)) Tj /F1 10 Tf (, it) Tj T* (will be treated as a valid entry in the device identity list. An all zeroes IRK is invalid and must not) Tj T* (be added \(DRGN-9083\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 721.0236 cm
+Q
+q
+1 0 0 1 57.02362 721.0236 cm
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 227.9892 0 Td 12 TL /F3 10 Tf 0 0 0 rg (Page 12) Tj T* -227.9892 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+122 0 obj
+<<
+/Length 8893
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 744.0236 cm
+q
+BT 1 0 0 1 0 3.5 Tm 21 TL /F2 17.5 Tf .133333 .133333 .133333 rg (s145_9.0.0-1.prototype) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 726.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (This version is a major release, providing support for nRF54L series devices.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 708.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Notes:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 702.0236 cm
+Q
+q
+1 0 0 1 57.02362 702.0236 cm
+Q
+q
+1 0 0 1 57.02362 690.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (This release has changed the API. This requires changes to applications.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 684.0236 cm
+Q
+q
+1 0 0 1 57.02362 672.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The release notes list changes since s140_nrf52_7.2.0.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 668.0236 cm
+Q
+q
+1 0 0 1 57.02362 638.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (SoftDevice properties) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 626.0236 cm
+Q
+q
+1 0 0 1 57.02362 626.0236 cm
+Q
+q
+1 0 0 1 57.02362 614.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (This SoftDevice variant is compatible with nRF54L15.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 608.0236 cm
+Q
+q
+1 0 0 1 57.02362 490.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 103 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 103 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The SoftDevice memory requirements for this version are as follows:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 97 cm
+Q
+q
+1 0 0 1 23 97 cm
+Q
+q
+1 0 0 1 23 85 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (NVM: ) Tj /F4 10 Tf (156.0 kB) Tj /F1 10 Tf ( \(0x27000 bytes\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 79 cm
+Q
+q
+1 0 0 1 23 55 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (RAM: ) Tj /F4 10 Tf (6.9 kB) Tj /F1 10 Tf ( \(0x1B80 bytes\). This is the minimum required memory. The actual requirements) Tj T* (depend on the configuration chosen at ) Tj /F5 10 Tf (sd_ble_enable\(\)) Tj /F1 10 Tf ( time.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 49 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 33 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 38 Tm 12 TL /F1 10 Tf 0 0 0 rg (Call stack: The SoftDevice uses a call stack combined with the application. The worst-case stack) Tj T* (usage for the SoftDevice is ) Tj /F4 10 Tf (1.8 kB) Tj /F1 10 Tf ( \(0x700 bytes\). Application writers should ensure that enough) Tj T* (stack space is reserved to cover the worst-case SoftDevice call stack usage combined with the) Tj T* (worst-case application call stack usage.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 484.0236 cm
+Q
+q
+1 0 0 1 57.02362 472.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The Firmware ID of this SoftDevice is 0x30D2.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 468.0236 cm
+Q
+q
+1 0 0 1 57.02362 438.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Changes) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 426.0236 cm
+Q
+q
+1 0 0 1 57.02362 426.0236 cm
+Q
+q
+1 0 0 1 57.02362 164.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 247 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 247 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (SoftDevice) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 241 cm
+Q
+q
+1 0 0 1 23 241 cm
+Q
+q
+1 0 0 1 23 217 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (The function ) Tj /F5 10 Tf (sd_flash_page_erase) Tj /F1 10 Tf ( has been removed for devices that do not require page) Tj T* (erase before write.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 211 cm
+Q
+q
+1 0 0 1 23 199 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (The function ) Tj /F5 10 Tf (sd_flash_protect) Tj /F1 10 Tf ( has been removed.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 193 cm
+Q
+q
+1 0 0 1 23 181 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (The function ) Tj /F5 10 Tf (sd_protected_register_write) Tj /F1 10 Tf ( has been removed.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 175 cm
+Q
+q
+1 0 0 1 23 163 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (The function ) Tj /F5 10 Tf (sd_power_pof_thresholdvddh_set) Tj /F1 10 Tf ( has been removed.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 157 cm
+Q
+q
+1 0 0 1 23 133 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (The functions ) Tj /F5 10 Tf (sd_power_ram_power_set) Tj /F1 10 Tf (, ) Tj /F5 10 Tf (sd_power_ram_power_clr) Tj /F1 10 Tf (, and) Tj T* /F5 10 Tf (sd_power_ram_power_get) Tj /F1 10 Tf ( have been removed.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 127 cm
+Q
+q
+1 0 0 1 23 103 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (The functions ) Tj /F5 10 Tf (sd_power_dcdc_mode_set) Tj /F1 10 Tf ( and ) Tj /F5 10 Tf (sd_power_dcdc_mode_get) Tj /F1 10 Tf ( have been) Tj T* (removed.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 97 cm
+Q
+q
+1 0 0 1 23 73 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (The functions ) Tj /F5 10 Tf (sd_power_reset_reason_get) Tj /F1 10 Tf ( and ) Tj /F5 10 Tf (sd_power_reset_reason_clr) Tj /F1 10 Tf ( have been) Tj T* (removed.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 67 cm
+Q
+q
+1 0 0 1 23 55 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 2 Tm 12 TL /F1 10 Tf 0 0 0 rg (The function ) Tj /F5 10 Tf (sd_power_system_off) Tj /F1 10 Tf ( has been removed.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 49 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 33 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 38 Tm 12 TL /F1 10 Tf 0 0 0 rg (The functions ) Tj /F5 10 Tf (sd_ppi_channel_enable_get) Tj /F1 10 Tf (, ) Tj /F5 10 Tf (sd_ppi_channel_enable_set) Tj /F1 10 Tf (,) Tj T* /F5 10 Tf (sd_ppi_channel_enable_clr) Tj /F1 10 Tf (, ) Tj /F5 10 Tf (sd_ppi_channel_assign) Tj /F1 10 Tf (, ) Tj /F5 10 Tf (sd_ppi_group_task_enable) Tj /F1 10 Tf (,) Tj T* /F5 10 Tf (sd_ppi_group_task_disable) Tj /F1 10 Tf (, ) Tj /F5 10 Tf (sd_ppi_group_assign) Tj /F1 10 Tf ( and ) Tj /F5 10 Tf (sd_ppi_group_get) Tj /F1 10 Tf ( have) Tj T* (been removed.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 160.0236 cm
+Q
+q
+1 0 0 1 57.02362 130.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Limitations) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 118.0236 cm
+Q
+q
+1 0 0 1 57.02362 118.0236 cm
+Q
+q
+1 0 0 1 57.02362 100.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (SoftDevice) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 227.9892 0 Td 12 TL /F3 10 Tf 0 0 0 rg (Page 13) Tj T* -227.9892 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+123 0 obj
+<<
+/Length 9387
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 557.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+BT 1 0 0 1 6 195 Tm  T* ET
+q
+1 0 0 1 23 181 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (If Radio Notifications are enabled, flash write and flash erase operations initiated through the) Tj T* (SoftDevice API will be notified to the application as Radio Events \(DRGN-5197\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 175 cm
+Q
+q
+1 0 0 1 23 151 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (Synthesized low frequency clock source is not tested or intended for use with the Bluetooth LE) Tj T* (stack.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 145 cm
+Q
+q
+1 0 0 1 23 109 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 26 Tm /F1 10 Tf 12 TL (Applications must not modify the SEVONPEND flag in the SCR register when running in priority) Tj T* (levels higher than 6 \(priority level numerical values lower than 6\) as this can lead to undefined) Tj T* (behavior.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 103 cm
+Q
+q
+1 0 0 1 23 31 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 57 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 62 Tm 12 TL /F1 10 Tf 0 0 0 rg (The SoftDevice may generate several events when connected, based on peer actions, meaning) Tj T* (without previous action from the application. The ) Tj /F5 10 Tf (BLE_GAP_EVT_PHY_UPDATE_REQUEST) Tj /F1 10 Tf ( event,) Tj T* (for instance, is generated when a connected peer sends a Phy Update Request, even when an) Tj T* (application does not include logic to change PHY. There are several such events that may require) Tj T* (action from an application if they are received. For more information, see the ) Tj /F5 10 Tf (sd_ble_enable\(\)) Tj /F1 10 Tf  T* (API in SoftDevice.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 25 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (Configuring multiple connection configurations \(see ) Tj /F5 10 Tf (ble_conn_cfg_t::conn_cfg_tag) Tj /F1 10 Tf (\) is not) Tj T* (supported \(DRGN-23839\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 551.0236 cm
+Q
+q
+1 0 0 1 57.02362 505.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 31 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 31 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GATT) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 25 cm
+Q
+q
+1 0 0 1 23 25 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL (To conform to the Bluetooth Core Specification, there shall be no secondary service that is not) Tj T* (referenced somehow by a primary service. The SoftDevice does not enforce this \(DRGN-906\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 499.0236 cm
+Q
+q
+1 0 0 1 57.02362 465.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 19 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 19 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (LL) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 13 cm
+Q
+q
+1 0 0 1 23 13 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL -0.066978 Tw (In connections, the Link Layer payload size is limited to 27 bytes on LE Coded PHY \(DRGN-8476\).) Tj T* 0 Tw ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 461.0236 cm
+Q
+q
+1 0 0 1 57.02362 431.0236 cm
+q
+BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Known Issues) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 419.0236 cm
+Q
+q
+1 0 0 1 57.02362 419.0236 cm
+Q
+q
+1 0 0 1 57.02362 331.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 73 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 73 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (SoftDevice) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 67 cm
+Q
+q
+1 0 0 1 23 67 cm
+Q
+q
+1 0 0 1 23 43 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (The Radio Notification signal is not yet supported. The function) Tj T* /F5 10 Tf (sd_radio_notification_cfg_set) Tj /F1 10 Tf ( must not be used \(DRGN-24324\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 37 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F1 10 Tf 0 0 0 rg (The API functions in ) Tj /F5 10 Tf (nrf_nvic.h) Tj /F1 10 Tf ( that operate on interrupts are not yet supported. This includes) Tj T* (the functions ) Tj /F5 10 Tf (sd_nvic_critical_region_enter) Tj /F1 10 Tf ( and ) Tj /F5 10 Tf (sd_nvic_critical_region_exit) Tj /F1 10 Tf  T* (\(DRGN-23477\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 325.0236 cm
+Q
+q
+1 0 0 1 57.02362 291.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 19 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 19 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (L2CAP) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 13 cm
+Q
+q
+1 0 0 1 23 13 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Receiving fragmented L2CAP packets is not yet supported \(DRGN-23305\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 285.0236 cm
+Q
+q
+1 0 0 1 57.02362 143.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 127 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 127 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GAP) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 121 cm
+Q
+q
+1 0 0 1 23 121 cm
+Q
+q
+1 0 0 1 23 61 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 45 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 50 Tm 12 TL /F1 10 Tf 0 0 0 rg (If the Peer Preferred Connection Parameters Characteristic \(PPCP\) contains "No specific values) Tj T* (indication \(0xFFFF\)", application should not perform a peripheral initiated connection parameter) Tj T* (update using PPCP. Otherwise invalid values will be used in) Tj T* /F5 10 Tf (L2CAP_CONNECTION_PARAMETER_UPDATE_REQ) Tj /F1 10 Tf (. A workaround is to always specify the) Tj T* (connection parameters in the ) Tj /F5 10 Tf (sd_ble_gap_conn_param_update) Tj /F1 10 Tf ( call \(DRGN-15111\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 55 cm
+Q
+q
+1 0 0 1 23 19 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F1 10 Tf 0 0 0 rg (The ) Tj /F5 10 Tf (BLE_GAP_EVT_SEC_INFO_REQUEST) Tj /F1 10 Tf ( event will not report the identity address of the peer to) Tj T* (the application. A workaround is to do a mapping of the connection handle to the peer's identity) Tj T* (address \(DRGN-10340\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 13 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (LE Secure Connections are not yet supported \(DRGN-23305\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 137.0236 cm
+Q
+q
+1 0 0 1 57.02362 103.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 19 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 19 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GATT) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 13 cm
+Q
+q
+1 0 0 1 23 13 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (ATT MTU size greater than 23 octets is not yet supported \(DRGN-23305\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 97.02362 cm
+Q
+q
+1 0 0 1 57.02362 80.69291 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 1.330709 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 1.330709 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GATTS) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 227.9892 0 Td 12 TL /F3 10 Tf 0 0 0 rg (Page 14) Tj T* -227.9892 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+124 0 obj
+<<
+/Length 2925
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 57.02362 737.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+BT 1 0 0 1 6 15 Tm  T* ET
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 9 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 14 Tm 12 TL /F1 10 Tf 0 0 0 rg (Queued Writes are not yet supported. Receiving the ) Tj /F5 10 Tf (ATT_PREPARE_WRITE_REQ) Tj /F1 10 Tf ( PDU will lead to) Tj T* (assert \(DRGN-23848\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 731.0236 cm
+Q
+q
+1 0 0 1 57.02362 613.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 103 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 103 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GATTC) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 97 cm
+Q
+q
+1 0 0 1 23 97 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 81 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 86 Tm 12 TL /F1 10 Tf 0 0 0 rg (The ) Tj /F5 10 Tf (ble_gattc_service_t::uuid) Tj /F1 10 Tf ( field is incorrectly populated in the) Tj T* /F5 10 Tf (BLE_GATTC_EVT_PRIM_SRVC_DISC_RSP) Tj /F1 10 Tf ( event if) Tj T* /F5 10 Tf (sd_ble_gattc_primary_services_discover\(\)) Tj /F1 10 Tf ( or ) Tj /F5 10 Tf (sd_ble_gattc_read\(\)) Tj /F1 10 Tf ( is called when) Tj T* (a Primary Service Discovery by Service UUID is already ongoing. When the application has called) Tj T* /F5 10 Tf (sd_ble_gattc_primary_services_discover\(\)) Tj /F1 10 Tf (, it should wait for the) Tj T* /F5 10 Tf (BLE_GATTC_EVT_PRIM_SRVC_DISC_RSP) Tj /F1 10 Tf ( event before calling) Tj T* /F5 10 Tf (sd_ble_gattc_primary_services_discover\(\)) Tj /F1 10 Tf ( or ) Tj /F5 10 Tf (sd_ble_gattc_read\(\)) Tj /F1 10 Tf  T* (\(DRGN-11300\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 607.0236 cm
+Q
+q
+1 0 0 1 57.02362 549.0236 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 43 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 43 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (LL) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 37 cm
+Q
+q
+1 0 0 1 23 37 cm
+Q
+q
+1 0 0 1 23 1 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F5 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+BT 1 0 0 1 0 26 Tm 12 TL /F1 10 Tf 0 0 0 rg (If the application adds an all zeroes IRK with the ) Tj /F5 10 Tf (sd_ble_gap_device_identities_set\(\)) Tj /F1 10 Tf (, it) Tj T* (will be treated as a valid entry in the device identity list. An all zeroes IRK is invalid and must not) Tj T* (be added \(DRGN-9083\).) Tj T* ET
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 545.0236 cm
+Q
+q
+1 0 0 1 51.02362 42.51969 cm
+q
+BT 1 0 0 1 0 2 Tm 227.9892 0 Td 12 TL /F3 10 Tf 0 0 0 rg (Page 15) Tj T* -227.9892 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+125 0 obj
+<<
+/Nums [ 0 126 0 R 1 127 0 R 2 128 0 R 3 129 0 R 4 130 0 R 
+  5 131 0 R 6 132 0 R 7 133 0 R 8 134 0 R 9 135 0 R 
+  10 136 0 R 11 137 0 R 12 138 0 R 13 139 0 R 14 140 0 R ]
+>>
+endobj
+126 0 obj
+<<
+/S /D /St 1
+>>
+endobj
+127 0 obj
+<<
+/S /D /St 2
+>>
+endobj
+128 0 obj
+<<
+/S /D /St 3
+>>
+endobj
+129 0 obj
+<<
+/S /D /St 4
+>>
+endobj
+130 0 obj
+<<
+/S /D /St 5
+>>
+endobj
+131 0 obj
+<<
+/S /D /St 6
+>>
+endobj
+132 0 obj
+<<
+/S /D /St 7
+>>
+endobj
+133 0 obj
+<<
+/S /D /St 8
+>>
+endobj
+134 0 obj
+<<
+/S /D /St 9
+>>
+endobj
+135 0 obj
+<<
+/S /D /St 10
+>>
+endobj
+136 0 obj
+<<
+/S /D /St 11
+>>
+endobj
+137 0 obj
+<<
+/S /D /St 12
+>>
+endobj
+138 0 obj
+<<
+/S /D /St 13
+>>
+endobj
+139 0 obj
+<<
+/S /D /St 14
+>>
+endobj
+140 0 obj
+<<
+/S /D /St 15
+>>
+endobj
+xref
+0 141
+0000000000 65535 f 
+0000000073 00000 n 
+0000000145 00000 n 
+0000000252 00000 n 
+0000000361 00000 n 
+0000000476 00000 n 
+0000000683 00000 n 
+0000000795 00000 n 
+0000000962 00000 n 
+0000001127 00000 n 
+0000001294 00000 n 
+0000001460 00000 n 
+0000001629 00000 n 
+0000001796 00000 n 
+0000001965 00000 n 
+0000002132 00000 n 
+0000002301 00000 n 
+0000002468 00000 n 
+0000002637 00000 n 
+0000002804 00000 n 
+0000002973 00000 n 
+0000003140 00000 n 
+0000003309 00000 n 
+0000003476 00000 n 
+0000003645 00000 n 
+0000003812 00000 n 
+0000003981 00000 n 
+0000004148 00000 n 
+0000004317 00000 n 
+0000004484 00000 n 
+0000004653 00000 n 
+0000004820 00000 n 
+0000004989 00000 n 
+0000005156 00000 n 
+0000005325 00000 n 
+0000005492 00000 n 
+0000005661 00000 n 
+0000005828 00000 n 
+0000005997 00000 n 
+0000006164 00000 n 
+0000006333 00000 n 
+0000006500 00000 n 
+0000006669 00000 n 
+0000006836 00000 n 
+0000007005 00000 n 
+0000007170 00000 n 
+0000007339 00000 n 
+0000007504 00000 n 
+0000007673 00000 n 
+0000007838 00000 n 
+0000008007 00000 n 
+0000008172 00000 n 
+0000008341 00000 n 
+0000008506 00000 n 
+0000008675 00000 n 
+0000008840 00000 n 
+0000009009 00000 n 
+0000009174 00000 n 
+0000009343 00000 n 
+0000009508 00000 n 
+0000009677 00000 n 
+0000009842 00000 n 
+0000010011 00000 n 
+0000010176 00000 n 
+0000010800 00000 n 
+0000010906 00000 n 
+0000011114 00000 n 
+0000011322 00000 n 
+0000011530 00000 n 
+0000011738 00000 n 
+0000011946 00000 n 
+0000012154 00000 n 
+0000012362 00000 n 
+0000012570 00000 n 
+0000012778 00000 n 
+0000012986 00000 n 
+0000013194 00000 n 
+0000013402 00000 n 
+0000013610 00000 n 
+0000013718 00000 n 
+0000013994 00000 n 
+0000014070 00000 n 
+0000014248 00000 n 
+0000014354 00000 n 
+0000014531 00000 n 
+0000014654 00000 n 
+0000014781 00000 n 
+0000014903 00000 n 
+0000015029 00000 n 
+0000015143 00000 n 
+0000015307 00000 n 
+0000015430 00000 n 
+0000015552 00000 n 
+0000015678 00000 n 
+0000015792 00000 n 
+0000015968 00000 n 
+0000016091 00000 n 
+0000016213 00000 n 
+0000016339 00000 n 
+0000016453 00000 n 
+0000016632 00000 n 
+0000016757 00000 n 
+0000016882 00000 n 
+0000017011 00000 n 
+0000017127 00000 n 
+0000017293 00000 n 
+0000017419 00000 n 
+0000017545 00000 n 
+0000017675 00000 n 
+0000017792 00000 n 
+0000017955 00000 n 
+0000019816 00000 n 
+0000026589 00000 n 
+0000034949 00000 n 
+0000037572 00000 n 
+0000047238 00000 n 
+0000056310 00000 n 
+0000060253 00000 n 
+0000068990 00000 n 
+0000077715 00000 n 
+0000086376 00000 n 
+0000095205 00000 n 
+0000096117 00000 n 
+0000105063 00000 n 
+0000114503 00000 n 
+0000117481 00000 n 
+0000117675 00000 n 
+0000117710 00000 n 
+0000117745 00000 n 
+0000117780 00000 n 
+0000117815 00000 n 
+0000117850 00000 n 
+0000117885 00000 n 
+0000117920 00000 n 
+0000117955 00000 n 
+0000117990 00000 n 
+0000118026 00000 n 
+0000118062 00000 n 
+0000118098 00000 n 
+0000118134 00000 n 
+0000118170 00000 n 
+trailer
+<<
+/ID 
+[<7e6a196d66f7a4aa8e9ce37679bceda5><7e6a196d66f7a4aa8e9ce37679bceda5>]
+% ReportLab generated PDF document -- digest (http://www.reportlab.com)
+
+/Info 79 0 R
+/Root 78 0 R
+/Size 141
+>>
+startxref
+118206
+%%EOF

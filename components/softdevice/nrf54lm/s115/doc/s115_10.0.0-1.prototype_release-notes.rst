@@ -1,0 +1,90 @@
+s115_10.0.0-1.prototype
+=======================
+
+This version is a major release.
+
+Notes:
+
+- This release has changed the API. This requires changes to applications.
+- The release notes list changes since s115_9.0.0.
+
+
+SoftDevice properties
+---------------------
+
+* This SoftDevice variant is compatible with
+  nRF54L05, nRF54L10, and nRF54L15.
+
+* The SoftDevice memory requirements for this version are as follows:
+
+  * NVM: **107.0 kB** (0x1AC00 bytes).
+
+  * RAM: **4.9 kB** (0x1380 bytes).
+    This is the minimum required memory. The actual requirements depend on the
+    configuration chosen at ``sd_ble_enable()`` time.
+
+  * Call stack: The SoftDevice uses a call stack combined with the application.
+    The worst-case stack usage for the SoftDevice is
+    **1.8 kB**
+    (0x700 bytes). Application writers should ensure
+    that enough stack space is reserved to cover the worst-case SoftDevice call
+    stack usage combined with the worst-case application call stack usage.
+
+* SoftDevice base address:
+
+  * nRF54L05: 0x062000 (``s115_nrf54l05_10.0.0-1.prototype_softdevice.hex``).
+
+  * nRF54L10: 0x0E2000 (``s115_nrf54l10_10.0.0-1.prototype_softdevice.hex``).
+
+  * nRF54L15: 0x162000 (``s115_nrf54l15_10.0.0-1.prototype_softdevice.hex``).
+
+* The Firmware ID of this SoftDevice is 0x3056.
+
+New Features
+-------------
+
+Changes
+-------
+
+
+Limitations
+-----------
+
+* SoftDevice
+
+  * If Radio Notifications are enabled, flash write and flash erase operations
+    initiated through the SoftDevice API will be notified to the application as
+    Radio Events (DRGN-5197).
+
+  * Synthesized low frequency clock source is not tested or intended for use
+    with the Bluetooth LE stack.
+
+  * Applications must not modify the SEVONPEND flag in the SCR register when
+    running in priority levels higher than 6 (priority level numerical values
+    lower than 6) as this can lead to undefined behavior.
+
+  * The SoftDevice may generate several events when connected, based on peer
+    actions, meaning without previous action from the application. The
+    ``BLE_GAP_EVT_PHY_UPDATE_REQUEST`` event, for instance, is generated when a
+    connected peer sends a Phy Update Request, even when an application does not
+    include logic to change PHY. There are several such events that may require
+    action from an application if they are received. For more information, see the
+    ``sd_ble_enable()`` API in SoftDevice.
+
+  * Configuring multiple connection configurations (see ``ble_conn_cfg_t::conn_cfg_tag``) is not supported (DRGN-23839).
+
+* GATT
+
+  * To conform to the Bluetooth Core Specification, there shall be no
+    secondary service that is not referenced somehow by a primary service. The
+    SoftDevice does not enforce this (DRGN-906).
+
+Known Issues
+------------
+
+* LL
+
+  * If the application adds an all zeroes IRK with the
+    ``sd_ble_gap_device_identities_set()``, it will be treated as a valid entry
+    in the device identity list. An all zeroes IRK is invalid and must not be
+    added (DRGN-9083).

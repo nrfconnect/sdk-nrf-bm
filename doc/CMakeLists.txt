@@ -253,12 +253,12 @@ add_doxygen_docset(nrf-bm ${NRF_BM_BASE} ${NRF_BM_VERSION})
 #-------------------------------------------------------------------------------
 # docset: s115
 
-add_doxygen_docset(s115 ${NRF_BM_BASE} "9.0.0" STANDALONE)
+add_doxygen_docset(s115 ${NRF_BM_BASE} "10.0.0-1.prototype" STANDALONE)
 
 #-------------------------------------------------------------------------------
 # docset: s145
 
-add_doxygen_docset(s145 ${NRF_BM_BASE} "9.0.0" STANDALONE)
+add_doxygen_docset(s145 ${NRF_BM_BASE} "10.0.0-1.prototype" STANDALONE)
 
 #-------------------------------------------------------------------------------
 # docset: kconfig
