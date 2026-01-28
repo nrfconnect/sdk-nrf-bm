@@ -68,8 +68,9 @@ static bool adv_addr_compare(const ble_gap_evt_adv_report_t *adv_report,
 	return false;
 }
 
-static int addr_filter_add(struct ble_scan *scan, const uint8_t *addr)
+static int addr_filter_add(struct ble_scan *scan, const struct ble_scan_filter_data *data)
 {
+	uint8_t *addr = data->addr_filter.addr;
 	ble_gap_addr_t *addr_filter = scan->scan_filters.addr_filter.target_addr;
 	uint8_t *counter = &scan->scan_filters.addr_filter.addr_cnt;
 
@@ -177,8 +178,9 @@ static bool adv_name_compare(const ble_gap_evt_adv_report_t *adv_report,
 	return false;
 }
 
-static int name_filter_add(struct ble_scan *scan, const char *name)
+static int name_filter_add(struct ble_scan *scan, const struct ble_scan_filter_data *data)
 {
+	char *name = data->name_filter.name;
 	uint8_t *counter = &scan->scan_filters.name_filter.name_cnt;
 	uint8_t name_len = strlen(name);
 
@@ -230,12 +232,12 @@ static bool adv_short_name_compare(const ble_gap_evt_adv_report_t *adv_report,
 }
 
 static int short_name_filter_add(struct ble_scan *scan,
-				 const struct ble_scan_short_name *short_name)
+				 const struct ble_scan_filter_data *data)
 {
 	uint8_t *counter = &scan->scan_filters.short_name_filter.name_cnt;
 	struct ble_scan_short_name_filter *short_name_filter =
 		&scan->scan_filters.short_name_filter;
-	uint8_t name_len = strlen(short_name->short_name);
+	uint8_t name_len = strlen(data->short_name_filter.short_name);
 
 	/* Check the name length. */
 	if ((name_len == 0) || (name_len > CONFIG_BLE_SCAN_SHORT_NAME_MAX_LEN)) {
@@ -250,18 +252,18 @@ static int short_name_filter_add(struct ble_scan *scan,
 	/* Check for duplicated filter. */
 	for (uint8_t i = 0; i < CONFIG_BLE_SCAN_SHORT_NAME_COUNT; i++) {
 		if (!strcmp(short_name_filter->short_name[i].short_target_name,
-			    short_name->short_name)) {
+			    data->short_name_filter.short_name)) {
 			return NRF_SUCCESS;
 		}
 	}
 
 	/* Add name to the filter. */
 	short_name_filter->short_name[(*counter)].short_name_min_len =
-		short_name->short_name_min_len;
+		data->short_name_filter.short_name_min_len;
 	memcpy(short_name_filter->short_name[(*counter)++].short_target_name,
-	       short_name->short_name, strlen(short_name->short_name));
+	       data->short_name_filter.short_name, strlen(data->short_name_filter.short_name));
 
-	LOG_DBG("Adding filter on %s name", short_name->short_name);
+	LOG_DBG("Adding filter on %s name", data->short_name_filter.short_name);
 
 	return NRF_SUCCESS;
 }
@@ -300,8 +302,9 @@ static bool adv_uuid_compare(const ble_gap_evt_adv_report_t *adv_report,
 	return false;
 }
 
-static int uuid_filter_add(struct ble_scan *scan, const ble_uuid_t *uuid)
+static int uuid_filter_add(struct ble_scan *scan, const struct ble_scan_filter_data *data)
 {
+	const ble_uuid_t *uuid = &data->uuid_filter.uuid;
 	ble_uuid_t *uuid_filter = scan->scan_filters.uuid_filter.uuid;
 	uint8_t *counter = &scan->scan_filters.uuid_filter.uuid_cnt;
 
@@ -343,8 +346,9 @@ static bool adv_appearance_compare(const ble_gap_evt_adv_report_t *adv_report,
 	return false;
 }
 
-static int appearance_filter_add(struct ble_scan *scan, uint16_t appearance)
+static int appearance_filter_add(struct ble_scan *scan, const struct ble_scan_filter_data *data)
 {
+	uint16_t appearance = data->appearance_filter.appearance;
 	uint16_t *appearance_filter = scan->scan_filters.appearance_filter.appearance;
 	uint8_t *counter = &scan->scan_filters.appearance_filter.appearance_cnt;
 
@@ -367,7 +371,8 @@ static int appearance_filter_add(struct ble_scan *scan, uint16_t appearance)
 }
 #endif /* CONFIG_BLE_SCAN_APPEARANCE_COUNT */
 
-uint32_t ble_scan_filter_add(struct ble_scan *scan, uint8_t type, const void *data)
+uint32_t ble_scan_filter_add(struct ble_scan *scan, uint8_t type,
+			     const struct ble_scan_filter_data *data)
 {
 	if (!scan || !data) {
 		return NRF_ERROR_NULL;
@@ -376,41 +381,31 @@ uint32_t ble_scan_filter_add(struct ble_scan *scan, uint8_t type, const void *da
 	switch (type) {
 #if (CONFIG_BLE_SCAN_NAME_COUNT > 0)
 	case BLE_SCAN_NAME_FILTER: {
-		char *name = (char *)data;
-
-		return name_filter_add(scan, name);
+		return name_filter_add(scan, data);
 	}
 #endif
 
 #if (CONFIG_BLE_SCAN_SHORT_NAME_COUNT > 0)
 	case BLE_SCAN_SHORT_NAME_FILTER: {
-		struct ble_scan_short_name *short_name = (struct ble_scan_short_name *)data;
-
-		return short_name_filter_add(scan, short_name);
+		return short_name_filter_add(scan, data);
 	}
 #endif
 
 #if (CONFIG_BLE_SCAN_ADDRESS_COUNT > 0)
 	case BLE_SCAN_ADDR_FILTER: {
-		uint8_t *addr = (uint8_t *)data;
-
-		return addr_filter_add(scan, addr);
+		return addr_filter_add(scan, data);
 	}
 #endif
 
 #if (CONFIG_BLE_SCAN_UUID_COUNT > 0)
 	case BLE_SCAN_UUID_FILTER: {
-		ble_uuid_t *uuid = (ble_uuid_t *)data;
-
-		return uuid_filter_add(scan, uuid);
+		return uuid_filter_add(scan, data);
 	}
 #endif
 
 #if (CONFIG_BLE_SCAN_APPEARANCE_COUNT > 0)
 	case BLE_SCAN_APPEARANCE_FILTER: {
-		uint16_t appearance = *((uint16_t *)data);
-
-		return appearance_filter_add(scan, appearance);
+		return appearance_filter_add(scan, data);
 	}
 #endif
 
