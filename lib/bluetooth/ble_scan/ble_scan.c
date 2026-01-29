@@ -74,16 +74,16 @@ static int addr_filter_add(struct ble_scan *scan, const struct ble_scan_filter_d
 	ble_gap_addr_t *addr_filter = scan->scan_filters.addr_filter.target_addr;
 	uint8_t *counter = &scan->scan_filters.addr_filter.addr_cnt;
 
-	/* If no memory for filter. */
-	if (*counter >= CONFIG_BLE_SCAN_ADDRESS_COUNT) {
-		return NRF_ERROR_NO_MEM;
-	}
-
 	/* Check for duplicated filter. */
 	for (uint8_t i = 0; i < CONFIG_BLE_SCAN_ADDRESS_COUNT; i++) {
 		if (!memcmp(addr_filter[i].addr, addr, BLE_GAP_ADDR_LEN)) {
 			return NRF_SUCCESS;
 		}
+	}
+
+	/* If no memory for filter. */
+	if (*counter >= CONFIG_BLE_SCAN_ADDRESS_COUNT) {
+		return NRF_ERROR_NO_MEM;
 	}
 
 	for (uint8_t i = 0; i < BLE_GAP_ADDR_LEN; i++) {
@@ -110,7 +110,9 @@ static uint16_t advdata_search(const uint8_t *encoded_data, uint16_t data_len, u
 	uint16_t new_offset;
 	uint16_t len;
 
-	if (!encoded_data || !offset) {
+	__ASSERT_NO_MSG(offset != NULL);
+
+	if (!encoded_data) {
 		return 0;
 	}
 
@@ -143,9 +145,7 @@ static bool advdata_name_find(const uint8_t *encoded_data, uint16_t data_len,
 	const uint8_t *parsed_name;
 	uint16_t data_offset = 0;
 
-	if (!target_name) {
-		return false;
-	}
+	__ASSERT_NO_MSG(target_name != NULL);
 
 	parsed_name_len = advdata_search(encoded_data, data_len, &data_offset,
 					 BLE_GAP_AD_TYPE_COMPLETE_LOCAL_NAME);
@@ -189,16 +189,16 @@ static int name_filter_add(struct ble_scan *scan, const struct ble_scan_filter_d
 		return NRF_ERROR_DATA_SIZE;
 	}
 
-	/* If no memory for filter. */
-	if (*counter >= CONFIG_BLE_SCAN_NAME_COUNT) {
-		return NRF_ERROR_NO_MEM;
-	}
-
 	/* Check for duplicated filter. */
 	for (uint8_t i = 0; i < CONFIG_BLE_SCAN_NAME_COUNT; i++) {
 		if (!strcmp(scan->scan_filters.name_filter.target_name[i], name)) {
 			return NRF_SUCCESS;
 		}
+	}
+
+	/* If no memory for filter. */
+	if (*counter >= CONFIG_BLE_SCAN_NAME_COUNT) {
+		return NRF_ERROR_NO_MEM;
 	}
 
 	/* Add name to filter. */
@@ -240,13 +240,10 @@ static int short_name_filter_add(struct ble_scan *scan,
 	uint8_t name_len = strlen(data->short_name_filter.short_name);
 
 	/* Check the name length. */
-	if ((name_len == 0) || (name_len > CONFIG_BLE_SCAN_SHORT_NAME_MAX_LEN)) {
+	if ((name_len == 0) ||
+	    (name_len > CONFIG_BLE_SCAN_SHORT_NAME_MAX_LEN) ||
+	    (name_len < data->short_name_filter.short_name_min_len)) {
 		return NRF_ERROR_DATA_SIZE;
-	}
-
-	/* If no memory for filter. */
-	if (*counter >= CONFIG_BLE_SCAN_SHORT_NAME_COUNT) {
-		return NRF_ERROR_NO_MEM;
 	}
 
 	/* Check for duplicated filter. */
@@ -255,6 +252,11 @@ static int short_name_filter_add(struct ble_scan *scan,
 			    data->short_name_filter.short_name)) {
 			return NRF_SUCCESS;
 		}
+	}
+
+	/* If no memory for filter. */
+	if (*counter >= CONFIG_BLE_SCAN_SHORT_NAME_COUNT) {
+		return NRF_ERROR_NO_MEM;
 	}
 
 	/* Add name to the filter. */
@@ -308,16 +310,16 @@ static int uuid_filter_add(struct ble_scan *scan, const struct ble_scan_filter_d
 	ble_uuid_t *uuid_filter = scan->scan_filters.uuid_filter.uuid;
 	uint8_t *counter = &scan->scan_filters.uuid_filter.uuid_cnt;
 
-	/* If no memory. */
-	if (*counter >= CONFIG_BLE_SCAN_UUID_COUNT) {
-		return NRF_ERROR_NO_MEM;
-	}
-
 	/* Check for duplicated filter.*/
 	for (uint8_t i = 0; i < CONFIG_BLE_SCAN_UUID_COUNT; i++) {
 		if (uuid_filter[i].uuid == uuid->uuid) {
 			return NRF_SUCCESS;
 		}
+	}
+
+	/* If no memory. */
+	if (*counter >= CONFIG_BLE_SCAN_UUID_COUNT) {
+		return NRF_ERROR_NO_MEM;
 	}
 
 	/* Add UUID to the filter. */
@@ -352,16 +354,16 @@ static int appearance_filter_add(struct ble_scan *scan, const struct ble_scan_fi
 	uint16_t *appearance_filter = scan->scan_filters.appearance_filter.appearance;
 	uint8_t *counter = &scan->scan_filters.appearance_filter.appearance_cnt;
 
-	/* If no memory. */
-	if (*counter >= CONFIG_BLE_SCAN_APPEARANCE_COUNT) {
-		return NRF_ERROR_NO_MEM;
-	}
-
 	/* Check for duplicated filter. */
 	for (uint8_t i = 0; i < CONFIG_BLE_SCAN_APPEARANCE_COUNT; i++) {
 		if (appearance_filter[i] == appearance) {
 			return NRF_SUCCESS;
 		}
+	}
+
+	/* If no memory. */
+	if (*counter >= CONFIG_BLE_SCAN_APPEARANCE_COUNT) {
+		return NRF_ERROR_NO_MEM;
 	}
 
 	/* Add appearance to the filter. */
@@ -476,9 +478,7 @@ uint32_t ble_scan_filters_enable(struct ble_scan *scan, uint8_t mode, bool match
 
 	/* Disable filters.*/
 	nrf_err = ble_scan_filters_disable(scan);
-	if (nrf_err) {
-		return nrf_err;
-	}
+	__ASSERT_NO_MSG(nrf_err == NRF_SUCCESS);
 
 	filters = &scan->scan_filters;
 
