@@ -20,7 +20,7 @@ config SOFTDEVICE_VERSION
 
 config SOFTDEVICE_START_OFFSET
 	hex
-	default 0x800 if SOC_SERIES_NRF54LX
+	default 0x800 if SOC_SERIES_NRF54L
 	default 0x200
 
 endif # MCUBOOT

@@ -463,7 +463,7 @@ The following Kconfig options must be enabled to support LE Secure Connections:
 * :kconfig:option:`CONFIG_PSA_WANT_ECC_SECP_R1_256`
 
 Additionally, static key slots or heap memory must be enabled for holding the key material.
-Enable the :kconfig:option:`CONFIG_MBEDTLS_PSA_STATIC_KEY_SLOTS` Kconfig option to use static key slots. Set the number of static key slots required by the application using the :kconfig:option:`CONFIG_MBEDTLS_PSA_KEY_SLOT_COUNT` Kconfig option. One slot is required for storing the DH key pair used by the LESC module. Ensure that the :kconfig:option:`CONFIG_MBEDTLS_PSA_STATIC_KEY_SLOT_BUFFER_SIZE` Kconfig option is set large enough to hold the largest key required by the application. A key slot buffer size of at least 65 bytes is required for the DH key pair used by the LESC module.
+Enable the :kconfig:option:`CONFIG_MBEDTLS_PSA_STATIC_KEY_SLOTS` Kconfig option to use static key slots. Set the number of static key slots required by the application using the :kconfig:option:`CONFIG_MBEDTLS_PSA_KEY_SLOT_COUNT` Kconfig option. One slot is required for storing the DH key pair used by the LESC module.
 Enable the :kconfig:option:`CONFIG_MBEDTLS_ENABLE_HEAP` Kconfig option to use heap memory to hold the key material.
 
 API documentation

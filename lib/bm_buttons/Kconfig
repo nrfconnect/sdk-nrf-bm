@@ -15,8 +15,8 @@ if BM_BUTTONS
 
 config BM_BUTTONS_NUM_PINS
 	int "Number of available pins for buttons"
-	range 1 24 if SOC_SERIES_NRF54LX
-	default 24 if SOC_SERIES_NRF54LX
+	range 1 24 if SOC_SERIES_NRF54L
+	default 24 if SOC_SERIES_NRF54L
 
 module=BM_BUTTONS
 module-str=Buttons library
