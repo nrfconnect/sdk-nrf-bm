@@ -99,6 +99,7 @@ Libraries
 
    * Added the :kconfig:option:`CONFIG_BLE_GATT_DB_MAX_CHARS` Kconfig option for configuring the number of characteristics in a :c:struct:`ble_gatt_db_srv` structure.
      The number of characteristics was previously set using the :c:macro:`BLE_GATT_DB_MAX_CHARS` definition in the :file:`ble_gatt_db.h` file.
+   * Fixed spelling of the ``characteristics`` member of the :c:struct:`ble_gatt_db_srv` structure.
 
 * :ref:`lib_ble_scan`:
 

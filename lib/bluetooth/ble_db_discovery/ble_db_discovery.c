@@ -279,7 +279,7 @@ static uint32_t characteristics_discover(struct ble_db_discovery *db_discovery,
 
 		srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
 
-		prev_char = &(srv_being_discovered->charateristics[prev_char_ind].characteristic);
+		prev_char = &(srv_being_discovered->characteristics[prev_char_ind].characteristic);
 
 		handle_range.start_handle = prev_char->handle_value + 1;
 	} else {
@@ -309,7 +309,7 @@ static uint32_t descriptors_discover(struct ble_db_discovery *db_discovery,
 	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
 
 	curr_char_being_discovered =
-		&(srv_being_discovered->charateristics[db_discovery->curr_char_ind]);
+		&(srv_being_discovered->characteristics[db_discovery->curr_char_ind]);
 
 	if ((db_discovery->curr_char_ind + 1) == srv_being_discovered->char_count) {
 		/* This is the last characteristic of this service. */
@@ -326,7 +326,7 @@ static uint32_t descriptors_discover(struct ble_db_discovery *db_discovery,
 				 */
 				next_char = NULL;
 			} else {
-				next_char = &(srv_being_discovered->charateristics[i + 1]);
+				next_char = &(srv_being_discovered->characteristics[i + 1]);
 			}
 
 			/* Check if it is possible for the current characteristic to have a
@@ -465,22 +465,22 @@ static void on_characteristic_discovery_rsp(struct ble_db_discovery *db_discover
 
 		for (i = num_chars_prev_disc, j = 0; i < srv_being_discovered->char_count;
 		     i++, j++) {
-			srv_being_discovered->charateristics[i].characteristic =
+			srv_being_discovered->characteristics[i].characteristic =
 				char_disc_rsp_evt->chars[j];
 
-			srv_being_discovered->charateristics[i].cccd_handle =
+			srv_being_discovered->characteristics[i].cccd_handle =
 				BLE_GATT_HANDLE_INVALID;
-			srv_being_discovered->charateristics[i].ext_prop_handle =
+			srv_being_discovered->characteristics[i].ext_prop_handle =
 				BLE_GATT_HANDLE_INVALID;
-			srv_being_discovered->charateristics[i].user_desc_handle =
+			srv_being_discovered->characteristics[i].user_desc_handle =
 				BLE_GATT_HANDLE_INVALID;
-			srv_being_discovered->charateristics[i].report_ref_handle =
+			srv_being_discovered->characteristics[i].report_ref_handle =
 				BLE_GATT_HANDLE_INVALID;
 		}
 
 		ble_gattc_char_t *last_known_char;
 
-		last_known_char = &(srv_being_discovered->charateristics[i - 1].characteristic);
+		last_known_char = &(srv_being_discovered->characteristics[i - 1].characteristic);
 
 		/* If no more characteristic discovery is required, or if the maximum number of
 		 * supported characteristic per service has been reached, descriptor discovery will
@@ -553,7 +553,7 @@ static void on_descriptor_discovery_rsp(struct ble_db_discovery *const db_discov
 	desc_disc_rsp_evt = &(ble_gattc_evt->params.desc_disc_rsp);
 
 	struct ble_gatt_db_char *char_being_discovered =
-		&(srv_being_discovered->charateristics[db_discovery->curr_char_ind]);
+		&(srv_being_discovered->characteristics[db_discovery->curr_char_ind]);
 
 	if (ble_gattc_evt->gatt_status == BLE_GATT_STATUS_SUCCESS) {
 		/* The descriptor was found at the peer.

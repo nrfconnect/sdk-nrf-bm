@@ -123,7 +123,7 @@ void ble_hrs_on_db_disc_evt(struct ble_hrs_client *ble_hrs_client,
 	    evt->params.discovered_db.srv_uuid.type == BLE_UUID_TYPE_BLE) {
 		/* Find the CCCD Handle of the Heart Rate Measurement characteristic. */
 		for (uint32_t i = 0; i < evt->params.discovered_db.char_count; i++) {
-			db_char = &evt->params.discovered_db.charateristics[i];
+			db_char = &evt->params.discovered_db.characteristics[i];
 
 			if (db_char->characteristic.uuid.uuid ==
 				BLE_UUID_HEART_RATE_MEASUREMENT_CHAR) {
