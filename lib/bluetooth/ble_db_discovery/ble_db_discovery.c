@@ -444,7 +444,7 @@ static void on_characteristic_discovery_rsp(struct ble_db_discovery *db_discover
 		/* Check if the total number of discovered characteristics are supported by this
 		 * module.
 		 */
-		if ((num_chars_prev_disc + num_chars_curr_disc) <= BLE_GATT_DB_MAX_CHARS) {
+		if ((num_chars_prev_disc + num_chars_curr_disc) <= CONFIG_BLE_GATT_DB_MAX_CHARS) {
 			/* Update the characteristics count. */
 			srv_being_discovered->char_count += num_chars_curr_disc;
 		} else {
@@ -452,11 +452,11 @@ static void on_characteristic_discovery_rsp(struct ble_db_discovery *db_discover
 			 * supported maximum. This module will store only the characteristics found
 			 * up to this point.
 			 */
-			srv_being_discovered->char_count = BLE_GATT_DB_MAX_CHARS;
+			srv_being_discovered->char_count = CONFIG_BLE_GATT_DB_MAX_CHARS;
 			LOG_WRN("Not enough space for characteristics associated with "
 				"service 0x%04X !",
 				srv_being_discovered->srv_uuid.uuid);
-			LOG_WRN("Increase BLE_GATT_DB_MAX_CHARS to be able to store more "
+			LOG_WRN("Increase CONFIG_BLE_GATT_DB_MAX_CHARS to be able to store more "
 				"characteristics for each service!");
 		}
 
@@ -487,7 +487,7 @@ static void on_characteristic_discovery_rsp(struct ble_db_discovery *db_discover
 		 * be performed.
 		 */
 		if (!is_char_discovery_reqd(db_discovery, last_known_char) ||
-		    (srv_being_discovered->char_count == BLE_GATT_DB_MAX_CHARS)) {
+		    (srv_being_discovered->char_count == CONFIG_BLE_GATT_DB_MAX_CHARS)) {
 			perform_desc_discov = true;
 		} else {
 			/* Update the current characteristic index. */
