@@ -13,7 +13,7 @@
 
 LOG_MODULE_DECLARE(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
 
-#if CONFIG_SOC_SERIES_NRF54LX
+#if CONFIG_SOC_SERIES_NRF54L
 #include "irq_connect.h"
 
 extern void CLOCK_POWER_SD_IRQHandler(void);
@@ -118,6 +118,6 @@ __attribute__((weak)) void C_CLOCK_POWER_SD_Handler(void)
 #endif
 }
 
-#endif /* CONFIG_SOC_SERIES_NRF54LX */
+#endif /* CONFIG_SOC_SERIES_NRF54L */
 
 SYS_INIT(irq_init, APPLICATION, 0);

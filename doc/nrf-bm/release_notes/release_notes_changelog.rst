@@ -65,10 +65,15 @@ Drivers
 * :ref:`driver_lpuarte`:
 
    * Updated to use the :ref:`lib_bm_gpiote` library.
-   * Removed the `gpiote_inst` and `gpiote_inst_num` members from the :c:struct:`bm_lpuarte_config` struct.
+   * Removed the ``gpiote_inst`` and ``gpiote_inst_num`` members from the :c:struct:`bm_lpuarte_config` structure.
 
 Libraries
 =========
+
+* :ref:`lib_peer_manager` library:
+
+   * Removed the ``CONFIG_MBEDTLS_PSA_STATIC_KEY_SLOT_BUFFER_SIZE`` Kconfig option.
+     The PSA Crypto core can deduce the key slot buffer size based on the keys enabled in the build, so there is no need to define the size manually.
 
 * Added the :ref:`lib_bm_gpiote` library.
 
