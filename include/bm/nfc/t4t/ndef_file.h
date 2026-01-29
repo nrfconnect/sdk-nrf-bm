@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#ifndef NFC_T4T_NDEF_FILE_H_
-#define NFC_T4T_NDEF_FILE_H_
+#ifndef BM_NFC_T4T_NDEF_FILE_H_
+#define BM_NFC_T4T_NDEF_FILE_H_
 
 /**@file
  *
@@ -15,7 +15,7 @@
  *
  */
 
-#include <zephyr/types.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -62,4 +62,4 @@ int nfc_t4t_ndef_file_encode(uint8_t *file_buf, uint32_t *size);
  * @}
  */
 
-#endif /* NFC_T4T_NDEF_FILE_H_ */
+#endif /* BM_NFC_T4T_NDEF_FILE_H_ */

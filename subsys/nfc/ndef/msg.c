@@ -4,9 +4,8 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <nfc/ndef/msg.h>
+#include <bm/nfc/ndef/msg.h>
 #include <zephyr/sys/byteorder.h>
-#include <zephyr/sys/util.h>
 #include <errno.h>
 
 /* Resolve the value of record location flags of the NFC NDEF record

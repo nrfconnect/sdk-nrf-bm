@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#ifndef NFC_NDEF_RECORD_H_
-#define NFC_NDEF_RECORD_H_
+#ifndef BM_NFC_NDEF_RECORD_H_
+#define BM_NFC_NDEF_RECORD_H_
 
-#include <zephyr/types.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,7 +15,7 @@ extern "C" {
 
 /**@file
  *
- * @defgroup nfc_ndef_record Custom NDEF records
+ * @defgroup nfc_ndef_record NFC custom NDEF records
  * @{
  * @ingroup nfc_ndef_msg
  *
@@ -291,4 +291,4 @@ int nfc_ndef_bin_payload_memcopy(
 }
 #endif
 
-#endif /* NFC_NDEF_RECORD_H_ */
+#endif /* BM_NFC_NDEF_RECORD_H_ */

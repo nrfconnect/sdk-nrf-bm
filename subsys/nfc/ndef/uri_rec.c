@@ -5,8 +5,7 @@
  */
 
 #include <string.h>
-#include <errno.h>
-#include <nfc/ndef/uri_rec.h>
+#include <bm/nfc/ndef/uri_rec.h>
 
 const uint8_t nfc_ndef_uri_rec_type = 'U'; /**< URI Record type. */
 

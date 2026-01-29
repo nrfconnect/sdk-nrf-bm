@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <nfc/ndef/launchapp_rec.h>
+#include <bm/nfc/ndef/launchapp_rec.h>
 
 /* Record Payload Type for NFC NDEF Android Application Record */
 const uint8_t ndef_android_launchapp_rec_type[] = {

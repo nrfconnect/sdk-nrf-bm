@@ -9,9 +9,9 @@
 #include <zephyr/logging/log_ctrl.h>
 
 #include <nfc_t4t_lib.h>
-#include <nfc/t4t/ndef_file.h>
-#include <nfc/ndef/msg.h>
-#include <nfc/ndef/text_rec.h>
+#include <bm/nfc/t4t/ndef_file.h>
+#include <bm/nfc/ndef/msg.h>
+#include <bm/nfc/ndef/text_rec.h>
 
 #if defined(CONFIG_SOFTDEVICE)
 #include <bm/softdevice_handler/nrf_sdh.h>

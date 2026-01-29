@@ -23,7 +23,7 @@
 
 #include <zephyr/logging/log.h>
 
-LOG_MODULE_REGISTER(nfc_platform, CONFIG_NFC_PLATFORM_LOG_LEVEL);
+LOG_MODULE_REGISTER(nfc_platform, CONFIG_BM_NFC_PLATFORM_LOG_LEVEL);
 
 #if NRF54L_ERRATA_60_ENABLE_WORKAROUND
 #define NFC_PLATFORM_USE_TIMER_WORKAROUND 1
@@ -82,15 +82,15 @@ int nfc_platform_setup(nfc_lib_cb_resolve_t nfc_lib_cb_resolve, uint8_t *p_irq_p
 {
 	int err;
 
-	IRQ_DIRECT_CONNECT(NFCT_IRQn, CONFIG_NFCT_IRQ_PRIORITY,
+	IRQ_DIRECT_CONNECT(NFCT_IRQn, CONFIG_BM_NFCT_IRQ_PRIORITY,
 			   nfc_isr_wrapper, 0);
 
 #if NFC_PLATFORM_USE_TIMER_WORKAROUND
-	IRQ_DIRECT_CONNECT(NFC_TIMER_IRQn, CONFIG_NFCT_IRQ_PRIORITY,
+	IRQ_DIRECT_CONNECT(NFC_TIMER_IRQn, CONFIG_BM_NFCT_IRQ_PRIORITY,
 			   nrfx_nfct_workaround_timer_handler, 0);
 #endif /* NFC_PLATFORM_USE_TIMER_WORKAROUND */
 
-	*p_irq_priority = CONFIG_NFCT_IRQ_PRIORITY;
+	*p_irq_priority = CONFIG_BM_NFCT_IRQ_PRIORITY;
 
 	err = nfc_platform_internal_init(nfc_lib_cb_resolve);
 	if (err) {
@@ -187,7 +187,7 @@ void nfc_platform_event_handler(const nrfx_nfct_evt_t *event)
 #if defined(CONFIG_SOFTDEVICE)
 		/* We need to start HFCLK through SoftDevice API. As the code
 		 * executes from an IRQ it must be ensured that the IRQ priority
-		 * is acceptable to call SoftDevice API. See CONFIG_NFCT_IRQ_PRIORITY.
+		 * is acceptable to call SoftDevice API. See CONFIG_BM_NFCT_IRQ_PRIORITY.
 		 */
 		sd_res = sd_clock_hfclk_request();
 		__ASSERT_NO_MSG(sd_res == NRF_SUCCESS);
