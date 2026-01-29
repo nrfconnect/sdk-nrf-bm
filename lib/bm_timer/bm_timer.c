@@ -11,7 +11,7 @@
 
 LOG_MODULE_REGISTER(bm_timer, CONFIG_BM_TIMER_LOG_LEVEL);
 
-#if CONFIG_SOC_SERIES_NRF54LX
+#if CONFIG_SOC_SERIES_NRF54L
 #include <hal/nrf_grtc.h>
 #define BM_TIMER_IRQn GRTC_IRQn
 #else

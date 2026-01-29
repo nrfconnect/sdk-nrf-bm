@@ -132,7 +132,7 @@ static void poweroff(void)
 	(void)z_nrf_retained_mem_retention_apply();
 #endif
 
-#if defined(CONFIG_SOC_SERIES_NRF54LX)
+#if defined(CONFIG_SOC_SERIES_NRF54L)
 	nrfx_reset_reason_clear(UINT32_MAX);
 #endif
 
