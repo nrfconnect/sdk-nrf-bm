@@ -4,9 +4,8 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <zephyr/kernel.h>
 #include <string.h>
-#include <nfc/ndef/text_rec.h>
+#include <bm/nfc/ndef/text_rec.h>
 
 /** Size of the status. */
 #define TEXT_REC_STATUS_SIZE          1

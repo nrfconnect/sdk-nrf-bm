@@ -98,7 +98,16 @@ Bluetooth LE Services
 Libraries for NFC
 -----------------
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* The NFC subsystem code has been migrated to |BMshort| and does not reuse code form |NCS| anymore.
+  The NFC related Kconfig options provided by |BMshort| have the ``BM_NFC_`` prefix.
+  The following list shows mapping from |NCS| Kconfig options to |BMshort| Kconfig options:
+
+  * ``CONFIG_NFCT_IRQ_PRIORITY`` ``-->`` :kconfig:option:`CONFIG_BM_NFCT_IRQ_PRIORITY`
+  * ``CONFIG_NFC_PLATFORM_LOG_LEVEL*`` ``-->`` :kconfig:option:`CONFIG_BM_NFC_PLATFORM_LOG_LEVEL*`
+  * ``CONFIG_NFC_NDEF*`` ``-->`` :kconfig:option:`CONFIG_BM_NFC_NDEF*`
+  * ``CONFIG_NFC_T4T_NDEF_FILE`` ``-->`` :kconfig:option:`CONFIG_BM_NFC_T4T_NDEF_FILE`
+
+  Use ``#include <bm/nfc/..>`` to include NFC related header files provided by |BMshort| instead of ``#include <nfc/...>``.
 
 Samples
 =======
@@ -131,7 +140,8 @@ Bluetooth LE samples
 NFC samples
 -----------
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Use ``CONFIG_BM_NFC_*`` Kconfig options provided by |BMshort| instead of ``CONFIG_NFC_*`` options provided by |NCS|
+  Use ``#include <bm/nfc/...>`` headers provided by |BMshort| instead of ``#include <nfc/...>`` headers from |NCS|.
 
 Peripheral samples
 ------------------

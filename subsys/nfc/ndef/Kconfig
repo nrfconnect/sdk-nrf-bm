@@ -1,0 +1,40 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+config BM_NFC_NDEF
+	bool "NDEF libraries for Bare Metal"
+	help
+	  Enable NFC Data Exchange Format libraries
+
+if BM_NFC_NDEF
+
+config BM_NFC_NDEF_MSG
+	bool "NDEF Message generator library for Bare Metal"
+
+config BM_NFC_NDEF_RECORD
+	bool "NDEF Record generator library for Bare Metal"
+
+config BM_NFC_NDEF_TEXT_RECORD
+	bool "Encoding data for a text record for NFC Tag for Bare Metal"
+
+config BM_NFC_NDEF_URI_MSG
+	bool "NDEF URI messages generator library for Bare Metal"
+
+config BM_NFC_NDEF_URI_REC
+	bool "NDEF URI record generator library for Bare Metal"
+
+config BM_NFC_NDEF_LAUNCHAPP_MSG
+	bool "NDEF Launch App message library for Bare Metal"
+	select BM_NFC_NDEF_LAUNCHAPP_REC
+	help
+	  Enable NDEF Launch App message generator library
+
+config BM_NFC_NDEF_LAUNCHAPP_REC
+	bool "NDEF Launch App records for Bare Metal"
+	help
+	  Enable NDEF Launch App records library
+
+endif # BM_NFC_NDEF

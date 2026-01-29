@@ -8,9 +8,9 @@
 #include <string.h>
 #include <errno.h>
 
-#include <nfc/ndef/launchapp_rec.h>
-#include <nfc/ndef/launchapp_msg.h>
-#include <nfc/ndef/uri_msg.h>
+#include <bm/nfc/ndef/launchapp_rec.h>
+#include <bm/nfc/ndef/launchapp_msg.h>
+#include <bm/nfc/ndef/uri_msg.h>
 
 
 int nfc_launchapp_msg_encode(uint8_t  const *android_package_name,

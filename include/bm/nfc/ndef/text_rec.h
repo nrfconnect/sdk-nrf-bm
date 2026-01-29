@@ -4,20 +4,21 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#ifndef NFC_NDEF_TEXT_REC_H_
-#define NFC_NDEF_TEXT_REC_H_
+#ifndef BM_NFC_NDEF_TEXT_REC_H_
+#define BM_NFC_NDEF_TEXT_REC_H_
 
 /**@file
  *
- * @defgroup nfc_text_rec Text records
+ * @defgroup nfc_text_rec NFC NDEF text records
  * @{
  *
  * @brief    Generation of NFC NDEF Text record descriptions.
  *
  */
 
-#include <zephyr/types.h>
-#include <nfc/ndef/record.h>
+#include <stdint.h>
+#include <errno.h>
+#include <bm/nfc/ndef/record.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -136,4 +137,4 @@ extern const uint8_t nfc_ndef_text_rec_type_field[];
 
 /** @} */
 
-#endif /* NFC_NDEF_TEXT_REC_H_ */
+#endif /* BM_NFC_NDEF_TEXT_REC_H_ */

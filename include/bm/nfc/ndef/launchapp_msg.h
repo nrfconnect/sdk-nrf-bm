@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#ifndef NFC_LAUNCHAPP_MSG_H__
-#define NFC_LAUNCHAPP_MSG_H__
+#ifndef BM_NFC_LAUNCHAPP_MSG_H__
+#define BM_NFC_LAUNCHAPP_MSG_H__
 
 /**@file
  *
- * @defgroup nfc_launchapp_msg Launch App messages
+ * @defgroup nfc_launchapp_msg NFC NDEF Launch App messages
  * @{
  *
  * @brief Generation of NFC NDEF messages that can be used to launch apps.
@@ -58,4 +58,4 @@ int nfc_launchapp_msg_encode(uint8_t  const *android_package_name,
  * @}
  */
 
- #endif // NFC_LAUNCHAPP_MSG_H__
+ #endif /* BM_NFC_LAUNCHAPP_MSG_H__ */

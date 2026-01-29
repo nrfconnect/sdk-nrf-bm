@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <errno.h>
-#include <nfc/ndef/uri_msg.h>
+#include <bm/nfc/ndef/uri_msg.h>
 
 int nfc_ndef_uri_msg_encode(enum nfc_ndef_uri_rec_id uri_id_code,
 			    uint8_t const *const uri_data,

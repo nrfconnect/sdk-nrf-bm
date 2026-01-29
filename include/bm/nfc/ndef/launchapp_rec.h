@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#ifndef NFC_LAUNCHAPP_REC_H__
-#define NFC_LAUNCHAPP_REC_H__
+#ifndef BM_NFC_LAUNCHAPP_REC_H__
+#define BM_NFC_LAUNCHAPP_REC_H__
 
 /**@file
  *
- * @defgroup nfc_launchapp_rec Launch App records
+ * @defgroup nfc_launchapp_rec NFC NDEF Launch App records
  * @{
  * @ingroup nfc_launchapp_msg
  *
@@ -18,7 +18,7 @@
  */
 
 #include <stdint.h>
-#include <nfc/ndef/record.h>
+#include <bm/nfc/ndef/record.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -76,4 +76,4 @@ extern const uint8_t ndef_android_launchapp_rec_type[NFC_ANDROID_REC_TYPE_LENGTH
  * @}
  */
 
-#endif // NFC_LAUNCHAPP_REC
+#endif /* BM_NFC_LAUNCHAPP_REC_H__ */

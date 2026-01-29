@@ -4,21 +4,22 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#ifndef NFC_NDEF_URI_MSG_H_
-#define NFC_NDEF_URI_MSG_H_
+#ifndef BM_NFC_NDEF_URI_MSG_H_
+#define BM_NFC_NDEF_URI_MSG_H_
 
 /**@file
  *
- * @defgroup nfc_uri_msg URI messages
+ * @defgroup nfc_uri_msg NFC NDEF URI messages
  * @{
  *
  * @brief    Generation of NFC NDEF messages with a URI record.
  *
  */
 
-#include <nfc/ndef/msg.h>
-#include <nfc/ndef/uri_rec.h>
-#include <zephyr/types.h>
+#include <stdint.h>
+#include <errno.h>
+#include <bm/nfc/ndef/msg.h>
+#include <bm/nfc/ndef/uri_rec.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -58,4 +59,4 @@ int nfc_ndef_uri_msg_encode(enum nfc_ndef_uri_rec_id uri_id_code,
  * @}
  */
 
-#endif /* NFC_NDEF_URI_MSG_H */
+#endif /* BM_NFC_NDEF_URI_MSG_H */
