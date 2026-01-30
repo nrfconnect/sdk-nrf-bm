@@ -1,0 +1,45 @@
+sample:
+  name: Bluetooth LE UART Central Service Sample
+tests:
+  sample.ble_nus_client:
+    build_only: true
+    integration_platforms:
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice/mcuboot
+    platform_allow:
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice/mcuboot
+    tags: ci_build
+  sample.ble_nus_client.logging_w_hwfc_parity:
+    build_only: true
+    integration_platforms:
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice
+    platform_allow:
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice
+    extra_configs:
+      - CONFIG_BM_UARTE_CONSOLE_UARTE_USE_HWFC=y
+      - CONFIG_BM_UARTE_CONSOLE_UARTE_PARITY_INCLUDED=y
+    tags: ci_build
+  sample.ble_nus_client.lpuarte:
+    build_only: true
+    integration_platforms:
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice
+    platform_allow:
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice/mcuboot
+    extra_args: EXTRA_CONF_FILE="lpuarte.conf"
+    tags: ci_build
