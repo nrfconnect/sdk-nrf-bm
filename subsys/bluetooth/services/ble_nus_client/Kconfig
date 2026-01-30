@@ -1,0 +1,16 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+menuconfig BLE_NUS_CLIENT
+	bool "Nordic UART client service"
+	depends on BLE_QWR
+
+if BLE_NUS_CLIENT
+
+module=BLE_NUS_CLIENT
+module-str=BLE Nordic UART Client Service
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endif
