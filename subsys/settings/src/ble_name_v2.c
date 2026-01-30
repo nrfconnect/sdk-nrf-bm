@@ -48,6 +48,20 @@ static int bluetooth_name_value_set(const char *name, const void *value, size_t 
 	return 0;
 }
 
+const char *ble_name_value_get(struct bm_retained_clipboard_ctx *ctx)
+{
+	int err;
+	struct bm_rmem_data_desc desc;
+	desc.type = BM_REM_TLV_TYPE_BLE_NAME;
+
+	err = bm_rmem_get_data(ctx, &desc);
+	if (err < 0) {
+		return NULL;
+	}
+
+	return (const char *)desc.data;
+}
+
 int settings_runtime_set(const char *name, const void *data, size_t len)
 {
 	return bluetooth_name_value_set(name, data, len);
