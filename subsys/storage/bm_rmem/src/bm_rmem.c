@@ -129,3 +129,9 @@ int bm_rmem_get_data(struct bm_retained_clipboard_ctx *ctx, struct bm_rmem_data_
 
 	return -ENOENT;
 }
+
+int bm_rmem_clear(void)
+{
+	memset(bm_clipboard_inst.address, 0, bm_clipboard_inst.size);
+	return 0;
+}

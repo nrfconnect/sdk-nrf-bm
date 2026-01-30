@@ -26,10 +26,11 @@ struct bm_rmem_data_desc {
 int bm_rmem_init_writer(struct bm_retained_clipboard_ctx *ctx);
 int bm_rmem_write_data(struct bm_retained_clipboard_ctx *ctx, uint16_t type, const void *data, uint16_t len);
 int bm_rmem_write_crc32(struct bm_retained_clipboard_ctx *ctx);
-int bm_rmem_verify_crc32(void);
+int bm_rmem_crc32_verify(void);
 int bm_rmem_get_data(struct bm_retained_clipboard_ctx *ctx, struct bm_rmem_data_desc *desc);
 int bm_rmem_init_reader(struct bm_retained_clipboard_ctx *ctx);
 int bm_rmem_get_data(struct bm_retained_clipboard_ctx *ctx, struct bm_rmem_data_desc *desc);
+int bm_rmem_clear(void);
 
 #define BM_REM_TLV_TYPE_BLE_NAME 0x0001
 #define BM_REM_TLV_TYPE_CRC_32 0x0002
