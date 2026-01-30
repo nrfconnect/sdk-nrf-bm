@@ -247,6 +247,10 @@ Bluetooth LE Services
 
    * Fixed a potential buffer over-read when parsing malformed Heart Rate Measurement notifications.
 
+* :ref:`lib_ble_service_nus_client` service:
+
+   * Added the Nordic UART Service (NUS) client.
+
 * :ref:`lib_ble_service_hids` service:
 
    * Updated the ``params`` union field of the :c:struct:`ble_hids_evt` structure to an anonymous union.
@@ -310,7 +314,10 @@ Samples
 Bluetooth LE samples
 --------------------
 
-* Added the :ref:`peripheral_nfc_pairing_sample`.
+* Added:
+
+   * The :ref:`ble_nus_central_sample` sample.
+   * The :ref:`peripheral_nfc_pairing_sample` sample.
 
 * :ref:`ble_bms_sample` sample:
 
