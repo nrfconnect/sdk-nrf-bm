@@ -14,13 +14,6 @@
 
 LOG_MODULE_REGISTER(ble_nus_client, CONFIG_BLE_NUS_CLIENT_LOG_LEVEL);
 
-/**
- * @brief Function for intercepting the errors of GATTC and the BLE GATT Queue.
- *
- * @param[in] nrf_error   Error code.
- * @param[in] ctx       Parameter from the event handler.
- * @param[in] conn_handle Connection handle.
- */
 static void gatt_error_handler(const struct ble_gq_req *req, struct ble_gq_evt *evt)
 {
 	struct ble_nus_c *ble_nus_c = (struct ble_nus_c *)req->ctx;
@@ -38,12 +31,10 @@ static void gatt_error_handler(const struct ble_gq_req *req, struct ble_gq_evt *
 
 void ble_nus_c_on_db_disc_evt(struct ble_nus_c *ble_nus_c, struct ble_db_discovery_evt *evt)
 {
-	struct ble_nus_c_evt nus_c_evt;
-	memset(&nus_c_evt, 0, sizeof(struct ble_nus_c_evt));
-
+	struct ble_nus_c_evt nus_c_evt = {0};
 	struct ble_gatt_db_char *chars = evt->params.discovered_db.charateristics;
 
-	/* Check if the NUS was discovered.*/
+	/** Check if the NUS was discovered. */
 	if ((evt->evt_type == BLE_DB_DISCOVERY_COMPLETE) &&
 	    (evt->params.discovered_db.srv_uuid.uuid == BLE_UUID_NUS_SERVICE) &&
 	    (evt->params.discovered_db.srv_uuid.type == ble_nus_c->uuid_type)) {
@@ -73,19 +64,9 @@ void ble_nus_c_on_db_disc_evt(struct ble_nus_c *ble_nus_c, struct ble_db_discove
 	}
 }
 
-/**
- * @brief     Function for handling Handle Value Notification received from the SoftDevice.
- *
- * @details   This function uses the Handle Value Notification received from the SoftDevice
- *            and checks if it is a notification of the NUS TX characteristic from the peer.
- *            If it is, this function decodes the data and sends it to the application.
- *
- * @param[in] ble_nus_c Pointer to the NUS Client structure.
- * @param[in] ble_evt   Pointer to the BLE event received.
- */
 static void on_hvx(struct ble_nus_c *ble_nus_c, ble_evt_t const *ble_evt)
 {
-	/* HVX can only occur from client sending.*/
+	/** HVX can only occur from client sending. */
 	if ((ble_nus_c->handles.nus_tx_handle != BLE_GATT_HANDLE_INVALID) &&
 	    (ble_evt->evt.gattc_evt.params.hvx.handle == ble_nus_c->handles.nus_tx_handle) &&
 	    (ble_nus_c->evt_handler != NULL)) {
@@ -101,13 +82,13 @@ static void on_hvx(struct ble_nus_c *ble_nus_c, ble_evt_t const *ble_evt)
 	}
 }
 
-uint32_t ble_nus_c_init(struct ble_nus_c *ble_nus_c, struct ble_nus_c_init *ble_nus_c_init)
+uint32_t ble_nus_c_init(struct ble_nus_c *ble_nus_c, struct ble_nus_c_config *ble_nus_c_init)
 {
 	uint32_t nrf_err;
 	ble_uuid_t uart_uuid;
 	ble_uuid128_t nus_base_uuid = NUS_BASE_UUID;
 
-	if (ble_nus_c == NULL || ble_nus_c_init == NULL || ble_nus_c_init->gatt_queue == NULL) {
+	if (!ble_nus_c || !ble_nus_c_init || !(ble_nus_c_init->gatt_queue)) {
 		return NRF_ERROR_NULL;
 	}
 
@@ -133,7 +114,7 @@ void ble_nus_c_on_ble_evt(ble_evt_t const *ble_evt, void *context)
 {
 	struct ble_nus_c *ble_nus_c = (struct ble_nus_c *)context;
 
-	if (ble_nus_c == NULL || ble_evt == NULL) {
+	if (!ble_nus_c || !ble_evt) {
 		return;
 	}
 
@@ -162,14 +143,11 @@ void ble_nus_c_on_ble_evt(ble_evt_t const *ble_evt, void *context)
 		break;
 
 	default:
-		/* No implementation needed.*/
+		/** No implementation needed. */
 		break;
 	}
 }
 
-/**
- * @brief Function for creating a message for writing to the CCCD.
- */
 static uint32_t cccd_configure(struct ble_nus_c *ble_nus_c, bool notification_enable)
 {
 	struct ble_gq_req cccd_req = {0};
