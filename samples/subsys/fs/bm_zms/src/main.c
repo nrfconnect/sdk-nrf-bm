@@ -18,9 +18,12 @@
 #define LONG_DATA_ID  3
 
 #include <bm/softdevice_handler/nrf_sdh.h>
+#include <bm/storage/bm_storage.h>
 #include <nrf_soc.h>
 
 #include <bm/fs/bm_zms.h>
+
+extern const struct bm_storage_api bm_storage_sd_api;
 
 static struct bm_zms_fs fs;
 static volatile bool nvm_is_full;
@@ -166,7 +169,8 @@ int main(void)
 		.offset = BM_ZMS_PARTITION_OFFSET,
 		.sector_size = CONFIG_APP_BM_ZMS_SECTOR_SIZE,
 		.sector_count = (BM_ZMS_PARTITION_SIZE / CONFIG_APP_BM_ZMS_SECTOR_SIZE),
-		.evt_handler = bm_zms_sample_handler
+		.evt_handler = bm_zms_sample_handler,
+		.storage_api = &bm_storage_sd_api,
 	};
 
 	/* Let's mount and clear the existing storage partition to reset the conditions. */
