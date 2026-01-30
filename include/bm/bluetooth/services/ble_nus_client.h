@@ -187,7 +187,7 @@ struct ble_nus_c_config {
  * @retval    NRF_SUCCESS If the module was initialized successfully.
  * @retval    err_code    Otherwise, this function propagates the error code
  *                        returned by the Database Discovery module API
- *                        @ref ble_db_discovery_evt_register.
+ *                        @ref ble_db_discovery_service_register.
  */
 uint32_t ble_nus_c_init(struct ble_nus_c *ble_nus_c, struct ble_nus_c_config *ble_nus_c_init);
 

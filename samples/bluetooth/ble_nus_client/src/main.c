@@ -28,7 +28,7 @@
 #include <zephyr/logging/log_ctrl.h>
 
 /** Tag that refers to the BLE stack configuration set with @ref sd_ble_cfg_set. The default tag is
- * @ref BLE_CONN_CFG_TAG_DEFAULT.
+ *  @ref BLE_CONN_CFG_TAG_DEFAULT.
  */
 #define APP_BLE_CONN_CFG_TAG  1
 /** BLE observer priority of the application. There is no need to modify this value. */
@@ -40,7 +40,7 @@
 #define NUS_UARTE_PIN_CTS BOARD_APP_UARTE_PIN_CTS
 #define NUS_UARTE_PIN_RTS BOARD_APP_UARTE_PIN_RTS
 
-/**< UUID type for the Nordic UART Service (vendor specific). */
+/** UUID type for the Nordic UART Service (vendor specific). */
 #define NUS_SERVICE_UUID_TYPE BLE_UUID_TYPE_VENDOR_BEGIN
 
 /** Echo the UART data that is received over the Nordic UART Service (NUS) back to the sender. */
@@ -60,8 +60,8 @@ LOG_MODULE_REGISTER(app, CONFIG_APP_BLE_NUS_CLIENT_SAMPLE_LOG_LEVEL);
 /** Maximum length of data (in bytes) that can be transmitted to the peer by the Nordic UART
  * service module.
  */
-const static uint16_t ble_nus_max_data_len =
-	BLE_GATT_ATT_MTU_DEFAULT - OPCODE_LENGTH - HANDLE_LENGTH;
+
+static uint16_t current_rx_buf_len = 20;
 /** Handle of the current connection. */
 static uint16_t conn_handle = BLE_CONN_HANDLE_INVALID;
 
@@ -89,7 +89,7 @@ static void uarte_rx_handler(char *data, size_t data_len)
 			rx_buf[rx_buf_idx++] = c;
 		}
 
-		if ((c == '\n' || c == '\r') || (rx_buf_idx >= ble_nus_max_data_len)) {
+		if ((c == '\n' || c == '\r') || (rx_buf_idx >= current_rx_buf_len)) {
 			if (rx_buf_idx == 0) {
 				/** RX buffer is empty, nothing to send. */
 				continue;
@@ -172,7 +172,7 @@ static void scan_init(void)
 	if (err) {
 		LOG_ERR("Failed to initialize scanning, nrf_error %#x", err);
 	}
-	err = ble_scan_filter_add(&m_scan, BLE_SCAN_NAME_FILTER, "Asil");
+	err = ble_scan_filter_add(&m_scan, BLE_SCAN_NAME_FILTER, "nRF_BM_NUS");
 	if (err) {
 		LOG_ERR("Failed to set filter, nrf_error %#x", err);
 	}
@@ -260,7 +260,7 @@ static void ble_evt_handler(ble_evt_t const *ble_evt, void *context)
 		break;
 
 	case BLE_GAP_EVT_SEC_PARAMS_REQUEST:
-		/** Pairing not supported.*/
+		/** Pairing not supported. */
 		err_code = sd_ble_gap_sec_params_reply(ble_evt->evt.gap_evt.conn_handle,
 						       BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP, NULL,
 						       NULL);
@@ -270,7 +270,7 @@ static void ble_evt_handler(ble_evt_t const *ble_evt, void *context)
 		break;
 
 	case BLE_GAP_EVT_CONN_PARAM_UPDATE_REQUEST:
-		/** Accepting parameters requested by peer.*/
+		/** Accepting parameters requested by peer. */
 		err_code = sd_ble_gap_conn_param_update(
 			gap_evt->conn_handle,
 			&gap_evt->params.conn_param_update_request.conn_params);
@@ -292,7 +292,7 @@ static void ble_evt_handler(ble_evt_t const *ble_evt, void *context)
 	} break;
 
 	case BLE_GATTC_EVT_TIMEOUT:
-		/** Disconnect on GATT Client timeout event.*/
+		/** Disconnect on GATT Client timeout event. */
 		LOG_DBG("GATT Client Timeout.");
 		err_code = sd_ble_gap_disconnect(ble_evt->evt.gattc_evt.conn_handle,
 						 BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
@@ -302,7 +302,7 @@ static void ble_evt_handler(ble_evt_t const *ble_evt, void *context)
 		break;
 
 	case BLE_GATTS_EVT_TIMEOUT:
-		/** Disconnect on GATT Server timeout event.*/
+		/** Disconnect on GATT Server timeout event. */
 		LOG_DBG("GATT Server Timeout.");
 		err_code = sd_ble_gap_disconnect(ble_evt->evt.gatts_evt.conn_handle,
 						 BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
@@ -325,17 +325,17 @@ static void ble_stack_init(void)
 		LOG_ERR("sdh_enable_request failed, nrf_error %#x", err_code);
 	}
 
-	/** Configure the BLE stack using the default settings.*/
-	/** Fetch the start address of the application RAM.*/
+	/** Configure the BLE stack using the default settings. */
+	/** Fetch the start address of the application RAM. */
 	uint32_t ram_start = 0;
 
-	/** Enable BLE stack.*/
+	/** Enable BLE stack. */
 	err_code = nrf_sdh_ble_enable((uint8_t)ram_start);
 	if (err_code) {
 		LOG_ERR("sdh_enable_enable failed, nrf_error %#x", err_code);
 	}
 
-	/** Register a handler for BLE events.*/
+	/** Register a handler for BLE events. */
 	NRF_SDH_BLE_OBSERVER(m_ble_observer, ble_evt_handler, NULL, USER_LOW);
 }
 
@@ -345,6 +345,7 @@ static void conn_params_evt_handler(const struct ble_conn_params_evt *evt)
 	case BLE_CONN_PARAMS_EVT_ATT_MTU_UPDATED:
 		LOG_INF("GATT ATT MTU on connection 0x%x changed to %d.", evt->conn_handle,
 			evt->att_mtu);
+		current_rx_buf_len = evt->att_mtu;
 		break;
 
 	case BLE_CONN_PARAMS_EVT_DATA_LENGTH_UPDATED:
@@ -371,6 +372,12 @@ static uint32_t gatt_init(void)
 
 static void button_disconnect_handler(uint8_t pin, uint8_t action)
 {
+	uint32_t nrf_err =
+		sd_ble_gap_disconnect(conn_handle, BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
+
+	if (nrf_err) {
+		LOG_ERR("sd_ble_gap_disconnect failed, nrf_error %#x", nrf_err);
+	}
 }
 
 static void button_sleep_handler(uint8_t pin, uint8_t action)
@@ -529,7 +536,7 @@ static void db_discovery_init(void)
 int main(void)
 {
 	int err;
-	/** Initialize.*/
+	/** Initialize. */
 	err = uarte_init();
 	if (err) {
 		LOG_ERR("Failed to enable UARTE, err %d", err);
