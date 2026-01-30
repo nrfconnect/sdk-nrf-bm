@@ -27,13 +27,6 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 
-#undef LOG_INF
-#define LOG_INF printf
-#undef LOG_WRN
-#define LOG_WRN printf
-#undef LOG_ERR
-#define LOG_ERR printf
-
 #define APP_BLE_CONN_CFG_TAG                                                                       \
 	1 /**< Tag that refers to the BLE stack configuration set with @ref sd_ble_cfg_set. The    \
 	     default tag is @ref BLE_CONN_CFG_TAG_DEFAULT. */
@@ -55,14 +48,13 @@
 	     sender. */
 
 BLE_NUS_C_DEF(m_ble_nus_c);	 /**< BLE Nordic UART Service (NUS) client instance. */
-BLE_NUS_DEF(ble_nus);		 /* BLE NUS service instance */
 BLE_DB_DISCOVERY_DEF(m_db_disc); /**< Database discovery module instance. */
 BLE_SCAN_DEF(m_scan);		 /**< Scanning Module instance. */
 BLE_GQ_DEF(m_ble_gatt_queue);	 /**< BLE GATT Queue instance. */
 
-LOG_MODULE_REGISTER(app, 4);
+LOG_MODULE_REGISTER(app, CONFIG_SAMPLE_BLE_NUS_CLIENT_SAMPLE_LOG_LEVEL);
 
-static uint16_t ble_nus_max_data_len =
+const static uint16_t ble_nus_max_data_len =
 	BLE_GATT_ATT_MTU_DEFAULT - OPCODE_LENGTH -
 	HANDLE_LENGTH; /**< Maximum length of data (in bytes) that can be transmitted to the peer by
 			  the Nordic UART service module. */
@@ -89,7 +81,7 @@ static void uarte_rx_handler(char *data, size_t data_len)
 	static char rx_buf[BLE_NUS_MAX_DATA_LEN];
 	static uint16_t rx_buf_idx;
 	uint16_t len;
-
+	LOG_INF("data_len: %zu", data_len);
 	for (int i = 0; i < data_len; i++) {
 		c = data[i];
 
@@ -107,24 +99,14 @@ static void uarte_rx_handler(char *data, size_t data_len)
 			LOG_INF("Sending data over BLE NUS, len %d", len);
 
 			do {
-				nrf_err = ble_nus_data_send(&ble_nus, rx_buf, &len, conn_handle);
-				if ((nrf_err) && (nrf_err != NRF_ERROR_INVALID_STATE) &&
-				    (nrf_err != NRF_ERROR_RESOURCES) &&
-				    (nrf_err != NRF_ERROR_NOT_FOUND)) {
+				nrf_err = ble_nus_c_string_send(&m_ble_nus_c, rx_buf, len);
+				if ((nrf_err != NRF_ERROR_INVALID_STATE) &&
+				    (nrf_err != NRF_ERROR_RESOURCES) && nrf_err) {
 					LOG_ERR("Failed to send NUS data, nrf_error %#x", nrf_err);
 					return;
 				}
 			} while (nrf_err == NRF_ERROR_RESOURCES);
-
-			if (len == rx_buf_idx) {
-				rx_buf_idx = 0;
-			} else {
-				/* Not all data in RX buffer was transmitted.
-				 * Move what is left to start of buffer.
-				 */
-				memmove(&rx_buf[len], &rx_buf[0], rx_buf_idx - len);
-				rx_buf_idx -= len;
-			}
+			rx_buf_idx = 0;
 		}
 	}
 }
@@ -431,6 +413,7 @@ static void ble_evt_handler(ble_evt_t const *ble_evt, void *context)
 	case BLE_GAP_EVT_CONNECTED:
 		err_code = ble_nus_c_handles_assign(&m_ble_nus_c, ble_evt->evt.gap_evt.conn_handle,
 						    NULL);
+		conn_handle = ble_evt->evt.gap_evt.conn_handle;
 		if (err_code) {
 			LOG_ERR("Failed to assign handles, nrf_error %#x", err_code);
 		}
@@ -593,7 +576,6 @@ static void button_sleep_handler(uint8_t pin, uint8_t action)
  */
 static void uarte_evt_handler(const nrfx_uarte_event_t *event, void *ctx)
 {
-	LOG_INF("uart_evt_handler triggered");
 	switch (event->type) {
 	case NRFX_UARTE_EVT_RX_DONE:
 		LOG_DBG("Received data from UART: %.*s (%d)", event->data.rx.length,
@@ -696,6 +678,10 @@ static int uarte_init(void)
 	if (err) {
 		LOG_ERR("Failed to initialize UART, err %d", err);
 		return err;
+	}
+	err = nrfx_uarte_rx_enable(&nus_uarte_inst, 0);
+	if (err) {
+		LOG_ERR("UART RX failed, err %d", err);
 	}
 #endif /* CONFIG_APP_NUS_LPUARTE */
 
@@ -811,18 +797,6 @@ static void db_discovery_init(void)
 	}
 }
 
-/**
- * @brief Function for handling the idle state (main loop).
- *
- * @details Handles any pending log operations, then sleeps until the next event occurs.
- */
-static void idle_state_handle(void)
-{
-	// if (NRF_LOG_PROCESS() == false) {
-	//	nrf_pwr_mgmt_run();
-	// }
-}
-
 int main(void)
 {
 	int err;
@@ -846,7 +820,15 @@ int main(void)
 	scan_start();
 
 	// Enter main loop.
-	for (;;) {
-		idle_state_handle();
+	while (true) {
+		while (LOG_PROCESS()) {
+		}
+
+		/* Wait for an event. */
+		__WFE();
+
+		/* Clear Event Register */
+		__SEV();
+		__WFE();
 	}
 }
