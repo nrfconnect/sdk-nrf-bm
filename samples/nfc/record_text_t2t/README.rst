@@ -77,8 +77,8 @@ Dependencies
 
 This sample uses the following |NCS| libraries:
 
-* NDEF messages
-* Text records
+* :ref:`nfc_ndef`
+* :ref:`nfc_text`
 
 In addition, it uses the :ref:`lib_nfc_t2t` from `sdk-nrfxlib`_.
 

@@ -9,6 +9,13 @@ NFC Type 4 Tag library
 
 The Type 4 Tag library implements NFC Type 4 Tag functionality based on the NFC Forum document *Type 4 Tag Technical Specification Version 1.0*.
 
+.. toctree::
+   :maxdepth: 1
+   :glob:
+   :caption: Subpages:
+
+   t4t/*
+
 Overview
 ********
 
@@ -55,6 +62,8 @@ A Type 4 Tag contains at least two Elementary Files:
       * - NDEF Message
         - NLEN bytes
         - The actual NDEF message content
+
+  You can find more information about the NDEF file format in the :ref:`nfc_t4t_ndef_file_readme` library documentation.
 
 Configuration
 *************

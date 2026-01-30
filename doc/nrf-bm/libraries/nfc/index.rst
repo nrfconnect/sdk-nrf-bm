@@ -9,6 +9,7 @@ This makes them ideal for implementing NFC tag functionality in bare metal appli
 .. note::
    For background information about NFC technology and the NDEF format, see the `nRF Connect SDK NFC libraries`_.
    The bare metal context supports only NFC-A listen mode (tag emulation).
+   Polling device functionality is not supported in |BMshort|.
 
 .. toctree::
    :maxdepth: 1
@@ -18,3 +19,4 @@ This makes them ideal for implementing NFC tag functionality in bare metal appli
    integration_notes
    type_2_tag
    type_4_tag
+   ndef/index
