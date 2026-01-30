@@ -49,19 +49,7 @@ extern "C" {
  */
 #define BLE_NUS_C_DEF(_name)                                                                       \
 	static struct ble_nus_c _name;                                                             \
-	NRF_SDH_BLE_OBSERVER(_name##_obs, BLE_NUS_C_BLE_OBSERVER_PRIO, ble_nus_c_on_ble_evt, &_name)
-
-/**
- * @brief Macro for defining multiple ble_nus_c instances.
- *
- * @param   _name   Name of the array of instances.
- * @param   _cnt    Number of instances to define.
- * @hideinitializer
- */
-#define BLE_NUS_C_ARRAY_DEF(_name, _cnt)                                                           \
-	static struct ble_nus_c _name[_cnt];                                                              \
-	NRF_SDH_BLE_OBSERVERS(_name##_obs, BLE_NUS_C_BLE_OBSERVER_PRIO, ble_nus_c_on_ble_evt,      \
-			      &_name, _cnt)
+	NRF_SDH_BLE_OBSERVER(_name##_obs, ble_nus_c_on_ble_evt, &_name, HIGH)
 
 #define NUS_BASE_UUID                                                                              \
 	{{0x9E, 0xCA, 0xDC, 0x24, 0x0E, 0xE5, 0xA9, 0xE0, 0x93, 0xF3, 0xA3, 0xB5, 0x00, 0x00,      \
@@ -78,11 +66,8 @@ extern "C" {
  * @brief   Maximum length of data (in bytes) that can be transmitted to the peer by the Nordic UART
  * service module.
  */
-#if defined(NRF_SDH_BLE_GATT_MAX_MTU_SIZE) && (NRF_SDH_BLE_GATT_MAX_MTU_SIZE != 0)
-#define BLE_NUS_MAX_DATA_LEN (NRF_SDH_BLE_GATT_MAX_MTU_SIZE - OPCODE_LENGTH - HANDLE_LENGTH)
-#else
-#define BLE_NUS_MAX_DATA_LEN (BLE_GATT_MTU_SIZE_DEFAULT - OPCODE_LENGTH - HANDLE_LENGTH)
-#warning NRF_SDH_BLE_GATT_MAX_MTU_SIZE is not defined.
+#ifndef BLE_NUS_MAX_DATA_LEN
+#define BLE_NUS_MAX_DATA_LEN (CONFIG_NRF_SDH_BLE_GATT_MAX_MTU_SIZE - OPCODE_LENGTH - HANDLE_LENGTH)
 #endif
 
 /**
@@ -91,9 +76,10 @@ extern "C" {
 enum ble_nus_c_evt_type {
 	BLE_NUS_C_EVT_DISCOVERY_COMPLETE, /**< Event indicating that the NUS service and its
 					     characteristics were found. */
-	BLE_NUS_C_EVT_NUS_TX_EVT,  /**< Event indicating that the central received something from a
-				      peer. */
-	BLE_NUS_C_EVT_DISCONNECTED /**< Event indicating that the NUS server disconnected. */
+	BLE_NUS_C_EVT_NUS_TX_EVT,   /**< Event indicating that the central received something from a
+				       peer. */
+	BLE_NUS_C_EVT_DISCONNECTED, /**< Event indicating that the NUS server disconnected. */
+	BLE_NUS_C_EVT_ERROR
 };
 
 /**
@@ -114,13 +100,23 @@ struct ble_nus_c_handles {
 struct ble_nus_c_evt {
 	enum ble_nus_c_evt_type evt_type;
 	uint16_t conn_handle;
+	union {
+		struct {
+			struct ble_nus_c_handles handles; /**< Handles on which the Nordic UART
+		       service characteristics were discovered on the peer device. **/
+		} discovery_complete;
+		struct {
+			uint8_t *data;
+			uint16_t data_len;
+		} nus_tx_evt;
+		struct {
+			uint32_t reason;
+		} disconnected;
+		struct {
+			uint32_t reason;
+		} error;
+	} params;
 	uint16_t max_data_len;
-	uint8_t *data;
-	uint16_t data_len;
-	struct ble_nus_c_handles
-		handles; /**< Handles on which the Nordic UART service characteristics
-		       were discovered on the peer device. This is filled if the
-		       evt_type is @ref BLE_NUS_C_EVT_DISCOVERY_COMPLETE.*/
 };
 
 /* Forward declaration of the ble_nus_t type. */
@@ -132,7 +128,8 @@ struct ble_nus_c;
  * @details This is the type of the event handler that is to be provided by the application
  *          of this module to receive events.
  */
-typedef void (*ble_nus_c_evt_handler)(struct ble_nus_c *ble_nus_c, struct ble_nus_c_evt const *evt);
+typedef void (*ble_nus_c_evt_handler_t)(struct ble_nus_c *ble_nus_c,
+					struct ble_nus_c_evt const *evt);
 
 /**
  * @brief NUS Client structure.
@@ -143,22 +140,19 @@ struct ble_nus_c {
 				 ble_nus_c_handles_assign when connected. */
 	struct ble_nus_c_handles
 		handles; /**< Handles on the connected peer device needed to interact with it. */
-	struct ble_nus_c_evt_handler evt_handler; /**< Application event handler to be called when
+	ble_nus_c_evt_handler_t evt_handler; /**< Application event handler to be called when
 						there is an event related to the NUS. */
-	struct ble_srv_error_handler
-		error_handler;	       /**< Function to be called in case of an error. */
-	struct nrf_ble_gq *gatt_queue; /**< Pointer to BLE GATT Queue instance. */
+	const struct ble_gq *gatt_queue;     /**< Pointer to BLE GATT Queue instance. */
 };
 
 /**
  * @brief NUS Client initialization structure.
  */
 struct ble_nus_c_init {
-	struct ble_nus_c_evt_handler evt_handler; /**< Application event handler to be called when
+	ble_nus_c_evt_handler_t evt_handler; /**< Application event handler to be called when
 						there is an event related to the NUS. */
-	struct ble_srv_error_handler
-		error_handler;	       /**< Function to be called in case of an error. */
-	struct nrf_ble_gq *gatt_queue; /**< Pointer to BLE GATT Queue instance. */
+	const struct ble_gq *gatt_queue;     /**< Pointer to BLE GATT Queue instance. */
+	struct ble_db_discovery *db_discovery;
 };
 
 /**
@@ -203,7 +197,7 @@ void ble_nus_c_on_db_disc_evt(struct ble_nus_c *ble_nus_c, struct ble_db_discove
  * @param[in] ble_evt     Pointer to the BLE event.
  * @param[in] context     Pointer to the NUS client structure.
  */
-void ble_nus_c_on_ble_evt(struct ble_evt const *ble_evt, void *context);
+void ble_nus_c_on_ble_evt(ble_evt_t const *ble_evt, void *context);
 
 /**
  * @brief   Function for requesting the peer to start sending notification of TX characteristic.
