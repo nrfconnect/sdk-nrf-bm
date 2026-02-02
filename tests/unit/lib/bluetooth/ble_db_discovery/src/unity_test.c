@@ -20,20 +20,13 @@ static struct ble_gq ble_gatt_queue;
 static struct ble_db_discovery_evt db_evt;
 static struct ble_db_discovery_evt db_evt_prev;
 
-void ble_evt_send(const ble_evt_t *evt)
-{
-	TYPE_SECTION_FOREACH(struct nrf_sdh_ble_evt_observer, nrf_sdh_ble_evt_observers, obs)
-	{
-		obs->handler(evt, obs->context);
-	}
-}
-
 static void db_discovery_evt_handler(struct ble_db_discovery *db_discovery,
 				     struct ble_db_discovery_evt *evt)
 {
 	db_evt_prev = db_evt;
 	db_evt = *evt;
 }
+
 static uint8_t stub_ble_gq_item_add_success_num_calls;
 
 static uint32_t stub_ble_gq_item_add_success(const struct ble_gq *gatt_queue,
@@ -325,11 +318,11 @@ void test_ble_db_discovery_on_ble_evt(void)
 	nrf_err = ble_db_discovery_start(&db_discovery, 8);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	ble_evt_send(&evt);
+	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
 	TEST_ASSERT_NOT_EQUAL(BLE_DB_DISCOVERY_ERROR, db_evt.evt_type);
 
 	evt.evt.gattc_evt.gatt_status = BLE_GATT_STATUS_UNKNOWN;
-	ble_evt_send(&evt);
+	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
 	TEST_ASSERT_NOT_EQUAL(BLE_DB_DISCOVERY_ERROR, db_evt.evt_type);
 
 	evt.header.evt_id = BLE_GATTC_EVT_CHAR_DISC_RSP;
@@ -340,18 +333,18 @@ void test_ble_db_discovery_on_ble_evt(void)
 		BLE_UUID_HEART_RATE_MEASUREMENT_CHAR;
 	evt.evt.gattc_evt.params.char_disc_rsp.chars[0].uuid.type = BLE_UUID_TYPE_BLE;
 
-	ble_evt_send(&evt);
+	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
 	TEST_ASSERT_NOT_EQUAL(BLE_DB_DISCOVERY_ERROR, db_evt.evt_type);
 
 	evt.evt.gattc_evt.params.char_disc_rsp.chars[0].uuid.uuid =
 		BLE_UUID_HEART_RATE_CONTROL_POINT_CHAR;
 
-	ble_evt_send(&evt);
+	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
 	TEST_ASSERT_NOT_EQUAL(BLE_DB_DISCOVERY_ERROR, db_evt.evt_type);
 
 	evt.evt.gattc_evt.gatt_status = BLE_GATT_STATUS_UNKNOWN;
 
-	ble_evt_send(&evt);
+	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
 	TEST_ASSERT_NOT_EQUAL(BLE_DB_DISCOVERY_ERROR, db_evt.evt_type);
 
 	evt.header.evt_id = BLE_GATTC_EVT_DESC_DISC_RSP;
@@ -362,30 +355,30 @@ void test_ble_db_discovery_on_ble_evt(void)
 	evt.evt.gattc_evt.params.desc_disc_rsp.descs[0].uuid.uuid =
 		BLE_UUID_DESCRIPTOR_CHAR_USER_DESC;
 	evt.evt.gattc_evt.params.desc_disc_rsp.descs[0].uuid.type = BLE_UUID_TYPE_BLE;
-	ble_evt_send(&evt);
+	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
 	TEST_ASSERT_NOT_EQUAL(BLE_DB_DISCOVERY_ERROR, db_evt.evt_type);
 
 	evt.evt.gattc_evt.params.desc_disc_rsp.descs[0].uuid.uuid =
 		BLE_UUID_DESCRIPTOR_CHAR_EXT_PROP;
 
-	ble_evt_send(&evt);
+	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
 	TEST_ASSERT_NOT_EQUAL(BLE_DB_DISCOVERY_ERROR, db_evt.evt_type);
 
 	evt.evt.gattc_evt.params.desc_disc_rsp.descs[0].uuid.uuid =
 		BLE_UUID_DESCRIPTOR_CLIENT_CHAR_CONFIG;
 
-	ble_evt_send(&evt);
+	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
 	TEST_ASSERT_NOT_EQUAL(BLE_DB_DISCOVERY_ERROR, db_evt.evt_type);
 
 	evt.evt.gattc_evt.params.desc_disc_rsp.descs[0].uuid.uuid = BLE_UUID_REPORT_REF_DESCR;
 
-	ble_evt_send(&evt);
+	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
 	TEST_ASSERT_NOT_EQUAL(BLE_DB_DISCOVERY_ERROR, db_evt.evt_type);
 
 	evt.header.evt_id = BLE_GAP_EVT_DISCONNECTED;
 	evt.evt.gap_evt.params.disconnected.reason = BLE_HCI_CONNECTION_TIMEOUT;
 
-	ble_evt_send(&evt);
+	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
 	TEST_ASSERT_NOT_EQUAL(BLE_DB_DISCOVERY_ERROR, db_evt.evt_type);
 
 	TEST_ASSERT_EQUAL(4, stub_ble_gq_item_add_success_num_calls);
@@ -421,7 +414,7 @@ void test_ble_db_discovery_on_ble_evt_no_mem(void)
 		BLE_UUID_HEART_RATE_SERVICE;
 	evt.evt.gattc_evt.params.prim_srvc_disc_rsp.services[0].uuid.type = BLE_UUID_TYPE_BLE;
 	evt.evt.gattc_evt.params.prim_srvc_disc_rsp.count = 1;
-	ble_evt_send(&evt);
+	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
 	TEST_ASSERT_EQUAL(BLE_DB_DISCOVERY_ERROR, db_evt_prev.evt_type);
 	TEST_ASSERT_EQUAL(NRF_ERROR_NO_MEM, db_evt_prev.params.error.reason);
 
@@ -431,7 +424,7 @@ void test_ble_db_discovery_on_ble_evt_no_mem(void)
 	evt.evt.gattc_evt.params.char_disc_rsp.count = 1;
 	evt.evt.gattc_evt.params.char_disc_rsp.chars[0].uuid.uuid = BLE_UUID_BATTERY_LEVEL_CHAR;
 	evt.evt.gattc_evt.params.char_disc_rsp.chars[0].uuid.type = BLE_UUID_TYPE_BLE;
-	ble_evt_send(&evt);
+	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
 	TEST_ASSERT_EQUAL(BLE_DB_DISCOVERY_ERROR, db_evt_prev.evt_type);
 	TEST_ASSERT_EQUAL(NRF_ERROR_NO_MEM, db_evt_prev.params.error.reason);
 }
