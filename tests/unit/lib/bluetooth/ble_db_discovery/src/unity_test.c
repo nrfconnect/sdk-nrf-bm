@@ -52,7 +52,7 @@ static uint32_t stub_ble_gq_item_add_success_then_no_mem(const struct ble_gq *ga
 	return NRF_ERROR_NO_MEM;
 }
 
-void test_ble_adv_init_error_null(void)
+void test_ble_db_discovery_init_error_null(void)
 {
 	uint32_t nrf_err;
 	struct ble_db_discovery_config config = {
@@ -69,7 +69,7 @@ void test_ble_adv_init_error_null(void)
 	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 }
 
-void test_ble_db_discovery_init(void)
+void test_ble_db_discovery_init_success(void)
 {
 	int nrf_err;
 	struct ble_db_discovery_config config = {
@@ -143,7 +143,7 @@ void test_ble_db_discovery_service_register_no_mem(void)
 	TEST_ASSERT_EQUAL(NRF_ERROR_NO_MEM, nrf_err);
 }
 
-void test_ble_db_discovery_service_register(void)
+void test_ble_db_discovery_service_register_success(void)
 {
 	uint32_t nrf_err;
 	struct ble_db_discovery_config config = {
@@ -252,7 +252,7 @@ void test_ble_db_discovery_start_no_mem(void)
 	TEST_ASSERT_EQUAL(NRF_ERROR_NO_MEM, nrf_err);
 }
 
-void test_ble_db_discovery_start(void)
+void test_ble_db_discovery_start_success(void)
 {
 	uint32_t nrf_err;
 	struct ble_db_discovery_config config = {
