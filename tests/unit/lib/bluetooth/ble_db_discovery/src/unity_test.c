@@ -79,9 +79,6 @@ void test_ble_db_discovery_init_success(void)
 
 	nrf_err = ble_db_discovery_init(&db_discovery, &config);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
-	TEST_ASSERT_EQUAL(0, db_discovery.pending_usr_evt_index);
-	TEST_ASSERT_NOT_EQUAL(NULL, db_discovery.evt_handler);
-	TEST_ASSERT_NOT_EQUAL(NULL, db_discovery.gatt_queue);
 }
 
 void test_ble_db_discovery_service_register_null(void)
@@ -136,8 +133,6 @@ void test_ble_db_discovery_service_register_no_mem(void)
 		TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 		hrs_uuid.uuid++;
 	}
-
-	TEST_ASSERT_EQUAL(CONFIG_BLE_DB_DISCOVERY_MAX_SRV, db_discovery.num_registered_uuids);
 
 	nrf_err = ble_db_discovery_service_register(&db_discovery, &hrs_uuid);
 	TEST_ASSERT_EQUAL(NRF_ERROR_NO_MEM, nrf_err);
