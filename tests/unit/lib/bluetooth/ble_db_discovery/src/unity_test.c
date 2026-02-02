@@ -24,6 +24,11 @@ static void db_discovery_evt_handler(struct ble_db_discovery *db_discovery,
 	db_evt = *evt;
 }
 
+static struct ble_db_discovery_config db_disc_config = {
+	.gatt_queue = &ble_gatt_queue,
+	.evt_handler = db_discovery_evt_handler,
+};
+
 static uint8_t stub_ble_gq_item_add_success_num_calls;
 
 static uint32_t stub_ble_gq_item_add_success(const struct ble_gq *gatt_queue,
@@ -72,12 +77,8 @@ void test_ble_db_discovery_init_error_null(void)
 void test_ble_db_discovery_init_success(void)
 {
 	int nrf_err;
-	struct ble_db_discovery_config config = {
-		.gatt_queue = &ble_gatt_queue,
-		.evt_handler = db_discovery_evt_handler,
-	};
 
-	nrf_err = ble_db_discovery_init(&db_discovery, &config);
+	nrf_err = ble_db_discovery_init(&db_discovery, &db_disc_config);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
@@ -85,14 +86,9 @@ void test_ble_db_discovery_service_register_null(void)
 {
 	uint32_t nrf_err;
 	struct ble_db_discovery db_discovery = {0};
-	struct ble_db_discovery_config config = {
-		.gatt_queue = &ble_gatt_queue,
-		.evt_handler = db_discovery_evt_handler,
-	};
-
 	ble_uuid_t hrs_uuid = {.type = BLE_UUID_TYPE_BLE, .uuid = BLE_UUID_HEART_RATE_SERVICE};
 
-	nrf_err = ble_db_discovery_init(&db_discovery, &config);
+	nrf_err = ble_db_discovery_init(&db_discovery, &db_disc_config);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	nrf_err = ble_db_discovery_service_register(&db_discovery, NULL);
@@ -116,16 +112,12 @@ void test_ble_db_discovery_service_register_invalid_state(void)
 void test_ble_db_discovery_service_register_no_mem(void)
 {
 	uint32_t nrf_err;
-	struct ble_db_discovery_config config = {
-		.gatt_queue = &ble_gatt_queue,
-		.evt_handler = db_discovery_evt_handler,
-	};
 	ble_uuid_t hrs_uuid = {
 		.type = BLE_UUID_TYPE_BLE,
 		.uuid = BLE_UUID_IMMEDIATE_ALERT_SERVICE
 	};
 
-	nrf_err = ble_db_discovery_init(&db_discovery, &config);
+	nrf_err = ble_db_discovery_init(&db_discovery, &db_disc_config);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	for (size_t i = 0; i < CONFIG_BLE_DB_DISCOVERY_MAX_SRV; ++i) {
@@ -141,16 +133,12 @@ void test_ble_db_discovery_service_register_no_mem(void)
 void test_ble_db_discovery_service_register_success(void)
 {
 	uint32_t nrf_err;
-	struct ble_db_discovery_config config = {
-		.gatt_queue = &ble_gatt_queue,
-		.evt_handler = db_discovery_evt_handler,
-	};
 	ble_uuid_t hrs_uuid = {
 		.type = BLE_UUID_TYPE_BLE,
 		.uuid = BLE_UUID_HEART_RATE_SERVICE
 	};
 
-	nrf_err = ble_db_discovery_init(&db_discovery, &config);
+	nrf_err = ble_db_discovery_init(&db_discovery, &db_disc_config);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	nrf_err = ble_db_discovery_service_register(&db_discovery, &hrs_uuid);
@@ -160,16 +148,12 @@ void test_ble_db_discovery_service_register_success(void)
 void test_ble_db_discovery_start_null(void)
 {
 	uint32_t nrf_err;
-	struct ble_db_discovery_config config = {
-		.gatt_queue = &ble_gatt_queue,
-		.evt_handler = db_discovery_evt_handler,
-	};
 	ble_uuid_t hrs_uuid = {
 		.type = BLE_UUID_TYPE_BLE,
 		.uuid = BLE_UUID_HEART_RATE_SERVICE
 	};
 
-	nrf_err = ble_db_discovery_init(&db_discovery, &config);
+	nrf_err = ble_db_discovery_init(&db_discovery, &db_disc_config);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	nrf_err = ble_db_discovery_service_register(&db_discovery, &hrs_uuid);
@@ -182,15 +166,11 @@ void test_ble_db_discovery_start_null(void)
 void test_ble_db_discovery_start_invalid_state(void)
 {
 	uint32_t nrf_err;
-	struct ble_db_discovery_config config = {
-		.gatt_queue = &ble_gatt_queue,
-		.evt_handler = db_discovery_evt_handler,
-	};
 
 	nrf_err = ble_db_discovery_start(&db_discovery, 0);
 	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, nrf_err);
 
-	nrf_err = ble_db_discovery_init(&db_discovery, &config);
+	nrf_err = ble_db_discovery_init(&db_discovery, &db_disc_config);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	nrf_err = ble_db_discovery_start(&db_discovery, 0);
@@ -200,12 +180,8 @@ void test_ble_db_discovery_start_invalid_state(void)
 void test_ble_db_discovery_start_busy(void)
 {
 	uint32_t nrf_err;
-	struct ble_db_discovery_config config = {
-		.gatt_queue = &ble_gatt_queue,
-		.evt_handler = db_discovery_evt_handler,
-	};
 
-	nrf_err = ble_db_discovery_init(&db_discovery, &config);
+	nrf_err = ble_db_discovery_init(&db_discovery, &db_disc_config);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	ble_uuid_t hrs_uuid = {.type = BLE_UUID_TYPE_BLE, .uuid = BLE_UUID_HEART_RATE_SERVICE};
@@ -226,16 +202,12 @@ void test_ble_db_discovery_start_busy(void)
 void test_ble_db_discovery_start_no_mem(void)
 {
 	uint32_t nrf_err;
-	struct ble_db_discovery_config config = {
-		.gatt_queue = &ble_gatt_queue,
-		.evt_handler = db_discovery_evt_handler,
-	};
 	ble_uuid_t hrs_uuid = {
 		.type = BLE_UUID_TYPE_BLE,
 		.uuid = BLE_UUID_HEART_RATE_SERVICE
 	};
 
-	nrf_err = ble_db_discovery_init(&db_discovery, &config);
+	nrf_err = ble_db_discovery_init(&db_discovery, &db_disc_config);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	nrf_err = ble_db_discovery_service_register(&db_discovery, &hrs_uuid);
@@ -250,16 +222,12 @@ void test_ble_db_discovery_start_no_mem(void)
 void test_ble_db_discovery_start_success(void)
 {
 	uint32_t nrf_err;
-	struct ble_db_discovery_config config = {
-		.gatt_queue = &ble_gatt_queue,
-		.evt_handler = db_discovery_evt_handler,
-	};
 	ble_uuid_t hrs_uuid = {
 		.type = BLE_UUID_TYPE_BLE,
 		.uuid = BLE_UUID_HEART_RATE_SERVICE
 	};
 
-	nrf_err = ble_db_discovery_init(&db_discovery, &config);
+	nrf_err = ble_db_discovery_init(&db_discovery, &db_disc_config);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	nrf_err = ble_db_discovery_service_register(&db_discovery, &hrs_uuid);
@@ -284,10 +252,6 @@ void test_ble_db_discovery_on_ble_evt(void)
 		.evt.gattc_evt.params.prim_srvc_disc_rsp.services[0].uuid.type = BLE_UUID_TYPE_BLE,
 		.evt.gattc_evt.params.prim_srvc_disc_rsp.count = 1,
 	};
-	struct ble_db_discovery_config config = {
-		.gatt_queue = &ble_gatt_queue,
-		.evt_handler = db_discovery_evt_handler,
-	};
 	ble_uuid_t hrs_uuid = {
 		.type = BLE_UUID_TYPE_BLE,
 		.uuid = BLE_UUID_HEART_RATE_SERVICE
@@ -296,7 +260,7 @@ void test_ble_db_discovery_on_ble_evt(void)
 	__cmock_ble_gq_item_add_Stub(stub_ble_gq_item_add_success);
 	__cmock_ble_gq_conn_handle_register_ExpectAndReturn(&ble_gatt_queue, 8, NRF_SUCCESS);
 
-	nrf_err = ble_db_discovery_init(&db_discovery, &config);
+	nrf_err = ble_db_discovery_init(&db_discovery, &db_disc_config);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	nrf_err = ble_db_discovery_service_register(&db_discovery, &hrs_uuid);
@@ -380,15 +344,11 @@ void test_ble_db_discovery_on_ble_evt_no_mem(void)
 {
 	uint32_t nrf_err;
 	ble_evt_t evt;
-	struct ble_db_discovery_config config = {
-		.gatt_queue = &ble_gatt_queue,
-		.evt_handler = db_discovery_evt_handler,
-	};
 
 	__cmock_ble_gq_conn_handle_register_ExpectAndReturn(&ble_gatt_queue, 4, NRF_SUCCESS);
 	__cmock_ble_gq_item_add_Stub(stub_ble_gq_item_add_success_then_no_mem);
 
-	nrf_err = ble_db_discovery_init(&db_discovery, &config);
+	nrf_err = ble_db_discovery_init(&db_discovery, &db_disc_config);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	ble_uuid_t hrs_uuid = {.type = BLE_UUID_TYPE_BLE, .uuid = BLE_UUID_HEART_RATE_SERVICE};
