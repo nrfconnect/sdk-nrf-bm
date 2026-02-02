@@ -33,8 +33,6 @@ zephyr_include_directories(
   ${ZEPHYR_HAL_NORDIC_MODULE_DIR}/nrfx/mdk
 )
 
-zephyr_linker_sources(SECTIONS evt_obs.ld)
-
 # Generate and add test file
 test_runner_generate(src/unity_test.c)
 target_sources(app PRIVATE src/unity_test.c)
