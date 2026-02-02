@@ -111,8 +111,6 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 			LOG_ERR("Failed to assign qwr handle, nrf_error %#x", nrf_err);
 			return;
 		}
-
-		nrf_gpio_pin_write(BOARD_PIN_LED_0, !BOARD_LED_ACTIVE_STATE);
 		nrf_gpio_pin_write(BOARD_PIN_LED_1, BOARD_LED_ACTIVE_STATE);
 		break;
 
@@ -121,7 +119,6 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		if (conn_handle == evt->evt.gap_evt.conn_handle) {
 			conn_handle = BLE_CONN_HANDLE_INVALID;
 		}
-
 		nrf_gpio_pin_write(BOARD_PIN_LED_1, !BOARD_LED_ACTIVE_STATE);
 		break;
 
@@ -165,10 +162,10 @@ static void ble_adv_evt_handler(struct ble_adv *ble_adv, const struct ble_adv_ev
 	case BLE_ADV_EVT_SLOW:
 	case BLE_ADV_EVT_FAST_ALLOW_LIST:
 	case BLE_ADV_EVT_SLOW_ALLOW_LIST:
-		nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+		LOG_DBG("Started advertising, adv_evt_type %d", (int)evt->evt_type);
 		break;
 	case BLE_ADV_EVT_IDLE:
-		nrf_gpio_pin_write(BOARD_PIN_LED_0, !BOARD_LED_ACTIVE_STATE);
+		LOG_DBG("Idle, adv_evt_type %d", (int)evt->evt_type);
 		break;
 	case BLE_ADV_EVT_ALLOW_LIST_REQUEST:
 		nrf_err = pm_allow_list_get(allow_list_addrs, &addr_cnt, allow_list_irks, &irk_cnt);
@@ -787,6 +784,9 @@ int main(void)
 	}
 
 	LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
+
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+	LOG_INF("Initialized application");
 
 idle:
 	while (true) {

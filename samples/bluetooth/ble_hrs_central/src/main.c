@@ -131,6 +131,8 @@ static void on_ble_evt(const ble_evt_t *ble_evt, void *ctx)
 			scan_start(false);
 		}
 
+		nrf_gpio_pin_write(BOARD_PIN_LED_1, BOARD_LED_ACTIVE_STATE);
+
 		break;
 
 	case BLE_GAP_EVT_DISCONNECTED:
@@ -139,6 +141,8 @@ static void on_ble_evt(const ble_evt_t *ble_evt, void *ctx)
 		if (ble_conn_state_central_conn_count() < CONFIG_NRF_SDH_BLE_CENTRAL_LINK_COUNT) {
 			scan_start(false);
 		}
+
+		nrf_gpio_pin_write(BOARD_PIN_LED_1, !BOARD_LED_ACTIVE_STATE);
 
 		break;
 
@@ -587,6 +591,7 @@ int main(void)
 	LOG_INF("BLE HRS Central sample started.");
 
 	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
+	nrf_gpio_cfg_output(BOARD_PIN_LED_1);
 
 	err = bm_buttons_init(configs, ARRAY_SIZE(configs), BM_BUTTONS_DETECTION_DELAY_MIN_US);
 	if (err) {
@@ -649,6 +654,9 @@ int main(void)
 	}
 
 	scan_start(erase_bonds);
+
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+	LOG_INF("Initialized application");
 
 	while (true) {
 #if defined(CONFIG_PM_LESC)

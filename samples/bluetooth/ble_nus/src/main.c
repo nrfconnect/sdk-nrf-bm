@@ -207,6 +207,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 			LOG_ERR("Failed to assign qwr handle, nrf_error %#x", nrf_err);
 			return;
 		}
+		nrf_gpio_pin_write(BOARD_PIN_LED_1, BOARD_LED_ACTIVE_STATE);
 		break;
 
 	case BLE_GAP_EVT_DISCONNECTED:
@@ -214,6 +215,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		if (conn_handle == evt->evt.gap_evt.conn_handle) {
 			conn_handle = BLE_CONN_HANDLE_INVALID;
 		}
+		nrf_gpio_pin_write(BOARD_PIN_LED_1, !BOARD_LED_ACTIVE_STATE);
 		break;
 
 	case BLE_GAP_EVT_AUTH_STATUS:
@@ -522,6 +524,12 @@ int main(void)
 	}
 
 	LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
+
+	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
+	nrf_gpio_cfg_output(BOARD_PIN_LED_1);
+
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+	LOG_INF("Initialized application");
 
 idle:
 	while (true) {

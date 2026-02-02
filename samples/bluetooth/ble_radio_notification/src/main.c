@@ -24,14 +24,30 @@ BLE_ADV_DEF(ble_adv);
 
 static void led_init(void)
 {
-	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
+	nrf_gpio_cfg_output(BOARD_PIN_LED_2);
 }
 
 static void led_set(bool state)
 {
-	nrf_gpio_pin_write(BOARD_PIN_LED_0,
+	nrf_gpio_pin_write(BOARD_PIN_LED_2,
 			   (state ? BOARD_LED_ACTIVE_STATE : !BOARD_LED_ACTIVE_STATE));
 }
+
+static void on_ble_evt(const ble_evt_t *evt, void *ctx)
+{
+	switch (evt->header.evt_id) {
+	case BLE_GAP_EVT_CONNECTED:
+		LOG_INF("Peer connected");
+		nrf_gpio_pin_write(BOARD_PIN_LED_1, BOARD_LED_ACTIVE_STATE);
+		break;
+
+	case BLE_GAP_EVT_DISCONNECTED:
+		LOG_INF("Peer disconnected");
+		nrf_gpio_pin_write(BOARD_PIN_LED_1, !BOARD_LED_ACTIVE_STATE);
+		break;
+	}
+}
+NRF_SDH_BLE_OBSERVER(sdh_ble, on_ble_evt, NULL, USER_LOW);
 
 static void ble_adv_evt_handler(struct ble_adv *adv, const struct ble_adv_evt *adv_evt)
 {
@@ -87,7 +103,10 @@ int main(void)
 
 	LOG_INF("BLE Radio Notification sample started");
 
+	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
+	nrf_gpio_cfg_output(BOARD_PIN_LED_1);
 	led_init();
+	LOG_INF("LEDs enabled");
 
 	err = nrf_sdh_enable_request();
 	if (err) {
@@ -131,6 +150,9 @@ int main(void)
 	}
 
 	LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
+
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+	LOG_INF("Initialized application");
 
 idle:
 	while (true) {
