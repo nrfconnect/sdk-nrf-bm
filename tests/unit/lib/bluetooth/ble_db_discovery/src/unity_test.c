@@ -14,8 +14,8 @@
 #include "cmock_ble_gattc.h"
 #include "cmock_ble_gq.h"
 
-BLE_GQ_DEF(ble_gatt_queue);
 BLE_DB_DISCOVERY_DEF(db_discovery);
+static struct ble_gq ble_gatt_queue;
 
 static struct ble_db_discovery_evt db_evt;
 static struct ble_db_discovery_evt db_evt_prev;
@@ -325,17 +325,13 @@ void test_ble_db_discovery_on_ble_evt(void)
 	nrf_err = ble_db_discovery_start(&db_discovery, 8);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	__cmock_ble_gq_on_ble_evt_ExpectAnyArgs();
-
 	ble_evt_send(&evt);
 	TEST_ASSERT_NOT_EQUAL(BLE_DB_DISCOVERY_ERROR, db_evt.evt_type);
 
-	__cmock_ble_gq_on_ble_evt_ExpectAnyArgs();
 	evt.evt.gattc_evt.gatt_status = BLE_GATT_STATUS_UNKNOWN;
 	ble_evt_send(&evt);
 	TEST_ASSERT_NOT_EQUAL(BLE_DB_DISCOVERY_ERROR, db_evt.evt_type);
 
-	__cmock_ble_gq_on_ble_evt_ExpectAnyArgs();
 	evt.header.evt_id = BLE_GATTC_EVT_CHAR_DISC_RSP;
 	evt.evt.gattc_evt.conn_handle = 8;
 	evt.evt.gattc_evt.gatt_status = BLE_GATT_STATUS_SUCCESS;
@@ -347,22 +343,16 @@ void test_ble_db_discovery_on_ble_evt(void)
 	ble_evt_send(&evt);
 	TEST_ASSERT_NOT_EQUAL(BLE_DB_DISCOVERY_ERROR, db_evt.evt_type);
 
-	__cmock_ble_gq_on_ble_evt_ExpectAnyArgs();
-
 	evt.evt.gattc_evt.params.char_disc_rsp.chars[0].uuid.uuid =
 		BLE_UUID_HEART_RATE_CONTROL_POINT_CHAR;
 
 	ble_evt_send(&evt);
 	TEST_ASSERT_NOT_EQUAL(BLE_DB_DISCOVERY_ERROR, db_evt.evt_type);
 
-	__cmock_ble_gq_on_ble_evt_ExpectAnyArgs();
-
 	evt.evt.gattc_evt.gatt_status = BLE_GATT_STATUS_UNKNOWN;
 
 	ble_evt_send(&evt);
 	TEST_ASSERT_NOT_EQUAL(BLE_DB_DISCOVERY_ERROR, db_evt.evt_type);
-
-	__cmock_ble_gq_on_ble_evt_ExpectAnyArgs();
 
 	evt.header.evt_id = BLE_GATTC_EVT_DESC_DISC_RSP;
 	evt.evt.gattc_evt.conn_handle = 8;
@@ -375,15 +365,11 @@ void test_ble_db_discovery_on_ble_evt(void)
 	ble_evt_send(&evt);
 	TEST_ASSERT_NOT_EQUAL(BLE_DB_DISCOVERY_ERROR, db_evt.evt_type);
 
-	__cmock_ble_gq_on_ble_evt_ExpectAnyArgs();
-
 	evt.evt.gattc_evt.params.desc_disc_rsp.descs[0].uuid.uuid =
 		BLE_UUID_DESCRIPTOR_CHAR_EXT_PROP;
 
 	ble_evt_send(&evt);
 	TEST_ASSERT_NOT_EQUAL(BLE_DB_DISCOVERY_ERROR, db_evt.evt_type);
-
-	__cmock_ble_gq_on_ble_evt_ExpectAnyArgs();
 
 	evt.evt.gattc_evt.params.desc_disc_rsp.descs[0].uuid.uuid =
 		BLE_UUID_DESCRIPTOR_CLIENT_CHAR_CONFIG;
@@ -391,14 +377,10 @@ void test_ble_db_discovery_on_ble_evt(void)
 	ble_evt_send(&evt);
 	TEST_ASSERT_NOT_EQUAL(BLE_DB_DISCOVERY_ERROR, db_evt.evt_type);
 
-	__cmock_ble_gq_on_ble_evt_ExpectAnyArgs();
-
 	evt.evt.gattc_evt.params.desc_disc_rsp.descs[0].uuid.uuid = BLE_UUID_REPORT_REF_DESCR;
 
 	ble_evt_send(&evt);
 	TEST_ASSERT_NOT_EQUAL(BLE_DB_DISCOVERY_ERROR, db_evt.evt_type);
-
-	__cmock_ble_gq_on_ble_evt_ExpectAnyArgs();
 
 	evt.header.evt_id = BLE_GAP_EVT_DISCONNECTED;
 	evt.evt.gap_evt.params.disconnected.reason = BLE_HCI_CONNECTION_TIMEOUT;
@@ -432,7 +414,6 @@ void test_ble_db_discovery_on_ble_evt_no_mem(void)
 	nrf_err = ble_db_discovery_start(&db_discovery, 4);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	__cmock_ble_gq_on_ble_evt_ExpectAnyArgs();
 	evt.header.evt_id = BLE_GATTC_EVT_PRIM_SRVC_DISC_RSP;
 	evt.evt.gattc_evt.conn_handle = 4;
 	evt.evt.gattc_evt.gatt_status = BLE_GATT_STATUS_SUCCESS;
@@ -444,7 +425,6 @@ void test_ble_db_discovery_on_ble_evt_no_mem(void)
 	TEST_ASSERT_EQUAL(BLE_DB_DISCOVERY_ERROR, db_evt_prev.evt_type);
 	TEST_ASSERT_EQUAL(NRF_ERROR_NO_MEM, db_evt_prev.params.error.reason);
 
-	__cmock_ble_gq_on_ble_evt_ExpectAnyArgs();
 	evt.header.evt_id = BLE_GATTC_EVT_CHAR_DISC_RSP;
 	evt.evt.gattc_evt.conn_handle = 8;
 	evt.evt.gattc_evt.gatt_status = BLE_GATT_STATUS_SUCCESS;
