@@ -292,7 +292,7 @@ uint32_t ble_gq_item_add(const struct ble_gq *gatt_queue, struct ble_gq_req *req
  * @param[in] gatt_queue   Pointer to the @ref ble_gq instance.
  * @param[in] conn_handle  Connection handle.
  *
- * @retval NRF_SUCCESS Connection handle was successful registered.
+ * @retval NRF_SUCCESS Connection handle was registered successfully.
  * @retval NRF_ERROR_NULL If @p gatt_queue was NULL.
  * @retval NRF_ERROR_NO_MEM No space for another connection handle.
  */
