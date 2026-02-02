@@ -9,9 +9,6 @@
 #include <bm/bluetooth/ble_db_discovery.h>
 #include <bm/bluetooth/services/uuid.h>
 
-#include "cmock_ble.h"
-#include "cmock_ble_gap.h"
-#include "cmock_ble_gattc.h"
 #include "cmock_ble_gq.h"
 
 BLE_DB_DISCOVERY_DEF(db_discovery);
