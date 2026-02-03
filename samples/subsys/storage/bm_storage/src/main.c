@@ -14,6 +14,7 @@
 
 #include <bm/softdevice_handler/nrf_sdh.h>
 #include <nrf_soc.h>
+#include <board-config.h>
 
 #include <bm/storage/bm_storage.h>
 
@@ -279,6 +280,9 @@ int main(void)
 	if (err) {
 		goto idle;
 	}
+
+	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
 
 	LOG_INF("Storage sample finished.");
 

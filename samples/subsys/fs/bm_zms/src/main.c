@@ -7,6 +7,7 @@
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
+#include <board-config.h>
 
 #define STORAGE_NODE DT_NODELABEL(storage0_partition)
 #define BM_ZMS_PARTITION_OFFSET DT_REG_ADDR(STORAGE_NODE)
@@ -334,6 +335,9 @@ int main(void)
 		goto idle;
 	}
 	wait_for_clear();
+
+	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
 
 	LOG_INF("BM_ZMS sample finished Successfully");
 
