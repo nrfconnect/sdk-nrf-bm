@@ -17,6 +17,8 @@ static struct ble_gq ble_gatt_queue;
 static struct ble_db_discovery_evt db_evt;
 static struct ble_db_discovery_evt db_evt_prev;
 
+static uint16_t test_conn_handle;
+
 static const ble_uuid_t srv1_uuid = {.uuid = 0x7890, .type = BLE_UUID_TYPE_BLE};
 
 static void db_discovery_evt_handler(struct ble_db_discovery *db_discovery,
@@ -145,7 +147,7 @@ void test_ble_db_discovery_start_null(void)
 	nrf_err = ble_db_discovery_service_register(&db_discovery, &srv1_uuid);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	nrf_err = ble_db_discovery_start(NULL, 0);
+	nrf_err = ble_db_discovery_start(NULL, test_conn_handle);
 	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 }
 
@@ -153,13 +155,13 @@ void test_ble_db_discovery_start_invalid_state(void)
 {
 	uint32_t nrf_err;
 
-	nrf_err = ble_db_discovery_start(&db_discovery, 0);
+	nrf_err = ble_db_discovery_start(&db_discovery, test_conn_handle);
 	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, nrf_err);
 
 	nrf_err = ble_db_discovery_init(&db_discovery, &db_disc_config);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	nrf_err = ble_db_discovery_start(&db_discovery, 0);
+	nrf_err = ble_db_discovery_start(&db_discovery, test_conn_handle);
 	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, nrf_err);
 }
 
@@ -176,10 +178,10 @@ void test_ble_db_discovery_start_busy(void)
 	__cmock_ble_gq_conn_handle_register_ExpectAnyArgsAndReturn(NRF_SUCCESS);
 	__cmock_ble_gq_item_add_ExpectAnyArgsAndReturn(NRF_SUCCESS);
 
-	nrf_err = ble_db_discovery_start(&db_discovery, 0);
+	nrf_err = ble_db_discovery_start(&db_discovery, test_conn_handle);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	nrf_err = ble_db_discovery_start(&db_discovery, 0);
+	nrf_err = ble_db_discovery_start(&db_discovery, test_conn_handle);
 	TEST_ASSERT_EQUAL(NRF_ERROR_BUSY, nrf_err);
 }
 
@@ -193,9 +195,10 @@ void test_ble_db_discovery_start_no_mem(void)
 	nrf_err = ble_db_discovery_service_register(&db_discovery, &srv1_uuid);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	__cmock_ble_gq_conn_handle_register_ExpectAndReturn(&ble_gatt_queue, 8, NRF_ERROR_NO_MEM);
+	__cmock_ble_gq_conn_handle_register_ExpectAndReturn(&ble_gatt_queue, test_conn_handle,
+							    NRF_ERROR_NO_MEM);
 
-	nrf_err = ble_db_discovery_start(&db_discovery, 8);
+	nrf_err = ble_db_discovery_start(&db_discovery, test_conn_handle);
 	TEST_ASSERT_EQUAL(NRF_ERROR_NO_MEM, nrf_err);
 }
 
@@ -209,10 +212,11 @@ void test_ble_db_discovery_start_success(void)
 	nrf_err = ble_db_discovery_service_register(&db_discovery, &srv1_uuid);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	__cmock_ble_gq_conn_handle_register_ExpectAndReturn(&ble_gatt_queue, 8, NRF_SUCCESS);
+	__cmock_ble_gq_conn_handle_register_ExpectAndReturn(&ble_gatt_queue, test_conn_handle,
+							    NRF_SUCCESS);
 	__cmock_ble_gq_item_add_ExpectAnyArgsAndReturn(NRF_SUCCESS);
 
-	nrf_err = ble_db_discovery_start(&db_discovery, 8);
+	nrf_err = ble_db_discovery_start(&db_discovery, test_conn_handle);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
@@ -225,14 +229,15 @@ void test_ble_db_discovery_on_ble_evt(void)
 	};
 	ble_evt_t evt = {
 		.header.evt_id = BLE_GATTC_EVT_PRIM_SRVC_DISC_RSP,
-		.evt.gattc_evt.conn_handle = 8,
+		.evt.gattc_evt.conn_handle = test_conn_handle,
 		.evt.gattc_evt.params.prim_srvc_disc_rsp.services[0].uuid = srv1_uuid,
 		.evt.gattc_evt.gatt_status = BLE_GATT_STATUS_SUCCESS,
 		.evt.gattc_evt.params.prim_srvc_disc_rsp.count = 1,
 	};
 
 	__cmock_ble_gq_item_add_Stub(stub_ble_gq_item_add_success);
-	__cmock_ble_gq_conn_handle_register_ExpectAndReturn(&ble_gatt_queue, 8, NRF_SUCCESS);
+	__cmock_ble_gq_conn_handle_register_ExpectAndReturn(&ble_gatt_queue, test_conn_handle,
+							    NRF_SUCCESS);
 
 	nrf_err = ble_db_discovery_init(&db_discovery, &db_disc_config);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
@@ -243,7 +248,7 @@ void test_ble_db_discovery_on_ble_evt(void)
 	nrf_err = ble_db_discovery_service_register(&db_discovery, &therm_uuid);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	nrf_err = ble_db_discovery_start(&db_discovery, 8);
+	nrf_err = ble_db_discovery_start(&db_discovery, test_conn_handle);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
@@ -254,7 +259,7 @@ void test_ble_db_discovery_on_ble_evt(void)
 	TEST_ASSERT_NOT_EQUAL(BLE_DB_DISCOVERY_ERROR, db_evt.evt_type);
 
 	evt.header.evt_id = BLE_GATTC_EVT_CHAR_DISC_RSP;
-	evt.evt.gattc_evt.conn_handle = 8;
+	evt.evt.gattc_evt.conn_handle = test_conn_handle;
 	evt.evt.gattc_evt.gatt_status = BLE_GATT_STATUS_SUCCESS;
 	evt.evt.gattc_evt.params.char_disc_rsp.count = 1;
 	evt.evt.gattc_evt.params.char_disc_rsp.chars[0].uuid.uuid =
@@ -276,7 +281,7 @@ void test_ble_db_discovery_on_ble_evt(void)
 	TEST_ASSERT_NOT_EQUAL(BLE_DB_DISCOVERY_ERROR, db_evt.evt_type);
 
 	evt.header.evt_id = BLE_GATTC_EVT_DESC_DISC_RSP;
-	evt.evt.gattc_evt.conn_handle = 8;
+	evt.evt.gattc_evt.conn_handle = test_conn_handle;
 	evt.evt.gattc_evt.gatt_status = BLE_GATT_STATUS_SUCCESS;
 	evt.evt.gattc_evt.params.desc_disc_rsp.count = 1;
 	evt.evt.gattc_evt.params.desc_disc_rsp.descs[0].handle = 8;
@@ -317,7 +322,8 @@ void test_ble_db_discovery_on_ble_evt_no_mem(void)
 	uint32_t nrf_err;
 	ble_evt_t evt;
 
-	__cmock_ble_gq_conn_handle_register_ExpectAndReturn(&ble_gatt_queue, 4, NRF_SUCCESS);
+	__cmock_ble_gq_conn_handle_register_ExpectAndReturn(&ble_gatt_queue, test_conn_handle,
+							    NRF_SUCCESS);
 	__cmock_ble_gq_item_add_Stub(stub_ble_gq_item_add_success_then_no_mem);
 
 	nrf_err = ble_db_discovery_init(&db_discovery, &db_disc_config);
@@ -326,11 +332,11 @@ void test_ble_db_discovery_on_ble_evt_no_mem(void)
 	nrf_err = ble_db_discovery_service_register(&db_discovery, &srv1_uuid);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	nrf_err = ble_db_discovery_start(&db_discovery, 4);
+	nrf_err = ble_db_discovery_start(&db_discovery, test_conn_handle);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	evt.header.evt_id = BLE_GATTC_EVT_PRIM_SRVC_DISC_RSP;
-	evt.evt.gattc_evt.conn_handle = 4;
+	evt.evt.gattc_evt.conn_handle = test_conn_handle;
 	evt.evt.gattc_evt.gatt_status = BLE_GATT_STATUS_SUCCESS;
 	evt.evt.gattc_evt.params.prim_srvc_disc_rsp.services[0].uuid = srv1_uuid;
 	evt.evt.gattc_evt.params.prim_srvc_disc_rsp.count = 1;
@@ -352,6 +358,9 @@ void test_ble_db_discovery_on_ble_evt_no_mem(void)
 void setUp(void)
 {
 	memset(&db_discovery, 0, sizeof(db_discovery));
+
+	/* Increment connection handle to catch issues with data persisting between tests. */
+	test_conn_handle++;
 }
 void tearDown(void)
 {
