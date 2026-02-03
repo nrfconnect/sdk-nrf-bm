@@ -25,6 +25,9 @@
 #include <zephyr/settings/settings.h>
 #include <bm/settings/bluetooth_name.h>
 #include <zephyr/retention/retention.h>
+#include <bm/storage/bm_rmem.h>
+
+const char *ble_name_value_get(struct bm_retained_clipboard_ctx *ctx);
 
 LOG_MODULE_REGISTER(app, CONFIG_APP_LOG_LEVEL);
 
@@ -224,6 +227,21 @@ int main(void)
 
 	settings_load();
 #endif
+#if CONFIG_NCS_BM_FLAT_SETTINGS_BLUETOOTH_NAME
+	struct bm_retained_clipboard_ctx clipboard_ctx;
+
+	err = bm_rmem_init_reader(&clipboard_ctx);
+	if (err) {
+		LOG_ERR("Failed to initialize retained clipboard reader, err %d", err);
+		return 0;
+	}
+
+	err = bm_rmem_crc32_verify();
+	if (err < 0) {
+		LOG_ERR("Failed to verify retained clipboard CRC32, err %d", err);
+		return 0;
+	}
+#endif
 
 	nrf_err = ble_mcumgr_init(&mcumgr_cfg);
 
@@ -251,12 +269,17 @@ int main(void)
 		return 0;
 	}
 
-#if CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME
+#if CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME || CONFIG_NCS_BM_FLAT_SETTINGS_BLUETOOTH_NAME
 	const char *custom_advertising_name;
 	uint8_t custom_advertising_name_size;
 	ble_gap_conn_sec_mode_t sec_mode = {0};
 
+#if CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME 	
 	custom_advertising_name = bluetooth_name_value_get();
+#endif
+#if CONFIG_NCS_BM_FLAT_SETTINGS_BLUETOOTH_NAME
+	custom_advertising_name = ble_name_value_get(&clipboard_ctx);
+#endif
 	custom_advertising_name_size = strlen(custom_advertising_name);
 
 	if (custom_advertising_name_size > 0) {
@@ -277,7 +300,7 @@ int main(void)
 			LOG_ERR("Failed to update advertising data, err %d", err);
 			return 0;
 		}
-
+#if CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME
 		/* Clear settings after device name has been set so it does not persist */
 		err = retention_clear(DEVICE_DT_GET(DT_CHOSEN(zephyr_settings_partition)));
 
@@ -285,6 +308,14 @@ int main(void)
 			LOG_ERR("Failed to clear retention area, err %d", err);
 			return 0;
 		}
+#endif
+#if CONFIG_NCS_BM_FLAT_SETTINGS_BLUETOOTH_NAME
+	err = bm_rmem_clear();
+	if (err) {
+		LOG_ERR("Failed to clear retained clipboard, err %d", err);
+		return 0;
+	}
+#endif
 	}
 #endif /* CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME */
 

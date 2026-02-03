@@ -6,5 +6,6 @@
 
 # zephyr-keep-sorted-start
 add_subdirectory_ifdef(CONFIG_BM_STORAGE bm_storage)
+add_subdirectory_ifdef(CONFIG_NCS_BM_RMEM_CLIPBOARD bm_rmem)
 add_subdirectory_ifdef(CONFIG_FLASH_MAP flash_map)
 # zephyr-keep-sorted-stop

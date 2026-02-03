@@ -8,10 +8,12 @@
 #include <zephyr/settings/settings.h>
 #include <zephyr/logging/log.h>
 #include <bm/settings/bluetooth_name.h>
+#include <string.h>
+#include <errno.h>
 
 LOG_MODULE_REGISTER(settings_bluetooth_name, CONFIG_SETTINGS_LOG_LEVEL);
 
-static char bluetooth_name_val[16] = "";
+char bluetooth_name_val[16] = "";
 
 static int bluetooth_name_handle_set(const char *name, size_t len, settings_read_cb read_cb,
 				     void *cb_arg);

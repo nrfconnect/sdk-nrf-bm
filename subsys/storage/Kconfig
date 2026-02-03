@@ -8,6 +8,7 @@ menu "Storage"
 
 # zephyr-keep-sorted-start
 rsource "bm_storage/Kconfig"
+rsource "bm_rmem/Kconfig"
 rsource "flash_map/Kconfig"
 # zephyr-keep-sorted-stop
 

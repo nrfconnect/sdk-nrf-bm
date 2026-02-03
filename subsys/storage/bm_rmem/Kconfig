@@ -1,0 +1,21 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menuconfig NCS_BM_RMEM_CLIPBOARD
+	bool "Inter application RAM Clipboard"
+	select EXPERIMENTAL
+	help
+	  If enabled, inatsance of simple inte application
+	  clipboard storage on retained RAM area is supported.
+
+if NCS_BM_RMEM_CLIPBOARD
+
+module = NCS_BM_RMEM_CLIPBOARD
+module-str = ncs_bm_rmem_clipboard
+source "subsys/logging/Kconfig.template.log_config"
+
+endif
+

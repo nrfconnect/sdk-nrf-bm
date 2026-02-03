@@ -3,5 +3,5 @@
 #
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
-
 zephyr_sources_ifdef(CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME src/bluetooth_name.c)
+zephyr_sources_ifdef(CONFIG_NCS_BM_FLAT_SETTINGS_BLUETOOTH_NAME src/ble_name_v2.c)
