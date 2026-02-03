@@ -75,6 +75,18 @@ The sample initializes a PWM instance that blinks **LED 1** and **LED 3** on the
   For the nRF54L Series, there is only one domain which contains both PWM and GPIO: PWM20/21/22 and GPIO Port P1.
   Therefore, for these devices, only LEDs connected to P1 can work with PWM - for the nRF54L15 DK these are **LED 1** and **LED 3**.
 
+User interface
+**************
+
+LED 0:
+  Lit when the device is initialized.
+
+LED 1:
+  Breathing animation.
+
+LED 3:
+  Breathing animation.
+
 Building and running
 ********************
 

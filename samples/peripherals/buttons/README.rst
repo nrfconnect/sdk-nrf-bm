@@ -64,6 +64,25 @@ The sample supports the following development kits:
            - S115
            - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
 
+
+User interface
+**************
+
+Button 0:
+  Prints out event.
+
+Button 1:
+  Prints out event.
+
+Button 2:
+  Prints out event.
+
+Button 3:
+  Prints out event and terminates the program.
+
+LED 0:
+   Lit when the device is initialized.
+
 Building and running
 ********************
 

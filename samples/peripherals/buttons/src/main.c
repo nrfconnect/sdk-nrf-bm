@@ -72,6 +72,9 @@ int main(void)
 		goto idle;
 	}
 
+	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+
 	LOG_INF("Buttons initialized, press button 3 to terminate");
 
 	while (running) {
