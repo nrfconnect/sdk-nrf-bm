@@ -4,8 +4,10 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-menu "NFC"
+menu "NFC for Bare Metal"
 
+rsource "ndef/Kconfig"
+rsource "t4t/Kconfig"
 rsource "lib/Kconfig"
 
 endmenu

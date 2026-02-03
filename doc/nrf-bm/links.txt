@@ -19,6 +19,9 @@
 .. _`Type 2 Tag nrfxlib documentation`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrfxlib/nfc/doc/type_2_tag.html
 .. _`Type 4 Tag nrfxlib documentation`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrfxlib/nfc/doc/type_4_tag.html
 .. _`NDEF library`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/libraries/nfc/ndef/index.html
+.. _`nRF Connect SDK Near Field Communication`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/protocols/nfc/index.html#ug-nfc
+.. _`nRF Connect SDK NFC Data Exchange Format`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/protocols/nfc/index.html#ug-nfc-ndef
+.. _`nRF Connect SDK NDEF message and record format`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/protocols/nfc/index.html#ug_nfc_ndef_format
 
 .. _`nRF54L15 DK`: https://docs.nordicsemi.com/bundle/ncs-latest/page/zephyr/boards/nordic/nrf54l15dk/doc/index.html#nrf54l15dk-nrf54l15
 .. _`nRF54L15 DK v1.0.0`: https://docs.nordicsemi.com/bundle/comp_matrix_nrf54l15/page/COMP/nrf54l15/nrf54l15_ic_rev_comp_with_dev_hw.html

@@ -14,8 +14,8 @@ config BM_NFC_PLATFORM
 
 if BM_NFC_PLATFORM
 
-config NFCT_IRQ_PRIORITY
-	int "Interrupt priority"
+config BM_NFCT_IRQ_PRIORITY
+	int "NFCT interrupt priority for Bare Metal"
 	range 0 5 if ZERO_LATENCY_IRQS
 	range 0 6
 	default 3 if SOFTDEVICE
@@ -25,8 +25,8 @@ config NFCT_IRQ_PRIORITY
 	  Levels are from 0 (highest priority) to 6 (lowest priority)
 
 
-module = NFC_PLATFORM
+module = BM_NFC_PLATFORM
 module-str = nfc_platform
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
-endif # NFC_PLATFORM
+endif # BM_NFC_PLATFORM
