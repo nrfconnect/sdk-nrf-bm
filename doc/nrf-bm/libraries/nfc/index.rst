@@ -18,3 +18,4 @@ This makes them ideal for implementing NFC tag functionality in bare metal appli
    integration_notes
    type_2_tag
    type_4_tag
+   **/index
