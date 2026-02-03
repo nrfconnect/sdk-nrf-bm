@@ -76,6 +76,10 @@ void test_ble_db_discovery_init_error_null(void)
 	config.evt_handler = NULL;
 	nrf_err = ble_db_discovery_init(&db_discovery, &config);
 	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
+	config.evt_handler = db_discovery_evt_handler;
+	config.gatt_queue = NULL;
+	nrf_err = ble_db_discovery_init(&db_discovery, &config);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 }
 
 void test_ble_db_discovery_init_success(void)
@@ -116,14 +120,27 @@ void test_ble_db_discovery_service_register_no_mem(void)
 	nrf_err = ble_db_discovery_init(&db_discovery, &db_disc_config);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
+	/* Register the first service UUID twice (here and one time in the for-loop) to test
+	 * multiple registration of the same service UUID.
+	 */
+	nrf_err = ble_db_discovery_service_register(&db_discovery, &uuid);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	/* Successfully register service UUIDs up to the configured upper limit. */
 	for (size_t i = 0; i < CONFIG_BLE_DB_DISCOVERY_MAX_SRV; ++i) {
 		nrf_err = ble_db_discovery_service_register(&db_discovery, &uuid);
 		TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 		uuid.uuid++;
 	}
 
+	/* Check that any new service UUID registration fails after reaching the upper limit. */
 	nrf_err = ble_db_discovery_service_register(&db_discovery, &uuid);
 	TEST_ASSERT_EQUAL(NRF_ERROR_NO_MEM, nrf_err);
+
+	/* Registering a previously registered service UUID should still return success. */
+	uuid = srv1_uuid;
+	nrf_err = ble_db_discovery_service_register(&db_discovery, &uuid);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
 void test_ble_db_discovery_service_register_success(void)
@@ -141,12 +158,6 @@ void test_ble_db_discovery_start_null(void)
 {
 	uint32_t nrf_err;
 
-	nrf_err = ble_db_discovery_init(&db_discovery, &db_disc_config);
-	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
-
-	nrf_err = ble_db_discovery_service_register(&db_discovery, &srv1_uuid);
-	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
-
 	nrf_err = ble_db_discovery_start(NULL, test_conn_handle);
 	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 }
@@ -155,12 +166,14 @@ void test_ble_db_discovery_start_invalid_state(void)
 {
 	uint32_t nrf_err;
 
+	/* Expect discovery start to fail because the instance have not been initialized. */
 	nrf_err = ble_db_discovery_start(&db_discovery, test_conn_handle);
 	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, nrf_err);
 
 	nrf_err = ble_db_discovery_init(&db_discovery, &db_disc_config);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
+	/* Expect discovery start to fail because no service UUID have been registered. */
 	nrf_err = ble_db_discovery_start(&db_discovery, test_conn_handle);
 	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, nrf_err);
 }
@@ -175,12 +188,17 @@ void test_ble_db_discovery_start_busy(void)
 	nrf_err = ble_db_discovery_service_register(&db_discovery, &srv1_uuid);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
-	__cmock_ble_gq_conn_handle_register_ExpectAnyArgsAndReturn(NRF_SUCCESS);
-	__cmock_ble_gq_item_add_ExpectAnyArgsAndReturn(NRF_SUCCESS);
+	__cmock_ble_gq_conn_handle_register_ExpectAndReturn(&ble_gatt_queue, test_conn_handle,
+							    NRF_SUCCESS);
+	__cmock_ble_gq_item_add_ExpectAndReturn(&ble_gatt_queue, NULL, test_conn_handle,
+						NRF_SUCCESS);
+	__cmock_ble_gq_item_add_IgnoreArg_req();
 
+	/* Start discovery. */
 	nrf_err = ble_db_discovery_start(&db_discovery, test_conn_handle);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
+	/* Expect another start to fail because a discovery procedure is already ongoing. */
 	nrf_err = ble_db_discovery_start(&db_discovery, test_conn_handle);
 	TEST_ASSERT_EQUAL(NRF_ERROR_BUSY, nrf_err);
 }
@@ -202,6 +220,26 @@ void test_ble_db_discovery_start_no_mem(void)
 	TEST_ASSERT_EQUAL(NRF_ERROR_NO_MEM, nrf_err);
 }
 
+static uint32_t stub_ble_gq_item_add_disc_start_success(const struct ble_gq *gq,
+							struct ble_gq_req *req,
+							uint16_t conn_handle,
+							int cmock_num_calls)
+{
+	TEST_ASSERT_EQUAL_PTR(&ble_gatt_queue, gq);
+	TEST_ASSERT_EQUAL(test_conn_handle, conn_handle);
+
+	TEST_ASSERT_NOT_NULL(req);
+	TEST_ASSERT_EQUAL(BLE_GQ_REQ_SRV_DISCOVERY, req->type);
+	TEST_ASSERT_NOT_NULL(req->evt_handler);
+	TEST_ASSERT_EQUAL_PTR(&db_discovery, req->ctx);
+	TEST_ASSERT_EQUAL(srv1_uuid.uuid, req->gattc_srv_disc.srvc_uuid.uuid);
+	TEST_ASSERT_EQUAL(srv1_uuid.type, req->gattc_srv_disc.srvc_uuid.type);
+	TEST_ASSERT_EQUAL(CONFIG_BLE_DB_DISCOVERY_SRV_DISC_START_HANDLE,
+			  req->gattc_srv_disc.start_handle);
+
+	return NRF_SUCCESS;
+}
+
 void test_ble_db_discovery_start_success(void)
 {
 	uint32_t nrf_err;
@@ -214,7 +252,7 @@ void test_ble_db_discovery_start_success(void)
 
 	__cmock_ble_gq_conn_handle_register_ExpectAndReturn(&ble_gatt_queue, test_conn_handle,
 							    NRF_SUCCESS);
-	__cmock_ble_gq_item_add_ExpectAnyArgsAndReturn(NRF_SUCCESS);
+	__cmock_ble_gq_item_add_Stub(stub_ble_gq_item_add_disc_start_success);
 
 	nrf_err = ble_db_discovery_start(&db_discovery, test_conn_handle);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
@@ -229,10 +267,12 @@ void test_ble_db_discovery_on_ble_evt(void)
 	};
 	ble_evt_t evt = {
 		.header.evt_id = BLE_GATTC_EVT_PRIM_SRVC_DISC_RSP,
-		.evt.gattc_evt.conn_handle = test_conn_handle,
-		.evt.gattc_evt.params.prim_srvc_disc_rsp.services[0].uuid = srv1_uuid,
 		.evt.gattc_evt.gatt_status = BLE_GATT_STATUS_SUCCESS,
-		.evt.gattc_evt.params.prim_srvc_disc_rsp.count = 1,
+		.evt.gattc_evt.conn_handle = test_conn_handle,
+		.evt.gattc_evt.params.prim_srvc_disc_rsp = {
+			.services[0].uuid = srv1_uuid,
+			.count = 1,
+		},
 	};
 
 	__cmock_ble_gq_item_add_Stub(stub_ble_gq_item_add_success);
@@ -357,7 +397,12 @@ void test_ble_db_discovery_on_ble_evt_no_mem(void)
 
 void setUp(void)
 {
+	/* Zero the database discovery instance before each test. */
 	memset(&db_discovery, 0, sizeof(db_discovery));
+
+	/* Zero the database event global variables before each test. */
+	memset(&db_evt, 0, sizeof(db_evt));
+	memset(&db_evt_prev, 0, sizeof(db_evt_prev));
 
 	/* Increment connection handle to catch issues with data persisting between tests. */
 	test_conn_handle++;
