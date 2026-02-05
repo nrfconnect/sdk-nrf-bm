@@ -49,6 +49,8 @@ uint8_t tail;
 uint8_t head;
 uint16_t lastsize;
 uint8_t pktbuf[CONFIG_MCUMGR_TRANSPORT_NETBUF_SIZE << 1] __aligned(4);
+uint8_t pktbuf2[CONFIG_MCUMGR_TRANSPORT_NETBUF_SIZE << 1] __aligned(4);
+uint8_t bm_busy;
 static void bm_storage_evt_handler_a(struct bm_storage_evt *evt)
 {
 	if (tail) {
@@ -60,6 +62,7 @@ static void bm_storage_evt_handler_a(struct bm_storage_evt *evt)
 	} else {
 		head = 0;
 	}
+	bm_busy = 0;
 }
 
 
@@ -107,6 +110,7 @@ img_mgmt_flash_area_id(int slot)
  */
 static int img_mgmt_get_unused_slot_area_id(int slot)
 {
+return 0;
 #if defined(CONFIG_MCUMGR_GRP_IMG_DIRECT_UPLOAD)
 	slot--;
 	if (slot < -1) {
@@ -193,7 +197,7 @@ int img_mgmt_read(int slot, unsigned int offset, void *dst, unsigned int num_byt
 int img_mgmt_write_image_data(unsigned int offset, const void *data, unsigned int num_bytes,
 			      bool last)
 {
-
+	if(bm_busy)return IMG_MGMT_ERR_BUSY;
 	static int write_offset;
 
 	if (offset == 0) {
@@ -223,6 +227,7 @@ int img_mgmt_write_image_data(unsigned int offset, const void *data, unsigned in
 	}
 	//LOG_ERR("numbytes %d tail %d  head %d write_sz %d unit %d last %d",
 	//	num_bytes, tail, head, write_sz, storage_a.nvm_info->program_unit, last);
+	bm_busy=1;
 	int err = bm_storage_write(&storage_a, storage_a.start_addr + write_offset,
 		pktbuf, write_sz, NULL);
 	//int err=0;
@@ -283,6 +288,7 @@ int img_mgmt_upload_inspect(const struct img_mgmt_upload_req *req,
 #elif defined(CONFIG_MCUMGR_GRP_IMG_TOO_LARGE_BOOTLOADER_INFO)
 		int max_image_size;
 #endif
+		LOG_ERR("non");
 
 		if (req->img_data.len < sizeof(struct image_header)) {
 			/*  Image header is the first thing in the image */
@@ -327,61 +333,6 @@ int img_mgmt_upload_inspect(const struct img_mgmt_upload_req *req,
 			}
 		}
 
-		action->area_id = img_mgmt_get_unused_slot_area_id(req->image);
-		if (action->area_id < 0) {
-			/* No slot available to upload to */
-			IMG_MGMT_UPLOAD_ACTION_SET_RC_RSN(action, img_mgmt_err_str_no_slot);
-			LOG_DBG("No slot available to upload to");
-			return IMG_MGMT_ERR_NO_FREE_SLOT;
-		}
-
-
-#if defined(CONFIG_MCUMGR_GRP_IMG_TOO_LARGE_SYSBUILD) &&			\
-	(defined(CONFIG_MCUBOOT_BOOTLOADER_MODE_SWAP_WITHOUT_SCRATCH) ||	\
-	 defined(CONFIG_MCUBOOT_BOOTLOADER_MODE_SWAP_USING_OFFSET) ||		\
-	 defined(CONFIG_MCUBOOT_BOOTLOADER_MODE_SWAP_USING_MOVE) ||		\
-	 defined(CONFIG_MCUBOOT_BOOTLOADER_MODE_SWAP_SCRATCH) ||		\
-	 defined(CONFIG_MCUBOOT_BOOTLOADER_MODE_OVERWRITE_ONLY) ||		\
-	 defined(CONFIG_MCUBOOT_BOOTLOADER_MODE_RAM_LOAD) ||			\
-	 defined(CONFIG_MCUBOOT_BOOTLOADER_MODE_DIRECT_XIP) ||			\
-	 defined(CONFIG_MCUBOOT_BOOTLOADER_MODE_DIRECT_XIP_WITH_REVERT)) &&	\
-	CONFIG_MCUBOOT_UPDATE_FOOTER_SIZE > 0
-		/* Check if slot1 is larger than slot0 by the update size, if so then the size
-		 * check can be skipped because the devicetree partitions are okay
-		 */
-
-
-skip_size_check:
-#elif defined(CONFIG_MCUMGR_GRP_IMG_TOO_LARGE_BOOTLOADER_INFO)
-		rc = blinfo_lookup(BLINFO_MAX_APPLICATION_SIZE, (char *)&max_image_size,
-				   sizeof(max_image_size));
-
-		if (rc == sizeof(max_image_size) && max_image_size > 0 &&
-		    req->size > max_image_size) {
-			IMG_MGMT_UPLOAD_ACTION_SET_RC_RSN(action,
-				img_mgmt_err_str_image_too_large);
-			flash_area_close(fa);
-			LOG_DBG("Upload too large for slot (with max image size): %u > %u",
-				req->size, max_image_size);
-			return IMG_MGMT_ERR_INVALID_IMAGE_TOO_LARGE;
-		}
-#endif
-
-#if defined(CONFIG_MCUMGR_GRP_IMG_REJECT_DIRECT_XIP_MISMATCHED_SLOT)
-		if (hdr->ih_flags & IMAGE_F_ROM_FIXED) {
-			if (fa->fa_off != hdr->ih_load_addr) {
-				IMG_MGMT_UPLOAD_ACTION_SET_RC_RSN(action,
-					img_mgmt_err_str_image_bad_flash_addr);
-				flash_area_close(fa);
-				LOG_DBG("Invalid flash address: %08X, expected: %08X",
-					hdr->ih_load_addr, (int)fa->fa_off);
-				return IMG_MGMT_ERR_INVALID_FLASH_ADDRESS;
-			}
-		}
-#endif
-
-		flash_area_close(fa);
-
 		if (req->upgrade) {
 			/* User specified upgrade-only. Make sure new image version is
 			 * greater than that of the currently running image.
@@ -404,6 +355,7 @@ skip_size_check:
 			}
 		}
 
+		LOG_ERR("non8");
 #ifndef CONFIG_IMG_ERASE_PROGRESSIVELY
 		rc = img_mgmt_flash_check_empty(action->area_id);
 		if (rc < 0) {
@@ -411,6 +363,7 @@ skip_size_check:
 			return rc;
 		}
 
+		LOG_ERR("non9");
 		action->erase = (rc == 0);
 #endif
 	} else {

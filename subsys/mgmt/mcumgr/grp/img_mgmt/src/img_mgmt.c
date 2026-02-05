@@ -528,6 +528,9 @@ defined(CONFIG_MCUMGR_SMP_COMMAND_STATUS_HOOKS)
 			if (rc == 0) {
 				g_img_mgmt_state.off += action.write_bytes;
 			}
+			else{
+			LOG_ERR("busy");
+}
 			rc = 0;
 		} else {
 			/* Write failed, currently not able to recover from this */
