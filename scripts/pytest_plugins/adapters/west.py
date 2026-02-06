@@ -7,11 +7,10 @@
 import logging
 import shlex
 import shutil
-import subprocess
 from pathlib import Path
 from typing import Literal
 
-from .common import normalize_path, run_command
+from .common import CommandError, CommandTimeoutError, normalize_path, run_command
 
 logger = logging.getLogger(__name__)
 
@@ -62,12 +61,16 @@ def west_flash(
         command.extend(shlex.split(extra_args, posix=False))
 
     try:
-        run_command(command, timeout=timeout)
-    except subprocess.CalledProcessError:
-        raise WestFlashException("Failed to flash device") from None
-    except subprocess.TimeoutExpired:
+        ret = run_command(command, timeout=timeout)
+        if ret.returncode != 0:
+            logger.error("west flash command failed")
+            logger.info(ret.stdout.decode())
+            raise AssertionError("west flash command failed")
+    except CommandTimeoutError:
         logger.error("Timeout flashing device")
         raise WestFlashException("Timeout flashing device") from None
+    except CommandError:
+        raise WestFlashException("Failed to flash device") from None
 
 
 def west_build(
@@ -96,15 +99,19 @@ def west_build(
         command.extend(shlex.split(extra_args, posix=False))
 
     try:
-        run_command(command, timeout=timeout)
-    except subprocess.CalledProcessError:
+        ret = run_command(command, timeout=timeout)
+        if ret.returncode != 0:
+            logger.error("west build command failed")
+            logger.info(ret.stdout.decode())
+            raise AssertionError("west build command failed")
+    except CommandTimeoutError:
+        logger.error("Timeout building required app")
+        shutil.rmtree(build_dir)
+        raise WestBuildException("Timeout building required app") from None
+    except CommandError:
         # create empty file to indicate a build error, will be used
         # to avoid unnecessary builds in other tests
         Path(build_dir / "build.error").touch()
         raise WestBuildException("Failed to build required app") from None
-    except subprocess.TimeoutExpired:
-        logger.error("Timeout building required app")
-        shutil.rmtree(build_dir)
-        raise WestBuildException("Timeout building required app") from None
 
     return source_dir, build_dir

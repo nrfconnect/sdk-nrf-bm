@@ -10,6 +10,8 @@ devices using the nrfutil command-line tool.
 
 import json
 import logging
+import subprocess
+from pathlib import Path
 from typing import Any, Literal
 
 from .common import run_command
@@ -51,3 +53,26 @@ def list_devices() -> dict[str, Any]:
         return json.loads(ret.stdout)
     except json.JSONDecodeError:
         return {"devices": []}
+
+
+def image_upload(
+    port: str, image_path: str | Path, timeout: int = 30, check: bool = True
+) -> subprocess.CompletedProcess:
+    """Run nrfutil image upload.
+
+    :param port: serial port number
+    :param image_path: path to an image
+    :param timeout: time out in seconds
+    :param check: check return code
+    """
+    command = [
+        "nrfutil",
+        "mcu-manager",
+        "serial",
+        "image-upload",
+        "--serial-port",
+        port,
+        "--firmware",
+        str(image_path),
+    ]
+    return run_command(command, timeout=timeout, check=check)
