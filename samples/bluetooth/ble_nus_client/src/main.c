@@ -47,7 +47,7 @@
 #define ECHOBACK_BLE_UART_DATA 1
 
 /** BLE Nordic UART Service (NUS) client instance. */
-BLE_NUS_C_DEF(m_ble_nus_c);
+BLE_NUS_CLIENT_DEF(m_ble_nus_c);
 /** Database discovery module instance. */
 BLE_DB_DISCOVERY_DEF(m_db_disc);
 /** Scanning Module instance. */
@@ -99,7 +99,7 @@ static void uarte_rx_handler(char *data, size_t data_len)
 			LOG_INF("Sending data over BLE NUS, len %d", len);
 
 			do {
-				nrf_err = ble_nus_c_string_send(&m_ble_nus_c, rx_buf, len);
+				nrf_err = ble_nus_client_string_send(&m_ble_nus_c, rx_buf, len);
 				if ((nrf_err != NRF_ERROR_INVALID_STATE) &&
 				    (nrf_err != NRF_ERROR_RESOURCES) && nrf_err) {
 					LOG_ERR("Failed to send NUS data, nrf_error %#x", nrf_err);
@@ -184,40 +184,41 @@ static void scan_init(void)
 
 static void db_disc_handler(struct ble_db_discovery *db_discovery, struct ble_db_discovery_evt *evt)
 {
-	ble_nus_c_on_db_disc_evt(&m_ble_nus_c, evt);
+	ble_nus_client_on_db_disc_evt(&m_ble_nus_c, evt);
 }
 
-static void ble_nus_c_evt_handler(struct ble_nus_c *ble_nus_c,
-				  struct ble_nus_c_evt const *ble_nus_evt)
+static void ble_nus_client_evt_handler(struct ble_nus_client *ble_nus_c,
+				       struct ble_nus_client_evt const *ble_nus_evt)
 {
 	uint32_t nrf_err;
 
 	switch (ble_nus_evt->evt_type) {
-	case BLE_NUS_C_EVT_DISCOVERY_COMPLETE:
+	case BLE_NUS_CLIENT_EVT_DISCOVERY_COMPLETE:
 		LOG_INF("Discovery complete.");
-		nrf_err = ble_nus_c_handles_assign(ble_nus_c, ble_nus_evt->conn_handle,
-						   &ble_nus_evt->params.discovery_complete.handles);
+		nrf_err = ble_nus_client_handles_assign(
+			ble_nus_c, ble_nus_evt->conn_handle,
+			&ble_nus_evt->params.discovery_complete.handles);
 		if (nrf_err) {
 			LOG_ERR("Failed to assign handles, nrf_error %#x", nrf_err);
 		}
 
-		nrf_err = ble_nus_c_tx_notif_enable(ble_nus_c);
+		nrf_err = ble_nus_client_tx_notif_enable(ble_nus_c);
 		if (nrf_err) {
 			LOG_ERR("Failed to enable peer tx notifications, nrf_error %#x", nrf_err);
 		}
 		LOG_INF("Connected to device with Nordic UART Service.");
 		break;
 
-	case BLE_NUS_C_EVT_NUS_TX_EVT:
+	case BLE_NUS_CLIENT_EVT_NUS_TX_EVT:
 		nrfx_uarte_tx(&nus_uarte_inst, ble_nus_evt->params.nus_tx_evt.data,
 			      ble_nus_evt->params.nus_tx_evt.data_len, 0);
 		break;
 
-	case BLE_NUS_C_EVT_DISCONNECTED:
+	case BLE_NUS_CLIENT_EVT_DISCONNECTED:
 		LOG_INF("Disconnected.");
 		scan_start();
 		break;
-	case BLE_NUS_C_EVT_ERROR:
+	case BLE_NUS_CLIENT_EVT_ERROR:
 		LOG_ERR("NUS error, nrf_error %#x", ble_nus_evt->params.error.reason);
 		break;
 	default:
@@ -233,8 +234,8 @@ static void ble_evt_handler(ble_evt_t const *ble_evt, void *context)
 
 	switch (ble_evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:
-		err_code = ble_nus_c_handles_assign(&m_ble_nus_c, ble_evt->evt.gap_evt.conn_handle,
-						    NULL);
+		err_code = ble_nus_client_handles_assign(&m_ble_nus_c,
+							 ble_evt->evt.gap_evt.conn_handle, NULL);
 		conn_handle = ble_evt->evt.gap_evt.conn_handle;
 		if (err_code) {
 			LOG_ERR("Failed to assign handles, nrf_error %#x", err_code);
@@ -462,13 +463,13 @@ static void nus_c_init(void)
 {
 	uint32_t err_code;
 
-	struct ble_nus_c_config init;
+	struct ble_nus_client_config init;
 
-	init.evt_handler = ble_nus_c_evt_handler;
+	init.evt_handler = ble_nus_client_evt_handler;
 	init.gatt_queue = &m_ble_gatt_queue;
 	init.db_discovery = &m_db_disc;
 
-	err_code = ble_nus_c_init(&m_ble_nus_c, &init);
+	err_code = ble_nus_client_init(&m_ble_nus_c, &init);
 	if (err_code) {
 		LOG_ERR("Failed to initialize NUS, nrf_error %#x", err_code);
 	}

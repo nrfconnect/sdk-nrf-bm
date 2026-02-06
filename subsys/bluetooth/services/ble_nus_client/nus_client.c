@@ -16,25 +16,26 @@ LOG_MODULE_REGISTER(ble_nus_client, CONFIG_BLE_NUS_CLIENT_LOG_LEVEL);
 
 static void gatt_error_handler(const struct ble_gq_req *req, struct ble_gq_evt *evt)
 {
-	struct ble_nus_c *ble_nus_c = (struct ble_nus_c *)req->ctx;
+	struct ble_nus_client *ble_nus_client = (struct ble_nus_client *)req->ctx;
 
 	LOG_DBG("A GATT Client error has occurred on conn_handle: %#X", evt->conn_handle);
 
-	if (ble_nus_c->evt_handler != NULL && evt->evt_type == BLE_GQ_EVT_ERROR) {
-		ble_nus_c->evt_handler(
-			ble_nus_c,
-			&(struct ble_nus_c_evt){.conn_handle = evt->conn_handle,
-						.evt_type = BLE_NUS_C_EVT_ERROR,
-						.params.error.reason = evt->error.reason});
+	if (ble_nus_client->evt_handler != NULL && evt->evt_type == BLE_GQ_EVT_ERROR) {
+		ble_nus_client->evt_handler(
+			ble_nus_client,
+			&(struct ble_nus_client_evt){.conn_handle = evt->conn_handle,
+						     .evt_type = BLE_NUS_CLIENT_EVT_ERROR,
+						     .params.error.reason = evt->error.reason});
 	}
 }
 
-void ble_nus_c_on_db_disc_evt(struct ble_nus_c *ble_nus_c, struct ble_db_discovery_evt *evt)
+void ble_nus_client_on_db_disc_evt(struct ble_nus_client *ble_nus_c,
+				   struct ble_db_discovery_evt *evt)
 {
-	struct ble_nus_c_evt nus_c_evt = {0};
+	struct ble_nus_client_evt nus_c_evt = {0};
 	struct ble_gatt_db_char *chars = evt->params.discovered_db.charateristics;
 
-	/** Check if the NUS was discovered. */
+	/* Check if the NUS was discovered. */
 	if ((evt->evt_type == BLE_DB_DISCOVERY_COMPLETE) &&
 	    (evt->params.discovered_db.srv_uuid.uuid == BLE_UUID_NUS_SERVICE) &&
 	    (evt->params.discovered_db.srv_uuid.type == ble_nus_c->uuid_type)) {
@@ -58,21 +59,21 @@ void ble_nus_c_on_db_disc_evt(struct ble_nus_c *ble_nus_c, struct ble_db_discove
 		}
 		if (ble_nus_c->evt_handler != NULL) {
 			nus_c_evt.conn_handle = evt->conn_handle;
-			nus_c_evt.evt_type = BLE_NUS_C_EVT_DISCOVERY_COMPLETE;
+			nus_c_evt.evt_type = BLE_NUS_CLIENT_EVT_DISCOVERY_COMPLETE;
 			ble_nus_c->evt_handler(ble_nus_c, &nus_c_evt);
 		}
 	}
 }
 
-static void on_hvx(struct ble_nus_c *ble_nus_c, ble_evt_t const *ble_evt)
+static void on_hvx(struct ble_nus_client *ble_nus_c, ble_evt_t const *ble_evt)
 {
 	/** HVX can only occur from client sending. */
 	if ((ble_nus_c->handles.nus_tx_handle != BLE_GATT_HANDLE_INVALID) &&
 	    (ble_evt->evt.gattc_evt.params.hvx.handle == ble_nus_c->handles.nus_tx_handle) &&
 	    (ble_nus_c->evt_handler != NULL)) {
-		struct ble_nus_c_evt ble_nus_c_evt;
+		struct ble_nus_client_evt ble_nus_c_evt;
 
-		ble_nus_c_evt.evt_type = BLE_NUS_C_EVT_NUS_TX_EVT;
+		ble_nus_c_evt.evt_type = BLE_NUS_CLIENT_EVT_NUS_TX_EVT;
 		ble_nus_c_evt.params.nus_tx_evt.data =
 			(uint8_t *)ble_evt->evt.gattc_evt.params.hvx.data;
 		ble_nus_c_evt.params.nus_tx_evt.data_len = ble_evt->evt.gattc_evt.params.hvx.len;
@@ -82,7 +83,8 @@ static void on_hvx(struct ble_nus_c *ble_nus_c, ble_evt_t const *ble_evt)
 	}
 }
 
-uint32_t ble_nus_c_init(struct ble_nus_c *ble_nus_c, struct ble_nus_c_config *ble_nus_c_init)
+uint32_t ble_nus_client_init(struct ble_nus_client *ble_nus_c,
+			     struct ble_nus_client_config *ble_nus_c_init)
 {
 	uint32_t nrf_err;
 	ble_uuid_t uart_uuid;
@@ -110,9 +112,9 @@ uint32_t ble_nus_c_init(struct ble_nus_c *ble_nus_c, struct ble_nus_c_config *bl
 	return ble_db_discovery_service_register(ble_nus_c_init->db_discovery, &uart_uuid);
 }
 
-void ble_nus_c_on_ble_evt(ble_evt_t const *ble_evt, void *context)
+void ble_nus_client_on_ble_evt(ble_evt_t const *ble_evt, void *context)
 {
-	struct ble_nus_c *ble_nus_c = (struct ble_nus_c *)context;
+	struct ble_nus_client *ble_nus_c = (struct ble_nus_client *)context;
 
 	if (!ble_nus_c || !ble_evt) {
 		return;
@@ -131,9 +133,9 @@ void ble_nus_c_on_ble_evt(ble_evt_t const *ble_evt, void *context)
 	case BLE_GAP_EVT_DISCONNECTED:
 		if (ble_evt->evt.gap_evt.conn_handle == ble_nus_c->conn_handle &&
 		    ble_nus_c->evt_handler != NULL) {
-			struct ble_nus_c_evt nus_c_evt;
+			struct ble_nus_client_evt nus_c_evt;
 
-			nus_c_evt.evt_type = BLE_NUS_C_EVT_DISCONNECTED;
+			nus_c_evt.evt_type = BLE_NUS_CLIENT_EVT_DISCONNECTED;
 			nus_c_evt.params.disconnected.reason =
 				ble_evt->evt.gap_evt.params.disconnected.reason;
 
@@ -148,7 +150,7 @@ void ble_nus_c_on_ble_evt(ble_evt_t const *ble_evt, void *context)
 	}
 }
 
-static uint32_t cccd_configure(struct ble_nus_c *ble_nus_c, bool notification_enable)
+static uint32_t cccd_configure(struct ble_nus_client *ble_nus_c, bool notification_enable)
 {
 	struct ble_gq_req cccd_req = {0};
 	uint8_t cccd[BLE_CCCD_VALUE_LEN];
@@ -170,7 +172,7 @@ static uint32_t cccd_configure(struct ble_nus_c *ble_nus_c, bool notification_en
 	return ble_gq_item_add(ble_nus_c->gatt_queue, &cccd_req, ble_nus_c->conn_handle);
 }
 
-uint32_t ble_nus_c_tx_notif_enable(struct ble_nus_c *ble_nus_c)
+uint32_t ble_nus_client_tx_notif_enable(struct ble_nus_client *ble_nus_c)
 {
 	if (!ble_nus_c) {
 		return NRF_ERROR_NULL;
@@ -183,7 +185,8 @@ uint32_t ble_nus_c_tx_notif_enable(struct ble_nus_c *ble_nus_c)
 	return cccd_configure(ble_nus_c, true);
 }
 
-uint32_t ble_nus_c_string_send(struct ble_nus_c *ble_nus_c, uint8_t *string, uint16_t length)
+uint32_t ble_nus_client_string_send(struct ble_nus_client *ble_nus_c, uint8_t *string,
+				    uint16_t length)
 {
 	if (!ble_nus_c) {
 		return NRF_ERROR_NULL;
@@ -213,8 +216,8 @@ uint32_t ble_nus_c_string_send(struct ble_nus_c *ble_nus_c, uint8_t *string, uin
 	return ble_gq_item_add(ble_nus_c->gatt_queue, &write_req, ble_nus_c->conn_handle);
 }
 
-uint32_t ble_nus_c_handles_assign(struct ble_nus_c *ble_nus, uint16_t conn_handle,
-				  struct ble_nus_c_handles const *peer_handles)
+uint32_t ble_nus_client_handles_assign(struct ble_nus_client *ble_nus, uint16_t conn_handle,
+				       struct ble_nus_client_handles const *peer_handles)
 {
 	if (!ble_nus) {
 		return NRF_ERROR_NULL;
