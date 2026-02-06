@@ -1,0 +1,14 @@
+s115_10.0.0-1.prototype
+=======================
+
+This section describes how to adapt to changes and use the new features of
+s115_10.0.0-1.prototype when migrating from s115_9.0.0.
+
+Required changes
+----------------
+
+Recommended changes
+-------------------
+
+New functionality
+-----------------

@@ -1,0 +1,141 @@
+s115_9.0.0
+==========
+
+This version is a major release, providing support for nRF54L series devices.
+
+Notes:
+
+- This release has changed the API. This requires changes to applications.
+- The release notes list changes since s115_9.0.0-3.prototype.
+
+
+SoftDevice properties
+---------------------
+
+* This SoftDevice variant is compatible with
+  nRF54L05, nRF54L10, and nRF54L15.
+
+* The SoftDevice memory requirements for this version are as follows:
+
+  * NVM: **107.0 kB** (0x1AC00 bytes).
+
+  * RAM: **4.9 kB** (0x1380 bytes).
+    This is the minimum required memory. The actual requirements depend on the
+    configuration chosen at ``sd_ble_enable()`` time.
+
+  * Call stack: The SoftDevice uses a call stack combined with the application.
+    The worst-case stack usage for the SoftDevice is
+    **1.8 kB**
+    (0x700 bytes). Application writers should ensure
+    that enough stack space is reserved to cover the worst-case SoftDevice call
+    stack usage combined with the worst-case application call stack usage.
+
+* SoftDevice base address:
+
+  * nRF54L05: 0x062000 (``s115_nrf54l05_9.0.0_softdevice.hex``).
+
+  * nRF54L10: 0x0E2000 (``s115_nrf54l10_9.0.0_softdevice.hex``).
+
+  * nRF54L15: 0x162000 (``s115_nrf54l15_9.0.0_softdevice.hex``).
+
+* The Firmware ID of this SoftDevice is 0x3024.
+
+Changes
+-------
+
+* SoftDevice
+
+  * Scheduler improvements (DRGN-24450):
+
+    * The scheduler can now manage events that are scheduled less than 100 microseconds apart.
+
+    * Updated Radio Timeslot implementation:
+
+      * The events ``NRF_EVT_RADIO_BLOCKED`` and ``NRF_EVT_RADIO_CANCELED`` are now sent immediately after the specified timeout or start time,
+        instead of being sent early if the scheduler predicted the timeslot could not be scheduled.
+
+      * Timeslot events can now run for longer than 128 seconds.
+
+  * Deprecated wrapper functions defined in the SoftDevice headers have been removed (DRGN-26817).
+
+    * ``sd_rand_application_pool_capacity_get``
+
+    * ``sd_rand_application_bytes_available_get``
+
+    * ``sd_app_evt_wait``
+
+  * The function ``sd_flash_write`` now uses buffered writes to RRAM, with WRITEBUFSIZE=1.
+    This reduces RRAM wear and improves performance (DRGN-24675).
+
+  * A new field ``hfint_ctiv`` has been added to ``nrf_clock_lf_cfg_t`` to control how often HFINT is calibrated (DRGN-26506).
+
+  * A new field ``hfclk_latency`` has been added to ``nrf_clock_lf_cfg_t`` to inform the SoftDevice
+    about the ramp-up time of the high-frequency crystal oscillator (DRGN-26554).
+
+* GAP
+
+  * The SoftDevice no longer enforces the spec-required 1 second interval between channel map updates (``ble_gap_opt_ch_map_t``) (DRGN-26253).
+
+  * The SoftDevice no longer allows an all-zeroes Identity Resolving Key (IRK) in the device identity list
+    when in network privacy mode (``BLE_GAP_PRIVACY_MODE_NETWORK_PRIVACY``).
+    ``sd_ble_gap_privacy_set`` and ``sd_ble_gap_device_identities_set`` now return ``BLE_ERROR_GAP_ZERO_IRK_NOT_ALLOWED`` in this case.
+
+  * The SoftDevice now uses an application-provided passkey (``BLE_GAP_OPT_PASSKEY``) for only one pairing attempt.
+    Using a static or non-random passkey is insecure and not allowed by the Bluetooth Core Specification (DRGN-26638).
+
+  * The API for Data Signing has been removed. This was never supported by the SoftDevice (DRGN-26752).
+
+  * The API for BR/EDR Link Key has been removed. This was never supported by the SoftDevice (DRGN-26752).
+
+  * Removed the ``p_id_info`` parameter from ``sd_ble_gap_sec_info_reply``. It was unused by the SoftDevice (DRGN-26752).
+
+  * The SoftDevice now supports advertising intervals longer than 10 seconds (DRGN-9988).
+
+  * In compliance with Bluetooth Core Specification v6.2, LE Legacy Pairing with Passkey Entry no longer
+    provides Authenticated man-in-the-middle (MITM) protection (DRGN-26635).
+
+  * Added ``sec_status`` parameter to ``sd_ble_gap_lesc_dhkey_reply``
+    so application can reject pairing earlier if peer's public key validation failed.
+    LE Secure Connections pairing now will not proceed to authentication stage 1 until application calls ``sd_ble_gap_lesc_dhkey_reply`` (DRGN-26190).
+
+Limitations
+-----------
+
+* SoftDevice
+
+  * If Radio Notifications are enabled, flash write and flash erase operations
+    initiated through the SoftDevice API will be notified to the application as
+    Radio Events (DRGN-5197).
+
+  * Synthesized low frequency clock source is not tested or intended for use
+    with the Bluetooth LE stack.
+
+  * Applications must not modify the SEVONPEND flag in the SCR register when
+    running in priority levels higher than 6 (priority level numerical values
+    lower than 6) as this can lead to undefined behavior.
+
+  * The SoftDevice may generate several events when connected, based on peer
+    actions, meaning without previous action from the application. The
+    ``BLE_GAP_EVT_PHY_UPDATE_REQUEST`` event, for instance, is generated when a
+    connected peer sends a Phy Update Request, even when an application does not
+    include logic to change PHY. There are several such events that may require
+    action from an application if they are received. For more information, see the
+    ``sd_ble_enable()`` API in SoftDevice.
+
+  * Configuring multiple connection configurations (see ``ble_conn_cfg_t::conn_cfg_tag``) is not supported (DRGN-23839).
+
+* GATT
+
+  * To conform to the Bluetooth Core Specification, there shall be no
+    secondary service that is not referenced somehow by a primary service. The
+    SoftDevice does not enforce this (DRGN-906).
+
+Known Issues
+------------
+
+* LL
+
+  * If the application adds an all zeroes IRK with the
+    ``sd_ble_gap_device_identities_set()``, it will be treated as a valid entry
+    in the device identity list. An all zeroes IRK is invalid and must not be
+    added (DRGN-9083).

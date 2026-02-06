@@ -196,12 +196,12 @@ endchoice
 
 config SOFTDEVICE_FILE
 	string
-	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/components/softdevice/s115/s115_nrf54l05_9.0.0_softdevice.hex" if SOFTDEVICE_S115 && SOC_NRF54L05
-	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/components/softdevice/s115/s115_nrf54l10_9.0.0_softdevice.hex" if SOFTDEVICE_S115 && SOC_NRF54L10
-	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/components/softdevice/s115/s115_nrf54l15_9.0.0_softdevice.hex" if SOFTDEVICE_S115 && SOC_NRF54L15
-	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/components/softdevice/s145/s145_nrf54l05_9.0.0_softdevice.hex" if SOFTDEVICE_S145 && SOC_NRF54L05
-	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/components/softdevice/s145/s145_nrf54l10_9.0.0_softdevice.hex" if SOFTDEVICE_S145 && SOC_NRF54L10
-	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/components/softdevice/s145/s145_nrf54l15_9.0.0_softdevice.hex" if SOFTDEVICE_S145 && SOC_NRF54L15
+	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/components/softdevice/v9/nrf54l/s115/s115_nrf54l05_9.0.0_softdevice.hex" if SOFTDEVICE_S115 && SOC_NRF54L05
+	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/components/softdevice/v9/nrf54l/s115/s115_nrf54l10_9.0.0_softdevice.hex" if SOFTDEVICE_S115 && SOC_NRF54L10
+	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/components/softdevice/v9/nrf54l/s115/s115_nrf54l15_9.0.0_softdevice.hex" if SOFTDEVICE_S115 && SOC_NRF54L15
+	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/components/softdevice/v9/nrf54l/s145/s145_nrf54l05_9.0.0_softdevice.hex" if SOFTDEVICE_S145 && SOC_NRF54L05
+	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/components/softdevice/v9/nrf54l/s145/s145_nrf54l10_9.0.0_softdevice.hex" if SOFTDEVICE_S145 && SOC_NRF54L10
+	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/components/softdevice/v9/nrf54l/s145/s145_nrf54l15_9.0.0_softdevice.hex" if SOFTDEVICE_S145 && SOC_NRF54L15
 	help
 	  Specifies the path to the softdevice hex file.
 

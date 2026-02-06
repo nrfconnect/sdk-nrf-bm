@@ -180,7 +180,7 @@ FULL_PATH_NAMES        = NO
 # will be relative from the directory where Doxygen is started.
 # This tag requires that the tag FULL_PATH_NAMES is set to YES.
 
-STRIP_FROM_PATH        = @DOCSET_SOURCE_BASE@/components/softdevice/s115/s115_API/
+STRIP_FROM_PATH        = @DOCSET_SOURCE_BASE@/components/softdevice/v9/nrf54l/s115/s115_API/
 
 # The STRIP_FROM_INC_PATH tag can be used to strip a user-defined part of the
 # path mentioned in the documentation of a class, which tells the reader which
@@ -189,7 +189,7 @@ STRIP_FROM_PATH        = @DOCSET_SOURCE_BASE@/components/softdevice/s115/s115_AP
 # specify the list of include paths that are normally passed to the compiler
 # using the -I flag.
 
-STRIP_FROM_INC_PATH    = @DOCSET_SOURCE_BASE@/components/softdevice/s115/s115_API/include/
+STRIP_FROM_INC_PATH    = @DOCSET_SOURCE_BASE@/components/softdevice/v9/nrf54l/s115/s115_API/include/
 
 # If the SHORT_NAMES tag is set to YES, Doxygen will generate much shorter (but
 # less readable) file names. This can be useful is your file systems doesn't
@@ -955,8 +955,8 @@ WARN_LOGFILE           =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = @DOCSET_SOURCE_BASE@/components/softdevice/s115/s115_API/doc/ \
-                         @DOCSET_SOURCE_BASE@/components/softdevice/s115/s115_API/include/ \
+INPUT                  = @DOCSET_SOURCE_BASE@/components/softdevice/v9/nrf54l/s115/s115_API/doc/ \
+                         @DOCSET_SOURCE_BASE@/components/softdevice/v9/nrf54l/s115/s115_API/include/ \
                          @DOCSET_SOURCE_BASE@/doc/s115/mainpage.dox
 
 # This tag can be used to specify the character encoding of the source files

@@ -61,12 +61,13 @@ if kconfig_mapping:
     intersphinx_mapping["kconfig"] = kconfig_mapping
 
 # Options for external_content -------------------------------------------------
+SOFTDEVICE_DIR = NRF_BM_BASE / "components" / "softdevice"
 
 external_content_contents = [
     (NRF_BM_BASE / "doc" / "nrf-bm", "*"),
     (NRF_BM_BASE, "samples/**/*.rst"),
-    (NRF_BM_BASE / "components" / "softdevice" / "s115" / "doc", "s115*.main.rst"),
-    (NRF_BM_BASE / "components" / "softdevice" / "s145" / "doc", "s145*.main.rst"),
+    (SOFTDEVICE_DIR / "v9" / "nrf54l" / "s115" / "doc", "s115*.main.rst"),
+    (SOFTDEVICE_DIR / "v9" / "nrf54l" / "s145" / "doc", "s145*.main.rst"),
 ]
 
 external_content_keep = ["versions.txt"]

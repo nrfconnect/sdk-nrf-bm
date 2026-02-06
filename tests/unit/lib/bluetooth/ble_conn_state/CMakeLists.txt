@@ -11,7 +11,7 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(unit_test_ble_conn_state)
 
 set(SOFTDEVICE_VARIANT "s115")
-set(SOFTDEVICE_INCLUDE_DIR "${ZEPHYR_NRF_BM_MODULE_DIR}/components/softdevice/\
+set(SOFTDEVICE_INCLUDE_DIR "${ZEPHYR_NRF_BM_MODULE_DIR}/components/softdevice/v9/nrf54l/\
 ${SOFTDEVICE_VARIANT}/${SOFTDEVICE_VARIANT}_API/include")
 
 zephyr_compile_definitions(
