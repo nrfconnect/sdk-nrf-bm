@@ -21,7 +21,7 @@ static bool bm_installs_was_valid;
 
 LOG_MODULE_REGISTER(bm_installs, CONFIG_BM_INSTALL_LOG_LEVEL);
 
-#if defined(CONFIG_SOC_SERIES_NRF54LX)
+#if defined(CONFIG_SOC_SERIES_NRF54L)
 #define MAX_IMAGE_SIZE (2 * 1024 * 1024)
 #else
 #define MAX_IMAGE_SIZE (1 * 1024 * 1024)

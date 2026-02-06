@@ -17,7 +17,7 @@ APPLICATION_NAME: str = "mcuboot_recovery_retention"
 
 def get_available_ports(dut: DeviceAdapter) -> list[str]:
     """Return list of UART ports."""
-    serial_number, port = dut.device_config.id, dut.device_config.serial
+    serial_number, port = dut.device_config.id, dut.device_config.serial_configs[0].port
     devices: list[dict[str, Any]] = list_devices()["devices"]
 
     # if device id is not provided try to find it having its serial port
