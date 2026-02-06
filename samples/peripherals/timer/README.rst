@@ -69,6 +69,12 @@ Overview
 
 The single-shot timer is used to sequence a series of actions (logging ``Hello``, ``world!``, and ``bye!``), while the periodic timer provides a visual indication of ongoing activity.
 
+User interface
+**************
+
+LED 0:
+  Lit when the device is initialized.
+
 Building and running
 ********************
 

@@ -71,6 +71,21 @@ The LED Button Service (LBS) is a custom service that receives information about
 
 You can use the sample to transmit the button state from your development kit to another device.
 
+User interface
+**************
+
+Button 0:
+  Press to send notification.
+
+LED 0:
+  Lit when the device is initialized.
+
+LED 1:
+  Lit when a device is connected.
+
+LED 2:
+  Service status LED.
+
 Building and running
 ********************
 

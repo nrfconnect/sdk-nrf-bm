@@ -17,17 +17,17 @@ LOG_MODULE_REGISTER(app, CONFIG_APP_LEDS_LOG_LEVEL);
 
 static void led_init(void)
 {
-	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
+	nrf_gpio_cfg_output(BOARD_PIN_LED_2);
 }
 
 static void led_on(void)
 {
-	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+	nrf_gpio_pin_write(BOARD_PIN_LED_2, BOARD_LED_ACTIVE_STATE);
 }
 
 static void led_off(void)
 {
-	nrf_gpio_pin_write(BOARD_PIN_LED_0, !BOARD_LED_ACTIVE_STATE);
+	nrf_gpio_pin_write(BOARD_PIN_LED_2, !BOARD_LED_ACTIVE_STATE);
 }
 
 int main(void)
@@ -35,7 +35,13 @@ int main(void)
 	LOG_INF("LEDs sample started");
 
 	/* Initialize the LED */
+	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
 	led_init();
+	LOG_INF("LEDs enabled");
+
+	/* Signal successful initialization */
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+	LOG_INF("Initialized application");
 
 	while (true) {
 		log_flush();

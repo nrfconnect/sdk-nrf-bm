@@ -51,7 +51,10 @@ User interface
 **************
 
 LED 0:
-   Indicates if an NFC field is present.
+  Lit when the device is initialized.
+
+LED 2:
+  Indicates if an NFC field is present.
 
 Building and running
 ********************

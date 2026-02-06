@@ -88,6 +88,22 @@ Make sure the ``REQ`` pin on one board is connected to the ``RDY`` on the other 
    With the LPUARTE configuration, the console is used only for application logging and not for NUS data.
    Output on the NUS TX line will be handled as input on the NUS RX line on the same device (loopback) or as NUS input to the other device (when using two devices).
 
+User interface
+**************
+
+Button 0:
+  Press to send notification.
+
+LED 0:
+  Lit when the device is initialized.
+
+LED 1:
+  Lit when a device is connected.
+
+.. note::
+
+   In LPUARTE mode, LED 1 may stay on even when no phone is connected because it shares the same pin (P1.10) as the RX signal. RX activity between two connected devices can toggle LED 1, which is expected behavior.
+   
 Building and running
 ********************
 

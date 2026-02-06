@@ -70,6 +70,12 @@ Overview
 The sample initializes the application UARTE instance, specified in the :file:`board-config.h` file in the board.
 It then outputs a message on the UART before echoing the message entered by the user.
 
+User interface
+**************
+
+LED 0:
+  Lit when the device is initialized.
+
 Building and running
 ********************
 

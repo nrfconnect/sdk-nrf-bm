@@ -69,6 +69,15 @@ Overview
 
 The sample initializes and blinks LED0 on the device.
 
+User interface
+**************
+
+LED 0:
+  Lit when the device is initialized.
+
+LED 2:
+  Blinky LED.
+
 Building and running
 ********************
 

@@ -86,6 +86,12 @@ The sample initializes the application LPUARTE instance, specified in the :file:
 It then implements a simple loopback using a single LPUARTE instance.
 By default, the console and logging are disabled to demonstrate low power consumption when UART is active.
 
+User interface
+**************
+
+LED 0:
+  Lit when the device is initialized.
+
 Building and running
 ********************
 

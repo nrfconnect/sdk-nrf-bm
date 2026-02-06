@@ -63,15 +63,6 @@ LOG_MODULE_REGISTER(app, CONFIG_APP_BLE_CGMS_LOG_LEVEL);
 /* Maximum encryption key size. */
 #define SEC_PARAM_MAX_KEY_SIZE 16
 
-enum led_indicate {
-	LED_INDICATE_IDLE = 1,
-	LED_INDICATE_ADVERTISING,
-	LED_INDICATE_ADVERTISING_ALLOW_LIST,
-	LED_INDICATE_ADVERTISING_SLOW,
-	LED_INDICATE_ADVERTISING_DIRECTED,
-	LED_INDICATE_CONNECTED,
-};
-
 /** Glucose measurement timer. */
 static struct bm_timer glucose_meas_timer;
 
@@ -370,14 +361,6 @@ void on_conn_params_evt(const struct ble_conn_params_evt *evt)
 	}
 }
 
-static void led_indication_set(enum led_indicate led_indicate)
-{
-	nrf_gpio_pin_write(BOARD_PIN_LED_0, IS_BIT_SET(led_indicate, 0) == BOARD_LED_ACTIVE_STATE);
-	nrf_gpio_pin_write(BOARD_PIN_LED_1, IS_BIT_SET(led_indicate, 1) == BOARD_LED_ACTIVE_STATE);
-	nrf_gpio_pin_write(BOARD_PIN_LED_2, IS_BIT_SET(led_indicate, 2) == BOARD_LED_ACTIVE_STATE);
-	nrf_gpio_pin_write(BOARD_PIN_LED_3, IS_BIT_SET(led_indicate, 3) == BOARD_LED_ACTIVE_STATE);
-}
-
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {
 
@@ -386,7 +369,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 	switch (evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:
 		LOG_INF("Connected");
-		led_indication_set(LED_INDICATE_CONNECTED);
+		nrf_gpio_pin_write(BOARD_PIN_LED_1, BOARD_LED_ACTIVE_STATE);
 
 		conn_handle = evt->evt.gap_evt.conn_handle;
 		nrf_err = ble_qwr_conn_handle_assign(&ble_qwr, conn_handle);
@@ -407,6 +390,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		break;
 	case BLE_GAP_EVT_DISCONNECTED:
 		LOG_INF("Disconnected");
+		nrf_gpio_pin_write(BOARD_PIN_LED_1, !BOARD_LED_ACTIVE_STATE);
 		if (conn_handle == evt->evt.gap_evt.conn_handle) {
 			conn_handle = BLE_CONN_HANDLE_INVALID;
 		}
@@ -484,22 +468,15 @@ static void ble_adv_evt_handler(struct ble_adv *adv, const struct ble_adv_evt *a
 		__ASSERT(false, "BLE advertising error %#x", adv_evt->error.reason);
 		break;
 	case BLE_ADV_EVT_DIRECTED_HIGH_DUTY:
-		led_indication_set(LED_INDICATE_ADVERTISING_DIRECTED);
-		break;
+	case BLE_ADV_EVT_DIRECTED:
 	case BLE_ADV_EVT_FAST:
-		led_indication_set(LED_INDICATE_ADVERTISING);
-		break;
 	case BLE_ADV_EVT_SLOW:
-		led_indication_set(LED_INDICATE_ADVERTISING_SLOW);
-		break;
 	case BLE_ADV_EVT_FAST_ALLOW_LIST:
-		led_indication_set(LED_INDICATE_ADVERTISING_ALLOW_LIST);
-		break;
 	case BLE_ADV_EVT_SLOW_ALLOW_LIST:
-		led_indication_set(LED_INDICATE_ADVERTISING_ALLOW_LIST);
+		LOG_DBG("Started advertising, adv_evt_type %d", (int)adv_evt->evt_type);
 		break;
 	case BLE_ADV_EVT_IDLE:
-		led_indication_set(LED_INDICATE_IDLE);
+		LOG_DBG("Idle, adv_evt_type %d", (int)adv_evt->evt_type);
 		break;
 	case BLE_ADV_EVT_ALLOW_LIST_REQUEST:
 		nrf_err = pm_allow_list_get(allow_list_addrs, &addr_cnt, allow_list_irks, &irk_cnt);
@@ -626,26 +603,20 @@ static void button_handler(uint8_t pin, uint8_t action)
 	}
 
 	switch (pin) {
-	case BOARD_PIN_BTN_0:
-		LOG_INF("Sleep mode not supported");
-		break;
-
-	case BOARD_PIN_BTN_1:
-		LOG_INF("Increase GL Concentration");
-		glucose_concentration += CONFIG_APP_GLUCOSE_CONCENTRATION_INC;
-		if (glucose_concentration > CONFIG_APP_GLUCOSE_CONCENTRATION_MAX) {
-			glucose_concentration = CONFIG_APP_GLUCOSE_CONCENTRATION_MIN;
-		}
-		break;
-
-	case BOARD_PIN_BTN_3:
+	case BOARD_PIN_BTN_2:
 		LOG_INF("Decrease GL Concentration");
 		glucose_concentration -= CONFIG_APP_GLUCOSE_CONCENTRATION_DEC;
 		if (glucose_concentration < CONFIG_APP_GLUCOSE_CONCENTRATION_MIN) {
 			glucose_concentration = CONFIG_APP_GLUCOSE_CONCENTRATION_MAX;
 		}
 		break;
-
+	case BOARD_PIN_BTN_3:
+		LOG_INF("Increase GL Concentration");
+		glucose_concentration += CONFIG_APP_GLUCOSE_CONCENTRATION_INC;
+		if (glucose_concentration > CONFIG_APP_GLUCOSE_CONCENTRATION_MAX) {
+			glucose_concentration = CONFIG_APP_GLUCOSE_CONCENTRATION_MIN;
+		}
+		break;
 	default:
 		break;
 	}
@@ -859,13 +830,6 @@ static int buttons_leds_init(bool *erase_bonds)
 
 	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
 	nrf_gpio_cfg_output(BOARD_PIN_LED_1);
-	nrf_gpio_cfg_output(BOARD_PIN_LED_2);
-	nrf_gpio_cfg_output(BOARD_PIN_LED_3);
-
-	nrf_gpio_pin_write(BOARD_PIN_LED_0, !BOARD_LED_ACTIVE_STATE);
-	nrf_gpio_pin_write(BOARD_PIN_LED_1, !BOARD_LED_ACTIVE_STATE);
-	nrf_gpio_pin_write(BOARD_PIN_LED_2, !BOARD_LED_ACTIVE_STATE);
-	nrf_gpio_pin_write(BOARD_PIN_LED_3, !BOARD_LED_ACTIVE_STATE);
 
 	return 0;
 }
@@ -923,6 +887,9 @@ int main(void)
 	}
 
 	LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
+
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+	LOG_INF("Initialized application");
 
 idle:
 	/* Enter main loop. */

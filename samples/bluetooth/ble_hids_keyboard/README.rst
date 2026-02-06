@@ -80,26 +80,28 @@ User interface
 **************
 
 Button 0:
-   Sends one character of the predefined input ("hello\\n") to the computer.
-
-   During bonding, press it to confirm that the passkey is correct.
+   During bonding with security enabled, press the button to confirm that the displayed passkey matches to proceed with authentication.
    See `Testing`_.
 
 Button 1:
+   Keep the button pressed while resetting the board to delete bonding information for all peers stored on the device.
+   
+   During bonding with security enabled, press the button to reject the displayed passkey and cancel the authentication process.
+
+Button 2:
    Simulates the Shift key.
 
-   Keep the button pressed while resetting the board to delete bonding information for all peers stored on the device.
-
-   During bonding, press it to reject the passkey.
+Button 3:
+   Sends one character of the predefined input ("hello\\n") to the computer.
 
 LED 0:
-   Lit when the device is advertising.
+   Lit when the device is initialized.
 
 LED 1:
    Lit when a device is connected.
 
-LED 3:
-   Lit when Caps Lock is on.
+LED 2:
+   Lit when Caps Lock is active on the computer.
 
 Building and running
 ********************
@@ -126,8 +128,8 @@ Testing
 
    The terminal output in |VSC| indicates ``Peer connected``.
 #. Observe that the device is detected as a keyboard.
-#. Repeatedly press **Button 0** on the kit.
+#. Repeatedly press **Button 3** on the kit.
    Every button press sends one character of the test message "hello" to your device (the test message includes a carriage return).
-#. Press **Button 1** and hold it while pressing **Button 0**.
+#. Press **Button 2** and hold it while pressing **Button 3**.
    Observe that the next letter of the "hello" message appears as a capital letter.
-   This is because **Button 1** simulates the Shift key.
+   This is because **Button 2** simulates the Shift key.

@@ -43,15 +43,16 @@ User interface
 **************
 
 Button 0:
-   During bonding, press the button to confirm that the passkey is correct.
+   During bonding with security enabled, press the button to confirm that the displayed passkey matches to proceed with authentication.
    See `Testing`_.
 
 Button 1:
    Keep the button pressed while resetting the board to delete bonding information for all peers stored on the device.
-   During bonding, press it to reject the passkey.
+   
+   During bonding with security enabled, press the button to reject the displayed passkey and cancel the authentication process.
 
 LED 0:
-   Lit when the device is advertising.
+   Lit when the device is initialized.
 
 LED 1:
    Lit when a device is connected.
