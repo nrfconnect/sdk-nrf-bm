@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Nordic Semiconductor ASA
+ * Copyright (c) 2026 Nordic Semiconductor ASA
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
@@ -13,156 +13,189 @@
 #include <nrf_error.h>
 
 #include "cmock_ble_gatts.h"
+#include "cmock_ble_gq.h"
+#include "cmock_ble_gap.h"
+#include "cmock_ble_gattc.h"
 #include "cmock_ble.h"
 #include "cmock_nrf_sdh_ble.h"
+#include "cmock_ble_db_discovery.h"
 
-static struct ble_nus ble_nus;
+BLE_GQ_DEF(m_ble_gatt_queue);
+BLE_DB_DISCOVERY_DEF(m_db_disc);
+BLE_NUS_CLIENT_DEF(ble_nus_client);
 
 uint16_t test_case_conn_handle = 0x1000;
 bool evt_handler_called;
 struct ble_nus_client_context *last_link_ctx;
 
-static uint32_t stub_sd_ble_gatts_service_add(uint8_t type, const ble_uuid_t *p_uuid,
-					      uint16_t *p_handle, int calls)
+static struct ble_nus_client_evt nus_client_evt;
+static struct ble_nus_client_evt nus_client_evt_prev;
+
+void ble_evt_send(const ble_evt_t *evt)
 {
-	ble_uuid_t expected_uuid = {
-		.type = 123,
-		.uuid = BLE_UUID_NUS_SERVICE,
-	};
-	uint16_t expected_conn_handle = BLE_CONN_HANDLE_INVALID;
-
-	TEST_ASSERT_EQUAL(BLE_GATTS_SRVC_TYPE_PRIMARY, type);
-	TEST_ASSERT_EQUAL(expected_uuid.type, p_uuid->type);
-	TEST_ASSERT_EQUAL(expected_uuid.uuid, p_uuid->uuid);
-	TEST_ASSERT_EQUAL(expected_conn_handle, *p_handle);
-	*p_handle = test_case_conn_handle;
-
-	return NRF_SUCCESS;
-}
-
-static uint32_t stub_sd_ble_gatts_characteristic_add(uint16_t service_handle,
-						     const ble_gatts_char_md_t *p_char_md,
-						     const ble_gatts_attr_t *p_attr_char_value,
-						     ble_gatts_char_handles_t *p_handles, int calls)
-{
-	ble_uuid_t expected_char_uuid = {.type = 123};
-
-	TEST_ASSERT_EQUAL(expected_char_uuid.type, p_attr_char_value->p_uuid->type);
-	TEST_ASSERT_EQUAL(test_case_conn_handle, service_handle);
-
-	p_handles->cccd_handle = 0x101;
-	p_handles->value_handle = 0x102;
-
-	return NRF_SUCCESS;
-}
-
-static uint32_t stub_sd_ble_gatts_value_get(uint16_t conn_handle, uint16_t handle,
-					    ble_gatts_value_t *p_value, int calls)
-{
-	TEST_ASSERT_EQUAL(test_case_conn_handle, conn_handle);
-	TEST_ASSERT_EQUAL(0x101, handle);
-
-	*p_value->p_value = BLE_GATT_HVX_NOTIFICATION;
-
-	return NRF_SUCCESS;
-}
-
-static uint32_t stub_sd_ble_gatts_value_get_err(uint16_t conn_handle, uint16_t handle,
-						ble_gatts_value_t *p_value, int calls)
-{
-	TEST_ASSERT_EQUAL(test_case_conn_handle, conn_handle);
-	TEST_ASSERT_EQUAL(0x101, handle);
-
-	switch (calls) {
-	case 0:
-		*p_value->p_value = BLE_GATT_HVX_NOTIFICATION;
-		return NRF_ERROR_INVALID_PARAM;
-	case 1:
-		*p_value->p_value = BLE_GATT_HVX_INDICATION;
-		return NRF_SUCCESS;
-	default:
-		return -1;
+	TYPE_SECTION_FOREACH(struct nrf_sdh_ble_evt_observer, nrf_sdh_ble_evt_observers, obs)
+	{
+		obs->handler(evt, obs->context);
 	}
 }
 
-static void ble_nus_evt_handler_on_connect(struct ble_nus *nus, const struct ble_nus_evt *evt)
+static void ble_nus_client_evt_handler(struct ble_nus_client *ble_nus_client,
+				       struct ble_nus_client_evt const *ble_nus_evt)
 {
-	last_link_ctx = evt->link_ctx;
-	TEST_ASSERT_EQUAL(BLE_NUS_EVT_COMM_STARTED, evt->evt_type);
-	TEST_ASSERT_TRUE(evt->link_ctx->is_notification_enabled);
-	evt_handler_called = true;
+	(void)ble_nus_client;
+	nus_client_evt_prev = nus_client_evt;
+	nus_client_evt = *ble_nus_evt;
 }
 
-static void ble_nus_evt_handler_on_connect_null_ctx(struct ble_nus *nus,
-						    const struct ble_nus_evt *evt)
-{
-	TEST_ASSERT_EQUAL(BLE_NUS_EVT_ERROR, evt->evt_type);
-	TEST_ASSERT_NULL(evt->link_ctx);
-	evt_handler_called = true;
-}
-
-static void ble_nus_evt_handler_on_write_notif(struct ble_nus *nus, const struct ble_nus_evt *evt)
-{
-	TEST_ASSERT_EQUAL(BLE_NUS_EVT_COMM_STARTED, evt->evt_type);
-	TEST_ASSERT_TRUE(evt->link_ctx->is_notification_enabled);
-	evt_handler_called = true;
-}
-
-static void ble_nus_evt_handler_on_write_indica(struct ble_nus *nus, const struct ble_nus_evt *evt)
-{
-	TEST_ASSERT_EQUAL(BLE_NUS_EVT_COMM_STOPPED, evt->evt_type);
-	TEST_ASSERT_FALSE(evt->link_ctx->is_notification_enabled);
-	evt_handler_called = true;
-}
-
-static void ble_nus_evt_handler_on_write_value(struct ble_nus *nus, const struct ble_nus_evt *evt)
-{
-	TEST_ASSERT_EQUAL(BLE_NUS_EVT_RX_DATA, evt->evt_type);
-	TEST_ASSERT_EQUAL(0xAB, evt->rx_data.data[0]);
-	TEST_ASSERT_EQUAL(0xCD, evt->rx_data.data[1]);
-	TEST_ASSERT_EQUAL(2, evt->rx_data.length);
-	evt_handler_called = true;
-}
-
-static void ble_nus_evt_handler_on_hvx_tx_complete(struct ble_nus *nus,
-						   const struct ble_nus_evt *evt)
-{
-	TEST_ASSERT_EQUAL(BLE_NUS_EVT_TX_RDY, evt->evt_type);
-	TEST_ASSERT_EQUAL_PTR(last_link_ctx, evt->link_ctx);
-	evt_handler_called = true;
-}
-
-static void nus_init(struct ble_nus_config *nus_cfg)
+static void nus_client_init(struct ble_nus_client_config *nus_cfg)
 {
 	uint32_t nrf_err;
 	uint8_t expected_uuid_type = 123;
 
 	__cmock_sd_ble_uuid_vs_add_ExpectAnyArgsAndReturn(NRF_SUCCESS);
 	__cmock_sd_ble_uuid_vs_add_ReturnThruPtr_p_uuid_type(&expected_uuid_type);
-	__cmock_sd_ble_gatts_service_add_Stub(stub_sd_ble_gatts_service_add);
-	__cmock_sd_ble_gatts_characteristic_add_Stub(stub_sd_ble_gatts_characteristic_add);
+	//__cmock_sd_ble_gatts_service_add_Stub(stub_sd_ble_gatts_service_add);
+	//__cmock_sd_ble_gatts_characteristic_add_Stub(stub_sd_ble_gatts_characteristic_add);
 
-	nrf_err = ble_nus_init(&ble_nus, nus_cfg);
+	nrf_err = ble_nus_client_init(&ble_nus_client, nus_cfg);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
-	TEST_ASSERT_EQUAL_PTR(nus_cfg->evt_handler, ble_nus.evt_handler);
+	TEST_ASSERT_EQUAL_PTR(nus_cfg->evt_handler, ble_nus_client.evt_handler);
 }
 
-static void setup_with_notif_enabled(uint16_t conn_handle)
+void test_ble_nus_client_init(void)
 {
-	ble_evt_t const ble_evt = {.evt.gap_evt.conn_handle = conn_handle,
-				   .header.evt_id = BLE_GAP_EVT_CONNECTED};
+	uint32_t err_code;
 
-	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get);
-	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(conn_handle, 0);
-	ble_nus_on_ble_evt(&ble_evt, &ble_nus);
-	__cmock_sd_ble_gatts_value_get_Stub(NULL);
+	struct ble_nus_client_config init;
 
-	TEST_ASSERT_TRUE(evt_handler_called);
+	init.evt_handler = ble_nus_client_evt_handler;
+	init.gatt_queue = &m_ble_gatt_queue;
+	init.db_discovery = &m_db_disc;
+
+	err_code = ble_nus_client_init(&ble_nus_client, &init);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, err_code);
+}
+
+void test_ble_nus_client_init_null(void)
+{
+	uint32_t nrf_err;
+
+	struct ble_nus_client_config cfg = {.db_discovery = &m_db_disc,
+					    .evt_handler = ble_nus_client_evt_handler,
+					    .gatt_queue = &m_ble_gatt_queue};
+
+	nrf_err = ble_nus_client_init(NULL, &cfg);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
+}
+
+void test_ble_nus_client_init_invalid_param(void)
+{
+	uint32_t nrf_err;
+
+	struct ble_nus_client_config cfg = {.db_discovery = &m_db_disc,
+					    .evt_handler = ble_nus_client_evt_handler,
+					    .gatt_queue = &m_ble_gatt_queue};
+
+	__cmock_sd_ble_uuid_vs_add_ExpectAnyArgsAndReturn(NRF_ERROR_NO_MEM);
+
+	nrf_err = ble_nus_client_init(&ble_nus_client, &cfg);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, nrf_err);
+}
+
+void test_ble_nus_client_tx_notif_enable(void)
+{
+	uint32_t nrf_err;
+
+	struct ble_nus_client_config nus_cfg = {.evt_handler = ble_nus_client_evt_handler,
+						.gatt_queue = &m_ble_gatt_queue,
+						.db_discovery = &m_db_disc};
+
+	ble_nus_client.uuid_type = BLE_UUID_TYPE_BLE;
+	nus_client_init(&nus_cfg);
+	struct ble_db_discovery_evt db_evt = {
+		.evt_type = BLE_DB_DISCOVERY_COMPLETE,
+		.conn_handle = test_case_conn_handle,
+		.params.discovered_db.srv_uuid.uuid = BLE_UUID_NUS_SERVICE,
+		.params.discovered_db.srv_uuid.type = ble_nus_client.uuid_type};
+	// struct ble_gatt_db_char *chars = evt.params.discovered_db.charateristics; // TODO: Make
+	// fake characteristics
+
+	ble_nus_client_handles_assign(&ble_nus_client, nus_client_evt.conn_handle,
+				      &nus_client_evt.params.discovery_complete.handles);
+	ble_nus_client_on_db_disc_evt(&ble_nus_client, &db_evt);
+
+	nrf_err = ble_nus_client_tx_notif_enable(&ble_nus_client);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+}
+
+void test_ble_nus_client_tx_notif_enable_null(void)
+{
+	uint32_t nrf_err;
+
+	nrf_err = ble_nus_client_tx_notif_enable(NULL);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
+}
+
+void test_ble_nus_client_tx_notif_enable_invalid_state(void)
+{
+	uint32_t nrf_err;
+
+	struct ble_nus_client_config nus_cfg = {.evt_handler = ble_nus_client_evt_handler,
+						.gatt_queue = &m_ble_gatt_queue,
+						.db_discovery = &m_db_disc};
+
+	ble_nus_client.uuid_type = BLE_UUID_TYPE_BLE;
+	nus_client_init(&nus_cfg);
+	ble_nus_client.conn_handle = BLE_CONN_HANDLE_INVALID;
+	nrf_err = ble_nus_client_tx_notif_enable(&ble_nus_client);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, nrf_err);
+}
+
+void test_ble_nus_client_string_send(void)
+{
+	uint32_t nrf_err;
+
+	struct ble_nus_client_config cfg = {.evt_handler = ble_nus_client_evt_handler,
+					    .gatt_queue = &m_ble_gatt_queue,
+					    .db_discovery = &m_db_disc};
+
+	nus_client_init(&cfg);
+
+	nrf_err = ble_nus_client_string_send(
+		&ble_nus_client, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890",
+		sizeof("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890") - 1);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+}
+
+void test_ble_nus_client_handles_assign(void)
+{
+	uint32_t nrf_err;
+	struct ble_db_discovery_evt db_evt = {
+		.conn_handle = 100,
+		.evt_type = BLE_DB_DISCOVERY_COMPLETE,
+		.params.discovered_db = {
+			.srv_uuid = {.uuid = BLE_UUID_NUS_SERVICE,
+				     .type = ble_nus_client.uuid_type},
+			.char_count = 2,
+			.charateristics = {
+				{.characteristic.uuid.uuid = BLE_UUID_NUS_RX_CHARACTERISTIC},
+				{.characteristic.uuid.uuid = BLE_UUID_NUS_TX_CHARACTERISTIC}}}};
+
+	struct ble_nus_client_config nus_cfg = {.evt_handler = ble_nus_client_evt_handler,
+						.gatt_queue = &m_ble_gatt_queue,
+						.db_discovery = &m_db_disc};
+	nus_client_init(&nus_cfg);
+
+	ble_nus_client_on_db_disc_evt(&ble_nus_client, &db_evt);
+
+	TEST_ASSERT_EQUAL(nus_client_evt.evt_type, BLE_NUS_CLIENT_EVT_DISCOVERY_COMPLETE);
+	nrf_err = ble_nus_client_handles_assign(&ble_nus_client, nus_client_evt.conn_handle,
+						&nus_client_evt.params.discovery_complete.handles);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
 void setUp(void)
 {
-	memset(&ble_nus, 0, sizeof(ble_nus));
 	evt_handler_called = false;
 	test_case_conn_handle++;
 }

@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2025 Nordic Semiconductor ASA
+# Copyright (c) 2026 Nordic Semiconductor ASA
 #
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
@@ -22,7 +22,11 @@ zephyr_compile_definitions(
 
 cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble.h)
 cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble_gatts.h)
+cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble_gattc.h)
+cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble_gap.h)
+cmock_handle(${ZEPHYR_NRF_BM_MODULE_DIR}/include/bm/bluetooth/ble_gq.h)
 cmock_handle(${ZEPHYR_NRF_BM_MODULE_DIR}/include/bm/softdevice_handler/nrf_sdh_ble.h)
+cmock_handle(${ZEPHYR_NRF_BM_MODULE_DIR}/include/bm/bluetooth/ble_db_discovery.h)
 
 zephyr_include_directories(
   ${ZEPHYR_NRF_BM_MODULE_DIR}/include
