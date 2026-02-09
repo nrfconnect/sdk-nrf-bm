@@ -14,6 +14,8 @@
 
 #include <bm/softdevice_handler/nrf_sdh.h>
 #include <nrf_soc.h>
+#include <hal/nrf_gpio.h>
+#include <board-config.h>
 
 #include <bm/storage/bm_storage.h>
 
@@ -238,6 +240,10 @@ int main(void)
 		goto idle;
 	}
 
+	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+	LOG_INF("Storage sample initialized");
+
 	LOG_INF("Reading persisted data");
 
 	err = storage_reads();
@@ -280,7 +286,7 @@ int main(void)
 		goto idle;
 	}
 
-	LOG_INF("Storage sample finished.");
+	LOG_INF("Storage sample finished");
 
 idle:
 	/* Enter main loop. */
