@@ -1,0 +1,23 @@
+# Redefine this symbol without dependencies, so that tests
+# can enable it without having to enable the dependencies too.
+config BLE_HRS_CLIENT
+	default y
+
+# Redefine Kconfigs used by the tested module that are defined in
+# other modules we do not want to enable.
+config NRF_SDH_BLE_CENTRAL_LINK_COUNT
+	default 1
+
+config BLE_DB_DISCOVERY_MAX_SRV
+	default 1
+
+config BLE_GQ_MAX_CONNECTIONS
+	default 1
+
+config BLE_GQ_QUEUE_SIZE
+	default 1
+
+config BLE_GQ_HEAP_SIZE
+	default 256
+
+source "Kconfig.zephyr"
