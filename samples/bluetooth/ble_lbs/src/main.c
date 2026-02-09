@@ -6,6 +6,7 @@
 
 #include <ble_gap.h>
 #include <nrf_soc.h>
+#include <hal/nrf_gpio.h>
 #include <bm/softdevice_handler/nrf_sdh.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
 #include <bm/bluetooth/ble_adv.h>
@@ -40,6 +41,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		if (nrf_err) {
 			LOG_ERR("Failed to set system attributes, nrf_error %#x", nrf_err);
 		}
+		nrf_gpio_pin_write(BOARD_PIN_LED_1, BOARD_LED_ACTIVE_STATE);
 		break;
 
 	case BLE_GAP_EVT_DISCONNECTED:
@@ -47,6 +49,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		if (conn_handle == evt->evt.gap_evt.conn_handle) {
 			conn_handle = BLE_CONN_HANDLE_INVALID;
 		}
+		nrf_gpio_pin_write(BOARD_PIN_LED_1, !BOARD_LED_ACTIVE_STATE);
 		break;
 
 	case BLE_GAP_EVT_AUTH_STATUS:
@@ -93,20 +96,24 @@ static void button_handler(uint8_t pin, enum bm_buttons_evt_type action)
 	ble_lbs_on_button_change(&ble_lbs, conn_handle, action);
 }
 
-static void led_on(void)
+static void lbs_led_on(void)
 {
-	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+	nrf_gpio_pin_write(BOARD_PIN_LED_2, BOARD_LED_ACTIVE_STATE);
 }
 
-static void led_off(void)
+static void lbs_led_off(void)
 {
-	nrf_gpio_pin_write(BOARD_PIN_LED_0, !BOARD_LED_ACTIVE_STATE);
+	nrf_gpio_pin_write(BOARD_PIN_LED_2, !BOARD_LED_ACTIVE_STATE);
 }
 
 static void led_init(void)
 {
 	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
-	led_off();
+	nrf_gpio_cfg_output(BOARD_PIN_LED_1);
+	nrf_gpio_cfg_output(BOARD_PIN_LED_2);
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, !BOARD_LED_ACTIVE_STATE);
+	nrf_gpio_pin_write(BOARD_PIN_LED_1, !BOARD_LED_ACTIVE_STATE);
+	nrf_gpio_pin_write(BOARD_PIN_LED_2, !BOARD_LED_ACTIVE_STATE);
 }
 
 static void lbs_evt_handler(struct ble_lbs *lbs, const struct ble_lbs_evt *lbs_evt)
@@ -114,10 +121,10 @@ static void lbs_evt_handler(struct ble_lbs *lbs, const struct ble_lbs_evt *lbs_e
 	switch (lbs_evt->evt_type) {
 	case BLE_LBS_EVT_LED_WRITE:
 		if (lbs_evt->led_write.value) {
-			led_on();
+			lbs_led_on();
 			LOG_INF("Received LED ON!");
 		} else {
-			led_off();
+			lbs_led_off();
 			LOG_INF("Received LED OFF!");
 		}
 		break;
@@ -165,10 +172,11 @@ int main(void)
 	LOG_INF("Bluetooth enabled");
 
 	led_init();
+	LOG_INF("LEDs enabled");
 
 	err = bm_buttons_init(
 		&(struct bm_buttons_config){
-			.pin_number = BOARD_PIN_BTN_0,
+			.pin_number = BOARD_PIN_BTN_2,
 			.active_state = BM_BUTTONS_ACTIVE_LOW,
 			.pull_config = BM_BUTTONS_PIN_PULLUP,
 			.handler = button_handler,
@@ -220,6 +228,9 @@ int main(void)
 	}
 
 	LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
+
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+	LOG_INF("BLE LBS sample initialized");
 
 idle:
 	while (true) {

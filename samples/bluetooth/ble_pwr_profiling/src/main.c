@@ -96,6 +96,7 @@ static void poweroff(void)
 
 #if defined(CONFIG_SAMPLE_BLE_PWR_PROFILING_LED)
 	nrf_gpio_pin_write(BOARD_PIN_LED_0, !BOARD_LED_ACTIVE_STATE);
+	nrf_gpio_pin_write(BOARD_PIN_LED_1, !BOARD_LED_ACTIVE_STATE);
 #endif
 
 #if defined(CONFIG_HAS_NORDIC_RAM_CTRL)
@@ -308,6 +309,9 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 	case BLE_GAP_EVT_CONNECTED:
 		LOG_INF("Peer connected");
 		conn_handle = evt->evt.gap_evt.conn_handle;
+#if defined(CONFIG_SAMPLE_BLE_PWR_PROFILING_LED)
+		nrf_gpio_pin_write(BOARD_PIN_LED_1, BOARD_LED_ACTIVE_STATE);
+#endif
 		break;
 
 	case BLE_GAP_EVT_DISCONNECTED:
@@ -320,6 +324,9 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 			}
 			poweroff();
 		}
+#if defined(CONFIG_SAMPLE_BLE_PWR_PROFILING_LED)
+		nrf_gpio_pin_write(BOARD_PIN_LED_1, !BOARD_LED_ACTIVE_STATE);
+#endif
 		break;
 
 	case BLE_GAP_EVT_AUTH_STATUS:
@@ -555,11 +562,11 @@ static void button_handler(uint8_t pin, uint8_t action)
 	(void)bm_timer_stop(&poweroff_timer);
 
 	switch (pin) {
-	case BOARD_PIN_BTN_0:
+	case BOARD_PIN_BTN_2:
 		adv_data_update_and_start(ADV_MODE_CONN);
 		break;
 
-	case BOARD_PIN_BTN_1:
+	case BOARD_PIN_BTN_3:
 		adv_data_update_and_start(ADV_MODE_NONCONN);
 		break;
 
@@ -608,26 +615,28 @@ int main(void)
 		.evt_handler = on_ble_qwr_evt,
 	};
 
-	struct bm_buttons_config configs[2] = {
+	struct bm_buttons_config configs[] = {
 		{
-			.pin_number = BOARD_PIN_BTN_0,
+			.pin_number = BOARD_PIN_BTN_2,
 			.active_state = BM_BUTTONS_ACTIVE_LOW,
 			.pull_config = BM_BUTTONS_PIN_PULLUP,
 			.handler = button_handler,
 		},
 		{
-			.pin_number = BOARD_PIN_BTN_1,
+			.pin_number = BOARD_PIN_BTN_3,
 			.active_state = BM_BUTTONS_ACTIVE_LOW,
 			.pull_config = BM_BUTTONS_PIN_PULLUP,
 			.handler = button_handler,
 		},
 	};
 
-	LOG_INF("BLE Power Profiling sample started");
+	LOG_INF("BLE PWR Profiling sample started");
 
 #if defined(CONFIG_SAMPLE_BLE_PWR_PROFILING_LED)
 	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
-	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+	nrf_gpio_cfg_output(BOARD_PIN_LED_1);
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, !BOARD_LED_ACTIVE_STATE);
+	nrf_gpio_pin_write(BOARD_PIN_LED_1, !BOARD_LED_ACTIVE_STATE);
 #endif
 
 	nrf_err = ble_conn_params_evt_handler_set(on_conn_params_evt);
@@ -702,8 +711,8 @@ int main(void)
 		goto idle;
 	}
 
-	const bool connectable_adv = bm_buttons_is_pressed(BOARD_PIN_BTN_0);
-	const bool nonconnectable_adv = bm_buttons_is_pressed(BOARD_PIN_BTN_1);
+	const bool connectable_adv = bm_buttons_is_pressed(BOARD_PIN_BTN_2);
+	const bool nonconnectable_adv = bm_buttons_is_pressed(BOARD_PIN_BTN_3);
 
 	if (connectable_adv) {
 		adv_data_update_and_start(ADV_MODE_CONN);
@@ -714,6 +723,12 @@ int main(void)
 		LOG_INF("No advertising selected, schedule power off in 5 seconds");
 		err = bm_timer_start(&poweroff_timer, BM_TIMER_MS_TO_TICKS(5000), NULL);
 	}
+
+#if defined(CONFIG_SAMPLE_BLE_PWR_PROFILING_LED)
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+#endif
+
+	LOG_INF("BLE PWR Profiling sample initialized");
 
 idle:
 	while (true) {
