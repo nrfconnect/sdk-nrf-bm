@@ -89,10 +89,10 @@ The only mechanisms that are functional in this mode are reset and wake-up.
 To wake up your development kit from the system off state, you have the following options:
 
 * Press the **RESET** button on your development kit.
-* Press **Button 0** to start connectable advertising.
-* Press **Button 1** to start non-connectable advertising.
+* Press **Button 2** to start connectable advertising.
+* Press **Button 3** to start non-connectable advertising.
 
-The development kit starts advertising automatically when pressing **Button 0** or **Button 1** and goes to **System off mode** when pressing **RESET**.
+The development kit starts advertising automatically when pressing **Button 2** or **Button 3** and goes to **System off mode** when pressing **RESET**.
 
 When you establish a connection with a central device, you can test different connection parameters to optimize the power consumption.
 When the central device enables the notification characteristic, your development kit starts sending notifications until the timeout set by the :kconfig:option:`CONFIG_SAMPLE_BLE_PWR_PROFILING_NOTIF_CONNECTION_TIMEOUT` Kconfig option expires.
@@ -135,27 +135,27 @@ This characteristic has a client characteristic configuration descriptor (CCCD) 
 User interface
 **************
 
-The sample uses buttons and LEDs to provide a simple user interface.
-
-Button 0:
+Button 2:
     Starts connectable advertising and wakes up the SoC from the system off state.
 
-Button 1:
+Button 3:
     Starts non-connectable advertising and wakes up the SoC from the system off state.
-
-LED 0:
-    Lit when the main loop is running.
-    Off when the device is in system off state.
 
 .. note::
    When you use buttons to wake up the SoC from the system off state, the button state is read in the main thread.
    This causes a delay between the SoC wake up and button press processing.
    If you want to start advertising on system start, you must keep pressing the button until you see a log message confirming the advertising start on the terminal.
 
+LED 0:
+  Lit when the device is initialized, if configured.
+
+LED 1:
+  Lit when a device is connected, if configured.
+
 .. note::
-   The LED is disabled by default.
-   You can enable the LED by setting the :kconfig:option:`CONFIG_SAMPLE_BLE_PWR_PROFILING_LED` Kconfig option.
-   Enabling the LED will increase the power consumption in active and low power mode by ~1.8 uA.
+   The LEDs are disabled by default.
+   You can enable LEDs by setting the :kconfig:option:`CONFIG_SAMPLE_BLE_PWR_PROFILING_LED` Kconfig option.
+   Enabling the LEDs increases power consumption by ~1.8 µA in active and low-power modes when not connected, and by ~3.7 µA when connected to a device, due to the second LED.
 
 Configuration
 *************

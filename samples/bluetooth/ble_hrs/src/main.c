@@ -6,6 +6,7 @@
 
 #include <ble_gap.h>
 #include <nrf_soc.h>
+#include <hal/nrf_gpio.h>
 #include <bm/softdevice_handler/nrf_sdh.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
 #include <bm/bluetooth/ble_adv.h>
@@ -227,6 +228,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 	case BLE_GAP_EVT_CONNECTED:
 		LOG_INF("Peer connected");
 		conn_handle = evt->evt.gap_evt.conn_handle;
+		nrf_gpio_pin_write(BOARD_PIN_LED_1, BOARD_LED_ACTIVE_STATE);
 		break;
 
 	case BLE_GAP_EVT_DISCONNECTED:
@@ -234,6 +236,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		if (conn_handle == evt->evt.gap_evt.conn_handle) {
 			conn_handle = BLE_CONN_HANDLE_INVALID;
 		}
+		nrf_gpio_pin_write(BOARD_PIN_LED_1, !BOARD_LED_ACTIVE_STATE);
 		break;
 
 	case BLE_GAP_EVT_AUTH_STATUS:
@@ -529,6 +532,11 @@ int main(void)
 		goto idle;
 	}
 
+	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
+	nrf_gpio_cfg_output(BOARD_PIN_LED_1);
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, !BOARD_LED_ACTIVE_STATE);
+	nrf_gpio_pin_write(BOARD_PIN_LED_1, !BOARD_LED_ACTIVE_STATE);
+
 	nrf_err = ble_adv_init(&ble_adv, &ble_adv_cfg);
 	if (nrf_err) {
 		LOG_ERR("Failed to initialize advertising, nrf_error %#x", nrf_err);
@@ -538,6 +546,9 @@ int main(void)
 	simulated_meas_start();
 
 	advertising_start(erase_bonds);
+
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+	LOG_INF("BLE HRS sample initialized");
 
 idle:
 	while (true) {

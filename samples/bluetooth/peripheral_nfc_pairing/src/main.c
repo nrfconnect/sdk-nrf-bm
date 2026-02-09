@@ -55,8 +55,11 @@ static uint8_t ndef_msg_buf[NDEF_MSG_BUF_SIZE];
 static void led_init(void)
 {
 	nrf_gpio_cfg_output(DEV_INITIALIZED_LED);
-	nrf_gpio_cfg_output(NFC_FIELD_LED);
 	nrf_gpio_cfg_output(CONN_STATUS_LED);
+	nrf_gpio_cfg_output(NFC_FIELD_LED);
+	nrf_gpio_pin_write(DEV_INITIALIZED_LED, !BOARD_LED_ACTIVE_STATE);
+	nrf_gpio_pin_write(CONN_STATUS_LED, !BOARD_LED_ACTIVE_STATE);
+	nrf_gpio_pin_write(NFC_FIELD_LED, !BOARD_LED_ACTIVE_STATE);
 }
 
 static void nfc_field_led_on(void)

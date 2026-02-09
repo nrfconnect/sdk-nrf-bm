@@ -82,7 +82,7 @@ User interface
 Button 0:
    Simulate mouse movement to the left.
 
-   During bonding, press it to confirm that the passkey is correct.
+   When pairing with authentication, press this button to confirm the passkey shown in the COM listener and complete pairing with the other device.
    See `Testing`_.
 
 Button 1:
@@ -90,7 +90,7 @@ Button 1:
 
    Keep the button pressed while resetting the board to delete bonding information for all peers stored on the device.
 
-   During bonding, press it to reject the passkey.
+   When pairing with authentication, press this button to reject the passkey shown in the COM listener to prevent pairing with the other device.
 
 Button 2:
    Simulate mouse movement to the right.
@@ -99,7 +99,7 @@ Button 3:
    Simulate mouse movement downwards.
 
 LED 0:
-   Lit when the device is advertising.
+   Lit when the device is initialized.
 
 LED 1:
    Lit when a device is connected.
@@ -117,7 +117,7 @@ Testing
 You can test this sample using a computer or a smartphone.
 
 1. Compile and program the application.
-#. In the Serial Terminal, using the `Serial Terminal app`_ or |VSC|, observe that the ``BLE HIDS Mouse sample started.`` message is printed.
+#. In the Serial Terminal, using the `Serial Terminal app`_ or |VSC|, observe that the ``BLE HIDS Mouse sample initialized`` message is printed.
 #. Observe that the ``Advertising as nRF_BM_HIDS_MOUSE`` message is printed.
 #. On your computer or mobile phone, open the Bluetooth settings and scan for advertising devices.
    Your device should be advertising as ``nRF_BM_HIDS_MOUSE``.

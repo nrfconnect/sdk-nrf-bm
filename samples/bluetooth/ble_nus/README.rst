@@ -76,6 +76,21 @@ When connected, the sample forwards any data received on the RX pin of the UART 
 
 Any data sent from the Bluetooth LE unit is sent out of the UART 0 peripheral’s TX pin.
 
+User interface
+**************
+
+LED 0:
+  Lit when the device is initialized.
+
+LED 1:
+  Lit when a device is connected.
+
+.. note::
+
+  LEDs are only used in the normal UARTE configuration. In LPUARTE mode, LEDs are disabled to avoid interfering with the RX pin and to allow proper low-power operation.
+
+  In LPUARTE mode, LED 1 may appear on even when no device is connected for some development kits because it shares pin with the RX signal; RX activity can toggle the LED, which is expected behavior.
+
 Building and running
 ********************
 
@@ -110,10 +125,9 @@ The sample can be tested in two ways, depending on the selected UART configurati
       #. Observe that the device is advertising under the default name ``nRF_BM_NUS``.
          You can configure this name using the :kconfig:option:`CONFIG_BLE_ADV_NAME` Kconfig option.
          For information on how to do this, see `Configuring Kconfig`_.
-      #. Observe that the text ``BLE NUS sample started`` is printed on the COM listener running on the computer.
+      #. Observe that the text ``BLE NUS sample initialized`` is printed on the COM listener running on the computer.
       #. Connect to your device using the `nRF Toolbox`_ mobile application with the :guilabel:`Universal Asynchronous Receiver/Transmitter (UART)` service.
       #. Write a text in the second COM listener running on the computer and press Enter.
-         Observe that the text is displayed in the terminal on the mobile phone.
       #. Write a text in the terminal on the mobile phone and press :guilabel:`Send`.
          Observe that the text is displayed in the second COM listener running on the computer.
 
