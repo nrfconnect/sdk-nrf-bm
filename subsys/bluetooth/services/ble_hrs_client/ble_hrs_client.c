@@ -25,7 +25,10 @@ LOG_MODULE_REGISTER(ble_hrs_client, CONFIG_BLE_HRS_CLIENT_LOG_LEVEL);
  */
 #define HRM_FLAG_MASK_HR_RR_INT (0x01 << 4)
 
-static void gatt_error_handler(const struct ble_gq_req *req, struct ble_gq_evt *gq_evt)
+#ifndef CONFIG_UNITY
+static
+#endif
+void ble_hrs_client_on_ble_gq_event(const struct ble_gq_req *req, struct ble_gq_evt *gq_evt)
 {
 	struct ble_hrs_client *ble_hrs_client = (struct ble_hrs_client *)req->ctx;
 	struct ble_hrs_client_evt evt = {
@@ -201,7 +204,7 @@ static uint32_t cccd_configure(struct ble_hrs_client *ble_hrs_client, bool enabl
 	};
 	struct ble_gq_req hrs_c_req = {
 		.type = BLE_GQ_REQ_GATTC_WRITE,
-		.evt_handler = gatt_error_handler,
+		.evt_handler = ble_hrs_client_on_ble_gq_event,
 		.ctx = ble_hrs_client,
 		.gattc_write.handle = ble_hrs_client->peer_hrs_db.hrm_cccd_handle,
 		.gattc_write.len = BLE_CCCD_VALUE_LEN,
