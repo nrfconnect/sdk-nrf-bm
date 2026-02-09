@@ -25,7 +25,7 @@ LOG_MODULE_REGISTER(sample, CONFIG_SAMPLE_NFC_TEXT_RECORD_T2T_LOG_LEVEL);
 #define MAX_REC_COUNT		3
 #define NDEF_MSG_BUF_SIZE	128
 
-#define NFC_FIELD_LED		BOARD_PIN_LED_0
+#define NFC_FIELD_LED		BOARD_PIN_LED_2
 
 /* Text message in English with its language code. */
 static const uint8_t en_payload[] = {
@@ -51,7 +51,10 @@ static uint8_t ndef_msg_buf[NDEF_MSG_BUF_SIZE];
 
 static void led_init(void)
 {
+	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
 	nrf_gpio_cfg_output(NFC_FIELD_LED);
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, !BOARD_LED_ACTIVE_STATE);
+	nrf_gpio_pin_write(NFC_FIELD_LED, !BOARD_LED_ACTIVE_STATE);
 }
 
 static void nfc_field_led_on(void)
@@ -155,7 +158,7 @@ int main(void)
 {
 	uint32_t len = sizeof(ndef_msg_buf);
 
-	LOG_INF("Starting NFC Text Record sample for Type 2 Tag");
+	LOG_INF("NFC Text record for Type 2 Tag sample started");
 
 	/* Configure LED-pins as outputs */
 	led_init();
@@ -183,13 +186,11 @@ int main(void)
 		goto fail;
 	}
 
-
 	/* Encode welcome message */
 	if (welcome_msg_encode(ndef_msg_buf, &len) < 0) {
 		LOG_ERR("Cannot encode message!");
 		goto fail;
 	}
-
 
 	/* Set created message as the NFC payload */
 	if (nfc_t2t_payload_set(ndef_msg_buf, len) < 0) {
@@ -197,13 +198,16 @@ int main(void)
 		goto fail;
 	}
 
-
 	/* Start sensing NFC field */
 	if (nfc_t2t_emulation_start() < 0) {
 		LOG_ERR("Cannot start emulation!");
 		goto fail;
 	}
 	LOG_INF("NFC configuration done");
+
+	/* Signal successful initialization */
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+	LOG_INF("NFC Text record for Type 2 Tag sample initialized");
 
 fail:
 	/* Main loop */
