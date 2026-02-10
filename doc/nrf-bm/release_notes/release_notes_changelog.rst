@@ -104,6 +104,7 @@ Bluetooth LE Services
 
 * Renamed the ``ble_hrs_central`` service to the :ref:`lib_ble_service_hrs_client` sample.
 * Updated all services to return errors from the SoftDevice directly.
+* Removed the BMS authorization code Kconfig options (:kconfig:option:`CONFIG_BLE_BMS_AUTHORIZATION_CODE` and :kconfig:option:`CONFIG_BLE_BMS_USE_AUTHORIZATION_CODE`) from the service library, as they are only used by the BMS sample.
 
 Libraries for NFC
 -----------------
@@ -134,6 +135,10 @@ Samples
 
 Bluetooth LE samples
 --------------------
+
+* :ref:`ble_bms_sample`:
+
+   * Added sample-specific Kconfig options for the BMS authorization code by moving them from the service library scope and renaming them from :kconfig:option:`CONFIG_BLE_BMS_AUTHORIZATION_CODE` and :kconfig:option:`CONFIG_BLE_BMS_USE_AUTHORIZATION_CODE` to :kconfig:option:`CONFIG_APP_BLE_BMS_AUTHORIZATION_CODE` and :kconfig:option:`CONFIG_APP_BLE_BMS_USE_AUTHORIZATION_CODE`.
 
 * :ref:`ble_hids_keyboard_sample`:
 

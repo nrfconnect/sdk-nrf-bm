@@ -416,10 +416,10 @@ void bms_evt_handler(struct ble_bms *bms, struct ble_bms_evt *evt)
 		break;
 	case BLE_BMS_EVT_AUTH:
 		LOG_DBG("Authorization request.");
-#if defined(CONFIG_BLE_BMS_USE_AUTHORIZATION_CODE)
-		if ((evt->auth.auth_code.len != strlen(CONFIG_BLE_BMS_AUTHORIZATION_CODE)) ||
-		    (memcmp(CONFIG_BLE_BMS_AUTHORIZATION_CODE, evt->auth.auth_code.code,
-			    strlen(CONFIG_BLE_BMS_AUTHORIZATION_CODE)) != 0)) {
+#if defined(CONFIG_SAMPLE_BLE_BMS_USE_AUTHORIZATION_CODE)
+		if ((evt->auth.auth_code.len != strlen(CONFIG_SAMPLE_BLE_BMS_AUTHORIZATION_CODE)) ||
+		    (memcmp(CONFIG_SAMPLE_BLE_BMS_AUTHORIZATION_CODE, evt->auth.auth_code.code,
+			    strlen(CONFIG_SAMPLE_BLE_BMS_AUTHORIZATION_CODE)) != 0)) {
 			is_authorized = false;
 		}
 #endif
@@ -577,7 +577,7 @@ int main(void)
 
 	struct ble_bms_config bms_cfg = {
 		.evt_handler = bms_evt_handler,
-#if defined(CONFIG_BLE_BMS_USE_AUTHORIZATION_CODE)
+#if defined(CONFIG_SAMPLE_BLE_BMS_USE_AUTHORIZATION_CODE)
 		/* Do not require auth to delete requesting. */
 		.feature.delete_requesting = true,
 		.feature.delete_all_auth = true,
