@@ -16,7 +16,7 @@ To generate an NDEF message, perform the following steps:
 #. Encode and create the message.
 
 By default, NDEF messages are encoded for the Type 2 Tag platform.
-See :ref:`ug_nfc_ndef_format` for a description of the format.
+See `nRF Connect SDK NDEF message and record format`_ for a description of the format.
 You can choose to encode an NDEF file containing the NDEF message for the Type 4 Tag platform using the :ref:`nfc_t4t_ndef_file_readme` library.
 In this case, an additional field is added in front of an NDEF message.
 
@@ -59,11 +59,9 @@ The following code example shows how to generate a record descriptor:
 
    // If required, get the record size to length variable.
    err = nfc_ndef_record_encode( &NFC_NDEF_GENERIC_RECORD_DESC_DEF(record),
-                                        NDEF_MIDDLE_RECORD,
-                                        NULL,
-                                        &length);
-
-
+                                       NDEF_MIDDLE_RECORD,
+                                       NULL,
+                                       &length);
 
 .. _nfc_ndef_msg_gen:
 
@@ -163,17 +161,17 @@ API documentation
 NDEF messages
 =============
 
-| Header file: :file:`include/nfc/ndef/msg.h`
+| Header file: :file:`bm/nfc/ndef/msg.h`
 | Source file: :file:`subsys/nfc/ndef/msg.c`
 
-.. doxygengroup:: nfc_ndef_msg
+:ref:`Custom NDEF messages API reference <nfc_custom_ndef_msg>`
 
 .. _nfc_ndef_record:
 
 NDEF records
 ============
 
-| Header file: :file:`include/nfc/ndef/record.h`
+| Header file: :file:`bm/nfc/ndef/record.h`
 | Source file: :file:`subsys/nfc/ndef/record.c`
 
-.. doxygengroup:: nfc_ndef_record
+:ref:`Custom NDEF records API reference <nfc_custom_ndef_record>`

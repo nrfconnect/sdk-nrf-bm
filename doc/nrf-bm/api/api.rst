@@ -181,6 +181,62 @@ NFC Type 4 Tag library
 
 .. doxygengroup:: nfc_t4t_lib
 
+.. _nfc_t4t_ndef_file:
+
+NFC NDEF file
+=============
+
+.. doxygengroup:: nfc_t4t_ndef_file
+
+.. _nfc_ndef_uri_msg:
+
+NFC NDEF URI messages
+=====================
+
+.. doxygengroup:: nfc_uri_msg
+
+.. _nfc_ndef_uri_rec:
+
+NFC NDEF URI records
+====================
+
+.. doxygengroup:: nfc_uri_rec
+
+.. _nfc_text_rec:
+
+NFC NDEF text records
+=====================
+
+.. doxygengroup:: nfc_text_rec
+
+.. _nfc_custom_ndef_msg:
+
+NFC custom NDEF messages
+========================
+
+.. doxygengroup:: nfc_ndef_msg
+
+.. _nfc_custom_ndef_record:
+
+NFC custom NDEF records
+=======================
+
+.. doxygengroup:: nfc_ndef_record
+
+.. _nfc_ndef_launchapp_msg:
+
+NFC NDEF Launch App messages
+=============================
+
+.. doxygengroup:: nfc_launchapp_msg
+
+.. _nfc_ndef_launchapp_rec:
+
+NFC NDEF Launch App records
+===========================
+
+.. doxygengroup:: nfc_launchapp_rec
+
 Services
 ********
 

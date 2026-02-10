@@ -75,11 +75,11 @@ After programming the sample to your development kit, complete the following ste
 Dependencies
 ************
 
-This sample uses the following |NCS| libraries:
+This sample uses the following |BMshort| libraries:
 
-* NDEF messages
-* Text records
-* NDEF file
+* :ref:`nfc_ndef`
+* :ref:`nfc_text`
+* :ref:`nfc_t4t_ndef_file_readme`
 
 In addition, it uses the :ref:`lib_nfc_t4t` from `sdk-nrfxlib`_.
 
