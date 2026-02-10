@@ -118,6 +118,12 @@ Samples
    * :ref:`ble_hids_mouse_sample`
    * :ref:`ble_hids_keyboard_sample`
 
+* Enabled allow list advertising by default in the following Bluetooth LE samples.
+   * :ref:`ble_bms_sample`
+   * :ref:`ble_cgms_sample`
+   * :ref:`ble_hids_keyboard_sample`
+   * :ref:`ble_hids_mouse_sample`
+
 Bluetooth LE samples
 --------------------
 
