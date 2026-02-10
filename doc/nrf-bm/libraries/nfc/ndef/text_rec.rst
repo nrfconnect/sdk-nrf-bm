@@ -50,7 +50,7 @@ The following code example shows how to generate a raw text message that contain
       err = nfc_ndef_msg_record_add(&NFC_NDEF_MSG(nfc_text_msg),
 		             &NFC_NDEF_TEXT_RECORD_DESC(nfc_en_text_rec));
       if (err < 0) {
-	      printk("Cannot add first record!\n");
+	      LOG_ERR("Cannot add first record!");
 	      return err;
       }
 
@@ -62,7 +62,7 @@ The following code example shows how to generate a raw text message that contain
 				            buffer,
 				            &len);
       if (err < 0) {
-	      printk("Cannot encode message!\n");
+	      LOG_ERR("Cannot encode message!");
 	      return err;
       }
 
@@ -71,7 +71,7 @@ API documentation
 
 .. _nfc_text_record:
 
-| Header file: :file:`include/nfc/ndef/text_rec.h`
+| Header file: :file:`bm/nfc/ndef/text_rec.h`
 | Source file: :file:`subsys/nfc/ndef/text_rec.c`
 
-.. doxygengroup:: nfc_text_rec
+:ref:`NDEF text records API reference <nfc_text_rec>`

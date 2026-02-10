@@ -41,7 +41,7 @@ The following code snippets show how to generate a URI message.
 				            &len);
 
       if (err < 0) {
-	      printk("Cannot encode message!\n");
+	      LOG_ERR("Cannot encode message!");
 	      return err;
       }
 
@@ -53,17 +53,17 @@ API documentation
 URI messages
 ============
 
-| Header file: :file:`include/nfc/ndef/uri_msg.h`
+| Header file: :file:`bm/nfc/ndef/uri_msg.h`
 | Source file: :file:`subsys/nfc/ndef/uri_msg.c`
 
-.. doxygengroup:: nfc_uri_msg
+:ref:`NDEF URI messages API reference <nfc_ndef_uri_msg>`
 
 .. _nfc_uri_record:
 
 URI records
 ===========
 
-| Header file: :file:`include/nfc/ndef/uri_rec.h`
+| Header file: :file:`bm/nfc/ndef/uri_rec.h`
 | Source file: :file:`subsys/nfc/ndef/uri_rec.c`
 
-.. doxygengroup:: nfc_uri_rec
+:ref:`NDEF URI records API reference <nfc_ndef_uri_rec>`

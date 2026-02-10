@@ -1,7 +1,7 @@
 .. _lib_nfc_t2t:
 
-NFC Type 2 Tag library
-######################
+Type 2 Tag
+##########
 
 .. contents::
    :local:

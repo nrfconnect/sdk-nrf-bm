@@ -25,10 +25,17 @@ The following code snippets show how to generate a Launch App message.
 
 1. Define the Universal Link string, Android package name string, and create a buffer for the message:
 
-   .. literalinclude:: ../../../../../samples/nfc/record_launch_app/src/main.c
-       :language: c
-       :start-after: include_startingpoint_pkg_def_launchapp_rst
-       :end-before: include_endpoint_pkg_def_launchapp_rst
+   .. code-block:: c
+
+      /* Package: no.nordicsemi.android.nrftoolbox */
+      static const uint8_t android_pkg_name[] = {
+               'n', 'o', '.', 'n', 'o', 'r', 'd', 'i', 'c', 's', 'e', 'm', 'i', '.', 'a', 'n', 'd', 'r',
+               'o', 'i', 'd', '.', 'n', 'r', 'f', 't', 'o', 'o', 'l', 'b', 'o', 'x' };
+
+      /* URI nrf-toolbox://main/ */
+      static const uint8_t universal_link[] = {
+               'n', 'r', 'f', '-', 't', 'o', 'o', 'l', 'b', 'o', 'x', ':', '/', '/', 'm', 'a', 'i', 'n',
+               '/'};
 
 #. Create the Launch App message:
 
@@ -44,7 +51,7 @@ The following code snippets show how to generate a Launch App message.
 			            &len);
 
       if (err < 0) {
-	      printk("Cannot encode message!\n");
+	      LOG_ERR("Cannot encode message!");
 	      return err;
       }
 
@@ -66,7 +73,8 @@ The library supports encoding AAR (Android Application Record) and Universal Lin
 Samples using the library
 *************************
 
-The :ref:`record_launch_app` sample uses this library.
+You can use this library when building NDEF messages for tag emulation (for example, with the Type 2 or Type 4 Tag libraries).
+|BMshort| currently does not provide samples using this library.
 
 Dependencies
 ************
@@ -83,17 +91,17 @@ API documentation
 Launch App messages
 ===================
 
-| Header file: :file:`include/nfc/ndef/launchapp_msg.h`
+| Header file: :file:`bm/nfc/ndef/launchapp_msg.h`
 | Source file: :file:`subsys/nfc/ndef/launchapp_msg.c`
 
-.. doxygengroup:: nfc_launchapp_msg
+:ref:`NDEF Launch App messages API reference <nfc_ndef_launchapp_msg>`
 
 .. _nfc_launchapp_rec:
 
 Launch App records
 ===================
 
-| Header file: :file:`include/nfc/ndef/launchapp_rec.h`
+| Header file: :file:`bm/nfc/ndef/launchapp_rec.h`
 | Source file: :file:`subsys/nfc/ndef/launchapp_rec.c`
 
-.. doxygengroup:: nfc_launchapp_rec
+:ref:`NDEF Launch App records API reference <nfc_ndef_launchapp_rec>`

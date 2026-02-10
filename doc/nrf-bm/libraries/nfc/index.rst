@@ -11,10 +11,10 @@ This makes them ideal for implementing NFC tag functionality in bare metal appli
    The bare metal context supports only NFC-A listen mode (tag emulation).
 
 .. toctree::
-   :maxdepth: 1
-   :glob:
+   :maxdepth: 2
    :caption: Subpages:
 
    integration_notes
-   type_2_tag
-   type_4_tag
+   t2t/index
+   t4t/index
+   ndef/index
