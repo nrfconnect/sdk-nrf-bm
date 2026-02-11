@@ -59,7 +59,7 @@ static void db_discovery_evt_handler(struct ble_db_discovery *db_discovery,
 	db_disc_evt[db_disc_evt_count++] = *evt;
 }
 
-static struct ble_db_discovery_config db_disc_config = {
+static const struct ble_db_discovery_config db_disc_config = {
 	.gatt_queue = &ble_gatt_queue,
 	.evt_handler = db_discovery_evt_handler,
 };

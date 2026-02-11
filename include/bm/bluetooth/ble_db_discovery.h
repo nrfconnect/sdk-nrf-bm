@@ -206,7 +206,7 @@ struct ble_db_discovery {
  *                        @ref ble_db_discovery_config::gatt_queue or @p db_discovery are @c NULL.
  */
 uint32_t ble_db_discovery_init(struct ble_db_discovery *db_discovery,
-			       struct ble_db_discovery_config *db_config);
+			       const struct ble_db_discovery_config *db_config);
 
 /**
  * @brief Start the discovery of the GATT database at the server.
