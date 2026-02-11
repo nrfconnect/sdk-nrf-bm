@@ -407,7 +407,7 @@ struct ble_scan {
 	/** Handler for the scanning events. */
 	ble_scan_evt_handler_t evt_handler;
 	/** Buffer where advertising reports will be stored by the SoftDevice. */
-	uint8_t scan_buffer_data[CONFIG_BLE_SCAN_BUFFER_SIZE];
+	uint8_t scan_buffer_data[2][CONFIG_BLE_SCAN_BUFFER_SIZE];
 	/** Structure-stored pointer to the buffer where advertising
 	 *  reports will be stored by the SoftDevice.
 	 */
