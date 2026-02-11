@@ -663,7 +663,7 @@ static uint32_t discovery_start(struct ble_db_discovery *const db_discovery, uin
 }
 
 uint32_t ble_db_discovery_init(struct ble_db_discovery *db_discovery,
-			       struct ble_db_discovery_config *db_config)
+			       const struct ble_db_discovery_config *db_config)
 {
 	if (!db_discovery || !db_config || !(db_config->evt_handler) || !(db_config->gatt_queue)) {
 		return NRF_ERROR_NULL;
