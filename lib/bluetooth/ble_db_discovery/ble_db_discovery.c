@@ -153,7 +153,6 @@ static void discovery_complete_evt_trigger(struct ble_db_discovery *db_discovery
 static void on_srv_disc_completion(struct ble_db_discovery *db_discovery, uint16_t conn_handle)
 {
 	uint32_t nrf_err;
-	struct ble_gq_req db_srv_disc_req = {0};
 	struct ble_gatt_db_srv *srv_being_discovered;
 
 	db_discovery->discoveries_count++;
@@ -181,15 +180,17 @@ static void on_srv_disc_completion(struct ble_db_discovery *db_discovery, uint16
 		LOG_DBG("Starting discovery of service with UUID %#x on connection handle %#x",
 			srv_being_discovered->srv_uuid.uuid, conn_handle);
 
-		db_srv_disc_req.type = BLE_GQ_REQ_SRV_DISCOVERY;
-		db_srv_disc_req.gattc_srv_disc.start_handle =
-			CONFIG_BLE_DB_DISCOVERY_SRV_DISC_START_HANDLE;
-		db_srv_disc_req.gattc_srv_disc.srvc_uuid = srv_being_discovered->srv_uuid;
-		db_srv_disc_req.ctx = db_discovery;
-		db_srv_disc_req.evt_handler = discovery_gq_event_handler;
+		struct ble_gq_req req = {
+			.type = BLE_GQ_REQ_SRV_DISCOVERY,
+			.evt_handler = discovery_gq_event_handler,
+			.ctx = db_discovery,
+			.gattc_srv_disc = {
+				.srvc_uuid = srv_being_discovered->srv_uuid,
+				.start_handle = CONFIG_BLE_DB_DISCOVERY_SRV_DISC_START_HANDLE,
+			},
+		};
 
-		nrf_err = ble_gq_item_add(db_discovery->gatt_queue, &db_srv_disc_req, conn_handle);
-
+		nrf_err = ble_gq_item_add(db_discovery->gatt_queue, &req, conn_handle);
 		if (nrf_err) {
 			discovery_error_handler(conn_handle, nrf_err, db_discovery);
 
@@ -265,7 +266,6 @@ static uint32_t characteristics_discover(struct ble_db_discovery *db_discovery,
 {
 	struct ble_gatt_db_srv *srv_being_discovered;
 	ble_gattc_handle_range_t handle_range = {0};
-	struct ble_gq_req db_char_disc_req = {0};
 
 	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
 
@@ -289,12 +289,14 @@ static uint32_t characteristics_discover(struct ble_db_discovery *db_discovery,
 
 	handle_range.end_handle = srv_being_discovered->handle_range.end_handle;
 
-	db_char_disc_req.type = BLE_GQ_REQ_CHAR_DISCOVERY;
-	db_char_disc_req.gattc_char_disc = handle_range;
-	db_char_disc_req.ctx = db_discovery;
-	db_char_disc_req.evt_handler = discovery_gq_event_handler;
+	struct ble_gq_req req = {
+		.type = BLE_GQ_REQ_CHAR_DISCOVERY,
+		.evt_handler = discovery_gq_event_handler,
+		.ctx = db_discovery,
+		.gattc_char_disc = handle_range,
+	};
 
-	return ble_gq_item_add(db_discovery->gatt_queue, &db_char_disc_req, conn_handle);
+	return ble_gq_item_add(db_discovery->gatt_queue, &req, conn_handle);
 }
 
 static uint32_t descriptors_discover(struct ble_db_discovery *db_discovery,
@@ -303,7 +305,6 @@ static uint32_t descriptors_discover(struct ble_db_discovery *db_discovery,
 	ble_gattc_handle_range_t handle_range;
 	struct ble_gatt_db_char *curr_char_being_discovered;
 	struct ble_gatt_db_srv *srv_being_discovered;
-	struct ble_gq_req db_desc_disc_req = {0};
 	bool is_discovery_reqd = false;
 
 	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
@@ -354,12 +355,14 @@ static uint32_t descriptors_discover(struct ble_db_discovery *db_discovery,
 
 	*raise_discov_complete = false;
 
-	db_desc_disc_req.type = BLE_GQ_REQ_DESC_DISCOVERY;
-	db_desc_disc_req.gattc_desc_disc = handle_range;
-	db_desc_disc_req.ctx = db_discovery;
-	db_desc_disc_req.evt_handler = discovery_gq_event_handler;
+	struct ble_gq_req req = {
+		.type = BLE_GQ_REQ_DESC_DISCOVERY,
+		.evt_handler = discovery_gq_event_handler,
+		.ctx = db_discovery,
+		.gattc_desc_disc = handle_range,
+	};
 
-	return ble_gq_item_add(db_discovery->gatt_queue, &db_desc_disc_req, conn_handle);
+	return ble_gq_item_add(db_discovery->gatt_queue, &req, conn_handle);
 }
 
 static void on_primary_srv_discovery_rsp(struct ble_db_discovery *db_discovery,
@@ -630,12 +633,6 @@ static uint32_t discovery_start(struct ble_db_discovery *const db_discovery, uin
 {
 	int nrf_err;
 	struct ble_gatt_db_srv *srv_being_discovered;
-	struct ble_gq_req db_srv_disc_req = {
-		.type = BLE_GQ_REQ_SRV_DISCOVERY,
-		.evt_handler = discovery_gq_event_handler,
-		.ctx = db_discovery,
-		.gattc_srv_disc.start_handle = CONFIG_BLE_DB_DISCOVERY_SRV_DISC_START_HANDLE,
-	};
 
 	nrf_err = ble_gq_conn_handle_register(db_discovery->gatt_queue, conn_handle);
 	if (nrf_err) {
@@ -647,12 +644,20 @@ static uint32_t discovery_start(struct ble_db_discovery *const db_discovery, uin
 	srv_being_discovered = &(db_discovery->services[db_discovery->curr_srv_ind]);
 	srv_being_discovered->srv_uuid = db_discovery->registered_uuids[db_discovery->curr_srv_ind];
 
-	db_srv_disc_req.gattc_srv_disc.srvc_uuid = srv_being_discovered->srv_uuid;
-
 	LOG_DBG("Starting discovery of service with UUID %#x on connection handle %#x",
 		srv_being_discovered->srv_uuid.uuid, conn_handle);
 
-	nrf_err = ble_gq_item_add(db_discovery->gatt_queue, &db_srv_disc_req, conn_handle);
+	struct ble_gq_req req = {
+		.type = BLE_GQ_REQ_SRV_DISCOVERY,
+		.evt_handler = discovery_gq_event_handler,
+		.ctx = db_discovery,
+		.gattc_srv_disc = {
+			.srvc_uuid = srv_being_discovered->srv_uuid,
+			.start_handle = CONFIG_BLE_DB_DISCOVERY_SRV_DISC_START_HANDLE,
+		},
+	};
+
+	nrf_err = ble_gq_item_add(db_discovery->gatt_queue, &req, conn_handle);
 	if (nrf_err) {
 		return nrf_err;
 	}
