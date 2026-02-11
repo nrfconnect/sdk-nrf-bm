@@ -99,6 +99,10 @@ Libraries
 
    * Added the :c:struct:`ble_scan_filter_data` structure as input to the :c:func:`ble_scan_filter_add` function.
    * Updated functions to use the ``uint32_t`` type instead of ``int`` when returning nrf_errors.
+   * Fixed an issue with active scanning where the multifilter match was used.
+     A match would not be triggered unless the data for all types of enabled filters were provided in either the advertising or scan response data.
+     Now the data can be provided in a mix of the advertising and scan response data.
+
 
 Bluetooth LE Services
 ---------------------

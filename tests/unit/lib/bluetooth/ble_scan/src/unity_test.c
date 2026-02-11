@@ -76,7 +76,6 @@ void test_ble_scan_init(void)
 		.scan_params = {
 			.extended = 1,
 			.report_incomplete_evts = 1,
-			.active = 1,
 			.filter_policy = BLE_GAP_SCAN_FP_ACCEPT_ALL,
 			.scan_phys = BLE_GAP_PHY_1MBPS,
 			.interval = CONFIG_BLE_SCAN_INTERVAL,
@@ -100,6 +99,21 @@ void test_ble_scan_init(void)
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	nrf_err = ble_scan_init(&ble_scan, &scan_cfg_with_params);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+}
+
+
+void test_ble_scan_init_active(void)
+{
+	uint32_t nrf_err;
+
+	struct ble_scan_config scan_cfg = {
+		.scan_params = BLE_SCAN_SCAN_PARAMS_DEFAULT,
+		.conn_params = BLE_SCAN_CONN_PARAMS_DEFAULT,
+		.evt_handler = scan_event_handler_func,
+	};
+
+	nrf_err = ble_scan_init(&ble_scan, &scan_cfg);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
@@ -668,7 +682,6 @@ void test_ble_scan_on_ble_evt_adv_report_device_name_bad_data(void)
 		},
 	};
 
-	test_ble_scan_init();
 	test_ble_scan_filter_add_name();
 
 	__cmock_sd_ble_gap_scan_start_ExpectAndReturn(
@@ -693,7 +706,6 @@ void test_ble_scan_on_ble_evt_adv_report_device_address_not_found(void)
 		},
 	};
 
-	test_ble_scan_init();
 	test_ble_scan_filter_add_addr();
 
 	__cmock_sd_ble_gap_scan_start_ExpectAndReturn(
@@ -717,7 +729,6 @@ void test_ble_scan_on_ble_evt_adv_report_device_address(void)
 		},
 	};
 
-	test_ble_scan_init();
 	test_ble_scan_filter_add_addr();
 
 	__cmock_sd_ble_gap_scan_start_ExpectAndReturn(
@@ -753,7 +764,6 @@ void test_ble_scan_on_ble_evt_adv_report_device_name_not_found(void)
 		},
 	};
 
-	test_ble_scan_init();
 	test_ble_scan_filter_add_name();
 
 	__cmock_sd_ble_gap_scan_start_ExpectAndReturn(
@@ -782,7 +792,6 @@ void test_ble_scan_on_ble_evt_adv_report_device_name(void)
 		},
 	};
 
-	test_ble_scan_init();
 	test_ble_scan_filter_add_name();
 
 	__cmock_sd_ble_gap_scan_start_ExpectAndReturn(
@@ -818,7 +827,6 @@ void test_ble_scan_on_ble_evt_adv_report_device_short_name_not_found(void)
 		},
 	};
 
-	test_ble_scan_init();
 	test_ble_scan_filter_add_short_name();
 
 	__cmock_ble_adv_data_short_name_find_ExpectWithArrayAndReturn(
@@ -852,7 +860,6 @@ void test_ble_scan_on_ble_evt_adv_report_device_short_name(void)
 		},
 	};
 
-	test_ble_scan_init();
 	test_ble_scan_filter_add_short_name();
 
 	__cmock_ble_adv_data_short_name_find_ExpectWithArrayAndReturn(
@@ -892,7 +899,6 @@ void test_ble_scan_on_ble_evt_adv_report_device_appearance_not_found(void)
 		},
 	};
 
-	test_ble_scan_init();
 	test_ble_scan_filter_add_appearance();
 
 	__cmock_ble_adv_data_appearance_find_ExpectWithArrayAndReturn(
@@ -925,7 +931,6 @@ void test_ble_scan_on_ble_evt_adv_report_device_appearance(void)
 		},
 	};
 
-	test_ble_scan_init();
 	test_ble_scan_filter_add_appearance();
 
 	__cmock_ble_adv_data_appearance_find_ExpectWithArrayAndReturn(
@@ -945,6 +950,83 @@ void test_ble_scan_on_ble_evt_adv_report_device_appearance(void)
 	TEST_ASSERT_EQUAL(0, scan_event.params.filter_match.filter_match.uuid_filter_match);
 	TEST_ASSERT_EQUAL_PTR(&ble_evt.evt.gap_evt.params.adv_report,
 			      scan_event.params.filter_match.adv_report);
+}
+
+void test_ble_scan_on_ble_evt_adv_report_device_name_and_appearance(void)
+{
+	uint32_t nrf_err;
+	uint16_t appearance_exp = 0xa44e;
+	uint8_t device_name_data[] = {
+		10, BLE_GAP_AD_TYPE_COMPLETE_LOCAL_NAME,
+		'm', 'y', '_', 'd', 'e', 'v', 'i', 'c', 'e',
+	};
+	uint8_t dummy_data[] = "hello";
+	ble_evt_t ble_evt_name = {
+		.header.evt_id = BLE_GAP_EVT_ADV_REPORT,
+		.evt.gap_evt = {
+			.conn_handle = CONN_HANDLE,
+			.params.adv_report = {
+				.data = {
+					.p_data = device_name_data,
+					.len = sizeof(device_name_data),
+				},
+			},
+		},
+	};
+	ble_evt_t ble_evt_appearance = {
+		.header.evt_id = BLE_GAP_EVT_ADV_REPORT,
+		.evt.gap_evt = {
+			.conn_handle = CONN_HANDLE,
+			.params.adv_report = {
+				.data = {
+					.p_data = dummy_data,
+					.len = sizeof(dummy_data),
+				},
+				.type.scan_response = 1,
+			},
+		},
+	};
+
+	struct ble_scan_filter_data filter_data_name = {
+		.name_filter.name = DEVICE_NAME,
+	};
+	struct ble_scan_filter_data filter_data_appearance = {
+		.appearance_filter.appearance = 0xa44e,
+	};
+
+
+	test_ble_scan_init_active();
+
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_NAME_FILTER, &filter_data_name);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_APPEARANCE_FILTER,
+				      &filter_data_appearance);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	ble_scan_filters_enable(&ble_scan, BLE_SCAN_APPEARANCE_FILTER | BLE_SCAN_NAME_FILTER, true);
+
+	__cmock_sd_ble_gap_scan_start_ExpectAndReturn(
+		NULL, &ble_scan.scan_buffer, NRF_SUCCESS);
+
+	ble_evt_send(&ble_evt_name);
+
+	__cmock_ble_adv_data_appearance_find_ExpectWithArrayAndReturn(
+		ble_evt_appearance.evt.gap_evt.params.adv_report.data.p_data, 1,
+		ble_evt_appearance.evt.gap_evt.params.adv_report.data.len,
+		&appearance_exp, 1, true);
+
+	__cmock_sd_ble_gap_scan_start_ExpectAndReturn(
+		NULL, &ble_scan.scan_buffer, NRF_SUCCESS);
+
+	ble_evt_send(&ble_evt_appearance);
+
+	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_FILTER_MATCH, scan_event.evt_type);
+	TEST_ASSERT_EQUAL(0, scan_event.params.filter_match.filter_match.address_filter_match);
+	TEST_ASSERT_EQUAL(1, scan_event.params.filter_match.filter_match.name_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.params.filter_match.filter_match.short_name_filter_match);
+	TEST_ASSERT_EQUAL(1, scan_event.params.filter_match.filter_match.appearance_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.params.filter_match.filter_match.uuid_filter_match);
 }
 
 void test_ble_scan_on_ble_evt_adv_report_device_uuid_not_found(void)
@@ -967,7 +1049,6 @@ void test_ble_scan_on_ble_evt_adv_report_device_uuid_not_found(void)
 		},
 	};
 
-	test_ble_scan_init();
 	test_ble_scan_filter_add_uuid();
 
 	__cmock_ble_adv_data_uuid_find_ExpectWithArrayAndReturn(
@@ -1004,7 +1085,6 @@ void test_ble_scan_on_ble_evt_adv_report_device_uuid(void)
 		},
 	};
 
-	test_ble_scan_init();
 	test_ble_scan_filter_add_uuid();
 
 	__cmock_ble_adv_data_uuid_find_ExpectWithArrayAndReturn(
@@ -1063,7 +1143,6 @@ void test_ble_scan_on_ble_evt_adv_report_device_uuid_connect(void)
 		.scan_params = {
 			.extended = 1,
 			.report_incomplete_evts = 1,
-			.active = 1,
 			.filter_policy = BLE_GAP_SCAN_FP_ACCEPT_ALL,
 			.scan_phys = BLE_GAP_PHY_1MBPS,
 			.interval = CONFIG_BLE_SCAN_INTERVAL,
@@ -1174,6 +1253,9 @@ void test_ble_scan_on_ble_evt_connected(void)
 void setUp(void)
 {
 	memset(&ble_scan, 0, sizeof(ble_scan));
+	memset(&scan_event, 0, sizeof(struct ble_scan_evt));
+	memset(&scan_event_prev, 0, sizeof(struct ble_scan_evt));
+	scan_event.evt_type = 0xbad;
 }
 
 void tearDown(void)
