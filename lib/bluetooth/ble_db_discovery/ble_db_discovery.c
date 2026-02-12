@@ -51,9 +51,7 @@ static uint32_t uuid_register(struct ble_db_discovery *db_discovery, const ble_u
 static void pending_user_events_send(struct ble_db_discovery *db_discovery)
 {
 	for (uint32_t i = 0; i < db_discovery->pending_usr_evt_idx; i++) {
-		/* Pass the event to the corresponding event handler. */
-		db_discovery->pending_usr_evts[i].evt_handler(
-			db_discovery, &(db_discovery->pending_usr_evts[i].evt));
+		db_discovery->evt_handler(db_discovery, &(db_discovery->pending_usr_evts[i]));
 	}
 
 	db_discovery->pending_usr_evt_idx = 0;
@@ -116,20 +114,18 @@ static void discovery_complete_evt_trigger(struct ble_db_discovery *db_discovery
 		if (db_discovery->pending_usr_evt_idx < CONFIG_BLE_DB_DISCOVERY_MAX_SRV) {
 			/* Insert an event into the pending event list. */
 			db_discovery->pending_usr_evts[db_discovery->pending_usr_evt_idx]
-				.evt.conn_handle = conn_handle;
+				.conn_handle = conn_handle;
 			db_discovery->pending_usr_evts[db_discovery->pending_usr_evt_idx]
-				.evt.params.discovered_db = *srv_being_discovered;
+				.params.discovered_db = *srv_being_discovered;
 
 			if (is_srv_found) {
 				db_discovery->pending_usr_evts[db_discovery->pending_usr_evt_idx]
-					.evt.evt_type = BLE_DB_DISCOVERY_COMPLETE;
+					.evt_type = BLE_DB_DISCOVERY_COMPLETE;
 			} else {
 				db_discovery->pending_usr_evts[db_discovery->pending_usr_evt_idx]
-					.evt.evt_type = BLE_DB_DISCOVERY_SRV_NOT_FOUND;
+					.evt_type = BLE_DB_DISCOVERY_SRV_NOT_FOUND;
 			}
 
-			db_discovery->pending_usr_evts[db_discovery->pending_usr_evt_idx]
-				.evt_handler = db_discovery->evt_handler;
 			db_discovery->pending_usr_evt_idx++;
 
 			if (db_discovery->pending_usr_evt_idx ==
