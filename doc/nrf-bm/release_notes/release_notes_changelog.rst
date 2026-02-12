@@ -116,6 +116,10 @@ Libraries
       * An issue causing fast advertising with allow list to incorrectly send event :c:enumerator:`BLE_ADV_EVT_FAST` when it should have sent event :c:enumerator:`BLE_ADV_EVT_FAST_ALLOW_LIST`.
       * An issue causing slow advertising with allow list to incorrectly send event :c:enumerator:`BLE_ADV_EVT_SLOW` when it should have sent event :c:enumerator:`BLE_ADV_EVT_SLOW_ALLOW_LIST`.
 
+* :ref:`lib_ble_db_discovery`:
+
+   * Removed the :c:struct:`ble_db_discovery_user_evt` structure after a rework.
+
 * :ref:`lib_ble_scan`:
 
    * Updated functions to use the ``uint32_t`` type instead of ``int`` when returning nrf_errors.
