@@ -55,14 +55,6 @@ LOG_MODULE_REGISTER(sample, CONFIG_SAMPLE_BLE_HRS_CENTRAL_LOG_LEVEL);
 /* Maximum encryption key size in octets. */
 #define SEC_PARAM_MAX_KEY_SIZE 16
 
-/* Macro to unpack 16bit unsigned UUID from octet stream. */
-#define UUID16_EXTRACT(DST, SRC)                                                                   \
-	do {                                                                                       \
-		(*(DST)) = (SRC)[1];                                                               \
-		(*(DST)) <<= 8;                                                                    \
-		(*(DST)) |= (SRC)[0];                                                              \
-	} while (0)
-
 /* Structure used to identify the heart rate client module. */
 BLE_HRS_CLIENT_DEF(ble_hrs_client);
 /* Gatt queue instance. */
