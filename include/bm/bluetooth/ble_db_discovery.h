@@ -115,20 +115,6 @@ struct ble_db_discovery_config {
 };
 
 /**
- * @brief BLE database discovery user event.
- */
-struct ble_db_discovery_user_evt {
-	/**
-	 * @brief Pending event.
-	 */
-	struct ble_db_discovery_evt evt;
-	/**
-	 * @brief Event handler which should be called to raise this event.
-	 */
-	ble_db_discovery_evt_handler evt_handler;
-};
-
-/**
  * @brief BLE database discovery.
  */
 struct ble_db_discovery {
@@ -194,7 +180,7 @@ struct ble_db_discovery {
 	 * When all expected services have been discovered, all pending events are sent to the
 	 * corresponding users.
 	 */
-	struct ble_db_discovery_user_evt pending_usr_evts[CONFIG_BLE_DB_DISCOVERY_MAX_SRV];
+	struct ble_db_discovery_evt pending_usr_evts[CONFIG_BLE_DB_DISCOVERY_MAX_SRV];
 };
 
 /**
