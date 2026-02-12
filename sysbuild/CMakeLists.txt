@@ -169,18 +169,11 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
       endif()
 
       if(SB_CONFIG_BM_APP_CAN_SETUP_FIRMWARE_LOADER_NAME)
-        set_config_bool(firmware_loader CONFIG_RETAINED_MEM y)
-        set_config_bool(firmware_loader CONFIG_RETENTION y)
-        set_config_bool(firmware_loader CONFIG_SETTINGS y)
-        set_config_bool(firmware_loader CONFIG_SETTINGS_RETENTION y)
-        set_config_bool(firmware_loader CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME y)
+        set_config_bool(firmware_loader CONFIG_NCS_BM_FLAT_SETTINGS_BLUETOOTH_NAME y)
 
-        set_config_bool(${DEFAULT_IMAGE} CONFIG_RETAINED_MEM y)
+        # Application pre-configuration
         set_config_bool(${DEFAULT_IMAGE} CONFIG_RETENTION y)
-        set_config_bool(${DEFAULT_IMAGE} CONFIG_SETTINGS y)
-        set_config_bool(${DEFAULT_IMAGE} CONFIG_SETTINGS_RUNTIME y)
-        set_config_bool(${DEFAULT_IMAGE} CONFIG_SETTINGS_RETENTION y)
-        set_config_bool(${DEFAULT_IMAGE} CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME y)
+        set_config_bool(${DEFAULT_IMAGE} CONFIG_NCS_BM_FLAT_SETTINGS_BLUETOOTH_NAME y)
       endif()
     endif()
 
