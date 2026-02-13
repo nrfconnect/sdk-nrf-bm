@@ -837,6 +837,174 @@ void test_ble_hrs_client_on_ble_evt_hvx_with_rr_intervals(void)
 	TEST_ASSERT_EQUAL(512, last_evt.params.hrm.rr_intervals[1]);
 }
 
+void test_ble_hrs_client_on_ble_evt_hvx_zero_len_ignored(void)
+{
+	uint32_t nrf_err;
+	struct ble_hrs_client ble_hrs_c = {0};
+	struct ble_hrs_client_config config = {
+		.evt_handler = hrs_client_evt_handler,
+		.gatt_queue = &gatt_queue,
+		.db_discovery = &db_discovery,
+	};
+	struct hrs_db peer_handles = {
+		.hrm_cccd_handle = HRM_CCCD_HANDLE,
+		.hrm_handle = HRM_HANDLE,
+	};
+	uint8_t evt_buf[sizeof(ble_evt_t)] = {0};
+	ble_evt_t *evt = (ble_evt_t *)evt_buf;
+
+	__cmock_ble_db_discovery_service_register_ExpectAndReturn(&db_discovery, NULL, NRF_SUCCESS);
+	__cmock_ble_db_discovery_service_register_IgnoreArg_uuid();
+
+	nrf_err = ble_hrs_client_init(&ble_hrs_c, &config);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	__cmock_ble_gq_conn_handle_register_ExpectAndReturn(&gatt_queue, CONN_HANDLE, NRF_SUCCESS);
+
+	nrf_err = ble_hrs_client_handles_assign(&ble_hrs_c, CONN_HANDLE, &peer_handles);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	evt->header.evt_id = BLE_GATTC_EVT_HVX;
+	evt->evt.gattc_evt.conn_handle = CONN_HANDLE;
+	evt->evt.gattc_evt.params.hvx.handle = HRM_HANDLE;
+	evt->evt.gattc_evt.params.hvx.len = 0;
+
+	evt_handler_called = 0;
+	ble_hrs_client_on_ble_evt(evt, &ble_hrs_c);
+
+	TEST_ASSERT_FALSE(evt_handler_called);
+}
+
+void test_ble_hrs_client_on_ble_evt_hvx_too_short_8bit_ignored(void)
+{
+	uint32_t nrf_err;
+	/* flags=0x00 (8-bit HR) but only 1 byte total -- missing the HR value */
+	uint8_t hrm_data[] = { 0x00 };
+	struct ble_hrs_client ble_hrs_c = {0};
+	struct ble_hrs_client_config config = {
+		.evt_handler = hrs_client_evt_handler,
+		.gatt_queue = &gatt_queue,
+		.db_discovery = &db_discovery,
+	};
+	struct hrs_db peer_handles = {
+		.hrm_cccd_handle = HRM_CCCD_HANDLE,
+		.hrm_handle = HRM_HANDLE,
+	};
+	uint8_t evt_buf[sizeof(ble_evt_t) + sizeof(hrm_data)] = {0};
+	ble_evt_t *evt = (ble_evt_t *)evt_buf;
+
+	__cmock_ble_db_discovery_service_register_ExpectAndReturn(&db_discovery, NULL, NRF_SUCCESS);
+	__cmock_ble_db_discovery_service_register_IgnoreArg_uuid();
+
+	nrf_err = ble_hrs_client_init(&ble_hrs_c, &config);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	__cmock_ble_gq_conn_handle_register_ExpectAndReturn(&gatt_queue, CONN_HANDLE, NRF_SUCCESS);
+
+	nrf_err = ble_hrs_client_handles_assign(&ble_hrs_c, CONN_HANDLE, &peer_handles);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	evt->header.evt_id = BLE_GATTC_EVT_HVX;
+	evt->evt.gattc_evt.conn_handle = CONN_HANDLE;
+	evt->evt.gattc_evt.params.hvx.handle = HRM_HANDLE;
+	evt->evt.gattc_evt.params.hvx.len = sizeof(hrm_data);
+	memcpy(evt->evt.gattc_evt.params.hvx.data, hrm_data, sizeof(hrm_data));
+
+	evt_handler_called = 0;
+	ble_hrs_client_on_ble_evt(evt, &ble_hrs_c);
+
+	TEST_ASSERT_FALSE(evt_handler_called);
+}
+
+void test_ble_hrs_client_on_ble_evt_hvx_too_short_16bit_ignored(void)
+{
+	uint32_t nrf_err;
+	/* flags=0x01 (16-bit HR) but only 2 bytes total -- need 3 */
+	uint8_t hrm_data[] = { 0x01, 0x34 };
+	struct ble_hrs_client ble_hrs_c = {0};
+	struct ble_hrs_client_config config = {
+		.evt_handler = hrs_client_evt_handler,
+		.gatt_queue = &gatt_queue,
+		.db_discovery = &db_discovery,
+	};
+	struct hrs_db peer_handles = {
+		.hrm_cccd_handle = HRM_CCCD_HANDLE,
+		.hrm_handle = HRM_HANDLE,
+	};
+	uint8_t evt_buf[sizeof(ble_evt_t) + sizeof(hrm_data)] = {0};
+	ble_evt_t *evt = (ble_evt_t *)evt_buf;
+
+	__cmock_ble_db_discovery_service_register_ExpectAndReturn(&db_discovery, NULL, NRF_SUCCESS);
+	__cmock_ble_db_discovery_service_register_IgnoreArg_uuid();
+
+	nrf_err = ble_hrs_client_init(&ble_hrs_c, &config);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	__cmock_ble_gq_conn_handle_register_ExpectAndReturn(&gatt_queue, CONN_HANDLE, NRF_SUCCESS);
+
+	nrf_err = ble_hrs_client_handles_assign(&ble_hrs_c, CONN_HANDLE, &peer_handles);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	evt->header.evt_id = BLE_GATTC_EVT_HVX;
+	evt->evt.gattc_evt.conn_handle = CONN_HANDLE;
+	evt->evt.gattc_evt.params.hvx.handle = HRM_HANDLE;
+	evt->evt.gattc_evt.params.hvx.len = sizeof(hrm_data);
+	memcpy(evt->evt.gattc_evt.params.hvx.data, hrm_data, sizeof(hrm_data));
+
+	evt_handler_called = 0;
+	ble_hrs_client_on_ble_evt(evt, &ble_hrs_c);
+
+	TEST_ASSERT_FALSE(evt_handler_called);
+}
+
+void test_ble_hrs_client_on_ble_evt_hvx_rr_truncated(void)
+{
+	uint32_t nrf_err;
+	/* flags 0x10 = RR intervals present,
+	 * 8-bit HR 0x48, one complete RR (256) + 1 trailing byte (truncated pair)
+	 */
+	uint8_t hrm_data[] = { 0x10, 0x48, 0x00, 0x01, 0xFF };
+	struct ble_hrs_client ble_hrs_c = {0};
+	struct ble_hrs_client_config config = {
+		.evt_handler = hrs_client_evt_handler,
+		.gatt_queue = &gatt_queue,
+		.db_discovery = &db_discovery,
+	};
+	struct hrs_db peer_handles = {
+		.hrm_cccd_handle = HRM_CCCD_HANDLE,
+		.hrm_handle = HRM_HANDLE,
+	};
+	uint8_t evt_buf[sizeof(ble_evt_t) + sizeof(hrm_data)] = {0};
+	ble_evt_t *evt = (ble_evt_t *)evt_buf;
+
+	__cmock_ble_db_discovery_service_register_ExpectAndReturn(&db_discovery, NULL, NRF_SUCCESS);
+	__cmock_ble_db_discovery_service_register_IgnoreArg_uuid();
+
+	nrf_err = ble_hrs_client_init(&ble_hrs_c, &config);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	__cmock_ble_gq_conn_handle_register_ExpectAndReturn(&gatt_queue, CONN_HANDLE, NRF_SUCCESS);
+
+	nrf_err = ble_hrs_client_handles_assign(&ble_hrs_c, CONN_HANDLE, &peer_handles);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	evt->header.evt_id = BLE_GATTC_EVT_HVX;
+	evt->evt.gattc_evt.conn_handle = CONN_HANDLE;
+	evt->evt.gattc_evt.params.hvx.handle = HRM_HANDLE;
+	evt->evt.gattc_evt.params.hvx.len = sizeof(hrm_data);
+	memcpy(evt->evt.gattc_evt.params.hvx.data, hrm_data, sizeof(hrm_data));
+
+	evt_handler_called = 0;
+	ble_hrs_client_on_ble_evt(evt, &ble_hrs_c);
+
+	TEST_ASSERT_TRUE(evt_handler_called);
+	TEST_ASSERT_EQUAL(BLE_HRS_CLIENT_EVT_HRM_NOTIFICATION, last_evt.evt_type);
+	TEST_ASSERT_EQUAL(0x48, last_evt.params.hrm.hr_value);
+	/* Only 1 complete RR pair; the trailing byte is ignored */
+	TEST_ASSERT_EQUAL(1, last_evt.params.hrm.rr_intervals_cnt);
+	TEST_ASSERT_EQUAL(256, last_evt.params.hrm.rr_intervals[0]);
+}
+
 void test_ble_hrs_client_on_ble_evt_hvx_wrong_handle_ignored(void)
 {
 	uint32_t nrf_err;
