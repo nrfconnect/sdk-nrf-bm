@@ -510,30 +510,33 @@ uint32_t ble_scan_filters_enable(struct ble_scan *scan, uint8_t mode, bool match
 
 uint32_t ble_scan_filters_disable(struct ble_scan *scan)
 {
+	struct ble_scan_filters *filters;
+
 	if (!scan) {
 		return NRF_ERROR_NULL;
 	}
 
+	filters = &scan->scan_filters;
+
 	/* Disable all filters.*/
 #if (CONFIG_BLE_SCAN_NAME_COUNT > 0)
-	bool *name_filter_enabled = &scan->scan_filters.name_filter.name_filter_enabled;
-	*name_filter_enabled = false;
+	filters->name_filter.name_filter_enabled = false;
+#endif
+
+#if (CONFIG_BLE_SCAN_SHORT_NAME_COUNT > 0)
+	filters->short_name_filter.short_name_filter_enabled = false;
 #endif
 
 #if (CONFIG_BLE_SCAN_ADDRESS_COUNT > 0)
-	bool *addr_filter_enabled = &scan->scan_filters.addr_filter.addr_filter_enabled;
-	*addr_filter_enabled = false;
+	filters->addr_filter.addr_filter_enabled = false;
 #endif
 
 #if (CONFIG_BLE_SCAN_UUID_COUNT > 0)
-	bool *uuid_filter_enabled = &scan->scan_filters.uuid_filter.uuid_filter_enabled;
-	*uuid_filter_enabled = false;
+	filters->uuid_filter.uuid_filter_enabled = false;
 #endif
 
 #if (CONFIG_BLE_SCAN_APPEARANCE_COUNT > 0)
-	bool *appearance_filter_enabled =
-		&scan->scan_filters.appearance_filter.appearance_filter_enabled;
-	*appearance_filter_enabled = false;
+	filters->appearance_filter.appearance_filter_enabled = false;
 #endif
 
 	return NRF_SUCCESS;
