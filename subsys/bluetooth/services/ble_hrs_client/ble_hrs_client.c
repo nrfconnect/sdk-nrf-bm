@@ -32,16 +32,17 @@ static
 void ble_hrs_client_on_ble_gq_event(const struct ble_gq_req *req, struct ble_gq_evt *gq_evt)
 {
 	struct ble_hrs_client *ble_hrs_client = (struct ble_hrs_client *)req->ctx;
-	struct ble_hrs_client_evt evt = {
-		.evt_type = BLE_HRS_CLIENT_EVT_ERROR,
-		.conn_handle = gq_evt->conn_handle,
-		.params.error.reason = gq_evt->error.reason
-	};
+	struct ble_hrs_client_evt evt = {0};
 
-	LOG_DBG("A GATT Client error has occurred on conn_handle 0X%X, nrf_error %#x",
-		gq_evt->conn_handle, gq_evt->error.reason);
+	switch (gq_evt->evt_type) {
+	case BLE_GQ_EVT_ERROR:
+		evt.evt_type = BLE_HRS_CLIENT_EVT_ERROR;
+		evt.conn_handle = gq_evt->conn_handle;
+		evt.params.error.reason = gq_evt->error.reason;
 
-	ble_hrs_client->evt_handler(ble_hrs_client, &evt);
+		ble_hrs_client->evt_handler(ble_hrs_client, &evt);
+		break;
+	}
 }
 
 static void on_hvx(struct ble_hrs_client *ble_hrs_client, const ble_evt_t *ble_evt)
