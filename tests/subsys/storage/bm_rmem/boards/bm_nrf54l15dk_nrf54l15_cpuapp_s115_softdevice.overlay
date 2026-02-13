@@ -1,0 +1,31 @@
+/ {
+	sram@2003FC00 {
+		compatible = "zephyr,memory-region", "mmio-sram";
+		reg = <0x2003FC00 64>;
+		zephyr,memory-region = "RetainedMem";
+		status = "okay";
+
+		retainedmem {
+			compatible = "zephyr,retained-ram";
+			status = "okay";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			clipboard_partition0: clipboard_partition@0 {
+				compatible = "zephyr,retention";
+				status = "okay";
+				reg = <0x0 64>;
+			};
+		};
+	};
+};
+
+&cpuapp_sram {
+	status = "okay";
+
+	/* Override setting in bm_nrf54l15dk_nrf54l15_cpuapp_common.dtsi
+	 * to adjust sram size to not overlap with retainedmem
+	 */
+	reg = < 0x20000080 (DT_SIZE_K(256) - DT_SIZE_K(1) - 0x80)>;
+	ranges = < 0x0 0x20000080 (DT_SIZE_K(256) - DT_SIZE_K(1) - 0x80)>;
+};
