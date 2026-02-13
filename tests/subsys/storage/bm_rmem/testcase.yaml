@@ -1,0 +1,12 @@
+common:
+  tags: bm_rmem
+  platform_allow:
+    - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice
+    - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice
+  integration_platforms:
+    - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice
+tests:
+  tests.subsys.storage.bm_rmem:
+    tags:
+      - storage
+      - bm_rmem
