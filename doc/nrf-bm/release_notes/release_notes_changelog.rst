@@ -102,7 +102,11 @@ Bluetooth LE Services
 
 * :ref:`lib_ble_service_hrs_client`:
 
-   * Added the :c:func:`ble_hrs_client_hrm_notif_disable` function to disable Heart Rate Measurement notifications.
+   * Added:
+
+      * The :c:func:`ble_hrs_client_hrm_notif_disable` function to disable Heart Rate Measurement notifications.
+      * Validation of the :c:member:`ble_hrs_client_config.evt_handler` and :c:member:`ble_hrs_client_config.gatt_queue` configuration fields in :c:func:`ble_hrs_client_init`.
+
    * Fixed a potential buffer over-read when parsing malformed Heart Rate Measurement notifications.
 
 Libraries for NFC
