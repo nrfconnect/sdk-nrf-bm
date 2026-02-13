@@ -20,6 +20,9 @@ config NCS_BM_FLAT_SETTINGS_BLUETOOTH_NAME
 	bool "Bluetooth name settings clipboard"
 	select NCS_BM_RMEM_CLIPBOARD
 	depends on !SETTINGS
+	# Enable runtime API in settings.h
+	# To be removed once API will be fixed in zephyr-rtos
+	select SETTINGS_RUNTIME
 	help
 	  If enabled, settings handlers for support BLE advertising name
 	  setup under `fw_loader/adv_name` key are included into the build.
@@ -31,5 +34,13 @@ if NCS_BM_FLAT_SETTINGS_BLUETOOTH_NAME
 module = NCS_BM_FLAT_SETTINGS
 module-str = ncs_bm_flat_settings
 source "subsys/logging/Kconfig.template.log_config"
+
+# hiden option
+# This is for suppresing warning on implicit declaration of API function
+# which prototypes were cut-out in zephyr-rtos settighs.h
+# To be removed once API will be fixed in zephyr-rtos
+config SETTINGS_RUNTIME
+	help
+	  Enables runtime storage back-end API.
 
 endif
