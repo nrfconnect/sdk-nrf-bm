@@ -213,6 +213,11 @@ void ble_hrs_client_on_ble_evt(const ble_evt_t *ble_evt, void *ble_hrs_client)
 
 static uint32_t cccd_configure(struct ble_hrs_client *ble_hrs_client, bool enable)
 {
+	if (ble_hrs_client->conn_handle == BLE_CONN_HANDLE_INVALID ||
+	    ble_hrs_client->peer_hrs_db.hrm_cccd_handle == BLE_GATT_HANDLE_INVALID) {
+		return NRF_ERROR_INVALID_STATE;
+	}
+
 	LOG_DBG("Configuring CCCD. CCCD Handle = %d, Connection Handle = %d",
 		ble_hrs_client->peer_hrs_db.hrm_cccd_handle, ble_hrs_client->conn_handle);
 
