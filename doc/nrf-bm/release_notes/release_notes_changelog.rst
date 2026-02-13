@@ -164,6 +164,8 @@ NFC samples
 Peripheral samples
 ------------------
 
+* Added the :ref:`bm_ppi_sample` sample.
+
 * :ref:`bm_lpuarte_sample` sample:
 
    * Updated to align with changes to the :ref:`driver_lpuarte` driver.
