@@ -136,37 +136,39 @@ void ble_hrs_on_db_disc_evt(struct ble_hrs_client *ble_hrs_client,
 	struct hrs_db *hrs_db = &ble_hrs_client->peer_hrs_db;
 
 	/* Check if the Heart Rate Service was discovered. */
-	if (evt->evt_type == BLE_DB_DISCOVERY_COMPLETE &&
-	    evt->params.discovered_db.srv_uuid.uuid == BLE_UUID_HEART_RATE_SERVICE &&
-	    evt->params.discovered_db.srv_uuid.type == BLE_UUID_TYPE_BLE) {
-		/* Find the CCCD Handle of the Heart Rate Measurement characteristic. */
-		for (uint32_t i = 0; i < evt->params.discovered_db.char_count; i++) {
-			db_char = &evt->params.discovered_db.charateristics[i];
-
-			if (db_char->characteristic.uuid.uuid ==
-				BLE_UUID_HEART_RATE_MEASUREMENT_CHAR) {
-				/* Found Heart Rate characteristic. Store CCCD handle and break. */
-				hrs_c_evt.params.peer_db.hrm_cccd_handle =
-					db_char->cccd_handle;
-				hrs_c_evt.params.peer_db.hrm_handle =
-					db_char->characteristic.handle_value;
-				break;
-			}
-		}
-
-		LOG_DBG("HRS discovered");
-		/* If the instance has been assigned prior to db_discovery,
-		 * assign the db_handles.
-		 */
-		if (ble_hrs_client->conn_handle != BLE_CONN_HANDLE_INVALID) {
-			if ((hrs_db->hrm_cccd_handle == BLE_GATT_HANDLE_INVALID) &&
-			    (hrs_db->hrm_handle == BLE_GATT_HANDLE_INVALID)) {
-				ble_hrs_client->peer_hrs_db = hrs_c_evt.params.peer_db;
-			}
-		}
-
-		ble_hrs_client->evt_handler(ble_hrs_client, &hrs_c_evt);
+	if (evt->evt_type != BLE_DB_DISCOVERY_COMPLETE ||
+	    evt->params.discovered_db.srv_uuid.uuid != BLE_UUID_HEART_RATE_SERVICE ||
+	    evt->params.discovered_db.srv_uuid.type != BLE_UUID_TYPE_BLE) {
+		return;
 	}
+
+	/* Find the CCCD Handle of the Heart Rate Measurement characteristic. */
+	for (uint32_t i = 0; i < evt->params.discovered_db.char_count; i++) {
+		db_char = &evt->params.discovered_db.charateristics[i];
+
+		if (db_char->characteristic.uuid.uuid ==
+			BLE_UUID_HEART_RATE_MEASUREMENT_CHAR) {
+			/* Found Heart Rate characteristic. Store CCCD handle and break. */
+			hrs_c_evt.params.peer_db.hrm_cccd_handle =
+				db_char->cccd_handle;
+			hrs_c_evt.params.peer_db.hrm_handle =
+				db_char->characteristic.handle_value;
+			break;
+		}
+	}
+
+	LOG_DBG("HRS discovered");
+	/* If the instance has been assigned prior to db_discovery,
+	 * assign the db_handles.
+	 */
+	if (ble_hrs_client->conn_handle != BLE_CONN_HANDLE_INVALID) {
+		if ((hrs_db->hrm_cccd_handle == BLE_GATT_HANDLE_INVALID) &&
+		    (hrs_db->hrm_handle == BLE_GATT_HANDLE_INVALID)) {
+			ble_hrs_client->peer_hrs_db = hrs_c_evt.params.peer_db;
+		}
+	}
+
+	ble_hrs_client->evt_handler(ble_hrs_client, &hrs_c_evt);
 }
 
 uint32_t ble_hrs_client_init(struct ble_hrs_client *ble_hrs_client,
