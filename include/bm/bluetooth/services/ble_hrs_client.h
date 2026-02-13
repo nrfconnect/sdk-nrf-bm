@@ -193,7 +193,11 @@ void ble_hrs_client_on_ble_evt(const ble_evt_t *ble_evt, void *ctx);
  * @param ble_hrs_client Heart Rate Client structure.
  *
  * @retval NRF_SUCCESS If the SoftDevice is requested to write to the CCCD of the peer.
- * @return Error code returned  by the SoftDevice API @ref sd_ble_gattc_write.
+ * @retval NRF_ERROR_NULL If @p ble_hrs_client is NULL.
+ * @retval NRF_ERROR_INVALID_STATE If the connection handle or CCCD handle has not been
+ *         assigned (e.g. @ref ble_hrs_client_handles_assign has not been called, or
+ *         the peer has disconnected).
+ * @return Otherwise, this function propagates the error code returned by the GATT queue.
  */
 uint32_t ble_hrs_client_hrm_notif_enable(struct ble_hrs_client *ble_hrs_client);
 
@@ -206,7 +210,11 @@ uint32_t ble_hrs_client_hrm_notif_enable(struct ble_hrs_client *ble_hrs_client);
  * @param ble_hrs_client Heart Rate Client structure.
  *
  * @retval NRF_SUCCESS If the SoftDevice is requested to write to the CCCD of the peer.
- * @return Error code returned  by the SoftDevice API @ref sd_ble_gattc_write.
+ * @retval NRF_ERROR_NULL If @p ble_hrs_client is NULL.
+ * @retval NRF_ERROR_INVALID_STATE If the connection handle or CCCD handle has not been
+ *         assigned (e.g. @ref ble_hrs_client_handles_assign has not been called, or
+ *         the peer has disconnected).
+ * @return Otherwise, this function propagates the error code returned by the GATT queue.
  */
 uint32_t ble_hrs_client_hrm_notif_disable(struct ble_hrs_client *ble_hrs_client);
 
