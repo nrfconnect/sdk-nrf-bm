@@ -100,6 +100,10 @@ Bluetooth LE Services
 * Renamed the ``ble_hrs_central`` service to the :ref:`lib_ble_service_hrs_client` sample.
 * Updated all services to return errors from the SoftDevice directly.
 
+* :ref:`lib_ble_service_hrs_client`:
+
+   * Fixed a potential buffer over-read when parsing malformed Heart Rate Measurement notifications.
+
 Libraries for NFC
 -----------------
 
