@@ -236,6 +236,15 @@ uint32_t ble_hrs_client_hrm_notif_enable(struct ble_hrs_client *ble_hrs_client)
 	return cccd_configure(ble_hrs_client, true);
 }
 
+uint32_t ble_hrs_client_hrm_notif_disable(struct ble_hrs_client *ble_hrs_client)
+{
+	if (!ble_hrs_client) {
+		return NRF_ERROR_NULL;
+	}
+
+	return cccd_configure(ble_hrs_client, false);
+}
+
 uint32_t ble_hrs_client_handles_assign(struct ble_hrs_client *ble_hrs_client,
 					uint16_t conn_handle,
 					const struct hrs_db *p_peer_hrs_handles)
