@@ -124,6 +124,9 @@ static void on_disconnected(struct ble_hrs_client *ble_hrs_client, const ble_evt
 void ble_hrs_on_db_disc_evt(struct ble_hrs_client *ble_hrs_client,
 			    const struct ble_db_discovery_evt *evt)
 {
+	__ASSERT(ble_hrs_client, "HRS client instance is NULL");
+	__ASSERT(evt, "Discovery event is NULL");
+
 	const struct ble_gatt_db_char *db_char;
 	struct ble_hrs_client_evt hrs_c_evt = {
 		.evt_type = BLE_HRS_CLIENT_EVT_DISCOVERY_COMPLETE,
