@@ -298,6 +298,48 @@ void test_ble_hrs_client_hrm_notif_disable_success(void)
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
+void test_ble_hrs_client_hrm_notif_enable_not_connected(void)
+{
+	uint32_t nrf_err;
+	struct ble_hrs_client ble_hrs_c = {0};
+	struct ble_hrs_client_config config = {
+		.evt_handler = hrs_client_evt_handler,
+		.gatt_queue = &gatt_queue,
+		.db_discovery = &db_discovery,
+	};
+
+	__cmock_ble_db_discovery_service_register_ExpectAndReturn(&db_discovery, NULL, NRF_SUCCESS);
+	__cmock_ble_db_discovery_service_register_IgnoreArg_uuid();
+
+	nrf_err = ble_hrs_client_init(&ble_hrs_c, &config);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	/* No handles_assign called, conn_handle is BLE_CONN_HANDLE_INVALID. */
+	nrf_err = ble_hrs_client_hrm_notif_enable(&ble_hrs_c);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, nrf_err);
+}
+
+void test_ble_hrs_client_hrm_notif_disable_not_connected(void)
+{
+	uint32_t nrf_err;
+	struct ble_hrs_client ble_hrs_c = {0};
+	struct ble_hrs_client_config config = {
+		.evt_handler = hrs_client_evt_handler,
+		.gatt_queue = &gatt_queue,
+		.db_discovery = &db_discovery,
+	};
+
+	__cmock_ble_db_discovery_service_register_ExpectAndReturn(&db_discovery, NULL, NRF_SUCCESS);
+	__cmock_ble_db_discovery_service_register_IgnoreArg_uuid();
+
+	nrf_err = ble_hrs_client_init(&ble_hrs_c, &config);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	/* No handles_assign called, conn_handle is BLE_CONN_HANDLE_INVALID. */
+	nrf_err = ble_hrs_client_hrm_notif_disable(&ble_hrs_c);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, nrf_err);
+}
+
 void test_ble_hrs_client_on_ble_gq_event_error_delivers_evt(void)
 {
 	uint32_t nrf_err;
