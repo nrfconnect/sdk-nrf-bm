@@ -120,8 +120,7 @@ void ble_nus_client_on_ble_evt(ble_evt_t const *ble_evt, void *context)
 		return;
 	}
 
-	if ((ble_nus_c->conn_handle == BLE_CONN_HANDLE_INVALID) ||
-	    (ble_nus_c->conn_handle != ble_evt->evt.gap_evt.conn_handle)) {
+	if (ble_nus_c->conn_handle == BLE_CONN_HANDLE_INVALID) {
 		return;
 	}
 
@@ -131,6 +130,9 @@ void ble_nus_client_on_ble_evt(ble_evt_t const *ble_evt, void *context)
 		break;
 
 	case BLE_GAP_EVT_DISCONNECTED:
+		if (ble_nus_c->conn_handle != ble_evt->evt.gap_evt.conn_handle) {
+			return;
+		}
 		if (ble_evt->evt.gap_evt.conn_handle == ble_nus_c->conn_handle &&
 		    ble_nus_c->evt_handler != NULL) {
 			struct ble_nus_client_evt nus_c_evt;

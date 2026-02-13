@@ -51,9 +51,10 @@ extern "C" {
 	static struct ble_nus_client _name;                                                        \
 	NRF_SDH_BLE_OBSERVER(_name##_obs, ble_nus_client_on_ble_evt, &_name, HIGH)
 
+/** Used vendor-specific UUID. */
 #define NUS_BASE_UUID                                                                              \
 	{{0x9E, 0xCA, 0xDC, 0x24, 0x0E, 0xE5, 0xA9, 0xE0, 0x93, 0xF3, 0xA3, 0xB5, 0x00, 0x00,      \
-	  0x40, 0x6E}} /**< Used vendor-specific UUID. */
+	  0x40, 0x6E}}
 
 /** Byte 12 and 13 of the Nordic UART Service UUID. */
 #define BLE_UUID_NUS_SERVICE	       0x0001
