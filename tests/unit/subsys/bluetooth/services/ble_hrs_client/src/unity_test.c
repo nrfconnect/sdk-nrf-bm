@@ -62,6 +62,34 @@ void test_ble_hrs_client_init_null(void)
 	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 }
 
+void test_ble_hrs_client_init_null_evt_handler(void)
+{
+	uint32_t nrf_err;
+	struct ble_hrs_client ble_hrs_c = {0};
+	struct ble_hrs_client_config config = {
+		.evt_handler = NULL,
+		.gatt_queue = &gatt_queue,
+		.db_discovery = &db_discovery,
+	};
+
+	nrf_err = ble_hrs_client_init(&ble_hrs_c, &config);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
+}
+
+void test_ble_hrs_client_init_null_gatt_queue(void)
+{
+	uint32_t nrf_err;
+	struct ble_hrs_client ble_hrs_c = {0};
+	struct ble_hrs_client_config config = {
+		.evt_handler = hrs_client_evt_handler,
+		.gatt_queue = NULL,
+		.db_discovery = &db_discovery,
+	};
+
+	nrf_err = ble_hrs_client_init(&ble_hrs_c, &config);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
+}
+
 void test_ble_hrs_client_init_service_register_fails(void)
 {
 	uint32_t nrf_err;
@@ -299,24 +327,6 @@ void test_ble_hrs_client_on_ble_gq_event_error_delivers_evt(void)
 	TEST_ASSERT_EQUAL(BLE_HRS_CLIENT_EVT_ERROR, last_evt.evt_type);
 	TEST_ASSERT_EQUAL(CONN_HANDLE, last_evt.conn_handle);
 	TEST_ASSERT_EQUAL(ERROR, last_evt.params.error.reason);
-}
-
-void test_ble_hrs_client_on_ble_gq_event_error_evt_handler_null_no_crash(void)
-{
-	struct ble_hrs_client ble_hrs_c = {0};
-	struct ble_gq_req req = { .ctx = &ble_hrs_c };
-	struct ble_gq_evt gq_evt = {
-		.evt_type = BLE_GQ_EVT_ERROR,
-		.conn_handle = CONN_HANDLE,
-		.error = { .reason = ERROR },
-	};
-
-	ble_hrs_c.evt_handler = NULL;
-
-	evt_handler_called = 0;
-	ble_hrs_client_on_ble_gq_event(&req, &gq_evt);
-
-	TEST_ASSERT_FALSE(evt_handler_called);
 }
 
 void test_ble_hrs_on_db_disc_evt_wrong_service_ignored(void)

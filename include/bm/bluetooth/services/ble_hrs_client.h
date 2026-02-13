@@ -162,6 +162,9 @@ struct ble_hrs_client_config {
  * @param[in] ble_hrs_client_config Heart rate service client configuration.
  *
  * @retval NRF_SUCCESS On successful initialization.
+ * @retval NRF_ERROR_NULL If any of @p ble_hrs_client, @p ble_hrs_client_config, or
+ *         the configuration's @ref ble_hrs_client_config.evt_handler or
+ *         @ref ble_hrs_client_config.gatt_queue fields are NULL.
  * @return Otherwise, this function propagates the error code returned by the
  *         Database Discovery module API @ref ble_db_discovery_service_register.
  */
