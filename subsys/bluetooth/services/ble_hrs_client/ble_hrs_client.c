@@ -11,6 +11,7 @@
 #include <ble_types.h>
 #include <ble_gattc.h>
 
+#include <zephyr/sys/byteorder.h>
 #include <zephyr/logging/log.h>
 
 LOG_MODULE_REGISTER(ble_hrs_client, CONFIG_BLE_HRS_CLIENT_LOG_LEVEL);
@@ -77,8 +78,7 @@ static void on_hvx(struct ble_hrs_client *ble_hrs_client, const ble_evt_t *ble_e
 	} else {
 		/* 16-bit heart rate value received. */
 		ble_hrs_client_evt.params.hrm.hr_value =
-			(((uint16_t)((uint8_t *)(&(hvx->data[index])))[0])) |
-			(((uint16_t)((uint8_t *)(&(hvx->data[index])))[1]) << 8);
+			sys_get_le16(&hvx->data[index]);
 		index += sizeof(uint16_t);
 	}
 
@@ -92,8 +92,7 @@ static void on_hvx(struct ble_hrs_client *ble_hrs_client, const ble_evt_t *ble_e
 				break;
 			}
 			ble_hrs_client_evt.params.hrm.rr_intervals[i] =
-				(((uint16_t)((uint8_t *)(&(hvx->data[index])))[0])) |
-				(((uint16_t)((uint8_t *)(&(hvx->data[index])))[1]) << 8);
+				sys_get_le16(&hvx->data[index]);
 			index += sizeof(uint16_t);
 		}
 	}
@@ -197,11 +196,9 @@ static uint32_t cccd_configure(struct ble_hrs_client *ble_hrs_client, bool enabl
 	LOG_DBG("Configuring CCCD. CCCD Handle = %d, Connection Handle = %d",
 		ble_hrs_client->peer_hrs_db.hrm_cccd_handle, ble_hrs_client->conn_handle);
 
-	uint16_t cccd_val = enable ? BLE_GATT_HVX_NOTIFICATION : 0;
-	uint8_t cccd[BLE_CCCD_VALUE_LEN] = {
-		(cccd_val & 0x00FF),
-		(cccd_val & 0xFF00) >> 8
-	};
+	uint8_t cccd[BLE_CCCD_VALUE_LEN];
+
+	sys_put_le16(enable ? BLE_GATT_HVX_NOTIFICATION : 0, cccd);
 	struct ble_gq_req hrs_c_req = {
 		.type = BLE_GQ_REQ_GATTC_WRITE,
 		.evt_handler = ble_hrs_client_on_ble_gq_event,
