@@ -41,9 +41,7 @@ void ble_hrs_client_on_ble_gq_event(const struct ble_gq_req *req, struct ble_gq_
 	LOG_DBG("A GATT Client error has occurred on conn_handle 0X%X, nrf_error %#x",
 		gq_evt->conn_handle, gq_evt->error.reason);
 
-	if (ble_hrs_client->evt_handler) {
-		ble_hrs_client->evt_handler(ble_hrs_client, &evt);
-	}
+	ble_hrs_client->evt_handler(ble_hrs_client, &evt);
 }
 
 static void on_hvx(struct ble_hrs_client *ble_hrs_client, const ble_evt_t *ble_evt)
@@ -176,6 +174,10 @@ uint32_t ble_hrs_client_init(struct ble_hrs_client *ble_hrs_client,
 	};
 
 	if (!ble_hrs_client || !ble_hrs_client_init) {
+		return NRF_ERROR_NULL;
+	}
+
+	if (!ble_hrs_client_init->evt_handler || !ble_hrs_client_init->gatt_queue) {
 		return NRF_ERROR_NULL;
 	}
 
