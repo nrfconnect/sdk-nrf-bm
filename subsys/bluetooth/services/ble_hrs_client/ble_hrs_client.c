@@ -48,7 +48,9 @@ void ble_hrs_client_on_ble_gq_event(const struct ble_gq_req *req, struct ble_gq_
 
 static void on_hvx(struct ble_hrs_client *ble_hrs_client, const ble_evt_t *ble_evt)
 {
-	uint32_t index = 0;
+	uint8_t flags;
+	uint32_t min_len;
+	uint32_t index;
 	const ble_gattc_evt_hvx_t *hvx = &ble_evt->evt.gattc_evt.params.hvx;
 	struct ble_hrs_client_evt ble_hrs_client_evt = {
 		.evt_type = BLE_HRS_CLIENT_EVT_HRM_NOTIFICATION,
@@ -58,8 +60,6 @@ static void on_hvx(struct ble_hrs_client *ble_hrs_client, const ble_evt_t *ble_e
 
 	/* Check if the event is on the link for this instance. */
 	if (ble_hrs_client->conn_handle != ble_evt->evt.gattc_evt.conn_handle) {
-		LOG_DBG("Received HVX on link 0x%x, not associated to this instance. Ignore.",
-			ble_evt->evt.gattc_evt.conn_handle);
 		return;
 	}
 
@@ -71,29 +71,43 @@ static void on_hvx(struct ble_hrs_client *ble_hrs_client, const ble_evt_t *ble_e
 	LOG_DBG("Received HVX on link 0x%x, hrm_handle 0x%x",
 		hvx->handle, ble_hrs_client->peer_hrs_db.hrm_handle);
 
-	if (!(hvx->data[index++] & HRM_FLAG_MASK_HR_16BIT)) {
+	/* Need at least 1 byte to read the flags. */
+	if (hvx->len < 1) {
+		return;
+	}
+
+	index = 0;
+	flags = hvx->data[index++];
+
+	/* Validate minimum payload length from flags:
+	 *   1 (flags) + HR value size (1 or 2)
+	 */
+	min_len = 1 + ((flags & HRM_FLAG_MASK_HR_16BIT) ? sizeof(uint16_t) : sizeof(uint8_t));
+	if (hvx->len < min_len) {
+		LOG_WRN("HRM too short: len=%u need=%u", hvx->len, min_len);
+		return;
+	}
+
+	/* All mandatory bytes are guaranteed present from here. */
+	if (!(flags & HRM_FLAG_MASK_HR_16BIT)) {
 		/* 8-bit heart rate value received. */
-		ble_hrs_client_evt.params.hrm.hr_value =
-			hvx->data[index++];
+		ble_hrs_client_evt.params.hrm.hr_value = hvx->data[index++];
 	} else {
 		/* 16-bit heart rate value received. */
-		ble_hrs_client_evt.params.hrm.hr_value =
-			sys_get_le16(&hvx->data[index]);
+		ble_hrs_client_evt.params.hrm.hr_value = sys_get_le16(&hvx->data[index]);
 		index += sizeof(uint16_t);
 	}
 
-	if ((hvx->data[0] & HRM_FLAG_MASK_HR_RR_INT)) {
-		ble_hrs_client_evt.params.hrm.rr_intervals_cnt =
-			CONFIG_BLE_HRS_CLIENT_RR_INTERVALS_MAX_COUNT;
-
+	/* RR intervals are variable-length; consume as many complete pairs as available. */
+	if ((flags & HRM_FLAG_MASK_HR_RR_INT)) {
 		for (uint32_t i = 0; i < CONFIG_BLE_HRS_CLIENT_RR_INTERVALS_MAX_COUNT; i++) {
-			if (index >= hvx->len) {
-				ble_hrs_client_evt.params.hrm.rr_intervals_cnt = (uint8_t)i;
+			if ((index + sizeof(uint16_t)) > hvx->len) {
 				break;
 			}
 			ble_hrs_client_evt.params.hrm.rr_intervals[i] =
 				sys_get_le16(&hvx->data[index]);
 			index += sizeof(uint16_t);
+			ble_hrs_client_evt.params.hrm.rr_intervals_cnt++;
 		}
 	}
 
