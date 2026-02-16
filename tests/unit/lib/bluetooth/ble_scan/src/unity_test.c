@@ -581,16 +581,16 @@ void test_ble_scan_filter_add_short_name_error_no_mem(void)
 	TEST_ASSERT_EQUAL(NRF_ERROR_NO_MEM, nrf_err);
 }
 
-void test_is_allow_list_used(void)
+void test_ble_scan_is_allow_list_used(void)
 {
 	bool nrf_err;
 
-	nrf_err = is_allow_list_used(&ble_scan);
+	nrf_err = ble_scan_is_allow_list_used(&ble_scan);
 	TEST_ASSERT_FALSE(nrf_err);
 
 	ble_scan.scan_params.filter_policy = BLE_GAP_SCAN_FP_WHITELIST;
 
-	nrf_err = is_allow_list_used(&ble_scan);
+	nrf_err = ble_scan_is_allow_list_used(&ble_scan);
 	TEST_ASSERT_TRUE(nrf_err);
 }
 

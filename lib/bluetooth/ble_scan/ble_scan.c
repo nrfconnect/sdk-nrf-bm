@@ -555,7 +555,7 @@ uint32_t ble_scan_filter_get(const struct ble_scan *scan, struct ble_scan_filter
 
 #endif /* CONFIG_BLE_SCAN_FILTER */
 
-bool is_allow_list_used(const struct ble_scan *scan)
+bool ble_scan_is_allow_list_used(const struct ble_scan *scan)
 {
 	if (scan->scan_params.filter_policy == BLE_GAP_SCAN_FP_WHITELIST ||
 	    scan->scan_params.filter_policy ==
@@ -623,7 +623,7 @@ uint32_t ble_scan_start(const struct ble_scan *scan)
 	/* If the allow list is used and the event handler is not NULL,
 	 * send the allow list request.
 	 */
-	if (is_allow_list_used(scan)) {
+	if (ble_scan_is_allow_list_used(scan)) {
 		if (scan->evt_handler) {
 			scan->evt_handler(&scan_evt);
 		}
@@ -664,7 +664,7 @@ static void ble_scan_on_adv_report(struct ble_scan *scan,
 	bool active_match_all = scan->scan_params.active && scan->scan_filters.all_filters_mode;
 
 	/* If the allow list is used, do not check the filters and return. */
-	if (is_allow_list_used(scan)) {
+	if (ble_scan_is_allow_list_used(scan)) {
 		scan_evt.evt_type = BLE_SCAN_EVT_ALLOW_LIST_ADV_REPORT;
 		scan_evt.params.allow_list_adv_report.report = adv_report;
 		scan->evt_handler(&scan_evt);

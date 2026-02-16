@@ -103,6 +103,7 @@ Libraries
    * Fixed an issue with active scanning where the multifilter match was used.
      A match would not be triggered unless the data for all types of enabled filters were provided in either the advertising or scan response data.
      Now the data can be provided in a mix of the advertising and scan response data.
+   * Renamed the ``allow_list_used`` function to :c:func:`ble_scan_is_allow_list_used`.
 
 
 Bluetooth LE Services

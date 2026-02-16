@@ -421,7 +421,7 @@ struct ble_scan {
  *
  * @return true if allow list is used.
  */
-bool is_allow_list_used(const struct ble_scan *scan);
+bool ble_scan_is_allow_list_used(const struct ble_scan *scan);
 
 /**
  * @brief Initialize the library.
