@@ -21,7 +21,6 @@ static nrfx_rramc_config_t rramc_config = NRFX_RRAMC_DEFAULT_CONFIG(RRAMC_WRITE_
 
 struct bm_storage_rram_state {
 	uint8_t refcount;
-	bool is_rramc_init;
 	atomic_t operation_ongoing;
 };
 
@@ -51,7 +50,6 @@ int bm_storage_backend_init(struct bm_storage *storage)
 			goto out;
 		}
 
-		state.is_rramc_init = true;
 		state.operation_ongoing = false;
 	}
 
@@ -80,7 +78,6 @@ int bm_storage_backend_uninit(struct bm_storage *storage)
 		}
 
 		nrfx_rramc_uninit();
-		state.is_rramc_init = false;
 
 		state.refcount = 0;
 	}
@@ -93,10 +90,6 @@ out:
 int bm_storage_backend_read(const struct bm_storage *storage, uint32_t src, void *dest,
 			    uint32_t len)
 {
-	if (!state.is_rramc_init) {
-		return -EPERM;
-	}
-
 	(void)nrfx_rramc_buffer_read(dest, src, len);
 
 	return 0;
@@ -105,10 +98,6 @@ int bm_storage_backend_read(const struct bm_storage *storage, uint32_t src, void
 int bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest,
 			     const void *src, uint32_t len, void *ctx)
 {
-	if (!state.is_rramc_init) {
-		return -EPERM;
-	}
-
 	if (!atomic_cas(&state.operation_ongoing, 0, 1)) {
 		return -EBUSY;
 	}
@@ -135,11 +124,6 @@ int bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest,
 
 bool bm_storage_backend_is_busy(const struct bm_storage *storage)
 {
-	/* Always appear as busy if driver is not initialized. */
-	if (!state.is_rramc_init) {
-		return true;
-	}
-
 	return (atomic_get(&state.operation_ongoing) == 1);
 }
 
