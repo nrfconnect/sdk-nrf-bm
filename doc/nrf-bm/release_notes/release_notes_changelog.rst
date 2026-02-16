@@ -106,6 +106,7 @@ Storage
      * The :c:member:`bm_storage_info.erase_value` field from a ``uint32_t`` to a ``uint8_t``.
      * The :c:func:`bm_storage_write` and :c:func:`bm_storage_erase` functions to return ``-ENOMEM`` when out of memory, instead of ``-EIO``.
      * The :c:func:`bm_storage_read`, :c:func:`bm_storage_write`, and :c:func:`bm_storage_erase` functions to return ``-EINVAL`` on alignment errors, instead of ``-EFAULT``.
+     * The :c:enum:`bm_storage_evt_dispatch_type` enum and the :c:member:`bm_storage_evt.dispatch_type` field have been replaced by a boolean :c:member:`bm_storage_evt.is_async`.
 
 Libraries
 =========

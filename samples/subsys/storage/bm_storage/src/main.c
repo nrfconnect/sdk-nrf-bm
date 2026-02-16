@@ -51,8 +51,8 @@ static void bm_storage_evt_handler_a(struct bm_storage_evt *evt)
 {
 	switch (evt->id) {
 	case BM_STORAGE_EVT_WRITE_RESULT:
-		LOG_INF("Handler A: bm_storage_evt: WRITE_RESULT %d, DISPATCH_TYPE %d",
-			evt->result, evt->dispatch_type);
+		LOG_INF("Handler A: bm_storage_evt: WRITE_RESULT %d, DISPATCH_TYPE %s",
+			evt->result, evt->is_async ? "async" : "sync");
 		outstanding_writes--;
 		break;
 	case BM_STORAGE_EVT_ERASE_RESULT:
@@ -68,7 +68,7 @@ static void bm_storage_evt_handler_b(struct bm_storage_evt *evt)
 	switch (evt->id) {
 	case BM_STORAGE_EVT_WRITE_RESULT:
 		LOG_INF("Handler B: bm_storage_evt: WRITE_RESULT %d, DISPATCH_TYPE %d",
-			evt->result, evt->dispatch_type);
+			evt->result, evt->is_async);
 		outstanding_writes--;
 		break;
 	case BM_STORAGE_EVT_ERASE_RESULT:
