@@ -134,6 +134,12 @@ static void *setup(void)
 	fixture.config.sector_count = TEST_SECTOR_COUNT;
 	fixture.config.evt_handler = bm_zms_test_evt_handler;
 
+#if defined(CONFIG_BM_STORAGE_BACKEND_SD)
+	fixture.config.storage_api = &bm_storage_sd_api;
+#elif defined(CONFIG_BM_STORAGE_BACKEND_NATIVE_SIM)
+	fixture.config.storage_api = &bm_storage_native_sim_api;
+#endif
+
 	return &fixture;
 }
 

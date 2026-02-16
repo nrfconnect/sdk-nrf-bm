@@ -2007,6 +2007,7 @@ int bm_zms_mount(struct bm_zms_fs *fs, const struct bm_zms_fs_config *config)
 
 	struct bm_storage_config conf = {
 		.evt_handler = zms_event_handler,
+		.api = config->storage_api,
 		.start_addr = fs->offset,
 		.end_addr = fs->offset + fs->sector_size * fs->sector_count,
 	};
