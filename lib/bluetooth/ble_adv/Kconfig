@@ -25,7 +25,7 @@ config BLE_ADV_USE_ALLOW_LIST
 
 config BLE_ADV_EXTENDED_ADVERTISING
 	bool "Extended advertising"
-	default y
+	depends on SOFTDEVICE_EXTENDED_ADVERTISING
 
 config BLE_ADV_DIRECTED_ADVERTISING
 	bool "Directed advertising"
