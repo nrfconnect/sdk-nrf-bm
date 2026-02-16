@@ -19,8 +19,6 @@
 #define PARTITION_START 0x4200
 #define PARTITION_SIZE  (BLOCK_SIZE * 2)
 
-extern const struct bm_storage_info bm_storage_info;
-
 static struct bm_storage_evt storage_event;
 static bool storage_event_received;
 
@@ -45,6 +43,7 @@ void test_bm_storage_rram_init_efault(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_rram_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -60,7 +59,7 @@ void test_bm_storage_rram_init_efault(void)
 }
 
 /* This is the first test that reaches the backend.
- * bm_storage_backend_init() increments the refcount and, since refcount == 1,
+ * The RRAM backend init increments the refcount and, since refcount == 1,
  * calls nrfx_rramc_init() to initialize the hardware.
  * All subsequent tests that call bm_storage_init() will increment the refcount
  * past 1 and skip the hardware initialization path, so they will NOT invoke
@@ -72,6 +71,7 @@ void test_bm_storage_rram_init(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_rram_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -91,6 +91,7 @@ void test_bm_storage_rram_init_eperm(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_rram_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -128,6 +129,7 @@ void test_bm_storage_rram_uninit(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_rram_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -147,6 +149,7 @@ void test_bm_storage_rram_init_uninit_init(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_rram_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -183,6 +186,7 @@ void test_bm_storage_rram_write_einval(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_rram_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -201,6 +205,7 @@ void test_bm_storage_rram_write_efault(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_rram_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -221,6 +226,7 @@ void test_bm_storage_rram_write(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_rram_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -269,6 +275,7 @@ void test_bm_storage_rram_read_einval(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_rram_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -288,6 +295,7 @@ void test_bm_storage_rram_read(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_rram_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -309,6 +317,7 @@ void test_bm_storage_rram_read_efault(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_rram_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -339,6 +348,7 @@ void test_bm_storage_rram_erase(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_rram_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -372,6 +382,7 @@ void test_bm_storage_rram_is_busy(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_rram_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};

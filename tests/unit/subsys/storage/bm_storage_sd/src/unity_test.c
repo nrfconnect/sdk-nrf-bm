@@ -10,7 +10,6 @@
 #include <zephyr/sys/util.h>
 
 #include <bm/storage/bm_storage.h>
-#include <bm/storage/bm_storage_backend.h>
 
 #include "bm/softdevice_handler/nrf_sdh.h"
 #include "cmock_nrf_sdh.h"
@@ -26,8 +25,6 @@
 #define PARTITION_SIZE	(BLOCK_SIZE * 3)
 
 #define PTR_IGNORE NULL
-
-extern const struct bm_storage_info bm_storage_info;
 
 /* The backend's SoC event handler */
 extern void bm_storage_sd_on_soc_evt(uint32_t evt, void *ctx);
@@ -69,6 +66,7 @@ void test_bm_storage_sd_init_efault(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -89,6 +87,7 @@ void test_bm_storage_sd_init_eperm(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -110,6 +109,7 @@ void test_bm_storage_sd_init(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -128,6 +128,7 @@ void test_bm_storage_sd_uninit_efault(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -158,6 +159,7 @@ void test_bm_storage_sd_uninit(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -180,6 +182,7 @@ void test_bm_storage_sd_uninit_outstanding(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -218,6 +221,7 @@ void test_bm_storage_sd_init_uninit_init(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -260,6 +264,7 @@ void test_bm_storage_sd_write_einval(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -289,6 +294,7 @@ void test_bm_storage_sd_write(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -328,6 +334,7 @@ void test_bm_storage_sd_write_retry_etimedout(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -376,6 +383,7 @@ void test_bm_storage_sd_write_queued(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -440,6 +448,7 @@ void test_bm_storage_sd_write_retry_queued(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -508,6 +517,7 @@ void test_bm_storage_sd_write_queued_eio(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -581,6 +591,7 @@ void test_bm_storage_sd_write_enomem(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -614,6 +625,81 @@ void test_bm_storage_sd_write_enomem(void)
 	}
 }
 
+void test_bm_storage_sd_write_two_instances(void)
+{
+	int err;
+	uint8_t buf[BLOCK_SIZE];
+	struct bm_storage storage = {0};
+	struct bm_storage storage2 = {0};
+	struct bm_storage_config config = {
+		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
+		.start_addr = PARTITION_START,
+		.end_addr = PARTITION_START + PARTITION_SIZE,
+	};
+
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){true});
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	__cmock_sd_flash_write_ExpectAndReturn(
+		(uint32_t *)PARTITION_START, (uint32_t *)buf, WORD_SIZE(sizeof(buf)), 0);
+
+	err = bm_storage_write(&storage, PARTITION_START, buf, sizeof(buf), &storage);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* The fist instance has scheduled one operation.
+	 * The second instance is initialized.
+	 */
+
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){true});
+
+	err = bm_storage_init(&storage2, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* Upon receiving the SoC event for the fist operation, one event is sent to
+	 * the instance that scheduled the operation. The second instance is unaffected.
+	 */
+	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+
+	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
+	TEST_ASSERT_EQUAL(0, storage_event.result);
+	TEST_ASSERT_EQUAL(PARTITION_START, storage_event.addr);
+	TEST_ASSERT_EQUAL_PTR(buf, storage_event.src);
+	TEST_ASSERT_EQUAL(sizeof(buf), storage_event.len);
+	TEST_ASSERT_EQUAL_PTR(&storage, storage_event.ctx);
+
+	/* A second write is requested by the second instance.
+	 * The first instance is uninitialized after the new operation is scheduled.
+	 */
+	__cmock_sd_flash_write_ExpectAndReturn(
+		(uint32_t *)PARTITION_START, (uint32_t *)buf, WORD_SIZE(sizeof(buf)), 0);
+
+	err = bm_storage_write(&storage2, PARTITION_START, buf, sizeof(buf), &storage2);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* Since `storage` has no pending operations, the unitialization is successful */
+
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(0, err);
+
+	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+
+	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
+	TEST_ASSERT_EQUAL(0, storage_event.result);
+	TEST_ASSERT_EQUAL(PARTITION_START, storage_event.addr);
+	TEST_ASSERT_EQUAL_PTR(buf, storage_event.src);
+	TEST_ASSERT_EQUAL(sizeof(buf), storage_event.len);
+	TEST_ASSERT_EQUAL_PTR(&storage2, storage_event.ctx);
+
+	TEST_ASSERT_EQUAL(2, storage_event_count);
+}
+
 void test_bm_storage_sd_write_disable_prepare(void)
 {
 	int err;
@@ -622,6 +708,7 @@ void test_bm_storage_sd_write_disable_prepare(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -670,6 +757,7 @@ void test_bm_storage_sd_write_disabled(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -707,6 +795,7 @@ void test_bm_storage_sd_write_softdevice_busy_retry(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -761,6 +850,7 @@ void test_bm_storage_sd_read_einval(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -784,6 +874,7 @@ void test_bm_storage_sd_read(void)
 	uint32_t dummy_partition[16] = {0x00C0FFEE};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
 		.start_addr = (uintptr_t)&dummy_partition,
 		.end_addr = (uintptr_t)&dummy_partition + sizeof(dummy_partition),
 	};
@@ -817,6 +908,7 @@ void test_bm_storage_sd_erase_einval(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -839,6 +931,7 @@ void test_bm_storage_sd_erase(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -883,6 +976,7 @@ void test_bm_storage_sd_erase_enomem(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -927,6 +1021,7 @@ void test_bm_storage_sd_is_busy(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
@@ -954,6 +1049,7 @@ void test_bm_storage_sd_soc_event_handler(void)
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};

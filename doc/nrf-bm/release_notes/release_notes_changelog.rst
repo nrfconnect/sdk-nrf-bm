@@ -76,6 +76,7 @@ Storage
 * :ref:`lib_storage`:
 
    Added:
+     * The capability to compile more than one backend.
      * The :c:func:`bm_storage_nvm_info_get` function to retrieve NVM information, such as the size of the program unit and other.
 
    Updated:

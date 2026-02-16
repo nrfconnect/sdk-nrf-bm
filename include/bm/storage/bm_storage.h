@@ -86,6 +86,28 @@ struct bm_storage_info {
 	bool no_explicit_erase;
 };
 
+struct bm_storage;
+struct bm_storage_config;
+
+/**
+ * @brief Backend API.
+ *
+ * Provides function pointers for a storage backend implementation.
+ * An API instance is assigned during initialization via
+ * @ref bm_storage_config.api.
+ *
+ * @see bm_storage_backends.h for available backend API instances.
+ */
+struct bm_storage_api {
+	int (*init)(struct bm_storage *storage, const struct bm_storage_config *config);
+	int (*uninit)(struct bm_storage *storage);
+	int (*read)(const struct bm_storage *storage, uint32_t src, void *dest, uint32_t len);
+	int (*write)(const struct bm_storage *storage, uint32_t dest, const void *src, uint32_t len,
+		     void *ctx);
+	int (*erase)(const struct bm_storage *storage, uint32_t addr, uint32_t len, void *ctx);
+	bool (*is_busy)(const struct bm_storage *storage);
+};
+
 /**
  * @brief Storage instance.
  *
@@ -98,6 +120,10 @@ struct bm_storage {
 	 * @brief Tells whether the instance is initialized.
 	 */
 	bool initialized;
+	/**
+	 * @brief API implementation.
+	 */
+	const struct bm_storage_api *api;
 	/**
 	 * @brief Information about the implementation-specific functionality and the non-volatile
 	 *        memory peripheral.
@@ -133,6 +159,10 @@ struct bm_storage_config {
 	 * @note If set to NULL, no events will be sent.
 	 */
 	bm_storage_evt_handler_t evt_handler;
+	/**
+	 * @brief API implementation.
+	 */
+	const struct bm_storage_api *api;
 	/**
 	 * @brief The beginning of the non-volatile memory region where this storage instance
 	 *        can operate.
@@ -261,14 +291,11 @@ bool bm_storage_is_busy(const struct bm_storage *storage);
  */
 const struct bm_storage_info *bm_storage_nvm_info_get(const struct bm_storage *storage);
 
-/**
- * @brief Singleton instance of the implementation-specific non-volatile memory information.
- */
-extern const struct bm_storage_info bm_storage_info;
-
 #ifdef __cplusplus
 }
 #endif
+
+#include <bm/storage/bm_storage_backends.h>
 
 #endif /* BM_STORAGE_H__ */
 

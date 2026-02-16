@@ -130,6 +130,8 @@ struct bm_zms_fs_config {
 	uint32_t sector_count;
 	/** Event handler for propagating events. */
 	bm_zms_evt_handler_t evt_handler;
+	/** Storage API implementation */
+	const struct bm_storage_api *storage_api;
 };
 
 /**

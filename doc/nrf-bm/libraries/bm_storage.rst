@@ -26,6 +26,8 @@ Select a storage backend by enabling one of the following Kconfig options:
 * :kconfig:option:`CONFIG_BM_STORAGE_BACKEND_RRAM` – RRAM backend. The events reported are synchronous.
 * :kconfig:option:`CONFIG_BM_STORAGE_BACKEND_SD` – SoftDevice backend. The events reported are asynchronous.
 
+The selected backend's API instance is made available through the :file:`include/bm/storage/bm_storage_backends.h` header, which is included transitively by :file:`include/bm/storage/bm_storage.h`.
+
 SoftDevice backend options:
 
 * :kconfig:option:`CONFIG_BM_STORAGE_BACKEND_SD_QUEUE_SIZE` – Queue size for pending operations.
@@ -39,7 +41,24 @@ Each storage instance is represented by a :c:struct:`bm_storage` structure.
 To initialize a storage instance, use the :c:func:`bm_storage_init` function, providing a configuration struct :c:struct:`bm_storage_config` with the following information:
 
 * :c:member:`bm_storage_config.evt_handler` – Event callback.
+* :c:member:`bm_storage_config.api` – Backend API implementation (for example, ``&bm_storage_sd_api`` or ``&bm_storage_rram_api``).
 * :c:member:`bm_storage_config.start_addr` and :c:member:`bm_storage_config.end_addr` – Accessible address range.
+
+The following example shows how to initialize a storage instance with a backend API:
+
+.. code-block:: c
+
+   #include <bm/storage/bm_storage.h>
+
+   struct bm_storage storage;
+   struct bm_storage_config config = {
+       .evt_handler = my_handler,
+       .api = &bm_storage_sd_api,
+       .start_addr = START,
+       .end_addr = END,
+   };
+
+   bm_storage_init(&storage, &config);
 
 You can uninitialize a storage instance with the :c:func:`bm_storage_uninit` function.
 
@@ -117,7 +136,8 @@ Dependencies
 API documentation
 *****************
 
-| Header file: :file:`include/bm_storage.h`
+| Header file: :file:`include/bm/storage/bm_storage.h`
+| Header file: :file:`include/bm/storage/bm_storage_backends.h`
 | Source files: :file:`lib/bm_storage/`
 
 :ref:`Storage library API reference <api_storage>`

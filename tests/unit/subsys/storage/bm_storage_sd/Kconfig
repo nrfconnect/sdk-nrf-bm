@@ -7,6 +7,7 @@
 # These are redefined here to override dependencies
 
 choice BM_STORAGE_BACKEND
+	prompt "Storage backend"
 
 config BM_STORAGE_BACKEND_SD
 	bool "SoftDevice backend (testing)"

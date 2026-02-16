@@ -91,6 +91,7 @@ static int storage_inits(void)
 
 	struct bm_storage_config storage_config_a = {
 		.evt_handler = bm_storage_evt_handler_a,
+		.api = &bm_storage_sd_api,
 		.start_addr = STORAGE_A_START,
 		.end_addr = STORAGE_A_END,
 	};
@@ -103,6 +104,7 @@ static int storage_inits(void)
 
 	struct bm_storage_config storage_config_b = {
 		.evt_handler = bm_storage_evt_handler_b,
+		.api = &bm_storage_sd_api,
 		.start_addr = STORAGE_B_START,
 		.end_addr = STORAGE_B_END,
 	};

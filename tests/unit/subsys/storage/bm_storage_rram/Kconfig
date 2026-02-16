@@ -7,6 +7,7 @@
 # Force RRAM backend for this test
 
 choice BM_STORAGE_BACKEND
+	prompt "Storage backend"
 
 config BM_STORAGE_BACKEND_RRAM
 	bool "RRAM backend (testing)"

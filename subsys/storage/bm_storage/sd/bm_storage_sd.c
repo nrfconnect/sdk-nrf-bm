@@ -12,7 +12,6 @@
 #include <bm/softdevice_handler/nrf_sdh_soc.h>
 #include <bm/softdevice_handler/nrf_sdh.h>
 #include <bm/storage/bm_storage.h>
-#include <bm/storage/bm_storage_backend.h>
 #include <zephyr/irq.h>
 #include <zephyr/sys/util.h>
 #include <zephyr/sys/atomic.h>
@@ -81,6 +80,20 @@ static struct {
 	uint8_t softdevice_is_enabled;
 	struct bm_storage_sd_op current_operation;
 } bm_storage_sd;
+
+/* This structure informs the upper layer of the capabilities of this specific API implementation.
+ * These are affected not only by the hardware, but also by the software (e.g. the SoftDevice API).
+ */
+static const struct bm_storage_info bm_storage_info = {
+	/* SoftDevice requires writing a minimum of 4 bytes at once */
+	.program_unit = SD_WRITE_BLOCK_SIZE,
+	/* No explicit erase operation on this hardware */
+	.no_explicit_erase = true,
+	/* Erase operation does not exist, so use same as program unit */
+	.erase_unit = SD_WRITE_BLOCK_SIZE,
+	/* Similar to FLASH */
+	.erase_value = 0xFF,
+};
 
 #ifndef CONFIG_UNITY
 static
@@ -284,8 +297,10 @@ static bool on_operation_failure(const struct bm_storage_sd_op *op)
 	return false;
 }
 
-int bm_storage_backend_init(struct bm_storage *storage)
+static int bm_storage_sd_init(struct bm_storage *storage, const struct bm_storage_config *config)
 {
+	storage->nvm_info = &bm_storage_info;
+
 	sd_softdevice_is_enabled(&bm_storage_sd.softdevice_is_enabled);
 
 	(void)memset(erase_buf, (int)(bm_storage_info.erase_value & 0xFF), sizeof(erase_buf));
@@ -293,7 +308,7 @@ int bm_storage_backend_init(struct bm_storage *storage)
 	return 0;
 }
 
-int bm_storage_backend_uninit(struct bm_storage *storage)
+static int bm_storage_sd_uninit(struct bm_storage *storage)
 {
 	/* Do not touch the internal state.
 	 * Let queued operations complete.
@@ -301,16 +316,16 @@ int bm_storage_backend_uninit(struct bm_storage *storage)
 	return 0;
 }
 
-int bm_storage_backend_read(const struct bm_storage *storage, uint32_t src, void *dest,
-			    uint32_t len)
+static int bm_storage_sd_read(const struct bm_storage *storage, uint32_t src, void *dest,
+			      uint32_t len)
 {
 	memcpy(dest, UINT_TO_POINTER(src), len);
 
 	return 0;
 }
 
-int bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest,
-			     const void *src, uint32_t len, void *ctx)
+static int bm_storage_sd_write(const struct bm_storage *storage, uint32_t dest, const void *src,
+			       uint32_t len, void *ctx)
 {
 	bool queued;
 	const struct bm_storage_sd_op op = {
@@ -336,8 +351,8 @@ int bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest,
 	return 0;
 }
 
-int bm_storage_backend_erase(const struct bm_storage *storage, uint32_t addr, uint32_t len,
-			     void *ctx)
+static int bm_storage_sd_erase(const struct bm_storage *storage, uint32_t addr, uint32_t len,
+			       void *ctx)
 {
 	bool queued;
 	const struct bm_storage_sd_op op = {
@@ -357,7 +372,7 @@ int bm_storage_backend_erase(const struct bm_storage *storage, uint32_t addr, ui
 	return 0;
 }
 
-bool bm_storage_backend_is_busy(const struct bm_storage *storage)
+static bool bm_storage_sd_is_busy(const struct bm_storage *storage)
 {
 	return (bm_storage_sd.queue_state != QUEUE_IDLE);
 }
@@ -459,9 +474,11 @@ void bm_storage_sd_on_soc_evt(uint32_t evt, void *ctx)
 }
 NRF_SDH_SOC_OBSERVER(sdh_soc, bm_storage_sd_on_soc_evt, NULL, HIGH);
 
-const struct bm_storage_info bm_storage_info = {
-	.program_unit = SD_WRITE_BLOCK_SIZE,
-	.no_explicit_erase = true,
-	.erase_unit = SD_WRITE_BLOCK_SIZE,
-	.erase_value = 0xFF,
+const struct bm_storage_api bm_storage_sd_api = {
+	.init = bm_storage_sd_init,
+	.uninit = bm_storage_sd_uninit,
+	.read = bm_storage_sd_read,
+	.write = bm_storage_sd_write,
+	.erase = bm_storage_sd_erase,
+	.is_busy = bm_storage_sd_is_busy,
 };
