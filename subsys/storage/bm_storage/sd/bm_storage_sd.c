@@ -46,7 +46,7 @@ enum bm_storage_sd_state_type {
 	BM_STORAGE_SD_STATE_OP_EXECUTING,
 };
 
-struct bm_storage_sd_state {
+static struct {
 	/* The module is initialized. */
 	bool is_init;
 	/* Ensures atomic access to various states. */
@@ -60,9 +60,7 @@ struct bm_storage_sd_state {
 	/* A SoftDevice state change is impending. */
 	bool paused;
 	struct bm_storage_sd_op current_operation;
-};
-
-static struct bm_storage_sd_state state;
+} bm_storage_sd;
 
 static void on_soc_evt(uint32_t evt, void *ctx);
 static int on_state_evt_change(enum nrf_sdh_state_evt evt, void *ctx);
@@ -122,21 +120,21 @@ static void queue_process(void)
 	uint32_t ret;
 	unsigned int key;
 
-	if (state.type == BM_STORAGE_SD_STATE_IDLE) {
+	if (bm_storage_sd.type == BM_STORAGE_SD_STATE_IDLE) {
 		key = irq_lock();
-		ret = ring_buf_get(&sd_fifo, (uint8_t *)&state.current_operation,
+		ret = ring_buf_get(&sd_fifo, (uint8_t *)&bm_storage_sd.current_operation,
 				   sizeof(struct bm_storage_sd_op));
 		irq_unlock(key);
 		if (ret != sizeof(struct bm_storage_sd_op)) {
 			/* No more operations left to be processed, unlock the resource. */
-			atomic_set(&state.operation_ongoing, 0);
+			atomic_set(&bm_storage_sd.operation_ongoing, 0);
 			return;
 		}
 	}
 
-	state.type = BM_STORAGE_SD_STATE_OP_EXECUTING;
+	bm_storage_sd.type = BM_STORAGE_SD_STATE_OP_EXECUTING;
 
-	ret = write_execute(&state.current_operation);
+	ret = write_execute(&bm_storage_sd.current_operation);
 
 	switch (ret) {
 	case NRF_SUCCESS:
@@ -145,7 +143,7 @@ static void queue_process(void)
 		 * Otherwise, the SoftDevice call is synchronous and will not send an event so we
 		 * simulate it.
 		 */
-		if (!state.sd_enabled) {
+		if (!bm_storage_sd.sd_enabled) {
 			bool is_sync = true;
 
 			on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, &is_sync);
@@ -156,22 +154,22 @@ static void queue_process(void)
 		 * requested by the storage logic.
 		 * Stop processing the queue until a system event is received.
 		 */
-		state.type = BM_STORAGE_SD_STATE_OP_PENDING;
+		bm_storage_sd.type = BM_STORAGE_SD_STATE_OP_PENDING;
 		break;
 	default:
 		/* An error has occurred. We cannot proceed further with this operation. */
-		event_send(&state.current_operation, true, -EIO);
+		event_send(&bm_storage_sd.current_operation, true, -EIO);
 		/* Reset the internal state so we can accept other operations. */
-		state.type = BM_STORAGE_SD_STATE_IDLE;
-		atomic_set(&state.operation_ongoing, 0);
+		bm_storage_sd.type = BM_STORAGE_SD_STATE_IDLE;
+		atomic_set(&bm_storage_sd.operation_ongoing, 0);
 		break;
 	}
 }
 
 static void queue_start(void)
 {
-	if ((atomic_cas(&state.operation_ongoing, 0, 1)) &&
-	    (!state.paused)) {
+	if ((atomic_cas(&bm_storage_sd.operation_ongoing, 0, 1)) &&
+	    (!bm_storage_sd.paused)) {
 		queue_process();
 	}
 }
@@ -180,7 +178,7 @@ static void queue_start(void)
 static bool on_operation_success(struct bm_storage_sd_op *op)
 {
 	/* Reset the retry counter on success. */
-	state.retries = 0;
+	bm_storage_sd.retries = 0;
 
 	__ASSERT(op->len % bm_storage_info.program_unit == 0,
 		 "Data length is expected to be a multiple of the program unit.");
@@ -201,11 +199,11 @@ static bool on_operation_success(struct bm_storage_sd_op *op)
 /* Write operation failure callback. */
 static bool on_operation_failure(const struct bm_storage_sd_op *op)
 {
-	state.retries++;
+	bm_storage_sd.retries++;
 
-	if (state.retries > CONFIG_BM_STORAGE_BACKEND_SD_MAX_RETRIES) {
+	if (bm_storage_sd.retries > CONFIG_BM_STORAGE_BACKEND_SD_MAX_RETRIES) {
 		/* Maximum amount of retries reached. Give up. */
-		state.retries = 0;
+		bm_storage_sd.retries = 0;
 		return true;
 	}
 
@@ -217,22 +215,22 @@ int bm_storage_backend_init(struct bm_storage *storage)
 	/* If it's already initialized, return early successfully.
 	 * This is to support more than one client initialization.
 	 */
-	if (state.is_init) {
+	if (bm_storage_sd.is_init) {
 		return 0;
 	}
 
 	/* Initialize the SoftDevice storage backend from one context only. */
-	if (!atomic_cas(&state.operation_ongoing, 0, 1)) {
+	if (!atomic_cas(&bm_storage_sd.operation_ongoing, 0, 1)) {
 		return -EBUSY;
 	}
 
-	sd_softdevice_is_enabled((uint8_t *)&state.sd_enabled);
+	sd_softdevice_is_enabled((uint8_t *)&bm_storage_sd.sd_enabled);
 
-	state.type = BM_STORAGE_SD_STATE_IDLE;
+	bm_storage_sd.type = BM_STORAGE_SD_STATE_IDLE;
 
-	state.is_init = true;
+	bm_storage_sd.is_init = true;
 
-	atomic_set(&state.operation_ongoing, 0);
+	atomic_set(&bm_storage_sd.operation_ongoing, 0);
 
 	return 0;
 }
@@ -248,7 +246,7 @@ int bm_storage_backend_uninit(struct bm_storage *storage)
 int bm_storage_backend_read(const struct bm_storage *storage, uint32_t src, void *dest,
 			    uint32_t len)
 {
-	if (!state.is_init) {
+	if (!bm_storage_sd.is_init) {
 		return -EPERM;
 	}
 
@@ -269,7 +267,7 @@ int bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest,
 	uint32_t written;
 	unsigned int key;
 
-	if (!state.is_init) {
+	if (!bm_storage_sd.is_init) {
 		return -EPERM;
 	}
 
@@ -301,7 +299,7 @@ int bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest,
 
 bool bm_storage_backend_is_busy(const struct bm_storage *storage)
 {
-	return (state.type != BM_STORAGE_SD_STATE_IDLE);
+	return (bm_storage_sd.type != BM_STORAGE_SD_STATE_IDLE);
 }
 
 static void on_soc_evt(uint32_t evt, void *ctx)
@@ -311,7 +309,7 @@ static void on_soc_evt(uint32_t evt, void *ctx)
 		return;
 	}
 
-	switch (state.type) {
+	switch (bm_storage_sd.type) {
 	case BM_STORAGE_SD_STATE_IDLE:
 		return;
 	case BM_STORAGE_SD_STATE_OP_PENDING:
@@ -321,24 +319,24 @@ static void on_soc_evt(uint32_t evt, void *ctx)
 
 		switch (evt) {
 		case NRF_EVT_FLASH_OPERATION_SUCCESS:
-			operation_finished = on_operation_success(&state.current_operation);
+			operation_finished = on_operation_success(&bm_storage_sd.current_operation);
 			break;
 		case NRF_EVT_FLASH_OPERATION_ERROR:
-			operation_finished = on_operation_failure(&state.current_operation);
+			operation_finished = on_operation_failure(&bm_storage_sd.current_operation);
 			break;
 		default:
 			break;
 		}
 
 		if (operation_finished) {
-			state.type = BM_STORAGE_SD_STATE_IDLE;
+			bm_storage_sd.type = BM_STORAGE_SD_STATE_IDLE;
 
 			/* We pass a pointer only when we call it manually for the synchronous
 			 * processing.
 			 */
 			bool is_sync = (ctx != NULL);
 
-			event_send(&state.current_operation, is_sync,
+			event_send(&bm_storage_sd.current_operation, is_sync,
 				   (evt == NRF_EVT_FLASH_OPERATION_SUCCESS) ? 0 : -ETIMEDOUT);
 		}
 		break;
@@ -346,7 +344,7 @@ static void on_soc_evt(uint32_t evt, void *ctx)
 		break;
 	}
 
-	if (!state.paused) {
+	if (!bm_storage_sd.paused) {
 		queue_process();
 	} else {
 		nrf_sdh_observer_ready(&sdh_state_evt);
@@ -359,14 +357,14 @@ static int on_state_evt_change(enum nrf_sdh_state_evt evt, void *ctx)
 	case NRF_SDH_STATE_EVT_ENABLE_PREPARE:
 	case NRF_SDH_STATE_EVT_DISABLE_PREPARE:
 		/* Only allow changing state when idle */
-		state.paused = true;
-		return (state.type != BM_STORAGE_SD_STATE_IDLE);
+		bm_storage_sd.paused = true;
+		return (bm_storage_sd.type != BM_STORAGE_SD_STATE_IDLE);
 
 	case NRF_SDH_STATE_EVT_ENABLED:
 	case NRF_SDH_STATE_EVT_DISABLED:
 		/* Continue executing any operation still in the queue */
-		state.paused = false;
-		state.sd_enabled = (evt == NRF_SDH_STATE_EVT_ENABLED);
+		bm_storage_sd.paused = false;
+		bm_storage_sd.sd_enabled = (evt == NRF_SDH_STATE_EVT_ENABLED);
 		queue_process();
 		return 0;
 
