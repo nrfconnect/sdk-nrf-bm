@@ -96,6 +96,7 @@ Storage
 * :ref:`lib_storage`:
 
    Added:
+     * The capability to compile more than one backend. An instance can be configured to use a specific backend by using the :c:struct:`bm_storage_config.api` field.
      * The :c:func:`bm_storage_nvm_info_get` function to retrieve NVM information, such as the size of the program unit and other.
 
    Updated:
@@ -107,6 +108,13 @@ Storage
      * The :c:func:`bm_storage_write` and :c:func:`bm_storage_erase` functions to return ``-ENOMEM`` when out of memory, instead of ``-EIO``.
      * The :c:func:`bm_storage_read`, :c:func:`bm_storage_write`, and :c:func:`bm_storage_erase` functions to return ``-EINVAL`` on alignment errors, instead of ``-EFAULT``.
      * The :c:enum:`bm_storage_evt_dispatch_type` enum and the :c:member:`bm_storage_evt.dispatch_type` field have been replaced by a boolean :c:member:`bm_storage_evt.is_async`.
+
+Filesystem
+==========
+
+* :ref:`lib_bm_zms`
+
+   * Added the :c:member:`bm_zms_fs_config.storage_api` field to select the storage backend API.
 
 Libraries
 =========
