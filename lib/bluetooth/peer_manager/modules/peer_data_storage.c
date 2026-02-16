@@ -12,6 +12,7 @@
 #include <zephyr/sys/util.h>
 #include <zephyr/sys/atomic.h>
 #include <zephyr/sys/__assert.h>
+#include <bm/storage/bm_storage_backends.h>
 #include <bm/fs/bm_zms.h>
 #include <bm/bluetooth/peer_manager/peer_manager_types.h>
 #include <modules/peer_manager_internal.h>
@@ -346,6 +347,7 @@ uint32_t pds_init(void)
 		.sector_size = CONFIG_PM_BM_ZMS_SECTOR_SIZE,
 		.sector_count = (PEER_MANAGER_PARTITION_SIZE / CONFIG_PM_BM_ZMS_SECTOR_SIZE),
 		.evt_handler = bm_zms_evt_handler,
+		.storage_api = &bm_storage_sd_api,
 	};
 
 	err = bm_zms_mount(&fs, &config);

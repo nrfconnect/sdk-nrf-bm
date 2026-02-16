@@ -10,12 +10,7 @@
 config BM_STORAGE
 	bool "Storage (testing)"
 
-choice BM_STORAGE_BACKEND
-	prompt "Backend"
-
 config BM_STORAGE_BACKEND_RRAM
 	bool "RRAM"
-
-endchoice
 
 source "Kconfig.zephyr"
