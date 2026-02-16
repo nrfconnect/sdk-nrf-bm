@@ -106,6 +106,8 @@ struct bm_zms_fs {
 	size_t ate_size;
 	/** BM Storage instance for asynchronous writes. */
 	struct bm_storage zms_bm_storage;
+	/** Cached pointer to the NVM information. */
+	const struct bm_storage_info *nvm_info;
 	/** Number of writes currently handled by the storage system. */
 	atomic_t ongoing_writes;
 	/** Event handler for propagating events. */

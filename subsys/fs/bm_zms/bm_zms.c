@@ -411,20 +411,20 @@ static inline off_t zms_addr_to_offset(struct bm_zms_fs *fs, uint64_t addr)
 /* Helper to round down len to the closest multiple of write_block_size  */
 static inline size_t zms_round_down_write_block_size(struct bm_zms_fs *fs, size_t len)
 {
-	return len & ~(fs->zms_bm_storage.nvm_info->program_unit - 1U);
+	return len & ~(fs->nvm_info->program_unit - 1U);
 }
 
 /* Helper to round up len to multiple of write_block_size */
 static inline size_t zms_round_up_write_block_size(struct bm_zms_fs *fs, size_t len)
 {
-	return (len + (fs->zms_bm_storage.nvm_info->program_unit - 1U)) &
-	       ~(fs->zms_bm_storage.nvm_info->program_unit - 1U);
+	return (len + (fs->nvm_info->program_unit - 1U)) &
+	       ~(fs->nvm_info->program_unit - 1U);
 }
 
 /* zms_al_size returns size aligned to fs->write_block_size */
 static inline size_t zms_al_size(struct bm_zms_fs *fs, size_t len)
 {
-	size_t write_block_size = fs->zms_bm_storage.nvm_info->program_unit;
+	size_t write_block_size = fs->nvm_info->program_unit;
 
 	if (write_block_size <= 1U) {
 		return len;
@@ -732,13 +732,13 @@ static int zms_flash_al_wrt(struct bm_zms_fs *fs)
 	if (cur_op.len) {
 		memcpy(bm_zms_internal_buf, data8 + cur_op.blen, cur_op.len);
 		(void)memset(bm_zms_internal_buf + cur_op.len,
-			     fs->zms_bm_storage.nvm_info->erase_value,
-			     fs->zms_bm_storage.nvm_info->program_unit - cur_op.len);
+			     fs->nvm_info->erase_value,
+			     fs->nvm_info->program_unit - cur_op.len);
 		cur_op.len = 0;
 		zms_al_wrt_next_op(fs);
 		return bm_storage_write(&fs->zms_bm_storage, offset + cur_op.blen,
 					bm_zms_internal_buf,
-					fs->zms_bm_storage.nvm_info->program_unit,
+					fs->nvm_info->program_unit,
 					(void *)&cur_op);
 	}
 
@@ -879,7 +879,7 @@ static int zms_flash_erase_sector(struct bm_zms_fs *fs, uint64_t addr)
 {
 	int rc;
 	off_t offset;
-	bool ebw_required = !fs->zms_bm_storage.nvm_info->no_explicit_erase;
+	bool ebw_required = !fs->nvm_info->no_explicit_erase;
 
 	if (!ebw_required) {
 		/* Do nothing for devices that do not have erase capability */
@@ -906,7 +906,7 @@ static int zms_flash_erase_sector(struct bm_zms_fs *fs, uint64_t addr)
 		return rc;
 	}
 
-	if (zms_flash_cmp_const(fs, addr, fs->zms_bm_storage.nvm_info->erase_value,
+	if (zms_flash_cmp_const(fs, addr, fs->nvm_info->erase_value,
 				fs->sector_size)) {
 		LOG_ERR("Failure while erasing the sector at offset 0x%lx", (long)offset);
 		rc = -EIO;
@@ -1232,7 +1232,7 @@ static int zms_sector_close(struct bm_zms_fs *fs)
 		 *   - Next 256th cycle the leading cycle_cnt is 0, this ATE becomes
 		 *     valid even if it is not the case.
 		 */
-		memset(&cur_op.ate_entry, fs->zms_bm_storage.nvm_info->erase_value,
+		memset(&cur_op.ate_entry, fs->nvm_info->erase_value,
 		       sizeof(struct zms_ate));
 		if (SECTOR_OFFSET(fs->ate_wra) && (fs->ate_wra > fs->data_wra)) {
 			cur_op.len = sizeof(struct zms_ate);
@@ -2017,8 +2017,10 @@ int bm_zms_mount(struct bm_zms_fs *fs, const struct bm_zms_fs_config *config)
 		return -EIO;
 	}
 
+	fs->nvm_info = bm_storage_nvm_info_get(&fs->zms_bm_storage);
+
 	fs->ate_size = zms_al_size(fs, sizeof(struct zms_ate));
-	write_block_size = fs->zms_bm_storage.nvm_info->program_unit;
+	write_block_size = fs->nvm_info->program_unit;
 
 	/* check that the write block size is supported */
 	if (write_block_size > ZMS_BLOCK_SIZE || write_block_size == 0) {
@@ -2029,9 +2031,9 @@ int bm_zms_mount(struct bm_zms_fs *fs, const struct bm_zms_fs_config *config)
 	/* When the device need erase operations before write let's check that
 	 * sector size is a multiple of pagesize
 	 */
-	if (!fs->zms_bm_storage.nvm_info->no_explicit_erase) {
+	if (!fs->nvm_info->no_explicit_erase) {
 		if (!fs->sector_size ||
-		    fs->sector_size % fs->zms_bm_storage.nvm_info->erase_unit) {
+		    fs->sector_size % fs->nvm_info->erase_unit) {
 			LOG_ERR("Invalid sector size");
 			return -EINVAL;
 		}
