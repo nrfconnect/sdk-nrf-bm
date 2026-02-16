@@ -71,12 +71,27 @@ void test_bm_storage_sd_init_efault(void)
 	TEST_ASSERT_EQUAL(-EFAULT, err);
 }
 
-/* This is the first test that reaches the backend.
- * bm_storage_backend_init() calls sd_softdevice_is_enabled() and then sets the
- * static is_init flag.  All subsequent tests that call bm_storage_init() will
- * hit the early-return path (is_init==true) and will NOT invoke
- * sd_softdevice_is_enabled() again.
- */
+void test_bm_storage_sd_init_eperm(void)
+{
+	int err;
+	struct bm_storage storage = {0};
+	struct bm_storage_config config = {
+		.evt_handler = bm_storage_evt_handler,
+		.start_addr = PARTITION_START,
+		.end_addr = PARTITION_START + PARTITION_SIZE,
+	};
+
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){true});
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(-EPERM, err);
+}
+
 void test_bm_storage_sd_init(void)
 {
 	int err;
@@ -89,15 +104,13 @@ void test_bm_storage_sd_init(void)
 
 	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
 	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
-	/* SoftDevice is enabled: writes are asynchronous. */
 	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){true});
 
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
-	TEST_ASSERT_TRUE(storage.initialized);
 }
 
-void test_bm_storage_sd_init_eperm(void)
+void test_bm_storage_sd_uninit_efault(void)
 {
 	int err;
 	struct bm_storage storage = {0};
@@ -107,18 +120,12 @@ void test_bm_storage_sd_init_eperm(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	/* Backend already initialized by test_bm_storage_sd_init. */
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){true});
+
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
-
-	/* Double initialization on the same instance is an error. */
-	err = bm_storage_init(&storage, &config);
-	TEST_ASSERT_EQUAL(-EPERM, err);
-}
-
-void test_bm_storage_sd_uninit_efault(void)
-{
-	int err;
 
 	err = bm_storage_uninit(NULL);
 	TEST_ASSERT_EQUAL(-EFAULT, err);
@@ -129,7 +136,6 @@ void test_bm_storage_sd_uninit_eperm(void)
 	int err;
 	struct bm_storage storage = {0};
 
-	/* Storage is uninitialized. */
 	err = bm_storage_uninit(&storage);
 	TEST_ASSERT_EQUAL(-EPERM, err);
 }
@@ -144,13 +150,15 @@ void test_bm_storage_sd_uninit(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	/* Backend already initialized by test_bm_storage_sd_init. */
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){true});
+
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
 	err = bm_storage_uninit(&storage);
 	TEST_ASSERT_EQUAL(0, err);
-	TEST_ASSERT_FALSE(storage.initialized);
 }
 
 void test_bm_storage_sd_uninit_outstanding(void)
@@ -164,7 +172,10 @@ void test_bm_storage_sd_uninit_outstanding(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	/* Backend already initialized by test_bm_storage_sd_init. */
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){true});
+
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
@@ -198,17 +209,24 @@ void test_bm_storage_sd_init_uninit_init(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	/* Backend already initialized by test_bm_storage_sd_init. */
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){true});
+
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
 	err = bm_storage_uninit(&storage);
 	TEST_ASSERT_EQUAL(0, err);
 
-	/* Re-initialization after uninit must succeed. */
+	/* Check that the instance can be re-initialized successfully */
+
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){true});
+
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
-	TEST_ASSERT_TRUE(storage.initialized);
 }
 
 void test_bm_storage_sd_write_eperm(void)
@@ -236,7 +254,10 @@ void test_bm_storage_sd_write_einval(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	/* Backend already initialized by test_bm_storage_sd_init. */
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){true});
+
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
@@ -255,7 +276,10 @@ void test_bm_storage_sd_write_efault(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	/* Backend already initialized by test_bm_storage_sd_init. */
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){true});
+
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
@@ -267,6 +291,7 @@ void test_bm_storage_sd_write(void)
 {
 	int err;
 	bool is_busy;
+	/* Write buffer size must be a multiple of the program unit. */
 	uint8_t buf[BLOCK_SIZE];
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
@@ -275,7 +300,10 @@ void test_bm_storage_sd_write(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	/* Backend already initialized by test_bm_storage_sd_init. */
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){true});
+
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
@@ -298,45 +326,6 @@ void test_bm_storage_sd_write(void)
 	TEST_ASSERT_EQUAL(sizeof(buf), storage_event.len);
 }
 
-void test_bm_storage_sd_write_softdevice_busy_retry(void)
-{
-	int err;
-	uint8_t buf[BLOCK_SIZE];
-	struct bm_storage storage = {0};
-	struct bm_storage_config config = {
-		.evt_handler = bm_storage_evt_handler,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
-	};
-
-	/* Backend already initialized by test_bm_storage_sd_init. */
-	err = bm_storage_init(&storage, &config);
-	TEST_ASSERT_EQUAL(0, err);
-
-	/* SoftDevice is busy with another operation */
-	__cmock_sd_flash_write_ExpectAndReturn(
-		(uint32_t *)PARTITION_START, (uint32_t *)buf, WORD_SIZE(sizeof(buf)),
-		NRF_ERROR_BUSY);
-
-	err = bm_storage_write(&storage, PARTITION_START, buf, sizeof(buf), NULL);
-	TEST_ASSERT_EQUAL(0, err);
-
-	/* The SoC event will trigger the operation again */
-	__cmock_sd_flash_write_ExpectAndReturn(
-		(uint32_t *)PARTITION_START, (uint32_t *)buf, WORD_SIZE(sizeof(buf)), 0);
-
-	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
-
-	/* The operation completes */
-	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
-
-	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
-	TEST_ASSERT_EQUAL(0, storage_event.result);
-	TEST_ASSERT_EQUAL(PARTITION_START, storage_event.addr);
-	TEST_ASSERT_EQUAL_PTR(buf, storage_event.src);
-	TEST_ASSERT_EQUAL(sizeof(buf), storage_event.len);
-}
-
 void test_bm_storage_sd_write_queued(void)
 {
 	int err;
@@ -350,7 +339,10 @@ void test_bm_storage_sd_write_queued(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	/* Backend already initialized by test_bm_storage_sd_init. */
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){true});
+
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
@@ -392,6 +384,9 @@ void test_bm_storage_sd_write_queued(void)
 	TEST_ASSERT_EQUAL(PARTITION_START, storage_event.addr);
 	TEST_ASSERT_EQUAL_PTR(buf2, storage_event.src);
 	TEST_ASSERT_EQUAL(sizeof(buf2), storage_event.len);
+
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(0, err);
 }
 
 void test_bm_storage_sd_write_disable_prepare(void)
@@ -406,7 +401,10 @@ void test_bm_storage_sd_write_disable_prepare(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	/* Backend already initialized by test_bm_storage_sd_init. */
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){true});
+
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
@@ -434,6 +432,9 @@ void test_bm_storage_sd_write_disable_prepare(void)
 	TEST_ASSERT_EQUAL(PARTITION_START, storage_event.addr);
 	TEST_ASSERT_EQUAL_PTR(buf, storage_event.src);
 	TEST_ASSERT_EQUAL(sizeof(buf), storage_event.len);
+
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(0, err);
 }
 
 void test_bm_storage_sd_write_disabled(void)
@@ -447,9 +448,11 @@ void test_bm_storage_sd_write_disabled(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	/* Backend already initialized by test_bm_storage_sd_init.
-	 * Previous tests left sd_enabled=false via DISABLED events.
-	 */
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	/* SoftDevice is disabled when the storage is initialized */
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){false});
+
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
@@ -462,6 +465,51 @@ void test_bm_storage_sd_write_disabled(void)
 
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_DISPATCH_SYNC, storage_event.dispatch_type);
+	TEST_ASSERT_EQUAL(0, storage_event.result);
+	TEST_ASSERT_EQUAL(PARTITION_START, storage_event.addr);
+	TEST_ASSERT_EQUAL_PTR(buf, storage_event.src);
+	TEST_ASSERT_EQUAL(sizeof(buf), storage_event.len);
+
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(0, err);
+}
+
+void test_bm_storage_sd_write_softdevice_busy_retry(void)
+{
+	int err;
+	uint8_t buf[BLOCK_SIZE];
+	struct bm_storage storage = {0};
+	struct bm_storage_config config = {
+		.evt_handler = bm_storage_evt_handler,
+		.start_addr = PARTITION_START,
+		.end_addr = PARTITION_START + PARTITION_SIZE,
+	};
+
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){true});
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* SoftDevice is busy with another operation */
+	__cmock_sd_flash_write_ExpectAndReturn(
+		(uint32_t *)PARTITION_START, (uint32_t *)buf, WORD_SIZE(sizeof(buf)),
+		NRF_ERROR_BUSY);
+
+	err = bm_storage_write(&storage, PARTITION_START, buf, sizeof(buf), NULL);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* The SoC event will trigger the operation again */
+	__cmock_sd_flash_write_ExpectAndReturn(
+		(uint32_t *)PARTITION_START, (uint32_t *)buf, WORD_SIZE(sizeof(buf)), 0);
+
+	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+
+	/* The operation completes */
+	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+
+	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
 	TEST_ASSERT_EQUAL(0, storage_event.result);
 	TEST_ASSERT_EQUAL(PARTITION_START, storage_event.addr);
 	TEST_ASSERT_EQUAL_PTR(buf, storage_event.src);
@@ -490,7 +538,10 @@ void test_bm_storage_sd_read_einval(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	/* Backend already initialized by test_bm_storage_sd_init. */
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){true});
+
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
@@ -502,23 +553,35 @@ void test_bm_storage_sd_read(void)
 {
 	int err;
 	uint8_t buf[BLOCK_SIZE] = {0};
-	uint32_t dummy_partition[16] = {0x00C0FFEE};
 	struct bm_storage storage = {0};
+	uint32_t dummy_partition[16] = {0x00C0FFEE};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
 		.start_addr = (uintptr_t)&dummy_partition,
 		.end_addr = (uintptr_t)&dummy_partition + sizeof(dummy_partition),
 	};
 
-	/* Backend already initialized by test_bm_storage_sd_init. */
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){true});
+
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
-	err = bm_storage_read(&storage, (uintptr_t)&dummy_partition, buf, sizeof(buf));
+	err = bm_storage_read(&storage, config.start_addr, buf, sizeof(buf));
 	TEST_ASSERT_EQUAL(0, err);
 
-	/* The SD backend reads via memcpy; verify the data was copied. */
 	TEST_ASSERT_EQUAL_MEMORY(buf, dummy_partition, sizeof(buf));
+}
+
+void test_bm_storage_sd_erase_eperm(void)
+{
+	int err;
+	struct bm_storage storage = {0};
+
+	/* Storage is uninitialized. */
+	err = bm_storage_erase(&storage, PARTITION_START, BLOCK_SIZE, NULL);
+	TEST_ASSERT_EQUAL(-EPERM, err);
 }
 
 void test_bm_storage_sd_is_busy(void)
@@ -538,11 +601,13 @@ void test_bm_storage_sd_is_busy(void)
 	is_busy = bm_storage_is_busy(&storage);
 	TEST_ASSERT_FALSE(is_busy);
 
-	/* Backend already initialized by test_bm_storage_sd_init. */
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){true});
+
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
-	/* Initialized and idle. */
 	is_busy = bm_storage_is_busy(&storage);
 	TEST_ASSERT_FALSE(is_busy);
 }
@@ -557,7 +622,10 @@ void test_bm_storage_sd_soc_event_handler(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	/* Backend already initialized by test_bm_storage_sd_init. */
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){true});
+
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 

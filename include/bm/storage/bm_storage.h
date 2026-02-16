@@ -170,7 +170,6 @@ struct bm_storage_config {
  *
  * @retval 0 on success.
  * @retval -EFAULT If @p storage is @c NULL or @p config is @c NULL.
- * @retval -EBUSY If the implementation-specific resource is busy.
  * @retval -EIO If an implementation-specific internal error occurred.
  */
 int bm_storage_init(struct bm_storage *storage, const struct bm_storage_config *config);
