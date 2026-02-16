@@ -202,8 +202,7 @@ int bm_storage_uninit(struct bm_storage *storage);
  * @retval 0 on success.
  * @retval -EFAULT If @p storage is @c NULL or if @p dest or @p src are not 32-bit word aligned,
  *                 or if they are outside the bounds of the memory region configured in @p storage.
- * @retval -EPERM If @p storage is in an invalid state or if the implementation-specific backend
- *                has not been initialized.
+ * @retval -EPERM The storage instance @p storage is not initialized.
  * @retval -EINVAL If @p len is zero or not a multiple of @ref bm_storage_info.program_unit.
  */
 int bm_storage_read(const struct bm_storage *storage, uint32_t src, void *dest, uint32_t len);
@@ -221,8 +220,7 @@ int bm_storage_read(const struct bm_storage *storage, uint32_t src, void *dest, 
  * @retval 0 on success.
  * @retval -EFAULT If @p storage is @c NULL or if @p dest or @p src are not 32-bit word aligned,
  *                 or if they are outside the bounds of the memory region configured in @p storage.
- * @retval -EPERM If @p storage is in an invalid state or if the implementation-specific backend
- *                has not been initialized.
+ * @retval -EPERM The storage instance @p storage is not initialized.
  * @retval -EINVAL If @p len is zero or not a multiple of @ref bm_storage_info.program_unit.
  * @retval -EBUSY If the implementation-specific backend is busy with an ongoing operation.
  * @retval -EIO If an implementation-specific internal error occurred.
@@ -242,8 +240,7 @@ int bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void
  * @retval 0 on success.
  * @retval -EFAULT If @p storage is @c NULL or if @p addr is outside the bounds of the memory region
  *                 configured in @p storage.
- * @retval -EPERM If @p storage is in an invalid state or if the implementation-specific backend
- *                has not been initialized.
+ * @retval -EPERM The storage instance @p storage is not initialized.
  * @retval -EINVAL If @p len is zero or not a multiple of @ref bm_storage_info.erase_unit.
  * @retval -EBUSY If the implementation-specific backend is busy with an ongoing operation.
  * @retval -ENOTSUP If the implementation-specific backend does not implement this function.

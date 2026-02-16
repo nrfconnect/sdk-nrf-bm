@@ -41,6 +41,10 @@ int bm_storage_init(struct bm_storage *storage, const struct bm_storage_config *
 		return -EFAULT;
 	}
 
+	if (storage->initialized) {
+		return -EPERM;
+	}
+
 	if (bm_storage_info.program_unit == 0) {
 		return -EIO;
 	}

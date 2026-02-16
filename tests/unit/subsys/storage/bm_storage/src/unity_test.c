@@ -104,6 +104,25 @@ void test_bm_storage_init(void)
 	TEST_ASSERT_EQUAL(0, err);
 }
 
+void test_bm_storage_init_eperm(void)
+{
+	int err;
+
+	struct bm_storage storage = { 0 };
+	struct bm_storage_config config = {
+		.evt_handler = bm_storage_evt_handler,
+		.start_addr = PARTITION_START,
+		.end_addr = PARTITION_START + PARTITION_SIZE,
+	};
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* Double initialization on the same instance is an error. */
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(-EPERM, err);
+}
+
 void test_bm_storage_uninit_efault(void)
 {
 	int err;

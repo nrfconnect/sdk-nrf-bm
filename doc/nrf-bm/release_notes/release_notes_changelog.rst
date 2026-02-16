@@ -67,6 +67,16 @@ Drivers
    * Updated to use the :ref:`lib_bm_gpiote` library.
    * Removed the ``gpiote_inst`` and ``gpiote_inst_num`` members from the :c:struct:`bm_lpuarte_config` structure.
 
+Subsystems
+==========
+
+Storage
+=======
+
+* :ref:`lib_storage`:
+
+   * Updated the :c:func:`bm_storage_init` function to return an error when the instance is already initialized.
+
 Libraries
 =========
 
