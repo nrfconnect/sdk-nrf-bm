@@ -29,7 +29,6 @@ config BLE_ADV_EXTENDED_ADVERTISING
 
 config BLE_ADV_DIRECTED_ADVERTISING
 	bool "Directed advertising"
-	default y
 
 config BLE_ADV_DIRECTED_ADVERTISING_HIGH_DUTY
 	bool "High duty"
