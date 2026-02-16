@@ -98,8 +98,16 @@ Testing
 
 You can test this sample by performing the following steps:
 
-1. Compile and program the application.
-2. Connect the logic analyzer to the shorted pins, to confirm UARTE activity.
-3. Measure the current to confirm that the power consumption indicates that high-frequency clock is disabled during the idle stage.
+#. Compile and program the application.
+#. Connect the logic analyzer to the shorted pins, to confirm UARTE activity.
+   The request/response pins are HIGH in the idle state.
+   When a transmission starts, the pins are pulled LOW to signal the start of data transfer.
+   At the same time, activity should be visible on the UART RX/TX pins.
+
+   Configure the logic analyzer to use an ``asynchronous serial (UART) protocol`` on the RX/TX
+   connection.
+   With the default sample configuration, use a baud rate of ``115200``, and verify that a
+   ``5-byte message`` is transmitted with the decimal values ``1``, ``2``, ``3``, ``4``, and ``5``.
+#. Measure the current to confirm that the power consumption indicates that high-frequency clock is disabled during the idle stage.
 
 During the idle stage, the UARTE receiver is ready to start reception, as the request pin wakes it up.

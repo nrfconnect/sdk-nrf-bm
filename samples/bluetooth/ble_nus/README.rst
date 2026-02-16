@@ -76,22 +76,6 @@ When connected, the sample forwards any data received on the RX pin of the UART 
 
 Any data sent from the Bluetooth LE unit is sent out of the UART 0 peripheral’s TX pin.
 
-Building and running with LPUARTE
-=================================
-
-The :file:`lpuarte.conf` file configures the sample to use the :ref:`LPUARTE <driver_lpuarte>` driver for the NUS Service.
-This is useful for reducing the power consumption.
-The file must be added to the build configuration is VS Code or as an extra argument to west: ``-DEXTRA_CONF_FILE="lpuarte.conf"``.
-
-To test the NUS sample with the :ref:`LPUARTE <driver_lpuarte>` driver in loopback mode, connect pin ``P1.08`` (REQ) with ``P1.09`` (RDY) and ``P1.10`` (RX) with ``P1.11`` (TX) on the nRF54L15DK, as given in the :file:`board-config.h`.
-It is also possible to test between two devices running NUS with LPUART by connecting the above mentioned pins and ``GND`` between the devices.
-Make sure the ``REQ`` pin on one board is connected to the ``RDY`` on the other board, and vice versa.
-
-.. note::
-
-   With the LPUARTE configuration, the console is used only for application logging and not for NUS data.
-   Output on the NUS TX line will be handled as input on the NUS RX line on the same device (loopback) or as NUS input to the other device (when using two devices).
-
 Building and running
 ********************
 
@@ -99,24 +83,69 @@ This sample can be found under :file:`samples/bluetooth/ble_nus/` in the |BMshor
 
 For details on how to create, configure, and program a sample, see :ref:`getting_started_with_the_samples`.
 
+Building and running with LPUARTE
+=================================
+
+The :file:`lpuarte.conf` file configures the sample to use the :ref:`LPUARTE <driver_lpuarte>` driver for the NUS Service.
+This is useful for reducing the power consumption.
+The file must be added to the build configuration is VS Code or as an extra argument to west: ``-DEXTRA_CONF_FILE="lpuarte.conf"``.
+
 Testing
 =======
 
-The following steps are valid for the default sample configuration.
-It does not use the Low Power UARTE (LPUARTE) configuration fragment.
+The sample can be tested in two ways, depending on the selected UART configuration: the default UARTE configuration or the Low Power UARTE (LPUARTE) configuration.
 
-1. Compile and program the application.
-#. Connect the device to the computer to access UART 0 and UART 1.
-   If you use a development kit, UART 0 and 1 are forwarded as COM ports (Windows) or ttyACM devices (Linux) after you connect the development kit over USB.
-   One instance is used for logging (if enabled), the other for the NUS service.
-#. Connect to the kit with a terminal emulator (for example, the `Serial Terminal app`_) to both UARTs.
-#. Reset the kit.
-#. Observe that the device is advertising under the default name ``nRF_BM_NUS``.
-   You can configure this name using the ``CONFIG_BLE_ADV_NAME`` Kconfig option.
-   For information on how to do this, see `Configuring Kconfig`_.
-#. Observe that the text ``BLE NUS sample started`` is printed on the COM listener running on the computer.
-#. Connect to your device using the `nRF Toolbox`_ mobile application with the :guilabel:`Universal Asynchronous Receiver/Transmitter (UART)` service.
-#. Write a text in the second COM listener running on the computer and press Enter.
-   Observe that the text is displayed in the terminal on the mobile phone.
-#. Write a text in the terminal on the mobile phone and press :guilabel:`Send`.
-   Observe that the text is displayed in the second COM listener running on the computer.
+.. tabs::
+
+   .. group-tab:: UARTE configuration
+
+      Test the sample using the standard UARTE interface with a single device and one phone. This is the default configuration.
+
+      1. Compile and program the application.
+      #. Connect the device to the computer to access UART 0 and UART 1.
+         If you use a development kit, UART 0 and 1 are forwarded as COM ports (Windows) or ttyACM devices (Linux) after you connect the development kit over USB.
+         One instance is used for logging (if enabled with :kconfig:option:`CONFIG_LOG`), while the other is used for the NUS service.
+      #. Connect to the kit with a terminal emulator (for example, the `Serial Terminal app`_) for both UARTs.
+      #. Reset the kit.
+      #. Observe that the device is advertising under the default name ``nRF_BM_NUS``.
+         You can configure this name using the :kconfig:option:`CONFIG_BLE_ADV_NAME` Kconfig option.
+         For information on how to do this, see `Configuring Kconfig`_.
+      #. Observe that the text ``BLE NUS sample started`` is printed on the COM listener running on the computer.
+      #. Connect to your device using the `nRF Toolbox`_ mobile application with the :guilabel:`Universal Asynchronous Receiver/Transmitter (UART)` service.
+      #. Write a text in the second COM listener running on the computer and press Enter.
+         Observe that the text is displayed in the terminal on the mobile phone.
+      #. Write a text in the terminal on the mobile phone and press :guilabel:`Send`.
+         Observe that the text is displayed in the second COM listener running on the computer.
+
+   .. group-tab:: LPUARTE configuration
+
+      Test the sample with the Low Power UARTE (:ref:`LPUARTE <driver_lpuarte>`) interface, either in loopback mode on a single device or between two devices.
+
+      1. Build the sample with the LPUARTE configuration by adding the extra Kconfig fragment :file:`lpuarte.conf`.
+      #. Flash the sample to your device(s).
+      #. Connect the pins as described below, as defined in :file:`board-config.h`.
+
+         #. For Two-device setup:
+
+            - Device 1 **TX (P1.11)** → Device 2 **RX (P1.10)**
+            - Device 1 **RX (P1.10)** → Device 2 **TX (P1.11)**
+            - Device 1 **REQ (P1.08)** → Device 2 **RDY (P1.09)**
+            - Device 1 **RDY (P1.09)** → Device 2 **REQ (P1.08)**
+            - Connect **GND** between both devices.
+
+         #. For Single-device loopback setup:
+
+            - **TX (P1.11)** → **RX (P1.10)**
+            - **REQ (P1.08)** → **RDY (P1.09)**
+
+      #. Power on the device(s).
+      #. Connect the phone(s) to the device(s) using the `nRF Toolbox`_ mobile application with the :guilabel:`Universal Asynchronous Receiver/Transmitter (UART)` service.
+      #. Send a message from one phone.
+         Observe that it is received on the other phone or looped back.
+      #. Send a message in the opposite direction.
+         Observe that it is received correctly.
+
+      .. note::
+
+         With the LPUARTE configuration, the console is used only for application logging and not for NUS data.
+         Output on the NUS TX line is handled as input on the NUS RX line on the same device (loopback) or as NUS input on the other device when using two devices.

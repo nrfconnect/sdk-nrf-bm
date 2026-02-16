@@ -186,4 +186,4 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Documentation
 =============
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Improved sample documentation with clearer, more descriptive user guides, including updated explanations of configuration options, hardware connections, and testing procedures.

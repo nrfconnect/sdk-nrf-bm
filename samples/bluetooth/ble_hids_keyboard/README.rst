@@ -76,6 +76,8 @@ An LED displays the Caps Lock state, which can be modified by another connected 
 This sample exposes the HID GATT Service.
 It uses a report map for a generic keyboard.
 
+.. include:: /includes/allow_list_sample.txt
+
 User interface
 **************
 

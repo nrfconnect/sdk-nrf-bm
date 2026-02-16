@@ -83,6 +83,8 @@ Testing
 You can test this sample by performing the following steps:
 
 1. Compile and program the application.
+#. Connect to the kit with a terminal emulator (for example, the `Serial Terminal app`_).
+   Note that the kit has two UARTs, where one will output the log and the other is used for the sample UARTE instance.
 #. Observe that the ``UARTE sample started`` message is printed in one terminal.
 #. Observe that the ``Hello world! I will echo the lines you enter:`` message is printed in another terminal.
 #. Enter a message in the terminal.

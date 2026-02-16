@@ -69,6 +69,8 @@ Overview
 
 The Continuous Glucose Monitoring Service (CGMS) is a service that exposes glucose and other data from a personal Continuous Glucose Monitoring sensor.
 
+.. include:: /includes/allow_list_sample.txt
+
 User interface
 **************
 
