@@ -21,9 +21,11 @@ int bm_storage_backend_init(struct bm_storage *storage)
 	return 0;
 }
 
+static int backend_uninit_retval;
+
 int bm_storage_backend_uninit(struct bm_storage *storage)
 {
-	return 0;
+	return backend_uninit_retval;
 }
 
 int bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest,
@@ -167,6 +169,52 @@ void test_bm_storage_uninit(void)
 
 	err = bm_storage_uninit(&storage);
 	TEST_ASSERT_EQUAL(0, err);
+}
+
+void test_bm_storage_init_uninit_init(void)
+{
+	int err;
+
+	struct bm_storage storage = { 0 };
+	struct bm_storage_config config = {
+		.evt_handler = bm_storage_evt_handler,
+		.start_addr = PARTITION_START,
+		.end_addr = PARTITION_START + PARTITION_SIZE,
+	};
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* Re-initialization after uninit must succeed. */
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+}
+
+void test_bm_storage_uninit_outstanding(void)
+{
+	int err;
+
+	struct bm_storage storage = { 0 };
+	struct bm_storage_config config = {
+		.evt_handler = bm_storage_evt_handler,
+		.start_addr = PARTITION_START,
+		.end_addr = PARTITION_START + PARTITION_SIZE,
+	};
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* Simulate the backend refusing to uninitialize due to outstanding operations. */
+	backend_uninit_retval = -EBUSY;
+
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(-EBUSY, err);
+
+	/* The instance must remain initialized when the backend refuses. */
+	TEST_ASSERT_TRUE(storage.initialized);
 }
 
 void test_bm_storage_write_efault(void)
@@ -433,6 +481,7 @@ void test_bm_storage_is_busy(void)
 
 void setUp(void)
 {
+	backend_uninit_retval = 0;
 }
 
 void tearDown(void)

@@ -60,9 +60,10 @@ void test_bm_storage_rram_init_efault(void)
 }
 
 /* This is the first test that reaches the backend.
- * bm_storage_backend_init() calls nrfx_rramc_init() and then sets the static
- * is_rramc_init flag.  All subsequent tests that call bm_storage_init() will
- * hit the early-return path (is_rramc_init==true) and will NOT invoke
+ * bm_storage_backend_init() increments the refcount and, since refcount == 1,
+ * calls nrfx_rramc_init() to initialize the hardware.
+ * All subsequent tests that call bm_storage_init() will increment the refcount
+ * past 1 and skip the hardware initialization path, so they will NOT invoke
  * nrfx_rramc_init() again.
  */
 void test_bm_storage_rram_init(void)
@@ -101,6 +102,66 @@ void test_bm_storage_rram_init_eperm(void)
 	/* Double initialization on the same instance is an error. */
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(-EPERM, err);
+}
+
+void test_bm_storage_rram_uninit_efault(void)
+{
+	int err;
+
+	err = bm_storage_uninit(NULL);
+	TEST_ASSERT_EQUAL(-EFAULT, err);
+}
+
+void test_bm_storage_rram_uninit_eperm(void)
+{
+	int err;
+	struct bm_storage storage = {0};
+
+	/* Storage is uninitialized. */
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(-EPERM, err);
+}
+
+void test_bm_storage_rram_uninit(void)
+{
+	int err;
+	struct bm_storage storage = {0};
+	struct bm_storage_config config = {
+		.evt_handler = bm_storage_evt_handler,
+		.start_addr = PARTITION_START,
+		.end_addr = PARTITION_START + PARTITION_SIZE,
+	};
+
+	/* Backend already initialized by test_bm_storage_rram_init. */
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(0, err);
+	TEST_ASSERT_FALSE(storage.initialized);
+}
+
+void test_bm_storage_rram_init_uninit_init(void)
+{
+	int err;
+	struct bm_storage storage = {0};
+	struct bm_storage_config config = {
+		.evt_handler = bm_storage_evt_handler,
+		.start_addr = PARTITION_START,
+		.end_addr = PARTITION_START + PARTITION_SIZE,
+	};
+
+	/* Backend already initialized by test_bm_storage_rram_init. */
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* Re-initialization after uninit must succeed. */
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+	TEST_ASSERT_TRUE(storage.initialized);
 }
 
 void test_bm_storage_rram_write_eperm(void)

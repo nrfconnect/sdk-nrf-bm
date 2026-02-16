@@ -109,6 +109,66 @@ void test_bm_storage_sd_init_eperm(void)
 	TEST_ASSERT_EQUAL(-EPERM, err);
 }
 
+void test_bm_storage_sd_uninit_efault(void)
+{
+	int err;
+
+	err = bm_storage_uninit(NULL);
+	TEST_ASSERT_EQUAL(-EFAULT, err);
+}
+
+void test_bm_storage_sd_uninit_eperm(void)
+{
+	int err;
+	struct bm_storage storage = {0};
+
+	/* Storage is uninitialized. */
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(-EPERM, err);
+}
+
+void test_bm_storage_sd_uninit(void)
+{
+	int err;
+	struct bm_storage storage = {0};
+	struct bm_storage_config config = {
+		.evt_handler = bm_storage_evt_handler,
+		.start_addr = PARTITION_START,
+		.end_addr = PARTITION_START + PARTITION_SIZE,
+	};
+
+	/* Backend already initialized by test_bm_storage_sd_init. */
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(0, err);
+	TEST_ASSERT_FALSE(storage.initialized);
+}
+
+void test_bm_storage_sd_init_uninit_init(void)
+{
+	int err;
+	struct bm_storage storage = {0};
+	struct bm_storage_config config = {
+		.evt_handler = bm_storage_evt_handler,
+		.start_addr = PARTITION_START,
+		.end_addr = PARTITION_START + PARTITION_SIZE,
+	};
+
+	/* Backend already initialized by test_bm_storage_sd_init. */
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* Re-initialization after uninit must succeed. */
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+	TEST_ASSERT_TRUE(storage.initialized);
+}
+
 void test_bm_storage_sd_write_eperm(void)
 {
 	int err;

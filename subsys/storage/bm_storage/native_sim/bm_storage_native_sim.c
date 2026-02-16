@@ -20,6 +20,7 @@ static void event_send(const struct bm_storage *storage, struct bm_storage_evt *
 
 #if defined(CONFIG_BM_STORAGE_BACKEND_NATIVE_SIM_ASYNC)
 #include <zephyr/kernel.h>
+#include <zephyr/sys/atomic.h>
 
 #define BM_STORAGE_NATIVE_SIM_STACK_SIZE 512
 #define BM_STORAGE_NATIVE_SIM_PRIORITY	 5
@@ -28,6 +29,7 @@ K_THREAD_STACK_DEFINE(bm_storage_native_sim_stack_area, BM_STORAGE_NATIVE_SIM_ST
 
 static struct k_work_q bm_storage_native_sim_work_q;
 
+static atomic_t refcount;
 static bool is_queue_init;
 
 struct write_work_ctx {
@@ -64,13 +66,30 @@ static void write_work_handler(struct k_work *work)
 int bm_storage_backend_init(struct bm_storage *storage)
 {
 #if defined(CONFIG_BM_STORAGE_BACKEND_NATIVE_SIM_ASYNC)
-	if (!is_queue_init) {
+	atomic_inc(&refcount);
+
+	if (atomic_get(&refcount) == 1 && !is_queue_init) {
 		k_work_queue_init(&bm_storage_native_sim_work_q);
 
 		k_work_queue_start(&bm_storage_native_sim_work_q, bm_storage_native_sim_stack_area,
 				K_THREAD_STACK_SIZEOF(bm_storage_native_sim_stack_area),
 				BM_STORAGE_NATIVE_SIM_PRIORITY, NULL);
 		is_queue_init = true;
+	}
+#endif
+	return 0;
+}
+
+int bm_storage_backend_uninit(struct bm_storage *storage)
+{
+#if defined(CONFIG_BM_STORAGE_BACKEND_NATIVE_SIM_ASYNC)
+	if (atomic_get(&refcount) == 0) {
+		return -EPERM;
+	}
+
+	if (atomic_dec(&refcount) == 1) {
+		/* Last user: mark queue so next init will start it again. */
+		is_queue_init = false;
 	}
 #endif
 	return 0;

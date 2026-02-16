@@ -237,6 +237,14 @@ int bm_storage_backend_init(struct bm_storage *storage)
 	return 0;
 }
 
+int bm_storage_backend_uninit(struct bm_storage *storage)
+{
+	/* Do not touch the internal state.
+	 * Let queued operations complete.
+	 */
+	return 0;
+}
+
 int bm_storage_backend_read(const struct bm_storage *storage, uint32_t src, void *dest,
 			    uint32_t len)
 {
