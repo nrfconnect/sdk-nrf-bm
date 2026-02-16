@@ -114,17 +114,25 @@ static uint32_t write_execute(const struct bm_storage_sd_op *op)
 	return sd_flash_write(dest, src, chunk_len_words);
 }
 
+static bool queue_load_next(void)
+{
+	uint32_t bytes;
+	unsigned int key;
+
+	key = irq_lock();
+	bytes = ring_buf_get(&sd_fifo, (uint8_t *)&bm_storage_sd.current_operation,
+			     sizeof(struct bm_storage_sd_op));
+	irq_unlock(key);
+
+	return (bytes == sizeof(struct bm_storage_sd_op));
+}
+
 static void queue_process(void)
 {
 	uint32_t ret;
-	unsigned int key;
 
 	if (bm_storage_sd.state == BM_STORAGE_SD_STATE_IDLE) {
-		key = irq_lock();
-		ret = ring_buf_get(&sd_fifo, (uint8_t *)&bm_storage_sd.current_operation,
-				   sizeof(struct bm_storage_sd_op));
-		irq_unlock(key);
-		if (ret != sizeof(struct bm_storage_sd_op)) {
+		if (!queue_load_next()) {
 			/* No more operations left to be processed, unlock the resource. */
 			atomic_set(&bm_storage_sd.operation_ongoing, 0);
 			return;
