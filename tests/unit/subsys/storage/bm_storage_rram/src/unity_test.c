@@ -59,12 +59,6 @@ void test_bm_storage_rram_init_efault(void)
 	TEST_ASSERT_EQUAL(-EFAULT, err);
 }
 
-/* This is the first test that reaches the backend.
- * bm_storage_backend_init() calls nrfx_rramc_init() and then sets the static
- * is_rramc_init flag.  All subsequent tests that call bm_storage_init() will
- * hit the early-return path (is_rramc_init==true) and will NOT invoke
- * nrfx_rramc_init() again.
- */
 void test_bm_storage_rram_init(void)
 {
 	int err;
@@ -82,6 +76,96 @@ void test_bm_storage_rram_init(void)
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 	TEST_ASSERT_TRUE(storage.initialized);
+
+	__cmock_nrfx_rramc_uninit_Expect();
+
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(err, 0);
+}
+
+void test_bm_storage_rram_uninit_efault(void)
+{
+	int err;
+
+	err = bm_storage_uninit(NULL);
+	TEST_ASSERT_EQUAL(-EFAULT, err);
+}
+
+void test_bm_storage_rram_uninit_eperm(void)
+{
+	int err;
+	struct bm_storage storage = {0};
+
+	/* Storage is uninitialized. */
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(-EPERM, err);
+}
+
+void test_bm_storage_rram_init_twice(void)
+{
+	int err;
+	struct bm_storage storage = {0};
+	struct bm_storage_config config = {
+		.evt_handler = bm_storage_evt_handler,
+		.start_addr = PARTITION_START,
+		.end_addr = PARTITION_START + PARTITION_SIZE,
+	};
+
+	__cmock_nrfx_rramc_init_ExpectAnyArgsAndReturn(0);
+	__cmock_nrfx_rramc_init_IgnoreArg_p_config();
+	__cmock_nrfx_rramc_init_IgnoreArg_handler();
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	__cmock_nrfx_rramc_uninit_Expect();
+
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(0, err);
+
+	__cmock_nrfx_rramc_init_ExpectAnyArgsAndReturn(0);
+	__cmock_nrfx_rramc_init_IgnoreArg_p_config();
+	__cmock_nrfx_rramc_init_IgnoreArg_handler();
+
+	/* Re-initialization after uninit must succeed. */
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+	TEST_ASSERT_TRUE(storage.initialized);
+
+	__cmock_nrfx_rramc_uninit_Expect();
+
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(0, err);
+}
+
+void test_bm_storage_rram_init_two_instances(void)
+{
+	int err;
+	struct bm_storage storage = {0};
+	struct bm_storage storage1 = {0};
+	struct bm_storage_config config = {
+		.evt_handler = bm_storage_evt_handler,
+		.start_addr = PARTITION_START,
+		.end_addr = PARTITION_START + PARTITION_SIZE,
+	};
+
+	__cmock_nrfx_rramc_init_ExpectAnyArgsAndReturn(0);
+	__cmock_nrfx_rramc_init_IgnoreArg_p_config();
+	__cmock_nrfx_rramc_init_IgnoreArg_handler();
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	err = bm_storage_init(&storage1, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(0, err);
+
+	__cmock_nrfx_rramc_uninit_Expect();
+
+	err = bm_storage_uninit(&storage1);
+	TEST_ASSERT_EQUAL(0, err);
 }
 
 void test_bm_storage_rram_write_eperm(void)
@@ -107,12 +191,20 @@ void test_bm_storage_rram_write_einval(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	/* Backend already initialized by test_bm_storage_rram_init. */
+	__cmock_nrfx_rramc_init_ExpectAnyArgsAndReturn(0);
+	__cmock_nrfx_rramc_init_IgnoreArg_p_config();
+	__cmock_nrfx_rramc_init_IgnoreArg_handler();
+
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
 	err = bm_storage_write(&storage, PARTITION_START, buf, sizeof(buf), NULL);
 	TEST_ASSERT_EQUAL(-EINVAL, err);
+
+	__cmock_nrfx_rramc_uninit_Expect();
+
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(err, 0);
 }
 
 void test_bm_storage_rram_write_efault(void)
@@ -125,12 +217,20 @@ void test_bm_storage_rram_write_efault(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	/* Backend already initialized by test_bm_storage_rram_init. */
+	__cmock_nrfx_rramc_init_ExpectAnyArgsAndReturn(0);
+	__cmock_nrfx_rramc_init_IgnoreArg_p_config();
+	__cmock_nrfx_rramc_init_IgnoreArg_handler();
+
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
 	err = bm_storage_write(&storage, PARTITION_START, NULL, BLOCK_SIZE, NULL);
 	TEST_ASSERT_EQUAL(-EFAULT, err);
+
+	__cmock_nrfx_rramc_uninit_Expect();
+
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(0, err);
 }
 
 void test_bm_storage_rram_write(void)
@@ -145,7 +245,10 @@ void test_bm_storage_rram_write(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	/* Backend already initialized by test_bm_storage_rram_init. */
+	__cmock_nrfx_rramc_init_ExpectAnyArgsAndReturn(0);
+	__cmock_nrfx_rramc_init_IgnoreArg_p_config();
+	__cmock_nrfx_rramc_init_IgnoreArg_handler();
+
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
@@ -169,6 +272,11 @@ void test_bm_storage_rram_write(void)
 	/* Not busy after sync write completed. */
 	is_busy = bm_storage_is_busy(&storage);
 	TEST_ASSERT_FALSE(is_busy);
+
+	__cmock_nrfx_rramc_uninit_Expect();
+
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(0, err);
 }
 
 void test_bm_storage_rram_read_eperm(void)
@@ -193,12 +301,20 @@ void test_bm_storage_rram_read_einval(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	/* Backend already initialized by test_bm_storage_rram_init. */
+	__cmock_nrfx_rramc_init_ExpectAnyArgsAndReturn(0);
+	__cmock_nrfx_rramc_init_IgnoreArg_p_config();
+	__cmock_nrfx_rramc_init_IgnoreArg_handler();
+
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
 	err = bm_storage_read(&storage, PARTITION_START, buf, 0);
 	TEST_ASSERT_EQUAL(-EINVAL, err);
+
+	__cmock_nrfx_rramc_uninit_Expect();
+
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(0, err);
 }
 
 void test_bm_storage_rram_read(void)
@@ -212,13 +328,21 @@ void test_bm_storage_rram_read(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	/* Backend already initialized by test_bm_storage_rram_init. */
+	__cmock_nrfx_rramc_init_ExpectAnyArgsAndReturn(0);
+	__cmock_nrfx_rramc_init_IgnoreArg_p_config();
+	__cmock_nrfx_rramc_init_IgnoreArg_handler();
+
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
 	__cmock_nrfx_rramc_buffer_read_Expect(buf, PARTITION_START, sizeof(buf));
 
 	err = bm_storage_read(&storage, PARTITION_START, buf, sizeof(buf));
+	TEST_ASSERT_EQUAL(0, err);
+
+	__cmock_nrfx_rramc_uninit_Expect();
+
+	err = bm_storage_uninit(&storage);
 	TEST_ASSERT_EQUAL(0, err);
 }
 
@@ -233,13 +357,21 @@ void test_bm_storage_rram_read_efault(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	/* Backend already initialized by test_bm_storage_rram_init. */
+	__cmock_nrfx_rramc_init_ExpectAnyArgsAndReturn(0);
+	__cmock_nrfx_rramc_init_IgnoreArg_p_config();
+	__cmock_nrfx_rramc_init_IgnoreArg_handler();
+
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
 	/* Read address is past the end of the partition. */
 	err = bm_storage_read(&storage, PARTITION_START + PARTITION_SIZE, buf, sizeof(buf));
 	TEST_ASSERT_EQUAL(-EFAULT, err);
+
+	__cmock_nrfx_rramc_uninit_Expect();
+
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(0, err);
 }
 
 void test_bm_storage_rram_erase_eperm(void)
@@ -262,13 +394,21 @@ void test_bm_storage_rram_erase_enotsup(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	/* Backend already initialized by test_bm_storage_rram_init. */
+	__cmock_nrfx_rramc_init_ExpectAnyArgsAndReturn(0);
+	__cmock_nrfx_rramc_init_IgnoreArg_p_config();
+	__cmock_nrfx_rramc_init_IgnoreArg_handler();
+
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
 	/* RRAM backend sets no_explicit_erase = true. */
 	err = bm_storage_erase(&storage, PARTITION_START, BLOCK_SIZE, NULL);
 	TEST_ASSERT_EQUAL(-ENOTSUP, err);
+
+	__cmock_nrfx_rramc_uninit_Expect();
+
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(0, err);
 }
 
 void test_bm_storage_rram_is_busy(void)
@@ -290,13 +430,21 @@ void test_bm_storage_rram_is_busy(void)
 	is_busy = bm_storage_is_busy(&storage);
 	TEST_ASSERT_TRUE(is_busy);
 
-	/* Backend already initialized by test_bm_storage_rram_init. */
+	__cmock_nrfx_rramc_init_ExpectAnyArgsAndReturn(0);
+	__cmock_nrfx_rramc_init_IgnoreArg_p_config();
+	__cmock_nrfx_rramc_init_IgnoreArg_handler();
+
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
 	/* Initialized and idle. */
 	is_busy = bm_storage_is_busy(&storage);
 	TEST_ASSERT_FALSE(is_busy);
+
+	__cmock_nrfx_rramc_uninit_Expect();
+
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(0, err);
 }
 
 void setUp(void)

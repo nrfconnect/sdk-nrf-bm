@@ -179,6 +179,12 @@ int bm_storage_init(struct bm_storage *storage, const struct bm_storage_config *
 /**
  * @brief Uninitialize a storage instance.
  *
+ * Uninitialization prevents an instance from accepting new operations until it is re-initialized.
+ *
+ * If the backend executes operations asynchronously, any outstanding operations will complete
+ * as normal and generate an event. If the backend executes operations synchronously,
+ * uninitialization will fail.
+ *
  * @note This function can be called multiple times on different storage instances in order to
  *       configure each of them separately for uninitialization.
  *
