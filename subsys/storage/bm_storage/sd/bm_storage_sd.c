@@ -76,7 +76,7 @@ static struct {
 		OP_EXECUTING,
 	} operation_state;
 	/* Number of times an operation has been retried on timeout. */
-	uint32_t retries;
+	uint8_t retries;
 	/* The SoftDevice is enabled. */
 	bool sd_enabled;
 	struct bm_storage_sd_op current_operation;
