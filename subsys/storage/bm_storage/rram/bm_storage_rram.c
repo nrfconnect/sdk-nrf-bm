@@ -20,6 +20,7 @@
 static nrfx_rramc_config_t rramc_config = NRFX_RRAMC_DEFAULT_CONFIG(RRAMC_WRITE_BLOCK_SIZE);
 
 struct bm_storage_rram_state {
+	uint8_t refcount;
 	bool is_rramc_init;
 	atomic_t operation_ongoing;
 };
@@ -38,29 +39,54 @@ static void event_send(const struct bm_storage *storage, struct bm_storage_evt *
 int bm_storage_backend_init(struct bm_storage *storage)
 {
 	int err;
+	unsigned int key;
 
-	/* If it's already initialized, return early successfully.
-	 * This is to support more than one client initialization.
-	 */
-	if (state.is_rramc_init) {
-		return 0;
-	}
+	err = 0;
+	key = irq_lock();
 
-	/* RRAMC backend must be initialized consistently from one context only.
-	 * NRFX does not guarantee thread-safety or re-entrancy.
-	 * Once the driver initialized, it will neither be re-initialized nor uninitialized.
-	 */
-	if (!atomic_cas(&state.operation_ongoing, 0, 1)) {
-		return -EBUSY;
-	}
+	if (state.refcount == 0) {
+		/* First user: initialize hardware */
+		err = nrfx_rramc_init(&rramc_config, NULL);
+		if (err) {
+			goto out;
+		}
 
-	err = nrfx_rramc_init(&rramc_config, NULL);
-	if (err == 0) {
 		state.is_rramc_init = true;
+		state.operation_ongoing = false;
 	}
 
-	atomic_set(&state.operation_ongoing, 0);
+	state.refcount++;
 
+out:
+	irq_unlock(key);
+	return err;
+}
+
+int bm_storage_backend_uninit(struct bm_storage *storage)
+{
+	int err;
+	unsigned int key;
+
+	err = 0;
+	key = irq_lock();
+
+	if (state.refcount > 1) {
+		state.refcount--;
+	} else {
+		/* Last user: uninitialize hardware. */
+		if (state.operation_ongoing) {
+			err = -EBUSY;
+			goto out;
+		}
+
+		nrfx_rramc_uninit();
+		state.is_rramc_init = false;
+
+		state.refcount = 0;
+	}
+
+out:
+	irq_unlock(key);
 	return err;
 }
 
