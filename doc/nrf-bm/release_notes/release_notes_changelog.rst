@@ -91,6 +91,7 @@ Storage
      * The SoftDevice, RRAM, and native_sim backends to support deinitialization.
      * The SoftDevice, RRAM, and native_sim backends to support the erase operation.
      * The :c:member:`bm_storage_info.erase_value` field from a ``uint32_t`` to a ``uint8_t``.
+     * The :c:func:`bm_storage_write` and :c:func:`bm_storage_erase` functions to return ``-ENOMEM`` when out of memory, instead of ``-EIO``.
 
 Libraries
 =========
