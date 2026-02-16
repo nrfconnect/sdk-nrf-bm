@@ -79,8 +79,8 @@ int bm_storage_uninit(struct bm_storage *storage)
 	err = bm_storage_backend_uninit(storage);
 
 	if (err == 0) {
+		/* Prevent further operations */
 		storage->initialized = false;
-		storage->nvm_info = NULL;
 	}
 
 	return err;
