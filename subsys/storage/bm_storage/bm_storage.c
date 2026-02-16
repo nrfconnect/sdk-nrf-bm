@@ -142,10 +142,6 @@ int bm_storage_erase(const struct bm_storage *storage, uint32_t addr, uint32_t l
 		return -EPERM;
 	}
 
-	if (storage->nvm_info->no_explicit_erase) {
-		return -ENOTSUP;
-	}
-
 	if (storage->nvm_info->erase_unit == 0) {
 		return -EIO;
 	}
