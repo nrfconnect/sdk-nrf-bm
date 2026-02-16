@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <stdint.h>
 #include <string.h>
+#include <zephyr/sys/util.h>
 
 #include <bm/storage/bm_storage.h>
 #include <bm/storage/bm_storage_backend.h>
@@ -34,12 +35,23 @@ extern void bm_storage_sd_on_soc_evt(uint32_t evt, void *ctx);
 extern int bm_storage_sd_on_state_evt(enum nrf_sdh_state_evt evt, void *ctx);
 
 static struct bm_storage_evt storage_event;
+
+/* Store the two last events, because sometimes one single SoC event generates two events
+ * to the application; this way we can test both.
+ */
+static struct bm_storage_evt storage_events[2];
+
 static bool storage_event_received;
+static int storage_event_count;
 
 static void bm_storage_evt_handler(struct bm_storage_evt *evt)
 {
 	storage_event_received = true;
-	memcpy(&storage_event, evt, sizeof(*evt));
+
+	storage_event = *evt;
+	storage_events[storage_event_count % ARRAY_SIZE(storage_events)] = *evt;
+
+	storage_event_count++;
 
 	switch (evt->id) {
 	case BM_STORAGE_EVT_WRITE_RESULT:
@@ -308,6 +320,53 @@ void test_bm_storage_sd_write(void)
 	TEST_ASSERT_EQUAL(sizeof(buf), storage_event.len);
 }
 
+void test_bm_storage_sd_write_retry_etimedout(void)
+{
+	int err;
+	/* Write buffer size must be a multiple of the program unit. */
+	uint8_t buf[BLOCK_SIZE];
+	struct bm_storage storage = {0};
+	struct bm_storage_config config = {
+		.evt_handler = bm_storage_evt_handler,
+		.start_addr = PARTITION_START,
+		.end_addr = PARTITION_START + PARTITION_SIZE,
+	};
+
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){true});
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	__cmock_sd_flash_write_ExpectAndReturn(
+		(uint32_t *)PARTITION_START, (uint32_t *)buf, WORD_SIZE(sizeof(buf)), 0);
+
+	err = bm_storage_write(&storage, PARTITION_START, buf, sizeof(buf), NULL);
+	TEST_ASSERT_EQUAL(0, err);
+
+	for (int i = 0; i < CONFIG_BM_STORAGE_BACKEND_SD_MAX_RETRIES; i++) {
+		__cmock_sd_flash_write_ExpectAndReturn((uint32_t *)PARTITION_START, (uint32_t *)buf,
+						       WORD_SIZE(sizeof(buf)), 0);
+
+		/* Operation times out and is retried */
+		bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_ERROR, NULL);
+
+		/* No event is sent while we are retrying */
+		TEST_ASSERT_EQUAL(0, storage_event_received);
+	}
+
+	/* The last retry will send an error, and the operation is not retried */
+	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_ERROR, NULL);
+
+	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
+	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_DISPATCH_MODE_ASYNC, storage_event.dispatch_mode);
+	TEST_ASSERT_EQUAL(-ETIMEDOUT, storage_event.result);
+	TEST_ASSERT_EQUAL(PARTITION_START, storage_event.addr);
+	TEST_ASSERT_EQUAL_PTR(buf, storage_event.src);
+	TEST_ASSERT_EQUAL(sizeof(buf), storage_event.len);
+}
+
 void test_bm_storage_sd_write_queued(void)
 {
 	int err;
@@ -371,6 +430,148 @@ void test_bm_storage_sd_write_queued(void)
 
 	err = bm_storage_uninit(&storage);
 	TEST_ASSERT_EQUAL(0, err);
+}
+
+void test_bm_storage_sd_write_retry_queued(void)
+{
+	int err;
+	/* Write buffer size must be a multiple of the program unit. */
+	uint8_t buf[BLOCK_SIZE];
+	struct bm_storage storage = {0};
+	struct bm_storage_config config = {
+		.evt_handler = bm_storage_evt_handler,
+		.start_addr = PARTITION_START,
+		.end_addr = PARTITION_START + PARTITION_SIZE,
+	};
+
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){true});
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	__cmock_sd_flash_write_ExpectAndReturn(
+		(uint32_t *)PARTITION_START, (uint32_t *)buf, WORD_SIZE(sizeof(buf)), 0);
+
+	err = bm_storage_write(&storage, PARTITION_START, buf, sizeof(buf), (void *)0xDEADBEEF);
+	TEST_ASSERT_EQUAL(0, err);
+
+	err = bm_storage_write(&storage, PARTITION_START, buf, sizeof(buf), (void *)0x0FA7FACE);
+	TEST_ASSERT_EQUAL(0, err);
+
+	for (int i = 0; i < CONFIG_BM_STORAGE_BACKEND_SD_MAX_RETRIES; i++) {
+		__cmock_sd_flash_write_ExpectAndReturn((uint32_t *)PARTITION_START, (uint32_t *)buf,
+						       WORD_SIZE(sizeof(buf)), 0);
+
+		/* Operation times out and is retried */
+		bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_ERROR, NULL);
+
+		/* No event is sent while we are retrying */
+		TEST_ASSERT_EQUAL(0, storage_event_received);
+	}
+
+	__cmock_sd_flash_write_ExpectAndReturn((uint32_t *)PARTITION_START, (uint32_t *)buf,
+					       WORD_SIZE(sizeof(buf)), 0);
+
+	/* The last retry will send an error, and the operation is not retried,
+	 * but the next one is started.
+	 */
+	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_ERROR, NULL);
+
+	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
+	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_DISPATCH_MODE_ASYNC, storage_event.dispatch_mode);
+	TEST_ASSERT_EQUAL(-ETIMEDOUT, storage_event.result);
+	TEST_ASSERT_EQUAL_PTR(0xDEADBEEF, storage_event.ctx);
+	TEST_ASSERT_EQUAL(PARTITION_START, storage_event.addr);
+	TEST_ASSERT_EQUAL_PTR(buf, storage_event.src);
+	TEST_ASSERT_EQUAL(sizeof(buf), storage_event.len);
+
+	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+
+	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
+	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_DISPATCH_MODE_ASYNC, storage_event.dispatch_mode);
+	TEST_ASSERT_EQUAL(0, storage_event.result);
+	TEST_ASSERT_EQUAL_PTR(0x0FA7FACE, storage_event.ctx);
+	TEST_ASSERT_EQUAL(PARTITION_START, storage_event.addr);
+	TEST_ASSERT_EQUAL_PTR(buf, storage_event.src);
+	TEST_ASSERT_EQUAL(sizeof(buf), storage_event.len);
+}
+
+/* Test that when one operation in the queue fails to be scheduled,
+ * we continue to process other operations.
+ */
+void test_bm_storage_sd_write_queued_eio(void)
+{
+	int err;
+	uint8_t buf[BLOCK_SIZE];
+	struct bm_storage storage = {0};
+	struct bm_storage_config config = {
+		.evt_handler = bm_storage_evt_handler,
+		.start_addr = PARTITION_START,
+		.end_addr = PARTITION_START + PARTITION_SIZE,
+	};
+
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){true});
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* First operation is scheduled immediately and successfully */
+	__cmock_sd_flash_write_ExpectAndReturn(
+		(uint32_t *)PARTITION_START, (uint32_t *)buf, WORD_SIZE(sizeof(buf)), 0);
+
+	err = bm_storage_write(&storage, PARTITION_START, buf, sizeof(buf), (void *)0xDEADBEEF);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* This one fails to be scheduled */
+	err = bm_storage_write(&storage, PARTITION_START, buf, sizeof(buf), (void *)0xBEEFDEAD);
+	TEST_ASSERT_EQUAL(0, err);
+
+	err = bm_storage_write(&storage, PARTITION_START, buf, sizeof(buf), (void *)0x0FA7FACE);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* The second operation is not successful, and it's performed after an event is received */
+	__cmock_sd_flash_write_ExpectAndReturn((uint32_t *)PARTITION_START, (uint32_t *)buf,
+					       WORD_SIZE(sizeof(buf)), NRF_ERROR_INTERNAL);
+
+	/* The queue will jump onto the next operation immediately */
+	__cmock_sd_flash_write_ExpectAndReturn(
+		(uint32_t *)PARTITION_START, (uint32_t *)buf, WORD_SIZE(sizeof(buf)), 0);
+
+	/* First operation has completed, second is rejected and third is scheduled*/
+	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+
+	/* First is okay */
+	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_events[0].id);
+	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_DISPATCH_MODE_ASYNC, storage_events[0].dispatch_mode);
+	TEST_ASSERT_EQUAL_PTR(0xDEADBEEF, storage_events[0].ctx);
+	TEST_ASSERT_EQUAL(0, storage_events[0].result);
+	TEST_ASSERT_EQUAL(PARTITION_START, storage_events[0].addr);
+	TEST_ASSERT_EQUAL_PTR(buf, storage_events[0].src);
+	TEST_ASSERT_EQUAL(sizeof(buf), storage_events[0].len);
+
+	/* Second one failed */
+	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_events[1].id);
+	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_DISPATCH_MODE_ASYNC, storage_events[1].dispatch_mode);
+	TEST_ASSERT_EQUAL_PTR(0xBEEFDEAD, storage_events[1].ctx);
+	TEST_ASSERT_EQUAL(-EIO, storage_events[1].result);
+	TEST_ASSERT_EQUAL(PARTITION_START, storage_events[1].addr);
+	TEST_ASSERT_EQUAL_PTR(buf, storage_events[1].src);
+	TEST_ASSERT_EQUAL(sizeof(buf), storage_events[1].len);
+
+	/* Last operation succeeds */
+	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+
+	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
+	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_DISPATCH_MODE_ASYNC, storage_event.dispatch_mode);
+	TEST_ASSERT_EQUAL_PTR(0x0FA7FACE, storage_event.ctx);
+	TEST_ASSERT_EQUAL(0, storage_event.result);
+	TEST_ASSERT_EQUAL(PARTITION_START, storage_event.addr);
+	TEST_ASSERT_EQUAL_PTR(buf, storage_event.src);
+	TEST_ASSERT_EQUAL(sizeof(buf), storage_event.len);
 }
 
 void test_bm_storage_sd_write_enomem(void)
@@ -779,7 +980,9 @@ void setUp(void)
 void tearDown(void)
 {
 	memset(&storage_event, 0x00, sizeof(storage_event));
+	memset(storage_events, 0x00, sizeof(storage_events));
 	storage_event_received = false;
+	storage_event_count = 0;
 }
 
 extern int unity_main(void);
