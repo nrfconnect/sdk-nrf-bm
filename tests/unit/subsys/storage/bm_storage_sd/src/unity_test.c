@@ -243,31 +243,6 @@ void test_bm_storage_sd_write_eperm(void)
 void test_bm_storage_sd_write_einval(void)
 {
 	int err;
-	/* Write buffer size must be a multiple of the program unit.
-	 * This will cause an error.
-	 */
-	uint8_t buf[BLOCK_SIZE - 1];
-	struct bm_storage storage = {0};
-	struct bm_storage_config config = {
-		.evt_handler = bm_storage_evt_handler,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
-	};
-
-	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
-	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
-	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){true});
-
-	err = bm_storage_init(&storage, &config);
-	TEST_ASSERT_EQUAL(0, err);
-
-	err = bm_storage_write(&storage, PARTITION_START, buf, sizeof(buf), NULL);
-	TEST_ASSERT_EQUAL(-EINVAL, err);
-}
-
-void test_bm_storage_sd_write_efault(void)
-{
-	int err;
 	uint8_t buf[BLOCK_SIZE];
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
@@ -283,8 +258,13 @@ void test_bm_storage_sd_write_efault(void)
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
+	/* Unaligned length */
+	err = bm_storage_write(&storage, PARTITION_START, buf, sizeof(buf) - 1, NULL);
+	TEST_ASSERT_EQUAL(-EINVAL, err);
+
+	/* Unaligned source */
 	err = bm_storage_write(&storage, PARTITION_START, buf + 1, sizeof(buf), NULL);
-	TEST_ASSERT_EQUAL(-EFAULT, err);
+	TEST_ASSERT_EQUAL(-EINVAL, err);
 }
 
 void test_bm_storage_sd_write(void)

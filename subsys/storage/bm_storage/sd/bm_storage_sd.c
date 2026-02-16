@@ -90,11 +90,6 @@ void bm_storage_sd_on_soc_evt(uint32_t evt, void *ctx);
 RING_BUF_DECLARE(sd_fifo, CONFIG_BM_STORAGE_BACKEND_SD_QUEUE_SIZE *
 		 sizeof(struct bm_storage_sd_op));
 
-static inline bool is_aligned32(uint32_t addr)
-{
-	return !(addr & 0x03);
-}
-
 static void event_send(const struct bm_storage_sd_op *op, bool is_sync, uint32_t result)
 {
 	struct bm_storage_evt evt;
@@ -313,13 +308,7 @@ int bm_storage_backend_uninit(struct bm_storage *storage)
 int bm_storage_backend_read(const struct bm_storage *storage, uint32_t src, void *dest,
 			    uint32_t len)
 {
-	/* SoftDevice expects this alignment. */
-	if (!is_aligned32(src)) {
-		return -EFAULT;
-	}
-
-	/* src is expected to be 32-bit word-aligned. */
-	memcpy(dest, (uint32_t *)src, len);
+	memcpy(dest, UINT_TO_POINTER(src), len);
 
 	return 0;
 }
@@ -337,9 +326,9 @@ int bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest,
 		.write.dest = dest,
 	};
 
-	/* SoftDevice expects this alignment. */
-	if (!is_aligned32((uint32_t)src) || !is_aligned32(dest)) {
-		return -EFAULT;
+	/* SoftDevice requires this alignment. */
+	if (!IS_ALIGNED(src, sizeof(uint32_t))) {
+		return -EINVAL;
 	}
 
 	queued = queue_store(&op);
@@ -362,11 +351,6 @@ int bm_storage_backend_erase(const struct bm_storage *storage, uint32_t addr, ui
 		.erase.addr = addr,
 		.erase.len = len,
 	};
-
-	/* SoftDevice expects this alignment. */
-	if ((addr % bm_storage_info.erase_unit) || (len % bm_storage_info.erase_unit)) {
-		return -EFAULT;
-	}
 
 	queued = queue_store(&op);
 	if (!queued) {

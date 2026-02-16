@@ -169,7 +169,7 @@ struct bm_storage_config {
  * @param[in] config Configuration for the storage instance initialization.
  *
  * @retval 0 on success.
- * @retval -EFAULT If @p storage is @c NULL or @p config is @c NULL.
+ * @retval -EFAULT The storage instance @p storage or @p config is @c NULL.
  * @retval -EIO If an implementation-specific internal error occurred.
  */
 int bm_storage_init(struct bm_storage *storage, const struct bm_storage_config *config);
@@ -187,7 +187,7 @@ int bm_storage_init(struct bm_storage *storage, const struct bm_storage_config *
  * @param[in] storage Storage instance to uninitialize.
  *
  * @retval 0 on success.
- * @retval -EFAULT If @p storage is @c NULL.
+ * @retval -EFAULT The storage instance @p storage is @c NULL.
  * @retval -EPERM If @p storage is in an invalid state.
  * @retval -EBUSY If the implementation-specific backend is busy with an ongoing operation.
  * @retval -ENOTSUP If the backend does not support uninitialization.
@@ -203,28 +203,27 @@ int bm_storage_uninit(struct bm_storage *storage);
  * @param[in] len Length of the data to copy (in bytes).
  *
  * @retval 0 on success.
- * @retval -EFAULT If @p storage is @c NULL or if @p dest or @p src are not 32-bit word aligned,
- *                 or if they are outside the bounds of the memory region configured in @p storage.
+ * @retval -EFAULT The storage instance @p storage or @p dest is @c NULL.
  * @retval -EPERM The storage instance @p storage is not initialized.
- * @retval -EINVAL If @p len is zero or not a multiple of @ref bm_storage_info.program_unit.
+ * @retval -EINVAL If @p len is zero.
  */
 int bm_storage_read(const struct bm_storage *storage, uint32_t src, void *dest, uint32_t len);
 
 /**
  * @brief Write data to a storage instance.
  *
+ * The write address and length must be a multiple of the backend's program unit.
+ *
  * @param[in] storage Storage instance to write data to.
  * @param[in] dest Address in non-volatile memory where to write the data to.
  * @param[in] src Data to be written.
  * @param[in] len Length of the data to be written (in bytes).
- * @param[in] ctx Pointer to user data, passed to the implementation-specific API function call.
- *                Can be NULL.
+ * @param[in] ctx User-defined context sent to the event handler.
  *
  * @retval 0 on success.
- * @retval -EFAULT If @p storage is @c NULL or if @p dest or @p src are not 32-bit word aligned,
- *                 or if they are outside the bounds of the memory region configured in @p storage.
+ * @retval -EFAULT The storage instance @p storage or @p src is @c NULL.
  * @retval -EPERM The storage instance @p storage is not initialized.
- * @retval -EINVAL If @p len is zero or not a multiple of @ref bm_storage_info.program_unit.
+ * @retval -EINVAL The @p dest or @p len parameters are unaligned.
  * @retval -ENOMEM Out of memory to perform the requested operation.
  * @retval -EBUSY If the implementation-specific backend is busy with an ongoing operation.
  * @retval -EIO If an implementation-specific internal error occurred.
@@ -235,17 +234,17 @@ int bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void
 /**
  * @brief Erase data in a storage instance.
  *
+ * The erase address and length must be a multiple of the backend's erase unit.
+ *
  * @param[in] storage Storage instance to erase data in.
  * @param[in] addr Address in non-volatile memory where to erase the data.
  * @param[in] len Length of the data to be erased (in bytes).
- * @param[in] ctx Pointer to user data, passed to the implementation-specific API function call.
- *                Can be NULL.
+ * @param[in] ctx User-defined context sent to the event handler.
  *
  * @retval 0 on success.
- * @retval -EFAULT If @p storage is @c NULL or if @p addr is outside the bounds of the memory region
- *                 configured in @p storage.
+ * @retval -EFAULT The storage instance @p storage is @c NULL.
  * @retval -EPERM The storage instance @p storage is not initialized.
- * @retval -EINVAL If @p len is zero or not a multiple of @ref bm_storage_info.erase_unit.
+ * @retval -EINVAL The @p addr or @p len parameters are unaligned.
  * @retval -ENOMEM Out of memory to perform the requested operation.
  * @retval -EBUSY If the implementation-specific backend is busy with an ongoing operation.
  * @retval -EIO If an implementation-specific internal error occurred.

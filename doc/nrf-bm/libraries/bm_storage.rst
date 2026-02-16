@@ -52,32 +52,24 @@ Read
 ====
 
 Use the :c:func:`bm_storage_read` function to copy data from NVM into RAM.
-The data length must be a multiple of the backend’s program unit and within the configured region.
-
-.. note::
-
-   The program unit is the smallest block of data that the backend can write in a single operation.
-   Both the destination address and the length must be aligned to this size.
-   The program unit is reported by :c:member:`bm_storage_info.program_unit`.
 
 Write
 =====
 
 Use the :c:func:`bm_storage_write` function to write data to NVM.
-Writes are validated against alignment and range, and completion is reported through :c:member:`bm_storage.evt_handler`.
+The completion of the operation is reported by the :c:enum:`BM_STORAGE_EVT_WRITE_RESULT` event.
 
 .. note::
 
-   Writes must be aligned to the backend’s program unit, reported by :c:member:`bm_storage_info.program_unit`.
-   This ensures that both the write address and the write length are correct for the underlying memory technology.
+   The program unit is the minimum programmable block in NVM.
+   Write operations must start at an address aligned by the program unit and use a length that is a multiple of this value.
 
 Erase
 =====
 
 Use the :c:func:`bm_storage_erase` function to erase a region in NVM.
-``len`` must be a multiple of the erase unit.
-If not supported by the backend, the call may return ``NRF_ERROR_NOT_SUPPORTED``.
-This means that the backend does not require the region to be erased before another write operation.
+The completion of the operation is reported by the :c:enum:`BM_STORAGE_EVT_ERASE_RESULT` event.
+When the erase operation is not supported by the hardware, the backend will emulate it by writing the memory’s erased value to the NVM area.
 
 .. note::
 
