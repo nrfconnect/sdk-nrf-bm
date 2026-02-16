@@ -35,23 +35,13 @@ enum bm_storage_evt_type {
 };
 
 /**
- * @brief Event dispatch types.
- */
-enum bm_storage_evt_dispatch_type {
-	/* The event was dispatched synchronously. */
-	BM_STORAGE_EVT_DISPATCH_SYNC,
-	/* The event was dispatched asynchronously. */
-	BM_STORAGE_EVT_DISPATCH_ASYNC
-};
-
-/**
  * @brief Storage event.
  */
 struct bm_storage_evt {
 	/* Event ID. */
 	enum bm_storage_evt_type id;
-	/* Specifies if the operation was performed synchronously or asynchronously. */
-	enum bm_storage_evt_dispatch_type dispatch_type;
+	/* Whether the event was dispatched asynchronously. */
+	bool is_async;
 	/* Result of the operation.
 	 * 0 on success.
 	 * A negative errno otherwise.
@@ -65,7 +55,7 @@ struct bm_storage_evt {
 	const void *src;
 	/* Length (in bytes) of the operation that was performed. */
 	size_t len;
-	/* Pointer to user data, passed to the implementation-specific API function call. */
+	/* User-defined context */
 	void *ctx;
 };
 
