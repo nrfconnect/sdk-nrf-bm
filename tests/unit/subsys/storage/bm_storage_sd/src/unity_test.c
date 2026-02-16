@@ -389,6 +389,46 @@ void test_bm_storage_sd_write_queued(void)
 	TEST_ASSERT_EQUAL(0, err);
 }
 
+void test_bm_storage_sd_write_enomem(void)
+{
+	int err;
+	uint8_t buf[BLOCK_SIZE];
+	struct bm_storage storage = {0};
+	struct bm_storage_config config = {
+		.evt_handler = bm_storage_evt_handler,
+		.start_addr = PARTITION_START,
+		.end_addr = PARTITION_START + PARTITION_SIZE,
+	};
+
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){true});
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* If the size of the queue is N, we can queue N+1 elements because the very fist
+	 * operation starts immediately, so the space in the queue is freed right away.
+	 */
+	for (size_t i = 0; i < CONFIG_BM_STORAGE_BACKEND_SD_QUEUE_SIZE + 1; i++) {
+		__cmock_sd_flash_write_ExpectAndReturn(
+			(uint32_t *)PARTITION_START, (uint32_t *)buf, WORD_SIZE(sizeof(buf)), 0);
+	}
+
+	for (size_t i = 0; i < CONFIG_BM_STORAGE_BACKEND_SD_QUEUE_SIZE + 1; i++) {
+		err = bm_storage_write(&storage, PARTITION_START, buf, sizeof(buf), NULL);
+		TEST_ASSERT_EQUAL(0, err);
+	}
+
+	err = bm_storage_write(&storage, PARTITION_START, buf, sizeof(buf), NULL);
+	TEST_ASSERT_EQUAL(-ENOMEM, err);
+
+	for (size_t i = 0; i < CONFIG_BM_STORAGE_BACKEND_SD_QUEUE_SIZE + 1; i++) {
+		/* Each system events triggers the next operation in the queue */
+		bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+	}
+}
+
 void test_bm_storage_sd_write_disable_prepare(void)
 {
 	int err;
@@ -650,7 +690,7 @@ void test_bm_storage_sd_erase(void)
 	TEST_ASSERT_FALSE(is_busy);
 }
 
-void test_bm_storage_sd_erase_eio(void)
+void test_bm_storage_sd_erase_enomem(void)
 {
 	int err;
 	struct bm_storage storage = {0};
@@ -685,7 +725,7 @@ void test_bm_storage_sd_erase_eio(void)
 
 	err = bm_storage_erase(&storage, PARTITION_START,
 			       storage.nvm_info->erase_unit, NULL);
-	TEST_ASSERT_EQUAL(-EIO, err);
+	TEST_ASSERT_EQUAL(-ENOMEM, err);
 
 	for (size_t i = 0; i < CONFIG_BM_STORAGE_BACKEND_SD_QUEUE_SIZE + 1; i++) {
 		/* Each system events triggers the next operation in the queue */

@@ -225,6 +225,7 @@ int bm_storage_read(const struct bm_storage *storage, uint32_t src, void *dest, 
  *                 or if they are outside the bounds of the memory region configured in @p storage.
  * @retval -EPERM The storage instance @p storage is not initialized.
  * @retval -EINVAL If @p len is zero or not a multiple of @ref bm_storage_info.program_unit.
+ * @retval -ENOMEM Out of memory to perform the requested operation.
  * @retval -EBUSY If the implementation-specific backend is busy with an ongoing operation.
  * @retval -EIO If an implementation-specific internal error occurred.
  */
@@ -245,6 +246,7 @@ int bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void
  *                 configured in @p storage.
  * @retval -EPERM The storage instance @p storage is not initialized.
  * @retval -EINVAL If @p len is zero or not a multiple of @ref bm_storage_info.erase_unit.
+ * @retval -ENOMEM Out of memory to perform the requested operation.
  * @retval -EBUSY If the implementation-specific backend is busy with an ongoing operation.
  * @retval -EIO If an implementation-specific internal error occurred.
  */
