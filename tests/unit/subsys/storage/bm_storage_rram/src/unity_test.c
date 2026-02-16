@@ -362,13 +362,11 @@ void test_bm_storage_rram_is_busy(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	/* NULL storage. */
 	is_busy = bm_storage_is_busy(NULL);
-	TEST_ASSERT_TRUE(is_busy);
+	TEST_ASSERT_FALSE(is_busy);
 
-	/* Uninitialized storage. */
 	is_busy = bm_storage_is_busy(&storage);
-	TEST_ASSERT_TRUE(is_busy);
+	TEST_ASSERT_FALSE(is_busy);
 
 	/* Backend already initialized by test_bm_storage_rram_init. */
 	err = bm_storage_init(&storage, &config);

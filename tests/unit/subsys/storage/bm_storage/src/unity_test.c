@@ -468,15 +468,17 @@ void test_bm_storage_is_busy(void)
 		.end_addr = PARTITION_START + PARTITION_SIZE,
 	};
 
-	/* Storage is NULL. */
 	is_busy = bm_storage_is_busy(NULL);
-	TEST_ASSERT_EQUAL(true, is_busy);
+	TEST_ASSERT_FALSE(is_busy);
+
+	is_busy = bm_storage_is_busy(&storage);
+	TEST_ASSERT_FALSE(is_busy);
 
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
 	is_busy = bm_storage_is_busy(&storage);
-	TEST_ASSERT_EQUAL(false, is_busy);
+	TEST_ASSERT_FALSE(is_busy);
 }
 
 void test_bm_storage_nvm_info_get_null(void)

@@ -79,6 +79,7 @@ Storage
      * The :c:func:`bm_storage_nvm_info_get` function to retrieve NVM information, such as the size of the program unit and other.
 
    Updated:
+     * The :c:func:`bm_storage_is_busy` function to return ``false`` instead of ``true`` when called with a ``NULL`` pointer or an uninitialized instance.
      * The :c:func:`bm_storage_init` function to return an error when the instance is already initialized.
      * The SoftDevice, RRAM, and native_sim backends to support deinitialization.
 
