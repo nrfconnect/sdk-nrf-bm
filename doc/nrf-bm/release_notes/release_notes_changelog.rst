@@ -103,6 +103,7 @@ Storage
      * The :c:func:`bm_storage_init` function to return an error when the instance is already initialized.
      * The SoftDevice, RRAM, and native_sim backends to support deinitialization.
      * The SoftDevice, RRAM, and native_sim backends to support the erase operation.
+     * The :c:member:`bm_storage_info.erase_value` field from a ``uint32_t`` to a ``uint8_t``.
 
 Libraries
 =========

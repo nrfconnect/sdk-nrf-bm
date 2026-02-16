@@ -488,5 +488,5 @@ const struct bm_storage_info bm_storage_info = {
 	.program_unit = SD_WRITE_BLOCK_SIZE,
 	.no_explicit_erase = true,
 	.erase_unit = SD_WRITE_BLOCK_SIZE,
-	.erase_value = 0xFFFFFFFF,
+	.erase_value = 0xFF,
 };
