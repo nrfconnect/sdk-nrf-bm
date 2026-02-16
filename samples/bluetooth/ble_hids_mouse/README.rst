@@ -74,6 +74,8 @@ Mouse clicks are not simulated.
 This sample exposes the HID GATT Service.
 It uses a report map for a generic mouse.
 
+.. include:: /includes/allow_list_sample.txt
+
 User interface
 **************
 

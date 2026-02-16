@@ -39,6 +39,8 @@ Overview
 
 When connected, the sample waits for the client's requests to perform any bond-deleting operation.
 
+.. include:: /includes/allow_list_sample.txt
+
 User interface
 **************
 
