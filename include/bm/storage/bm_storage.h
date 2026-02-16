@@ -79,17 +79,17 @@ typedef void (*bm_storage_evt_handler_t)(struct bm_storage_evt *evt);
  */
 struct bm_storage_info {
 	/**
+	 * @brief Size of the smallest programmable unit (in bytes).
+	 */
+	uint32_t program_unit;
+	/**
 	 * @brief Size of a page (in bytes). A page is the smallest unit that can be erased.
 	 */
 	uint32_t erase_unit;
 	/**
 	 * @brief Value used by the implementation-specific backend to represent erased memory.
 	 */
-	uint32_t erase_value;
-	/**
-	 * @brief Size of the smallest programmable unit (in bytes).
-	 */
-	uint32_t program_unit;
+	uint8_t erase_value;
 	/**
 	 * @brief Specifies if the implementation-specific backend does not need erase.
 	 */
