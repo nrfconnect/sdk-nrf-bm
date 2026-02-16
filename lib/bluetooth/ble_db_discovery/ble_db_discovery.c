@@ -4,7 +4,11 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include <stdlib.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <ble_gap.h>
+#include <ble_gattc.h>
+#include <ble_types.h>
 #include <bm/bluetooth/ble_db_discovery.h>
 #include <bm/bluetooth/ble_gq.h>
 #include <bm/bluetooth/services/uuid.h>
