@@ -35,24 +35,13 @@ endchoice
 
 if BM_STORAGE_BACKEND_SD
 
-config BM_STORAGE_BACKEND_SD_QUEUE_SIZE
-	int "SoftDevice storage backend queue size"
-	default 4
-
-config BM_STORAGE_BACKEND_SD_MAX_RETRIES
-	int "Maximum number of attempts at executing an operation when the SoftDevice is busy"
-	range 0 255
-	default 8
-	help
-	  Increase this value if events frequently return -ETIMEDOUT.
-	  The SoftDevice might fail to schedule flash access due to high BLE activity.
+rsource "sd/Kconfig"
 
 endif # BM_STORAGE_BACKEND_SD
 
 if BM_STORAGE_BACKEND_NATIVE_SIM
 
-config BM_STORAGE_BACKEND_NATIVE_SIM_ASYNC
-	bool "Asynchronous execution of storage operations"
+rsource "native_sim/Kconfig"
 
 endif # BM_STORAGE_BACKEND_NATIVE_SIM
 
