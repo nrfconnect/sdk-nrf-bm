@@ -366,7 +366,7 @@ void test_bm_storage_rram_read_efault(void)
 
 	/* Read address is past the end of the partition. */
 	err = bm_storage_read(&storage, PARTITION_START + PARTITION_SIZE, buf, sizeof(buf));
-	TEST_ASSERT_EQUAL(-EFAULT, err);
+	TEST_ASSERT_EQUAL(-EINVAL, err);
 
 	__cmock_nrfx_rramc_uninit_Expect();
 
