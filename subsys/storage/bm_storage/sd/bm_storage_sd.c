@@ -62,14 +62,13 @@ static struct {
 	struct bm_storage_sd_op current_operation;
 } bm_storage_sd;
 
-static void on_soc_evt(uint32_t evt, void *ctx);
-static int on_state_evt_change(enum nrf_sdh_state_evt evt, void *ctx);
+#ifndef CONFIG_UNITY
+static
+#endif
+void bm_storage_sd_on_soc_evt(uint32_t evt, void *ctx);
 
 RING_BUF_DECLARE(sd_fifo, CONFIG_BM_STORAGE_BACKEND_SD_QUEUE_SIZE *
 		 sizeof(struct bm_storage_sd_op));
-
-NRF_SDH_SOC_OBSERVER(sdh_soc, on_soc_evt, NULL, HIGH);
-NRF_SDH_STATE_EVT_OBSERVER(sdh_state_evt, on_state_evt_change, NULL, HIGH);
 
 static inline bool is_aligned32(uint32_t addr)
 {
@@ -146,7 +145,7 @@ static void queue_process(void)
 		if (!bm_storage_sd.sd_enabled) {
 			bool is_sync = true;
 
-			on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, &is_sync);
+			bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, &is_sync);
 		}
 		break;
 	case NRF_ERROR_BUSY:
@@ -302,7 +301,38 @@ bool bm_storage_backend_is_busy(const struct bm_storage *storage)
 	return (bm_storage_sd.type != BM_STORAGE_SD_STATE_IDLE);
 }
 
-static void on_soc_evt(uint32_t evt, void *ctx)
+#ifndef CONFIG_UNITY
+static
+#endif
+int bm_storage_sd_on_state_evt(enum nrf_sdh_state_evt evt, void *ctx)
+{
+	switch (evt) {
+	case NRF_SDH_STATE_EVT_ENABLE_PREPARE:
+	case NRF_SDH_STATE_EVT_DISABLE_PREPARE:
+		/* Only allow changing state when idle */
+		bm_storage_sd.paused = true;
+		return (bm_storage_sd.type != BM_STORAGE_SD_STATE_IDLE);
+
+	case NRF_SDH_STATE_EVT_ENABLED:
+	case NRF_SDH_STATE_EVT_DISABLED:
+		/* Continue executing any operation still in the queue */
+		bm_storage_sd.paused = false;
+		bm_storage_sd.sd_enabled = (evt == NRF_SDH_STATE_EVT_ENABLED);
+		queue_process();
+		return 0;
+
+	case NRF_SDH_STATE_EVT_BLE_ENABLED:
+	default:
+		/* Not interesting */
+		return 0;
+	}
+}
+NRF_SDH_STATE_EVT_OBSERVER(sdh_state_evt, bm_storage_sd_on_state_evt, NULL, HIGH);
+
+#ifndef CONFIG_UNITY
+static
+#endif
+void bm_storage_sd_on_soc_evt(uint32_t evt, void *ctx)
 {
 	if ((evt != NRF_EVT_FLASH_OPERATION_SUCCESS) &&
 	    (evt != NRF_EVT_FLASH_OPERATION_ERROR)) {
@@ -350,30 +380,7 @@ static void on_soc_evt(uint32_t evt, void *ctx)
 		nrf_sdh_observer_ready(&sdh_state_evt);
 	}
 }
-
-static int on_state_evt_change(enum nrf_sdh_state_evt evt, void *ctx)
-{
-	switch (evt) {
-	case NRF_SDH_STATE_EVT_ENABLE_PREPARE:
-	case NRF_SDH_STATE_EVT_DISABLE_PREPARE:
-		/* Only allow changing state when idle */
-		bm_storage_sd.paused = true;
-		return (bm_storage_sd.type != BM_STORAGE_SD_STATE_IDLE);
-
-	case NRF_SDH_STATE_EVT_ENABLED:
-	case NRF_SDH_STATE_EVT_DISABLED:
-		/* Continue executing any operation still in the queue */
-		bm_storage_sd.paused = false;
-		bm_storage_sd.sd_enabled = (evt == NRF_SDH_STATE_EVT_ENABLED);
-		queue_process();
-		return 0;
-
-	case NRF_SDH_STATE_EVT_BLE_ENABLED:
-	default:
-		/* Not interesting */
-		return 0;
-	}
-}
+NRF_SDH_SOC_OBSERVER(sdh_soc, bm_storage_sd_on_soc_evt, NULL, HIGH);
 
 const struct bm_storage_info bm_storage_info = {
 	.program_unit = SD_WRITE_BLOCK_SIZE,
