@@ -93,6 +93,7 @@ Libraries
    * Updated:
 
       * Changed the :kconfig:option:`CONFIG_BLE_ADV_EXTENDED_ADVERTISING` Kconfig option to be disabled by default and dependent on the new :kconfig:option:`CONFIG_SOFTDEVICE_EXTENDED_ADVERTISING` Kconfig option.
+      * Changed the :kconfig:option:`CONFIG_BLE_ADV_DIRECTED_ADVERTISING` Kconfig option to be disabled by default.
 
 * :ref:`lib_ble_scan`:
 
