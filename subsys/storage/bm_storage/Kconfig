@@ -11,8 +11,7 @@ menuconfig BM_STORAGE
 
 if BM_STORAGE
 
-choice BM_STORAGE_BACKEND
-	prompt "Bare Metal storage backend"
+menu "Bare Metal storage backend"
 
 config BM_STORAGE_BACKEND_RRAM
 	bool "Bare Metal RRAM storage backend"
@@ -20,6 +19,7 @@ config BM_STORAGE_BACKEND_RRAM
 
 config BM_STORAGE_BACKEND_SD
 	bool "Bare Metal SoftDevice storage backend"
+	default y
 	depends on SOFTDEVICE
 	depends on NRF_SDH
 	depends on RING_BUFFER
@@ -31,7 +31,7 @@ config BM_STORAGE_BACKEND_NATIVE_SIM
 	help
 	  This backend is designed to be used exclusively when running Ztest integration tests.
 
-endchoice
+endmenu
 
 if BM_STORAGE_BACKEND_SD
 

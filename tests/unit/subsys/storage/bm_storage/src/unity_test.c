@@ -7,7 +7,6 @@
 #include <errno.h>
 
 #include <bm/storage/bm_storage.h>
-#include <bm/storage/bm_storage_backend.h>
 
 /* Arbitrary block size. */
 #define BLOCK_SIZE 16
@@ -16,48 +15,58 @@
 #define PARTITION_START 0x4200
 #define PARTITION_SIZE (BLOCK_SIZE * 2)
 
-int bm_storage_backend_init(struct bm_storage *storage)
+static const struct bm_storage_info bm_storage_info = {
+	.erase_unit = BLOCK_SIZE,
+	.program_unit = BLOCK_SIZE,
+	.no_explicit_erase = false
+};
+
+static int bm_storage_test_api_init(struct bm_storage *storage,
+				    const struct bm_storage_config *config)
 {
+	storage->nvm_info = &bm_storage_info;
 	return 0;
 }
 
 static int backend_uninit_retval;
 
-int bm_storage_backend_uninit(struct bm_storage *storage)
+static int bm_storage_test_api_uninit(struct bm_storage *storage)
 {
 	return backend_uninit_retval;
 }
 
-int bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest,
-			     const void *src, uint32_t len, void *ctx)
+static int bm_storage_test_api_write(const struct bm_storage *storage, uint32_t dest,
+				     const void *src, uint32_t len, void *ctx)
 {
 	return 0;
 }
 
-int bm_storage_backend_erase(const struct bm_storage *storage, uint32_t addr,
-			     uint32_t len, void *ctx)
+static int bm_storage_test_api_erase(const struct bm_storage *storage, uint32_t addr, uint32_t len,
+				     void *ctx)
 {
 	return 0;
 }
 
-int bm_storage_backend_read(const struct bm_storage *storage, uint32_t src, void *dest,
-			    uint32_t len)
+static int bm_storage_test_api_read(const struct bm_storage *storage, uint32_t src, void *dest,
+				    uint32_t len)
 {
 	return 0;
 }
 
-bool bm_storage_backend_is_busy(const struct bm_storage *storage)
+static bool bm_storage_test_api_is_busy(const struct bm_storage *storage)
 {
 	return false;
 }
 
-/* Implements the exported extern. */
-const struct bm_storage_info bm_storage_info = {
-	.erase_value = 0xFF,
-	.erase_unit = BLOCK_SIZE,
-	.program_unit = BLOCK_SIZE,
-	.no_explicit_erase = false
+static struct bm_storage_api bm_storage_test_api = {
+	.init = bm_storage_test_api_init,
+	.uninit = bm_storage_test_api_uninit,
+	.read = bm_storage_test_api_read,
+	.write = bm_storage_test_api_write,
+	.erase = bm_storage_test_api_erase,
+	.is_busy = bm_storage_test_api_is_busy,
 };
+
 
 static void bm_storage_evt_handler(struct bm_storage_evt *evt)
 {
@@ -77,6 +86,7 @@ void test_bm_storage_init_efault(void)
 
 	struct bm_storage storage = { 0 };
 	struct bm_storage_config config = {
+		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
@@ -90,6 +100,11 @@ void test_bm_storage_init_efault(void)
 
 	err = bm_storage_init(NULL, &config);
 	TEST_ASSERT_EQUAL(-EFAULT, err);
+
+	config.api = NULL;
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(-EFAULT, err);
 }
 
 void test_bm_storage_init(void)
@@ -98,6 +113,7 @@ void test_bm_storage_init(void)
 
 	struct bm_storage storage = { 0 };
 	struct bm_storage_config config = {
+		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
@@ -113,6 +129,7 @@ void test_bm_storage_init_eperm(void)
 
 	struct bm_storage storage = { 0 };
 	struct bm_storage_config config = {
+		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
@@ -132,6 +149,7 @@ void test_bm_storage_uninit_efault(void)
 
 	struct bm_storage storage = { 0 };
 	struct bm_storage_config config = {
+		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
@@ -160,6 +178,7 @@ void test_bm_storage_uninit(void)
 
 	struct bm_storage storage = { 0 };
 	struct bm_storage_config config = {
+		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
@@ -178,6 +197,7 @@ void test_bm_storage_init_uninit_init(void)
 
 	struct bm_storage storage = { 0 };
 	struct bm_storage_config config = {
+		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
@@ -200,6 +220,7 @@ void test_bm_storage_uninit_outstanding(void)
 
 	struct bm_storage storage = { 0 };
 	struct bm_storage_config config = {
+		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
@@ -224,6 +245,7 @@ void test_bm_storage_write_efault(void)
 	char input[BLOCK_SIZE] = "Ciao";
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
+		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
@@ -258,6 +280,7 @@ void test_bm_storage_write_einval(void)
 	char input[BLOCK_SIZE] = {0};
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
+		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
@@ -290,6 +313,7 @@ void test_bm_storage_write(void)
 	char input[BLOCK_SIZE] = {0};
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
+		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
@@ -308,6 +332,7 @@ void test_bm_storage_read_efault(void)
 	char output[BLOCK_SIZE] = {0};
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
+		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
@@ -340,6 +365,7 @@ void test_bm_storage_read_einval(void)
 	char output[BLOCK_SIZE] = {0};
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
+		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
@@ -366,6 +392,7 @@ void test_bm_storage_read(void)
 	char output[BLOCK_SIZE] = { 0 };
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
+		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
@@ -401,6 +428,7 @@ void test_bm_storage_erase_einval(void)
 	int err;
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
+		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
@@ -430,6 +458,7 @@ void test_bm_storage_erase(void)
 	int err;
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
+		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
@@ -448,6 +477,7 @@ void test_bm_storage_is_busy(void)
 	bool is_busy = false;
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
+		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
@@ -484,6 +514,7 @@ void test_bm_storage_nvm_info_get(void)
 	struct bm_storage storage = {0};
 	const struct bm_storage_info *info;
 	struct bm_storage_config config = {
+		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
 		.start_addr = PARTITION_START,
 		.end_addr = PARTITION_START + PARTITION_SIZE,
