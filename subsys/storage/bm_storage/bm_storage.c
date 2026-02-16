@@ -92,7 +92,7 @@ int bm_storage_read(const struct bm_storage *storage, uint32_t src, void *dest, 
 		return -EFAULT;
 	}
 
-	if (!storage->initialized || !storage->nvm_info) {
+	if (!storage->initialized) {
 		return -EPERM;
 	}
 
@@ -115,7 +115,7 @@ int bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void
 		return -EFAULT;
 	}
 
-	if (!storage->initialized || !storage->nvm_info) {
+	if (!storage->initialized) {
 		return -EPERM;
 	}
 
@@ -137,7 +137,7 @@ int bm_storage_erase(const struct bm_storage *storage, uint32_t addr, uint32_t l
 		return -EFAULT;
 	}
 
-	if (!storage->initialized || !storage->nvm_info) {
+	if (!storage->initialized) {
 		return -EPERM;
 	}
 
