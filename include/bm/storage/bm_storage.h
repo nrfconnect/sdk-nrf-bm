@@ -263,6 +263,16 @@ int bm_storage_erase(const struct bm_storage *storage, uint32_t addr, uint32_t l
 bool bm_storage_is_busy(const struct bm_storage *storage);
 
 /**
+ * @brief Retrieve NVM storage information.
+ *
+ * @param[in] storage The storage instance.
+ *
+ * @return Pointer to the NVM information, or @c NULL if @p storage is
+ *         @c NULL or not initialized.
+ */
+const struct bm_storage_info *bm_storage_nvm_info_get(const struct bm_storage *storage);
+
+/**
  * @brief Singleton instance of the implementation-specific non-volatile memory information.
  */
 extern const struct bm_storage_info bm_storage_info;

@@ -5,6 +5,7 @@
  */
 
 #include <errno.h>
+#include <string.h>
 #include <zephyr/kernel.h>
 #include <sys/types.h>
 #include <bm/storage/bm_storage.h>
@@ -172,4 +173,13 @@ bool bm_storage_is_busy(const struct bm_storage *storage)
 	}
 
 	return bm_storage_backend_is_busy(storage);
+}
+
+const struct bm_storage_info *bm_storage_nvm_info_get(const struct bm_storage *storage)
+{
+	if (!storage || !storage->initialized) {
+		return NULL;
+	}
+
+	return storage->nvm_info;
 }

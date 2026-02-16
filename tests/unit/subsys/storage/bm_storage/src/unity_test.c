@@ -479,6 +479,38 @@ void test_bm_storage_is_busy(void)
 	TEST_ASSERT_EQUAL(false, is_busy);
 }
 
+void test_bm_storage_nvm_info_get_null(void)
+{
+	struct bm_storage storage = {0};
+	const struct bm_storage_info *info;
+
+	info = bm_storage_nvm_info_get(NULL);
+	TEST_ASSERT_NULL(info);
+
+	info = bm_storage_nvm_info_get(&storage);
+	TEST_ASSERT_NULL(info);
+}
+
+void test_bm_storage_nvm_info_get(void)
+{
+	int err;
+	struct bm_storage storage = {0};
+	const struct bm_storage_info *info;
+	struct bm_storage_config config = {
+		.evt_handler = bm_storage_evt_handler,
+		.start_addr = PARTITION_START,
+		.end_addr = PARTITION_START + PARTITION_SIZE,
+	};
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	info = bm_storage_nvm_info_get(&storage);
+	TEST_ASSERT_NOT_NULL(info);
+
+	TEST_ASSERT_EQUAL_MEMORY(&bm_storage_info, info, sizeof(struct bm_storage_info));
+}
+
 void setUp(void)
 {
 	backend_uninit_retval = 0;
