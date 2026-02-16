@@ -49,7 +49,7 @@ static void write_work_handler(struct k_work *work)
 
 	struct bm_storage_evt evt = {
 		.id = BM_STORAGE_EVT_WRITE_RESULT,
-		.dispatch_type = BM_STORAGE_EVT_DISPATCH_ASYNC,
+		.is_async = true,
 		.result = 0,
 		.addr = work_ctx->dest,
 		.src = work_ctx->src,
@@ -135,7 +135,7 @@ int bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest, co
 
 	struct bm_storage_evt evt = {
 		.id = BM_STORAGE_EVT_WRITE_RESULT,
-		.dispatch_type = BM_STORAGE_EVT_DISPATCH_SYNC,
+		.is_async = false,
 		.result = 0,
 		.addr = dest,
 		.src = src,
@@ -156,7 +156,7 @@ int bm_storage_backend_erase(const struct bm_storage *storage, uint32_t addr, ui
 
 	struct bm_storage_evt evt = {
 		.id = BM_STORAGE_EVT_ERASE_RESULT,
-		.dispatch_type = BM_STORAGE_EVT_DISPATCH_SYNC,
+		.is_async = false,
 		.result = 0,
 		.addr = addr,
 		.len = len,

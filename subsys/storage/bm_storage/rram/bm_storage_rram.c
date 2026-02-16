@@ -114,7 +114,7 @@ int bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest,
 
 	struct bm_storage_evt evt = {
 		.id = BM_STORAGE_EVT_WRITE_RESULT,
-		.dispatch_type = BM_STORAGE_EVT_DISPATCH_SYNC,
+		.is_async = false,
 		.result = 0,
 		.addr = dest,
 		.src = src,
@@ -146,7 +146,7 @@ int bm_storage_backend_erase(const struct bm_storage *storage, uint32_t addr, ui
 
 	struct bm_storage_evt evt = {
 		.id = BM_STORAGE_EVT_ERASE_RESULT,
-		.dispatch_type = BM_STORAGE_EVT_DISPATCH_SYNC,
+		.is_async = false,
 		.result = 0,
 		.addr = addr,
 		.len = len,

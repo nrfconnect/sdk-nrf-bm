@@ -193,6 +193,7 @@ void test_bm_storage_sd_uninit_outstanding(void)
 
 	/* An event is generated regardless */
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
+	TEST_ASSERT_EQUAL(true, storage_event.is_async);
 	TEST_ASSERT_EQUAL(0, storage_event.result);
 	TEST_ASSERT_EQUAL(PARTITION_START, storage_event.addr);
 	TEST_ASSERT_EQUAL_PTR(buf, storage_event.src);
@@ -300,6 +301,7 @@ void test_bm_storage_sd_write(void)
 	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
 
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
+	TEST_ASSERT_EQUAL(true, storage_event.is_async);
 	TEST_ASSERT_EQUAL(0, storage_event.result);
 	TEST_ASSERT_EQUAL(PARTITION_START, storage_event.addr);
 	TEST_ASSERT_EQUAL_PTR(buf, storage_event.src);
@@ -335,6 +337,7 @@ void test_bm_storage_sd_write_queued(void)
 	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
 
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
+	TEST_ASSERT_EQUAL(true, storage_event.is_async);
 	TEST_ASSERT_EQUAL(0, storage_event.result);
 	TEST_ASSERT_EQUAL(PARTITION_START, storage_event.addr);
 	TEST_ASSERT_EQUAL_PTR(buf, storage_event.src);
@@ -360,6 +363,7 @@ void test_bm_storage_sd_write_queued(void)
 	TEST_ASSERT_FALSE(is_busy);
 
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
+	TEST_ASSERT_EQUAL(false, storage_event.is_async);
 	TEST_ASSERT_EQUAL(0, storage_event.result);
 	TEST_ASSERT_EQUAL(PARTITION_START, storage_event.addr);
 	TEST_ASSERT_EQUAL_PTR(buf2, storage_event.src);
@@ -448,6 +452,7 @@ void test_bm_storage_sd_write_disable_prepare(void)
 	TEST_ASSERT_FALSE(is_busy);
 
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
+	TEST_ASSERT_EQUAL(false, storage_event.is_async);
 	TEST_ASSERT_EQUAL(0, storage_event.result);
 	TEST_ASSERT_EQUAL(PARTITION_START, storage_event.addr);
 	TEST_ASSERT_EQUAL_PTR(buf, storage_event.src);
@@ -484,7 +489,7 @@ void test_bm_storage_sd_write_disabled(void)
 	TEST_ASSERT_EQUAL(0, err);
 
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
-	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_DISPATCH_SYNC, storage_event.dispatch_type);
+	TEST_ASSERT_EQUAL(false, storage_event.is_async);
 	TEST_ASSERT_EQUAL(0, storage_event.result);
 	TEST_ASSERT_EQUAL(PARTITION_START, storage_event.addr);
 	TEST_ASSERT_EQUAL_PTR(buf, storage_event.src);
@@ -530,6 +535,7 @@ void test_bm_storage_sd_write_softdevice_busy_retry(void)
 	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
 
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
+	TEST_ASSERT_EQUAL(true, storage_event.is_async);
 	TEST_ASSERT_EQUAL(0, storage_event.result);
 	TEST_ASSERT_EQUAL(PARTITION_START, storage_event.addr);
 	TEST_ASSERT_EQUAL_PTR(buf, storage_event.src);

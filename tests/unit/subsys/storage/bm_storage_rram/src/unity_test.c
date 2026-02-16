@@ -240,7 +240,7 @@ void test_bm_storage_rram_write(void)
 	/* RRAM backend dispatches events synchronously. */
 	TEST_ASSERT_TRUE(storage_event_received);
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
-	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_DISPATCH_SYNC, storage_event.dispatch_type);
+	TEST_ASSERT_EQUAL(false, storage_event.is_async);
 	TEST_ASSERT_EQUAL(0, storage_event.result);
 	TEST_ASSERT_EQUAL(PARTITION_START, storage_event.addr);
 	TEST_ASSERT_EQUAL_PTR(buf, storage_event.src);

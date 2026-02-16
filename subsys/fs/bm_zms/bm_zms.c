@@ -314,7 +314,7 @@ static void zms_event_handler(struct bm_storage_evt *p_evt)
 	atomic_set(&queue_process_start, true);
 	atomic_set(&cur_op_result, p_evt->result);
 
-	if (p_evt->dispatch_type == BM_STORAGE_EVT_DISPATCH_ASYNC) {
+	if (p_evt->is_async) {
 		queue_process();
 	}
 }
