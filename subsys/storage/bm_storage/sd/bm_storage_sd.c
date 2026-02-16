@@ -5,6 +5,7 @@
  */
 
 #include <stdint.h>
+#include <string.h>
 #include <nrf_soc.h>
 #include <nrf_sdm.h>
 #include <nrf_error.h>
@@ -13,6 +14,7 @@
 #include <bm/storage/bm_storage.h>
 #include <bm/storage/bm_storage_backend.h>
 #include <zephyr/irq.h>
+#include <zephyr/sys/util.h>
 #include <zephyr/sys/atomic.h>
 #include <zephyr/sys/ring_buffer.h>
 
@@ -25,16 +27,33 @@
 struct bm_storage_sd_op {
 	/* The bm_storage instance that requested the operation. */
 	const struct bm_storage *storage;
+	/* The operation ID (write, erase) */
+	enum {
+		WRITE,
+		ERASE,
+	} id;
 	/* User-defined parameter passed to the event handler. */
 	void *ctx;
-	/* Data to be written to non-volatile memory. */
-	const void *src;
-	/* Destination of the data in non-volatile memory. */
-	uint32_t dest;
-	/* Length of the data to be written (in bytes). */
-	uint32_t len;
-	/* Write offset. */
-	uint32_t offset;
+	union {
+		struct {
+			/* Data to be written to non-volatile memory */
+			const void *src;
+			/* Destination of the data in non-volatile memory */
+			uint32_t dest;
+			/* Length of the data to be written (in bytes) */
+			uint32_t len;
+			/* Operation offset */
+			uint32_t offset;
+		} write;
+		struct {
+			/* The address to start erasing from */
+			uint32_t addr;
+			/* The number of bytes to erase */
+			uint32_t len;
+			/* Operation offset */
+			uint32_t offset;
+		} erase;
+	};
 };
 
 static struct {
@@ -78,41 +97,67 @@ static inline bool is_aligned32(uint32_t addr)
 
 static void event_send(const struct bm_storage_sd_op *op, bool is_sync, uint32_t result)
 {
+	struct bm_storage_evt evt;
+
 	if (op->storage->evt_handler == NULL) {
 		/* Do nothing. */
 		return;
 	}
 
-	struct bm_storage_evt evt = {
-		.id = BM_STORAGE_EVT_WRITE_RESULT,
-		.dispatch_type = (is_sync) ? BM_STORAGE_EVT_DISPATCH_SYNC :
-					BM_STORAGE_EVT_DISPATCH_ASYNC,
-		.result = result,
-		.addr = op->dest,
-		.src = op->src,
-		.len = op->len,
-		.ctx = op->ctx
-	};
+	switch (op->id) {
+	case WRITE:
+		evt = (struct bm_storage_evt) {
+			.id = BM_STORAGE_EVT_WRITE_RESULT,
+			.result = result,
+			.ctx = op->ctx,
+			.addr = op->write.dest,
+			.src = op->write.src,
+			.len = op->write.len,
+		};
+		break;
+	case ERASE:
+		evt = (struct bm_storage_evt) {
+			.id = BM_STORAGE_EVT_ERASE_RESULT,
+			.result = result,
+			.ctx = op->ctx,
+			.addr = op->erase.addr,
+			.len = op->erase.len,
+		};
+		break;
+	}
+
+	evt.dispatch_type = (is_sync) ? BM_STORAGE_EVT_DISPATCH_SYNC :
+					BM_STORAGE_EVT_DISPATCH_ASYNC;
 
 	op->storage->evt_handler(&evt);
 }
 
 static uint32_t write_execute(const struct bm_storage_sd_op *op)
 {
-	__ASSERT(op->len % bm_storage_info.program_unit == 0,
+	__ASSERT(op->write.len % bm_storage_info.program_unit == 0,
 		 "Data length is expected to be a multiple of the program unit.");
 
-	__ASSERT(op->offset % bm_storage_info.program_unit == 0,
+	__ASSERT(op->write.offset % bm_storage_info.program_unit == 0,
 		 "Offset is expected to be a multiple of the program unit.");
 
 	/* Calculate number of 32-bit words for sd_flash_write(). */
-	uint32_t chunk_len_words = (op->len - op->offset) / sizeof(uint32_t);
+	uint32_t chunk_len_words = (op->write.len - op->write.offset) / sizeof(uint32_t);
 
 	/* src and dest are word-aligned. */
-	uint32_t *dest = (uint32_t *)(op->dest + op->offset);
-	const uint32_t *src  = (const uint32_t *)((uint32_t)op->src + op->offset);
+	uint32_t *dest = (uint32_t *)(op->write.dest + op->write.offset);
+	const uint32_t *src  = (const uint32_t *)((uint32_t)op->write.src + op->write.offset);
 
 	return sd_flash_write(dest, src, chunk_len_words);
+}
+
+static uint8_t erase_buf[SD_WRITE_BLOCK_SIZE];
+
+static uint32_t erase_execute(struct bm_storage_sd_op *op)
+{
+	uint32_t *addr = UINT_TO_POINTER(op->erase.addr + op->erase.offset);
+
+	return sd_flash_write(addr, (const uint32_t *)erase_buf,
+			      bm_storage_info.erase_unit / sizeof(uint32_t));
 }
 
 static bool queue_load_next(void)
@@ -139,10 +184,18 @@ static void queue_process(void)
 		}
 	}
 
+	ret = 0;
 	bm_storage_sd.queue_state = QUEUE_RUNNING;
 	bm_storage_sd.operation_state = OP_EXECUTING;
 
-	ret = write_execute(&bm_storage_sd.current_operation);
+	switch (bm_storage_sd.current_operation.id) {
+	case WRITE:
+		ret = write_execute(&bm_storage_sd.current_operation);
+		break;
+	case ERASE:
+		ret = erase_execute(&bm_storage_sd.current_operation);
+		break;
+	}
 
 	switch (ret) {
 	case NRF_SUCCESS:
@@ -187,17 +240,28 @@ static bool on_operation_success(struct bm_storage_sd_op *op)
 	/* Reset the retry counter on success. */
 	bm_storage_sd.retries = 0;
 
-	__ASSERT(op->len % bm_storage_info.program_unit == 0,
-		 "Data length is expected to be a multiple of the program unit.");
+	switch (op->id) {
+	case WRITE:
+		__ASSERT(op->len % bm_storage_info.program_unit == 0,
+			 "Data length is expected to be a multiple of the program unit.");
 
-	__ASSERT(op->offset % bm_storage_info.program_unit == 0,
-		 "Offset is expected to be a multiple of the program unit.");
+		__ASSERT(op->offset % bm_storage_info.program_unit == 0,
+			 "Offset is expected to be a multiple of the program unit.");
 
-	op->offset += op->len - op->offset;
+		op->write.offset += op->write.len - op->write.offset;
+		/* Avoid missing the last chunk by rounding */
+		if (op->write.offset >= op->write.len) {
+			return true;
+		}
+		break;
 
-	/* Avoid missing the last chunk by rounding */
-	if (op->offset >= op->len) {
-		return true;
+	case ERASE:
+		op->erase.offset += bm_storage_info.erase_unit;
+
+		if (op->erase.len == op->erase.offset) {
+			return true;
+		}
+		break;
 	}
 
 	return false;
@@ -220,6 +284,8 @@ static bool on_operation_failure(const struct bm_storage_sd_op *op)
 int bm_storage_backend_init(struct bm_storage *storage)
 {
 	sd_softdevice_is_enabled((uint8_t *)&bm_storage_sd.sd_enabled);
+
+	(void)memset(erase_buf, (int)(bm_storage_info.erase_value & 0xFF), sizeof(erase_buf));
 
 	return 0;
 }
@@ -259,10 +325,43 @@ int bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest,
 
 	struct bm_storage_sd_op op = {
 		.storage = storage,
+		.id = WRITE,
 		.ctx = ctx,
-		.src = src,
-		.len = len,
-		.dest = dest,
+		.write.src = src,
+		.write.len = len,
+		.write.dest = dest,
+	};
+
+	key = irq_lock();
+	written = ring_buf_put(&sd_fifo, (void *)&op, sizeof(struct bm_storage_sd_op));
+	irq_unlock(key);
+
+	if (written != sizeof(struct bm_storage_sd_op)) {
+		return -EIO;
+	}
+
+	queue_start();
+
+	return 0;
+}
+
+int bm_storage_backend_erase(const struct bm_storage *storage, uint32_t addr, uint32_t len,
+			     void *ctx)
+{
+	uint32_t written;
+	unsigned int key;
+
+	/* SoftDevice expects this alignment. */
+	if ((addr % bm_storage_info.erase_unit) || (len % bm_storage_info.erase_unit)) {
+		return -EFAULT;
+	}
+
+	struct bm_storage_sd_op op = {
+		.storage = storage,
+		.id = ERASE,
+		.ctx = ctx,
+		.erase.addr = addr,
+		.erase.len = len,
 	};
 
 	key = irq_lock();
@@ -387,5 +486,7 @@ NRF_SDH_SOC_OBSERVER(sdh_soc, bm_storage_sd_on_soc_evt, NULL, HIGH);
 
 const struct bm_storage_info bm_storage_info = {
 	.program_unit = SD_WRITE_BLOCK_SIZE,
-	.no_explicit_erase = true
+	.no_explicit_erase = true,
+	.erase_unit = SD_WRITE_BLOCK_SIZE,
+	.erase_value = 0xFFFFFFFF,
 };

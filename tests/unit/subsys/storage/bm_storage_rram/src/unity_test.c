@@ -332,9 +332,10 @@ void test_bm_storage_rram_erase_eperm(void)
 	TEST_ASSERT_EQUAL(-EPERM, err);
 }
 
-void test_bm_storage_rram_erase_enotsup(void)
+void test_bm_storage_rram_erase(void)
 {
 	int err;
+	bool is_busy;
 	struct bm_storage storage = {0};
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
@@ -346,9 +347,22 @@ void test_bm_storage_rram_erase_enotsup(void)
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
-	/* RRAM backend sets no_explicit_erase = true. */
+	/* Erase writes erase_value (0xFF) in BLOCK_SIZE chunks via nrfx_rramc_bytes_write. */
+	__cmock_nrfx_rramc_bytes_write_ExpectAnyArgs();
+	__cmock_nrfx_rramc_bytes_write_IgnoreArg_address();
+	__cmock_nrfx_rramc_bytes_write_IgnoreArg_src();
+	__cmock_nrfx_rramc_bytes_write_IgnoreArg_num_bytes();
+
 	err = bm_storage_erase(&storage, PARTITION_START, BLOCK_SIZE, NULL);
-	TEST_ASSERT_EQUAL(-ENOTSUP, err);
+	TEST_ASSERT_EQUAL(0, err);
+
+	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_ERASE_RESULT, storage_event.id);
+	TEST_ASSERT_EQUAL(0, storage_event.result);
+	TEST_ASSERT_EQUAL(PARTITION_START, storage_event.addr);
+	TEST_ASSERT_EQUAL(BLOCK_SIZE, storage_event.len);
+
+	is_busy = bm_storage_is_busy(&storage);
+	TEST_ASSERT_FALSE(is_busy);
 }
 
 void test_bm_storage_rram_is_busy(void)
