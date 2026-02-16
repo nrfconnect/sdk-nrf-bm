@@ -53,6 +53,7 @@ bool bm_storage_backend_is_busy(const struct bm_storage *storage)
 
 /* Implements the exported extern. */
 const struct bm_storage_info bm_storage_info = {
+	.erase_value = 0xFF,
 	.erase_unit = BLOCK_SIZE,
 	.program_unit = BLOCK_SIZE,
 	.no_explicit_erase = false
