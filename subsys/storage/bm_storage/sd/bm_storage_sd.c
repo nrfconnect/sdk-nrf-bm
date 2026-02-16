@@ -77,8 +77,8 @@ static struct {
 	} operation_state;
 	/* Number of times an operation has been retried on timeout. */
 	uint8_t retries;
-	/* The SoftDevice is enabled. */
-	bool sd_enabled;
+	/* Whether the SoftDevice is enabled */
+	uint8_t softdevice_is_enabled;
 	struct bm_storage_sd_op current_operation;
 } bm_storage_sd;
 
@@ -103,7 +103,7 @@ static void event_send(const struct bm_storage_sd_op *op, uint32_t result)
 	case WRITE:
 		evt = (struct bm_storage_evt) {
 			.id = BM_STORAGE_EVT_WRITE_RESULT,
-			.is_async = bm_storage_sd.sd_enabled,
+			.is_async = bm_storage_sd.softdevice_is_enabled,
 			.result = result,
 			.ctx = op->ctx,
 			.addr = op->write.dest,
@@ -114,7 +114,7 @@ static void event_send(const struct bm_storage_sd_op *op, uint32_t result)
 	case ERASE:
 		evt = (struct bm_storage_evt) {
 			.id = BM_STORAGE_EVT_ERASE_RESULT,
-			.is_async = bm_storage_sd.sd_enabled,
+			.is_async = bm_storage_sd.softdevice_is_enabled,
 			.result = result,
 			.ctx = op->ctx,
 			.addr = op->erase.addr,
@@ -208,7 +208,7 @@ static void queue_process(void)
 		/* The operation was accepted by the SoftDevice.
 		 * If the SoftDevice is enabled, wait for a SoC event, otherwise simulate it.
 		 */
-		if (!bm_storage_sd.sd_enabled) {
+		if (!bm_storage_sd.softdevice_is_enabled) {
 			bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
 		}
 		break;
@@ -286,7 +286,7 @@ static bool on_operation_failure(const struct bm_storage_sd_op *op)
 
 int bm_storage_backend_init(struct bm_storage *storage)
 {
-	sd_softdevice_is_enabled((uint8_t *)&bm_storage_sd.sd_enabled);
+	sd_softdevice_is_enabled(&bm_storage_sd.softdevice_is_enabled);
 
 	(void)memset(erase_buf, (int)(bm_storage_info.erase_value & 0xFF), sizeof(erase_buf));
 
@@ -385,7 +385,7 @@ int bm_storage_sd_on_state_evt(enum nrf_sdh_state_evt evt, void *ctx)
 				bm_storage_sd.queue_state == QUEUE_PAUSED);
 
 		/* Continue executing any operation still in the queue */
-		bm_storage_sd.sd_enabled = (evt == NRF_SDH_STATE_EVT_ENABLED);
+		bm_storage_sd.softdevice_is_enabled = (evt == NRF_SDH_STATE_EVT_ENABLED);
 		bm_storage_sd.queue_state = QUEUE_RUNNING;
 		queue_process();
 		return 0;
