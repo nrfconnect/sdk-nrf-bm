@@ -47,8 +47,6 @@ enum bm_storage_sd_state {
 };
 
 static struct {
-	/* The module is initialized. */
-	bool is_init;
 	/* Ensures atomic access to various states. */
 	atomic_t operation_ongoing;
 	/* Internal storage state. */
@@ -219,25 +217,7 @@ static bool on_operation_failure(const struct bm_storage_sd_op *op)
 
 int bm_storage_backend_init(struct bm_storage *storage)
 {
-	/* If it's already initialized, return early successfully.
-	 * This is to support more than one client initialization.
-	 */
-	if (bm_storage_sd.is_init) {
-		return 0;
-	}
-
-	/* Initialize the SoftDevice storage backend from one context only. */
-	if (!atomic_cas(&bm_storage_sd.operation_ongoing, 0, 1)) {
-		return -EBUSY;
-	}
-
 	sd_softdevice_is_enabled((uint8_t *)&bm_storage_sd.sd_enabled);
-
-	bm_storage_sd.state = BM_STORAGE_SD_STATE_IDLE;
-
-	bm_storage_sd.is_init = true;
-
-	atomic_set(&bm_storage_sd.operation_ongoing, 0);
 
 	return 0;
 }
@@ -253,10 +233,6 @@ int bm_storage_backend_uninit(struct bm_storage *storage)
 int bm_storage_backend_read(const struct bm_storage *storage, uint32_t src, void *dest,
 			    uint32_t len)
 {
-	if (!bm_storage_sd.is_init) {
-		return -EPERM;
-	}
-
 	/* SoftDevice expects this alignment. */
 	if (!is_aligned32(src)) {
 		return -EFAULT;
@@ -273,10 +249,6 @@ int bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest,
 {
 	uint32_t written;
 	unsigned int key;
-
-	if (!bm_storage_sd.is_init) {
-		return -EPERM;
-	}
 
 	/* SoftDevice expects this alignment. */
 	if (!is_aligned32((uint32_t)src) || !is_aligned32(dest)) {
