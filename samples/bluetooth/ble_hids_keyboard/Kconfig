@@ -6,11 +6,11 @@
 
 menu "BLE HIDS Keyboard sample"
 
-config APP_BLE_HIDS_REPORT_FIFO_SIZE
+config SAMPLE_BLE_HIDS_REPORT_FIFO_SIZE
 	int "Report FIFO size"
 	default 10
 
-module=APP_BLE_HIDS_KEYBOARD
+module=SAMPLE_BLE_HIDS_KEYBOARD
 module-str=BLE HIDS Keyboard Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

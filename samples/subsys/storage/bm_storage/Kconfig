@@ -6,7 +6,7 @@
 
 menu "Bare Metal Storage sample"
 
-module=APP_BM_STORAGE
+module=SAMPLE_BM_STORAGE
 module-str=Bare Metal Storage Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

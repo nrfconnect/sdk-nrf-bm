@@ -6,33 +6,33 @@
 
 menu "BLE NUS sample"
 
-config APP_NUS_UART_IRQ_PRIO
+config SAMPLE_NUS_UART_IRQ_PRIO
 	int "NUS UART IRQ priority"
 	default 3
 
-config APP_NUS_UART_PARITY
+config SAMPLE_NUS_UART_PARITY
 	bool "BLE UART use parity"
 
-config APP_NUS_LPUARTE
+config SAMPLE_NUS_LPUARTE
 	bool "NUS Low Power UARTE"
 
-if APP_NUS_LPUARTE
+if SAMPLE_NUS_LPUARTE
 
-endif # APP_NUS_LPUARTE
+endif # SAMPLE_NUS_LPUARTE
 
-config APP_NUS_UART_HWFC
+config SAMPLE_NUS_UART_HWFC
 	bool "NUS UART use HWFC"
-	depends on !APP_NUS_LPUARTE
+	depends on !SAMPLE_NUS_LPUARTE
 	default y
 
-config APP_NUS_UART_RX_BUF_SIZE
+config SAMPLE_NUS_UART_RX_BUF_SIZE
 	int "NUS UART receive buffer size"
-	default 128 if APP_NUS_LPUARTE
+	default 128 if SAMPLE_NUS_LPUARTE
 	default 1
 	help
 	  UART RX is double buffered, so the actual buffer will be twice as large.
 
-module=APP_BLE_NUS
+module=SAMPLE_BLE_NUS
 module-str=BLE NUS Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
