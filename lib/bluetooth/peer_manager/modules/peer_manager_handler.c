@@ -11,7 +11,7 @@
 #include <string.h>
 #include <ble_gap.h>
 #include <ble_gattc.h>
-#include <bm/bluetooth/ble_conn_state.h>
+#include <modules/conn_state.h>
 #include <bm/bluetooth/peer_manager/peer_manager.h>
 #include <bm/bluetooth/peer_manager/peer_manager_handler.h>
 #if CONFIG_PM_HANDLER_SEC_DELAY_MS > 0
@@ -333,7 +333,7 @@ void pm_handler_pm_evt_log(const struct pm_evt *pm_evt)
 	switch (pm_evt->evt_id) {
 	case PM_EVT_BONDED_PEER_CONNECTED:
 		LOG_DBG("Previously bonded peer connected: role: %s, conn_handle: %d, peer_id: %d",
-			roles_str[ble_conn_state_role(pm_evt->conn_handle)],
+			roles_str[pm_conn_state_role(pm_evt->conn_handle)],
 			pm_evt->conn_handle, pm_evt->peer_id);
 		break;
 
@@ -344,14 +344,14 @@ void pm_handler_pm_evt_log(const struct pm_evt *pm_evt)
 	case PM_EVT_CONN_SEC_START:
 		LOG_DBG("Connection security procedure started: role: %s, conn_handle: %d, "
 			"procedure: %s",
-			roles_str[ble_conn_state_role(pm_evt->conn_handle)],
+			roles_str[pm_conn_state_role(pm_evt->conn_handle)],
 			pm_evt->conn_handle,
 			sec_procedure_str[pm_evt->params.conn_sec_start.procedure]);
 		break;
 
 	case PM_EVT_CONN_SEC_SUCCEEDED:
 		LOG_INF("Connection secured: role: %s, conn_handle: %d, procedure: %s",
-			roles_str[ble_conn_state_role(pm_evt->conn_handle)],
+			roles_str[pm_conn_state_role(pm_evt->conn_handle)],
 			pm_evt->conn_handle,
 			sec_procedure_str[pm_evt->params.conn_sec_start.procedure]);
 		break;
@@ -359,7 +359,7 @@ void pm_handler_pm_evt_log(const struct pm_evt *pm_evt)
 	case PM_EVT_CONN_SEC_FAILED:
 		LOG_INF("Connection security failed: role: %s, conn_handle: 0x%x, procedure: "
 			"%s, error: %d",
-			roles_str[ble_conn_state_role(pm_evt->conn_handle)],
+			roles_str[pm_conn_state_role(pm_evt->conn_handle)],
 			pm_evt->conn_handle,
 			sec_procedure_str[pm_evt->params.conn_sec_start.procedure],
 			pm_evt->params.conn_sec_failed.error);
