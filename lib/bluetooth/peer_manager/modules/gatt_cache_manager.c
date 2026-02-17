@@ -9,9 +9,9 @@
 #include <stdint.h>
 #include <ble_gap.h>
 #include <ble_err.h>
-#include <bm/bluetooth/ble_conn_state.h>
 #include <bm/bluetooth/peer_manager/peer_manager_types.h>
 
+#include <modules/conn_state.h>
 #include <modules/peer_manager_internal.h>
 #include <modules/id_manager.h>
 #include <modules/gatts_cache_manager.h>
@@ -188,7 +188,7 @@ static void local_db_apply_in_evt(uint16_t conn_handle)
 		break;
 	}
 
-	ble_conn_state_user_flag_set(conn_handle, flag_local_db_apply_pending,
+	pm_conn_state_user_flag_set(conn_handle, flag_local_db_apply_pending,
 				     set_procedure_as_pending);
 }
 
@@ -202,7 +202,7 @@ static void local_db_apply_in_evt(uint16_t conn_handle)
  */
 static __INLINE void local_db_update(uint16_t conn_handle, bool update)
 {
-	ble_conn_state_user_flag_set(conn_handle, flag_local_db_update_pending, update);
+	pm_conn_state_user_flag_set(conn_handle, flag_local_db_update_pending, update);
 }
 
 /**
@@ -368,8 +368,8 @@ static void service_changed_send_in_evt(uint16_t conn_handle)
 		break;
 	}
 
-	ble_conn_state_user_flag_set(conn_handle, flag_service_changed_pending, sc_pending_state);
-	ble_conn_state_user_flag_set(conn_handle, flag_service_changed_sent, sc_sent_state);
+	pm_conn_state_user_flag_set(conn_handle, flag_service_changed_pending, sc_pending_state);
+	pm_conn_state_user_flag_set(conn_handle, flag_service_changed_sent, sc_sent_state);
 }
 #endif
 
@@ -381,7 +381,7 @@ static void apply_pending_handle(uint16_t conn_handle, void *context)
 
 static __INLINE void apply_pending_flags_check(void)
 {
-	(void)ble_conn_state_for_each_set_user_flag(flag_local_db_apply_pending,
+	(void)pm_conn_state_for_each_set_user_flag(flag_local_db_apply_pending,
 						    apply_pending_handle, NULL);
 }
 
@@ -405,21 +405,21 @@ static void db_update_pending_handle(uint16_t conn_handle, void *context)
 static void sc_send_pending_handle(uint16_t conn_handle, void *context)
 {
 	ARG_UNUSED(context);
-	if (!ble_conn_state_user_flag_get(conn_handle, flag_service_changed_sent)) {
+	if (!pm_conn_state_user_flag_get(conn_handle, flag_service_changed_sent)) {
 		service_changed_send_in_evt(conn_handle);
 	}
 }
 
 static __INLINE void service_changed_pending_flags_check(void)
 {
-	(void)(ble_conn_state_for_each_set_user_flag(flag_service_changed_pending,
+	(void)(pm_conn_state_for_each_set_user_flag(flag_service_changed_pending,
 						     sc_send_pending_handle, NULL));
 }
 
 static void service_changed_needed(uint16_t conn_handle)
 {
 	if (gscm_service_changed_ind_needed(conn_handle)) {
-		ble_conn_state_user_flag_set(conn_handle, flag_service_changed_pending, true);
+		pm_conn_state_user_flag_set(conn_handle, flag_service_changed_pending, true);
 	}
 }
 #endif
@@ -440,7 +440,7 @@ static void car_update_pending_handle(uint16_t conn_handle, void *context)
 		sd_ble_gattc_char_value_by_uuid_read(conn_handle, &car_uuid, &car_handle_range);
 
 	if (nrf_err == NRF_SUCCESS) {
-		ble_conn_state_user_flag_set(conn_handle, flag_car_handle_queried, true);
+		pm_conn_state_user_flag_set(conn_handle, flag_car_handle_queried, true);
 	}
 }
 
@@ -455,16 +455,16 @@ static void car_update_needed(uint16_t conn_handle)
 	if (pds_peer_data_read(im_peer_id_get_by_conn_handle(conn_handle),
 			       PM_PEER_DATA_ID_CENTRAL_ADDR_RES, &peer_data,
 			       &central_addr_res_size) == NRF_ERROR_NOT_FOUND) {
-		ble_conn_state_user_flag_set(conn_handle, flag_car_update_pending, true);
+		pm_conn_state_user_flag_set(conn_handle, flag_car_update_pending, true);
 	}
 }
 
 static __INLINE void update_pending_flags_check(void)
 {
-	uint32_t count = ble_conn_state_for_each_set_user_flag(flag_local_db_update_pending,
+	uint32_t count = pm_conn_state_for_each_set_user_flag(flag_local_db_update_pending,
 							       db_update_pending_handle, NULL);
 	if (count == 0) {
-		(void)ble_conn_state_for_each_set_user_flag(flag_car_update_pending,
+		(void)pm_conn_state_for_each_set_user_flag(flag_car_update_pending,
 							    car_update_pending_handle, NULL);
 	}
 }
@@ -530,7 +530,7 @@ void gcm_pdb_evt_handler(struct pm_evt *event)
 					uint16_t conn_handle = im_conn_handle_get(event->peer_id);
 
 					if (conn_handle != BLE_CONN_HANDLE_INVALID) {
-						ble_conn_state_user_flag_set(
+						pm_conn_state_user_flag_set(
 							conn_handle, flag_service_changed_pending,
 							true);
 						service_changed_pending_flags_check();
@@ -562,23 +562,23 @@ uint32_t gcm_init(void)
 
 	internal_state_reset();
 
-	flag_local_db_update_pending = ble_conn_state_user_flag_acquire();
-	flag_local_db_apply_pending = ble_conn_state_user_flag_acquire();
-	flag_service_changed_pending = ble_conn_state_user_flag_acquire();
-	flag_service_changed_sent = ble_conn_state_user_flag_acquire();
-	flag_car_update_pending = ble_conn_state_user_flag_acquire();
-	flag_car_handle_queried = ble_conn_state_user_flag_acquire();
-	flag_car_value_queried = ble_conn_state_user_flag_acquire();
+	flag_local_db_update_pending = pm_conn_state_user_flag_acquire();
+	flag_local_db_apply_pending = pm_conn_state_user_flag_acquire();
+	flag_service_changed_pending = pm_conn_state_user_flag_acquire();
+	flag_service_changed_sent = pm_conn_state_user_flag_acquire();
+	flag_car_update_pending = pm_conn_state_user_flag_acquire();
+	flag_car_handle_queried = pm_conn_state_user_flag_acquire();
+	flag_car_value_queried = pm_conn_state_user_flag_acquire();
 
-	if ((flag_local_db_update_pending == BLE_CONN_STATE_USER_FLAG_INVALID) ||
-	    (flag_local_db_apply_pending == BLE_CONN_STATE_USER_FLAG_INVALID) ||
-	    (flag_service_changed_pending == BLE_CONN_STATE_USER_FLAG_INVALID) ||
-	    (flag_service_changed_sent == BLE_CONN_STATE_USER_FLAG_INVALID) ||
-	    (flag_car_update_pending == BLE_CONN_STATE_USER_FLAG_INVALID) ||
-	    (flag_car_handle_queried == BLE_CONN_STATE_USER_FLAG_INVALID) ||
-	    (flag_car_value_queried == BLE_CONN_STATE_USER_FLAG_INVALID)) {
+	if ((flag_local_db_update_pending == PM_CONN_STATE_USER_FLAG_INVALID) ||
+	    (flag_local_db_apply_pending == PM_CONN_STATE_USER_FLAG_INVALID) ||
+	    (flag_service_changed_pending == PM_CONN_STATE_USER_FLAG_INVALID) ||
+	    (flag_service_changed_sent == PM_CONN_STATE_USER_FLAG_INVALID) ||
+	    (flag_car_update_pending == PM_CONN_STATE_USER_FLAG_INVALID) ||
+	    (flag_car_handle_queried == PM_CONN_STATE_USER_FLAG_INVALID) ||
+	    (flag_car_value_queried == PM_CONN_STATE_USER_FLAG_INVALID)) {
 		LOG_ERR("Could not acquire conn_state user flags. Increase "
-			"BLE_CONN_STATE_USER_FLAG_COUNT in the ble_conn_state module.");
+			"PM_CONN_STATE_USER_FLAG_COUNT in the pm_conn_state module.");
 		return NRF_ERROR_INTERNAL;
 	}
 
@@ -600,7 +600,7 @@ void store_car_value(uint16_t conn_handle, bool car_value)
 		.length_words = 1,
 	};
 
-	ble_conn_state_user_flag_set(conn_handle, flag_car_update_pending, false);
+	pm_conn_state_user_flag_set(conn_handle, flag_car_update_pending, false);
 	peer_data.central_addr_res = car_value ? &car_value_true : &car_value_false;
 	uint32_t nrf_err =
 		pds_peer_data_store(im_peer_id_get_by_conn_handle(conn_handle), &peer_data, NULL);
@@ -635,8 +635,8 @@ void gcm_ble_evt_handler(const ble_evt_t *ble_evt)
 
 		gscm_db_change_notification_done(event.peer_id);
 
-		ble_conn_state_user_flag_set(conn_handle, flag_service_changed_sent, false);
-		ble_conn_state_user_flag_set(conn_handle, flag_service_changed_pending, false);
+		pm_conn_state_user_flag_set(conn_handle, flag_service_changed_sent, false);
+		pm_conn_state_user_flag_set(conn_handle, flag_service_changed_pending, false);
 		evt_send(&event);
 		break;
 	}
@@ -656,11 +656,11 @@ void gcm_ble_evt_handler(const ble_evt_t *ble_evt)
 		const ble_gattc_evt_char_val_by_uuid_read_rsp_t *val =
 			&ble_evt->evt.gattc_evt.params.char_val_by_uuid_read_rsp;
 
-		if (!ble_conn_state_user_flag_get(conn_handle, flag_car_handle_queried)) {
+		if (!pm_conn_state_user_flag_get(conn_handle, flag_car_handle_queried)) {
 			break;
 		}
 
-		ble_conn_state_user_flag_set(conn_handle, flag_car_handle_queried, false);
+		pm_conn_state_user_flag_set(conn_handle, flag_car_handle_queried, false);
 
 		if (ble_evt->evt.gattc_evt.gatt_status ==
 		    BLE_GATT_STATUS_ATTERR_ATTRIBUTE_NOT_FOUND) {
@@ -685,7 +685,7 @@ void gcm_ble_evt_handler(const ble_evt_t *ble_evt)
 
 				if (nrf_err == NRF_SUCCESS) {
 					handle_found = true;
-					ble_conn_state_user_flag_set(
+					pm_conn_state_user_flag_set(
 						conn_handle, flag_car_value_queried, true);
 				}
 			}
@@ -703,11 +703,11 @@ void gcm_ble_evt_handler(const ble_evt_t *ble_evt)
 		conn_handle = ble_evt->evt.gattc_evt.conn_handle;
 		const ble_gattc_evt_read_rsp_t *val = &ble_evt->evt.gattc_evt.params.read_rsp;
 
-		if (!ble_conn_state_user_flag_get(conn_handle, flag_car_value_queried)) {
+		if (!pm_conn_state_user_flag_get(conn_handle, flag_car_value_queried)) {
 			break;
 		}
 
-		ble_conn_state_user_flag_set(conn_handle, flag_car_value_queried, false);
+		pm_conn_state_user_flag_set(conn_handle, flag_car_value_queried, false);
 
 		if (ble_evt->evt.gattc_evt.gatt_status != BLE_GATT_STATUS_SUCCESS) {
 			LOG_WRN("Unexpected GATT status while getting CAR char value: 0x%x",
@@ -748,12 +748,12 @@ void gcm_local_database_has_changed(void)
 {
 	gscm_local_database_has_changed();
 
-	struct ble_conn_state_conn_handle_list conn_handles = ble_conn_state_conn_handles();
+	struct pm_conn_state_conn_handle_list conn_handles = pm_conn_state_conn_handles();
 
 	for (uint16_t i = 0; i < conn_handles.len; i++) {
 		if (im_peer_id_get_by_conn_handle(conn_handles.conn_handles[i]) ==
 		    PM_PEER_ID_INVALID) {
-			ble_conn_state_user_flag_set(conn_handles.conn_handles[i],
+			pm_conn_state_user_flag_set(conn_handles.conn_handles[i],
 						     flag_service_changed_pending, true);
 		}
 	}

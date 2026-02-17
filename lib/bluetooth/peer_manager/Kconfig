@@ -8,7 +8,6 @@ menuconfig PEER_MANAGER
 	bool "Peer Manager"
 	depends on SOFTDEVICE
 	depends on NRF_SDH_BLE
-	depends on BLE_CONN_STATE
 	depends on BM_TIMER
 	depends on BM_ZMS
 	help
@@ -110,6 +109,13 @@ config PM_HANDLER_SEC_DELAY_MS
 	default 0
 	help
 	  This might be necessary for interoperability reasons, especially as peripheral.
+
+config PM_CONN_STATE_USER_FLAG_COUNT
+	int "Connection state user flag count"
+	range 0 24
+	default 24
+	help
+	   The number of available user flags.
 
 module=PEER_MANAGER
 module-str=Peer Manager

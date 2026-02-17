@@ -12,9 +12,9 @@
 #include <ble_gap.h>
 #include <ble_err.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
-#include <bm/bluetooth/ble_conn_state.h>
 #include <bm/bluetooth/peer_manager/peer_manager_types.h>
 
+#include <modules/conn_state.h>
 #include <modules/id_manager.h>
 #include <modules/peer_database.h>
 #include <modules/peer_data_storage.h>
@@ -259,7 +259,7 @@ uint16_t im_peer_id_get_by_conn_handle(uint16_t conn_handle)
 {
 	const int idx = nrf_sdh_ble_idx_get(conn_handle);
 
-	if ((idx < 0) || (idx >= IM_MAX_CONN_HANDLES) || !ble_conn_state_valid(conn_handle)) {
+	if ((idx < 0) || (idx >= IM_MAX_CONN_HANDLES) || !pm_conn_state_valid(conn_handle)) {
 		return PM_PEER_ID_INVALID;
 	}
 
@@ -272,7 +272,7 @@ uint32_t im_ble_addr_get(uint16_t conn_handle, ble_gap_addr_t *ble_addr)
 
 	const int idx = nrf_sdh_ble_idx_get(conn_handle);
 
-	if ((idx < 0) || (idx >= IM_MAX_CONN_HANDLES) || !ble_conn_state_valid(conn_handle)) {
+	if ((idx < 0) || (idx >= IM_MAX_CONN_HANDLES) || !pm_conn_state_valid(conn_handle)) {
 		return BLE_ERROR_INVALID_CONN_HANDLE;
 	}
 
@@ -334,7 +334,7 @@ uint16_t im_conn_handle_get(uint16_t peer_id)
 
 	for (uint16_t idx = 0; idx < IM_MAX_CONN_HANDLES; idx++) {
 		if ((connections[idx].peer_id == peer_id) &&
-		    ble_conn_state_valid(connections[idx].conn_handle)) {
+		    pm_conn_state_valid(connections[idx].conn_handle)) {
 			return connections[idx].conn_handle;
 		}
 	}

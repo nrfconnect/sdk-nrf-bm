@@ -15,14 +15,12 @@
 #include <bm/bluetooth/ble_scan.h>
 #include <bm/bluetooth/ble_db_discovery.h>
 #include <bm/bluetooth/ble_conn_params.h>
-#include <bm/bluetooth/ble_conn_state.h>
 #include <bm/bluetooth/peer_manager/peer_manager.h>
 #include <bm/bluetooth/peer_manager/peer_manager_handler.h>
 #include <bm/bluetooth/peer_manager/peer_manager_types.h>
 #include <bm/bluetooth/peer_manager/nrf_ble_lesc.h>
 
 #include <bm/bluetooth/ble_gq.h>
-#include <bm/bluetooth/ble_conn_state.h>
 #include <bm/bluetooth/services/ble_hrs_client.h>
 #include <bm/bluetooth/services/uuid.h>
 #include <bm/softdevice_handler/nrf_sdh.h>
@@ -31,6 +29,7 @@
 
 #include <zephyr/kernel.h>
 #include <zephyr/bluetooth/uuid.h>
+#include <zephyr/sys/atomic.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 
@@ -51,6 +50,8 @@ BLE_SCAN_DEF(ble_scan);
 static uint16_t conn_handle;
 /* True if allow list has been temporarily disabled. */
 static bool allow_list_disabled;
+/* Central connections */
+static atomic_t central_conn;
 
 #if defined(CONFIG_SAMPLE_USE_TARGET_PERIPHERAL_ADDR)
 uint8_t target_periph_addr[BLE_GAP_ADDR_LEN] = {
@@ -62,6 +63,19 @@ uint8_t target_periph_addr[BLE_GAP_ADDR_LEN] = {
 	(CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR) & 0xff,
 };
 #endif /* CONFIG_SAMPLE_USE_TARGET_PERIPHERAL_ADDR */
+
+static uint32_t active_conn_count(atomic_t *conn)
+{
+	uint32_t set_flag_count = 0;
+
+	for (uint32_t i = 0; i < CONFIG_NRF_SDH_BLE_CENTRAL_LINK_COUNT; i++) {
+		if (atomic_test_bit(conn, i)) {
+			set_flag_count += 1;
+		}
+	}
+
+	return set_flag_count;
+}
 
 static uint32_t scan_start(bool erase_bonds);
 
@@ -92,6 +106,8 @@ static void on_ble_evt(const ble_evt_t *ble_evt, void *ctx)
 	uint32_t nrf_err;
 	const ble_gap_evt_t *gap_evt = &ble_evt->evt.gap_evt;
 
+	int idx = nrf_sdh_ble_idx_get(ble_evt->evt.gap_evt.conn_handle);
+
 	switch (ble_evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:
 		LOG_INF("Connected");
@@ -102,7 +118,11 @@ static void on_ble_evt(const ble_evt_t *ble_evt, void *ctx)
 			LOG_ERR("db discovery start failed, nrf_error %#x", nrf_err);
 		}
 
-		if (ble_conn_state_central_conn_count() < CONFIG_NRF_SDH_BLE_CENTRAL_LINK_COUNT) {
+		if (ble_evt->evt.gap_evt.params.connected.role == BLE_GAP_ROLE_CENTRAL) {
+			atomic_set_bit(&central_conn, idx);
+		}
+
+		if (active_conn_count(&central_conn) < CONFIG_NRF_SDH_BLE_CENTRAL_LINK_COUNT) {
 			scan_start(false);
 		}
 
@@ -111,7 +131,9 @@ static void on_ble_evt(const ble_evt_t *ble_evt, void *ctx)
 	case BLE_GAP_EVT_DISCONNECTED:
 		LOG_INF("Disconnected, reason %#x", gap_evt->params.disconnected.reason);
 
-		if (ble_conn_state_central_conn_count() < CONFIG_NRF_SDH_BLE_CENTRAL_LINK_COUNT) {
+		atomic_clear_bit(&central_conn, idx);
+
+		if (active_conn_count(&central_conn) < CONFIG_NRF_SDH_BLE_CENTRAL_LINK_COUNT) {
 			scan_start(false);
 		}
 

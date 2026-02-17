@@ -443,7 +443,6 @@ This library uses the following |BMshort| libraries:
 
 * SoftDevice - :kconfig:option:`CONFIG_SOFTDEVICE`
 * SoftDevice handler - :kconfig:option:`CONFIG_NRF_SDH`
-* BLE Connection State - :kconfig:option:`CONFIG_BLE_CONN_STATE`
 * Timer library - :kconfig:option:`CONFIG_BM_TIMER`
 * Bare Metal Zephyr Memory Storage - :kconfig:option:`CONFIG_BM_ZMS`
 
