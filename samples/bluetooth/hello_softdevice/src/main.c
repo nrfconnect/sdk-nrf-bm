@@ -13,7 +13,7 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 
-LOG_MODULE_REGISTER(app, CONFIG_APP_BLE_HELLO_SD_LOG_LEVEL);
+LOG_MODULE_REGISTER(app, CONFIG_SAMPLE_BLE_HELLO_SD_LOG_LEVEL);
 
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {

@@ -34,7 +34,7 @@
 
 #include <board-config.h>
 
-LOG_MODULE_REGISTER(app, CONFIG_APP_BLE_PWR_PROFILING_LOG_LEVEL);
+LOG_MODULE_REGISTER(app, CONFIG_SAMPLE_BLE_PWR_PROFILING_LOG_LEVEL);
 
 /** Custom UUID base for the Service. */
 #define BLE_UUID_BASE { 0x23, 0xD1, 0xBC, 0xEA, 0x5F, 0x78, 0x23, 0x15, \
@@ -46,7 +46,7 @@ LOG_MODULE_REGISTER(app, CONFIG_APP_BLE_PWR_PROFILING_LOG_LEVEL);
 #define BLE_UUID_PWR_CHARACTERISTIC 0x1631
 
 /* Notification connection timeout. */
-#define NOTIF_CONN_TIMEOUT CONFIG_APP_BLE_PWR_PROFILING_NOTIF_CONNECTION_TIMEOUT
+#define NOTIF_CONN_TIMEOUT CONFIG_SAMPLE_BLE_PWR_PROFILING_NOTIF_CONNECTION_TIMEOUT
 
 /** Characteristic notification timer. */
 static struct bm_timer char_notif_timer;
@@ -58,7 +58,7 @@ static struct bm_timer poweroff_timer;
 /** BLE QWR instance. */
 BLE_QWR_DEF(ble_qwr);
 /** Characteristic value. */
-static uint8_t char_value[CONFIG_APP_BLE_PWR_PROFILING_CHAR_VALUE_LEN];
+static uint8_t char_value[CONFIG_SAMPLE_BLE_PWR_PROFILING_CHAR_VALUE_LEN];
 /** Handle of the current connection. */
 static uint16_t conn_handle = BLE_CONN_HANDLE_INVALID;
 /** Connection interval. */
@@ -94,7 +94,7 @@ static void poweroff(void)
 	LOG_INF("Power off");
 	log_flush();
 
-#if defined(CONFIG_APP_BLE_PWR_PROFILING_LED)
+#if defined(CONFIG_SAMPLE_BLE_PWR_PROFILING_LED)
 	nrf_gpio_pin_write(BOARD_PIN_LED_0, !BOARD_LED_ACTIVE_STATE);
 #endif
 
@@ -165,8 +165,8 @@ static uint32_t ble_pwr_profiling_char_add(const uint8_t uuid_type, uint16_t ser
 		.p_uuid = &char_uuid,
 		.p_attr_md = &attr_md,
 		.p_value = char_value,
-		.init_len = CONFIG_APP_BLE_PWR_PROFILING_CHAR_VALUE_LEN,
-		.max_len = CONFIG_APP_BLE_PWR_PROFILING_CHAR_VALUE_LEN,
+		.init_len = CONFIG_SAMPLE_BLE_PWR_PROFILING_CHAR_VALUE_LEN,
+		.max_len = CONFIG_SAMPLE_BLE_PWR_PROFILING_CHAR_VALUE_LEN,
 	};
 
 	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.read_perm);
@@ -184,7 +184,7 @@ static uint32_t ble_pwr_profiling_char_add(const uint8_t uuid_type, uint16_t ser
 static void notification_send(void)
 {
 	uint32_t nrf_err;
-	uint16_t len = CONFIG_APP_BLE_PWR_PROFILING_CHAR_VALUE_LEN;
+	uint16_t len = CONFIG_SAMPLE_BLE_PWR_PROFILING_CHAR_VALUE_LEN;
 
 	/* Increase last byte of characteristic value to have different values on each update*/
 	char_value[0]++;
@@ -482,8 +482,8 @@ static void adv_data_update_and_start(enum adv_mode adv_mode)
 	case ADV_MODE_CONN:
 		memset(&adv_params, 0, sizeof(adv_params));
 		adv_params.properties.type = BLE_GAP_ADV_TYPE_CONNECTABLE_SCANNABLE_UNDIRECTED;
-		adv_params.interval = CONFIG_APP_BLE_PWR_PROFILING_CONN_ADVERTISING_INTERVAL;
-		adv_params.duration = CONFIG_APP_BLE_PWR_PROFILING_CONN_ADVERTISING_TIMEOUT;
+		adv_params.interval = CONFIG_SAMPLE_BLE_PWR_PROFILING_CONN_ADVERTISING_INTERVAL;
+		adv_params.duration = CONFIG_SAMPLE_BLE_PWR_PROFILING_CONN_ADVERTISING_TIMEOUT;
 		break;
 
 	case ADV_MODE_NONCONN:
@@ -492,8 +492,8 @@ static void adv_data_update_and_start(enum adv_mode adv_mode)
 
 		memset(&adv_params, 0, sizeof(adv_params));
 		adv_params.properties.type = BLE_GAP_ADV_TYPE_NONCONNECTABLE_SCANNABLE_UNDIRECTED;
-		adv_params.interval = CONFIG_APP_BLE_PWR_PROFILING_NONCONN_ADVERTISING_INTERVAL;
-		adv_params.duration = CONFIG_APP_BLE_PWR_PROFILING_NONCONN_ADVERTISING_TIMEOUT;
+		adv_params.interval = CONFIG_SAMPLE_BLE_PWR_PROFILING_NONCONN_ADVERTISING_INTERVAL;
+		adv_params.duration = CONFIG_SAMPLE_BLE_PWR_PROFILING_NONCONN_ADVERTISING_TIMEOUT;
 		break;
 
 	default:
@@ -542,7 +542,7 @@ static void adv_data_update_and_start(enum adv_mode adv_mode)
 
 	adv_mode_current = adv_mode;
 
-	LOG_INF("Advertising as %s", CONFIG_APP_BLE_PWR_PROFILING_ADV_NAME);
+	LOG_INF("Advertising as %s", CONFIG_SAMPLE_BLE_PWR_PROFILING_ADV_NAME);
 }
 
 static void button_handler(uint8_t pin, uint8_t action)
@@ -574,8 +574,8 @@ static uint32_t adv_init(void)
 	ble_gap_conn_sec_mode_t sec_mode = {0};
 
 	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&sec_mode);
-	nrf_err = sd_ble_gap_device_name_set(&sec_mode, CONFIG_APP_BLE_PWR_PROFILING_ADV_NAME,
-					     strlen(CONFIG_APP_BLE_PWR_PROFILING_ADV_NAME));
+	nrf_err = sd_ble_gap_device_name_set(&sec_mode, CONFIG_SAMPLE_BLE_PWR_PROFILING_ADV_NAME,
+					     strlen(CONFIG_SAMPLE_BLE_PWR_PROFILING_ADV_NAME));
 	if (nrf_err) {
 		LOG_ERR("Failed to set advertising name, nrf_error %#x", nrf_err);
 		return nrf_err;
@@ -625,7 +625,7 @@ int main(void)
 
 	LOG_INF("BLE Power Profiling sample started");
 
-#if defined(CONFIG_APP_BLE_PWR_PROFILING_LED)
+#if defined(CONFIG_SAMPLE_BLE_PWR_PROFILING_LED)
 	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
 	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
 #endif

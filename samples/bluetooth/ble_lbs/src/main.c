@@ -19,7 +19,7 @@
 
 #include <board-config.h>
 
-LOG_MODULE_REGISTER(app, CONFIG_APP_BLE_LBS_LOG_LEVEL);
+LOG_MODULE_REGISTER(app, CONFIG_SAMPLE_BLE_LBS_LOG_LEVEL);
 
 BLE_ADV_DEF(ble_adv); /* BLE advertising instance */
 BLE_LBS_DEF(ble_lbs); /* BLE LED Button Service instance */

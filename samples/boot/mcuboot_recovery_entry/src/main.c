@@ -17,7 +17,7 @@
 #include <zephyr/mgmt/mcumgr/mgmt/callbacks.h>
 #include <zephyr/settings/settings.h>
 
-LOG_MODULE_REGISTER(app, CONFIG_APP_LOG_LEVEL);
+LOG_MODULE_REGISTER(app, CONFIG_SAMPLE_LOG_LEVEL);
 
 BLE_ADV_DEF(ble_adv); /* BLE advertising instance */
 

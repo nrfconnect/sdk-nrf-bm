@@ -8,25 +8,25 @@ menu "BLE HRS sample"
 
 menu "Battery level simulation"
 
-config APP_BATTERY_LEVEL_MEAS_INTERVAL
+config SAMPLE_BATTERY_LEVEL_MEAS_INTERVAL
 	int "Battery level measurement interval (ms)"
 	default 2000
 	help
 	  Battery level measurement interval in milliseconds
 
-config APP_BATTERY_LEVEL_MIN
+config SAMPLE_BATTERY_LEVEL_MIN
 	int "Minimum simulated battery level (%)"
 	default 81
 	help
 	  Minimum battery level as returned by the simulated measurement function
 
-config APP_BATTERY_LEVEL_MAX
+config SAMPLE_BATTERY_LEVEL_MAX
 	int "Maximum simulated battery level (%)"
 	default 100
 	help
 	  Maximum battery level as returned by the simulated measurement function
 
-config APP_BATTERY_LEVEL_INCREMENT
+config SAMPLE_BATTERY_LEVEL_INCREMENT
 	int "Simulated battery level increment/decrement (%)"
 	default 1
 	help
@@ -37,25 +37,25 @@ endmenu # "Battery level simulation"
 
 menu "Heart rate simulation"
 
-config APP_HEART_RATE_MEAS_INTERVAL
+config SAMPLE_HEART_RATE_MEAS_INTERVAL
 	int "Heart rate measurement interval (ms)"
 	default 1000
 	help
 	  Heart rate measurement interval in milliseconds
 
-config APP_HEART_RATE_MIN
+config SAMPLE_HEART_RATE_MIN
 	int "Minimum simulated heart rate (bpm)"
 	default 140
 	help
 	  Minimum heart rate as returned by the simulated measurement function
 
-config APP_HEART_RATE_MAX
+config SAMPLE_HEART_RATE_MAX
 	int "Maximum simulated heart rate (bpm)"
 	default 300
 	help
 	  Maximum heart rate as returned by the simulated measurement function
 
-config APP_HEART_RATE_INCREMENT
+config SAMPLE_HEART_RATE_INCREMENT
 	int "Simulated heart rate increment/decrement (bpm)"
 	default 10
 	help
@@ -66,27 +66,27 @@ endmenu # "Heart rate simulation"
 
 menu "RR interval simulation"
 
-config APP_RR_INTERVAL_MEAS_INTERVAL
+config SAMPLE_RR_INTERVAL_MEAS_INTERVAL
 	int "RR interval measurement interval (ms)"
 	default 300
 	help
 	  RR interval measurement interval in milliseconds
 
-config APP_RR_INTERVAL_MIN
+config SAMPLE_RR_INTERVAL_MIN
 	int "Minimum simulated RR interval (in 1/1024 sec units)"
 	default 100
 	help
 	  Minimum RR interval as returned by the simulated measurement function.
 	  Represented in '1/1024 seconds' unit.
 
-config APP_RR_INTERVAL_MAX
+config SAMPLE_RR_INTERVAL_MAX
 	int "Maximum simulated RR interval (in 1/1024 sec units)"
 	default 500
 	help
 	  Maximum RR interval as returned by the simulated measurement function.
 	  Represented in '1/1024 seconds' unit.
 
-config APP_RR_INTERVAL_INCREMENT
+config SAMPLE_RR_INTERVAL_INCREMENT
 	int "Simulated RR interval increment/decrement (in 1/1024 sec units)"
 	default 1
 	help
@@ -98,7 +98,7 @@ endmenu # "RR interval simulation"
 
 menu "Sensor contact detected simulation"
 
-config APP_SENSOR_CONTACT_DETECTED_INTERVAL
+config SAMPLE_SENSOR_CONTACT_DETECTED_INTERVAL
 	int "Sensor contact detected toggle interval (ms)"
 	default 5000
 	help
@@ -106,7 +106,7 @@ config APP_SENSOR_CONTACT_DETECTED_INTERVAL
 
 endmenu # "Sensor contact simulation"
 
-module=APP_BLE_HRS
+module=SAMPLE_BLE_HRS
 module-str=BLE Heart Rate Service Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

@@ -17,7 +17,7 @@
 #include <hal/nrf_gpio.h>
 #include <board-config.h>
 
-LOG_MODULE_REGISTER(app, CONFIG_APP_BLE_RADIO_NOTIFICATION_LOG_LEVEL);
+LOG_MODULE_REGISTER(app, CONFIG_SAMPLE_BLE_RADIO_NOTIFICATION_LOG_LEVEL);
 
 /* BLE advertising instance */
 BLE_ADV_DEF(ble_adv);
@@ -97,7 +97,7 @@ int main(void)
 
 	LOG_INF("SoftDevice enabled");
 
-	nrf_err = ble_radio_notification_init(CONFIG_APP_BLE_RADIO_NOTIFICATION_DISTANCE_US,
+	nrf_err = ble_radio_notification_init(CONFIG_SAMPLE_BLE_RADIO_NOTIFICATION_DISTANCE_US,
 					  ble_radio_notification_evt_handler);
 	if (nrf_err != NRF_SUCCESS) {
 		LOG_ERR("Failed to enable BLE, nrf_error %#x", nrf_err);

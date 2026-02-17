@@ -27,7 +27,7 @@
 
 #include <board-config.h>
 
-LOG_MODULE_REGISTER(app, CONFIG_APP_BLE_HRS_LOG_LEVEL);
+LOG_MODULE_REGISTER(app, CONFIG_SAMPLE_BLE_HRS_LOG_LEVEL);
 
 #define CONN_TAG 1
 
@@ -178,16 +178,16 @@ static void simulated_meas_init(void)
 {
 	int err;
 	const struct sensorsim_cfg battery_sim_cfg = {
-		.min = CONFIG_APP_BATTERY_LEVEL_MIN, .max = CONFIG_APP_BATTERY_LEVEL_MAX,
-		.incr = CONFIG_APP_BATTERY_LEVEL_INCREMENT, .start_at_max = true,
+		.min = CONFIG_SAMPLE_BATTERY_LEVEL_MIN, .max = CONFIG_SAMPLE_BATTERY_LEVEL_MAX,
+		.incr = CONFIG_SAMPLE_BATTERY_LEVEL_INCREMENT, .start_at_max = true,
 	};
 	const struct sensorsim_cfg heart_rate_sim_cfg = {
-		.min = CONFIG_APP_HEART_RATE_MIN, .max = CONFIG_APP_HEART_RATE_MAX,
-		.incr = CONFIG_APP_HEART_RATE_INCREMENT, .start_at_max = false,
+		.min = CONFIG_SAMPLE_HEART_RATE_MIN, .max = CONFIG_SAMPLE_HEART_RATE_MAX,
+		.incr = CONFIG_SAMPLE_HEART_RATE_INCREMENT, .start_at_max = false,
 	};
 	const struct sensorsim_cfg rr_interval_sim_cfg = {
-		.min = CONFIG_APP_RR_INTERVAL_MIN, .max = CONFIG_APP_RR_INTERVAL_MAX,
-		.incr = CONFIG_APP_RR_INTERVAL_INCREMENT, .start_at_max = false,
+		.min = CONFIG_SAMPLE_RR_INTERVAL_MIN, .max = CONFIG_SAMPLE_RR_INTERVAL_MAX,
+		.incr = CONFIG_SAMPLE_RR_INTERVAL_INCREMENT, .start_at_max = false,
 	};
 
 	err = sensorsim_init(&battery_sim_state, &battery_sim_cfg);
@@ -228,13 +228,13 @@ static void simulated_meas_init(void)
 static void simulated_meas_start(void)
 {
 	(void)bm_timer_start(&battery_timer,
-			     BM_TIMER_MS_TO_TICKS(CONFIG_APP_BATTERY_LEVEL_MEAS_INTERVAL), NULL);
+			     BM_TIMER_MS_TO_TICKS(CONFIG_SAMPLE_BATTERY_LEVEL_MEAS_INTERVAL), NULL);
 	(void)bm_timer_start(&heart_rate_timer,
-			     BM_TIMER_MS_TO_TICKS(CONFIG_APP_HEART_RATE_MEAS_INTERVAL), NULL);
+			     BM_TIMER_MS_TO_TICKS(CONFIG_SAMPLE_HEART_RATE_MEAS_INTERVAL), NULL);
 	(void)bm_timer_start(&rr_interval_timer,
-			     BM_TIMER_MS_TO_TICKS(CONFIG_APP_RR_INTERVAL_MEAS_INTERVAL), NULL);
+			     BM_TIMER_MS_TO_TICKS(CONFIG_SAMPLE_RR_INTERVAL_MEAS_INTERVAL), NULL);
 	(void)bm_timer_start(&sensor_contact_timer,
-			     BM_TIMER_MS_TO_TICKS(CONFIG_APP_SENSOR_CONTACT_DETECTED_INTERVAL),
+			     BM_TIMER_MS_TO_TICKS(CONFIG_SAMPLE_SENSOR_CONTACT_DETECTED_INTERVAL),
 			     NULL);
 }
 
@@ -473,7 +473,7 @@ int main(void)
 	struct ble_bas_config bas_cfg = {
 		.evt_handler = ble_bas_evt_handler,
 		.can_notify = true,
-		.battery_level = CONFIG_APP_BATTERY_LEVEL_MAX,
+		.battery_level = CONFIG_SAMPLE_BATTERY_LEVEL_MAX,
 		.sec_mode = BLE_BAS_CONFIG_SEC_MODE_DEFAULT,
 	};
 	struct ble_dis_config dis_config = {

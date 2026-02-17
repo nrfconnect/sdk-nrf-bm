@@ -12,14 +12,6 @@ menuconfig BLE_BMS
 
 if BLE_BMS
 
-config BLE_BMS_USE_AUTHORIZATION_CODE
-	bool "Use authorization code"
-	default y
-
-config BLE_BMS_AUTHORIZATION_CODE
-	string "Authorization code"
-	default "ABCD"
-
 module=BLE_BMS
 module-str=BLE_BMS
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"

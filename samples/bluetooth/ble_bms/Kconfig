@@ -6,15 +6,23 @@
 
 menu "BLE BMS sample"
 
-config APP_QWR_MEM_BUFF_SIZE
+config SAMPLE_QWR_MEM_BUFF_SIZE
 	int "QWR memory buffer size"
 	default 512
 
-config APP_BLE_BMS_PEERS_TO_DELETE_ON_DISCONNECT_MAX
+config SAMPLE_BLE_BMS_PEERS_TO_DELETE_ON_DISCONNECT_MAX
 	int "Maximum number of peers to delete upon a peer disconnect"
 	default 10
 
-module=APP_BLE_BMS
+config SAMPLE_BLE_BMS_USE_AUTHORIZATION_CODE
+	bool "Use authorization code"
+	default y
+
+config SAMPLE_BLE_BMS_AUTHORIZATION_CODE
+	string "Authorization code"
+	default "ABCD"
+
+module=SAMPLE_BLE_BMS
 module-str=BLE Bond Management Service Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

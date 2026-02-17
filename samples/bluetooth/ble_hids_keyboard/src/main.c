@@ -35,7 +35,7 @@
 #include <zephyr/logging/log_ctrl.h>
 #include <board-config.h>
 
-LOG_MODULE_REGISTER(app, CONFIG_APP_BLE_HIDS_KEYBOARD_LOG_LEVEL);
+LOG_MODULE_REGISTER(app, CONFIG_SAMPLE_BLE_HIDS_KEYBOARD_LOG_LEVEL);
 
 #define BASE_USB_HID_SPEC_VERSION 0x0101
 
@@ -103,7 +103,7 @@ static bool boot_mode;
 static void identities_set(enum pm_peer_id_list_skip skip);
 
 /* FIFO for keeping track of keystrokes that can not be sent immediately. */
-RING_BUF_DECLARE(report_fifo, CONFIG_APP_BLE_HIDS_REPORT_FIFO_SIZE *
+RING_BUF_DECLARE(report_fifo, CONFIG_SAMPLE_BLE_HIDS_REPORT_FIFO_SIZE *
 		 (sizeof(struct ble_hids_input_report) + CONFIG_BLE_HIDS_INPUT_REPORT_MAX_LEN));
 
 uint32_t report_fifo_put(struct ble_hids_input_report *report)

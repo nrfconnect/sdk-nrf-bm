@@ -13,7 +13,7 @@
 
 #include <board-config.h>
 
-LOG_MODULE_REGISTER(app, CONFIG_APP_LEDS_LOG_LEVEL);
+LOG_MODULE_REGISTER(app, CONFIG_SAMPLE_LEDS_LOG_LEVEL);
 
 static void led_init(void)
 {

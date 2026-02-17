@@ -6,12 +6,12 @@
 
 menu "BLE Radio Notification sample"
 
-config APP_BLE_RADIO_NOTIFICATION_DISTANCE_US
+config SAMPLE_BLE_RADIO_NOTIFICATION_DISTANCE_US
 	int "Distance between the active notification signal and start of radio event preparation"
 	range 50 5500
 	default 800
 
-module=APP_BLE_RADIO_NOTIFICATION
+module=SAMPLE_BLE_RADIO_NOTIFICATION
 module-str=BLE Radio Notification Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

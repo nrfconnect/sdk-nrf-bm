@@ -6,7 +6,7 @@
 
 menu "LEDs sample"
 
-module=APP_LEDS
+module=SAMPLE_LEDS
 module-str=LEDs Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

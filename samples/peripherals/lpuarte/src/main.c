@@ -15,7 +15,7 @@
 
 #include <board-config.h>
 
-LOG_MODULE_REGISTER(app, CONFIG_APP_LPUARTE_LOG_LEVEL);
+LOG_MODULE_REGISTER(app, CONFIG_SAMPLE_LPUARTE_LOG_LEVEL);
 
 static nrfx_uarte_t uarte_inst = NRFX_UARTE_INSTANCE(BOARD_APP_LPUARTE_INST);
 
@@ -75,14 +75,14 @@ static int lpuarte_init(void)
 		.rdy_pin = BOARD_APP_LPUARTE_PIN_RDY,
 	};
 
-#if defined(CONFIG_APP_LPUARTE_PARITY)
+#if defined(CONFIG_SAMPLE_LPUARTE_PARITY)
 	lpu_cfg.uarte_cfg.config.parity = NRF_UARTE_PARITY_INCLUDED;
 #endif
 
-	lpu_cfg.uarte_cfg.interrupt_priority = CONFIG_APP_LPUARTE_IRQ_PRIO;
+	lpu_cfg.uarte_cfg.interrupt_priority = CONFIG_SAMPLE_LPUARTE_IRQ_PRIO;
 
 	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(BOARD_APP_LPUARTE_INST),
-			   CONFIG_APP_LPUARTE_IRQ_PRIO, lpuarte_direct_isr, 0);
+			   CONFIG_SAMPLE_LPUARTE_IRQ_PRIO, lpuarte_direct_isr, 0);
 
 	irq_enable(NRFX_IRQ_NUMBER_GET(BOARD_APP_LPUARTE_INST));
 

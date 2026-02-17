@@ -11,7 +11,7 @@
 #include <board-config.h>
 #include <nrfx_uarte.h>
 
-LOG_MODULE_REGISTER(app, CONFIG_APP_UARTE_LOG_LEVEL);
+LOG_MODULE_REGISTER(app, CONFIG_SAMPLE_UARTE_LOG_LEVEL);
 
 /** Application UARTE instance */
 static nrfx_uarte_t uarte_inst = NRFX_UARTE_INSTANCE(BOARD_APP_UARTE_INST);
@@ -25,7 +25,7 @@ static void uarte_rx_handler(char *data, size_t data_len)
 {
 	int err;
 	uint8_t c;
-	static char rx_buf[CONFIG_APP_UARTE_DATA_LEN_MAX];
+	static char rx_buf[CONFIG_SAMPLE_UARTE_DATA_LEN_MAX];
 	static uint16_t rx_buf_idx;
 
 	for (int i = 0; i < data_len; i++) {
@@ -100,21 +100,21 @@ static int uarte_init(void)
 	nrfx_uarte_config_t uarte_config = NRFX_UARTE_DEFAULT_CONFIG(BOARD_APP_UARTE_PIN_TX,
 								     BOARD_APP_UARTE_PIN_RX);
 
-#if defined(CONFIG_APP_UARTE_HWFC)
+#if defined(CONFIG_SAMPLE_UARTE_HWFC)
 	uarte_config.config.hwfc = NRF_UARTE_HWFC_ENABLED;
 	uarte_config.cts_pin = BOARD_APP_UARTE_PIN_CTS;
 	uarte_config.rts_pin = BOARD_APP_UARTE_PIN_RTS;
 #endif
 
-#if defined(CONFIG_APP_UARTE_PARITY)
+#if defined(CONFIG_SAMPLE_UARTE_PARITY)
 	uarte_config.parity = NRF_UARTE_PARITY_INCLUDED;
 #endif
 
-	uarte_config.interrupt_priority = CONFIG_APP_UARTE_IRQ_PRIO;
+	uarte_config.interrupt_priority = CONFIG_SAMPLE_UARTE_IRQ_PRIO;
 
 	/* We need to connect the IRQ ourselves. */
 	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(BOARD_APP_UARTE_INST),
-			   CONFIG_APP_UARTE_IRQ_PRIO,
+			   CONFIG_SAMPLE_UARTE_IRQ_PRIO,
 			   uarte_direct_isr, 0);
 
 	irq_enable(NRFX_IRQ_NUMBER_GET(BOARD_APP_UARTE_INST));

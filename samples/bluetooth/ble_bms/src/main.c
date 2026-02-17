@@ -34,9 +34,9 @@
 
 /* FIFO for keeping track of peers that cannot be deleted immediately. */
 RING_BUF_DECLARE(peers_to_delete_on_disconnect,
-		 CONFIG_APP_BLE_BMS_PEERS_TO_DELETE_ON_DISCONNECT_MAX * sizeof(uint16_t));
+		 CONFIG_SAMPLE_BLE_BMS_PEERS_TO_DELETE_ON_DISCONNECT_MAX * sizeof(uint16_t));
 
-LOG_MODULE_REGISTER(app, CONFIG_APP_BLE_BMS_LOG_LEVEL);
+LOG_MODULE_REGISTER(app, CONFIG_SAMPLE_BLE_BMS_LOG_LEVEL);
 
 /* Perform bonding. */
 #define SEC_PARAM_BOND 1
@@ -70,7 +70,7 @@ static uint16_t peer_id;
 static bool auth_key_request;
 
 /* Write buffer for the Queued Write module. */
-static uint8_t qwr_mem[CONFIG_APP_QWR_MEM_BUFF_SIZE];
+static uint8_t qwr_mem[CONFIG_SAMPLE_QWR_MEM_BUFF_SIZE];
 
 /* Forward declaration */
 static void identities_set(enum pm_peer_id_list_skip skip);
@@ -433,10 +433,10 @@ void bms_evt_handler(struct ble_bms *bms, struct ble_bms_evt *evt)
 		break;
 	case BLE_BMS_EVT_AUTH:
 		LOG_DBG("Authorization request.");
-#if defined(CONFIG_BLE_BMS_USE_AUTHORIZATION_CODE)
-		if ((evt->auth.auth_code.len != strlen(CONFIG_BLE_BMS_AUTHORIZATION_CODE)) ||
-		    (memcmp(CONFIG_BLE_BMS_AUTHORIZATION_CODE, evt->auth.auth_code.code,
-			    strlen(CONFIG_BLE_BMS_AUTHORIZATION_CODE)) != 0)) {
+#if defined(CONFIG_SAMPLE_BLE_BMS_USE_AUTHORIZATION_CODE)
+		if ((evt->auth.auth_code.len != strlen(CONFIG_SAMPLE_BLE_BMS_AUTHORIZATION_CODE)) ||
+		    (memcmp(CONFIG_SAMPLE_BLE_BMS_AUTHORIZATION_CODE, evt->auth.auth_code.code,
+			    strlen(CONFIG_SAMPLE_BLE_BMS_AUTHORIZATION_CODE)) != 0)) {
 			is_authorized = false;
 		}
 #endif
@@ -594,7 +594,7 @@ int main(void)
 
 	struct ble_bms_config bms_cfg = {
 		.evt_handler = bms_evt_handler,
-#if defined(CONFIG_BLE_BMS_USE_AUTHORIZATION_CODE)
+#if defined(CONFIG_SAMPLE_BLE_BMS_USE_AUTHORIZATION_CODE)
 		/* Do not require auth to delete requesting. */
 		.feature.delete_requesting = true,
 		.feature.delete_all_auth = true,

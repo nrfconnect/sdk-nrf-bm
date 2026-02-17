@@ -106,7 +106,14 @@ Testing
 #. Reconnect the devices and verify that the connection security is not updated.
 #. Bond both devices again.
 #. Write ``06 41 42 43 44`` to the Bond Management Service Control Point Characteristic.
-   ``06`` is the command to delete all bonds on the server, followed by the authorization code ``ABCD``.
+   ``06`` is the command to delete all bonds on the server, followed by the authorization code ``ABCD`` (ASCII ``41 42 43 44``).
 #. Disconnect the device to trigger the bond deletion procedures.
 #. Delete the bond information of the central device again.
 #. Reconnect the devices again and verify that the connection security is not updated.
+
+.. note::
+   The default authorization code ``ABCD`` (ASCII ``41 42 43 44``) is configurable through the :kconfig:option:`CONFIG_SAMPLE_BLE_BMS_AUTHORIZATION_CODE` Kconfig option. The maximum allowed length is :c:macro:`BLE_BMS_AUTH_CODE_MAX_LEN` (127 bytes), which comes from the BMS control point definition.
+
+   Authorization codes up to **127 bytes** are supported. You may configure the code to any value within this limit as needed.
+
+   If this security feature is not required, it can be enabled or disabled using the :kconfig:option:`CONFIG_SAMPLE_BLE_BMS_USE_AUTHORIZATION_CODE` Kconfig option. After changing the configuration, rebuild the sample and test how bond deletion behaves with or without an authorization code.

@@ -6,24 +6,24 @@
 
 menu "PWM sample"
 
-config APP_PWM_IRQ_PRIO
+config SAMPLE_PWM_IRQ_PRIO
 	int "PWM IRQ priority"
 	default 5
 
-config APP_PWM_PLAYBACK_COUNT
+config SAMPLE_PWM_PLAYBACK_COUNT
 	int "PWM playback count"
 	default 1
 	help
 	  Number of times the sequence will be replayed until the
 	  NRFX_PWM_EVT_FINISHED event is raised.
 
-config APP_PWM_VALUE_REPEATS
+config SAMPLE_PWM_VALUE_REPEATS
 	int "PWM value repeats"
 	default 150
 	help
 	   Number of times that each duty cycle is to be repeated (after being played once).
 
-module=APP_PWM
+module=SAMPLE_PWM
 module-str=PWM Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
