@@ -6,7 +6,7 @@
 
 menu "Buttons sample"
 
-module=APP_BUTTONS
+module=SAMPLE_BUTTONS
 module-str=Buttons Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

@@ -6,23 +6,23 @@
 
 menu "Timer sample"
 
-config APP_PERIODIC_TIMER_INTERVAL_MS
+config SAMPLE_PERIODIC_TIMER_INTERVAL_MS
 	int "Timeout interval of periodic timer"
 	default 500
 
-config APP_HELLO_TIMER_DURATION_MS
+config SAMPLE_HELLO_TIMER_DURATION_MS
 	int "First timeout duration of oneshot timer"
 	default 1000
 
-config APP_WORLD_TIMER_DURATION_MS
+config SAMPLE_WORLD_TIMER_DURATION_MS
 	int "Second timeout duration of oneshot timer"
 	default 2000
 
-config APP_BYE_TIMER_DURATION_MS
+config SAMPLE_BYE_TIMER_DURATION_MS
 	int "Third timeout duration of oneshot timer"
 	default 4000
 
-module=APP_TIMER
+module=SAMPLE_TIMER
 module-str=Timer Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

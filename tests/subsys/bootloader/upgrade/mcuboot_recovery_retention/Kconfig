@@ -6,7 +6,7 @@
 
 menu "MCUboot recovery retention test"
 
-module=APP
+module=TEST
 module-str=MCUboot recovery retention
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

@@ -6,7 +6,7 @@
 
 menu "BLE CGMS sample"
 
-config APP_QWR_MEM_BUFF_SIZE
+config SAMPLE_QWR_MEM_BUFF_SIZE
 	int "QWR memory buffer size"
 	default 512
 
@@ -14,33 +14,33 @@ menu "Glucose measurement simulation"
 
 endmenu # Glucose measurement simulation
 
-config APP_GLUCOSE_MEAS_INTERVAL
+config SAMPLE_GLUCOSE_MEAS_INTERVAL
 	int "Fastest possible communication interval"
 	default 1
 
-config APP_GLUCOSE_CONCENTRATION_INC
+config SAMPLE_GLUCOSE_CONCENTRATION_INC
 	int "Glucose concentration increment on button press"
 	default 10
 	help
 	   How much the simulated glucose concentration will increase upon a button press.
 
-config APP_GLUCOSE_CONCENTRATION_DEC
+config SAMPLE_GLUCOSE_CONCENTRATION_DEC
 	int "Glucose concentration increment on button press"
 	default 5
 	help
 	   How much the simulated glucose concentration will decrease upon a button press.
 
-config APP_GLUCOSE_CONCENTRATION_MAX
+config SAMPLE_GLUCOSE_CONCENTRATION_MAX
 	int "Maximum glucose concentration (mg/dL)"
 	default 800
 
-config APP_GLUCOSE_CONCENTRATION_MIN
+config SAMPLE_GLUCOSE_CONCENTRATION_MIN
 	int "Minimum glucose concentration (mg/dL)"
 	default 5
 
 endmenu # "BLE CGMS sample"
 
-module=APP_BLE_CGMS
+module=SAMPLE_BLE_CGMS
 module-str=BLE CGMS Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

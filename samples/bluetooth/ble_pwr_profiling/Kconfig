@@ -6,44 +6,44 @@
 
 menu "BLE Power Profiling sample"
 
-config APP_BLE_PWR_PROFILING_ADV_NAME
+config SAMPLE_BLE_PWR_PROFILING_ADV_NAME
 	string "Advertising name"
 	default "Nordic_Power_Profiling"
 
-config APP_BLE_PWR_PROFILING_CONN_ADVERTISING_TIMEOUT
+config SAMPLE_BLE_PWR_PROFILING_CONN_ADVERTISING_TIMEOUT
 	int "Connectable advertising timeout (10 ms units)"
 	range 0 18000
 	default 3000
 
-config APP_BLE_PWR_PROFILING_CONN_ADVERTISING_INTERVAL
+config SAMPLE_BLE_PWR_PROFILING_CONN_ADVERTISING_INTERVAL
 	int "Connectable advertising interval (0.625 ms units)"
 	range 32 16384
 	default 160
 
-config APP_BLE_PWR_PROFILING_NONCONN_ADVERTISING_TIMEOUT
+config SAMPLE_BLE_PWR_PROFILING_NONCONN_ADVERTISING_TIMEOUT
 	int "Non-connectable advertising timeout (10 ms units)"
 	range 0 18000
 	default 6000
 
-config APP_BLE_PWR_PROFILING_NONCONN_ADVERTISING_INTERVAL
+config SAMPLE_BLE_PWR_PROFILING_NONCONN_ADVERTISING_INTERVAL
 	int "Non-connectable advertising interval (0.625 ms units)"
 	range 32 16384
 	default 1600
 
-config APP_BLE_PWR_PROFILING_NOTIF_CONNECTION_TIMEOUT
+config SAMPLE_BLE_PWR_PROFILING_NOTIF_CONNECTION_TIMEOUT
 	int "Notification connection timeout"
 	default 10000
 	help
 	  The time before the application disconnects after notifications are enabled.
 
-config APP_BLE_PWR_PROFILING_CHAR_VALUE_LEN
+config SAMPLE_BLE_PWR_PROFILING_CHAR_VALUE_LEN
 	int "Size of characteristic value"
 	default 20
 
-config APP_BLE_PWR_PROFILING_LED
+config SAMPLE_BLE_PWR_PROFILING_LED
 	bool "Power profiling LED"
 
-module=APP_BLE_PWR_PROFILING
+module=SAMPLE_BLE_PWR_PROFILING
 module-str=BLE Power Profiling Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

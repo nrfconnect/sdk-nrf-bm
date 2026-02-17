@@ -6,7 +6,7 @@
 
 menu "BLE HIDS Mouse sample"
 
-module=APP_BLE_HIDS_MOUSE
+module=SAMPLE_BLE_HIDS_MOUSE
 module-str=BLE HIDS Mouse Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

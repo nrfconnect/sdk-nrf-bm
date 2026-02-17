@@ -6,7 +6,7 @@
 
 menu "Hello SoftDevice sample"
 
-module=APP_BLE_HELLO_SD
+module=SAMPLE_BLE_HELLO_SD
 module-str=Hello SoftDevice Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

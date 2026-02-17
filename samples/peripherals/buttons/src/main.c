@@ -12,7 +12,7 @@
 
 #include <board-config.h>
 
-LOG_MODULE_REGISTER(app, CONFIG_APP_BUTTONS_LOG_LEVEL);
+LOG_MODULE_REGISTER(sample, CONFIG_SAMPLE_BUTTONS_LOG_LEVEL);
 
 static volatile bool running;
 

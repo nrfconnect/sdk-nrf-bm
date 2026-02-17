@@ -119,6 +119,8 @@ Libraries for NFC
 Samples
 =======
 
+* Updated the prefix for sample Kconfig options from ``APP`` to ``SAMPLE``.
+
 * Removed the battery measurement simulation from the following samples:
 
    * :ref:`ble_cgms_sample`
