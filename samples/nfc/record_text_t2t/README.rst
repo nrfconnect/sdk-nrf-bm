@@ -51,7 +51,10 @@ User interface
 **************
 
 LED 0:
-   Indicates if an NFC field is present.
+  Lit when the device is initialized.
+
+LED 2:
+  Indicates whether an NFC field is present.
 
 Building and running
 ********************
@@ -68,9 +71,9 @@ Testing
 
 After programming the sample to your development kit, complete the following steps to test it:
 
-1. Touch the NFC antenna with the smartphone or tablet and observe that **LED 0** is lit.
+1. Touch the NFC antenna with the smartphone or tablet and observe that **LED 2** is lit.
 #. Observe that the smartphone or tablet displays the encoded text (in the most suitable language).
-#. Move the smartphone or tablet away from the NFC antenna and observe that **LED 0** turns off.
+#. Move the smartphone or tablet away from the NFC antenna and observe that **LED 2** turns off.
 
 Dependencies
 ************

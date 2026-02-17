@@ -35,7 +35,7 @@
 #include <zephyr/logging/log_ctrl.h>
 #include <board-config.h>
 
-LOG_MODULE_REGISTER(app, CONFIG_APP_BLE_HIDS_KEYBOARD_LOG_LEVEL);
+LOG_MODULE_REGISTER(sample, CONFIG_SAMPLE_BLE_HIDS_KEYBOARD_LOG_LEVEL);
 
 #define BASE_USB_HID_SPEC_VERSION 0x0101
 
@@ -103,7 +103,7 @@ static bool boot_mode;
 static void identities_set(enum pm_peer_id_list_skip skip);
 
 /* FIFO for keeping track of keystrokes that can not be sent immediately. */
-RING_BUF_DECLARE(report_fifo, CONFIG_APP_BLE_HIDS_REPORT_FIFO_SIZE *
+RING_BUF_DECLARE(report_fifo, CONFIG_SAMPLE_BLE_HIDS_REPORT_FIFO_SIZE *
 		 (sizeof(struct ble_hids_input_report) + CONFIG_BLE_HIDS_INPUT_REPORT_MAX_LEN));
 
 uint32_t report_fifo_put(struct ble_hids_input_report *report)
@@ -194,9 +194,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		nrf_err = ble_qwr_conn_handle_assign(&ble_qwr, conn_handle);
 		if (nrf_err) {
 			LOG_ERR("Failed to assign qwr handle, nrf_error %#x", nrf_err);
-			return;
 		}
-		nrf_gpio_pin_write(BOARD_PIN_LED_0, !BOARD_LED_ACTIVE_STATE);
 		nrf_gpio_pin_write(BOARD_PIN_LED_1, BOARD_LED_ACTIVE_STATE);
 		break;
 
@@ -254,10 +252,10 @@ static void ble_adv_evt_handler(struct ble_adv *ble_adv, const struct ble_adv_ev
 	case BLE_ADV_EVT_SLOW:
 	case BLE_ADV_EVT_FAST_ALLOW_LIST:
 	case BLE_ADV_EVT_SLOW_ALLOW_LIST:
-		nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+		LOG_DBG("Started advertising, adv_evt_type %d", evt->evt_type);
 		break;
 	case BLE_ADV_EVT_IDLE:
-		nrf_gpio_pin_write(BOARD_PIN_LED_0, !BOARD_LED_ACTIVE_STATE);
+		LOG_DBG("Advertising idle");
 		break;
 	case BLE_ADV_EVT_ALLOW_LIST_REQUEST:
 		nrf_err = pm_allow_list_get(allow_list_addrs, &addr_cnt, allow_list_irks, &irk_cnt);
@@ -335,12 +333,12 @@ static void on_hid_rep_char_write(const struct ble_hids_evt *evt)
 
 			if (!caps_on && ((report_val & OUTPUT_REPORT_BIT_MASK_CAPS_LOCK) != 0)) {
 				LOG_INF("Caps Lock is turned on");
-				nrf_gpio_pin_write(BOARD_PIN_LED_3, BOARD_LED_ACTIVE_STATE);
+				nrf_gpio_pin_write(BOARD_PIN_LED_2, BOARD_LED_ACTIVE_STATE);
 				caps_on = true;
 			} else if (caps_on &&
 				   ((report_val & OUTPUT_REPORT_BIT_MASK_CAPS_LOCK) == 0)) {
 				LOG_INF("Caps Lock is turned off");
-				nrf_gpio_pin_write(BOARD_PIN_LED_3, !BOARD_LED_ACTIVE_STATE);
+				nrf_gpio_pin_write(BOARD_PIN_LED_2, !BOARD_LED_ACTIVE_STATE);
 				caps_on = false;
 			}
 		}
@@ -636,7 +634,10 @@ static void button_handler(uint8_t pin, uint8_t action)
 	}
 
 	switch (pin) {
-	case BOARD_PIN_BTN_0:
+	case BOARD_PIN_BTN_2:
+		on_key_press(&ble_hids, 0xE1, action == BM_BUTTONS_PRESS); /* Shift */
+		break;
+	case BOARD_PIN_BTN_3:
 		if (action == BM_BUTTONS_PRESS) {
 			on_key_press(&ble_hids, *chr, true);
 		} else {
@@ -645,10 +646,6 @@ static void button_handler(uint8_t pin, uint8_t action)
 				chr = hello_world_str;
 			}
 		}
-		break;
-
-	case BOARD_PIN_BTN_1:
-		on_key_press(&ble_hids, 0xE1, action == BM_BUTTONS_PRESS); /* Shift */
 		break;
 	}
 }
@@ -851,7 +848,7 @@ int main(void)
 		.evt_handler = ble_qwr_evt_handler,
 	};
 
-	struct bm_buttons_config configs[4] = {
+	struct bm_buttons_config configs[] = {
 		{
 			.pin_number = BOARD_PIN_BTN_0,
 			.active_state = BM_BUTTONS_ACTIVE_LOW,
@@ -882,7 +879,7 @@ int main(void)
 
 	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
 	nrf_gpio_cfg_output(BOARD_PIN_LED_1);
-	nrf_gpio_cfg_output(BOARD_PIN_LED_3);
+	nrf_gpio_cfg_output(BOARD_PIN_LED_2);
 
 	err = bm_buttons_init(configs, ARRAY_SIZE(configs), BM_BUTTONS_DETECTION_DELAY_MIN_US);
 	if (err) {
@@ -965,6 +962,9 @@ int main(void)
 	}
 
 	LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
+
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+	LOG_INF("BLE HIDS Keyboard sample initialized");
 
 idle:
 	while (true) {

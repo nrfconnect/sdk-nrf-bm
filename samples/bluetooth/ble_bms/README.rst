@@ -43,15 +43,16 @@ User interface
 **************
 
 Button 0:
-   During bonding, press the button to confirm that the passkey is correct.
+   When pairing with authentication, press this button to confirm the passkey shown in the COM listener and complete pairing with the other device.
    See `Testing`_.
 
 Button 1:
    Keep the button pressed while resetting the board to delete bonding information for all peers stored on the device.
-   During bonding, press it to reject the passkey.
+
+   When pairing with authentication, press this button to reject the passkey shown in the COM listener to prevent pairing with the other device.
 
 LED 0:
-   Lit when the device is advertising.
+   Lit when the device is initialized.
 
 LED 1:
    Lit when a device is connected.
@@ -71,7 +72,7 @@ Testing
 1. Compile and program the application.
 #. Connect to the kit that runs this sample with a terminal emulator (for example, the `Serial Terminal app`_).
 #. Reset the kit.
-#. In the Serial Terminal, observe that the ``BLE BMS sample started`` message is printed.
+#. In the Serial Terminal, observe that the ``BLE BMS sample initialized`` message is printed.
 #. Observe that the ``Advertising as nRF_BM_BMS`` message is printed.
 #. Open `nRF Connect for Desktop`_.
 #. Open the `Bluetooth Low Energy app`_ and select the connected device that is used for communication.

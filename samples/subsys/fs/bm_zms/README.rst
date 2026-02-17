@@ -73,6 +73,12 @@ Kconfig fragments
 By default, the sample uses the SoftDevice storage backend.
 To configure it for this sample, follow the steps outlined in :ref:`sample_intro_config_build`.
 
+User interface
+**************
+
+LED 0:
+  Lit when the device has finished running the tests.
+
 Building and running
 ********************
 

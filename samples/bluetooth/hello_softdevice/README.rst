@@ -72,6 +72,12 @@ Overview
 The sample demonstrates the basic management of the SoftDevice in |BMlong|.
 It shows how to enable and disable the SoftDevice, handle various types of events related to the SoftDevice, and manage the Bluetooth LE functionality.
 
+User interface
+**************
+
+LED 2:
+  Lit when the SoftDevice is enabled.
+
 Building and running
 ********************
 
@@ -86,7 +92,7 @@ You can test this sample by performing the following steps:
 
 1. Compile and program the application.
 #. Observe that the ``Hello SoftDevice sample started`` message is printed.
-#. Observe that the ``SoftDevice enabled`` message is printed.
+#. Observe that the ``SoftDevice enabled`` message is printed and **LED 2** is ON.
 #. Observe that the ``Bluetooth enabled`` message is printed.
-#. Observe that the ``SoftDevice disabled`` message is printed.
+#. Observe that the ``SoftDevice disabled`` message is printed and **LED 2** is OFF.
 #. Observe that the ``Bye`` message is printed.

@@ -70,6 +70,12 @@ Overview
 The sample initializes the application UARTE instance, specified in the :file:`board-config.h` file in the board.
 It then outputs a message on the UART before echoing the message entered by the user.
 
+User interface
+**************
+
+LED 0:
+  Lit when the device is initialized.
+
 Building and running
 ********************
 
@@ -83,7 +89,7 @@ Testing
 You can test this sample by performing the following steps:
 
 1. Compile and program the application.
-#. Observe that the ``UARTE sample started`` message is printed in one terminal.
+#. Observe that the ``UARTE sample initialized`` message is printed in one terminal.
 #. Observe that the ``Hello world! I will echo the lines you enter:`` message is printed in another terminal.
 #. Enter a message in the terminal.
    Observe that you receive the same line in response when pressing Enter (sending ``\r`` or ``\n`` to the device).

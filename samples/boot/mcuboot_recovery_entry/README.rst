@@ -85,7 +85,7 @@ Testing
    Observe that the details of the currently loaded application are displayed.
 #. Build an application with a modified image version by changing the :kconfig:option:`CONFIG_MCUBOOT_IMGTOOL_SIGN_VERSION` Kconfig option.
    One way of changing the option is to add ``CONFIG_MCUBOOT_IMGTOOL_SIGN_VERSION="1.0.0+0"`` to the sample's :file:`prj.conf` file to override the default version string.
-#. Transfer the :file:`<build_dir>/installer_softdevice_firmware_loader.bin` and :file:`<build_dir>/<app_name>/zephyr/zephyr.signed.bin` files to your mobile device.
+#. Transfer the :file:`<build_dir>/installer_softdevice_firmware_loader.bin` and :file:`<build_dir>/<SAMPLE_name>/zephyr/zephyr.signed.bin` files to your mobile device.
 #. In nRF Connect Device Manager application, tap the :guilabel:`Image` tab at the bottom to move to the image management tab.
    If you only see the basic image tab view, tap :guilabel:`Advanced` to switch to the advanced image tab view.
 #. Under :guilabel:`Firmware Upload` select the update file to load:

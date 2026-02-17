@@ -6,22 +6,25 @@
 
 menu "LPUARTE sample"
 
-config APP_LPUARTE_DATA_LEN_MAX
+config SAMPLE_LPUARTE_DATA_LEN_MAX
 	int "Maximum UARTE data length"
 	default 128
 	help
 	  Defines the maximum length the application can store in the receive buffer.
 
-config APP_LPUARTE_PARITY
+config SAMPLE_LPUARTE_PARITY
 	bool "UARTE parity"
 	help
 	  Enable parity on the UARTE peripheral used by the application.
 
-config APP_LPUARTE_IRQ_PRIO
+config SAMPLE_LPUARTE_IRQ_PRIO
 	int "LPUARTE IRQ priority"
 	default 5
 
-module=APP_LPUARTE
+config SAMPLE_LPUARTE_INIT_LED
+	bool "LED indicating if application has been initialized"
+
+module=SAMPLE_LPUARTE
 module-str=Low Power UARTE Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

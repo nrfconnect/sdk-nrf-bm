@@ -68,7 +68,19 @@ Overview
 ********
 
 The sample initializes the radio notification library and registers a handler that triggers both when the radio is enabled and when it is disabled.
-The handler then toggles **LED 0** based on the current state of the radio.
+The handler then toggles **LED 2** based on the current state of the radio.
+
+User interface
+**************
+
+LED 0:
+  Lit when the device is initialized.
+
+LED 1:
+  Lit when a device is connected.
+
+LED 2:
+  ON when a "radio on" notification is received, OFF when a "radio off" notification is received.
 
 Building and running
 ********************
@@ -84,6 +96,6 @@ You can test this sample using `nRF Connect for Desktop`_ with the `Serial Termi
 Make sure that these are installed before starting the testing procedure.
 
 1. Compile and program the application.
-#. In the Serial Terminal, observe that the ``BLE Radio Notification sample started`` message is printed.
-#. Observe that the **LED 0** blinks while the device is advertising and the radio is active.
-#. Observe that the **LED 0** stops blinking when advertising stops.
+#. In the Serial Terminal, observe that the ``BLE Radio Notification sample initialized`` message is printed.
+#. Observe that the **LED 2** blinks while the device is advertising and the radio is active.
+#. Observe that the **LED 2** stops blinking when advertising stops.

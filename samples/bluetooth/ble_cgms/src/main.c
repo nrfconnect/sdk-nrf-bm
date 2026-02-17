@@ -18,6 +18,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <ble.h>
+#include <hal/nrf_gpio.h>
 #include <bm/bluetooth/ble_adv.h>
 #include <bm/bluetooth/ble_conn_params.h>
 #include <bm/bluetooth/peer_manager/nrf_ble_lesc.h>
@@ -44,7 +45,7 @@
 
 #include <board-config.h>
 
-LOG_MODULE_REGISTER(app, CONFIG_APP_BLE_CGMS_LOG_LEVEL);
+LOG_MODULE_REGISTER(sample, CONFIG_SAMPLE_BLE_CGMS_LOG_LEVEL);
 
 /* Perform bonding. */
 #define SEC_PARAM_BOND 1
@@ -62,15 +63,6 @@ LOG_MODULE_REGISTER(app, CONFIG_APP_BLE_CGMS_LOG_LEVEL);
 #define SEC_PARAM_MIN_KEY_SIZE 7
 /* Maximum encryption key size. */
 #define SEC_PARAM_MAX_KEY_SIZE 16
-
-enum led_indicate {
-	LED_INDICATE_IDLE = 1,
-	LED_INDICATE_ADVERTISING,
-	LED_INDICATE_ADVERTISING_ALLOW_LIST,
-	LED_INDICATE_ADVERTISING_SLOW,
-	LED_INDICATE_ADVERTISING_DIRECTED,
-	LED_INDICATE_CONNECTED,
-};
 
 /** Glucose measurement timer. */
 static struct bm_timer glucose_meas_timer;
@@ -94,9 +86,9 @@ static uint16_t peer_id;
 static bool auth_key_request;
 
 static uint16_t current_time_offset;
-static uint16_t glucose_concentration = CONFIG_APP_GLUCOSE_CONCENTRATION_MIN;
+static uint16_t glucose_concentration = CONFIG_SAMPLE_GLUCOSE_CONCENTRATION_MIN;
 
-static uint8_t qwr_mem[CONFIG_APP_QWR_MEM_BUFF_SIZE];
+static uint8_t qwr_mem[CONFIG_SAMPLE_QWR_MEM_BUFF_SIZE];
 
 
 /**
@@ -140,7 +132,7 @@ static void glucose_meas_timeout_handler(void *context)
 	if (ble_cgms.comm_interval != 0) {
 		current_time_offset += ble_cgms.comm_interval;
 	} else {
-		current_time_offset += CONFIG_APP_GLUCOSE_MEAS_INTERVAL;
+		current_time_offset += CONFIG_SAMPLE_GLUCOSE_MEAS_INTERVAL;
 	}
 
 	read_glucose_measurement();
@@ -228,7 +220,7 @@ static void cgms_evt_handler(struct ble_cgms *cgms, const struct ble_cgms_evt *e
 	case BLE_CGMS_EVT_WRITE_COMM_INTERVAL:
 		LOG_INF("CGMS change communication interval");
 		if (cgms->comm_interval == 0xFF) {
-			cgms->comm_interval = CONFIG_APP_GLUCOSE_MEAS_INTERVAL;
+			cgms->comm_interval = CONFIG_SAMPLE_GLUCOSE_MEAS_INTERVAL;
 		}
 		err = bm_timer_stop(&glucose_meas_timer);
 		if (err) {
@@ -297,7 +289,7 @@ static uint32_t services_init(void)
 	};
 
 	struct ble_qwr_config qwr_config = {
-		.mem_buffer.len = CONFIG_APP_QWR_MEM_BUFF_SIZE,
+		.mem_buffer.len = CONFIG_SAMPLE_QWR_MEM_BUFF_SIZE,
 		.mem_buffer.p_mem = qwr_mem,
 		.evt_handler = qwr_evt_handler,
 	};
@@ -313,7 +305,7 @@ static uint32_t services_init(void)
 	}
 
 	/* Initialize Glucose Service */
-	ble_cgms.comm_interval = CONFIG_APP_GLUCOSE_MEAS_INTERVAL;
+	ble_cgms.comm_interval = CONFIG_SAMPLE_GLUCOSE_MEAS_INTERVAL;
 
 	nrf_err = ble_cgms_init(&ble_cgms, &cgms_config);
 	if (nrf_err) {
@@ -321,7 +313,7 @@ static uint32_t services_init(void)
 		return nrf_err;
 	}
 
-	ble_cgms.comm_interval = CONFIG_APP_GLUCOSE_MEAS_INTERVAL;
+	ble_cgms.comm_interval = CONFIG_SAMPLE_GLUCOSE_MEAS_INTERVAL;
 
 	/* Add a basic battery measurement with only mandatory fields */
 
@@ -370,14 +362,6 @@ void on_conn_params_evt(const struct ble_conn_params_evt *evt)
 	}
 }
 
-static void led_indication_set(enum led_indicate led_indicate)
-{
-	nrf_gpio_pin_write(BOARD_PIN_LED_0, IS_BIT_SET(led_indicate, 0) == BOARD_LED_ACTIVE_STATE);
-	nrf_gpio_pin_write(BOARD_PIN_LED_1, IS_BIT_SET(led_indicate, 1) == BOARD_LED_ACTIVE_STATE);
-	nrf_gpio_pin_write(BOARD_PIN_LED_2, IS_BIT_SET(led_indicate, 2) == BOARD_LED_ACTIVE_STATE);
-	nrf_gpio_pin_write(BOARD_PIN_LED_3, IS_BIT_SET(led_indicate, 3) == BOARD_LED_ACTIVE_STATE);
-}
-
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {
 
@@ -386,7 +370,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 	switch (evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:
 		LOG_INF("Connected");
-		led_indication_set(LED_INDICATE_CONNECTED);
+		nrf_gpio_pin_write(BOARD_PIN_LED_1, BOARD_LED_ACTIVE_STATE);
 
 		conn_handle = evt->evt.gap_evt.conn_handle;
 		nrf_err = ble_qwr_conn_handle_assign(&ble_qwr, conn_handle);
@@ -407,6 +391,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		break;
 	case BLE_GAP_EVT_DISCONNECTED:
 		LOG_INF("Disconnected");
+		nrf_gpio_pin_write(BOARD_PIN_LED_1, !BOARD_LED_ACTIVE_STATE);
 		if (conn_handle == evt->evt.gap_evt.conn_handle) {
 			conn_handle = BLE_CONN_HANDLE_INVALID;
 		}
@@ -484,22 +469,15 @@ static void ble_adv_evt_handler(struct ble_adv *adv, const struct ble_adv_evt *a
 		__ASSERT(false, "BLE advertising error %#x", adv_evt->error.reason);
 		break;
 	case BLE_ADV_EVT_DIRECTED_HIGH_DUTY:
-		led_indication_set(LED_INDICATE_ADVERTISING_DIRECTED);
-		break;
+	case BLE_ADV_EVT_DIRECTED:
 	case BLE_ADV_EVT_FAST:
-		led_indication_set(LED_INDICATE_ADVERTISING);
-		break;
 	case BLE_ADV_EVT_SLOW:
-		led_indication_set(LED_INDICATE_ADVERTISING_SLOW);
-		break;
 	case BLE_ADV_EVT_FAST_ALLOW_LIST:
-		led_indication_set(LED_INDICATE_ADVERTISING_ALLOW_LIST);
-		break;
 	case BLE_ADV_EVT_SLOW_ALLOW_LIST:
-		led_indication_set(LED_INDICATE_ADVERTISING_ALLOW_LIST);
+		LOG_DBG("Started advertising, adv_evt_type %d", adv_evt->evt_type);
 		break;
 	case BLE_ADV_EVT_IDLE:
-		led_indication_set(LED_INDICATE_IDLE);
+		LOG_DBG("Advertising idle");
 		break;
 	case BLE_ADV_EVT_ALLOW_LIST_REQUEST:
 		nrf_err = pm_allow_list_get(allow_list_addrs, &addr_cnt, allow_list_irks, &irk_cnt);
@@ -626,26 +604,20 @@ static void button_handler(uint8_t pin, uint8_t action)
 	}
 
 	switch (pin) {
-	case BOARD_PIN_BTN_0:
-		LOG_INF("Sleep mode not supported");
-		break;
-
-	case BOARD_PIN_BTN_1:
-		LOG_INF("Increase GL Concentration");
-		glucose_concentration += CONFIG_APP_GLUCOSE_CONCENTRATION_INC;
-		if (glucose_concentration > CONFIG_APP_GLUCOSE_CONCENTRATION_MAX) {
-			glucose_concentration = CONFIG_APP_GLUCOSE_CONCENTRATION_MIN;
-		}
-		break;
-
-	case BOARD_PIN_BTN_3:
+	case BOARD_PIN_BTN_2:
 		LOG_INF("Decrease GL Concentration");
-		glucose_concentration -= CONFIG_APP_GLUCOSE_CONCENTRATION_DEC;
-		if (glucose_concentration < CONFIG_APP_GLUCOSE_CONCENTRATION_MIN) {
-			glucose_concentration = CONFIG_APP_GLUCOSE_CONCENTRATION_MAX;
+		glucose_concentration -= CONFIG_SAMPLE_GLUCOSE_CONCENTRATION_DEC;
+		if (glucose_concentration < CONFIG_SAMPLE_GLUCOSE_CONCENTRATION_MIN) {
+			glucose_concentration = CONFIG_SAMPLE_GLUCOSE_CONCENTRATION_MAX;
 		}
 		break;
-
+	case BOARD_PIN_BTN_3:
+		LOG_INF("Increase GL Concentration");
+		glucose_concentration += CONFIG_SAMPLE_GLUCOSE_CONCENTRATION_INC;
+		if (glucose_concentration > CONFIG_SAMPLE_GLUCOSE_CONCENTRATION_MAX) {
+			glucose_concentration = CONFIG_SAMPLE_GLUCOSE_CONCENTRATION_MIN;
+		}
+		break;
 	default:
 		break;
 	}
@@ -806,7 +778,7 @@ static uint32_t advertising_init(void)
 	return NRF_SUCCESS;
 }
 
-struct bm_buttons_config btn_configs[4] = {
+struct bm_buttons_config btn_configs[] = {
 	{
 		.pin_number = BOARD_PIN_BTN_0,
 		.active_state = BM_BUTTONS_ACTIVE_LOW,
@@ -859,13 +831,6 @@ static int buttons_leds_init(bool *erase_bonds)
 
 	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
 	nrf_gpio_cfg_output(BOARD_PIN_LED_1);
-	nrf_gpio_cfg_output(BOARD_PIN_LED_2);
-	nrf_gpio_cfg_output(BOARD_PIN_LED_3);
-
-	nrf_gpio_pin_write(BOARD_PIN_LED_0, !BOARD_LED_ACTIVE_STATE);
-	nrf_gpio_pin_write(BOARD_PIN_LED_1, !BOARD_LED_ACTIVE_STATE);
-	nrf_gpio_pin_write(BOARD_PIN_LED_2, !BOARD_LED_ACTIVE_STATE);
-	nrf_gpio_pin_write(BOARD_PIN_LED_3, !BOARD_LED_ACTIVE_STATE);
 
 	return 0;
 }
@@ -923,6 +888,9 @@ int main(void)
 	}
 
 	LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
+
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+	LOG_INF("Continuous Glucose Monitoring sample initialized");
 
 idle:
 	/* Enter main loop. */

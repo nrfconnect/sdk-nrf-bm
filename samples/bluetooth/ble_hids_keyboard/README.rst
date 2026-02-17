@@ -80,26 +80,28 @@ User interface
 **************
 
 Button 0:
-   Sends one character of the predefined input ("hello\\n") to the computer.
-
-   During bonding, press it to confirm that the passkey is correct.
+   When pairing with authentication, press this button to confirm the passkey shown in the COM listener and complete pairing with the other device.
    See `Testing`_.
 
 Button 1:
-   Simulates the Shift key.
-
    Keep the button pressed while resetting the board to delete bonding information for all peers stored on the device.
 
-   During bonding, press it to reject the passkey.
+   When pairing with authentication, press this button to reject the passkey shown in the COM listener to prevent pairing with the other device.
+
+Button 2:
+   Simulate the Shift key.
+
+Button 3:
+   Send one character of the predefined input ("hello\\n") to the computer.
 
 LED 0:
-   Lit when the device is advertising.
+   Lit when the device is initialized.
 
 LED 1:
    Lit when a device is connected.
 
-LED 3:
-   Lit when Caps Lock is on.
+LED 2:
+   Lit when Caps Lock is active on the computer.
 
 Building and running
 ********************
@@ -112,7 +114,7 @@ Testing
 =======
 
 1. Compile and program the application.
-#. In the Serial Terminal, using the `Serial Terminal app`_ or |VSC|, observe that the ``BLE HIDS Keyboard sample started.`` message is printed.
+#. In the Serial Terminal, using the `Serial Terminal app`_ or |VSC|, observe that the ``BLE HIDS Keyboard sample initialized`` message is printed.
 #. Observe that the ``Advertising as nRF_BM_HIDS_KB`` message is printed.
 #. On your computer or mobile phone, open the Bluetooth settings and scan for advertising devices.
    Your device should be advertising as ``nRF_BM_HIDS_KB``.
@@ -126,8 +128,8 @@ Testing
 
    The terminal output in |VSC| indicates ``Peer connected``.
 #. Observe that the device is detected as a keyboard.
-#. Repeatedly press **Button 0** on the kit.
+#. Repeatedly press **Button 3** on the kit.
    Every button press sends one character of the test message "hello" to your device (the test message includes a carriage return).
-#. Press **Button 1** and hold it while pressing **Button 0**.
+#. Press **Button 2** and hold it while pressing **Button 3**.
    Observe that the next letter of the "hello" message appears as a capital letter.
-   This is because **Button 1** simulates the Shift key.
+   This is because **Button 2** simulates the Shift key.

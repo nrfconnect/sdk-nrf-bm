@@ -69,6 +69,15 @@ Overview
 
 The sample initializes and blinks LED0 on the device.
 
+User interface
+**************
+
+LED 0:
+  Lit when the device is initialized.
+
+LED 2:
+  Blinky LED.
+
 Building and running
 ********************
 
@@ -82,5 +91,5 @@ Testing
 You can test this sample by performing the following steps:
 
 1. Compile and program the application.
-#. Observe that the ``LEDs sample started`` message is printed.
+#. Observe that the ``LEDs sample initialized`` message is printed.
 #. Observe that LED0 is blinking.

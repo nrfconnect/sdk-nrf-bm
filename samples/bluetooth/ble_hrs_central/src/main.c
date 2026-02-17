@@ -36,7 +36,7 @@
 
 #include <board-config.h>
 
-LOG_MODULE_REGISTER(app, CONFIG_APP_BLE_HRS_CENTRAL_SAMPLE_LOG_LEVEL);
+LOG_MODULE_REGISTER(sample, CONFIG_SAMPLE_BLE_HRS_CENTRAL_SAMPLE_LOG_LEVEL);
 
 /* Perform bonding. */
 #define SEC_PARAM_BOND 1
@@ -77,16 +77,16 @@ static uint16_t conn_handle;
 /* True if allow list has been temporarily disabled. */
 static bool allow_list_disabled;
 
-#if defined(CONFIG_APP_USE_TARGET_PERIPHERAL_ADDR)
+#if defined(CONFIG_SAMPLE_USE_TARGET_PERIPHERAL_ADDR)
 uint8_t target_periph_addr[BLE_GAP_ADDR_LEN] = {
-	(CONFIG_APP_TARGET_PERIPHERAL_ADDR >> 40) & 0xff,
-	(CONFIG_APP_TARGET_PERIPHERAL_ADDR >> 32) & 0xff,
-	(CONFIG_APP_TARGET_PERIPHERAL_ADDR >> 24) & 0xff,
-	(CONFIG_APP_TARGET_PERIPHERAL_ADDR >> 16) & 0xff,
-	(CONFIG_APP_TARGET_PERIPHERAL_ADDR >> 8) & 0xff,
-	(CONFIG_APP_TARGET_PERIPHERAL_ADDR) & 0xff,
+	(CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR >> 40) & 0xff,
+	(CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR >> 32) & 0xff,
+	(CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR >> 24) & 0xff,
+	(CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR >> 16) & 0xff,
+	(CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR >> 8) & 0xff,
+	(CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR) & 0xff,
 };
-#endif /* CONFIG_APP_USE_TARGET_PERIPHERAL_ADDR */
+#endif /* CONFIG_SAMPLE_USE_TARGET_PERIPHERAL_ADDR */
 
 static uint32_t scan_start(bool erase_bonds);
 
@@ -131,6 +131,8 @@ static void on_ble_evt(const ble_evt_t *ble_evt, void *ctx)
 			scan_start(false);
 		}
 
+		nrf_gpio_pin_write(BOARD_PIN_LED_1, BOARD_LED_ACTIVE_STATE);
+
 		break;
 
 	case BLE_GAP_EVT_DISCONNECTED:
@@ -139,6 +141,8 @@ static void on_ble_evt(const ble_evt_t *ble_evt, void *ctx)
 		if (ble_conn_state_central_conn_count() < CONFIG_NRF_SDH_BLE_CENTRAL_LINK_COUNT) {
 			scan_start(false);
 		}
+
+		nrf_gpio_pin_write(BOARD_PIN_LED_1, !BOARD_LED_ACTIVE_STATE);
 
 		break;
 
@@ -540,20 +544,20 @@ static uint32_t scan_init(void)
 		LOG_ERR("nrf_ble_scan_filter_add uuid failed, nrf_error %#x", nrf_err);
 	}
 
-#if defined(CONFIG_APP_USE_TARGET_PERIPHERAL_NAME)
+#if defined(CONFIG_SAMPLE_USE_TARGET_PERIPHERAL_NAME)
 		nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_NAME_FILTER,
-					      CONFIG_APP_TARGET_PERIPHERAL_NAME);
+					      CONFIG_SAMPLE_TARGET_PERIPHERAL_NAME);
 		if (nrf_err) {
 			LOG_ERR("nrf_ble_scan_filter_add name failed, nrf_error %#x", nrf_err);
 		}
-#endif /* CONFIG_APP_USE_TARGET_PERIPHERAL_NAME */
+#endif /* CONFIG_SAMPLE_USE_TARGET_PERIPHERAL_NAME */
 
-#if defined(CONFIG_APP_USE_TARGET_PERIPHERAL_ADDR)
+#if defined(CONFIG_SAMPLE_USE_TARGET_PERIPHERAL_ADDR)
 		nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_ADDR_FILTER, target_periph_addr);
 		if (nrf_err) {
 			LOG_ERR("nrf_ble_scan_filter_add address failed, nrf_error %#x", nrf_err);
 		}
-#endif /* CONFIG_APP_USE_TARGET_PERIPHERAL_ADDR */
+#endif /* CONFIG_SAMPLE_USE_TARGET_PERIPHERAL_ADDR */
 
 	nrf_err = ble_scan_filters_enable(&ble_scan, BLE_SCAN_UUID_FILTER |
 						     BLE_SCAN_NAME_FILTER |
@@ -587,6 +591,7 @@ int main(void)
 	LOG_INF("BLE HRS Central sample started.");
 
 	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
+	nrf_gpio_cfg_output(BOARD_PIN_LED_1);
 
 	err = bm_buttons_init(configs, ARRAY_SIZE(configs), BM_BUTTONS_DETECTION_DELAY_MIN_US);
 	if (err) {
@@ -649,6 +654,9 @@ int main(void)
 	}
 
 	scan_start(erase_bonds);
+
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+	LOG_INF("BLE HRS sample initialized");
 
 	while (true) {
 #if defined(CONFIG_PM_LESC)

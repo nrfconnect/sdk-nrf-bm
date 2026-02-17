@@ -8,9 +8,10 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 #include <nrfx_pwm.h>
+#include <hal/nrf_gpio.h>
 #include <board-config.h>
 
-LOG_MODULE_REGISTER(app, CONFIG_APP_PWM_LOG_LEVEL);
+LOG_MODULE_REGISTER(sample, CONFIG_SAMPLE_PWM_LOG_LEVEL);
 
 /* nrfx PWM instance index. */
 #define PWM_INST NRF_PWM20
@@ -50,14 +51,14 @@ int main(void)
 	nrf_pwm_sequence_t seq = {
 		.values = {pwm_val},
 		.length = NRFX_ARRAY_SIZE(pwm_val),
-		.repeats = CONFIG_APP_PWM_VALUE_REPEATS,
+		.repeats = CONFIG_SAMPLE_PWM_VALUE_REPEATS,
 		.end_delay = 0
 	};
 
 	LOG_INF("PWM sample started");
 
 	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(PWM_INST),
-			   CONFIG_APP_PWM_IRQ_PRIO,
+			   CONFIG_SAMPLE_PWM_IRQ_PRIO,
 			   pwm_direct_isr, 0);
 
 	err = nrfx_pwm_init(&pwm_instance, &config, pwm_handler, &pwm_instance);
@@ -66,8 +67,13 @@ int main(void)
 		goto idle;
 	}
 
-	nrfx_pwm_simple_playback(&pwm_instance, &seq, CONFIG_APP_PWM_PLAYBACK_COUNT,
+	nrfx_pwm_simple_playback(&pwm_instance, &seq, CONFIG_SAMPLE_PWM_PLAYBACK_COUNT,
 				 NRFX_PWM_FLAG_LOOP);
+
+	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+
+	LOG_INF("PWM sample initialized");
 
 idle:
 	while (true) {

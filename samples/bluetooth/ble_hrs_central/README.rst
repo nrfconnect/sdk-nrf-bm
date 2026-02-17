@@ -73,6 +73,23 @@ If this succeeds, the sample subscribes to the Heart Rate Measurement characteri
 
 .. _ble_hrs_central_sample_testing:
 
+User interface
+**************
+
+Button 0:
+  Press to disable allow list.
+
+Button 1:
+  Press to disconnect from the connected peer device.
+
+  Keep the button pressed while resetting the board to delete bonding information for all peers stored on the device.
+
+LED 0:
+   Lit when the device is initialized.
+
+LED 1:
+   Lit when a device is connected.
+
 Building and running
 ********************
 
@@ -88,7 +105,7 @@ This sample requires two devices to test, one running this sample and another on
 Complete the following steps to test the sample:
 
 1. Compile and program the application.
-#. In the Serial Terminal, observe that the ``BLE HRS Central sample started`` message is printed.
+#. In the Serial Terminal, observe that the ``BLE HRS Central sample initialized`` message is printed.
 #. Program the other development kit with the :ref:`ble_hrs_sample` sample and reset it.
 #. Observe that the ``Scan filter match`` message is printed, followed by ``Connecting to target`` and ``Connected``.
 #. Observe that the ``Heart rate service discovered.`` message is printed.

@@ -73,18 +73,25 @@ User interface
 **************
 
 Button 0:
-   During bonding, press the button to confirm that the passkey is correct.
+   When pairing with authentication, press this button to confirm the passkey shown in the COM listener and complete pairing with the other device.
    See `Testing`_.
 
 Button 1:
-   Increase the simulated glucose concentration.
-
    Keep the button pressed while resetting the board to delete bonding information for all peers stored on the device.
 
-   During bonding, press it to reject the passkey.
+   When pairing with authentication, press this button to reject the passkey shown in the COM listener to prevent pairing with the other device.
+
+Button 2:
+   Decrease the simulated glucose concentration.
 
 Button 3:
-   Decrease the simulated glucose concentration.
+   Increase the simulated glucose concentration.
+
+LED 0:
+   Lit when the device is initialized.
+
+LED 1:
+   Lit when a device is connected.
 
 Building and running
 ********************
@@ -101,7 +108,7 @@ Testing
 #. Connect to the kit with a terminal emulator (for example, the `Serial Terminal app`_).
    Note that the kit has two UARTs, where only one will output the log.
 #. Reset the kit.
-#. In the Serial Terminal, observe that the ``Continuous Glucose Monitoring sample started.`` message is printed.
+#. In the Serial Terminal, observe that the ``Continuous Glucose Monitoring sample initialized.`` message is printed.
 #. Observe that the device is advertising under the default name ``nRF_BM_CGMS``.
    You can configure this name using the ``CONFIG_BLE_ADV_NAME`` Kconfig option.
    For information on how to do this, see `Configuring Kconfig`_.

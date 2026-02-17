@@ -13,9 +13,10 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 
+#include <hal/nrf_gpio.h>
 #include <board-config.h>
 
-LOG_MODULE_REGISTER(app, CONFIG_APP_LPUARTE_LOG_LEVEL);
+LOG_MODULE_REGISTER(sample, CONFIG_SAMPLE_LPUARTE_LOG_LEVEL);
 
 static nrfx_uarte_t uarte_inst = NRFX_UARTE_INSTANCE(BOARD_APP_LPUARTE_INST);
 
@@ -75,14 +76,14 @@ static int lpuarte_init(void)
 		.rdy_pin = BOARD_APP_LPUARTE_PIN_RDY,
 	};
 
-#if defined(CONFIG_APP_LPUARTE_PARITY)
+#if defined(CONFIG_SAMPLE_LPUARTE_PARITY)
 	lpu_cfg.uarte_cfg.config.parity = NRF_UARTE_PARITY_INCLUDED;
 #endif
 
-	lpu_cfg.uarte_cfg.interrupt_priority = CONFIG_APP_LPUARTE_IRQ_PRIO;
+	lpu_cfg.uarte_cfg.interrupt_priority = CONFIG_SAMPLE_LPUARTE_IRQ_PRIO;
 
 	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(BOARD_APP_LPUARTE_INST),
-			   CONFIG_APP_LPUARTE_IRQ_PRIO, lpuarte_direct_isr, 0);
+			   CONFIG_SAMPLE_LPUARTE_IRQ_PRIO, lpuarte_direct_isr, 0);
 
 	irq_enable(NRFX_IRQ_NUMBER_GET(BOARD_APP_LPUARTE_INST));
 
@@ -148,6 +149,13 @@ int main(void)
 	if (err) {
 		LOG_ERR("bm_timer_start failed, err %d", err);
 	}
+
+#if defined(CONFIG_SAMPLE_LPUARTE_INIT_LED)
+	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+#endif
+
+	LOG_INF("LPUARTE sample initialized");
 
 idle:
 	while (true) {

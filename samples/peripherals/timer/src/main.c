@@ -8,13 +8,15 @@
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
+#include <hal/nrf_gpio.h>
+#include <board-config.h>
 
-LOG_MODULE_REGISTER(app, CONFIG_APP_TIMER_LOG_LEVEL);
+LOG_MODULE_REGISTER(sample, CONFIG_SAMPLE_TIMER_LOG_LEVEL);
 
-#define PERIODIC_TIMER_TICKS BM_TIMER_MS_TO_TICKS(CONFIG_APP_PERIODIC_TIMER_INTERVAL_MS)
-#define HELLO_TIMER_TICKS    BM_TIMER_MS_TO_TICKS(CONFIG_APP_HELLO_TIMER_DURATION_MS)
-#define WORLD_TIMER_TICKS    BM_TIMER_MS_TO_TICKS(CONFIG_APP_WORLD_TIMER_DURATION_MS)
-#define BYE_TIMER_TICKS      BM_TIMER_MS_TO_TICKS(CONFIG_APP_BYE_TIMER_DURATION_MS)
+#define PERIODIC_TIMER_TICKS BM_TIMER_MS_TO_TICKS(CONFIG_SAMPLE_PERIODIC_TIMER_INTERVAL_MS)
+#define HELLO_TIMER_TICKS    BM_TIMER_MS_TO_TICKS(CONFIG_SAMPLE_HELLO_TIMER_DURATION_MS)
+#define WORLD_TIMER_TICKS    BM_TIMER_MS_TO_TICKS(CONFIG_SAMPLE_WORLD_TIMER_DURATION_MS)
+#define BYE_TIMER_TICKS      BM_TIMER_MS_TO_TICKS(CONFIG_SAMPLE_BYE_TIMER_DURATION_MS)
 
 static struct bm_timer oneshot_timer;
 static struct bm_timer periodic_timer;
@@ -98,7 +100,10 @@ int main(void)
 		goto idle;
 	}
 
-	LOG_INF("Timers initialized");
+	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+
+	LOG_INF("Timer sample initialized");
 
 idle:
 	while (true) {

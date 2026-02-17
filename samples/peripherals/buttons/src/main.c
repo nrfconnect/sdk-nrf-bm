@@ -10,9 +10,10 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 
+#include <hal/nrf_gpio.h>
 #include <board-config.h>
 
-LOG_MODULE_REGISTER(app, CONFIG_APP_BUTTONS_LOG_LEVEL);
+LOG_MODULE_REGISTER(sample, CONFIG_SAMPLE_BUTTONS_LOG_LEVEL);
 
 static volatile bool running;
 
@@ -33,7 +34,7 @@ int main(void)
 
 	running = true;
 
-	struct bm_buttons_config configs[4] = {
+	struct bm_buttons_config configs[] = {
 		{
 			.pin_number = BOARD_PIN_BTN_0,
 			.active_state = BM_BUTTONS_ACTIVE_LOW,
@@ -72,7 +73,10 @@ int main(void)
 		goto idle;
 	}
 
-	LOG_INF("Buttons initialized, press button 3 to terminate");
+	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+
+	LOG_INF("Buttons sample initialized, press button 3 to terminate");
 
 	while (running) {
 		log_flush();

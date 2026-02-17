@@ -95,6 +95,12 @@ User interface
 Button 1:
    Keep the button pressed while resetting the board to delete bonding information for all peers stored on the device.
 
+LED 0:
+   Lit when the device is initialized.
+
+LED 1:
+   Lit when a device is connected.
+
 Building and running
 ********************
 
@@ -109,7 +115,7 @@ You can test this sample using `nRF Connect for Desktop`_ with the `Bluetooth Lo
 Make sure that these are installed before starting the testing procedure.
 
 1. Compile and program the application.
-#. In the Serial Terminal, observe that the ``BLE HRS sample started`` message is printed.
+#. In the Serial Terminal, observe that the ``BLE HRS sample initialized`` message is printed.
 #. Observe that the ``Advertising as nRF_BM_HRS`` message is printed.
 #. In nRF Connect for Desktop, scan for advertising devices.
    Your device should be advertising as ``nRF_BM_HRS``.

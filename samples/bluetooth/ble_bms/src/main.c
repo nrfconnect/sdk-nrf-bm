@@ -34,9 +34,9 @@
 
 /* FIFO for keeping track of peers that cannot be deleted immediately. */
 RING_BUF_DECLARE(peers_to_delete_on_disconnect,
-		 CONFIG_APP_BLE_BMS_PEERS_TO_DELETE_ON_DISCONNECT_MAX * sizeof(uint16_t));
+		 CONFIG_SAMPLE_BLE_BMS_PEERS_TO_DELETE_ON_DISCONNECT_MAX * sizeof(uint16_t));
 
-LOG_MODULE_REGISTER(app, CONFIG_APP_BLE_BMS_LOG_LEVEL);
+LOG_MODULE_REGISTER(sample, CONFIG_SAMPLE_BLE_BMS_LOG_LEVEL);
 
 /* Perform bonding. */
 #define SEC_PARAM_BOND 1
@@ -70,7 +70,7 @@ static uint16_t peer_id;
 static bool auth_key_request;
 
 /* Write buffer for the Queued Write module. */
-static uint8_t qwr_mem[CONFIG_APP_QWR_MEM_BUFF_SIZE];
+static uint8_t qwr_mem[CONFIG_SAMPLE_QWR_MEM_BUFF_SIZE];
 
 /* Forward declaration */
 static void identities_set(enum pm_peer_id_list_skip skip);
@@ -89,9 +89,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		nrf_err = ble_qwr_conn_handle_assign(&ble_qwr, conn_handle);
 		if (nrf_err) {
 			LOG_ERR("Failed to assign qwr handle, nrf_error %#x", nrf_err);
-			return;
 		}
-		nrf_gpio_pin_write(BOARD_PIN_LED_0, !BOARD_LED_ACTIVE_STATE);
 		nrf_gpio_pin_write(BOARD_PIN_LED_1, BOARD_LED_ACTIVE_STATE);
 		break;
 
@@ -145,10 +143,10 @@ static void ble_adv_evt_handler(struct ble_adv *ble_adv, const struct ble_adv_ev
 	case BLE_ADV_EVT_SLOW:
 	case BLE_ADV_EVT_FAST_ALLOW_LIST:
 	case BLE_ADV_EVT_SLOW_ALLOW_LIST:
-		nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+		LOG_DBG("Started advertising, adv_evt_type %d", evt->evt_type);
 		break;
 	case BLE_ADV_EVT_IDLE:
-		nrf_gpio_pin_write(BOARD_PIN_LED_0, !BOARD_LED_ACTIVE_STATE);
+		LOG_DBG("Advertising idle");
 		break;
 	case BLE_ADV_EVT_ALLOW_LIST_REQUEST:
 		nrf_err = pm_allow_list_get(allow_list_addrs, &addr_cnt,
@@ -616,7 +614,7 @@ int main(void)
 		.mem_buffer.p_mem = qwr_mem,
 	};
 
-	struct bm_buttons_config configs[4] = {
+	struct bm_buttons_config configs[] = {
 		{
 			.pin_number = BOARD_PIN_BTN_0,
 			.active_state = BM_BUTTONS_ACTIVE_LOW,
@@ -625,18 +623,6 @@ int main(void)
 		},
 		{
 			.pin_number = BOARD_PIN_BTN_1,
-			.active_state = BM_BUTTONS_ACTIVE_LOW,
-			.pull_config = BM_BUTTONS_PIN_PULLUP,
-			.handler = button_handler,
-		},
-		{
-			.pin_number = BOARD_PIN_BTN_2,
-			.active_state = BM_BUTTONS_ACTIVE_LOW,
-			.pull_config = BM_BUTTONS_PIN_PULLUP,
-			.handler = button_handler,
-		},
-		{
-			.pin_number = BOARD_PIN_BTN_3,
 			.active_state = BM_BUTTONS_ACTIVE_LOW,
 			.pull_config = BM_BUTTONS_PIN_PULLUP,
 			.handler = button_handler,
@@ -725,6 +711,9 @@ int main(void)
 	}
 
 	LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
+
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+	LOG_INF("BLE BMS sample initialized");
 
 idle:
 	while (true) {

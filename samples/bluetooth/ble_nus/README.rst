@@ -88,6 +88,21 @@ Make sure the ``REQ`` pin on one board is connected to the ``RDY`` on the other 
    With the LPUARTE configuration, the console is used only for application logging and not for NUS data.
    Output on the NUS TX line will be handled as input on the NUS RX line on the same device (loopback) or as NUS input to the other device (when using two devices).
 
+User interface
+**************
+
+LED 0:
+  Lit when the device is initialized.
+
+LED 1:
+  Lit when a device is connected.
+
+.. note::
+
+  LEDs are only used in the normal UARTE configuration. In LPUARTE mode, LEDs are disabled to avoid interfering with the RX pin and to allow proper low-power operation.
+
+  In LPUARTE mode, LED 1 may appear on even when no phone is connected because it shares pin with the RX signal; RX activity can toggle the LED, which is expected behavior.
+
 Building and running
 ********************
 
@@ -110,7 +125,7 @@ It does not use the Low Power UARTE (LPUARTE) configuration fragment.
 #. Observe that the device is advertising under the default name ``nRF_BM_NUS``.
    You can configure this name using the ``CONFIG_BLE_ADV_NAME`` Kconfig option.
    For information on how to do this, see `Configuring Kconfig`_.
-#. Observe that the text ``BLE NUS sample started`` is printed on the COM listener running on the computer.
+#. Observe that the text ``BLE NUS sample initialized`` is printed on the COM listener running on the computer.
 #. Connect to your device using the `nRF Toolbox`_ mobile application with the :guilabel:`Universal Asynchronous Receiver/Transmitter (UART)` service.
 #. Write a text in the second COM listener running on the computer and press Enter.
    Observe that the text is displayed in the terminal on the mobile phone.

@@ -67,9 +67,24 @@ The sample supports the following development kits:
 Overview
 ********
 
-The LED Button Service (LBS) is a custom service that receives information about the state of an LED and sends notifications when a button changes its state.
+The LED Button Service (LBS) is a custom service that controls the state of an LED and sends notifications when a button changes its state.
 
 You can use the sample to transmit the button state from your development kit to another device.
+
+User interface
+**************
+
+Button 2:
+  Press to send a notification on the LBS Button State characteristic.
+
+LED 0:
+  Lit when the device is initialized.
+
+LED 1:
+  Lit when a device is connected.
+
+LED 2:
+  LED controlled through the LBS LED State characteristic.
 
 Building and running
 ********************
@@ -85,7 +100,7 @@ You can test this sample using `nRF Connect for Desktop`_ with the `Bluetooth Lo
 Make sure that these are installed before starting the testing procedure.
 
 1. Compile and program the application.
-#. In the Serial Terminal, observe that the ``BLE LBS sample started`` message is printed.
+#. In the Serial Terminal, observe that the ``BLE LBS sample initialized`` message is printed.
 #. Observe that the ``Advertising as nRF_BM_LBS`` message is printed.
 #. In nRF Connect for Desktop, scan for advertising devices.
    Your device should be advertising as ``nRF_BM_LBS``.

@@ -14,10 +14,12 @@
 
 #include <bm/softdevice_handler/nrf_sdh.h>
 #include <nrf_soc.h>
+#include <hal/nrf_gpio.h>
+#include <board-config.h>
 
 #include <bm/storage/bm_storage.h>
 
-LOG_MODULE_REGISTER(app, CONFIG_APP_BM_STORAGE_LOG_LEVEL);
+LOG_MODULE_REGISTER(sample, CONFIG_SAMPLE_BM_STORAGE_LOG_LEVEL);
 
 #define STORAGE0_PARTITION DT_NODELABEL(storage0_partition)
 #define STORAGE0_START DT_REG_ADDR(STORAGE0_PARTITION)
@@ -279,6 +281,9 @@ int main(void)
 	if (err) {
 		goto idle;
 	}
+
+	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
 
 	LOG_INF("Storage sample finished.");
 

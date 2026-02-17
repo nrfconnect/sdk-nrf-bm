@@ -13,7 +13,10 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 
-LOG_MODULE_REGISTER(app, CONFIG_APP_BLE_HELLO_SD_LOG_LEVEL);
+#include <hal/nrf_gpio.h>
+#include <board-config.h>
+
+LOG_MODULE_REGISTER(sample, CONFIG_SAMPLE_BLE_HELLO_SD_LOG_LEVEL);
 
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {
@@ -47,6 +50,9 @@ int main(void)
 		goto idle;
 	}
 
+	nrf_gpio_cfg_output(BOARD_PIN_LED_2);
+	nrf_gpio_pin_write(BOARD_PIN_LED_2, BOARD_LED_ACTIVE_STATE);
+
 	LOG_INF("SoftDevice enabled");
 
 	err = nrf_sdh_ble_enable(CONFIG_NRF_SDH_BLE_CONN_TAG);
@@ -66,6 +72,8 @@ int main(void)
 		LOG_ERR("Failed to disable SoftDevice, err %d", err);
 		goto idle;
 	}
+
+	nrf_gpio_pin_write(BOARD_PIN_LED_2, !BOARD_LED_ACTIVE_STATE);
 
 	LOG_INF("SoftDevice disabled");
 	LOG_INF("Bye");

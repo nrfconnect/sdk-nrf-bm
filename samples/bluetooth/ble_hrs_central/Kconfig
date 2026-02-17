@@ -6,31 +6,31 @@
 
 menu "BLE HRS central sample"
 
-config APP_USE_TARGET_PERIPHERAL_NAME
+config SAMPLE_USE_TARGET_PERIPHERAL_NAME
 	bool "Use target peripheral name"
 	default y
 
-if APP_USE_TARGET_PERIPHERAL_NAME
+if SAMPLE_USE_TARGET_PERIPHERAL_NAME
 
-config APP_TARGET_PERIPHERAL_NAME
+config SAMPLE_TARGET_PERIPHERAL_NAME
 	string "Target peripheral name"
 	default "nRF_BM_HRS"
 
-endif # APP_USE_TARGET_PERIPHERAL_NAME
+endif # SAMPLE_USE_TARGET_PERIPHERAL_NAME
 
-config APP_USE_TARGET_PERIPHERAL_ADDR
+config SAMPLE_USE_TARGET_PERIPHERAL_ADDR
 	bool "Use target peripheral address"
 
-if APP_USE_TARGET_PERIPHERAL_ADDR
+if SAMPLE_USE_TARGET_PERIPHERAL_ADDR
 
-config APP_TARGET_PERIPHERAL_ADDR
+config SAMPLE_TARGET_PERIPHERAL_ADDR
 	hex "Target peripheral address"
 	range 0x0 0xffffffffffff
 	default 0x78E7F806C5D8
 
-endif # APP_USE_TARGET_PERIPHERAL_ADDR
+endif # SAMPLE_USE_TARGET_PERIPHERAL_ADDR
 
-module=APP_BLE_HRS_CENTRAL_SAMPLE
+module=SAMPLE_BLE_HRS_CENTRAL_SAMPLE
 module-str=BLE Heart Rate Central Service Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 

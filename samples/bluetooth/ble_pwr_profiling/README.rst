@@ -89,13 +89,13 @@ The only mechanisms that are functional in this mode are reset and wake-up.
 To wake up your development kit from the system off state, you have the following options:
 
 * Press the **RESET** button on your development kit.
-* Press **Button 0** to start connectable advertising.
-* Press **Button 1** to start non-connectable advertising.
+* Press **Button 2** to start connectable advertising.
+* Press **Button 3** to start non-connectable advertising.
 
-The development kit starts advertising automatically when pressing **Button 0** or **Button 1** and goes to **System off mode** when pressing **RESET**.
+The development kit starts advertising automatically when pressing **Button 2** or **Button 3** and goes to **System off mode** when pressing **RESET**.
 
 When you establish a connection with a central device, you can test different connection parameters to optimize the power consumption.
-When the central device enables the notification characteristic, your development kit starts sending notifications until the timeout set by the :kconfig:option:`CONFIG_APP_BLE_PWR_PROFILING_NOTIF_CONNECTION_TIMEOUT` Kconfig option expires.
+When the central device enables the notification characteristic, your development kit starts sending notifications until the timeout set by the :kconfig:option:`CONFIG_SAMPLE_BLE_PWR_PROFILING_NOTIF_CONNECTION_TIMEOUT` Kconfig option expires.
 The device then disconnects from the central and enters the system off mode.
 You can press a button to wake up the device and continue testing.
 
@@ -128,34 +128,34 @@ Characteristics
 The 128-bit characteristic UUID is ``00001631-1212-EFDE-1523-785FEABCD123``.
 This characteristic value can be read or sent by the notification mechanism.
 The value is an array filled with zeroes, where upon enabling notifications the value of the last byte will increase per notification.
-You can configure the length of data using the :kconfig:option:`CONFIG_APP_BLE_PWR_PROFILING_CHAR_VALUE_LEN` Kconfig option.
+You can configure the length of data using the :kconfig:option:`CONFIG_SAMPLE_BLE_PWR_PROFILING_CHAR_VALUE_LEN` Kconfig option.
 
 This characteristic has a client characteristic configuration descriptor (CCCD) associated with it.
 
 User interface
 **************
 
-The sample uses buttons and LEDs to provide a simple user interface.
-
-Button 0:
+Button 2:
     Starts connectable advertising and wakes up the SoC from the system off state.
 
-Button 1:
+Button 3:
     Starts non-connectable advertising and wakes up the SoC from the system off state.
-
-LED 0:
-    Lit when the main loop is running.
-    Off when the device is in system off state.
 
 .. note::
    When you use buttons to wake up the SoC from the system off state, the button state is read in the main thread.
    This causes a delay between the SoC wake up and button press processing.
    If you want to start advertising on system start, you must keep pressing the button until you see a log message confirming the advertising start on the terminal.
 
+LED 0:
+  Lit when the device is initialized, if configured.
+
+LED 1:
+  Lit when a device is connected, if configured.
+
 .. note::
-   The LED is disabled by default.
-   You can enable the LED by setting the :kconfig:option:`CONFIG_APP_BLE_PWR_PROFILING_LED` Kconfig option.
-   Enabling the LED will increase the power consumption in active and low power mode by ~1.8 uA.
+   The LEDs are disabled by default.
+   You can enable LEDs by setting the :kconfig:option:`CONFIG_SAMPLE_BLE_PWR_PROFILING_LED` Kconfig option.
+   Enabling the LEDs increases power consumption by ~1.8 µA in active and low-power modes when not connected, and by ~3.7 µA when connected to a device, due to the second LED.
 
 Configuration
 *************
@@ -164,43 +164,43 @@ The Peripheral Power Profiling sample allows configuring some of its settings us
 You can set different options to monitor the power consumption of your development kit.
 You can modify the following options (available in the Kconfig file at :file:`samples/bluetooth/ble_pwr_profiling`):
 
-.. _CONFIG_APP_BLE_PWR_PROFILING_CHAR_VALUE_LEN:
+.. _CONFIG_SAMPLE_BLE_PWR_PROFILING_CHAR_VALUE_LEN:
 
-CONFIG_APP_BLE_PWR_PROFILING_CHAR_VALUE_LEN - Notification data length
+CONFIG_SAMPLE_BLE_PWR_PROFILING_CHAR_VALUE_LEN - Notification data length
    Sets the length of the data sent through notification mechanism.
 
-.. _CONFIG_APP_BLE_PWR_PROFILING_NOTIF_CONNECTION_TIMEOUT:
+.. _CONFIG_SAMPLE_BLE_PWR_PROFILING_NOTIF_CONNECTION_TIMEOUT:
 
-CONFIG_APP_BLE_PWR_PROFILING_NOTIF_CONNECTION_TIMEOUT - Notification timeout
+CONFIG_SAMPLE_BLE_PWR_PROFILING_NOTIF_CONNECTION_TIMEOUT - Notification timeout
    Sets the notification timeout in milliseconds.
    When this timeout fires the device will stop sending notifications.
    After that, the sample disconnects and enters the system off mode.
 
-.. _CONFIG_APP_BLE_PWR_PROFILING_CONN_ADVERTISING_TIMEOUT:
+.. _CONFIG_SAMPLE_BLE_PWR_PROFILING_CONN_ADVERTISING_TIMEOUT:
 
-CONFIG_APP_BLE_PWR_PROFILING_CONN_ADVERTISING_TIMEOUT - Connectable advertising timeout
+CONFIG_SAMPLE_BLE_PWR_PROFILING_CONN_ADVERTISING_TIMEOUT - Connectable advertising timeout
    Sets the connectable advertising duration in N*10 milliseconds unit.
    If the connection is not established during advertising, the device enters the system off state.
 
-.. _CONFIG_APP_BLE_PWR_PROFILING_CONN_ADVERTISING_INTERVAL:
+.. _CONFIG_SAMPLE_BLE_PWR_PROFILING_CONN_ADVERTISING_INTERVAL:
 
-CONFIG_APP_BLE_PWR_PROFILING_CONN_ADVERTISING_INTERVAL - Connectable advertising interval
+CONFIG_SAMPLE_BLE_PWR_PROFILING_CONN_ADVERTISING_INTERVAL - Connectable advertising interval
    Sets the connectable advertising interval in 0.625 milliseconds unit.
 
-.. _CONFIG_APP_BLE_PWR_PROFILING_NONCONN_ADVERTISING_TIMEOUT:
+.. _CONFIG_SAMPLE_BLE_PWR_PROFILING_NONCONN_ADVERTISING_TIMEOUT:
 
-CONFIG_APP_BLE_PWR_PROFILING_NONCONN_ADVERTISING_TIMEOUT - Non-connectable advertising timeout
+CONFIG_SAMPLE_BLE_PWR_PROFILING_NONCONN_ADVERTISING_TIMEOUT - Non-connectable advertising timeout
    Sets the non-connectable advertising duration in N*10 milliseconds unit.
    When the advertising ends, the device enters the system off state if there is no outgoing connection.
 
-.. _CONFIG_APP_BLE_PWR_PROFILING_NONCONN_ADVERTISING_INTERVAL:
+.. _CONFIG_SAMPLE_BLE_PWR_PROFILING_NONCONN_ADVERTISING_INTERVAL:
 
-CONFIG_APP_BLE_PWR_PROFILING_NONCONN_ADVERTISING_INTERVAL - Non-connectable advertising interval
+CONFIG_SAMPLE_BLE_PWR_PROFILING_NONCONN_ADVERTISING_INTERVAL - Non-connectable advertising interval
    Sets the non-connectable advertising interval in 0.625 milliseconds unit.
 
-.. _CONFIG_APP_BLE_PWR_PROFILING_LED:
+.. _CONFIG_SAMPLE_BLE_PWR_PROFILING_LED:
 
-CONFIG_APP_BLE_PWR_PROFILING_LED - Enable LEDs
+CONFIG_SAMPLE_BLE_PWR_PROFILING_LED - Enable LEDs
    Enabled by default. The LEDs can be disabled to reduce power consumption.
 
 Building and running
@@ -248,5 +248,5 @@ Testing with Bluetooth Low Energy app and Power Profiler Kit II (PPK2)
 #. Observe the power consumption with the new connection parameters.
 #. In service with UUID :guilabel:`000016301212EFDE1523785FEABCD123`, click :guilabel:`Notify` for the characteristic.
 #. Observe that notifications are received.
-#. After the timeout set by the :kconfig:option:`CONFIG_APP_BLE_PWR_PROFILING_NOTIF_CONNECTION_TIMEOUT` option, your development kit disconnects and enters the system off mode.
+#. After the timeout set by the :kconfig:option:`CONFIG_SAMPLE_BLE_PWR_PROFILING_NOTIF_CONNECTION_TIMEOUT` option, your development kit disconnects and enters the system off mode.
 #. Repeat this test using different wake-up methods and different parameters, and monitor the power consumption for your new setup.
