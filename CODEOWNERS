@@ -45,6 +45,7 @@
 /include/bm/                              @nrfconnect/ncs-bm
 /include/bm/bluetooth/                    @nrfconnect/ncs-bm
 /include/bm/settings/                     @nrfconnect/ncs-eris
+/include/bm/storage/bm_rmem.h             @nrfconnect/ncs-eris
 
 # Libraries
 /lib/bluetooth/ble_adv/                   @nrfconnect/ncs-bm
@@ -94,6 +95,7 @@
 /subsys/softdevice/                       @nrfconnect/ncs-bm
 /subsys/softdevice_handler/               @nrfconnect/ncs-bm
 /subsys/storage/bm_storage/               @nrfconnect/ncs-bm
+/subsys/storage/bm_rmem/                  @nrfconnect/ncs-eris
 /subsys/storage/flash_map/                @nrfconnect/ncs-eris
 
 # Sysbuild
@@ -114,6 +116,7 @@
 /tests/unit/lib/bluetooth/ble_scan/         @nrfconnect/ncs-bm
 /tests/unit/subsys/bluetooth/services/      @nrfconnect/ncs-bm @nrfconnect/ncs-bm-test
 /tests/subsys/bootloader/upgrade/           @nrfconnect/ncs-eris
+/tests/subsys/storage/bm_rmem/              @nrfconnect/ncs-eris
 /tests/unit/subsys/storage/bm_storage/      @nrfconnect/ncs-bm
 
 # Zephyr module
