@@ -8,10 +8,10 @@
 #include <nrf_strerror.h>
 #include <string.h>
 #include <ble_err.h>
-#include <bm/bluetooth/ble_conn_state.h>
 #if defined(CONFIG_PM_LESC)
 #include <bm/bluetooth/peer_manager/nrf_ble_lesc.h>
 #endif
+#include <modules/conn_state.h>
 #include <modules/id_manager.h>
 #include <modules/security_dispatcher.h>
 #include <modules/peer_database.h>
@@ -65,19 +65,19 @@ static ble_gap_lesc_p256_pk_t *lesc_public_key;
 /* User flag indicating whether a connection has a pending call to @ref sm_link_secure because it
  * returned @ref NRF_ERROR_BUSY.
  */
-static int flag_link_secure_pending_busy = BLE_CONN_STATE_USER_FLAG_INVALID;
+static int flag_link_secure_pending_busy = PM_CONN_STATE_USER_FLAG_INVALID;
 /* User flag indicating whether a pending call to @ref sm_link_secure should be called with true for
  * the force_repairing parameter.
  */
-static int flag_link_secure_force_repairing = BLE_CONN_STATE_USER_FLAG_INVALID;
+static int flag_link_secure_force_repairing = PM_CONN_STATE_USER_FLAG_INVALID;
 /* User flag indicating whether a pending call to @ref sm_link_secure should be called with NULL
  * security parameters.
  */
-static int flag_link_secure_null_params = BLE_CONN_STATE_USER_FLAG_INVALID;
+static int flag_link_secure_null_params = PM_CONN_STATE_USER_FLAG_INVALID;
 /* User flag indicating whether a connection has a pending call to @ref sm_sec_params_reply because
  * it returned @ref NRF_ERROR_BUSY.
  */
-static int flag_params_reply_pending_busy = BLE_CONN_STATE_USER_FLAG_INVALID;
+static int flag_params_reply_pending_busy = PM_CONN_STATE_USER_FLAG_INVALID;
 
 /**
  * @brief Function for sending an SM event to all registered event handlers.
@@ -111,11 +111,11 @@ static void flags_set_from_err_code(uint16_t conn_handle, uint32_t nrf_err, bool
 	}
 
 	if (params_reply) {
-		ble_conn_state_user_flag_set(conn_handle, flag_params_reply_pending_busy,
+		pm_conn_state_user_flag_set(conn_handle, flag_params_reply_pending_busy,
 					     flag_value_busy);
-		ble_conn_state_user_flag_set(conn_handle, flag_link_secure_pending_busy, false);
+		pm_conn_state_user_flag_set(conn_handle, flag_link_secure_pending_busy, false);
 	} else {
-		ble_conn_state_user_flag_set(conn_handle, flag_link_secure_pending_busy,
+		pm_conn_state_user_flag_set(conn_handle, flag_link_secure_pending_busy,
 					     flag_value_busy);
 	}
 }
@@ -278,9 +278,9 @@ static uint32_t link_secure(uint16_t conn_handle, bool null_params, bool force_r
 
 	switch (nrf_err) {
 	case NRF_ERROR_BUSY:
-		ble_conn_state_user_flag_set(conn_handle, flag_link_secure_null_params,
+		pm_conn_state_user_flag_set(conn_handle, flag_link_secure_null_params,
 					     null_params);
-		ble_conn_state_user_flag_set(conn_handle, flag_link_secure_force_repairing,
+		pm_conn_state_user_flag_set(conn_handle, flag_link_secure_force_repairing,
 					     force_repairing);
 		return_nrf_err = NRF_SUCCESS;
 		break;
@@ -350,20 +350,20 @@ uint32_t sm_conn_sec_status_get(uint16_t conn_handle, struct pm_conn_sec_status 
 		return NRF_ERROR_NULL;
 	}
 
-	int status = ble_conn_state_status(conn_handle);
+	int status = pm_conn_state_status(conn_handle);
 
-	if (status == BLE_CONN_STATUS_INVALID) {
+	if (status == PM_CONN_STATUS_INVALID) {
 		return BLE_ERROR_INVALID_CONN_HANDLE;
 	}
 
 	uint16_t peer_id = im_peer_id_get_by_conn_handle(conn_handle);
 
-	conn_sec_status->connected = (status == BLE_CONN_STATUS_CONNECTED);
+	conn_sec_status->connected = (status == PM_CONN_STATUS_CONNECTED);
 	conn_sec_status->bonded = (peer_id != PM_PEER_ID_INVALID);
-	conn_sec_status->encrypted = ble_conn_state_encrypted(conn_handle);
-	conn_sec_status->mitm_protected = ble_conn_state_mitm_protected(conn_handle);
-	conn_sec_status->lesc = ble_conn_state_lesc(conn_handle) ||
-				  (ble_conn_state_encrypted(conn_handle) && key_is_lesc(peer_id));
+	conn_sec_status->encrypted = pm_conn_state_encrypted(conn_handle);
+	conn_sec_status->mitm_protected = pm_conn_state_mitm_protected(conn_handle);
+	conn_sec_status->lesc = pm_conn_state_lesc(conn_handle) ||
+				  (pm_conn_state_encrypted(conn_handle) && key_is_lesc(peer_id));
 	return NRF_SUCCESS;
 }
 
@@ -393,7 +393,7 @@ static void sec_req_process(const struct pm_evt *event)
 
 	if (default_sec_params == NULL) {
 		null_params = true;
-	} else if (ble_conn_state_encrypted(event->conn_handle)) {
+	} else if (pm_conn_state_encrypted(event->conn_handle)) {
 		struct pm_conn_sec_status sec_status_req = {
 			.bonded = event->params.peripheral_security_req.bond,
 			.mitm_protected = event->params.peripheral_security_req.mitm,
@@ -443,22 +443,22 @@ void sm_smd_evt_handler(struct pm_evt *event)
 	}
 }
 
-/** @brief Function handling a pending params_reply. See @ref ble_conn_state_user_function_t. */
+/** @brief Function handling a pending params_reply. See @ref pm_conn_state_user_function_t. */
 static void params_reply_pending_handle(uint16_t conn_handle, void *context)
 {
 	ARG_UNUSED(context);
 	smd_params_reply_perform(conn_handle, NULL);
 }
 
-/** @brief Function handling a pending link_secure. See @ref ble_conn_state_user_function_t. */
+/** @brief Function handling a pending link_secure. See @ref pm_conn_state_user_function_t. */
 static void link_secure_pending_handle(uint16_t conn_handle, void *context)
 {
 	ARG_UNUSED(context);
 
 	bool force_repairing =
-		ble_conn_state_user_flag_get(conn_handle, flag_link_secure_force_repairing);
+		pm_conn_state_user_flag_get(conn_handle, flag_link_secure_force_repairing);
 	bool null_params =
-		ble_conn_state_user_flag_get(conn_handle, flag_link_secure_null_params);
+		pm_conn_state_user_flag_get(conn_handle, flag_link_secure_null_params);
 
 	/* If this fails, it will be automatically retried. */
 	(void)link_secure(conn_handle, null_params, force_repairing, true);
@@ -478,9 +478,9 @@ void sm_pdb_evt_handler(struct pm_evt *event)
 	case PM_EVT_PEER_DATA_UPDATE_FAILED:
 	case PM_EVT_PEER_DELETE_SUCCEEDED:
 	case PM_EVT_PEER_DELETE_FAILED:
-		(void)ble_conn_state_for_each_set_user_flag(flag_params_reply_pending_busy,
+		(void)pm_conn_state_for_each_set_user_flag(flag_params_reply_pending_busy,
 							    params_reply_pending_handle, NULL);
-		(void)ble_conn_state_for_each_set_user_flag(flag_link_secure_pending_busy,
+		(void)pm_conn_state_for_each_set_user_flag(flag_link_secure_pending_busy,
 							    link_secure_pending_handle, NULL);
 		break;
 	default:
@@ -496,8 +496,8 @@ void sm_pdb_evt_handler(struct pm_evt *event)
  */
 static void flag_id_init(int *flag_id)
 {
-	if (*flag_id == BLE_CONN_STATE_USER_FLAG_INVALID) {
-		*flag_id = ble_conn_state_user_flag_acquire();
+	if (*flag_id == PM_CONN_STATE_USER_FLAG_INVALID) {
+		*flag_id = pm_conn_state_user_flag_acquire();
 	}
 }
 
@@ -518,9 +518,9 @@ uint32_t sm_init(void)
 	flag_id_init(&flag_link_secure_null_params);
 	flag_id_init(&flag_params_reply_pending_busy);
 
-	if (flag_params_reply_pending_busy == BLE_CONN_STATE_USER_FLAG_INVALID) {
+	if (flag_params_reply_pending_busy == PM_CONN_STATE_USER_FLAG_INVALID) {
 		LOG_ERR("Could not acquire conn_state user flags. Increase "
-			"BLE_CONN_STATE_USER_FLAG_COUNT in the ble_conn_state module.");
+			"PM_CONN_STATE_USER_FLAG_COUNT in the pm_conn_state module.");
 		return NRF_ERROR_INTERNAL;
 	}
 
@@ -537,9 +537,9 @@ void sm_ble_evt_handler(const ble_evt_t *ble_evt)
 #if defined(CONFIG_PM_LESC)
 	nrf_ble_lesc_on_ble_evt(ble_evt);
 #endif
-	(void)ble_conn_state_for_each_set_user_flag(flag_params_reply_pending_busy,
+	(void)pm_conn_state_for_each_set_user_flag(flag_params_reply_pending_busy,
 						    params_reply_pending_handle, NULL);
-	(void)ble_conn_state_for_each_set_user_flag(flag_link_secure_pending_busy,
+	(void)pm_conn_state_for_each_set_user_flag(flag_link_secure_pending_busy,
 						    link_secure_pending_handle, NULL);
 }
 

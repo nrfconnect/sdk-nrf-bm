@@ -4,9 +4,10 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 menuconfig BLE_CONN_STATE
-	bool "Connection state"
+	bool "Connection state [DEPRECATED]"
 	depends on SOFTDEVICE
 	depends on NRF_SDH_BLE
+	select DEPRECATED
 	help
 	  A library to defer event processing to main().
 
