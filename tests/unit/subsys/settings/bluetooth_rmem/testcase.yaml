@@ -1,0 +1,6 @@
+common:
+  sysbuild: false
+  platform_allow: native_sim
+  tags: unittest
+tests:
+  subsys.bluetooth_rmem: {}
