@@ -9,10 +9,11 @@
 #include <bm/storage/bm_storage.h>
 
 static const struct bm_storage_info bm_storage_info = {
-	.erase_unit = 16,
-	.erase_value = 0xFF,
 	.program_unit = 16,
-	.is_erase_before_write = false
+	.erase_unit = 16,
+	.wear_unit = 16,
+	.erase_value = 0xFF,
+	.is_erase_before_write = false,
 };
 
 static void event_send(const struct bm_storage *storage, struct bm_storage_evt *evt)
