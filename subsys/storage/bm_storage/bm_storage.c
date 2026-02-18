@@ -119,6 +119,8 @@ int bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void
 
 int bm_storage_erase(const struct bm_storage *storage, uint32_t addr, uint32_t len, void *ctx)
 {
+	uint32_t erase_align;
+
 	if (!storage) {
 		return -EFAULT;
 	}
@@ -127,8 +129,14 @@ int bm_storage_erase(const struct bm_storage *storage, uint32_t addr, uint32_t l
 		return -EPERM;
 	}
 
-	if (!IS_ALIGNED(addr, storage->nvm_info->erase_unit) ||
-	    !IS_ALIGNED(len,  storage->nvm_info->erase_unit)) {
+	if (storage->nvm_info->is_erase_before_write) {
+		erase_align = storage->nvm_info->erase_unit;
+	} else {
+		erase_align = storage->nvm_info->program_unit;
+	}
+
+	if (!IS_ALIGNED(addr, erase_align) ||
+	    !IS_ALIGNED(len,  erase_align)) {
 		return -EINVAL;
 	}
 

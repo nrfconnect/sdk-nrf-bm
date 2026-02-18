@@ -20,10 +20,11 @@
 static nrfx_rramc_config_t rramc_config = NRFX_RRAMC_DEFAULT_CONFIG(RRAMC_WRITE_BLOCK_SIZE);
 
 static const struct bm_storage_info bm_storage_info = {
-	.erase_unit = RRAMC_WRITE_BLOCK_SIZE,
-	.erase_value = 0xFF,
 	.program_unit = RRAMC_WRITE_BLOCK_SIZE,
-	.is_erase_before_write = false
+	.erase_unit = RRAMC_WRITE_BLOCK_SIZE,
+	.wear_unit = RRAMC_WRITE_BLOCK_SIZE,
+	.erase_value = 0xFF,
+	.is_erase_before_write = false,
 };
 
 struct bm_storage_rram_state {

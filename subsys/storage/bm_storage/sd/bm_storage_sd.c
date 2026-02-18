@@ -92,12 +92,11 @@ static struct {
  */
 static const struct bm_storage_info bm_storage_info = {
 	/* SoftDevice requires writing a minimum of 4 bytes at once */
-	.program_unit = SD_WRITE_BLOCK_SIZE,
-	.is_erase_before_write = false,
-	/* Erase operation does not exist, so use same as program unit */
-	.erase_unit = SD_WRITE_BLOCK_SIZE,
-	/* Similar to FLASH */
+	.program_unit = SD_PROGRAM_UNIT_BYTES,
+	.erase_unit = SD_PROGRAM_UNIT_BYTES,
+	.wear_unit = SD_WRITE_BLOCK_SIZE,
 	.erase_value = 0xFF,
+	.is_erase_before_write = false,
 };
 
 #ifndef CONFIG_UNITY
@@ -170,7 +169,7 @@ static uint32_t erase_execute(struct bm_storage_sd_op *op)
 	uint32_t *addr = UINT_TO_POINTER(op->erase.addr + op->erase.offset);
 
 	return sd_flash_write(addr, (const uint32_t *)erase_buf,
-			      bm_storage_info.erase_unit / sizeof(uint32_t));
+			      bm_storage_info.wear_unit / sizeof(uint32_t));
 }
 
 static bool queue_load_next(void)
@@ -277,7 +276,7 @@ static bool on_operation_success(struct bm_storage_sd_op *op)
 		break;
 
 	case ERASE:
-		op->erase.offset += bm_storage_info.erase_unit;
+		op->erase.offset += bm_storage_info.wear_unit;
 
 		if (op->erase.len == op->erase.offset) {
 			return true;

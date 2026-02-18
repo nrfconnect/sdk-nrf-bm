@@ -993,10 +993,10 @@ void test_bm_storage_sd_erase(void)
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
-	for (size_t i = 0; i < BLOCK_SIZE / storage.nvm_info->erase_unit; i++) {
+	for (size_t i = 0; i < BLOCK_SIZE / storage.nvm_info->wear_unit; i++) {
 		__cmock_sd_flash_write_ExpectAndReturn(
-			(uint32_t *)(PARTITION_START + (i * storage.nvm_info->erase_unit)),
-			NULL, WORD_SIZE(storage.nvm_info->erase_unit), 0);
+			(uint32_t *)(PARTITION_START + (i * storage.nvm_info->wear_unit)),
+			NULL, WORD_SIZE(storage.nvm_info->wear_unit), 0);
 		__cmock_sd_flash_write_IgnoreArg_p_src();
 	}
 
@@ -1006,7 +1006,7 @@ void test_bm_storage_sd_erase(void)
 	is_busy = bm_storage_is_busy(&storage);
 	TEST_ASSERT_TRUE(is_busy);
 
-	for (size_t i = 0; i < BLOCK_SIZE / storage.nvm_info->erase_unit; i++) {
+	for (size_t i = 0; i < BLOCK_SIZE / storage.nvm_info->wear_unit; i++) {
 		bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
 	}
 
@@ -1044,18 +1044,18 @@ void test_bm_storage_sd_erase_enomem(void)
 	for (size_t i = 0; i < CONFIG_BM_STORAGE_BACKEND_SD_QUEUE_SIZE + 1; i++) {
 		__cmock_sd_flash_write_ExpectAndReturn(
 			(uint32_t *)PARTITION_START, NULL,
-			WORD_SIZE(storage.nvm_info->erase_unit), 0);
+			WORD_SIZE(storage.nvm_info->wear_unit), 0);
 		__cmock_sd_flash_write_IgnoreArg_p_src();
 	}
 
 	for (size_t i = 0; i < CONFIG_BM_STORAGE_BACKEND_SD_QUEUE_SIZE + 1; i++) {
 		err = bm_storage_erase(&storage, PARTITION_START,
-				       storage.nvm_info->erase_unit, NULL);
+				       storage.nvm_info->wear_unit, NULL);
 		TEST_ASSERT_EQUAL(0, err);
 	}
 
 	err = bm_storage_erase(&storage, PARTITION_START,
-			       storage.nvm_info->erase_unit, NULL);
+			       storage.nvm_info->wear_unit, NULL);
 	TEST_ASSERT_EQUAL(-ENOMEM, err);
 
 	for (size_t i = 0; i < CONFIG_BM_STORAGE_BACKEND_SD_QUEUE_SIZE + 1; i++) {

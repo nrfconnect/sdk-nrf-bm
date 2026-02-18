@@ -91,6 +91,10 @@ struct bm_storage_info {
 	 */
 	uint32_t erase_unit;
 	/**
+	 * @brief Size of the memory unit towards which wear is counted, in bytes.
+	 */
+	uint32_t wear_unit;
+	/**
 	 * @brief Value used to represent erased memory.
 	 */
 	uint8_t erase_value;
@@ -260,7 +264,8 @@ int bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void
 /**
  * @brief Erase data from storage.
  *
- * The erase address and length must be a multiple of the backend's erase unit.
+ * The erase address and length must be aligned to the backend's program unit
+ * or erase unit, depending on the wear mode.
  *
  * @param[in] storage Storage instance to erase data in.
  * @param[in] addr Address in non-volatile memory where to erase the data.

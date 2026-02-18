@@ -16,8 +16,9 @@
 #define PARTITION_SIZE (BLOCK_SIZE * 2)
 
 static const struct bm_storage_info bm_storage_info = {
-	.erase_unit = BLOCK_SIZE,
 	.program_unit = BLOCK_SIZE,
+	.erase_unit = BLOCK_SIZE,
+	.wear_unit = BLOCK_SIZE,
 	.is_erase_before_write = true
 };
 

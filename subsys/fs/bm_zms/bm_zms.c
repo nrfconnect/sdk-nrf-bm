@@ -411,20 +411,20 @@ static inline off_t zms_addr_to_offset(struct bm_zms_fs *fs, uint64_t addr)
 /* Helper to round down len to the closest multiple of write_block_size  */
 static inline size_t zms_round_down_write_block_size(struct bm_zms_fs *fs, size_t len)
 {
-	return len & ~(fs->nvm_info->program_unit - 1U);
+	return len & ~(fs->nvm_info->wear_unit - 1U);
 }
 
 /* Helper to round up len to multiple of write_block_size */
 static inline size_t zms_round_up_write_block_size(struct bm_zms_fs *fs, size_t len)
 {
-	return (len + (fs->nvm_info->program_unit - 1U)) &
-	       ~(fs->nvm_info->program_unit - 1U);
+	return (len + (fs->nvm_info->wear_unit - 1U)) &
+	       ~(fs->nvm_info->wear_unit - 1U);
 }
 
 /* zms_al_size returns size aligned to fs->write_block_size */
 static inline size_t zms_al_size(struct bm_zms_fs *fs, size_t len)
 {
-	size_t write_block_size = fs->nvm_info->program_unit;
+	size_t write_block_size = fs->nvm_info->wear_unit;
 
 	if (write_block_size <= 1U) {
 		return len;
@@ -733,12 +733,12 @@ static int zms_flash_al_wrt(struct bm_zms_fs *fs)
 		memcpy(bm_zms_internal_buf, data8 + cur_op.blen, cur_op.len);
 		(void)memset(bm_zms_internal_buf + cur_op.len,
 			     fs->nvm_info->erase_value,
-			     fs->nvm_info->program_unit - cur_op.len);
+			     fs->nvm_info->wear_unit - cur_op.len);
 		cur_op.len = 0;
 		zms_al_wrt_next_op(fs);
 		return bm_storage_write(&fs->zms_bm_storage, offset + cur_op.blen,
 					bm_zms_internal_buf,
-					fs->nvm_info->program_unit,
+					fs->nvm_info->wear_unit,
 					(void *)&cur_op);
 	}
 
@@ -2021,7 +2021,7 @@ int bm_zms_mount(struct bm_zms_fs *fs, const struct bm_zms_fs_config *config)
 	fs->nvm_info = bm_storage_nvm_info_get(&fs->zms_bm_storage);
 
 	fs->ate_size = zms_al_size(fs, sizeof(struct zms_ate));
-	write_block_size = fs->nvm_info->program_unit;
+	write_block_size = fs->nvm_info->wear_unit;
 
 	/* check that the write block size is supported */
 	if (write_block_size > ZMS_BLOCK_SIZE || write_block_size == 0) {
@@ -2034,7 +2034,7 @@ int bm_zms_mount(struct bm_zms_fs *fs, const struct bm_zms_fs_config *config)
 	 */
 	if (fs->nvm_info->is_erase_before_write) {
 		if (!fs->sector_size ||
-		    fs->sector_size % fs->nvm_info->erase_unit) {
+		    fs->sector_size % fs->nvm_info->wear_unit) {
 			LOG_ERR("Invalid sector size");
 			return -EINVAL;
 		}

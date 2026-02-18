@@ -86,6 +86,8 @@ Storage
      * The SoftDevice, RRAM, and native_sim backends to support the erase operation.
      * The SoftDevice backend to support chunking of write operations.
      * The ``no_explicit_erase`` field in :c:struct:`bm_storage_info` has been renamed to ``is_erase_before_write`` to explicitly convey that the memory must be erased before it can be written to.
+     * The :c:member:`bm_storage_info.wear_unit` field to represent the NVM wear granularity.
+     * The SoftDevice backend's :c:member:`bm_storage_info.program_unit` from 16 to 4 bytes, reflecting the true minimum programmable unit.
      * The :c:func:`bm_storage_write` and :c:func:`bm_storage_erase` functions to return ``-ENOMEM`` when out of memory, instead of ``-EIO``.
      * The :c:func:`bm_storage_read`, :c:func:`bm_storage_write`, and :c:func:`bm_storage_erase` functions to return ``-EINVAL`` on alignment errors, instead of ``-EFAULT``.
      * The :c:enum:`bm_storage_evt_dispatch_type` enum and the :c:member:`bm_storage_evt.dispatch_type` field have been replaced by a boolean :c:member:`bm_storage_evt.is_async`.
