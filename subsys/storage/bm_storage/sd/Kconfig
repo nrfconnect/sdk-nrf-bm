@@ -20,4 +20,20 @@ config BM_STORAGE_BACKEND_SD_MAX_RETRIES
 	  Increase this value if events frequently return -ETIMEDOUT.
 	  The SoftDevice might fail to schedule flash access due to high BLE activity.
 
+config BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE
+	int "Maximum number of bytes to pass to sd_flash_write() at once"
+	# A multiple of both 16 (128 bits) and 8 bytes (64 bits).
+	default 32
+	help
+	  This value limits the maximum number of bytes that are requested to be written
+	  by the SoftDevice in a single sd_flash_write() call.
+
+	  Tweaking this value helps to increase throughput by either increasing the chances
+	  that the SoftDevice will successfully schedule the operation, or by writing more
+	  bytes at once.
+
+	  This value is also critical to minimize the ECC update overhead by ensuring
+	  that the amount of data written at once is always a multiple of the NVM line for which
+	  the ECC is calculated, thus minimizing ECC wear.
+
 endmenu
