@@ -23,6 +23,7 @@ cmock_handle(${ZEPHYR_NRF_BM_MODULE_DIR}/include/bm/softdevice_handler/nrf_sdh.h
 
 zephyr_compile_definitions(
   NRF54L15_XXAA
+  NRF_APPLICATION
   SVCALL_AS_NORMAL_FUNCTION
   SUPPRESS_INLINE_IMPLEMENTATION
 )
@@ -30,6 +31,7 @@ zephyr_compile_definitions(
 zephyr_include_directories(
   ${SOFTDEVICE_INCLUDE_DIR}
   ${ZEPHYR_NRF_BM_MODULE_DIR}/include
+  ${ZEPHYR_HAL_NORDIC_MODULE_DIR}/nrfx/bsp/stable
 )
 
 # Generate and add test file
