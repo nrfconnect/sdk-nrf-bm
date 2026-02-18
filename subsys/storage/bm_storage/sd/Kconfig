@@ -36,4 +36,12 @@ config BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE
 	  that the amount of data written at once is always a multiple of the NVM line for which
 	  the ECC is calculated, thus minimizing ECC wear.
 
+config BM_STORAGE_BACKEND_SD_ERASE_BLOCKS
+	bool "Erase in blocks"
+	help
+	  When enabled, the erase operation writes up to _MAX_WRITE_SIZE bytes
+	  at once instead of one wear unit at a time.
+	  This speeds up erase at the cost of a larger static buffer
+	  (equal to _MAX_WRITE_SIZE).
+
 endmenu

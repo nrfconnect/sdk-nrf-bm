@@ -160,14 +160,36 @@ static uint32_t write_execute(const struct bm_storage_sd_op *op)
 	return sd_flash_write(dest, src, chunk_len);
 }
 
+__aligned(sizeof(uint32_t)) /* SoftDevice requirement */
+#ifdef CONFIG_BM_STORAGE_BACKEND_SD_ERASE_BLOCKS
+static uint8_t erase_buf[CONFIG_BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE];
+#else
 static uint8_t erase_buf[SD_WRITE_BLOCK_SIZE];
+#endif
 
 static uint32_t erase_execute(struct bm_storage_sd_op *op)
 {
-	uint32_t *addr = UINT_TO_POINTER(op->erase.addr + op->erase.offset);
+	uint32_t *addr;
 
-	return sd_flash_write(addr, (const uint32_t *)erase_buf,
+	addr = UINT_TO_POINTER(op->erase.addr + op->erase.offset);
+
+#ifdef CONFIG_BM_STORAGE_BACKEND_SD_ERASE_BLOCKS
+	uint32_t chunk_len;
+
+	/* Write up to _MAX_WRITE_SIZE bytes at once */
+	chunk_len =
+		MIN(op->erase.len - op->erase.offset, CONFIG_BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE);
+
+	/* Calculate number of 32-bit words for sd_flash_write() */
+	chunk_len = MAX(1, chunk_len / SD_PROGRAM_UNIT_BYTES);
+
+	__ASSERT_NO_MSG(chunk_len <= sizeof(erase_buf) / SD_PROGRAM_UNIT_BYTES);
+
+	return sd_flash_write(addr, (uint32_t *)erase_buf, chunk_len);
+#else
+	return sd_flash_write(addr, (uint32_t *)erase_buf,
 			      bm_storage_info.wear_unit / sizeof(uint32_t));
+#endif
 }
 
 static bool queue_load_next(void)
@@ -274,7 +296,14 @@ static bool on_operation_success(struct bm_storage_sd_op *op)
 		break;
 
 	case ERASE:
+#ifdef CONFIG_BM_STORAGE_BACKEND_SD_ERASE_BLOCKS
+		chunk_len = MIN(op->erase.len - op->erase.offset,
+				CONFIG_BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE);
+
+		op->erase.offset += MAX(bm_storage_info.wear_unit, chunk_len);
+#else
 		op->erase.offset += bm_storage_info.wear_unit;
+#endif
 
 		if (op->erase.len == op->erase.offset) {
 			return true;
