@@ -104,6 +104,7 @@ Libraries
      A match would not be triggered unless the data for all types of enabled filters were provided in either the advertising or scan response data.
      Now the data can be provided in a mix of the advertising and scan response data.
    * Renamed the ``allow_list_used`` function to :c:func:`ble_scan_is_allow_list_used`.
+   * Aligned the name of the :c:type:`ble_gap_evt_adv_report_t` fields in the :c:struct:`ble_scan_evt` struct to ``adv_report``.
 
 
 Bluetooth LE Services

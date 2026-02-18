@@ -181,12 +181,12 @@ struct ble_scan_evt {
 		/** Advertising report event parameters for allow list. */
 		struct {
 			/** Advertising report */
-			const ble_gap_evt_adv_report_t *report;
+			const ble_gap_evt_adv_report_t *adv_report;
 		} allow_list_adv_report;
 		/** Advertising report event parameters	when filter is not found. */
 		struct {
 			/** Advertising report. */
-			const ble_gap_evt_adv_report_t *report;
+			const ble_gap_evt_adv_report_t *adv_report;
 		} not_found;
 		/** Connected event parameters. */
 		struct {

@@ -666,7 +666,7 @@ static void ble_scan_on_adv_report(struct ble_scan *scan,
 	/* If the allow list is used, do not check the filters and return. */
 	if (ble_scan_is_allow_list_used(scan)) {
 		scan_evt.evt_type = BLE_SCAN_EVT_ALLOW_LIST_ADV_REPORT;
-		scan_evt.params.allow_list_adv_report.report = adv_report;
+		scan_evt.params.allow_list_adv_report.adv_report = adv_report;
 		scan->evt_handler(&scan_evt);
 
 		if (scan->connect_if_match) {
@@ -789,7 +789,7 @@ static void ble_scan_on_adv_report(struct ble_scan *scan,
 		}
 	} else {
 		scan_evt.evt_type = BLE_SCAN_EVT_NOT_FOUND;
-		scan_evt.params.not_found.report = adv_report;
+		scan_evt.params.not_found.adv_report = adv_report;
 	}
 
 	/* If the event handler is not NULL, notify the main application. */
