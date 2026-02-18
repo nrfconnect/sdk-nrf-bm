@@ -99,6 +99,7 @@ Storage
      * The capability to compile more than one backend. An instance can be configured to use a specific backend by using the :c:member:`bm_storage_config.api` field.
      * The :c:member:`bm_storage_info.wear_unit` field to represent the NVM wear granularity.
      * The :c:func:`bm_storage_nvm_info_get` function to retrieve NVM information, such as the size of the program unit and other.
+     * The :c:member:`bm_storage_config.is_wear_aligned` configuration flag to enforce wear unit alignment on operations.
 
    Updated:
      * The :c:func:`bm_storage_is_busy` function to return ``false`` instead of ``true`` when called with a ``NULL`` pointer or an uninitialized instance.
