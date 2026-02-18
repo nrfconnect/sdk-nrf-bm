@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <mdk/nrf_peripherals.h>
 #include <nrf_soc.h>
 #include <nrf_sdm.h>
 #include <nrf_error.h>
@@ -20,11 +21,8 @@
 /* Smallest unit that can be programmed using sd_flash_write() */
 #define SD_PROGRAM_UNIT_BYTES sizeof(uint32_t)
 
-/* 128-bit word line. This is the optimal size to fully utilize RRAM 128-bit word line with ECC
- * (error correction code) and minimize ECC updates overhead, due to these updates happening
- * per-line.
- */
-#define SD_WRITE_BLOCK_SIZE 16
+/* RRAM word line size in bytes, derived from hardware definition (in bits). */
+#define SD_WRITE_BLOCK_SIZE (RRAMC_NRRAMWORDSIZE / BITS_PER_BYTE)
 
 BUILD_ASSERT((CONFIG_BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE % SD_PROGRAM_UNIT_BYTES) == 0,
 	     "_SD_MAX_WRITE_SIZE must be a multiple of 4");
