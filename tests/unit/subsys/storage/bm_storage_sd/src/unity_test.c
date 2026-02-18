@@ -16,14 +16,16 @@
 #include "cmock_nrf_sdm.h"
 #include "cmock_nrf_soc.h"
 
-/* Arbitrary block size. */
-#define BLOCK_SIZE 16
-#define WORD_SIZE(a) ((a) / sizeof(uint32_t))
+/* This is used to size buffers.
+ * A buffer is as large as a chunk (so it is written in one operation).
+ */
+#define BLOCK_SIZE CONFIG_BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE
 
 /* Arbitrary partition, must be 32-bit word aligned. */
 #define PARTITION_START 0x4200
 #define PARTITION_SIZE	(BLOCK_SIZE * 3)
 
+#define WORD_SIZE(a) ((a) / sizeof(uint32_t))
 #define PTR_IGNORE NULL
 
 /* The backend's SoC event handler */
@@ -830,6 +832,54 @@ void test_bm_storage_sd_write_softdevice_busy_retry(void)
 	TEST_ASSERT_EQUAL(PARTITION_START, storage_event.addr);
 	TEST_ASSERT_EQUAL_PTR(buf, storage_event.src);
 	TEST_ASSERT_EQUAL(sizeof(buf), storage_event.len);
+}
+
+void test_bm_storage_sd_write_chunk(void)
+{
+	int err;
+	uint8_t buf[BLOCK_SIZE * 2];
+	struct bm_storage storage = {0};
+	struct bm_storage_config config = {
+		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
+		.start_addr = PARTITION_START,
+		.end_addr = PARTITION_START + PARTITION_SIZE,
+	};
+
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){true});
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* First chunk, up to BLOCK_SIZE */
+	__cmock_sd_flash_write_ExpectAndReturn(
+		(uint32_t *)PARTITION_START, (uint32_t *)buf, WORD_SIZE(BLOCK_SIZE), 0);
+
+	err = bm_storage_write(&storage, PARTITION_START, buf, sizeof(buf), NULL);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* The SoC event from the first operation will trigger the second */
+	__cmock_sd_flash_write_ExpectAndReturn(
+		(uint32_t *)(PARTITION_START + BLOCK_SIZE),
+		(uint32_t *)(buf + BLOCK_SIZE),
+		WORD_SIZE(sizeof(buf) - BLOCK_SIZE), 0);
+
+	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+
+	TEST_ASSERT_FALSE(storage_event_received);
+
+	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+
+	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
+	TEST_ASSERT_EQUAL(0, storage_event.result);
+	TEST_ASSERT_EQUAL(PARTITION_START, storage_event.addr);
+	TEST_ASSERT_EQUAL_PTR(buf, storage_event.src);
+	TEST_ASSERT_EQUAL(sizeof(buf), storage_event.len);
+
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(0, err);
 }
 
 void test_bm_storage_sd_read_eperm(void)

@@ -17,11 +17,17 @@
 #include <zephyr/sys/atomic.h>
 #include <zephyr/sys/ring_buffer.h>
 
+/* Smallest unit that can be programmed using sd_flash_write() */
+#define SD_PROGRAM_UNIT_BYTES sizeof(uint32_t)
+
 /* 128-bit word line. This is the optimal size to fully utilize RRAM 128-bit word line with ECC
  * (error correction code) and minimize ECC updates overhead, due to these updates happening
  * per-line.
  */
 #define SD_WRITE_BLOCK_SIZE 16
+
+BUILD_ASSERT((CONFIG_BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE % SD_PROGRAM_UNIT_BYTES) == 0,
+	     "_SD_MAX_WRITE_SIZE must be a multiple of 4");
 
 struct bm_storage_sd_op {
 	/* The bm_storage instance that requested the operation. */
@@ -141,20 +147,21 @@ static void event_send(const struct bm_storage_sd_op *op, uint32_t result)
 
 static uint32_t write_execute(const struct bm_storage_sd_op *op)
 {
-	__ASSERT(op->write.len % bm_storage_info.program_unit == 0,
-		 "Data length is expected to be a multiple of the program unit.");
+	uint32_t *dest;
+	uint32_t *src;
+	uint32_t chunk_len;
 
-	__ASSERT(op->write.offset % bm_storage_info.program_unit == 0,
-		 "Offset is expected to be a multiple of the program unit.");
+	dest = (uint32_t *)(op->write.dest + op->write.offset);
+	src  = (uint32_t *)((uintptr_t)op->write.src + op->write.offset);
 
-	/* Calculate number of 32-bit words for sd_flash_write(). */
-	uint32_t chunk_len_words = (op->write.len - op->write.offset) / sizeof(uint32_t);
+	/* Limit by _MAX_WRITE_SIZE */
+	chunk_len =
+		MIN(op->write.len - op->write.offset, CONFIG_BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE);
 
-	/* src and dest are word-aligned. */
-	uint32_t *dest = (uint32_t *)(op->write.dest + op->write.offset);
-	const uint32_t *src  = (const uint32_t *)((uint32_t)op->write.src + op->write.offset);
+	/* Calculate number of 32-bit words for sd_flash_write() */
+	chunk_len = MAX(1, chunk_len / SD_PROGRAM_UNIT_BYTES);
 
-	return sd_flash_write(dest, src, chunk_len_words);
+	return sd_flash_write(dest, src, chunk_len);
 }
 
 static uint8_t erase_buf[SD_WRITE_BLOCK_SIZE];
@@ -253,19 +260,18 @@ static void queue_start(void)
 /* Write operation success callback. Keeps track of the progress of an operation. */
 static bool on_operation_success(struct bm_storage_sd_op *op)
 {
+	uint32_t chunk_len;
+
 	/* Reset the retry counter on success. */
 	bm_storage_sd.retries = 0;
 
 	switch (op->id) {
 	case WRITE:
-		__ASSERT(op->len % bm_storage_info.program_unit == 0,
-			 "Data length is expected to be a multiple of the program unit.");
+		chunk_len = MIN(op->write.len - op->write.offset,
+				CONFIG_BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE);
 
-		__ASSERT(op->offset % bm_storage_info.program_unit == 0,
-			 "Offset is expected to be a multiple of the program unit.");
+		op->write.offset += chunk_len;
 
-		op->write.offset += op->write.len - op->write.offset;
-		/* Avoid missing the last chunk by rounding */
 		if (op->write.offset >= op->write.len) {
 			return true;
 		}

@@ -32,6 +32,7 @@ SoftDevice backend options:
 
 * :kconfig:option:`CONFIG_BM_STORAGE_BACKEND_SD_QUEUE_SIZE` – Queue size for pending operations.
 * :kconfig:option:`CONFIG_BM_STORAGE_BACKEND_SD_MAX_RETRIES` – Maximum retries if the SoftDevice is busy.
+* :kconfig:option:`CONFIG_BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE` - Maximum number of bytes to write in a single call to ``sd_flash_write()``.
 
 Initialization
 ==============
