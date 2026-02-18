@@ -7,15 +7,14 @@
 #include <errno.h>
 #include <stdint.h>
 #include <string.h>
+#include <mdk/nrf_peripherals.h>
 #include <zephyr/sys/atomic.h>
+#include <zephyr/sys/util.h>
 #include <nrfx_rramc.h>
 #include <bm/storage/bm_storage.h>
 
-/* 128-bit word line. This is the optimal size to fully utilize RRAM 128-bit word line with ECC
- * (error correction code) and minimize ECC updates overhead, due to these updates happening
- * per-line.
- */
-#define RRAMC_WRITE_BLOCK_SIZE 16
+/* RRAM word line size in bytes, derived from hardware definition (in bits). */
+#define RRAMC_WRITE_BLOCK_SIZE (RRAMC_NRRAMWORDSIZE / BITS_PER_BYTE)
 
 static nrfx_rramc_config_t rramc_config = NRFX_RRAMC_DEFAULT_CONFIG(RRAMC_WRITE_BLOCK_SIZE);
 
