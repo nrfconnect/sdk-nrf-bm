@@ -150,7 +150,7 @@ static uint32_t write_execute(const struct bm_storage_sd_op *op)
 	dest = (uint32_t *)(op->write.dest + op->write.offset);
 	src  = (uint32_t *)((uintptr_t)op->write.src + op->write.offset);
 
-	/* Limit by _MAX_WRITE_SIZE */
+	/* Limit by _SD_MAX_WRITE_SIZE */
 	chunk_len =
 		MIN(op->write.len - op->write.offset, CONFIG_BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE);
 

@@ -10,6 +10,7 @@
 
 /* Arbitrary block size. */
 #define BLOCK_SIZE 16
+#define PROGRAM_UNIT 4
 
 /* Arbitrary partition, must be 32-bit word aligned. */
 #define PARTITION_START 0x4200
@@ -22,10 +23,24 @@ static const struct bm_storage_info bm_storage_info = {
 	.is_erase_before_write = true
 };
 
+static const struct bm_storage_info bm_storage_info_rram_like = {
+	.program_unit = PROGRAM_UNIT,
+	.erase_unit = PROGRAM_UNIT,
+	.wear_unit = BLOCK_SIZE,
+	.is_erase_before_write = false,
+};
+
 static int bm_storage_test_api_init(struct bm_storage *storage,
 				    const struct bm_storage_config *config)
 {
 	storage->nvm_info = &bm_storage_info;
+	return 0;
+}
+
+static int bm_storage_test_api_init_rram_like(struct bm_storage *storage,
+					      const struct bm_storage_config *config)
+{
+	storage->nvm_info = &bm_storage_info_rram_like;
 	return 0;
 }
 
@@ -68,6 +83,14 @@ static struct bm_storage_api bm_storage_test_api = {
 	.is_busy = bm_storage_test_api_is_busy,
 };
 
+static struct bm_storage_api bm_storage_test_api_rram_like = {
+	.init = bm_storage_test_api_init_rram_like,
+	.uninit = bm_storage_test_api_uninit,
+	.read = bm_storage_test_api_read,
+	.write = bm_storage_test_api_write,
+	.erase = bm_storage_test_api_erase,
+	.is_busy = bm_storage_test_api_is_busy,
+};
 
 static void bm_storage_evt_handler(struct bm_storage_evt *evt)
 {
@@ -528,6 +551,112 @@ void test_bm_storage_nvm_info_get(void)
 	TEST_ASSERT_NOT_NULL(info);
 
 	TEST_ASSERT_EQUAL_MEMORY(&bm_storage_info, info, sizeof(struct bm_storage_info));
+}
+
+void test_bm_storage_write_wear_aligned(void)
+{
+	int err;
+	char input[BLOCK_SIZE] = {0};
+	struct bm_storage storage = {0};
+	struct bm_storage_config config = {
+		.api = &bm_storage_test_api_rram_like,
+		.evt_handler = bm_storage_evt_handler,
+		.start_addr = PARTITION_START,
+		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.flags.is_wear_aligned = true,
+	};
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* Aligned to wear_unit: succeeds */
+	err = bm_storage_write(&storage, PARTITION_START, input, sizeof(input), NULL);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* Aligned to program_unit but not wear_unit: fails */
+	err = bm_storage_write(&storage, PARTITION_START + PROGRAM_UNIT, input, PROGRAM_UNIT, NULL);
+	TEST_ASSERT_EQUAL(-EINVAL, err);
+}
+
+void test_bm_storage_write_no_wear_aligned(void)
+{
+	int err;
+	char input[PROGRAM_UNIT] = {0};
+	struct bm_storage storage = {0};
+	struct bm_storage_config config = {
+		.api = &bm_storage_test_api_rram_like,
+		.evt_handler = bm_storage_evt_handler,
+		.start_addr = PARTITION_START,
+		.end_addr = PARTITION_START + PARTITION_SIZE,
+	};
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* Without the flag, program_unit alignment is sufficient */
+	err = bm_storage_write(&storage, PARTITION_START + PROGRAM_UNIT, input, sizeof(input),
+			       NULL);
+	TEST_ASSERT_EQUAL(0, err);
+}
+
+void test_bm_storage_erase_wear_aligned(void)
+{
+	int err;
+	struct bm_storage storage = {0};
+	struct bm_storage_config config = {
+		.api = &bm_storage_test_api_rram_like,
+		.evt_handler = bm_storage_evt_handler,
+		.start_addr = PARTITION_START,
+		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.flags.is_wear_aligned = true,
+	};
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* Aligned to wear_unit: succeeds */
+	err = bm_storage_erase(&storage, PARTITION_START, BLOCK_SIZE, NULL);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* Aligned to program_unit but not wear_unit: fails */
+	err = bm_storage_erase(&storage, PARTITION_START, PROGRAM_UNIT, NULL);
+	TEST_ASSERT_EQUAL(-EINVAL, err);
+}
+
+void test_bm_storage_erase_no_wear_aligned(void)
+{
+	int err;
+	struct bm_storage storage = {0};
+	struct bm_storage_config config = {
+		.api = &bm_storage_test_api_rram_like,
+		.evt_handler = bm_storage_evt_handler,
+		.start_addr = PARTITION_START,
+		.end_addr = PARTITION_START + PARTITION_SIZE,
+	};
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* Without is_wear_aligned: erase_unit alignment is sufficient */
+	err = bm_storage_erase(&storage, PARTITION_START, PROGRAM_UNIT, NULL);
+	TEST_ASSERT_EQUAL(0, err);
+}
+
+void test_bm_storage_init_wear_aligned_einval(void)
+{
+	int err;
+	struct bm_storage storage = {0};
+	struct bm_storage_config config = {
+		.api = &bm_storage_test_api,
+		.evt_handler = bm_storage_evt_handler,
+		.start_addr = PARTITION_START,
+		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.flags.is_wear_aligned = true,
+	};
+
+	/* is_erase_before_write backend does not support is_wear_aligned */
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(-EINVAL, err);
 }
 
 void setUp(void)
