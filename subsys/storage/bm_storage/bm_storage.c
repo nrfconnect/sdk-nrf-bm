@@ -6,31 +6,21 @@
 
 #include <errno.h>
 #include <zephyr/kernel.h>
+#include <zephyr/toolchain.h>
 #include <sys/types.h>
 #include <bm/storage/bm_storage.h>
-#include <bm/storage/bm_storage_backend.h>
 
-__weak int bm_storage_backend_uninit(struct bm_storage *storage)
-{
-	return -ENOTSUP;
-}
+TOOLCHAIN_DISABLE_WARNING("-Wdeprecated-declarations");
 
-__weak int bm_storage_backend_erase(const struct bm_storage *storage, uint32_t addr,
-					uint32_t len, void *ctx)
+static bool is_within_bounds(const struct bm_storage *storage, uint32_t addr, uint32_t len)
 {
-	return -ENOTSUP;
-}
+	if (!storage->flags.has_absolute_addressing) {
+		addr += storage->addr;
+	}
 
-__weak bool bm_storage_backend_is_busy(const struct bm_storage *storage)
-{
-	return false;
-}
-
-static inline bool is_within_bounds(off_t addr, size_t len, off_t boundary_start,
-				    size_t boundary_size)
-{
-	return (addr >= boundary_start && (addr < (boundary_start + boundary_size)) &&
-		(len <= (boundary_start + boundary_size - addr)));
+	return ((addr >= storage->addr) &&			 /* after/at the start address */
+		(addr + len <= storage->addr + storage->size) && /* no larger than the partition */
+		(addr + len > addr));				 /* no overflow */
 }
 
 int bm_storage_init(struct bm_storage *storage, const struct bm_storage_config *config)
@@ -41,21 +31,38 @@ int bm_storage_init(struct bm_storage *storage, const struct bm_storage_config *
 		return -EFAULT;
 	}
 
-	if (bm_storage_info.program_unit == 0) {
-		return -EIO;
+	if (storage->flags.is_initialized) {
+		return -EPERM;
 	}
 
-	storage->nvm_info = &bm_storage_info;
-	storage->evt_handler = config->evt_handler;
-	storage->start_addr = config->start_addr;
-	storage->end_addr = config->end_addr;
+	if (!config->api) {
+		return -EFAULT;
+	}
 
-	err = bm_storage_backend_init(storage);
+	storage->api = config->api;
+	storage->evt_handler = config->evt_handler;
+
+	storage->flags.pad_write_operations = config->flags.pad_write_operations;
+
+	if (config->start_addr || config->end_addr) {
+		storage->addr = config->start_addr;
+		storage->size = config->end_addr - config->start_addr;
+		storage->flags.has_absolute_addressing = true;
+	} else {
+		storage->addr = config->addr;
+		storage->size = config->size;
+		storage->flags.has_absolute_addressing = false;
+	}
+
+	err = storage->api->init(storage, config);
 	if (err) {
 		return err;
 	}
 
-	storage->initialized = true;
+	__ASSERT(storage->nvm_info, "NVM info not provided by backend");
+
+
+	storage->flags.is_initialized = true;
 
 	return 0;
 }
@@ -68,15 +75,15 @@ int bm_storage_uninit(struct bm_storage *storage)
 		return -EFAULT;
 	}
 
-	if (!storage->initialized) {
+	if (!storage->flags.is_initialized) {
 		return -EPERM;
 	}
 
-	err = bm_storage_backend_uninit(storage);
+	err = storage->api->uninit(storage);
 
 	if (err == 0) {
-		storage->initialized = false;
-		storage->nvm_info = NULL;
+		/* Prevent further operations */
+		storage->flags.is_initialized = false;
 	}
 
 	return err;
@@ -88,7 +95,7 @@ int bm_storage_read(const struct bm_storage *storage, uint32_t src, void *dest, 
 		return -EFAULT;
 	}
 
-	if (!storage->initialized || !storage->nvm_info) {
+	if (!storage->flags.is_initialized) {
 		return -EPERM;
 	}
 
@@ -96,12 +103,11 @@ int bm_storage_read(const struct bm_storage *storage, uint32_t src, void *dest, 
 		return -EINVAL;
 	}
 
-	if (!is_within_bounds(src, len, storage->start_addr,
-		storage->end_addr - storage->start_addr)) {
-		return -EFAULT;
+	if (!is_within_bounds(storage, src, len)) {
+		return -EINVAL;
 	}
 
-	return bm_storage_backend_read(storage, src, dest, len);
+	return storage->api->read(storage, src, dest, len);
 }
 
 int bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void *src,
@@ -111,20 +117,24 @@ int bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void
 		return -EFAULT;
 	}
 
-	if (!storage->initialized || !storage->nvm_info) {
+	if (!storage->flags.is_initialized) {
 		return -EPERM;
 	}
 
-	if (len == 0 || len % storage->nvm_info->program_unit != 0) {
+	if (!IS_ALIGNED(dest, storage->nvm_info->program_unit)) {
 		return -EINVAL;
 	}
 
-	if (!is_within_bounds(dest, len, storage->start_addr,
-		storage->end_addr - storage->start_addr)) {
-		return -EFAULT;
+	if (!IS_ALIGNED(len, storage->nvm_info->program_unit) &&
+	    !storage->flags.pad_write_operations) {
+		return -EINVAL;
 	}
 
-	return bm_storage_backend_write(storage, dest, src, len, ctx);
+	if (!is_within_bounds(storage, dest, len)) {
+		return -EINVAL;
+	}
+
+	return storage->api->write(storage, dest, src, len, ctx);
 }
 
 int bm_storage_erase(const struct bm_storage *storage, uint32_t addr, uint32_t len, void *ctx)
@@ -133,39 +143,47 @@ int bm_storage_erase(const struct bm_storage *storage, uint32_t addr, uint32_t l
 		return -EFAULT;
 	}
 
-	if (!storage->initialized || !storage->nvm_info) {
+	if (!storage->flags.is_initialized) {
 		return -EPERM;
 	}
 
-	if (storage->nvm_info->no_explicit_erase) {
-		return -ENOTSUP;
-	}
-
-	if (storage->nvm_info->erase_unit == 0) {
-		return -EIO;
-	}
-
-	if (len == 0 || len % storage->nvm_info->erase_unit != 0) {
+	if (!IS_ALIGNED(addr, storage->nvm_info->erase_unit) ||
+	    !IS_ALIGNED(len,  storage->nvm_info->erase_unit)) {
 		return -EINVAL;
 	}
 
-	if (!is_within_bounds(addr, len, storage->start_addr,
-			      storage->end_addr - storage->start_addr)) {
-		return -EFAULT;
+	if (!is_within_bounds(storage, addr, len)) {
+		return -EINVAL;
 	}
 
-	return bm_storage_backend_erase(storage, addr, len, ctx);
+	return storage->api->erase(storage, addr, len, ctx);
 }
 
 bool bm_storage_is_busy(const struct bm_storage *storage)
 {
 	if (!storage) {
-		return true;
+		return false;
 	}
 
-	if (!storage->initialized) {
-		return true;
+	if (!storage->flags.is_initialized) {
+		return false;
 	}
 
-	return bm_storage_backend_is_busy(storage);
+	return storage->api->is_busy(storage);
 }
+
+int bm_storage_nvm_info_get(const struct bm_storage *storage, struct bm_storage_info *info)
+{
+	if (!storage || !info) {
+		return -EFAULT;
+	}
+	if (!storage->flags.is_initialized) {
+		return -EPERM;
+	}
+
+	memcpy(info, storage->nvm_info, sizeof(struct bm_storage_info));
+
+	return 0;
+}
+
+TOOLCHAIN_ENABLE_WARNING("-Wdeprecated-declarations");

@@ -112,11 +112,6 @@ Bare Metal Storage library
 
 .. doxygengroup:: bm_storage
 
-Bare Metal Storage library backend
-----------------------------------
-
-.. doxygengroup:: bm_storage_backend
-
 .. _api_bm_timer:
 
 Bare Metal Timer library
