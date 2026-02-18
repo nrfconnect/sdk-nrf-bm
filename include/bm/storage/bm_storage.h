@@ -163,6 +163,15 @@ struct bm_storage {
 	 *        field and @ref start_addr.
 	 */
 	uint32_t end_addr;
+	/**
+	 * @brief Configuration flags.
+	 */
+	struct {
+		/**
+		 * @brief Enforce wear unit alignment on operations that cause wear.
+		 */
+		bool is_wear_aligned : 1;
+	} flags;
 };
 
 /**
@@ -193,6 +202,21 @@ struct bm_storage_config {
 	 *        field and @ref start_addr.
 	 */
 	uint32_t end_addr;
+	/**
+	 * @brief Configuration flags.
+	 */
+	struct {
+		/**
+		 * @brief Enforce wear unit alignment on operations that cause wear.
+		 *
+		 * If @ref bm_storage_info.is_erase_before_write is not set,
+		 * both write and erase operations must be aligned to the wear unit.
+		 *
+		 * If @ref bm_storage_info.is_erase_before_write is set,
+		 * only the erase operation must be aligned to the wear unit.
+		 */
+		bool is_wear_aligned : 1;
+	} flags;
 };
 
 /**
@@ -203,6 +227,7 @@ struct bm_storage_config {
  *
  * @retval 0 on success.
  * @retval -EFAULT The storage instance @p storage or @p config is @c NULL.
+ * @retval -EINVAL The configuration flags are not compatible with the backend.
  * @retval -EIO If an implementation-specific internal error occurred.
  */
 int bm_storage_init(struct bm_storage *storage, const struct bm_storage_config *config);
@@ -243,6 +268,8 @@ int bm_storage_read(const struct bm_storage *storage, uint32_t src, void *dest, 
  * @brief Write data to storage.
  *
  * The write address and length must be a multiple of the backend's program unit.
+ * If @ref bm_storage_config.flags.is_wear_aligned is set, alignment to the wear unit is
+ * required instead.
  *
  * @param[in] storage Storage instance to write data to.
  * @param[in] dest Address in non-volatile memory where to write the data to.
@@ -264,8 +291,12 @@ int bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void
 /**
  * @brief Erase data from storage.
  *
- * The erase address and length must be aligned to the backend's program unit
- * or erase unit, depending on the wear mode.
+ * If @ref bm_storage_info.is_erase_before_write is set, the erase address and length
+ * must be aligned to the backend's erase unit.
+ *
+ * If @ref bm_storage_info.is_erase_before_write is not set, the erase address and length
+ * must be aligned to the backend's program unit, or to the backend's wear unit
+ * if @ref bm_storage_config.is_wear_aligned is set.
  *
  * @param[in] storage Storage instance to erase data in.
  * @param[in] addr Address in non-volatile memory where to erase the data.

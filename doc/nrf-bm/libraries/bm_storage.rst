@@ -84,18 +84,22 @@ The completion of the operation is reported by the :c:enum:`BM_STORAGE_EVT_WRITE
    The program unit is the minimum programmable block in NVM.
    Write operations must start at an address aligned by the program unit and use a length that is a multiple of this value.
 
+   If :c:member:`bm_storage_config.flags.is_wear_aligned` is set during initialization, the wear unit (:c:member:`bm_storage_info.wear_unit`) is used for alignment instead.
+
 Erase
 =====
 
 Use the :c:func:`bm_storage_erase` function to erase a region in NVM.
 The completion of the operation is reported by the :c:enum:`BM_STORAGE_EVT_ERASE_RESULT` event.
-When the erase operation is not supported by the hardware, the backend will emulate it by writing the memory’s erased value to the NVM area.
 
 .. note::
 
    The erase unit is the minimum erasable block in NVM.
    Erase operations must start at an address aligned by the erase unit and use a length that is a multiple of this value.
    The erase unit is reported by :c:member:`bm_storage_info.erase_unit`.
+
+When the erase operation is not supported by the hardware, the backend will emulate it by writing the memory’s erased value to the NVM area.
+If the erase operation is emulated, the alignment requirements are the same as those for the write operation.
 
 Busy state
 ==========

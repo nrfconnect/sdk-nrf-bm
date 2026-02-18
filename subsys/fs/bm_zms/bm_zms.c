@@ -2010,6 +2010,7 @@ int bm_zms_mount(struct bm_zms_fs *fs, const struct bm_zms_fs_config *config)
 		.api = config->storage_api,
 		.start_addr = fs->offset,
 		.end_addr = fs->offset + fs->sector_size * fs->sector_count,
+		.flags.is_wear_aligned = true,
 	};
 
 	ret = bm_storage_init(&fs->zms_bm_storage, &conf);
