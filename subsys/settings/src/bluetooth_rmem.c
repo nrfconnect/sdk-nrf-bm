@@ -30,8 +30,15 @@ static int bluetooth_name_value_set(const char *name, const void *value, size_t 
 		return -EFAULT;
 	}
 
+	size_t name_len = strlen(name);
+	size_t key_len = strlen(bluetooth_name_key);
+
+	if (name_len != strlen(bluetooth_name_key)) {
+		return -ENOENT;
+	}
+
 	/* Check if the key name matches "fw_loader/adv_name" */
-	if (memcmp(name, bluetooth_name_key, sizeof(bluetooth_name_key) - 1) != 0) {
+	if (memcmp(name, bluetooth_name_key, key_len) != 0) {
 		return -ENOENT;
 	}
 
