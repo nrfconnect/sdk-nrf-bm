@@ -993,12 +993,9 @@ void test_bm_storage_sd_erase(void)
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
-	for (size_t i = 0; i < BLOCK_SIZE / storage.nvm_info->wear_unit; i++) {
-		__cmock_sd_flash_write_ExpectAndReturn(
-			(uint32_t *)(PARTITION_START + (i * storage.nvm_info->wear_unit)),
-			NULL, WORD_SIZE(storage.nvm_info->wear_unit), 0);
-		__cmock_sd_flash_write_IgnoreArg_p_src();
-	}
+	__cmock_sd_flash_write_ExpectAndReturn(
+		(uint32_t *)PARTITION_START, PTR_IGNORE, WORD_SIZE(BLOCK_SIZE), 0);
+	__cmock_sd_flash_write_IgnoreArg_p_src();
 
 	err = bm_storage_erase(&storage, PARTITION_START, BLOCK_SIZE, NULL);
 	TEST_ASSERT_EQUAL(0, err);
@@ -1006,15 +1003,107 @@ void test_bm_storage_sd_erase(void)
 	is_busy = bm_storage_is_busy(&storage);
 	TEST_ASSERT_TRUE(is_busy);
 
-	for (size_t i = 0; i < BLOCK_SIZE / storage.nvm_info->wear_unit; i++) {
-		bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
-	}
+	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
 
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_ERASE_RESULT, storage_event.id);
 	TEST_ASSERT_EQUAL(0, storage_event.result);
 	TEST_ASSERT_EQUAL(PARTITION_START, storage_event.addr);
 	TEST_ASSERT_EQUAL_PTR(NULL, storage_event.src);
 	TEST_ASSERT_EQUAL(BLOCK_SIZE, storage_event.len);
+
+	is_busy = bm_storage_is_busy(&storage);
+	TEST_ASSERT_FALSE(is_busy);
+}
+
+void test_bm_storage_sd_erase_chunk(void)
+{
+	int err;
+	struct bm_storage storage = {0};
+	struct bm_storage_config config = {
+		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
+		.start_addr = PARTITION_START,
+		.end_addr = PARTITION_START + PARTITION_SIZE,
+	};
+
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){true});
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	const uint32_t big_block = BLOCK_SIZE + storage.nvm_info->wear_unit;
+
+	/* First chunk, up to _MAX_WRITE_SIZE */
+	__cmock_sd_flash_write_ExpectAndReturn(
+		(uint32_t *)PARTITION_START, PTR_IGNORE, WORD_SIZE(BLOCK_SIZE), 0);
+	__cmock_sd_flash_write_IgnoreArg_p_src();
+
+	err = bm_storage_erase(&storage, PARTITION_START, big_block, NULL);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* The SoC event from the first operation will trigger the second */
+	__cmock_sd_flash_write_ExpectAndReturn(
+		(uint32_t *)(PARTITION_START + BLOCK_SIZE), PTR_IGNORE,
+		WORD_SIZE(storage.nvm_info->wear_unit), 0);
+	__cmock_sd_flash_write_IgnoreArg_p_src();
+
+	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+
+	TEST_ASSERT_FALSE(storage_event_received);
+
+	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+
+	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_ERASE_RESULT, storage_event.id);
+	TEST_ASSERT_EQUAL(0, storage_event.result);
+	TEST_ASSERT_EQUAL(PARTITION_START, storage_event.addr);
+	TEST_ASSERT_EQUAL_PTR(NULL, storage_event.src);
+	TEST_ASSERT_EQUAL(big_block, storage_event.len);
+
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(0, err);
+}
+
+void test_bm_storage_sd_erase_odd(void)
+{
+	int err;
+	bool is_busy;
+	struct bm_storage storage = {0};
+	struct bm_storage_config config = {
+		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
+		.start_addr = PARTITION_START,
+		.end_addr = PARTITION_START + PARTITION_SIZE,
+	};
+
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){true});
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* A multiple of the wear unit, but smaller than _MAX_WRITE_SIZE */
+	const uint32_t small_block = storage.nvm_info->wear_unit * 2;
+
+	__cmock_sd_flash_write_ExpectAndReturn(
+		(uint32_t *)PARTITION_START, PTR_IGNORE, WORD_SIZE(small_block), 0);
+	__cmock_sd_flash_write_IgnoreArg_p_src();
+
+	err = bm_storage_erase(&storage, PARTITION_START, small_block, NULL);
+	TEST_ASSERT_EQUAL(0, err);
+
+	is_busy = bm_storage_is_busy(&storage);
+	TEST_ASSERT_TRUE(is_busy);
+
+	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+
+	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_ERASE_RESULT, storage_event.id);
+	TEST_ASSERT_EQUAL(0, storage_event.result);
+	TEST_ASSERT_EQUAL(PARTITION_START, storage_event.addr);
+	TEST_ASSERT_EQUAL_PTR(NULL, storage_event.src);
+	TEST_ASSERT_EQUAL(small_block, storage_event.len);
 
 	is_busy = bm_storage_is_busy(&storage);
 	TEST_ASSERT_FALSE(is_busy);

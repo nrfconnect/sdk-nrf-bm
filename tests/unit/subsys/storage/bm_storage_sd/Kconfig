@@ -23,4 +23,7 @@ config BM_STORAGE_BACKEND_SD_MAX_RETRIES
 config BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE
 	default 32
 
+config BM_STORAGE_BACKEND_SD_ERASE_BLOCKS
+	default y
+
 source "Kconfig.zephyr"
