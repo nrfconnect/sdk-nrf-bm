@@ -127,6 +127,10 @@ Samples
    * :ref:`ble_hids_mouse_sample`
    * :ref:`ble_hids_keyboard_sample`
 
+* Improved sample documentation with clearer, more descriptive user guides,
+  including updated explanations of configuration options, hardware connections,
+  and testing procedures.
+
 Bluetooth LE samples
 --------------------
 

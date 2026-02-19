@@ -74,6 +74,19 @@ Mouse clicks are not simulated.
 This sample exposes the HID GATT Service.
 It uses a report map for a generic mouse.
 
+Allow list
+==========
+
+By default, the sample does not use allow list advertising, which means that any nearby device can connect and bond with the device.
+Bonded devices are stored in internal non-volatile memory (NVM) and are remembered across power cycles.
+
+You can enable allow list advertising by setting
+:kconfig:option:`CONFIG_BLE_ADV_USE_ALLOW_LIST` to ``y`` in the base Kconfig fragment (:file:`prj.conf`).
+When enabled, only previously bonded devices are allowed to reconnect, which allows faster reconnection and prevents unknown devices from connecting.
+
+When allow list advertising is enabled and you want to add a new bonded device, existing bonds must first be deleted.
+This can be done through user interaction, as described in the `User interface`_ section below.
+
 User interface
 **************
 

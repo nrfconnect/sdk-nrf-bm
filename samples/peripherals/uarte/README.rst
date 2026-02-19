@@ -83,7 +83,14 @@ Testing
 You can test this sample by performing the following steps:
 
 1. Compile and program the application.
+#. Open a serial terminal configured for standard 115200 baud rate.
 #. Observe that the ``UARTE sample started`` message is printed in one terminal.
 #. Observe that the ``Hello world! I will echo the lines you enter:`` message is printed in another terminal.
 #. Enter a message in the terminal.
    Observe that you receive the same line in response when pressing Enter (sending ``\r`` or ``\n`` to the device).
+
+.. note::
+
+  If no UART output is visible, you may be connected to the logger (RTT or logging) port instead of the application UART port.
+  Try selecting a different serial port for the same device, usually one port lower or higher than the logger port.
+  Using `nRF Connect for Desktop`_ with the Serial Terminal application is recommended to easily switch between available ports and send messages.
