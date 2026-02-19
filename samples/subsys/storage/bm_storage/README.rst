@@ -21,7 +21,7 @@ The sample supports the following development kits:
 
    .. group-tab:: Simple board variants
 
-      The following board variants do **not** have DFU capabilities.
+      The following board variants do **not** have DFU capabilities:
 
       .. list-table::
          :header-rows: 1
@@ -45,7 +45,7 @@ The sample supports the following development kits:
 
    .. group-tab:: MCUboot board variants
 
-      The following board variants have DFU capabilities.
+      The following board variants have DFU capabilities:
 
       .. list-table::
          :header-rows: 1
