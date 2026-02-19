@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Nordic Semiconductor ASA
+ * Copyright (c) 2025 - 2026 Nordic Semiconductor
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
@@ -14,6 +14,16 @@
 #include <bm_installs.h>
 
 LOG_MODULE_REGISTER(installer, CONFIG_INSTALLER_LOG_LEVEL);
+
+#if defined(CONFIG_APP_BM_INSTALLER_SELF_DELAYS)
+#define VERIFICATION_DELAY(x, msg) do { \
+	LOG_INF(msg); \
+	log_flush(); \
+	k_busy_wait((x) * USEC_PER_MSEC); \
+} while (0)
+#else
+#define VERIFICATION_DELAY(x, msg)
+#endif /* CONFIG_APP_BM_INSTALLER_SELF_DELAYS */
 
 #define IMAGE_DATA_SIZE 64
 #define IMAGE_DATA_ARRAY_SIZE 32
@@ -138,6 +148,10 @@ int main(void)
 		}
 	}
 
+	/* Delay for reliability verification purpose */
+	VERIFICATION_DELAY(CONFIG_APP_BM_INSTALLER_POST_METADATA_INVALIDATION_DELAY_MS,
+			   "V_DELAY_POST_METADATA_INVALIDATION");
+
 	memset(&replacement_metadata.padding, 0xff, BM_INSTALLS_PADDING_SIZE);
 
 	while (i < CONFIG_BM_INSTALL_IMAGES) {
@@ -198,10 +212,23 @@ int main(void)
 			pos += process_size;
 			read_pos += process_size;
 			write_pos += process_size;
+
+			/* Delay for reliability verification purpose */
+			VERIFICATION_DELAY(CONFIG_APP_BM_INSTALLER_INTER_IMAGE_CHUNK_COPY_DELAY_MS,
+					   "V_DELAY_IMAGE_CHUNK_COPY");
 		}
 
 		++i;
+
+		if (i < CONFIG_BM_INSTALL_IMAGES) {
+			VERIFICATION_DELAY(CONFIG_APP_BM_INSTALLER_NEXT_IMAGE_COPY_DELAY_MS,
+					   "V_DELAY_NEXT_IMAGE_COPY");
+		}
 	}
+
+	/* Delay for reliability verification purpose */
+	VERIFICATION_DELAY(CONFIG_APP_BM_INSTALLER_PRIOR_METADATA_UPDATE_DELAY_MS,
+			   "V_DELAY_METADATA_UPDATE");
 
 	/* Write new metadata, after updating checksum */
 	replacement_metadata.checksum = crc32_ieee((const uint8_t *)&replacement_metadata,
@@ -217,6 +244,11 @@ int main(void)
 
 erase_header:
 	/* Erase header of installer image to boot back into firmware loader image */
+
+	/* Delay for reliability verification purpose */
+	VERIFICATION_DELAY(CONFIG_APP_BM_INSTALLER_PRIOR_SELF_DESTRUCTION_DELAY_MS,
+			   "V_DELAY_SELF_DESTRUCTION");
+
 #if defined(CONFIG_FLASH_HAS_EXPLICIT_ERASE)
 	memset(erase_buffer, 0, sizeof(erase_buffer));
 	rc = flash_area_write(&fa_installer, 0, erase_buffer, CONFIG_ROM_START_OFFSET);
@@ -227,7 +259,7 @@ erase_header:
 	if (rc) {
 		LOG_ERR("Clear installer header failed: %d", rc);
 	} else {
-		LOG_ERR("Clear installer header OK");
+		LOG_INF("Clear installer header OK");
 	}
 
 	log_flush();
