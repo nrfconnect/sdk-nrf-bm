@@ -65,6 +65,10 @@ size_t ble_name_value_get(struct bm_retained_clipboard_ctx *ctx, char const **na
 	int err;
 	struct bm_rmem_data_desc desc;
 
+	if (name == NULL || ctx == NULL) {
+		return 0;
+	}
+
 	desc.type = BM_REM_TLV_TYPE_BLE_NAME;
 
 	err = bm_rmem_data_get(ctx, &desc);
