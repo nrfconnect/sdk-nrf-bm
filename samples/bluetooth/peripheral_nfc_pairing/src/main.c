@@ -111,6 +111,10 @@ static uint32_t paring_key_generate(void)
 	}
 
 	oob_local = nrf_ble_lesc_own_oob_data_get();
+	if (oob_local == NULL) {
+		LOG_ERR("Failed to get LESC own OOB data!");
+		return NRF_ERROR_NULL;
+	}
 
 	return tk_value_generate();
 }
@@ -360,23 +364,11 @@ static void nfc_callback(void *context,
 static int pairing_msg_generate(uint32_t *len)
 {
 	int err;
-	uint32_t nrf_err;
 	struct nfc_ndef_le_oob_rec_payload_desc rec_payload = {0};
 	struct nfc_ndef_ch_msg_records ch_records;
 	uint32_t ndef_size = nfc_t4t_ndef_file_msg_size_get(*len);
 
 	NFC_NDEF_MSG_DEF(hs_msg, 2);
-
-	oob_local = nrf_ble_lesc_own_oob_data_get();
-	if (oob_local == NULL) {
-		LOG_ERR("Failed to get LESC own OOB data!");
-		return -EFAULT;
-	}
-
-	nrf_err = tk_value_generate();
-	if (nrf_err != NRF_SUCCESS) {
-		return -EFAULT;
-	}
 
 	rec_payload.addr = &oob_local->addr;
 	rec_payload.le_sc_data = oob_local;
