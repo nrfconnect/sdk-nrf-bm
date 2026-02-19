@@ -361,6 +361,7 @@ static void nfc_callback(void *context,
 	}
 }
 
+/** .. include_startingpoint_bm_pair_msg_rst */
 static int pairing_msg_generate(uint32_t *len)
 {
 	int err;
@@ -410,6 +411,7 @@ static int pairing_msg_generate(uint32_t *len)
 
 	return 0;
 }
+/** .. include_endpoint_bm_pair_msg_rst */
 
 static int nfc_init(void)
 {

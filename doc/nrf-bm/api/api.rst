@@ -237,6 +237,27 @@ NFC NDEF Launch App records
 
 .. doxygengroup:: nfc_launchapp_rec
 
+.. _nfc_ndef_ch_rec:
+
+NFC NDEF Connection Handover records
+====================================
+
+.. doxygengroup:: nfc_ndef_ch
+
+.. _nfc_ndef_ch_msg:
+
+NFC NDEF Connection Handover messages
+=====================================
+
+.. doxygengroup:: nfc_ndef_ch_msg
+
+.. _nfc_ndef_le_oob_rec:
+
+NFC NDEF Bluetooth LE OOB records
+=================================
+
+.. doxygengroup:: nfc_ndef_le_oob_rec
+
 Services
 ********
 
