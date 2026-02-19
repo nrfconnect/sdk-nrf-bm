@@ -150,3 +150,17 @@ Testing
 #. Touch the NFC antenna with the smartphone or tablet and observe that **LED 2** is lit.
 #. Confirm pairing with :guilabel:`nRF_BM_Nordic_NFC_pairing` in a pop-up window on the smartphone or tablet and observe that **LED 1** lights up.
 #. Move the smartphone or tablet away from the NFC antenna and observe that **LED 2** turns off.
+
+Dependencies
+************
+
+This sample uses the following |BMshort| NFC libraries:
+
+* :ref:`nfc_t4t_ndef_file_readme`
+* :ref:`nfc_ndef`
+* :ref:`nfc_ch`
+* :ref:`nfc_ndef_le_oob`
+
+In addition, it uses the :ref:`lib_nfc_t4t` from `sdk-nrfxlib`_.
+
+See :ref:`lib_nfc` for more information about the NFC libraries.
