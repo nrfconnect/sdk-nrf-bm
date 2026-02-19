@@ -59,12 +59,6 @@ It then starts advertising the MCUmgr service allowing for a firmware update to 
 
 For more details on this workflow, see `System reset`_ in Zephyr documentation.
 
-Programming the S115 SoftDevice
-*******************************
-
-The SoftDevice is automatically flashed when programming the board.
-No additional steps are needed for programming the SoftDevice when building with MCUboot firmware loader mode enabled.
-
 Building and running
 ********************
 
