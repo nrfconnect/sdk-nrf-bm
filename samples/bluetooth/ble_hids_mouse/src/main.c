@@ -61,23 +61,6 @@ LOG_MODULE_REGISTER(sample, CONFIG_SAMPLE_BLE_HIDS_MOUSE_LOG_LEVEL);
 /**< Id of reference to Mouse Input Report containing media player data. */
 #define INPUT_REP_REF_MPLAYER_ID 3
 
-/* Perform bonding. */
-#define SEC_PARAM_BOND 1
-/* Man In The Middle protection not required. */
-#define SEC_PARAM_MITM 0
-/* LE Secure Connections enabled. */
-#define SEC_PARAM_LESC 1
-/* Keypress notifications not enabled. */
-#define SEC_PARAM_KEYPRESS 1
-/* No I/O capabilities. */
-#define SEC_PARAM_IO_CAPABILITIES BLE_GAP_IO_CAPS_DISPLAY_YESNO
-/* Out Of Band data not available. */
-#define SEC_PARAM_OOB 0
-/* Minimum encryption key size. */
-#define SEC_PARAM_MIN_KEY_SIZE 7
-/* Maximum encryption key size. */
-#define SEC_PARAM_MAX_KEY_SIZE 16
-
 /* HID service instance */
 BLE_HIDS_DEF(ble_hids);
 /* BLE Advertising library instance */
@@ -596,14 +579,14 @@ static uint32_t peer_manager_init(void)
 
 	/* Security parameters to be used for all security procedures. */
 	sec_param = (ble_gap_sec_params_t) {
-		.bond = SEC_PARAM_BOND,
-		.mitm = SEC_PARAM_MITM,
-		.lesc = SEC_PARAM_LESC,
-		.keypress = SEC_PARAM_KEYPRESS,
-		.io_caps = SEC_PARAM_IO_CAPABILITIES,
-		.oob = SEC_PARAM_OOB,
-		.min_key_size = SEC_PARAM_MIN_KEY_SIZE,
-		.max_key_size = SEC_PARAM_MAX_KEY_SIZE,
+		.bond = 1,
+		.mitm = 0,
+		.lesc = 1,
+		.keypress = 1,
+		.io_caps = BLE_GAP_IO_CAPS_DISPLAY_YESNO,
+		.oob = 0,
+		.min_key_size = 7,
+		.max_key_size = 16,
 		.kdist_own.enc = 1,
 		.kdist_own.id = 1,
 		.kdist_peer.enc = 1,

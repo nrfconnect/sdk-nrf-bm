@@ -31,23 +31,6 @@ LOG_MODULE_REGISTER(sample, CONFIG_SAMPLE_BLE_HRS_LOG_LEVEL);
 
 #define CONN_TAG 1
 
-/* Perform bonding. */
-#define SEC_PARAM_BOND 1
-/* Man In The Middle protection not required. */
-#define SEC_PARAM_MITM 0
-/* LE Secure Connections enabled. */
-#define SEC_PARAM_LESC 1
-/* Keypress notifications not enabled. */
-#define SEC_PARAM_KEYPRESS 0
-/* No I/O capabilities. */
-#define SEC_PARAM_IO_CAPABILITIES BLE_GAP_IO_CAPS_DISPLAY_ONLY
-/* Out Of Band data not available. */
-#define SEC_PARAM_OOB 0
-/* Minimum encryption key size. */
-#define SEC_PARAM_MIN_KEY_SIZE 7
-/* Maximum encryption key size. */
-#define SEC_PARAM_MAX_KEY_SIZE 16
-
 BLE_ADV_DEF(ble_adv); /* BLE advertising instance */
 BLE_BAS_DEF(ble_bas); /* BLE battery service instance */
 BLE_HRS_DEF(ble_hrs); /* BLE heart rate service instance */
@@ -420,14 +403,14 @@ static uint32_t peer_manager_init(void)
 
 	/* Security parameters to be used for all security procedures. */
 	sec_param = (ble_gap_sec_params_t) {
-		.bond = SEC_PARAM_BOND,
-		.mitm = SEC_PARAM_MITM,
-		.lesc = SEC_PARAM_LESC,
-		.keypress = SEC_PARAM_KEYPRESS,
-		.io_caps = SEC_PARAM_IO_CAPABILITIES,
-		.oob = SEC_PARAM_OOB,
-		.min_key_size = SEC_PARAM_MIN_KEY_SIZE,
-		.max_key_size = SEC_PARAM_MAX_KEY_SIZE,
+		.bond = 1,
+		.mitm = 0,
+		.lesc = 1,
+		.keypress = 0,
+		.io_caps = BLE_GAP_IO_CAPS_DISPLAY_ONLY,
+		.oob = 0,
+		.min_key_size = 7,
+		.max_key_size = 16,
 		.kdist_own.enc = 1,
 		.kdist_own.id = 1,
 		.kdist_peer.enc = 1,
