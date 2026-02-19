@@ -56,6 +56,7 @@ void test_ble_name_value_get_success(void)
 
 	/* Expect bm_rmem_data_get to be called and succeed */
 	__cmock_bm_rmem_data_get_ExpectAndReturn(&ctx, NULL, 0);
+	__cmock_bm_rmem_data_get_IgnoreArg_desc();
 	__cmock_bm_rmem_data_get_ReturnThruPtr_desc(&expected_desc);
 
 	len = ble_name_value_get(&ctx, &name);
@@ -73,6 +74,7 @@ void test_ble_name_value_get_failure(void)
 
 	/* Expect bm_rmem_data_get to fail */
 	__cmock_bm_rmem_data_get_ExpectAndReturn(&ctx, NULL, -ENOENT);
+	__cmock_bm_rmem_data_get_IgnoreArg_desc();
 
 	len = ble_name_value_get(&ctx, &name);
 
@@ -84,14 +86,24 @@ void test_ble_name_value_get_null_ctx(void)
 {
 	size_t len;
 	const char *name = NULL;
+	struct bm_retained_clipboard_ctx ctx = {0};
 
-	/* Expect bm_rmem_data_get to be called with NULL ctx */
-	__cmock_bm_rmem_data_get_ExpectAndReturn(NULL, NULL, -EFAULT);
-
+	/* Function returns early if ctx is NULL, so bm_rmem_data_get is not called */
 	len = ble_name_value_get(NULL, &name);
 
 	TEST_ASSERT_EQUAL(0, len);
 	TEST_ASSERT_NULL(name);
+}
+
+void test_ble_name_value_get_null_name(void)
+{
+	size_t len;
+	struct bm_retained_clipboard_ctx ctx = {0};
+
+	/* Function returns early if name is NULL, so bm_rmem_data_get is not called */
+	len = ble_name_value_get(&ctx, NULL);
+
+	TEST_ASSERT_EQUAL(0, len);
 }
 
 /* Test cases for settings_runtime_set() */
