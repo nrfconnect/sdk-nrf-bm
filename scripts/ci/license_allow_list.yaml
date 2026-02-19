@@ -44,6 +44,10 @@ Apache-2.0: |
   ^nrf-bm/subsys/mgmt/mcumgr/grp/Kconfig
   ^nrf-bm/subsys/mgmt/mcumgr/grp/img_mgmt/CMakeLists.txt
   ^nrf-bm/subsys/mgmt/mcumgr/grp/img_mgmt/Kconfig
+  ^nrf-bm/subsys/mgmt/mcumgr/grp/img_mgmt/include/img_mgmt.h
+  ^nrf-bm/subsys/mgmt/mcumgr/grp/img_mgmt/include/mgmt/mcumgr/grp/img_mgmt/img_mgmt_priv.h
+  ^nrf-bm/subsys/mgmt/mcumgr/grp/img_mgmt/src/img_mgmt.c
+  ^nrf-bm/subsys/mgmt/mcumgr/grp/img_mgmt/src/zephyr_img_mgmt.c
   ^nrf-bm/subsys/mgmt/mcumgr/grp/os_mgmt/CMakeLists.txt
   ^nrf-bm/subsys/mgmt/mcumgr/grp/os_mgmt/Kconfig
   ^nrf-bm/subsys/mgmt/mcumgr/grp/settings_mgmt/CMakeLists.txt
