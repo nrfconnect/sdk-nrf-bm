@@ -25,7 +25,6 @@ The Connection Handover library provides functions for creating and encoding the
   * Alternative Carrier record
   * Collision Resolution record
 
-
 Connection Handover messages
 ****************************
 
@@ -37,14 +36,12 @@ The Connection Handover message library provides functions for encoding the foll
 * Handover Mediation message
 * Handover Initiate message
 
-This library is used in the :ref:`peripheral_nfc_pairing` sample.
-
-The following code sample demonstrates how to create a Handover Select message with one Alternative Carrier record that has a reference to the :ref:`Bluetooth LE OOB record <nfc_ndef_le_oob>`:
+The following code sample from the :ref:`peripheral_nfc_pairing_sample` sample demonstrates how to create a Handover Select message with one Alternative Carrier record that has a reference to the :ref:`Bluetooth LE OOB record <nfc_ndef_le_oob>`:
 
 .. literalinclude:: ../../../../../samples/bluetooth/peripheral_nfc_pairing/src/main.c
     :language: c
-    :start-after: include_startingpoint_pair_msg_rst
-    :end-before: include_endpoint_pair_msg_rst
+    :start-after: include_startingpoint_bm_pair_msg_rst
+    :end-before: include_endpoint_bm_pair_msg_rst
 
 API documentation
 *****************
@@ -54,18 +51,17 @@ API documentation
 Connection Handover records
 ===========================
 
-| Header file: :file:`include/nfc/ndef/ch.h`
+| Header file: :file:`bm/nfc/ndef/ch.h`
 | Source file: :file:`subsys/nfc/ndef/ch.c`
 
-.. doxygengroup:: nfc_ndef_ch
-
+:ref:`Connection Handover records <nfc_ndef_ch_rec>`
 
 .. _nfc_pair_msg:
 
 Connection Handover messages
 ============================
 
-| Header file: :file:`include/nfc/ndef/ch_msg.h`
+| Header file: :file:`bm/nfc/ndef/ch_msg.h`
 | Source file: :file:`subsys/nfc/ndef/ch_msg.c`
 
-.. doxygengroup:: nfc_ndef_ch_msg
+:ref:`Connection Handover messages <nfc_ndef_ch_msg>`

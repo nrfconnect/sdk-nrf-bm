@@ -118,3 +118,4 @@
 
 .. _`Bluetooth Core Specification`: https://www.bluetooth.org/en-us/specification/adopted-specifications
 .. _`Bond Management Service Specification`: https://www.bluetooth.com/specifications/specs/bond-management-service-1-0-1/
+.. _`Bluetooth Secure Simple Pairing Using NFC`: https://nfc-forum.org/build/specifications#application-documents

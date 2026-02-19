@@ -13,7 +13,7 @@ This data should be presented in the form of a Bluetooth LE pairing message.
 A Bluetooth LE pairing message that works with Android devices contains one Bluetooth LE OOB record.
 This record contains the Bluetooth LE advertising data structure with information that is used to establish the connection and pair.
 
-The following Bluetooth LE pairing methods can be used in combination with this module:
+The following Bluetooth LE pairing methods can be used in combination with this library:
 
 Legacy and LE Secure Connections Just Works pairing
   The NDEF record contains basic advertising data such as device name, address, and role.
@@ -25,14 +25,14 @@ LE Secure Connections pairing with OOB data
 
 For more information about NFC Connection Handover pairing methods, refer to `Bluetooth Secure Simple Pairing Using NFC`_ and the `Bluetooth Core Specification`_ Volume 3 Part H Chapter 2.
 
-The Bluetooth LE OOB record is used in the :ref:`peripheral_hids_keyboard` sample.
+The Bluetooth LE OOB record is used in the :ref:`peripheral_nfc_pairing_sample` sample.
+
+.. _nfc_le_oob_rec:
 
 API documentation
 *****************
 
-| Header file: :file:`include/nfc/ndef/le_oob_rec.h`
+| Header file: :file:`bm/nfc/ndef/le_oob_rec.h`
 | Source file: :file:`subsys/nfc/ndef/le_oob_rec.c`
 
-.. _nfc_ndef_le_oob_rec:
-
-.. doxygengroup:: nfc_ndef_le_oob_rec
+:ref:`LE OOB records <nfc_ndef_le_oob_rec>`
