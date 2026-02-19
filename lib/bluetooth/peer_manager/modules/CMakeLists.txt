@@ -5,6 +5,7 @@
 #
 
 zephyr_library_sources_ifdef(CONFIG_PM_RA_PROTECTION auth_status_tracker.c)
+zephyr_library_sources(conn_state.c)
 zephyr_library_sources(gatt_cache_manager.c)
 zephyr_library_sources(gatts_cache_manager.c)
 zephyr_library_sources(id_manager.c)

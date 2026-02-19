@@ -167,9 +167,9 @@ See table below for a summary of supported libraries.
      -
      -
    * - ``ble_conn_state``
-     - Yes
-     - Name unchanged
+     - No
      -
+     - No
      -
    * - ``ble_dtm``
      - No

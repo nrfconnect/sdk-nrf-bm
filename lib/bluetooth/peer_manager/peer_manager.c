@@ -9,10 +9,10 @@
 #include <string.h>
 
 #include <ble_err.h>
-#include <bm/bluetooth/ble_conn_state.h>
 #include <bm/bluetooth/peer_manager/peer_manager.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
 
+#include <modules/conn_state.h>
 #include <modules/security_manager.h>
 #include <modules/security_dispatcher.h>
 #include <modules/gatt_cache_manager.h>
@@ -47,7 +47,7 @@ static pm_evt_handler_t evt_handlers[CONFIG_PM_MAX_REGISTRANTS];
 static uint8_t n_registrants;
 
 /** User flag indicating whether a connection is excluded from being handled by the Peer Manager. */
-static int flag_conn_excluded = BLE_CONN_STATE_USER_FLAG_INVALID;
+static int flag_conn_excluded = PM_CONN_STATE_USER_FLAG_INVALID;
 
 /**
  * @brief Function for sending a Peer Manager event to all subscribers.
@@ -277,13 +277,13 @@ static bool is_conn_handle_excluded(const ble_evt_t *ble_evt)
 		pm_conn_config_req_evt.params.conn_config_req.context = &is_excluded;
 
 		evt_send(&pm_conn_config_req_evt);
-		ble_conn_state_user_flag_set(conn_handle, flag_conn_excluded, is_excluded);
+		pm_conn_state_user_flag_set(conn_handle, flag_conn_excluded, is_excluded);
 
 		return is_excluded;
 	}
 
 	default:
-		return ble_conn_state_user_flag_get(conn_handle, flag_conn_excluded);
+		return pm_conn_state_user_flag_get(conn_handle, flag_conn_excluded);
 	}
 }
 
@@ -322,6 +322,8 @@ static void internal_state_reset(void)
 uint32_t pm_init(void)
 {
 	uint32_t nrf_err;
+
+	pm_conn_state_init();
 
 	nrf_err = pds_init();
 	if (nrf_err) {
@@ -370,7 +372,7 @@ uint32_t pm_init(void)
 	peer_rank_initialized = false;
 	module_initialized = true;
 
-	flag_conn_excluded = ble_conn_state_user_flag_acquire();
+	flag_conn_excluded = pm_conn_state_user_flag_acquire();
 
 	/* If CONFIG_PM_PEER_RANKS is 0, these variables are unused. */
 	UNUSED_VARIABLE(peer_rank_initialized);
