@@ -75,6 +75,7 @@ jobs:
           -e KconfigBasicNoModules -e ClangFormat \
           -e SysbuildKconfigBasicNoModules \
           -e LicenseAndCopyrightCheck \
+          -e BinaryFiles
           -c origin/${BASE_REF}..
 
       - name: upload-results
