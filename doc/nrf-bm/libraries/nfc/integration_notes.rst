@@ -34,8 +34,26 @@ Integration requirements
 When integrating the NFC libraries in your application, be aware of the following:
 
 * The libraries require the NFCT driver from the `nrfx`_ repository.
-* The NFCT driver uses one Timer peripheral.
-  To configure the timer instance, change ``NRFX_NFCT_CONFIG_TIMER_INSTANCE_ID`` in the :file:`nrfx_config.h` file.
+  See :ref:`nrfx driver <driver_nrfx>` for more information.
+
+  The NFCT driver pre-allocates one Timer peripheral that it needs to work correctly.
+  On nRF54L Series devices, this timer is set to TIMER24.
+  It is not recommended to change the timer.
+  To override the default when necessary, set the ``NRFX_NFCT_CONFIG_TIMER_INSTANCE_ID`` macro in the :file:`nrfx_config.h` file.
+  The following is an example configuration for :file:`nrfx_config.h` (valid for all nRF54L Series devices):
+
+  .. code-block:: c
+
+   #ifndef NRFX_CONFIG_H__
+   #define NRFX_CONFIG_H__
+
+   /* Set the Timer TIMER22 instance for the NFCT driver. */
+   #define NRFX_NFCT_CONFIG_TIMER_INSTANCE_ID 22
+
+   /* Use defaults for undefined symbols. */
+   #include "nrfx_templates_config.h"
+   #endif // NRFX_CONFIG_H__
+
 * Each library must be the only user of the NFCT peripheral and of the chosen TIMER instance.
 * The libraries use an NFC Platform software module that handles clock control and interrupt routing.
   See the :ref:`lib_nfc_platform` section for details.
