@@ -17,7 +17,8 @@ The following sections provide detailed lists of changes by component.
 SDK installation
 ================
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+- Updated the steps to install prerequisites in the :ref:`install_nrf_bm` page.
+  Installation of the recommended version of SEGGER J-Link is now handled by nRF Connect for Desktop.
 
 S115 SoftDevice
 ===============
