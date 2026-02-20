@@ -702,3 +702,39 @@ ZTEST_F(bm_zms, test_zms_cache_hash_quality)
 
 #endif
 }
+
+/*
+ * Test ZMS write with number of bytes that is not mulitple of the program unit
+ */
+ZTEST_F(bm_zms, test_bm_zms_write_prime)
+{
+	int err;
+	uint32_t id = 123;
+	uint8_t wr_buf[17] = {0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8,
+			      0x9, 0xA, 0xB, 0xC, 0xD, 0xE, 0xF, 0x42};
+	uint8_t rd_buf[17];
+	size_t len;
+
+	err = bm_zms_mount(&fixture->fs, &fixture->config);
+	wait_for_mount();
+	zassert_true(err == 0, "bm_zms_mount call failure");
+
+	err = bm_zms_clear(&fixture->fs);
+	zassert_true(err == 0, "bm_zms_clear call failure");
+	wait_for_clear();
+
+	err = bm_zms_mount(&fixture->fs, &fixture->config);
+	wait_for_mount();
+	zassert_true(err == 0, "bm_zms_mount call failure");
+
+	err = bm_zms_write(&fixture->fs, id, wr_buf, sizeof(wr_buf));
+	zassert_equal(err, sizeof(wr_buf), "bm_zms_write call failure");
+	wait_for_write();
+
+	len = bm_zms_read(&fixture->fs, id, rd_buf, sizeof(rd_buf));
+	zassert_equal(len, sizeof(wr_buf), "bm_zms_read read %d bytes intead of %d", len,
+		      sizeof(wr_buf));
+
+	zassert_mem_equal(wr_buf, rd_buf, sizeof(rd_buf),
+			  "RD buff should be equal to the WR buff");
+}

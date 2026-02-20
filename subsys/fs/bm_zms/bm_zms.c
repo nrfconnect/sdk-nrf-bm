@@ -52,8 +52,6 @@ static atomic_t queued_op_cnt;
 /* Queue of bm_zms operations. */
 RING_BUF_DECLARE(zms_fifo, CONFIG_BM_ZMS_OP_QUEUE_SIZE * sizeof(zms_op_t));
 
-/* Internal write buffer for padding data that is not a multiple of the program unit. */
-static __ALIGN(4) uint8_t bm_zms_internal_buf[ZMS_BLOCK_SIZE];
 
 static int zms_prev_ate(struct bm_zms_fs *fs, uint64_t *addr, struct zms_ate *ate);
 static int zms_ate_valid(struct bm_zms_fs *fs, const struct zms_ate *entry);
@@ -699,9 +697,8 @@ static void zms_al_wrt_next_op(struct bm_zms_fs *fs)
 static int zms_flash_al_wrt(struct bm_zms_fs *fs)
 {
 	const uint8_t *data8;
-	int rc = 0;
 	off_t offset;
-	size_t blen = 0;
+	size_t len;
 
 	if (!cur_op.len) {
 		zms_al_wrt_next_op(fs);
@@ -719,30 +716,14 @@ static int zms_flash_al_wrt(struct bm_zms_fs *fs)
 		 */
 		data8 = (const uint8_t *)cur_op.data;
 	}
+
 	offset = zms_addr_to_offset(fs, cur_op.addr);
+	len = cur_op.len;
 
-	blen = zms_round_down_write_block_size(fs, cur_op.len);
-	if (blen > 0) {
-		cur_op.len -= blen;
-		cur_op.blen = (cur_op.len) ? blen : 0;
-		zms_al_wrt_next_op(fs);
-		return bm_storage_write(&fs->zms_bm_storage, offset, data8, blen,
-					(void *)&cur_op);
-	}
-	if (cur_op.len) {
-		memcpy(bm_zms_internal_buf, data8 + cur_op.blen, cur_op.len);
-		(void)memset(bm_zms_internal_buf + cur_op.len,
-			     fs->nvm_info->erase_value,
-			     fs->nvm_info->wear_unit - cur_op.len);
-		cur_op.len = 0;
-		zms_al_wrt_next_op(fs);
-		return bm_storage_write(&fs->zms_bm_storage, offset + cur_op.blen,
-					bm_zms_internal_buf,
-					fs->nvm_info->wear_unit,
-					(void *)&cur_op);
-	}
+	cur_op.len = 0;
 
-	return rc;
+	zms_al_wrt_next_op(fs);
+	return bm_storage_write(&fs->zms_bm_storage, offset, data8, len, (void *)&cur_op);
 }
 
 /* basic flash read from bm_zms address */
@@ -2011,6 +1992,7 @@ int bm_zms_mount(struct bm_zms_fs *fs, const struct bm_zms_fs_config *config)
 		.start_addr = fs->offset,
 		.end_addr = fs->offset + fs->sector_size * fs->sector_count,
 		.flags.is_wear_aligned = true,
+		.flags.is_write_padded = true,
 	};
 
 	ret = bm_storage_init(&fs->zms_bm_storage, &conf);
