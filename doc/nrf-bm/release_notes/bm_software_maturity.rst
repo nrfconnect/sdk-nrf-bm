@@ -91,6 +91,8 @@ A device is considered supported if at least one sample or component has been de
      - Supported from v1.0.0
    * - nRF54LV10
      - --
+   * - nRF54LVM20A
+     - --
 
 .. note::
    Any device not listed is considered out of scope.
@@ -110,17 +112,21 @@ The following table indicates the software maturity levels of the support for ea
      - nRF54L10
      - nRF54L05
      - nRF54LV10
+     - nRF54LVM20A
    * - **Bluetooth®**
      - Supported
      - Supported
      - Supported
      - --
+     - Experimental
    * - **NFC**
      - Experimental
      - Experimental
      - Experimental
      - --
+     - --
    * - **ESB**
+     - --
      - --
      - --
      - --
@@ -145,16 +151,19 @@ The following table indicates SoftDevice compatibility per SoC:
      - nRF54L10
      - nRF54L05
      - nRF54LV10
+     - nRF54LM20A
    * - **SoftDevice S115**
      - Supported
      - Supported
      - Supported
      - --
+     - Experimental
    * - **SoftDevice S145**
      - Experimental
      - Experimental
      - Experimental
      - --
+     - Experimental
 
 .. note::
    The Experimental status of the S145 SoftDevice refers to its integration in the |BMlong|.
@@ -219,35 +228,42 @@ The following table indicates the software maturity levels of the support for ea
      - nRF54L10
      - nRF54L05
      - nRF54LV10
+     - nRF54LM20A
    * - **NFC Type 2 Tag (read-only)**
      - Experimental
      - Experimental
      - Experimental
+     - --
      - --
    * - **NFC Type 4 Tag (read/write)**
      - Experimental
      - Experimental
      - Experimental
      - --
+     - --
    * - **NDEF encoding and decoding**
      - Supported
      - Supported
      - Supported
+     - --
      - --
    * - **NFC Record Type Definition: URI, text**
      - Experimental
      - Experimental
      - Experimental
      - --
+     - --
    * - **NFC Connection Handover to Bluetooth carrier, Static and Negotiated Handover**
      - In development
      - In development
      - In development
      - --
+     - --
    * - **NFC Tag NDEF Exchange Protocol (TNEP)**
      - In development
      - In development
      - In development
+     - --
      - --
 
 nRF Secure Immutable Bootloader
@@ -271,12 +287,15 @@ The following table indicates the software maturity levels of the support for ea
      - nRF54L10
      - nRF54L05
      - nRF54LV10
+     - nRF54LM20A
    * - **Immutable MCUboot as part of build**
      - Supported
      - Supported
      - Supported
      - --
+     - --
    * - **Updatable MCUboot as part of build**
+     - --
      - --
      - --
      - --
@@ -286,8 +305,10 @@ The following table indicates the software maturity levels of the support for ea
      - Supported
      - Supported
      - --
+     - --
    * - **Multiple signature keys**
      - Supported
      - Supported
      - Supported
+     - --
      - --
