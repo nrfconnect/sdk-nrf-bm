@@ -27,6 +27,8 @@
 .. _`nRF54L15 DK v1.0.0`: https://docs.nordicsemi.com/bundle/comp_matrix_nrf54l15/page/COMP/nrf54l15/nrf54l15_ic_rev_comp_with_dev_hw.html
 .. _`nRF54L15 DK v0.9.3`: https://docs.nordicsemi.com/bundle/comp_matrix_nrf54l15/page/COMP/nrf54l15/nrf54l15_ic_rev_comp_with_dev_hw.html
 
+.. _`nRF54LV10 DK`: https://docs.nordicsemi.com/bundle/ug_nrf54lv10_dk/page/UG/nRF54LV10_DK/intro/intro.html
+
 .. _`v3.2.0 software maturity levels`: https://docs.nordicsemi.com/bundle/ncs-3.2.0/page/nrf/releases_and_maturity/software_maturity.html
 
 .. _`nRF54L15 Compatibility Matrix`: https://docs.nordicsemi.com/bundle/comp_matrix_nrf54l15/page/COMP/nrf54l15/nrf54l15_ble_qdid_qual_matrix.html
