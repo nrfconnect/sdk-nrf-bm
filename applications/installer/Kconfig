@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2025 Nordic Semiconductor
+# Copyright (c) 2025 - 2026 Nordic Semiconductor
 #
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
@@ -7,5 +7,44 @@
 module = INSTALLER
 module-str = installer
 source "subsys/logging/Kconfig.template.log_config"
+
+menuconfig APP_BM_INSTALLER_SELF_DELAYS
+	bool "Installers verification delays [EXPERIMENTAL]"
+	select EXPERIMENTAL
+	help
+	  For testing purposes only.
+
+if APP_BM_INSTALLER_SELF_DELAYS
+
+config APP_BM_INSTALLER_POST_METADATA_INVALIDATION_DELAY_MS
+	int "Delay after metadata invalidation [ms]"
+	default 1000
+	help
+	  The delay after metadata invalidation and before images copy.
+
+config APP_BM_INSTALLER_INTER_IMAGE_CHUNK_COPY_DELAY_MS
+	int "Delay between image chunks copies [ms]"
+	default 200
+	help
+	  The delay between image chunks copies.
+
+config APP_BM_INSTALLER_NEXT_IMAGE_COPY_DELAY_MS
+	int "Delay before next image copy [ms]"
+	default 1000
+	help
+	  The delay before next image copy.
+
+config APP_BM_INSTALLER_PRIOR_METADATA_UPDATE_DELAY_MS
+	int "Delay before metadata update [ms]"
+	default 1000
+	help
+	  The delay after images copy and before metadata update.
+
+config APP_BM_INSTALLER_PRIOR_SELF_DESTRUCTION_DELAY_MS
+	int "Delay before self destruction [ms]"
+	default 1000
+	help
+	  The delay after metadata update and before self destruction.
+endif
 
 source "Kconfig.zephyr"
