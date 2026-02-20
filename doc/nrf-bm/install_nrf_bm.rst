@@ -12,34 +12,24 @@ You can use Visual Studio Code and the `nRF Connect for Visual Studio Code`_ ext
 Install prerequisites
 *********************
 
-Install the following software tools:
+Complete the following steps to install the prerequisites:
 
-* `nRF Connect for Desktop`_
+1. Install `nRF Connect for Desktop`_.
+   Pay attention to the following information:
 
-  * Running `nRF Connect for Desktop`_ has the following additional requirements:
+   * nRF Connect for Desktop requires SEGGER J-Link.
+     When you install nRF Connect for Desktop, nRF Connect for Desktop asks you to install the recommended version of SEGGER J-Link.
+   * nRF Connect for Desktop has some `additional requirements`_ for some operating systems.
+   * nRF Connect for Desktop installs the Quick Start app automatically.
 
-    * The |jlink_ver| of SEGGER J-Link.
-
-      Download it from the `J-Link Software and Documentation Pack`_ page.
-
-      * On Windows, the driver comes bundled with nRF Connect for Desktop.
-      * On macOS and Linux, you must install the driver manually.
-
-      .. note::
-
-         On Ubuntu you might be required to install ``libfuse2``.
-         To do so, open a terminal and execute: ``sudo apt install libfuse2``.
-
-  * With the nRF54L15 DK connected to your PC, launch the Quick Start app from nRF Connect for Desktop.
-    The kit will be detected by the app and it will guide you through initial configuration.
-  * Complete the steps of the Quick Start wizard.
-    Make sure to select :guilabel:`VS Code IDE` as the development environment and to install the `Serial Terminal app`_.
-
-* |VSC|:
-
-  * The latest version of |VSC| for your operating system from the `Visual Studio Code download page`_.
-  * In |VSC|, the latest version of the `nRF Connect for VS Code Extension Pack`_.
-    The |nRFVSC| comes with its own bundled version of some of the nRF Util commands.
+2. Connect the nRF54L15 DK to your PC.
+3. In nRF Connect for Desktop, launch the Quick Start app.
+   The nRF54L15 DK will be detected by the app and it will guide you through initial configuration.
+4. Complete the steps of the Quick Start wizard.
+   Make sure to select :guilabel:`VS Code IDE` as the development environment and to install the `Serial Terminal app`_.
+5. Install the latest version of |VSC|.
+6. In |VSC|, install the latest version of the `nRF Connect for VS Code Extension Pack`_.
+   The |nRFVSC| comes with its own bundled version of some of the nRF Util commands.
 
 .. _cloning_the_repositories_nrf_bm:
 
