@@ -10,6 +10,8 @@
 
 #include <bm/storage/bm_storage.h>
 
+#include <zephyr/sys/util.h>
+
 #include "bm/storage/bm_storage_backends.h"
 #include "cmock_nrfx_rramc.h"
 
@@ -20,8 +22,23 @@
 #define PARTITION_START 0x4200
 #define PARTITION_SIZE  (BLOCK_SIZE * 2)
 
+static uint8_t rram_partition[BLOCK_SIZE * 2];
+static uint32_t rram_partition_base = (uintptr_t)rram_partition;
+
 static struct bm_storage_evt storage_event;
 static bool storage_event_received;
+
+static void stub_nrfx_rramc_buffer_read(void *dest, uint32_t address, uint32_t len,
+					int cmock_num_calls)
+{
+	memcpy(dest, &rram_partition[address - rram_partition_base], len);
+}
+
+static void stub_nrfx_rramc_bytes_write(uint32_t address, const void *src, uint32_t len,
+					int cmock_num_calls)
+{
+	memcpy(&rram_partition[address - rram_partition_base], src, len);
+}
 
 static void bm_storage_evt_handler(struct bm_storage_evt *evt)
 {
@@ -281,6 +298,54 @@ void test_bm_storage_rram_write(void)
 
 	__cmock_nrfx_rramc_uninit_Expect();
 
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(0, err);
+}
+
+void test_bm_storage_rram_write_padded(void)
+{
+	int err;
+	uint8_t buf[BLOCK_SIZE + 5];
+	struct bm_storage storage = {0};
+	struct bm_storage_config config = {
+		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_rram_api,
+		.start_addr = (uintptr_t)rram_partition,
+		.end_addr = (uintptr_t)rram_partition + sizeof(rram_partition),
+		.flags.is_write_padded = true,
+	};
+	uint32_t pad_len = BLOCK_SIZE - (sizeof(buf) % BLOCK_SIZE);
+	uint8_t expected_pad[BLOCK_SIZE];
+
+	__cmock_nrfx_rramc_init_ExpectAnyArgsAndReturn(0);
+	__cmock_nrfx_rramc_init_IgnoreArg_p_config();
+	__cmock_nrfx_rramc_init_IgnoreArg_handler();
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	memset(buf, 0xBB, sizeof(buf));
+	memset(rram_partition, 0xA5, sizeof(rram_partition));
+
+	__cmock_nrfx_rramc_bytes_write_Stub(stub_nrfx_rramc_bytes_write);
+	__cmock_nrfx_rramc_buffer_read_Stub(stub_nrfx_rramc_buffer_read);
+
+	err = bm_storage_write(&storage, rram_partition_base, buf, sizeof(buf), NULL);
+	TEST_ASSERT_EQUAL(0, err);
+
+	TEST_ASSERT_TRUE(storage_event_received);
+	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
+	TEST_ASSERT_EQUAL(0, storage_event.result);
+	TEST_ASSERT_EQUAL(rram_partition_base, storage_event.addr);
+	TEST_ASSERT_EQUAL(sizeof(buf), storage_event.len);
+
+	TEST_ASSERT_EQUAL_MEMORY(buf, rram_partition, sizeof(buf));
+
+	/* Padding bytes after written data must match original NVM content (0xA5) */
+	memset(expected_pad, 0xA5, pad_len);
+	TEST_ASSERT_EQUAL_MEMORY(expected_pad, rram_partition + sizeof(buf), pad_len);
+
+	__cmock_nrfx_rramc_uninit_Expect();
 	err = bm_storage_uninit(&storage);
 	TEST_ASSERT_EQUAL(0, err);
 }

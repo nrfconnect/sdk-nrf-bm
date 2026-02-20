@@ -86,6 +86,7 @@ The completion of the operation is reported by the :c:enumerator:`BM_STORAGE_EVT
    Write operations must start at an address aligned by the program unit and use a length that is a multiple of this value.
 
    If :c:member:`bm_storage_config.is_wear_aligned` is set during initialization, the wear unit (:c:member:`bm_storage_info.wear_unit`) is used for alignment instead.
+   If :c:member:`bm_storage_config.is_write_padded` is set during initialization, write operations are automatically padded to the chosen alignment unit (either the program or wear unit).
 
 Erase
 =====
