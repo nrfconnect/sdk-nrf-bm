@@ -157,7 +157,6 @@ typedef struct __aligned(4) {
 	zms_write_sub_step_t sub_step;	       /* The current sub-step the operation is at. */
 	size_t len;			       /* Length of the current write. */
 	size_t data_len;		       /* Length of the data to write. */
-	size_t blen;			       /* Block size for the current write. */
 	uint32_t id;			       /* BM_ZMS ATE ID */
 	uint64_t addr;
 	struct bm_zms_fs *fs;		       /* Pointer to the file system. */
