@@ -100,6 +100,16 @@ Bluetooth LE Services
 * Renamed the ``ble_hrs_central`` service to the :ref:`lib_ble_service_hrs_client` sample.
 * Updated all services to return errors from the SoftDevice directly.
 
+* :ref:`lib_ble_service_hrs_client`:
+
+   * Added:
+
+      * The :c:func:`ble_hrs_client_hrm_notif_disable` function to disable Heart Rate Measurement notifications.
+      * Validation of the :c:member:`ble_hrs_client_config.evt_handler` and :c:member:`ble_hrs_client_config.gatt_queue` configuration fields in :c:func:`ble_hrs_client_init`.
+      * State validation in :c:func:`ble_hrs_client_hrm_notif_enable` and :c:func:`ble_hrs_client_hrm_notif_disable`, returning ``NRF_ERROR_INVALID_STATE`` when the connection or CCCD handle has not been assigned.
+
+   * Fixed a potential buffer over-read when parsing malformed Heart Rate Measurement notifications.
+
 Libraries for NFC
 -----------------
 
