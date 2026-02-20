@@ -1,0 +1,21 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menuconfig NCS_BM_RMEM_CLIPBOARD
+	bool "Inter application RAM Clipboard"
+	help
+	  If enabled, inatsance of simple inter application
+	  clipboard storage on retained RAM area is supported.
+	  The storage is using RAM memory partition described int the DTS node of
+	  zephyr,retained-ram compatible.
+
+if NCS_BM_RMEM_CLIPBOARD
+
+module = NCS_BM_RMEM_CLIPBOARD
+module-str = ncs_bm_rmem_clipboard
+source "subsys/logging/Kconfig.template.log_config"
+
+endif
