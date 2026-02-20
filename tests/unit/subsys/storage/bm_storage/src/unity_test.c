@@ -599,6 +599,27 @@ void test_bm_storage_write_no_wear_aligned(void)
 	TEST_ASSERT_EQUAL(0, err);
 }
 
+void test_bm_storage_write_padded_accepts_unaligned_len(void)
+{
+	int err;
+	char input[BLOCK_SIZE + 3] = {0};
+	struct bm_storage storage = {0};
+	struct bm_storage_config config = {
+		.api = &bm_storage_test_api_rram_like,
+		.evt_handler = bm_storage_evt_handler,
+		.start_addr = PARTITION_START,
+		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.flags.is_write_padded = true,
+	};
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* With is_write_padded, length not a multiple of program_unit is accepted */
+	err = bm_storage_write(&storage, PARTITION_START, input, sizeof(input), NULL);
+	TEST_ASSERT_EQUAL(0, err);
+}
+
 void test_bm_storage_erase_wear_aligned(void)
 {
 	int err;

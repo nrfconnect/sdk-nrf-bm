@@ -6,7 +6,12 @@
 
 #include <string.h>
 #include <stdint.h>
+#include <zephyr/sys/util.h>
 #include <bm/storage/bm_storage.h>
+
+#define NATIVE_SIM_PAD_UNIT 16
+
+static uint8_t pad_buffer[NATIVE_SIM_PAD_UNIT];
 
 static const struct bm_storage_info bm_storage_info = {
 	.program_unit = 16,
@@ -23,6 +28,35 @@ static void event_send(const struct bm_storage *storage, struct bm_storage_evt *
 	}
 
 	storage->evt_handler(evt);
+}
+
+static void write_padded(const struct bm_storage *storage, uint32_t dest, const void *src,
+			 uint32_t len)
+{
+	uint32_t aligned_len;
+	uint32_t remainder;
+	uint32_t pad_unit;
+	void *dest_addr;
+
+	dest_addr = (void *)(uintptr_t)(storage->addr + dest);
+	pad_unit = storage->flags.is_wear_aligned ? bm_storage_info.wear_unit
+						  : bm_storage_info.program_unit;
+	aligned_len = ROUND_DOWN(len, pad_unit);
+
+	memcpy(dest_addr, src, aligned_len);
+
+	if (aligned_len < len) {
+		__ASSERT_NO_MSG(storage->flags.is_write_padded);
+
+		remainder = len - aligned_len;
+
+		/* Copy the remaining bytes into the padding buffer */
+		memcpy(pad_buffer, (const uint8_t *)src + aligned_len, remainder);
+		/* Pad it with what's already stored in memory */
+		memcpy(pad_buffer + remainder, (const uint8_t *)dest_addr + len,
+		       pad_unit - remainder);
+		memcpy((uint8_t *)dest_addr + aligned_len, pad_buffer, pad_unit);
+	}
 }
 
 #if defined(CONFIG_BM_STORAGE_BACKEND_NATIVE_SIM_ASYNC)
@@ -50,7 +84,15 @@ static void write_work_handler(struct k_work *work)
 {
 	struct write_work_ctx *work_ctx = CONTAINER_OF(work, struct write_work_ctx, work.work);
 
-	memcpy((void *)work_ctx->dest, work_ctx->src, work_ctx->len);
+	if (work_ctx->storage->flags.is_write_padded &&
+	    (work_ctx->len % (work_ctx->storage->flags.is_wear_aligned ?
+			     bm_storage_info.wear_unit :
+			     bm_storage_info.program_unit) != 0)) {
+		write_padded(work_ctx->storage, work_ctx->dest, work_ctx->src, work_ctx->len);
+	} else {
+		memcpy((void *)(uintptr_t)(work_ctx->storage->addr + work_ctx->dest),
+		       work_ctx->src, work_ctx->len);
+	}
 
 	struct bm_storage_evt evt = {
 		.id = BM_STORAGE_EVT_WRITE_RESULT,
@@ -128,7 +170,14 @@ static int bm_storage_native_sim_write(const struct bm_storage *storage, uint32_
 
 	return 0;
 #else
-	memcpy((void *)dest, src, len);
+	if (storage->flags.is_write_padded &&
+	    (len % (storage->flags.is_wear_aligned ?
+		   bm_storage_info.wear_unit :
+		   bm_storage_info.program_unit) != 0)) {
+		write_padded(storage, dest, src, len);
+	} else {
+		memcpy((void *)(uintptr_t)(storage->addr + dest), src, len);
+	}
 
 	struct bm_storage_evt evt = {
 		.id = BM_STORAGE_EVT_WRITE_RESULT,
