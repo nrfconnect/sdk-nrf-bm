@@ -28,10 +28,6 @@ tests:
     integration_platforms:
       - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot
-      - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
-      - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice/mcuboot
-      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
-      - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice/mcuboot
     platform_allow:
       - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot
@@ -50,10 +46,6 @@ tests:
     integration_platforms:
       - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot
-      - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
-      - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice/mcuboot
-      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
-      - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice/mcuboot
     platform_allow:
       - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot

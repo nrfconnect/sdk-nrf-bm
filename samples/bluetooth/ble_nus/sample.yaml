@@ -8,14 +8,6 @@ tests:
       - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice
       - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot
-      - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice
-      - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
-      - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice
-      - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice/mcuboot
-      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice
-      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
-      - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice
-      - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice/mcuboot
       - bm_nrf54lv10dk/nrf54lv10a/cpuapp/s115_softdevice
       - bm_nrf54lv10dk/nrf54lv10a/cpuapp/s145_softdevice
     platform_allow:
@@ -41,17 +33,10 @@ tests:
       - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice
       - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot
-      - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice
-      - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
-      - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice
-      - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice/mcuboot
-      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice
-      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
-      - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice
-      - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice/mcuboot
       - bm_nrf54lv10dk/nrf54lv10a/cpuapp/s115_softdevice
       - bm_nrf54lv10dk/nrf54lv10a/cpuapp/s145_softdevice
     platform_allow:
+
       - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice
       - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice
@@ -59,6 +44,7 @@ tests:
       - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice
       - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice
       - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
