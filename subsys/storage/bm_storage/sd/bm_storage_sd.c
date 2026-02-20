@@ -141,18 +141,38 @@ static void event_send(const struct bm_storage_sd_op *op, uint32_t result)
 	op->storage->evt_handler(&evt);
 }
 
+__aligned(sizeof(uint32_t))
+static uint8_t pad_buffer[SD_WRITE_BLOCK_SIZE];
+
 static uint32_t write_execute(const struct bm_storage_sd_op *op)
 {
 	uint32_t *dest;
 	uint32_t *src;
 	uint32_t chunk_len;
+	uint32_t pad_unit;
 
 	dest = (uint32_t *)(op->write.dest + op->write.offset);
 	src  = (uint32_t *)((uintptr_t)op->write.src + op->write.offset);
 
-	/* Limit by _MAX_WRITE_SIZE */
-	chunk_len =
-		MIN(op->write.len - op->write.offset, CONFIG_BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE);
+	chunk_len = MIN(op->write.len - op->write.offset,
+			CONFIG_BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE);
+
+	if (op->storage->flags.is_write_padded) {
+		pad_unit = op->storage->flags.is_wear_aligned ?
+			   bm_storage_info.wear_unit :
+			   bm_storage_info.program_unit;
+
+		if (chunk_len < pad_unit) {
+			memcpy(pad_buffer + chunk_len,
+			       (const uint8_t *)dest + chunk_len,
+			       pad_unit - chunk_len);
+			memcpy(pad_buffer, src, chunk_len);
+			src = (uint32_t *)pad_buffer;
+			chunk_len = pad_unit;
+		} else {
+			chunk_len = ROUND_DOWN(chunk_len, pad_unit);
+		}
+	}
 
 	/* Calculate number of 32-bit words for sd_flash_write() */
 	chunk_len = MAX(1, chunk_len / SD_PROGRAM_UNIT_BYTES);
@@ -279,6 +299,7 @@ static void queue_start(void)
 static bool on_operation_success(struct bm_storage_sd_op *op)
 {
 	uint32_t chunk_len;
+	uint32_t pad_unit;
 
 	/* Reset the retry counter on success. */
 	bm_storage_sd.retries = 0;
@@ -287,6 +308,14 @@ static bool on_operation_success(struct bm_storage_sd_op *op)
 	case WRITE:
 		chunk_len = MIN(op->write.len - op->write.offset,
 				CONFIG_BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE);
+
+		if (op->storage->flags.is_write_padded) {
+			pad_unit = op->storage->flags.is_wear_aligned ?
+				   bm_storage_info.wear_unit :
+				   bm_storage_info.program_unit;
+			chunk_len = MAX(pad_unit,
+					ROUND_DOWN(chunk_len, pad_unit));
+		}
 
 		op->write.offset += chunk_len;
 

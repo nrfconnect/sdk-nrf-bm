@@ -171,6 +171,10 @@ struct bm_storage {
 		 * @brief Enforce wear unit alignment on operations that cause wear.
 		 */
 		bool is_wear_aligned : 1;
+		/**
+		 * @brief Automatically pad write operations.
+		 */
+		bool is_write_padded : 1;
 	} flags;
 };
 
@@ -216,6 +220,13 @@ struct bm_storage_config {
 		 * only the erase operation must be aligned to the wear unit.
 		 */
 		bool is_wear_aligned : 1;
+		/**
+		 * @brief Automatically pad write operations up to the alignment unit.
+		 *
+		 * The padding value matches the existing contents of the
+		 * NVM address being written to.
+		 */
+		bool is_write_padded : 1;
 	} flags;
 };
 

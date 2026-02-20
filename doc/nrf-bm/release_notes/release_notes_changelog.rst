@@ -79,6 +79,7 @@ Storage
      * The capability to compile more than one backend.
      * The :c:func:`bm_storage_nvm_info_get` function to retrieve NVM information, such as the size of the program unit and other.
      * The :c:member:`bm_storage_config.flags.is_wear_aligned` configuration flag to enforce wear unit alignment on operations.
+     * The :c:member:`bm_storage_config.flags.is_write_padded` configuration flag to automatically pad write operations to the alignment unit.
 
    Updated:
      * The :c:func:`bm_storage_is_busy` function to return ``false`` instead of ``true`` when called with a ``NULL`` pointer or an uninitialized instance.
