@@ -38,6 +38,7 @@ int bm_storage_init(struct bm_storage *storage, const struct bm_storage_config *
 	storage->end_addr = config->end_addr;
 	storage->nvm_info = NULL;
 	storage->flags.is_wear_aligned = config->flags.is_wear_aligned;
+	storage->flags.is_write_padded = config->flags.is_write_padded;
 
 	err = storage->api->init(storage, config);
 	if (err) {
@@ -124,8 +125,11 @@ int bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void
 		write_align = storage->nvm_info->program_unit;
 	}
 
-	if (!IS_ALIGNED(dest, write_align) ||
-	    !IS_ALIGNED(len,  write_align)) {
+	if (!IS_ALIGNED(dest, write_align)) {
+		return -EINVAL;
+	}
+
+	if (!storage->flags.is_write_padded && !IS_ALIGNED(len, write_align)) {
 		return -EINVAL;
 	}
 

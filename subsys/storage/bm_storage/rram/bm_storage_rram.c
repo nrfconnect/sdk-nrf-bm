@@ -34,6 +34,8 @@ struct bm_storage_rram_state {
 static struct bm_storage_rram_state state;
 
 static uint8_t erase_buf[RRAMC_WRITE_BLOCK_SIZE];
+__aligned(sizeof(uint32_t))
+static uint8_t pad_buffer[RRAMC_WRITE_BLOCK_SIZE];
 
 static void event_send(const struct bm_storage *storage, struct bm_storage_evt *evt)
 {
@@ -111,11 +113,35 @@ static int bm_storage_rramc_read(const struct bm_storage *storage, uint32_t src,
 static int bm_storage_rramc_write(const struct bm_storage *storage, uint32_t dest, const void *src,
 				  uint32_t len, void *ctx)
 {
+	uint32_t aligned_len;
+	uint32_t remainder;
+	uint32_t pad_unit;
+
 	if (!atomic_cas(&state.operation_ongoing, 0, 1)) {
 		return -EBUSY;
 	}
 
-	nrfx_rramc_bytes_write(dest, src, len);
+	pad_unit = storage->flags.is_wear_aligned ? bm_storage_info.wear_unit
+						  : bm_storage_info.program_unit;
+
+	/* Write all data up to the last pad_unit */
+	aligned_len = ROUND_DOWN(len, pad_unit);
+
+	nrfx_rramc_bytes_write(dest, src, aligned_len);
+
+	/* Check if we need to write anything else */
+	if (aligned_len < len) {
+		__ASSERT_NO_MSG(storage->flags.is_write_padded);
+
+		remainder = len - aligned_len;
+
+		/* Copy the remaining bytes into the padding buffer */
+		memcpy(pad_buffer, (const uint8_t *)src + aligned_len, remainder);
+		/* Pad it with what's already stored in memory */
+		nrfx_rramc_buffer_read(pad_buffer + remainder, dest + aligned_len,
+				       pad_unit - remainder);
+		nrfx_rramc_bytes_write(dest + aligned_len, pad_buffer, pad_unit);
+	}
 
 	/* Clear the atomic before sending the event, to allow API calls in the event context. */
 	atomic_set(&state.operation_ongoing, 0);
