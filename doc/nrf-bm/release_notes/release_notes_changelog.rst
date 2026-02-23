@@ -226,3 +226,4 @@ Documentation
 =============
 
 * Improved sample documentation with clearer, more descriptive user guides, including updated explanations of configuration options, hardware connections, and testing procedures.
+* Added the :ref:`board_memory_layouts` section, which documents RRAM and SRAM partition layouts for supported boards.
