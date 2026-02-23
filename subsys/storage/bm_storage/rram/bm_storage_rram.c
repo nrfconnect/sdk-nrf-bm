@@ -23,7 +23,7 @@ static const struct bm_storage_info bm_storage_info = {
 	.erase_unit = RRAMC_WRITE_BLOCK_SIZE,
 	.erase_value = 0xFF,
 	.program_unit = RRAMC_WRITE_BLOCK_SIZE,
-	.no_explicit_erase = true
+	.is_erase_before_write = false
 };
 
 struct bm_storage_rram_state {

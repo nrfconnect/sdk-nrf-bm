@@ -95,9 +95,9 @@ struct bm_storage_info {
 	 */
 	uint8_t erase_value;
 	/**
-	 * @brief Whether the hardware requires memory to be erased, before it can be written.
+	 * @brief Whether the memory must be erased before it can be written to.
 	 */
-	bool no_explicit_erase;
+	bool is_erase_before_write;
 };
 
 struct bm_storage;

@@ -879,7 +879,7 @@ static int zms_flash_erase_sector(struct bm_zms_fs *fs, uint64_t addr)
 {
 	int rc;
 	off_t offset;
-	bool ebw_required = !fs->nvm_info->no_explicit_erase;
+	bool ebw_required = fs->nvm_info->is_erase_before_write;
 
 	if (!ebw_required) {
 		/* Do nothing for devices that do not have erase capability */
@@ -2032,7 +2032,7 @@ int bm_zms_mount(struct bm_zms_fs *fs, const struct bm_zms_fs_config *config)
 	/* When the device need erase operations before write let's check that
 	 * sector size is a multiple of pagesize
 	 */
-	if (!fs->nvm_info->no_explicit_erase) {
+	if (fs->nvm_info->is_erase_before_write) {
 		if (!fs->sector_size ||
 		    fs->sector_size % fs->nvm_info->erase_unit) {
 			LOG_ERR("Invalid sector size");

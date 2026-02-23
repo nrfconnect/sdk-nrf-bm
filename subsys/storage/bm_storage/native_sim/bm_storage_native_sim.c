@@ -12,7 +12,7 @@ static const struct bm_storage_info bm_storage_info = {
 	.erase_unit = 16,
 	.erase_value = 0xFF,
 	.program_unit = 16,
-	.no_explicit_erase = true
+	.is_erase_before_write = false
 };
 
 static void event_send(const struct bm_storage *storage, struct bm_storage_evt *evt)

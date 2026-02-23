@@ -18,7 +18,7 @@
 static const struct bm_storage_info bm_storage_info = {
 	.erase_unit = BLOCK_SIZE,
 	.program_unit = BLOCK_SIZE,
-	.no_explicit_erase = false
+	.is_erase_before_write = true
 };
 
 static int bm_storage_test_api_init(struct bm_storage *storage,
