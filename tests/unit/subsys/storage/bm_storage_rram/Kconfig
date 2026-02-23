@@ -1,0 +1,21 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+# These are redefined here to override dependencies
+# and avoid pulling them in, since they are mocked
+
+config BM_STORAGE
+	bool "Storage (testing)"
+
+choice BM_STORAGE_BACKEND
+	prompt "Backend"
+
+config BM_STORAGE_BACKEND_RRAM
+	bool "RRAM"
+
+endchoice
+
+source "Kconfig.zephyr"
