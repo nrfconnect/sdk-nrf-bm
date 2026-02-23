@@ -93,8 +93,7 @@ static struct {
 static const struct bm_storage_info bm_storage_info = {
 	/* SoftDevice requires writing a minimum of 4 bytes at once */
 	.program_unit = SD_WRITE_BLOCK_SIZE,
-	/* No explicit erase operation on this hardware */
-	.no_explicit_erase = true,
+	.is_erase_before_write = false,
 	/* Erase operation does not exist, so use same as program unit */
 	.erase_unit = SD_WRITE_BLOCK_SIZE,
 	/* Similar to FLASH */
