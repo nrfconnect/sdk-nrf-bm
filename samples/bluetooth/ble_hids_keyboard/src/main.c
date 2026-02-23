@@ -752,7 +752,7 @@ static uint32_t peer_manager_init(void)
 		.bond = 1,
 		.mitm = 0,
 		.lesc = 1,
-		.keypress = 1,
+		.keypress = 0,
 		.io_caps = BLE_GAP_IO_CAPS_DISPLAY_YESNO,
 		.oob = 0,
 		.min_key_size = 7,
