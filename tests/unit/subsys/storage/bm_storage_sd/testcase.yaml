@@ -1,0 +1,4 @@
+tests:
+  subsys.bm_storage_sd:
+    platform_allow: native_sim
+    tags: unittest
