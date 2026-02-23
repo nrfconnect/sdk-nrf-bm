@@ -137,7 +137,7 @@ static int bm_storage_native_sim_uninit(struct bm_storage *storage)
 static int bm_storage_native_sim_read(const struct bm_storage *storage, uint32_t src, void *dest,
 				      uint32_t len)
 {
-	memcpy(dest, (void *)src, len);
+	memcpy(dest, (void *)(uintptr_t)(storage->addr + src), len);
 
 	return 0;
 }
@@ -198,7 +198,8 @@ static int bm_storage_native_sim_write(const struct bm_storage *storage, uint32_
 static int bm_storage_native_sim_erase(const struct bm_storage *storage, uint32_t addr,
 				       uint32_t len, void *ctx)
 {
-	memset((void *)addr, (int)(bm_storage_info.erase_value & 0xFF), len);
+	memset((void *)(uintptr_t)(storage->addr + addr), (int)(bm_storage_info.erase_value & 0xFF),
+	       len);
 
 	struct bm_storage_evt evt = {
 		.id = BM_STORAGE_EVT_ERASE_RESULT,

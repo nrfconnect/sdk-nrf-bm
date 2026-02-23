@@ -105,7 +105,7 @@ out:
 static int bm_storage_rramc_read(const struct bm_storage *storage, uint32_t src, void *dest,
 				 uint32_t len)
 {
-	(void)nrfx_rramc_buffer_read(dest, src, len);
+	(void)nrfx_rramc_buffer_read(dest, storage->addr + src, len);
 
 	return 0;
 }
@@ -127,7 +127,7 @@ static int bm_storage_rramc_write(const struct bm_storage *storage, uint32_t des
 	/* Write all data up to the last pad_unit */
 	aligned_len = ROUND_DOWN(len, pad_unit);
 
-	nrfx_rramc_bytes_write(dest, src, aligned_len);
+	nrfx_rramc_bytes_write(storage->addr + dest, src, aligned_len);
 
 	/* Check if we need to write anything else */
 	if (aligned_len < len) {
@@ -138,12 +138,12 @@ static int bm_storage_rramc_write(const struct bm_storage *storage, uint32_t des
 		/* Copy the remaining bytes into the padding buffer */
 		memcpy(pad_buffer, (const uint8_t *)src + aligned_len, remainder);
 		/* Pad it with what's already stored in memory */
-		nrfx_rramc_buffer_read(pad_buffer + remainder, dest + aligned_len,
+		nrfx_rramc_buffer_read(pad_buffer + remainder, storage->addr + dest + len,
 				       pad_unit - remainder);
-		nrfx_rramc_bytes_write(dest + aligned_len, pad_buffer, pad_unit);
+
+		nrfx_rramc_bytes_write(storage->addr + dest + aligned_len, pad_buffer, pad_unit);
 	}
 
-	/* Clear the atomic before sending the event, to allow API calls in the event context. */
 	atomic_set(&state.operation_ongoing, 0);
 
 	struct bm_storage_evt evt = {
@@ -169,7 +169,8 @@ static int bm_storage_rramc_erase(const struct bm_storage *storage, uint32_t add
 	}
 
 	for (uint32_t offset = 0; offset < len; offset += RRAMC_WRITE_BLOCK_SIZE) {
-		nrfx_rramc_bytes_write(addr + offset, erase_buf, RRAMC_WRITE_BLOCK_SIZE);
+		nrfx_rramc_bytes_write(storage->addr + addr + offset, erase_buf,
+				       RRAMC_WRITE_BLOCK_SIZE);
 	}
 
 	atomic_set(&state.operation_ongoing, 0);
