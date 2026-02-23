@@ -99,7 +99,7 @@ static int bm_storage_rramc_read(const struct bm_storage *storage, uint32_t src,
 		return -EPERM;
 	}
 
-	(void)nrfx_rramc_buffer_read(dest, src, len);
+	(void)nrfx_rramc_buffer_read(dest, storage->addr + src, len);
 
 	return 0;
 }
@@ -115,9 +115,8 @@ static int bm_storage_rramc_write(const struct bm_storage *storage, uint32_t des
 		return -EBUSY;
 	}
 
-	nrfx_rramc_bytes_write(dest, src, len);
+	nrfx_rramc_bytes_write(storage->addr + dest, src, len);
 
-	/* Clear the atomic before sending the event, to allow API calls in the event context. */
 	atomic_set(&state.operation_ongoing, 0);
 
 	struct bm_storage_evt evt = {
@@ -147,7 +146,8 @@ static int bm_storage_rramc_erase(const struct bm_storage *storage, uint32_t add
 	}
 
 	for (uint32_t offset = 0; offset < len; offset += RRAMC_WRITE_BLOCK_SIZE) {
-		nrfx_rramc_bytes_write(addr + offset, erase_buf, RRAMC_WRITE_BLOCK_SIZE);
+		nrfx_rramc_bytes_write(storage->addr + addr + offset, erase_buf,
+				       RRAMC_WRITE_BLOCK_SIZE);
 	}
 
 	atomic_set(&state.operation_ongoing, 0);

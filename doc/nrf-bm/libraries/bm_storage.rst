@@ -44,7 +44,7 @@ To initialize a storage instance, use the :c:func:`bm_storage_init` function, pr
 
 * :c:member:`bm_storage_config.evt_handler` – Event callback.
 * :c:member:`bm_storage_config.api` – Backend API implementation (for example, ``&bm_storage_sd_api`` or ``&bm_storage_rram_api``).
-* :c:member:`bm_storage_config.start_addr` and :c:member:`bm_storage_config.end_addr` – Accessible address range.
+* :c:member:`bm_storage_config.addr` and :c:member:`bm_storage_config.size` – Partition starting address and size.
 
 The following example shows how to initialize a storage instance with a backend API:
 
@@ -56,11 +56,13 @@ The following example shows how to initialize a storage instance with a backend 
    struct bm_storage_config config = {
        .evt_handler = my_handler,
        .api = &bm_storage_sd_api,
-       .start_addr = START,
-       .end_addr = END,
+       .addr = PARTITION_ADDR,
+       .size = PARTITION_SIZE,
    };
 
    bm_storage_init(&storage, &config);
+
+All read, write, and erase operations use offsets relative to the partition start (0-based).
 
 You can uninitialize a storage instance with the :c:func:`bm_storage_uninit` function.
 

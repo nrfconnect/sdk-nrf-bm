@@ -10,11 +10,9 @@
 #include <sys/types.h>
 #include <bm/storage/bm_storage.h>
 
-static bool is_within_bounds(off_t addr, size_t len, off_t boundary_start, size_t boundary_size)
+static bool is_within_bounds(uint32_t offset, uint32_t len, uint32_t size)
 {
-	return (addr >= boundary_start &&
-			(addr < (boundary_start + boundary_size)) &&
-			(len <= (boundary_start + boundary_size - addr)));
+	return (offset + len <= size) && (offset + len > offset);
 }
 
 int bm_storage_init(struct bm_storage *storage, const struct bm_storage_config *config)
@@ -25,7 +23,7 @@ int bm_storage_init(struct bm_storage *storage, const struct bm_storage_config *
 		return -EFAULT;
 	}
 
-	if (storage->initialized) {
+	if (storage->flags.is_initialized) {
 		return -EPERM;
 	}
 	if (!config->api) {
@@ -34,8 +32,8 @@ int bm_storage_init(struct bm_storage *storage, const struct bm_storage_config *
 
 	storage->api = config->api;
 	storage->evt_handler = config->evt_handler;
-	storage->start_addr = config->start_addr;
-	storage->end_addr = config->end_addr;
+	storage->addr = config->addr;
+	storage->size = config->size;
 	storage->flags.is_wear_aligned = config->flags.is_wear_aligned;
 	storage->flags.is_write_padded = config->flags.is_write_padded;
 
@@ -56,7 +54,7 @@ int bm_storage_init(struct bm_storage *storage, const struct bm_storage_config *
 		return -EINVAL;
 	}
 
-	storage->initialized = true;
+	storage->flags.is_initialized = true;
 
 	return 0;
 }
@@ -69,15 +67,14 @@ int bm_storage_uninit(struct bm_storage *storage)
 		return -EFAULT;
 	}
 
-	if (!storage->initialized) {
+	if (!storage->flags.is_initialized) {
 		return -EPERM;
 	}
 
 	err = storage->api->uninit(storage);
 
 	if (err == 0) {
-		/* Prevent further operations */
-		storage->initialized = false;
+		storage->flags.is_initialized = false;
 	}
 
 	return err;
@@ -89,7 +86,7 @@ int bm_storage_read(const struct bm_storage *storage, uint32_t src, void *dest, 
 		return -EFAULT;
 	}
 
-	if (!storage->initialized) {
+	if (!storage->flags.is_initialized) {
 		return -EPERM;
 	}
 
@@ -97,8 +94,7 @@ int bm_storage_read(const struct bm_storage *storage, uint32_t src, void *dest, 
 		return -EINVAL;
 	}
 
-	if (!is_within_bounds(src, len, storage->start_addr,
-			      storage->end_addr - storage->start_addr)) {
+	if (!is_within_bounds(src, len, storage->size)) {
 		return -EINVAL;
 	}
 
@@ -114,7 +110,7 @@ int bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void
 		return -EFAULT;
 	}
 
-	if (!storage->initialized) {
+	if (!storage->flags.is_initialized) {
 		return -EPERM;
 	}
 
@@ -132,8 +128,7 @@ int bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void
 		return -EINVAL;
 	}
 
-	if (!is_within_bounds(dest, len, storage->start_addr,
-			      storage->end_addr - storage->start_addr)) {
+	if (!is_within_bounds(dest, len, storage->size)) {
 		return -EINVAL;
 	}
 
@@ -148,14 +143,13 @@ int bm_storage_erase(const struct bm_storage *storage, uint32_t addr, uint32_t l
 		return -EFAULT;
 	}
 
-	if (!storage->initialized) {
+	if (!storage->flags.is_initialized) {
 		return -EPERM;
 	}
 
 	if (storage->nvm_info->is_erase_before_write) {
 		erase_align = storage->nvm_info->erase_unit;
 	} else {
-		/* Erase operation is simulated, enforce wear-unit alignment if configured */
 		if (storage->flags.is_wear_aligned) {
 			erase_align = storage->nvm_info->wear_unit;
 		} else {
@@ -168,8 +162,7 @@ int bm_storage_erase(const struct bm_storage *storage, uint32_t addr, uint32_t l
 		return -EINVAL;
 	}
 
-	if (!is_within_bounds(addr, len, storage->start_addr,
-			      storage->end_addr - storage->start_addr)) {
+	if (!is_within_bounds(addr, len, storage->size)) {
 		return -EINVAL;
 	}
 
@@ -182,7 +175,7 @@ bool bm_storage_is_busy(const struct bm_storage *storage)
 		return false;
 	}
 
-	if (!storage->initialized) {
+	if (!storage->flags.is_initialized) {
 		return false;
 	}
 
@@ -191,7 +184,7 @@ bool bm_storage_is_busy(const struct bm_storage *storage)
 
 const struct bm_storage_info *bm_storage_nvm_info_get(const struct bm_storage *storage)
 {
-	if (!storage || !storage->initialized) {
+	if (!storage || !storage->flags.is_initialized) {
 		return NULL;
 	}
 

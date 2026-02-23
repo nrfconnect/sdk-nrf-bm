@@ -133,10 +133,6 @@ struct bm_storage_api {
  */
 struct bm_storage {
 	/**
-	 * @brief Tells whether the instance is initialized.
-	 */
-	bool initialized;
-	/**
 	 * @brief API implementation.
 	 */
 	const struct bm_storage_api *api;
@@ -150,23 +146,21 @@ struct bm_storage {
 	 */
 	bm_storage_evt_handler_t evt_handler;
 	/**
-	 * @brief The beginning of the non-volatile memory region where this storage instance
-	 *        can operate.
-	 *        All non-volatile memory operations must be within the boundary delimited by this
-	 *        field and @ref end_addr.
+	 * @brief The starting address of this instance's partition.
 	 */
-	uint32_t start_addr;
+	uint32_t addr;
 	/**
-	 * @brief The last address (exclusive) of non-volatile memory where this storage instance
-	 *        can operate.
-	 *        All non-volatile memory operations must be within the boundary delimited by this
-	 *        field and @ref start_addr.
+	 * @brief The size of this instance's partition, in bytes.
 	 */
-	uint32_t end_addr;
+	uint32_t size;
 	/**
-	 * @brief Configuration flags.
+	 * @brief Instance flags.
 	 */
 	struct {
+		/**
+		 * @brief The instance has been initialized.
+		 */
+		bool is_initialized : 1;
 		/**
 		 * @brief Enforce wear unit alignment on operations that cause wear.
 		 */
@@ -193,19 +187,13 @@ struct bm_storage_config {
 	 */
 	const struct bm_storage_api *api;
 	/**
-	 * @brief The beginning of the non-volatile memory region where this storage instance
-	 *        can operate.
-	 *        All non-volatile memory operations must be within the boundary delimited by this
-	 *        field and @ref end_addr.
+	 * @brief The starting address of this instance's partition.
 	 */
-	uint32_t start_addr;
+	uint32_t addr;
 	/**
-	 * @brief The last address (exclusive) of non-volatile memory where this storage instance
-	 *        can operate.
-	 *        All non-volatile memory operations must be within the boundary delimited by this
-	 *        field and @ref start_addr.
+	 * @brief The size of this instance's partition, in bytes.
 	 */
-	uint32_t end_addr;
+	uint32_t size;
 	/**
 	 * @brief Configuration flags.
 	 */
@@ -264,7 +252,7 @@ int bm_storage_uninit(struct bm_storage *storage);
  * @brief Read data from storage.
  *
  * @param[in] storage Storage instance to read data from.
- * @param[in] src Address in non-volatile memory where to read data from.
+ * @param[in] src Offset within the partition where to read data from.
  * @param[out] dest Destination where the data will be copied to.
  * @param[in] len Length of the data to copy (in bytes).
  *
@@ -283,7 +271,7 @@ int bm_storage_read(const struct bm_storage *storage, uint32_t src, void *dest, 
  * required instead.
  *
  * @param[in] storage Storage instance to write data to.
- * @param[in] dest Address in non-volatile memory where to write the data to.
+ * @param[in] dest Offset within the partition where to write the data to.
  * @param[in] src Data to be written.
  * @param[in] len Length of the data to be written (in bytes).
  * @param[in] ctx User-defined context sent to the event handler.
@@ -310,7 +298,7 @@ int bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void
  * if @ref bm_storage_config.is_wear_aligned is set.
  *
  * @param[in] storage Storage instance to erase data in.
- * @param[in] addr Address in non-volatile memory where to erase the data.
+ * @param[in] addr Offset within the partition where to erase the data.
  * @param[in] len Length of the data to be erased (in bytes).
  * @param[in] ctx User-defined context sent to the event handler.
  *

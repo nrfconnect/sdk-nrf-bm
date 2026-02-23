@@ -112,8 +112,8 @@ void test_bm_storage_init_efault(void)
 	struct bm_storage_config config = {
 		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	err = bm_storage_init(NULL, NULL);
@@ -139,8 +139,8 @@ void test_bm_storage_init(void)
 	struct bm_storage_config config = {
 		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	err = bm_storage_init(&storage, &config);
@@ -155,8 +155,8 @@ void test_bm_storage_init_eperm(void)
 	struct bm_storage_config config = {
 		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	err = bm_storage_init(&storage, &config);
@@ -175,8 +175,8 @@ void test_bm_storage_uninit_efault(void)
 	struct bm_storage_config config = {
 		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	err = bm_storage_init(&storage, &config);
@@ -204,8 +204,8 @@ void test_bm_storage_uninit(void)
 	struct bm_storage_config config = {
 		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	err = bm_storage_init(&storage, &config);
@@ -223,8 +223,8 @@ void test_bm_storage_init_uninit_init(void)
 	struct bm_storage_config config = {
 		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	err = bm_storage_init(&storage, &config);
@@ -246,8 +246,8 @@ void test_bm_storage_uninit_outstanding(void)
 	struct bm_storage_config config = {
 		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	err = bm_storage_init(&storage, &config);
@@ -260,7 +260,7 @@ void test_bm_storage_uninit_outstanding(void)
 	TEST_ASSERT_EQUAL(-EBUSY, err);
 
 	/* The instance must remain initialized when the backend refuses. */
-	TEST_ASSERT_TRUE(storage.initialized);
+	TEST_ASSERT_TRUE(storage.flags.is_initialized);
 }
 
 void test_bm_storage_write_efault(void)
@@ -271,17 +271,17 @@ void test_bm_storage_write_efault(void)
 	struct bm_storage_config config = {
 		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
-	err = bm_storage_write(NULL, PARTITION_START, input, sizeof(input), NULL);
+	err = bm_storage_write(NULL, 0, input, sizeof(input), NULL);
 	TEST_ASSERT_EQUAL(-EFAULT, err);
 
-	err = bm_storage_write(&storage, PARTITION_START, NULL, sizeof(input), NULL);
+	err = bm_storage_write(&storage, 0, NULL, sizeof(input), NULL);
 	TEST_ASSERT_EQUAL(-EFAULT, err);
 }
 
@@ -292,7 +292,7 @@ void test_bm_storage_write_eperm(void)
 	struct bm_storage storage = {0};
 
 	/* Storage is uninitialized. */
-	err = bm_storage_write(&storage, PARTITION_START, input, sizeof(input), NULL);
+	err = bm_storage_write(&storage, 0, input, sizeof(input), NULL);
 	TEST_ASSERT_EQUAL(-EPERM, err);
 }
 
@@ -306,8 +306,8 @@ void test_bm_storage_write_einval(void)
 	struct bm_storage_config config = {
 		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	err = bm_storage_init(&storage, &config);
@@ -315,10 +315,10 @@ void test_bm_storage_write_einval(void)
 
 	/* Unaligned */
 
-	err = bm_storage_write(&storage, PARTITION_START + 1, input, sizeof(input), NULL);
+	err = bm_storage_write(&storage, 1, input, sizeof(input), NULL);
 	TEST_ASSERT_EQUAL(-EINVAL, err);
 
-	err = bm_storage_write(&storage, PARTITION_START, input, sizeof(input) - 1, NULL);
+	err = bm_storage_write(&storage, 0, input, sizeof(input) - 1, NULL);
 	TEST_ASSERT_EQUAL(-EINVAL, err);
 
 	/* Out of bounds */
@@ -326,7 +326,7 @@ void test_bm_storage_write_einval(void)
 	err = bm_storage_write(&storage, PARTITION_SIZE + BLOCK_SIZE, input, sizeof(input), NULL);
 	TEST_ASSERT_EQUAL(-EINVAL, err);
 
-	err = bm_storage_write(&storage, PARTITION_START, input, PARTITION_SIZE + BLOCK_SIZE, NULL);
+	err = bm_storage_write(&storage, 0, input, PARTITION_SIZE + BLOCK_SIZE, NULL);
 	TEST_ASSERT_EQUAL(-EINVAL, err);
 }
 
@@ -339,14 +339,14 @@ void test_bm_storage_write(void)
 	struct bm_storage_config config = {
 		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
-	err = bm_storage_write(&storage, PARTITION_START, input, sizeof(input), NULL);
+	err = bm_storage_write(&storage, 0, input, sizeof(input), NULL);
 	TEST_ASSERT_EQUAL(0, err);
 }
 
@@ -358,17 +358,17 @@ void test_bm_storage_read_efault(void)
 	struct bm_storage_config config = {
 		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
-	err = bm_storage_read(NULL, PARTITION_START, output, sizeof(output));
+	err = bm_storage_read(NULL, 0, output, sizeof(output));
 	TEST_ASSERT_EQUAL(-EFAULT, err);
 
-	err = bm_storage_read(&storage, PARTITION_START, NULL, sizeof(output));
+	err = bm_storage_read(&storage, 0, NULL, sizeof(output));
 	TEST_ASSERT_EQUAL(-EFAULT, err);
 }
 
@@ -379,7 +379,7 @@ void test_bm_storage_read_eperm(void)
 	struct bm_storage storage = {0};
 
 	/* Storage is uninitialized. */
-	err = bm_storage_read(&storage, PARTITION_START, output, sizeof(output));
+	err = bm_storage_read(&storage, 0, output, sizeof(output));
 	TEST_ASSERT_EQUAL(-EPERM, err);
 }
 
@@ -391,22 +391,22 @@ void test_bm_storage_read_einval(void)
 	struct bm_storage_config config = {
 		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
-	err = bm_storage_read(&storage, PARTITION_START, output, 0);
+	err = bm_storage_read(&storage, 0, output, 0);
 	TEST_ASSERT_EQUAL(-EINVAL, err);
 
 	/* Operation is out of bounds. */
-	err = bm_storage_read(&storage, PARTITION_START - 1, output, sizeof(output));
+	err = bm_storage_read(&storage, PARTITION_SIZE, output, sizeof(output));
 	TEST_ASSERT_EQUAL(-EINVAL, err);
 
 	/* Operation is out of bounds. */
-	err = bm_storage_read(&storage, PARTITION_START, output, PARTITION_SIZE + 1);
+	err = bm_storage_read(&storage, 0, output, PARTITION_SIZE + 1);
 	TEST_ASSERT_EQUAL(-EINVAL, err);
 }
 
@@ -418,14 +418,14 @@ void test_bm_storage_read(void)
 	struct bm_storage_config config = {
 		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
-	err = bm_storage_read(&storage, PARTITION_START, output, sizeof(output));
+	err = bm_storage_read(&storage, 0, output, sizeof(output));
 	TEST_ASSERT_EQUAL(0, err);
 }
 
@@ -433,7 +433,7 @@ void test_bm_storage_erase_efault(void)
 {
 	int err;
 
-	err = bm_storage_erase(NULL, PARTITION_START, BLOCK_SIZE, NULL);
+	err = bm_storage_erase(NULL, 0, BLOCK_SIZE, NULL);
 	TEST_ASSERT_EQUAL(-EFAULT, err);
 }
 
@@ -443,7 +443,7 @@ void test_bm_storage_erase_eperm(void)
 	struct bm_storage storage = {0};
 
 	/* Storage is uninitialized. */
-	err = bm_storage_erase(&storage, PARTITION_START, BLOCK_SIZE, NULL);
+	err = bm_storage_erase(&storage, 0, BLOCK_SIZE, NULL);
 	TEST_ASSERT_EQUAL(-EPERM, err);
 }
 
@@ -454,8 +454,8 @@ void test_bm_storage_erase_einval(void)
 	struct bm_storage_config config = {
 		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	err = bm_storage_init(&storage, &config);
@@ -463,17 +463,17 @@ void test_bm_storage_erase_einval(void)
 
 	/* Unaligned */
 
-	err = bm_storage_erase(&storage, PARTITION_START + 1, BLOCK_SIZE, NULL);
+	err = bm_storage_erase(&storage, 1, BLOCK_SIZE, NULL);
 	TEST_ASSERT_EQUAL(-EINVAL, err);
 
-	err = bm_storage_erase(&storage, PARTITION_START, BLOCK_SIZE - 1, NULL);
+	err = bm_storage_erase(&storage, 0, BLOCK_SIZE - 1, NULL);
 	TEST_ASSERT_EQUAL(-EINVAL, err);
 
 	/* Out of bounds */
-	err = bm_storage_erase(&storage, PARTITION_START - BLOCK_SIZE, BLOCK_SIZE, NULL);
+	err = bm_storage_erase(&storage, PARTITION_SIZE, BLOCK_SIZE, NULL);
 	TEST_ASSERT_EQUAL(-EINVAL, err);
 
-	err = bm_storage_erase(&storage, PARTITION_START, PARTITION_SIZE + BLOCK_SIZE, NULL);
+	err = bm_storage_erase(&storage, 0, PARTITION_SIZE + BLOCK_SIZE, NULL);
 	TEST_ASSERT_EQUAL(-EINVAL, err);
 }
 
@@ -484,14 +484,14 @@ void test_bm_storage_erase(void)
 	struct bm_storage_config config = {
 		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
-	err = bm_storage_erase(&storage, PARTITION_START, BLOCK_SIZE, NULL);
+	err = bm_storage_erase(&storage, 0, BLOCK_SIZE, NULL);
 	TEST_ASSERT_EQUAL(0, err);
 }
 
@@ -503,8 +503,8 @@ void test_bm_storage_is_busy(void)
 	struct bm_storage_config config = {
 		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	is_busy = bm_storage_is_busy(NULL);
@@ -540,8 +540,8 @@ void test_bm_storage_nvm_info_get(void)
 	struct bm_storage_config config = {
 		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	err = bm_storage_init(&storage, &config);
@@ -561,8 +561,8 @@ void test_bm_storage_write_wear_aligned(void)
 	struct bm_storage_config config = {
 		.api = &bm_storage_test_api_rram_like,
 		.evt_handler = bm_storage_evt_handler,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 		.flags.is_wear_aligned = true,
 	};
 
@@ -570,11 +570,11 @@ void test_bm_storage_write_wear_aligned(void)
 	TEST_ASSERT_EQUAL(0, err);
 
 	/* Aligned to wear_unit: succeeds */
-	err = bm_storage_write(&storage, PARTITION_START, input, sizeof(input), NULL);
+	err = bm_storage_write(&storage, 0, input, sizeof(input), NULL);
 	TEST_ASSERT_EQUAL(0, err);
 
 	/* Aligned to program_unit but not wear_unit: fails */
-	err = bm_storage_write(&storage, PARTITION_START + PROGRAM_UNIT, input, PROGRAM_UNIT, NULL);
+	err = bm_storage_write(&storage, PROGRAM_UNIT, input, PROGRAM_UNIT, NULL);
 	TEST_ASSERT_EQUAL(-EINVAL, err);
 }
 
@@ -586,16 +586,15 @@ void test_bm_storage_write_no_wear_aligned(void)
 	struct bm_storage_config config = {
 		.api = &bm_storage_test_api_rram_like,
 		.evt_handler = bm_storage_evt_handler,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
 	/* Without the flag, program_unit alignment is sufficient */
-	err = bm_storage_write(&storage, PARTITION_START + PROGRAM_UNIT, input, sizeof(input),
-			       NULL);
+	err = bm_storage_write(&storage, PROGRAM_UNIT, input, sizeof(input), NULL);
 	TEST_ASSERT_EQUAL(0, err);
 }
 
@@ -606,8 +605,8 @@ void test_bm_storage_erase_wear_aligned(void)
 	struct bm_storage_config config = {
 		.api = &bm_storage_test_api_rram_like,
 		.evt_handler = bm_storage_evt_handler,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 		.flags.is_wear_aligned = true,
 	};
 
@@ -615,11 +614,11 @@ void test_bm_storage_erase_wear_aligned(void)
 	TEST_ASSERT_EQUAL(0, err);
 
 	/* Aligned to wear_unit: succeeds */
-	err = bm_storage_erase(&storage, PARTITION_START, BLOCK_SIZE, NULL);
+	err = bm_storage_erase(&storage, 0, BLOCK_SIZE, NULL);
 	TEST_ASSERT_EQUAL(0, err);
 
 	/* Aligned to program_unit but not wear_unit: fails */
-	err = bm_storage_erase(&storage, PARTITION_START, PROGRAM_UNIT, NULL);
+	err = bm_storage_erase(&storage, 0, PROGRAM_UNIT, NULL);
 	TEST_ASSERT_EQUAL(-EINVAL, err);
 }
 
@@ -630,15 +629,15 @@ void test_bm_storage_erase_no_wear_aligned(void)
 	struct bm_storage_config config = {
 		.api = &bm_storage_test_api_rram_like,
 		.evt_handler = bm_storage_evt_handler,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
 	/* Without is_wear_aligned: erase_unit alignment is sufficient */
-	err = bm_storage_erase(&storage, PARTITION_START, PROGRAM_UNIT, NULL);
+	err = bm_storage_erase(&storage, 0, PROGRAM_UNIT, NULL);
 	TEST_ASSERT_EQUAL(0, err);
 }
 
@@ -649,8 +648,8 @@ void test_bm_storage_init_wear_aligned_einval(void)
 	struct bm_storage_config config = {
 		.api = &bm_storage_test_api,
 		.evt_handler = bm_storage_evt_handler,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 		.flags.is_wear_aligned = true,
 	};
 

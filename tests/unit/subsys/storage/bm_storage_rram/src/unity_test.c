@@ -44,8 +44,8 @@ void test_bm_storage_rram_init_efault(void)
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
 		.api = &bm_storage_rram_api,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	err = bm_storage_init(NULL, NULL);
@@ -72,8 +72,8 @@ void test_bm_storage_rram_init(void)
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
 		.api = &bm_storage_rram_api,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	__cmock_nrfx_rramc_init_ExpectAnyArgsAndReturn(0);
@@ -82,7 +82,7 @@ void test_bm_storage_rram_init(void)
 
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
-	TEST_ASSERT_TRUE(storage.initialized);
+	TEST_ASSERT_TRUE(storage.flags.is_initialized);
 }
 
 void test_bm_storage_rram_init_eperm(void)
@@ -92,8 +92,8 @@ void test_bm_storage_rram_init_eperm(void)
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
 		.api = &bm_storage_rram_api,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	/* Backend already initialized by test_bm_storage_rram_init. */
@@ -130,8 +130,8 @@ void test_bm_storage_rram_uninit(void)
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
 		.api = &bm_storage_rram_api,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	/* Backend already initialized by test_bm_storage_rram_init. */
@@ -140,7 +140,7 @@ void test_bm_storage_rram_uninit(void)
 
 	err = bm_storage_uninit(&storage);
 	TEST_ASSERT_EQUAL(0, err);
-	TEST_ASSERT_FALSE(storage.initialized);
+	TEST_ASSERT_FALSE(storage.flags.is_initialized);
 }
 
 void test_bm_storage_rram_init_uninit_init(void)
@@ -150,8 +150,8 @@ void test_bm_storage_rram_init_uninit_init(void)
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
 		.api = &bm_storage_rram_api,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	/* Backend already initialized by test_bm_storage_rram_init. */
@@ -164,7 +164,7 @@ void test_bm_storage_rram_init_uninit_init(void)
 	/* Re-initialization after uninit must succeed. */
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
-	TEST_ASSERT_TRUE(storage.initialized);
+	TEST_ASSERT_TRUE(storage.flags.is_initialized);
 }
 
 void test_bm_storage_rram_write_eperm(void)
@@ -174,7 +174,7 @@ void test_bm_storage_rram_write_eperm(void)
 	struct bm_storage storage = {0};
 
 	/* Storage is uninitialized. */
-	err = bm_storage_write(&storage, PARTITION_START, buf, sizeof(buf), NULL);
+	err = bm_storage_write(&storage, 0, buf, sizeof(buf), NULL);
 	TEST_ASSERT_EQUAL(-EPERM, err);
 }
 
@@ -187,15 +187,15 @@ void test_bm_storage_rram_write_einval(void)
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
 		.api = &bm_storage_rram_api,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	/* Backend already initialized by test_bm_storage_rram_init. */
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
-	err = bm_storage_write(&storage, PARTITION_START, buf, sizeof(buf), NULL);
+	err = bm_storage_write(&storage, 0, buf, sizeof(buf), NULL);
 	TEST_ASSERT_EQUAL(-EINVAL, err);
 }
 
@@ -206,15 +206,15 @@ void test_bm_storage_rram_write_efault(void)
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
 		.api = &bm_storage_rram_api,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	/* Backend already initialized by test_bm_storage_rram_init. */
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
-	err = bm_storage_write(&storage, PARTITION_START, NULL, BLOCK_SIZE, NULL);
+	err = bm_storage_write(&storage, 0, NULL, BLOCK_SIZE, NULL);
 	TEST_ASSERT_EQUAL(-EFAULT, err);
 }
 
@@ -227,8 +227,8 @@ void test_bm_storage_rram_write(void)
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
 		.api = &bm_storage_rram_api,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	/* Backend already initialized by test_bm_storage_rram_init. */
@@ -240,7 +240,7 @@ void test_bm_storage_rram_write(void)
 	__cmock_nrfx_rramc_bytes_write_IgnoreArg_src();
 	__cmock_nrfx_rramc_bytes_write_IgnoreArg_num_bytes();
 
-	err = bm_storage_write(&storage, PARTITION_START, buf, sizeof(buf), NULL);
+	err = bm_storage_write(&storage, 0, buf, sizeof(buf), NULL);
 	TEST_ASSERT_EQUAL(0, err);
 
 	/* RRAM backend dispatches events synchronously. */
@@ -248,7 +248,7 @@ void test_bm_storage_rram_write(void)
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
 	TEST_ASSERT_EQUAL(false, storage_event.is_async);
 	TEST_ASSERT_EQUAL(0, storage_event.result);
-	TEST_ASSERT_EQUAL(PARTITION_START, storage_event.addr);
+	TEST_ASSERT_EQUAL(0, storage_event.addr);
 	TEST_ASSERT_EQUAL_PTR(buf, storage_event.src);
 	TEST_ASSERT_EQUAL(sizeof(buf), storage_event.len);
 
@@ -264,7 +264,7 @@ void test_bm_storage_rram_read_eperm(void)
 	struct bm_storage storage = {0};
 
 	/* Storage is uninitialized. */
-	err = bm_storage_read(&storage, PARTITION_START, buf, sizeof(buf));
+	err = bm_storage_read(&storage, 0, buf, sizeof(buf));
 	TEST_ASSERT_EQUAL(-EPERM, err);
 }
 
@@ -276,15 +276,15 @@ void test_bm_storage_rram_read_einval(void)
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
 		.api = &bm_storage_rram_api,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	/* Backend already initialized by test_bm_storage_rram_init. */
 	err = bm_storage_init(&storage, &config);
 	TEST_ASSERT_EQUAL(0, err);
 
-	err = bm_storage_read(&storage, PARTITION_START, buf, 0);
+	err = bm_storage_read(&storage, 0, buf, 0);
 	TEST_ASSERT_EQUAL(-EINVAL, err);
 }
 
@@ -296,8 +296,8 @@ void test_bm_storage_rram_read(void)
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
 		.api = &bm_storage_rram_api,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	/* Backend already initialized by test_bm_storage_rram_init. */
@@ -306,7 +306,7 @@ void test_bm_storage_rram_read(void)
 
 	__cmock_nrfx_rramc_buffer_read_Expect(buf, PARTITION_START, sizeof(buf));
 
-	err = bm_storage_read(&storage, PARTITION_START, buf, sizeof(buf));
+	err = bm_storage_read(&storage, 0, buf, sizeof(buf));
 	TEST_ASSERT_EQUAL(0, err);
 }
 
@@ -318,8 +318,8 @@ void test_bm_storage_rram_read_efault(void)
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
 		.api = &bm_storage_rram_api,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	/* Backend already initialized by test_bm_storage_rram_init. */
@@ -327,7 +327,7 @@ void test_bm_storage_rram_read_efault(void)
 	TEST_ASSERT_EQUAL(0, err);
 
 	/* Read address is past the end of the partition. */
-	err = bm_storage_read(&storage, PARTITION_START + PARTITION_SIZE, buf, sizeof(buf));
+	err = bm_storage_read(&storage, PARTITION_SIZE, buf, sizeof(buf));
 	TEST_ASSERT_EQUAL(-EINVAL, err);
 }
 
@@ -337,7 +337,7 @@ void test_bm_storage_rram_erase_eperm(void)
 	struct bm_storage storage = {0};
 
 	/* Storage is uninitialized. */
-	err = bm_storage_erase(&storage, PARTITION_START, BLOCK_SIZE, NULL);
+	err = bm_storage_erase(&storage, 0, BLOCK_SIZE, NULL);
 	TEST_ASSERT_EQUAL(-EPERM, err);
 }
 
@@ -349,8 +349,8 @@ void test_bm_storage_rram_erase(void)
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
 		.api = &bm_storage_rram_api,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	/* Backend already initialized by test_bm_storage_rram_init. */
@@ -363,12 +363,12 @@ void test_bm_storage_rram_erase(void)
 	__cmock_nrfx_rramc_bytes_write_IgnoreArg_src();
 	__cmock_nrfx_rramc_bytes_write_IgnoreArg_num_bytes();
 
-	err = bm_storage_erase(&storage, PARTITION_START, BLOCK_SIZE, NULL);
+	err = bm_storage_erase(&storage, 0, BLOCK_SIZE, NULL);
 	TEST_ASSERT_EQUAL(0, err);
 
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_ERASE_RESULT, storage_event.id);
 	TEST_ASSERT_EQUAL(0, storage_event.result);
-	TEST_ASSERT_EQUAL(PARTITION_START, storage_event.addr);
+	TEST_ASSERT_EQUAL(0, storage_event.addr);
 	TEST_ASSERT_EQUAL(BLOCK_SIZE, storage_event.len);
 
 	is_busy = bm_storage_is_busy(&storage);
@@ -383,8 +383,8 @@ void test_bm_storage_rram_is_busy(void)
 	struct bm_storage_config config = {
 		.evt_handler = bm_storage_evt_handler,
 		.api = &bm_storage_rram_api,
-		.start_addr = PARTITION_START,
-		.end_addr = PARTITION_START + PARTITION_SIZE,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
 	};
 
 	is_busy = bm_storage_is_busy(NULL);

@@ -151,7 +151,7 @@ static uint32_t write_execute(const struct bm_storage_sd_op *op)
 	uint32_t chunk_len;
 	uint32_t pad_unit;
 
-	dest = (uint32_t *)(op->write.dest + op->write.offset);
+	dest = (uint32_t *)(op->storage->addr + op->write.dest + op->write.offset);
 	src  = (uint32_t *)((uintptr_t)op->write.src + op->write.offset);
 
 	chunk_len = MIN(op->write.len - op->write.offset,
@@ -191,7 +191,7 @@ static uint32_t erase_execute(struct bm_storage_sd_op *op)
 {
 	uint32_t *addr;
 
-	addr = UINT_TO_POINTER(op->erase.addr + op->erase.offset);
+	addr = UINT_TO_POINTER(op->storage->addr + op->erase.addr + op->erase.offset);
 
 #ifdef CONFIG_BM_STORAGE_BACKEND_SD_ERASE_BLOCKS
 	uint32_t chunk_len;
@@ -379,7 +379,7 @@ static int bm_storage_sd_uninit(struct bm_storage *storage)
 static int bm_storage_sd_read(const struct bm_storage *storage, uint32_t src, void *dest,
 			      uint32_t len)
 {
-	memcpy(dest, UINT_TO_POINTER(src), len);
+	memcpy(dest, UINT_TO_POINTER(storage->addr + src), len);
 
 	return 0;
 }

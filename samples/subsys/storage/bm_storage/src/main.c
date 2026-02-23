@@ -30,10 +30,10 @@ LOG_MODULE_REGISTER(sample, CONFIG_SAMPLE_BM_STORAGE_LOG_LEVEL);
 #define BUFFER_BLOCK_SIZE 16
 
 /* Two disjoint storage regions to showcase multiple clients of the storage library. */
-#define STORAGE_A_START STORAGE0_START
-#define STORAGE_A_END (STORAGE_A_START + BUFFER_BLOCK_SIZE)
-#define STORAGE_B_START STORAGE_A_END
-#define STORAGE_B_END (STORAGE_B_START + BUFFER_BLOCK_SIZE)
+#define STORAGE_A_ADDR STORAGE0_START
+#define STORAGE_A_SIZE BUFFER_BLOCK_SIZE
+#define STORAGE_B_ADDR (STORAGE_A_ADDR + STORAGE_A_SIZE)
+#define STORAGE_B_SIZE BUFFER_BLOCK_SIZE
 
 /* Forward declarations. */
 static void bm_storage_evt_handler_a(struct bm_storage_evt *evt);
@@ -92,8 +92,8 @@ static int storage_inits(void)
 	struct bm_storage_config storage_config_a = {
 		.evt_handler = bm_storage_evt_handler_a,
 		.api = &bm_storage_sd_api,
-		.start_addr = STORAGE_A_START,
-		.end_addr = STORAGE_A_END,
+		.addr = STORAGE_A_ADDR,
+		.size = STORAGE_A_SIZE,
 	};
 
 	err = bm_storage_init(&storage_a, &storage_config_a);
@@ -105,8 +105,8 @@ static int storage_inits(void)
 	struct bm_storage_config storage_config_b = {
 		.evt_handler = bm_storage_evt_handler_b,
 		.api = &bm_storage_sd_api,
-		.start_addr = STORAGE_B_START,
-		.end_addr = STORAGE_B_END,
+		.addr = STORAGE_B_ADDR,
+		.size = STORAGE_B_SIZE,
 	};
 
 	err = bm_storage_init(&storage_b, &storage_config_b);
@@ -146,20 +146,19 @@ static int storage_writes(void)
 	/* Prepare writes. */
 	outstanding_writes = 2;
 
-	LOG_INF("Writing in Partition A, addr: 0x%08X, size: %d", storage_a.start_addr,
+	LOG_INF("Writing in Partition A, addr: 0x%08X, size: %d", storage_a.addr,
 		sizeof(input_a));
 
-	err = bm_storage_write(&storage_a, storage_a.start_addr, input_a, sizeof(input_a), NULL);
+	err = bm_storage_write(&storage_a, 0, input_a, sizeof(input_a), NULL);
 	if (err) {
 		LOG_ERR("bm_storage_write() failed, err %d", err);
 		return err;
 	}
 
-	LOG_INF("Writing in Partition B, addr: 0x%08X, size: %d", storage_b.start_addr,
+	LOG_INF("Writing in Partition B, addr: 0x%08X, size: %d", storage_b.addr,
 		sizeof(input_b));
 
-	err = bm_storage_write(&storage_b, storage_b.start_addr, input_b, sizeof(input_b),
-			       NULL);
+	err = bm_storage_write(&storage_b, 0, input_b, sizeof(input_b), NULL);
 	if (err) {
 		LOG_ERR("bm_storage_write() failed, err %d", err);
 		return err;
@@ -176,19 +175,19 @@ static int storage_erases(void)
 	/* Prepare writes. */
 	outstanding_writes = 2;
 
-	LOG_INF("Erasing in Partition A, addr: 0x%08X, size: %d", storage_a.start_addr,
+	LOG_INF("Erasing in Partition A, addr: 0x%08X, size: %d", storage_a.addr,
 		sizeof(erase));
 
-	err = bm_storage_write(&storage_a, storage_a.start_addr, erase, sizeof(erase), NULL);
+	err = bm_storage_write(&storage_a, 0, erase, sizeof(erase), NULL);
 	if (err) {
 		LOG_ERR("bm_storage_write() failed, err %d", err);
 		return err;
 	}
 
-	LOG_INF("Erasing in Partition B, addr: 0x%08X, size: %d", storage_b.start_addr,
+	LOG_INF("Erasing in Partition B, addr: 0x%08X, size: %d", storage_b.addr,
 		sizeof(erase));
 
-	err = bm_storage_write(&storage_b, storage_b.start_addr, erase, sizeof(erase), NULL);
+	err = bm_storage_write(&storage_b, 0, erase, sizeof(erase), NULL);
 	if (err) {
 		LOG_ERR("bm_storage_write() failed, err %d", err);
 		return err;
@@ -202,7 +201,7 @@ static int storage_reads(void)
 	int err;
 	char output[BUFFER_BLOCK_SIZE] = { 0 };
 
-	err = bm_storage_read(&storage_a, storage_a.start_addr, output, sizeof(output));
+	err = bm_storage_read(&storage_a, 0, output, sizeof(output));
 	if (err) {
 		LOG_ERR("bm_storage_read() failed, err %d", err);
 		return err;
@@ -212,7 +211,7 @@ static int storage_reads(void)
 
 	memset(output, 0, sizeof(output));
 
-	err = bm_storage_read(&storage_b, storage_b.start_addr, output, sizeof(output));
+	err = bm_storage_read(&storage_b, 0, output, sizeof(output));
 	if (err) {
 		LOG_ERR("bm_storage_read() failed, err %d", err);
 		return err;
