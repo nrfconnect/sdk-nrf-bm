@@ -1,0 +1,16 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+# Force RRAM backend for this test
+
+choice BM_STORAGE_BACKEND
+
+config BM_STORAGE_BACKEND_RRAM
+	bool "RRAM backend (testing)"
+
+endchoice
+
+source "Kconfig.zephyr"
