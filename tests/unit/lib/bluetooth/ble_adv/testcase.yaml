@@ -3,111 +3,111 @@ common:
   platform_allow: native_sim
   tags: unittest
 tests:
-  lib.ble_adv: {}
-  lib.ble_adv.directed:
+  lib.ble_adv.mode_none: {}
+  lib.ble_adv.mode_slow:
+    extra_configs:
+      - CONFIG_BLE_ADV_SLOW_ADVERTISING=y
+  lib.ble_adv.mode_fast:
+    extra_configs:
+      - CONFIG_BLE_ADV_FAST_ADVERTISING=y
+  lib.ble_adv.mode_fast_slow:
+    extra_configs:
+      - CONFIG_BLE_ADV_FAST_ADVERTISING=y
+      - CONFIG_BLE_ADV_SLOW_ADVERTISING=y
+  lib.ble_adv.mode_directed:
     extra_configs:
       - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
-  lib.ble_adv.no_directed_hd:
+  lib.ble_adv.mode_directed_slow:
     extra_configs:
       - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
-      - CONFIG_BLE_ADV_DIRECTED_ADVERTISING_HIGH_DUTY=n
-  lib.ble_adv.no_fast:
+      - CONFIG_BLE_ADV_SLOW_ADVERTISING=y
+  lib.ble_adv.mode_directed_fast:
     extra_configs:
       - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
-      - CONFIG_BLE_ADV_FAST_ADVERTISING=n
-  lib.ble_adv.no_slow:
+      - CONFIG_BLE_ADV_FAST_ADVERTISING=y
+  lib.ble_adv.mode_directed_fast_slow:
     extra_configs:
       - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
-      - CONFIG_BLE_ADV_SLOW_ADVERTISING=n
-  lib.ble_adv.no_directed_hd_or_fast:
+      - CONFIG_BLE_ADV_FAST_ADVERTISING=y
+      - CONFIG_BLE_ADV_SLOW_ADVERTISING=y
+  lib.ble_adv.mode_dhd_directed:
     extra_configs:
+      - CONFIG_BLE_ADV_DIRECTED_ADVERTISING_HIGH_DUTY=y
       - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
-      - CONFIG_BLE_ADV_DIRECTED_ADVERTISING_HIGH_DUTY=n
-      - CONFIG_BLE_ADV_FAST_ADVERTISING=n
-  lib.ble_adv.no_directed_hd_or_slow:
+  lib.ble_adv.mode_dhd_directed_slow:
     extra_configs:
+      - CONFIG_BLE_ADV_DIRECTED_ADVERTISING_HIGH_DUTY=y
       - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
-      - CONFIG_BLE_ADV_DIRECTED_ADVERTISING_HIGH_DUTY=n
-      - CONFIG_BLE_ADV_SLOW_ADVERTISING=n
-  lib.ble_adv.no_directed_or_fast:
+      - CONFIG_BLE_ADV_SLOW_ADVERTISING=y
+  lib.ble_adv.mode_dhd_directed_fast:
     extra_configs:
-      - CONFIG_BLE_ADV_FAST_ADVERTISING=n
-  lib.ble_adv.no_directed_or_slow:
-    extra_configs:
-      - CONFIG_BLE_ADV_SLOW_ADVERTISING=n
-  lib.ble_adv.no_fast_or_slow:
-    extra_configs:
+      - CONFIG_BLE_ADV_DIRECTED_ADVERTISING_HIGH_DUTY=y
       - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
-      - CONFIG_BLE_ADV_FAST_ADVERTISING=n
-      - CONFIG_BLE_ADV_SLOW_ADVERTISING=n
-  lib.ble_adv.no_directed_hd_or_fast_or_slow:
+      - CONFIG_BLE_ADV_FAST_ADVERTISING=y
+  lib.ble_adv.mode_dhd_directed_fast_slow:
     extra_configs:
+      - CONFIG_BLE_ADV_DIRECTED_ADVERTISING_HIGH_DUTY=y
       - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
-      - CONFIG_BLE_ADV_DIRECTED_ADVERTISING_HIGH_DUTY=n
-      - CONFIG_BLE_ADV_FAST_ADVERTISING=n
-      - CONFIG_BLE_ADV_SLOW_ADVERTISING=n
-  lib.ble_adv.no_directed_or_fast_or_slow:
-    extra_configs:
-      - CONFIG_BLE_ADV_FAST_ADVERTISING=n
-      - CONFIG_BLE_ADV_SLOW_ADVERTISING=n
+      - CONFIG_BLE_ADV_FAST_ADVERTISING=y
+      - CONFIG_BLE_ADV_SLOW_ADVERTISING=y
 
-  lib.ble_adv.use_allow_list:
+  lib.ble_adv.use_allow_list_mode_none:
+    extra_configs:
+      - CONFIG_BLE_ADV_USE_ALLOW_LIST=y
+  lib.ble_adv.use_allow_list_mode_slow:
+    extra_configs:
+      - CONFIG_BLE_ADV_USE_ALLOW_LIST=y
+      - CONFIG_BLE_ADV_SLOW_ADVERTISING=y
+  lib.ble_adv.use_allow_list_mode_fast:
+    extra_configs:
+      - CONFIG_BLE_ADV_USE_ALLOW_LIST=y
+      - CONFIG_BLE_ADV_FAST_ADVERTISING=y
+  lib.ble_adv.use_allow_list_mode_fast_slow:
+    extra_configs:
+      - CONFIG_BLE_ADV_USE_ALLOW_LIST=y
+      - CONFIG_BLE_ADV_FAST_ADVERTISING=y
+      - CONFIG_BLE_ADV_SLOW_ADVERTISING=y
+  lib.ble_adv.use_allow_list_mode_directed:
     extra_configs:
       - CONFIG_BLE_ADV_USE_ALLOW_LIST=y
       - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
-  lib.ble_adv.use_allow_list_no_directed_hd:
+  lib.ble_adv.use_allow_list_mode_directed_slow:
     extra_configs:
       - CONFIG_BLE_ADV_USE_ALLOW_LIST=y
       - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
-      - CONFIG_BLE_ADV_DIRECTED_ADVERTISING_HIGH_DUTY=n
-  lib.ble_adv.use_allow_list_no_directed:
-    extra_configs:
-      - CONFIG_BLE_ADV_USE_ALLOW_LIST=y
-  lib.ble_adv.use_allow_list_no_fast:
+      - CONFIG_BLE_ADV_SLOW_ADVERTISING=y
+  lib.ble_adv.use_allow_list_mode_directed_fast:
     extra_configs:
       - CONFIG_BLE_ADV_USE_ALLOW_LIST=y
       - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
-      - CONFIG_BLE_ADV_FAST_ADVERTISING=n
-  lib.ble_adv.use_allow_list_no_slow:
+      - CONFIG_BLE_ADV_FAST_ADVERTISING=y
+  lib.ble_adv.use_allow_list_mode_directed_fast_slow:
     extra_configs:
       - CONFIG_BLE_ADV_USE_ALLOW_LIST=y
       - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
-      - CONFIG_BLE_ADV_SLOW_ADVERTISING=n
-  lib.ble_adv.use_allow_list_no_directed_hd_or_fast:
+      - CONFIG_BLE_ADV_FAST_ADVERTISING=y
+      - CONFIG_BLE_ADV_SLOW_ADVERTISING=y
+  lib.ble_adv.use_allow_list_mode_dhd_directed:
     extra_configs:
       - CONFIG_BLE_ADV_USE_ALLOW_LIST=y
+      - CONFIG_BLE_ADV_DIRECTED_ADVERTISING_HIGH_DUTY=y
       - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
-      - CONFIG_BLE_ADV_DIRECTED_ADVERTISING_HIGH_DUTY=n
-      - CONFIG_BLE_ADV_FAST_ADVERTISING=n
-  lib.ble_adv.use_allow_list_no_directed_hd_or_slow:
+  lib.ble_adv.use_allow_list_mode_dhd_directed_slow:
     extra_configs:
       - CONFIG_BLE_ADV_USE_ALLOW_LIST=y
+      - CONFIG_BLE_ADV_DIRECTED_ADVERTISING_HIGH_DUTY=y
       - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
-      - CONFIG_BLE_ADV_DIRECTED_ADVERTISING_HIGH_DUTY=n
-      - CONFIG_BLE_ADV_SLOW_ADVERTISING=n
-  lib.ble_adv.use_allow_list_no_directed_or_fast:
+      - CONFIG_BLE_ADV_SLOW_ADVERTISING=y
+  lib.ble_adv.use_allow_list_mode_dhd_directed_fast:
     extra_configs:
       - CONFIG_BLE_ADV_USE_ALLOW_LIST=y
-      - CONFIG_BLE_ADV_FAST_ADVERTISING=n
-  lib.ble_adv.use_allow_list_no_directed_or_slow:
-    extra_configs:
-      - CONFIG_BLE_ADV_USE_ALLOW_LIST=y
-      - CONFIG_BLE_ADV_SLOW_ADVERTISING=n
-  lib.ble_adv.use_allow_list_no_fast_or_slow:
-    extra_configs:
-      - CONFIG_BLE_ADV_USE_ALLOW_LIST=y
+      - CONFIG_BLE_ADV_DIRECTED_ADVERTISING_HIGH_DUTY=y
       - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
-      - CONFIG_BLE_ADV_FAST_ADVERTISING=n
-      - CONFIG_BLE_ADV_SLOW_ADVERTISING=n
-  lib.ble_adv.use_allow_list_no_directed_hd_or_fast_or_slow:
+      - CONFIG_BLE_ADV_FAST_ADVERTISING=y
+  lib.ble_adv.use_allow_list_mode_dhd_directed_fast_slow:
     extra_configs:
       - CONFIG_BLE_ADV_USE_ALLOW_LIST=y
+      - CONFIG_BLE_ADV_DIRECTED_ADVERTISING_HIGH_DUTY=y
       - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
-      - CONFIG_BLE_ADV_DIRECTED_ADVERTISING_HIGH_DUTY=n
-      - CONFIG_BLE_ADV_FAST_ADVERTISING=n
-      - CONFIG_BLE_ADV_SLOW_ADVERTISING=n
-  lib.ble_adv.use_allow_list_no_directed_or_fast_or_slow:
-    extra_configs:
-      - CONFIG_BLE_ADV_USE_ALLOW_LIST=y
-      - CONFIG_BLE_ADV_FAST_ADVERTISING=n
-      - CONFIG_BLE_ADV_SLOW_ADVERTISING=n
+      - CONFIG_BLE_ADV_FAST_ADVERTISING=y
+      - CONFIG_BLE_ADV_SLOW_ADVERTISING=y
