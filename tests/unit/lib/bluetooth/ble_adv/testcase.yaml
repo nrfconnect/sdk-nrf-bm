@@ -4,24 +4,29 @@ common:
   tags: unittest
 tests:
   lib.ble_adv: {}
+  lib.ble_adv.directed:
+    extra_configs:
+      - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
   lib.ble_adv.no_directed_hd:
     extra_configs:
       - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
       - CONFIG_BLE_ADV_DIRECTED_ADVERTISING_HIGH_DUTY=n
   lib.ble_adv.no_fast:
     extra_configs:
-      - CONFIG_BLE_ADV_FAST_ADVERTISING=n
       - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
+      - CONFIG_BLE_ADV_FAST_ADVERTISING=n
   lib.ble_adv.no_slow:
     extra_configs:
-      - CONFIG_BLE_ADV_SLOW_ADVERTISING=n
       - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
+      - CONFIG_BLE_ADV_SLOW_ADVERTISING=n
   lib.ble_adv.no_directed_hd_or_fast:
     extra_configs:
+      - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
       - CONFIG_BLE_ADV_DIRECTED_ADVERTISING_HIGH_DUTY=n
       - CONFIG_BLE_ADV_FAST_ADVERTISING=n
   lib.ble_adv.no_directed_hd_or_slow:
     extra_configs:
+      - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
       - CONFIG_BLE_ADV_DIRECTED_ADVERTISING_HIGH_DUTY=n
       - CONFIG_BLE_ADV_SLOW_ADVERTISING=n
   lib.ble_adv.no_directed_or_fast:
@@ -46,13 +51,10 @@ tests:
       - CONFIG_BLE_ADV_FAST_ADVERTISING=n
       - CONFIG_BLE_ADV_SLOW_ADVERTISING=n
 
-  lib.ble_adv.directed:
-    extra_configs:
-      - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
   lib.ble_adv.use_allow_list:
     extra_configs:
-      - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
       - CONFIG_BLE_ADV_USE_ALLOW_LIST=y
+      - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
   lib.ble_adv.use_allow_list_no_directed_hd:
     extra_configs:
       - CONFIG_BLE_ADV_USE_ALLOW_LIST=y
@@ -63,13 +65,13 @@ tests:
       - CONFIG_BLE_ADV_USE_ALLOW_LIST=y
   lib.ble_adv.use_allow_list_no_fast:
     extra_configs:
-      - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
       - CONFIG_BLE_ADV_USE_ALLOW_LIST=y
+      - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
       - CONFIG_BLE_ADV_FAST_ADVERTISING=n
   lib.ble_adv.use_allow_list_no_slow:
     extra_configs:
-      - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
       - CONFIG_BLE_ADV_USE_ALLOW_LIST=y
+      - CONFIG_BLE_ADV_DIRECTED_ADVERTISING=y
       - CONFIG_BLE_ADV_SLOW_ADVERTISING=n
   lib.ble_adv.use_allow_list_no_directed_hd_or_fast:
     extra_configs:
