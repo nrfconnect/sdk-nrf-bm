@@ -21,6 +21,9 @@ config SAMPLE_LPUARTE_IRQ_PRIO
 	int "LPUARTE IRQ priority"
 	default 5
 
+config SAMPLE_LPUARTE_INIT_LED
+	bool "LED indicating if application has been initialized"
+
 module=SAMPLE_LPUARTE
 module-str=Low Power UARTE Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"

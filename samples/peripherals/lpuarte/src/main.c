@@ -13,6 +13,7 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 
+#include <hal/nrf_gpio.h>
 #include <board-config.h>
 
 LOG_MODULE_REGISTER(sample, CONFIG_SAMPLE_LPUARTE_LOG_LEVEL);
@@ -148,6 +149,13 @@ int main(void)
 	if (err) {
 		LOG_ERR("bm_timer_start failed, err %d", err);
 	}
+
+#if defined(CONFIG_SAMPLE_LPUARTE_INIT_LED)
+	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+#endif
+
+	LOG_INF("LPUARTE sample initialized");
 
 idle:
 	while (true) {

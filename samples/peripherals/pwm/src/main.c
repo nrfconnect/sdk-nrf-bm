@@ -8,6 +8,7 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 #include <nrfx_pwm.h>
+#include <hal/nrf_gpio.h>
 #include <board-config.h>
 
 LOG_MODULE_REGISTER(sample, CONFIG_SAMPLE_PWM_LOG_LEVEL);
@@ -68,6 +69,11 @@ int main(void)
 
 	nrfx_pwm_simple_playback(&pwm_instance, &seq, CONFIG_SAMPLE_PWM_PLAYBACK_COUNT,
 				 NRFX_PWM_FLAG_LOOP);
+
+	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+
+	LOG_INF("PWM sample initialized");
 
 idle:
 	while (true) {
