@@ -8,6 +8,7 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 
+#include <hal/nrf_gpio.h>
 #include <board-config.h>
 #include <nrfx_uarte.h>
 
@@ -153,6 +154,11 @@ int main(void)
 	if (err) {
 		LOG_ERR("UARTE RX failed, err %d", err);
 	}
+
+	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+
+	LOG_INF("UARTE sample initialized");
 
 idle:
 	while (true) {

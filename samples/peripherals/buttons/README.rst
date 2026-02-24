@@ -64,6 +64,25 @@ The sample supports the following development kits:
            - S115
            - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
 
+
+User interface
+**************
+
+Button 0:
+  Prints out an event message.
+
+Button 1:
+  Prints out an event message.
+
+Button 2:
+  Prints out an event message.
+
+Button 3:
+  Prints out an event message and terminates the program.
+
+LED 0:
+   Lit when the device is initialized.
+
 Building and running
 ********************
 
@@ -78,7 +97,7 @@ You can test this sample by performing the following steps:
 
 1. Compile and program the application.
 #. Observe that the ``Buttons sample started`` message is printed.
-#. Observe that the ``Buttons initialized, press Button 3 to terminate`` message is printed.
+#. Observe that the ``Buttons sample initialized, press Button 3 to terminate`` message is printed.
 #. Press the buttons on the development kit.
    Observe the application printing a message when the buttons are pressed.
 #. Press Button 3 on the development kit to terminate the application.
