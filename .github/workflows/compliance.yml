@@ -83,11 +83,8 @@ jobs:
           ls -la
           git log --pretty=oneline | head -n 10
           $ZEPHYR_BASE/scripts/ci/check_compliance.py --annotate \
-          -e KconfigBasicNoModules -e ClangFormat \
-          -e SysbuildKconfigBasicNoModules \
-          -e LicenseAndCopyrightCheck \
-          -e BinaryFiles
-          -c origin/${BASE_REF}..
+          -e KconfigBasicNoModules -e ClangFormat -e SysbuildKconfigBasicNoModules \
+          -e LicenseAndCopyrightCheck -e BinaryFiles -c origin/${BASE_REF}..
 
       - name: upload-results
         uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
