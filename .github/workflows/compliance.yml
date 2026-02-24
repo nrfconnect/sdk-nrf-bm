@@ -35,6 +35,17 @@ jobs:
           pip3 install -U wheel
           pip install -r scripts/requirements-compliance.txt
 
+      - name: Setup Node.js
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
+        with:
+          node-version: "lts/*"
+          cache: npm
+          check-latest: true
+          cache-dependency-path: ./ncs/zephyr/scripts/ci/package-lock.json
+
+      - name: Install Node dependencies
+        run: npm --prefix ./ncs/zephyr/scripts/ci ci
+
       - name: Run merge commits test
         env:
           BASE_REF: ${{ github.base_ref }}
