@@ -44,6 +44,7 @@ Boards
 
 * Adjusted SRAM sizes for the ``bm_nrf54l15dk`` board target to not overlap with VPR context.
 * Adjusted the board memory layout for all boards to align with the new SoftDevice.
+* Disabled all Peripheral Resource Sharing (PRS) boxes for the ``bm_nrf54l15dk`` board variants.
 
 Build system
 ============
