@@ -25,8 +25,12 @@
 			compatible = "mmio-sram";
 			#address-cells = <1>;
 			#size-cells = <1>;
-			reg = <0x20000080 (DT_SIZE_K(256) - 0x80)>;
-			ranges = <0x0 0x20000080 (DT_SIZE_K(256) - 0x80)>;
+			/* Size reduced by 0x80 bytes to account for the start address offset.
+			 * As total size of SRAM is not 1kB aligned,
+			 * 0x200 bytes are added to the 255 kB.
+			 */
+			reg = <0x20000080 (DT_SIZE_K(255) - 0x80 + 0x200)>;
+			ranges = <0x0 0x20000080 (DT_SIZE_K(255) - 0x80 + 0x200)>;
 		};
 	};
 

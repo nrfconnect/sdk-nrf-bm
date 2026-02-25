@@ -38,6 +38,7 @@ Boards
 ======
 
 * Added experimental support for PCA10188 (`nRF54LV10 DK`_)
+* Adjusted SRAM sizes for the ``bm_nrf54l15dk`` board target to not overlap with VPR context.
 
 Build system
 ============
