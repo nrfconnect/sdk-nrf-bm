@@ -14,18 +14,18 @@ menuconfig BLE_DB_DISCOVERY
 if BLE_DB_DISCOVERY
 
 config BLE_DB_DISCOVERY_MAX_SRV
-	int "Max discovered services"
-	range 1 6
+	int "Maximum number of services for discovery"
 	default 6
 	help
-	  The total number of services that can be discovered by this library.
+	  Maximum number of service UUIDs that can be registered for discovery per DB discovery
+	  instance. Increasing this value will increase the size of 'struct ble_db_discovery'.
 
 config BLE_DB_DISCOVERY_SRV_DISC_START_HANDLE
-	hex "Start handle value during discovery"
-	range 0x0000 0x0EFF
+	hex "Attribute handle to start discovery from"
+	range 0x0001 0xFFFF
 	default 0x0001
 	help
-	  The start handle value used during service discovery.
+	  The attribute handle value to start service discovery from.
 
 module=BLE_DB_DISCOVERY
 module-str=BLE DB Discovery
