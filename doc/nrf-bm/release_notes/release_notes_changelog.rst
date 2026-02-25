@@ -186,4 +186,4 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Documentation
 =============
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Added the :ref:`board_memory_layouts` section, which documents RRAM and SRAM partition layouts for supported ``bm_*`` boards (``bm_nrf54l15dk`` and ``bm_nrf54lv10dk``).
