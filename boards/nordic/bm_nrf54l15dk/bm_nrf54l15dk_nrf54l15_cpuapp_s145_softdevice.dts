@@ -71,6 +71,6 @@
 
 	app_ram: sram@4780 {
 		label = "app_ram";
-		reg = <0x4780 DT_SIZE_K(237)>;
+		reg = <0x4780 (DT_SIZE_K(237) + 0x200)>;
 	};
 };
