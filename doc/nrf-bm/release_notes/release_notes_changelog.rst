@@ -38,6 +38,7 @@ Boards
 ======
 
 * Added experimental support for PCA10188 (`nRF54LV10 DK`_)
+* Disabled all Peripheral Resource Sharing (PRS) boxes for the ``bm_nrf54l15dk`` board variants.
 
 Build system
 ============
