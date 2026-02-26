@@ -51,8 +51,8 @@ You can also provide the sysbuild Kconfig option during compilation.
 KMU (Key Management Unit)
 *************************
 
-The nRF54L Series devices include an integrated Key Management Unit (KMU).
-This on-die peripheral is designed to work with CRACEN, enabling secure storage and usage of cryptographic keys.
+Most nRF54L Series devices include the Key Management Unit (KMU) hardware peripheral.
+This on-die module is designed to work with the CRACEN hardware accelerator, enabling secure storage and usage of cryptographic keys.
 It also prevents the keys from being externally read, thus enhancing security.
 
 Firmware booting with KMU
@@ -72,7 +72,7 @@ In |nRFVSC|, this automatically happens when using the :guilabel:`Erase and Flas
 If using ``west flash`` on the command line, this automatically happens when using the ``--erase`` or ``--recover`` arguments.
 It is essential to run this command first after building the project to prepare the board for development.
 
-For more information about KMU on the nRF54L Series, see `Introduction to KMU key provisioning`_ and `Performing KMU provisioning`_.
+For more information about the KMU, see `Working with the KMU and CRACEN`_ and `Provisioning the KMU`_.
 
 Runtime revocation
 ==================
@@ -86,7 +86,7 @@ The revocation of keys is triggered when both the firmware loader and SoftDevice
 
 The number of available key slots is set by the ``CONFIG_BOOT_SIGNATURE_KMU_SLOTS`` Kconfig option.
 These slots have to be properly provisioned.
-For more information refer to `Performing KMU provisioning`_.
+For more information refer to `Provisioning the KMU`_.
 
 .. caution::
    You must enable the ``CONFIG_BOOT_KEYS_REVOCATION`` Kconfig option when creating your project.
