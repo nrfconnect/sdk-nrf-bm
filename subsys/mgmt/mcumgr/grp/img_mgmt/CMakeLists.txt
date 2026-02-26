@@ -9,13 +9,13 @@
 # when Image Management is enabled.
 zephyr_library_named(mgmt_mcumgr_grp_img)
 zephyr_library_sources(
-  ${ZEPHYR_BASE}/subsys/mgmt/mcumgr/grp/img_mgmt/src/zephyr_img_mgmt.c
+  src/zephyr_img_mgmt.c
   ${ZEPHYR_BASE}/subsys/mgmt/mcumgr/grp/img_mgmt/src/img_mgmt_util.c
   src/img_mgmt_state.c
-  ${ZEPHYR_BASE}/subsys/mgmt/mcumgr/grp/img_mgmt/src/img_mgmt.c
+  src/img_mgmt.c
 )
 
-zephyr_library_include_directories(${ZEPHYR_BASE}/subsys/mgmt/mcumgr/grp/img_mgmt/include)
+zephyr_library_include_directories(include)
 
 if(CONFIG_MCUBOOT_IMG_MANAGER)
   zephyr_library_link_libraries(MCUBOOT_BOOTUTIL)
