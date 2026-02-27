@@ -664,7 +664,7 @@ bool ble_adv_data_short_name_find(const uint8_t *data, uint16_t data_len, const 
 	const uint8_t *const parsed_name = &data[data_offset];
 
 	if ((data_offset != 0) && (parsed_name_len != 0) &&
-	    (parsed_name_len >= short_name_min_len) && (parsed_name_len < strlen(name)) &&
+	    (parsed_name_len >= short_name_min_len) && (parsed_name_len <= strlen(name)) &&
 	    (memcmp(name, parsed_name, parsed_name_len) == 0)) {
 		return true;
 	}

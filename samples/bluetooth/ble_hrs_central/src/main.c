@@ -509,26 +509,30 @@ static uint32_t scan_init(void)
 		LOG_ERR("nrf_ble_scan_init failed, nrf_error %#x", nrf_err);
 	}
 
-	ble_uuid_t uuid = {
-		.uuid = BLE_UUID_HEART_RATE_SERVICE,
-		.type = BLE_UUID_TYPE_BLE,
+	struct ble_scan_filter_data filter_data = {
+		.uuid_filter.uuid = {
+			.uuid = BLE_UUID_HEART_RATE_SERVICE,
+			.type = BLE_UUID_TYPE_BLE,
+		},
 	};
 
-	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_UUID_FILTER, &uuid);
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_UUID_FILTER, &filter_data);
 	if (nrf_err) {
 		LOG_ERR("nrf_ble_scan_filter_add uuid failed, nrf_error %#x", nrf_err);
 	}
 
 #if defined(CONFIG_SAMPLE_USE_TARGET_PERIPHERAL_NAME)
-		nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_NAME_FILTER,
-					      CONFIG_SAMPLE_TARGET_PERIPHERAL_NAME);
+		filter_data.name_filter.name = CONFIG_SAMPLE_TARGET_PERIPHERAL_NAME;
+
+		nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_NAME_FILTER, &filter_data);
 		if (nrf_err) {
 			LOG_ERR("nrf_ble_scan_filter_add name failed, nrf_error %#x", nrf_err);
 		}
 #endif /* CONFIG_SAMPLE_USE_TARGET_PERIPHERAL_NAME */
 
 #if defined(CONFIG_SAMPLE_USE_TARGET_PERIPHERAL_ADDR)
-		nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_ADDR_FILTER, target_periph_addr);
+		filter_data.addr_filter.addr = target_periph_addr;
+		nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_ADDR_FILTER, &filter_data);
 		if (nrf_err) {
 			LOG_ERR("nrf_ble_scan_filter_add address failed, nrf_error %#x", nrf_err);
 		}

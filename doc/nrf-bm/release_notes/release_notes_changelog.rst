@@ -90,6 +90,7 @@ Libraries
 
       * An issue causing fast advertising with allow list to incorrectly send event :c:enumerator:`BLE_ADV_EVT_FAST` when it should have sent event :c:enumerator:`BLE_ADV_EVT_FAST_ALLOW_LIST`.
       * An issue causing slow advertising with allow list to incorrectly send event :c:enumerator:`BLE_ADV_EVT_SLOW` when it should have sent event :c:enumerator:`BLE_ADV_EVT_SLOW_ALLOW_LIST`.
+      * An issue in the data module where the short name would not be matched in certain cases.
 
    * Updated:
 
@@ -98,7 +99,14 @@ Libraries
 
 * :ref:`lib_ble_scan`:
 
+   * Added the :c:struct:`ble_scan_filter_data` structure as input to the :c:func:`ble_scan_filter_add` function.
    * Updated functions to use the ``uint32_t`` type instead of ``int`` when returning nrf_errors.
+   * Fixed an issue with active scanning where the multifilter match was used.
+     A match would not be triggered unless the data for all types of enabled filters were provided in either the advertising or scan response data.
+     Now the data can be provided in a mix of the advertising and scan response data.
+   * Renamed the ``allow_list_used`` function to :c:func:`ble_scan_is_allow_list_used`.
+   * Aligned the name of the :c:type:`ble_gap_evt_adv_report_t` fields in the :c:struct:`ble_scan_evt` struct to ``adv_report``.
+
 
 Bluetooth LE Services
 ---------------------
