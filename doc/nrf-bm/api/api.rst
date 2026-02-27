@@ -331,6 +331,13 @@ Nordic UART Service (NUS)
 
 .. doxygengroup:: ble_nus
 
+.. _api_ble_nus_client:
+
+Nordic UART Service (NUS) Client
+================================
+
+.. doxygengroup:: ble_nus_client
+
 SoftDevice Handler
 ******************
 

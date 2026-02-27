@@ -1,0 +1,58 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "BLE NUS Central sample"
+
+
+config SAMPLE_NUS_UART_IRQ_PRIO
+	int "NUS UART IRQ priority"
+	default 3
+
+config SAMPLE_NUS_CLIENT_UART_RX_BUF_SIZE
+	int "NUS UART receive buffer size"
+	default 128 if SAMPLE_NUS_CENTRAL_LPUARTE
+	default 1
+	help
+	  UART RX is double buffered, so the actual buffer will be twice as large.
+
+config SAMPLE_USE_TARGET_PERIPHERAL_NAME
+	bool "Use target peripheral name"
+	default y
+
+config SAMPLE_NUS_CENTRAL_LPUARTE
+	bool "NUS Client Low Power UARTE"
+
+if SAMPLE_NUS_CENTRAL_LPUARTE
+
+endif # SAMPLE_NUS_CENTRAL_LPUARTE
+
+if SAMPLE_USE_TARGET_PERIPHERAL_NAME
+
+config SAMPLE_TARGET_PERIPHERAL_NAME
+	string "Target peripheral name"
+	default "nRF_BM_NUS"
+
+endif # SAMPLE_USE_TARGET_PERIPHERAL_NAME
+
+config SAMPLE_USE_TARGET_PERIPHERAL_ADDR
+	bool "Use target peripheral address"
+
+if SAMPLE_USE_TARGET_PERIPHERAL_ADDR
+
+config SAMPLE_TARGET_PERIPHERAL_ADDR
+	hex "Target peripheral address"
+	range 0x0 0xffffffffffff
+	default 0x78E7F806C5D8
+
+endif # SAMPLE_USE_TARGET_PERIPHERAL_ADDR
+
+module=SAMPLE_BLE_NUS_CENTRAL
+module-str=BLE Nordic UART Central Service Sample
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endmenu # "BLE NUS central sample"
+
+source "Kconfig.zephyr"
