@@ -1,0 +1,23 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menuconfig BLE_BAS_CLIENT
+	bool "Bluetooth LE battery service client [EXPERIMENTAL]"
+	depends on SOFTDEVICE_CENTRAL
+	depends on NRF_SDH_BLE
+	depends on BLE_DB_DISCOVERY
+	depends on BLE_GATT_QUEUE
+	select EXPERIMENTAL
+	help
+	  Battery Service Client library.
+
+if BLE_BAS_CLIENT
+
+module=BLE_BAS_CLIENT
+module-str=BLE battery client
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endif # BLE_BAS_CLIENT

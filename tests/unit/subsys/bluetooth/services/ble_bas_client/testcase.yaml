@@ -1,0 +1,4 @@
+tests:
+  bluetooth.ble_bas_client:
+    platform_allow: native_sim
+    tags: unittest
