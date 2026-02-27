@@ -13,5 +13,5 @@ toolchain:
   - xtools
   - zephyr
 sysbuild: true
-ram: 238
-flash: 1310
+ram: 237
+flash: 1314

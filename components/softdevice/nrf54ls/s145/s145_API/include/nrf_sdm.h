@@ -125,7 +125,7 @@ the start of the SoftDevice */
 #define SD_SIZE_GET(baseaddr) (*((uint32_t *) ((baseaddr) + SD_SIZE_OFFSET)))
 
 /** @brief Defines the amount of flash that is used by the SoftDevice. */
-#define SD_FLASH_SIZE 0x24000
+#define SD_FLASH_SIZE 0x23000
 
 /** @brief Defines a macro for retrieving the actual FWID value from a given base address. */
 #define SD_FWID_GET(baseaddr) (*((uint16_t *) ((baseaddr) + SD_FWID_OFFSET)))

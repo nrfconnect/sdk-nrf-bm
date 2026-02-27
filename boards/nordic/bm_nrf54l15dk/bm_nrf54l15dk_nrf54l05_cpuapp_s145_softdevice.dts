@@ -27,14 +27,14 @@
 
 		slot0_partition: partition@0 {
 			label = "slot0";
-			reg = <0x00000000 DT_SIZE_K(347)>;
+			reg = <0x00000000 DT_SIZE_K(351)>;
 		};
 
-		storage_partition: partition@56c00 {
+		storage_partition: partition@57c00 {
 			compatible = "fixed-subpartitions";
 			label = "storage";
-			reg = <0x00056c00 DT_SIZE_K(8)>;
-			ranges = <0x0 0x56c00 DT_SIZE_K(8)>;
+			reg = <0x00057c00 DT_SIZE_K(8)>;
+			ranges = <0x0 0x57c00 DT_SIZE_K(8)>;
 			#address-cells = <1>;
 			#size-cells = <1>;
 
@@ -49,9 +49,9 @@
 			};
 		};
 
-		softdevice_partition: partition@58c00 {
+		softdevice_partition: partition@59c00 {
 			label = "softdevice";
-			reg = <0x00058c00 DT_SIZE_K(144)>;
+			reg = <0x00059c00 DT_SIZE_K(140)>;
 		};
 	};
 };
@@ -61,16 +61,16 @@
 
 	softdevice_static_ram: sram@0 {
 		label = "softdevice_static_ram";
-		reg = <0x0 0x1780>;
+		reg = <0x0 0x1480>;
 	};
 
-	softdevice_dynamic_ram: sram@1780 {
+	softdevice_dynamic_ram: sram@1480 {
 		label = "softdevice_dynamic_ram";
-		reg = <0x1780 DT_SIZE_K(12)>;
+		reg = <0x1480 (DT_SIZE_K(12) + 0x300)>;
 	};
 
 	app_ram: sram@4780 {
 		label = "app_ram";
-		reg = <0x4780 DT_SIZE_K(77)>;
+		reg = <0x4780 DT_SIZE_K(78)>;
 	};
 };
