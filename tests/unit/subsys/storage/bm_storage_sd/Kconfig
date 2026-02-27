@@ -1,0 +1,29 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+# These are redefined here to override dependencies
+
+choice BM_STORAGE_BACKEND
+	prompt "Storage backend"
+
+config BM_STORAGE_BACKEND_SD
+	bool "SoftDevice backend (testing)"
+
+endchoice
+
+config BM_STORAGE_BACKEND_SD_QUEUE_SIZE
+	default 4
+
+config BM_STORAGE_BACKEND_SD_MAX_RETRIES
+	default 8
+
+config BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE
+	default 32
+
+config BM_STORAGE_BACKEND_SD_ERASE_BLOCKS
+	default y
+
+source "Kconfig.zephyr"

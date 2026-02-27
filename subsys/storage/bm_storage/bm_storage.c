@@ -5,32 +5,14 @@
  */
 
 #include <errno.h>
+#include <string.h>
 #include <zephyr/kernel.h>
 #include <sys/types.h>
 #include <bm/storage/bm_storage.h>
-#include <bm/storage/bm_storage_backend.h>
 
-__weak int bm_storage_backend_uninit(struct bm_storage *storage)
+static bool is_within_bounds(uint32_t offset, uint32_t len, uint32_t size)
 {
-	return -ENOTSUP;
-}
-
-__weak int bm_storage_backend_erase(const struct bm_storage *storage, uint32_t addr,
-					uint32_t len, void *ctx)
-{
-	return -ENOTSUP;
-}
-
-__weak bool bm_storage_backend_is_busy(const struct bm_storage *storage)
-{
-	return false;
-}
-
-static inline bool is_within_bounds(off_t addr, size_t len, off_t boundary_start,
-				    size_t boundary_size)
-{
-	return (addr >= boundary_start && (addr < (boundary_start + boundary_size)) &&
-		(len <= (boundary_start + boundary_size - addr)));
+	return (offset + len <= size) && (offset + len > offset);
 }
 
 int bm_storage_init(struct bm_storage *storage, const struct bm_storage_config *config)
@@ -41,21 +23,38 @@ int bm_storage_init(struct bm_storage *storage, const struct bm_storage_config *
 		return -EFAULT;
 	}
 
-	if (bm_storage_info.program_unit == 0) {
-		return -EIO;
+	if (storage->flags.is_initialized) {
+		return -EPERM;
+	}
+	if (!config->api) {
+		return -EFAULT;
 	}
 
-	storage->nvm_info = &bm_storage_info;
+	storage->api = config->api;
 	storage->evt_handler = config->evt_handler;
-	storage->start_addr = config->start_addr;
-	storage->end_addr = config->end_addr;
+	storage->addr = config->addr;
+	storage->size = config->size;
+	storage->flags.is_wear_aligned = config->flags.is_wear_aligned;
+	storage->flags.is_write_padded = config->flags.is_write_padded;
 
-	err = bm_storage_backend_init(storage);
+	err = storage->api->init(storage, config);
 	if (err) {
 		return err;
 	}
 
-	storage->initialized = true;
+	__ASSERT(storage->nvm_info, "NVM info not provided by backend");
+
+	if (storage->nvm_info->is_erase_before_write) {
+		__ASSERT(storage->nvm_info->erase_unit == storage->nvm_info->wear_unit,
+			"erase_unit != wear_unit but is_erase_before_write is set");
+	}
+
+	if (storage->flags.is_wear_aligned &&
+	    storage->nvm_info->is_erase_before_write) {
+		return -EINVAL;
+	}
+
+	storage->flags.is_initialized = true;
 
 	return 0;
 }
@@ -68,15 +67,14 @@ int bm_storage_uninit(struct bm_storage *storage)
 		return -EFAULT;
 	}
 
-	if (!storage->initialized) {
+	if (!storage->flags.is_initialized) {
 		return -EPERM;
 	}
 
-	err = bm_storage_backend_uninit(storage);
+	err = storage->api->uninit(storage);
 
 	if (err == 0) {
-		storage->initialized = false;
-		storage->nvm_info = NULL;
+		storage->flags.is_initialized = false;
 	}
 
 	return err;
@@ -88,7 +86,7 @@ int bm_storage_read(const struct bm_storage *storage, uint32_t src, void *dest, 
 		return -EFAULT;
 	}
 
-	if (!storage->initialized || !storage->nvm_info) {
+	if (!storage->flags.is_initialized) {
 		return -EPERM;
 	}
 
@@ -96,76 +94,99 @@ int bm_storage_read(const struct bm_storage *storage, uint32_t src, void *dest, 
 		return -EINVAL;
 	}
 
-	if (!is_within_bounds(src, len, storage->start_addr,
-		storage->end_addr - storage->start_addr)) {
-		return -EFAULT;
+	if (!is_within_bounds(src, len, storage->size)) {
+		return -EINVAL;
 	}
 
-	return bm_storage_backend_read(storage, src, dest, len);
+	return storage->api->read(storage, src, dest, len);
 }
 
 int bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void *src,
 		     uint32_t len, void *ctx)
 {
+	uint32_t write_align;
+
 	if (!storage || !src) {
 		return -EFAULT;
 	}
 
-	if (!storage->initialized || !storage->nvm_info) {
+	if (!storage->flags.is_initialized) {
 		return -EPERM;
 	}
 
-	if (len == 0 || len % storage->nvm_info->program_unit != 0) {
+	if (storage->flags.is_wear_aligned) {
+		write_align = storage->nvm_info->wear_unit;
+	} else {
+		write_align = storage->nvm_info->program_unit;
+	}
+
+	if (!IS_ALIGNED(dest, write_align)) {
 		return -EINVAL;
 	}
 
-	if (!is_within_bounds(dest, len, storage->start_addr,
-		storage->end_addr - storage->start_addr)) {
-		return -EFAULT;
+	if (!storage->flags.is_write_padded && !IS_ALIGNED(len, write_align)) {
+		return -EINVAL;
 	}
 
-	return bm_storage_backend_write(storage, dest, src, len, ctx);
+	if (!is_within_bounds(dest, len, storage->size)) {
+		return -EINVAL;
+	}
+
+	return storage->api->write(storage, dest, src, len, ctx);
 }
 
 int bm_storage_erase(const struct bm_storage *storage, uint32_t addr, uint32_t len, void *ctx)
 {
+	uint32_t erase_align;
+
 	if (!storage) {
 		return -EFAULT;
 	}
 
-	if (!storage->initialized || !storage->nvm_info) {
+	if (!storage->flags.is_initialized) {
 		return -EPERM;
 	}
 
-	if (storage->nvm_info->no_explicit_erase) {
-		return -ENOTSUP;
+	if (storage->nvm_info->is_erase_before_write) {
+		erase_align = storage->nvm_info->erase_unit;
+	} else {
+		if (storage->flags.is_wear_aligned) {
+			erase_align = storage->nvm_info->wear_unit;
+		} else {
+			erase_align = storage->nvm_info->program_unit;
+		}
 	}
 
-	if (storage->nvm_info->erase_unit == 0) {
-		return -EIO;
-	}
-
-	if (len == 0 || len % storage->nvm_info->erase_unit != 0) {
+	if (!IS_ALIGNED(addr, erase_align) ||
+	    !IS_ALIGNED(len,  erase_align)) {
 		return -EINVAL;
 	}
 
-	if (!is_within_bounds(addr, len, storage->start_addr,
-			      storage->end_addr - storage->start_addr)) {
-		return -EFAULT;
+	if (!is_within_bounds(addr, len, storage->size)) {
+		return -EINVAL;
 	}
 
-	return bm_storage_backend_erase(storage, addr, len, ctx);
+	return storage->api->erase(storage, addr, len, ctx);
 }
 
 bool bm_storage_is_busy(const struct bm_storage *storage)
 {
 	if (!storage) {
-		return true;
+		return false;
 	}
 
-	if (!storage->initialized) {
-		return true;
+	if (!storage->flags.is_initialized) {
+		return false;
 	}
 
-	return bm_storage_backend_is_busy(storage);
+	return storage->api->is_busy(storage);
+}
+
+const struct bm_storage_info *bm_storage_nvm_info_get(const struct bm_storage *storage)
+{
+	if (!storage || !storage->flags.is_initialized) {
+		return NULL;
+	}
+
+	return storage->nvm_info;
 }

@@ -12,46 +12,40 @@ menuconfig BM_STORAGE
 if BM_STORAGE
 
 choice BM_STORAGE_BACKEND
-	prompt "Bare Metal storage backend"
+	prompt "Storage backend"
 
 config BM_STORAGE_BACKEND_RRAM
-	bool "Bare Metal RRAM storage backend"
+	bool "RRAM"
 	depends on !SOFTDEVICE
+	help
+	  A backend using the RRAMC peripheral directly.
 
 config BM_STORAGE_BACKEND_SD
-	bool "Bare Metal SoftDevice storage backend"
+	bool "SoftDevice"
 	depends on SOFTDEVICE
 	depends on NRF_SDH
 	depends on RING_BUFFER
+	help
+	  A backend using the SoftDevice.
 
 config BM_STORAGE_BACKEND_NATIVE_SIM
-	bool "Bare Metal native simulator storage backend"
+	bool "Simulated (native)"
 	depends on BOARD_NATIVE_SIM
 	depends on ZTEST
 	help
-	  This backend is designed to be used exclusively when running Ztest integration tests.
+	  A backend designed to be used for tests.
 
 endchoice
 
 if BM_STORAGE_BACKEND_SD
 
-config BM_STORAGE_BACKEND_SD_QUEUE_SIZE
-	int "SoftDevice storage backend queue size"
-	default 4
-
-config BM_STORAGE_BACKEND_SD_MAX_RETRIES
-	int "Maximum number of attempts at executing an operation when the SoftDevice is busy"
-	default 8
-	help
-	  Increase this value if events frequently return -ETIMEDOUT.
-	  The SoftDevice might fail to schedule flash access due to high BLE activity.
+rsource "sd/Kconfig"
 
 endif # BM_STORAGE_BACKEND_SD
 
 if BM_STORAGE_BACKEND_NATIVE_SIM
 
-config BM_STORAGE_BACKEND_NATIVE_SIM_ASYNC
-	bool "Asynchronous execution of storage operations"
+rsource "native_sim/Kconfig"
 
 endif # BM_STORAGE_BACKEND_NATIVE_SIM
 

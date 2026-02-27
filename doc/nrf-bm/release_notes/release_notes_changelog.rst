@@ -68,6 +68,34 @@ Drivers
    * Updated to use the :ref:`lib_bm_gpiote` library.
    * Removed the ``gpiote_inst`` and ``gpiote_inst_num`` members from the :c:struct:`bm_lpuarte_config` structure.
 
+Subsystems
+==========
+
+Storage
+=======
+
+* :ref:`lib_storage`:
+
+   Added:
+     * The capability to compile more than one backend.
+     * The :c:func:`bm_storage_nvm_info_get` function to retrieve NVM information, such as the size of the program unit and other.
+     * The :c:member:`bm_storage_config.flags.is_wear_aligned` configuration flag to enforce wear unit alignment on operations.
+     * The :c:member:`bm_storage_config.flags.is_write_padded` configuration flag to automatically pad write operations to the alignment unit.
+
+   Updated:
+     * The :c:func:`bm_storage_is_busy` function to return ``false`` instead of ``true`` when called with a ``NULL`` pointer or an uninitialized instance.
+     * The :c:func:`bm_storage_init` function to return an error when the instance is already initialized.
+     * The SoftDevice, RRAM, and native_sim backends to support deinitialization.
+     * The SoftDevice, RRAM, and native_sim backends to support the erase operation.
+     * The SoftDevice backend to support chunking of write operations.
+     * The ``no_explicit_erase`` field in :c:struct:`bm_storage_info` has been renamed to ``is_erase_before_write`` to explicitly convey that the memory must be erased before it can be written to.
+     * The :c:member:`bm_storage_info.wear_unit` field to represent the NVM wear granularity.
+     * The SoftDevice backend's :c:member:`bm_storage_info.program_unit` from 16 to 4 bytes, reflecting the true minimum programmable unit.
+     * The ``start_addr`` and ``end_addr`` fields in :c:struct:`bm_storage_config` and :c:struct:`bm_storage` have been replaced by ``addr`` and ``size``. The API now uses relative addressing (0-based offsets within the partition).
+     * The :c:func:`bm_storage_write` and :c:func:`bm_storage_erase` functions to return ``-ENOMEM`` when out of memory, instead of ``-EIO``.
+     * The :c:func:`bm_storage_read`, :c:func:`bm_storage_write`, and :c:func:`bm_storage_erase` functions to return ``-EINVAL`` on alignment errors, instead of ``-EFAULT``.
+     * The :c:enum:`bm_storage_evt_dispatch_type` enum and the :c:member:`bm_storage_evt.dispatch_type` field have been replaced by a boolean :c:member:`bm_storage_evt.is_async`.
+
 Libraries
 =========
 

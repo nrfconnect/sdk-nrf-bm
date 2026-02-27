@@ -5,150 +5,269 @@
  */
 
 #include <stdint.h>
+#include <string.h>
+#include <mdk/nrf_peripherals.h>
 #include <nrf_soc.h>
 #include <nrf_sdm.h>
 #include <nrf_error.h>
 #include <bm/softdevice_handler/nrf_sdh_soc.h>
 #include <bm/softdevice_handler/nrf_sdh.h>
 #include <bm/storage/bm_storage.h>
-#include <bm/storage/bm_storage_backend.h>
 #include <zephyr/irq.h>
+#include <zephyr/sys/util.h>
 #include <zephyr/sys/atomic.h>
 #include <zephyr/sys/ring_buffer.h>
 
-/* 128-bit word line. This is the optimal size to fully utilize RRAM 128-bit word line with ECC
- * (error correction code) and minimize ECC updates overhead, due to these updates happening
- * per-line.
- */
-#define SD_WRITE_BLOCK_SIZE 16
+/* Smallest unit that can be programmed using sd_flash_write() */
+#define SD_PROGRAM_UNIT_BYTES sizeof(uint32_t)
+
+/* RRAM word line size in bytes, derived from hardware definition (in bits). */
+#define SD_WRITE_BLOCK_SIZE (RRAMC_NRRAMWORDSIZE / BITS_PER_BYTE)
+
+BUILD_ASSERT((CONFIG_BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE % SD_PROGRAM_UNIT_BYTES) == 0,
+	     "_SD_MAX_WRITE_SIZE must be a multiple of 4");
 
 struct bm_storage_sd_op {
 	/* The bm_storage instance that requested the operation. */
 	const struct bm_storage *storage;
+	/* The operation ID (write, erase) */
+	enum {
+		WRITE,
+		ERASE,
+	} id;
 	/* User-defined parameter passed to the event handler. */
 	void *ctx;
-	/* Data to be written to non-volatile memory. */
-	const void *src;
-	/* Destination of the data in non-volatile memory. */
-	uint32_t dest;
-	/* Length of the data to be written (in bytes). */
-	uint32_t len;
-	/* Write offset. */
-	uint32_t offset;
+	union {
+		struct {
+			/* Data to be written to non-volatile memory */
+			const void *src;
+			/* Destination of the data in non-volatile memory */
+			uint32_t dest;
+			/* Length of the data to be written (in bytes) */
+			uint32_t len;
+			/* Operation offset */
+			uint32_t offset;
+		} write;
+		struct {
+			/* The address to start erasing from */
+			uint32_t addr;
+			/* The number of bytes to erase */
+			uint32_t len;
+			/* Operation offset */
+			uint32_t offset;
+		} erase;
+	};
 };
 
-enum bm_storage_sd_state_type {
-	/* No operations requested to the SoftDevice. */
-	BM_STORAGE_SD_STATE_IDLE,
-	/* A non-storage operation is pending. */
-	BM_STORAGE_SD_STATE_OP_PENDING,
-	/* An storage operation is executing. */
-	BM_STORAGE_SD_STATE_OP_EXECUTING,
-};
-
-struct bm_storage_sd_state {
-	/* The module is initialized. */
-	bool is_init;
-	/* Ensures atomic access to various states. */
-	atomic_t operation_ongoing;
+static struct {
 	/* Internal storage state. */
-	enum bm_storage_sd_state_type type;
+	union {
+		enum {
+			/* Queue is idle. */
+			QUEUE_IDLE,
+			/* An operation is executing. */
+			QUEUE_RUNNING,
+			/* Waiting for an external operation to complete. */
+			QUEUE_WAITING,
+			/* Queue processing is paused. */
+			QUEUE_PAUSED,
+		} queue_state;
+		atomic_t atomic_state;
+	};
+	enum {
+		OP_NONE,
+		OP_EXECUTING,
+	} operation_state;
 	/* Number of times an operation has been retried on timeout. */
-	uint32_t retries;
-	/* The SoftDevice is enabled. */
-	bool sd_enabled;
-	/* A SoftDevice state change is impending. */
-	bool paused;
+	uint8_t retries;
+	/* Whether the SoftDevice is enabled */
+	uint8_t softdevice_is_enabled;
 	struct bm_storage_sd_op current_operation;
+} bm_storage_sd;
+
+/* This structure informs the upper layer of the capabilities of this specific API implementation.
+ * These are affected not only by the hardware, but also by the software (e.g. the SoftDevice API).
+ */
+static const struct bm_storage_info bm_storage_info = {
+	/* SoftDevice requires writing a minimum of 4 bytes at once */
+	.program_unit = SD_PROGRAM_UNIT_BYTES,
+	.erase_unit = SD_PROGRAM_UNIT_BYTES,
+	.wear_unit = SD_WRITE_BLOCK_SIZE,
+	.erase_value = 0xFF,
+	.is_erase_before_write = false,
 };
 
-static struct bm_storage_sd_state state;
-
-static void on_soc_evt(uint32_t evt, void *ctx);
-static int on_state_evt_change(enum nrf_sdh_state_evt evt, void *ctx);
+#ifndef CONFIG_UNITY
+static
+#endif
+void bm_storage_sd_on_soc_evt(uint32_t evt, void *ctx);
 
 RING_BUF_DECLARE(sd_fifo, CONFIG_BM_STORAGE_BACKEND_SD_QUEUE_SIZE *
 		 sizeof(struct bm_storage_sd_op));
 
-NRF_SDH_SOC_OBSERVER(sdh_soc, on_soc_evt, NULL, HIGH);
-NRF_SDH_STATE_EVT_OBSERVER(sdh_state_evt, on_state_evt_change, NULL, HIGH);
-
-static inline bool is_aligned32(uint32_t addr)
+static void event_send(const struct bm_storage_sd_op *op, uint32_t result)
 {
-	return !(addr & 0x03);
-}
+	struct bm_storage_evt evt;
 
-static void event_send(const struct bm_storage_sd_op *op, bool is_sync, uint32_t result)
-{
 	if (op->storage->evt_handler == NULL) {
 		/* Do nothing. */
 		return;
 	}
 
-	struct bm_storage_evt evt = {
-		.id = BM_STORAGE_EVT_WRITE_RESULT,
-		.dispatch_type = (is_sync) ? BM_STORAGE_EVT_DISPATCH_SYNC :
-					BM_STORAGE_EVT_DISPATCH_ASYNC,
-		.result = result,
-		.addr = op->dest,
-		.src = op->src,
-		.len = op->len,
-		.ctx = op->ctx
-	};
+	switch (op->id) {
+	case WRITE:
+		evt = (struct bm_storage_evt) {
+			.id = BM_STORAGE_EVT_WRITE_RESULT,
+			.is_async = bm_storage_sd.softdevice_is_enabled,
+			.result = result,
+			.ctx = op->ctx,
+			.addr = op->write.dest,
+			.src = op->write.src,
+			.len = op->write.len,
+		};
+		break;
+	case ERASE:
+		evt = (struct bm_storage_evt) {
+			.id = BM_STORAGE_EVT_ERASE_RESULT,
+			.is_async = bm_storage_sd.softdevice_is_enabled,
+			.result = result,
+			.ctx = op->ctx,
+			.addr = op->erase.addr,
+			.len = op->erase.len,
+		};
+		break;
+	}
 
 	op->storage->evt_handler(&evt);
 }
 
+__aligned(sizeof(uint32_t))
+static uint8_t pad_buffer[SD_WRITE_BLOCK_SIZE];
+
 static uint32_t write_execute(const struct bm_storage_sd_op *op)
 {
-	__ASSERT(op->len % bm_storage_info.program_unit == 0,
-		 "Data length is expected to be a multiple of the program unit.");
+	uint32_t *dest;
+	uint32_t *src;
+	uint32_t chunk_len;
+	uint32_t pad_unit;
 
-	__ASSERT(op->offset % bm_storage_info.program_unit == 0,
-		 "Offset is expected to be a multiple of the program unit.");
+	dest = (uint32_t *)(op->storage->addr + op->write.dest + op->write.offset);
+	src  = (uint32_t *)((uintptr_t)op->write.src + op->write.offset);
 
-	/* Calculate number of 32-bit words for sd_flash_write(). */
-	uint32_t chunk_len_words = (op->len - op->offset) / sizeof(uint32_t);
+	chunk_len = MIN(op->write.len - op->write.offset,
+			CONFIG_BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE);
 
-	/* src and dest are word-aligned. */
-	uint32_t *dest = (uint32_t *)(op->dest + op->offset);
-	const uint32_t *src  = (const uint32_t *)((uint32_t)op->src + op->offset);
+	if (op->storage->flags.is_write_padded) {
+		pad_unit = op->storage->flags.is_wear_aligned ?
+			   bm_storage_info.wear_unit :
+			   bm_storage_info.program_unit;
 
-	return sd_flash_write(dest, src, chunk_len_words);
+		if (chunk_len < pad_unit) {
+			memcpy(pad_buffer + chunk_len,
+			       (const uint8_t *)dest + chunk_len,
+			       pad_unit - chunk_len);
+			memcpy(pad_buffer, src, chunk_len);
+			src = (uint32_t *)pad_buffer;
+			chunk_len = pad_unit;
+		} else {
+			chunk_len = ROUND_DOWN(chunk_len, pad_unit);
+		}
+	}
+
+	/* Calculate number of 32-bit words for sd_flash_write() */
+	chunk_len = MAX(1, chunk_len / SD_PROGRAM_UNIT_BYTES);
+
+	return sd_flash_write(dest, src, chunk_len);
+}
+
+__aligned(sizeof(uint32_t)) /* SoftDevice requirement */
+#ifdef CONFIG_BM_STORAGE_BACKEND_SD_ERASE_BLOCKS
+static uint8_t erase_buf[CONFIG_BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE];
+#else
+static uint8_t erase_buf[SD_WRITE_BLOCK_SIZE];
+#endif
+
+static uint32_t erase_execute(struct bm_storage_sd_op *op)
+{
+	uint32_t *addr;
+
+	addr = UINT_TO_POINTER(op->storage->addr + op->erase.addr + op->erase.offset);
+
+#ifdef CONFIG_BM_STORAGE_BACKEND_SD_ERASE_BLOCKS
+	uint32_t chunk_len;
+
+	/* Write up to _MAX_WRITE_SIZE bytes at once */
+	chunk_len =
+		MIN(op->erase.len - op->erase.offset, CONFIG_BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE);
+
+	/* Calculate number of 32-bit words for sd_flash_write() */
+	chunk_len = MAX(1, chunk_len / SD_PROGRAM_UNIT_BYTES);
+
+	__ASSERT_NO_MSG(chunk_len <= sizeof(erase_buf) / SD_PROGRAM_UNIT_BYTES);
+
+	return sd_flash_write(addr, (uint32_t *)erase_buf, chunk_len);
+#else
+	return sd_flash_write(addr, (uint32_t *)erase_buf,
+			      bm_storage_info.wear_unit / sizeof(uint32_t));
+#endif
+}
+
+static bool queue_load_next(void)
+{
+	uint32_t bytes;
+	unsigned int key;
+
+	key = irq_lock();
+	bytes = ring_buf_get(&sd_fifo, (uint8_t *)&bm_storage_sd.current_operation,
+			     sizeof(struct bm_storage_sd_op));
+	irq_unlock(key);
+
+	return (bytes == sizeof(struct bm_storage_sd_op));
+}
+
+static bool queue_store(const struct bm_storage_sd_op *op)
+{
+	uint32_t bytes;
+	unsigned int key;
+
+	key = irq_lock();
+	bytes = ring_buf_put(&sd_fifo, (uint8_t *)op, sizeof(*op));
+	irq_unlock(key);
+
+	return (bytes == sizeof(*op));
 }
 
 static void queue_process(void)
 {
 	uint32_t ret;
-	unsigned int key;
 
-	if (state.type == BM_STORAGE_SD_STATE_IDLE) {
-		key = irq_lock();
-		ret = ring_buf_get(&sd_fifo, (uint8_t *)&state.current_operation,
-				   sizeof(struct bm_storage_sd_op));
-		irq_unlock(key);
-		if (ret != sizeof(struct bm_storage_sd_op)) {
-			/* No more operations left to be processed, unlock the resource. */
-			atomic_set(&state.operation_ongoing, 0);
+	if (bm_storage_sd.operation_state == OP_NONE) {
+		if (!queue_load_next()) {
+			bm_storage_sd.queue_state = QUEUE_IDLE;
 			return;
 		}
 	}
 
-	state.type = BM_STORAGE_SD_STATE_OP_EXECUTING;
+	ret = 0;
+	bm_storage_sd.queue_state = QUEUE_RUNNING;
+	bm_storage_sd.operation_state = OP_EXECUTING;
 
-	ret = write_execute(&state.current_operation);
+	switch (bm_storage_sd.current_operation.id) {
+	case WRITE:
+		ret = write_execute(&bm_storage_sd.current_operation);
+		break;
+	case ERASE:
+		ret = erase_execute(&bm_storage_sd.current_operation);
+		break;
+	}
 
 	switch (ret) {
 	case NRF_SUCCESS:
 		/* The operation was accepted by the SoftDevice.
-		 * If the SoftDevice is enabled, wait for a system event.
-		 * Otherwise, the SoftDevice call is synchronous and will not send an event so we
-		 * simulate it.
+		 * If the SoftDevice is enabled, wait for a SoC event, otherwise simulate it.
 		 */
-		if (!state.sd_enabled) {
-			bool is_sync = true;
-
-			on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, &is_sync);
+		if (!bm_storage_sd.softdevice_is_enabled) {
+			bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
 		}
 		break;
 	case NRF_ERROR_BUSY:
@@ -156,22 +275,22 @@ static void queue_process(void)
 		 * requested by the storage logic.
 		 * Stop processing the queue until a system event is received.
 		 */
-		state.type = BM_STORAGE_SD_STATE_OP_PENDING;
+		bm_storage_sd.queue_state = QUEUE_WAITING;
 		break;
 	default:
-		/* An error has occurred. We cannot proceed further with this operation. */
-		event_send(&state.current_operation, true, -EIO);
-		/* Reset the internal state so we can accept other operations. */
-		state.type = BM_STORAGE_SD_STATE_IDLE;
-		atomic_set(&state.operation_ongoing, 0);
+		/* An error has occurred and we cannot proceed further with this operation.
+		 * Process the next operation in the queue.
+		 */
+		event_send(&bm_storage_sd.current_operation, -EIO);
+		bm_storage_sd.operation_state = OP_NONE;
+		queue_process();
 		break;
 	}
 }
 
 static void queue_start(void)
 {
-	if ((atomic_cas(&state.operation_ongoing, 0, 1)) &&
-	    (!state.paused)) {
+	if (atomic_cas(&bm_storage_sd.atomic_state, QUEUE_IDLE, QUEUE_RUNNING)) {
 		queue_process();
 	}
 }
@@ -179,20 +298,46 @@ static void queue_start(void)
 /* Write operation success callback. Keeps track of the progress of an operation. */
 static bool on_operation_success(struct bm_storage_sd_op *op)
 {
+	uint32_t chunk_len;
+	uint32_t pad_unit;
+
 	/* Reset the retry counter on success. */
-	state.retries = 0;
+	bm_storage_sd.retries = 0;
 
-	__ASSERT(op->len % bm_storage_info.program_unit == 0,
-		 "Data length is expected to be a multiple of the program unit.");
+	switch (op->id) {
+	case WRITE:
+		chunk_len = MIN(op->write.len - op->write.offset,
+				CONFIG_BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE);
 
-	__ASSERT(op->offset % bm_storage_info.program_unit == 0,
-		 "Offset is expected to be a multiple of the program unit.");
+		if (op->storage->flags.is_write_padded) {
+			pad_unit = op->storage->flags.is_wear_aligned ?
+				   bm_storage_info.wear_unit :
+				   bm_storage_info.program_unit;
+			chunk_len = MAX(pad_unit,
+					ROUND_DOWN(chunk_len, pad_unit));
+		}
 
-	op->offset += op->len - op->offset;
+		op->write.offset += chunk_len;
 
-	/* Avoid missing the last chunk by rounding */
-	if (op->offset >= op->len) {
-		return true;
+		if (op->write.offset >= op->write.len) {
+			return true;
+		}
+		break;
+
+	case ERASE:
+#ifdef CONFIG_BM_STORAGE_BACKEND_SD_ERASE_BLOCKS
+		chunk_len = MIN(op->erase.len - op->erase.offset,
+				CONFIG_BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE);
+
+		op->erase.offset += MAX(bm_storage_info.wear_unit, chunk_len);
+#else
+		op->erase.offset += bm_storage_info.wear_unit;
+#endif
+
+		if (op->erase.len == op->erase.offset) {
+			return true;
+		}
+		break;
 	}
 
 	return false;
@@ -201,164 +346,122 @@ static bool on_operation_success(struct bm_storage_sd_op *op)
 /* Write operation failure callback. */
 static bool on_operation_failure(const struct bm_storage_sd_op *op)
 {
-	state.retries++;
+	bm_storage_sd.retries++;
 
-	if (state.retries > CONFIG_BM_STORAGE_BACKEND_SD_MAX_RETRIES) {
+	if (bm_storage_sd.retries > CONFIG_BM_STORAGE_BACKEND_SD_MAX_RETRIES) {
 		/* Maximum amount of retries reached. Give up. */
-		state.retries = 0;
+		bm_storage_sd.retries = 0;
 		return true;
 	}
 
 	return false;
 }
 
-int bm_storage_backend_init(struct bm_storage *storage)
+static int bm_storage_sd_init(struct bm_storage *storage, const struct bm_storage_config *config)
 {
-	/* If it's already initialized, return early successfully.
-	 * This is to support more than one client initialization.
+	storage->nvm_info = &bm_storage_info;
+
+	sd_softdevice_is_enabled(&bm_storage_sd.softdevice_is_enabled);
+
+	(void)memset(erase_buf, (int)(bm_storage_info.erase_value & 0xFF), sizeof(erase_buf));
+
+	return 0;
+}
+
+static int bm_storage_sd_uninit(struct bm_storage *storage)
+{
+	/* Do not touch the internal state.
+	 * Let queued operations complete.
 	 */
-	if (state.is_init) {
-		return 0;
-	}
+	return 0;
+}
 
-	/* Initialize the SoftDevice storage backend from one context only. */
-	if (!atomic_cas(&state.operation_ongoing, 0, 1)) {
-		return -EBUSY;
-	}
-
-	sd_softdevice_is_enabled((uint8_t *)&state.sd_enabled);
-
-	state.type = BM_STORAGE_SD_STATE_IDLE;
-
-	state.is_init = true;
-
-	atomic_set(&state.operation_ongoing, 0);
+static int bm_storage_sd_read(const struct bm_storage *storage, uint32_t src, void *dest,
+			      uint32_t len)
+{
+	memcpy(dest, UINT_TO_POINTER(storage->addr + src), len);
 
 	return 0;
 }
 
-int bm_storage_backend_read(const struct bm_storage *storage, uint32_t src, void *dest,
-			    uint32_t len)
+static int bm_storage_sd_write(const struct bm_storage *storage, uint32_t dest, const void *src,
+			       uint32_t len, void *ctx)
 {
-	if (!state.is_init) {
-		return -EPERM;
-	}
-
-	/* SoftDevice expects this alignment. */
-	if (!is_aligned32(src)) {
-		return -EFAULT;
-	}
-
-	/* src is expected to be 32-bit word-aligned. */
-	memcpy(dest, (uint32_t *)src, len);
-
-	return 0;
-}
-
-int bm_storage_backend_write(const struct bm_storage *storage, uint32_t dest,
-			     const void *src, uint32_t len, void *ctx)
-{
-	uint32_t written;
-	unsigned int key;
-
-	if (!state.is_init) {
-		return -EPERM;
-	}
-
-	/* SoftDevice expects this alignment. */
-	if (!is_aligned32((uint32_t)src) || !is_aligned32(dest)) {
-		return -EFAULT;
-	}
-
-	struct bm_storage_sd_op op = {
+	bool queued;
+	const struct bm_storage_sd_op op = {
 		.storage = storage,
+		.id = WRITE,
 		.ctx = ctx,
-		.src = src,
-		.len = len,
-		.dest = dest,
+		.write.src = src,
+		.write.len = len,
+		.write.dest = dest,
 	};
 
-	key = irq_lock();
-	written = ring_buf_put(&sd_fifo, (void *)&op, sizeof(struct bm_storage_sd_op));
-	irq_unlock(key);
+	/* SoftDevice requires this alignment. */
+	if (!IS_ALIGNED(src, sizeof(uint32_t))) {
+		return -EINVAL;
+	}
 
-	if (written != sizeof(struct bm_storage_sd_op)) {
-		return -EIO;
+	queued = queue_store(&op);
+	if (!queued) {
+		return -ENOMEM;
 	}
 
 	queue_start();
-
 	return 0;
 }
 
-bool bm_storage_backend_is_busy(const struct bm_storage *storage)
+static int bm_storage_sd_erase(const struct bm_storage *storage, uint32_t addr, uint32_t len,
+			       void *ctx)
 {
-	return (state.type != BM_STORAGE_SD_STATE_IDLE);
+	bool queued;
+	const struct bm_storage_sd_op op = {
+		.storage = storage,
+		.id = ERASE,
+		.ctx = ctx,
+		.erase.addr = addr,
+		.erase.len = len,
+	};
+
+	queued = queue_store(&op);
+	if (!queued) {
+		return -ENOMEM;
+	}
+
+	queue_start();
+	return 0;
 }
 
-static void on_soc_evt(uint32_t evt, void *ctx)
+static bool bm_storage_sd_is_busy(const struct bm_storage *storage)
 {
-	if ((evt != NRF_EVT_FLASH_OPERATION_SUCCESS) &&
-	    (evt != NRF_EVT_FLASH_OPERATION_ERROR)) {
-		return;
-	}
-
-	switch (state.type) {
-	case BM_STORAGE_SD_STATE_IDLE:
-		return;
-	case BM_STORAGE_SD_STATE_OP_PENDING:
-		break;
-	case BM_STORAGE_SD_STATE_OP_EXECUTING:
-		bool operation_finished = false;
-
-		switch (evt) {
-		case NRF_EVT_FLASH_OPERATION_SUCCESS:
-			operation_finished = on_operation_success(&state.current_operation);
-			break;
-		case NRF_EVT_FLASH_OPERATION_ERROR:
-			operation_finished = on_operation_failure(&state.current_operation);
-			break;
-		default:
-			break;
-		}
-
-		if (operation_finished) {
-			state.type = BM_STORAGE_SD_STATE_IDLE;
-
-			/* We pass a pointer only when we call it manually for the synchronous
-			 * processing.
-			 */
-			bool is_sync = (ctx != NULL);
-
-			event_send(&state.current_operation, is_sync,
-				   (evt == NRF_EVT_FLASH_OPERATION_SUCCESS) ? 0 : -ETIMEDOUT);
-		}
-		break;
-	default:
-		break;
-	}
-
-	if (!state.paused) {
-		queue_process();
-	} else {
-		nrf_sdh_observer_ready(&sdh_state_evt);
-	}
+	return (bm_storage_sd.queue_state != QUEUE_IDLE);
 }
 
-static int on_state_evt_change(enum nrf_sdh_state_evt evt, void *ctx)
+#ifndef CONFIG_UNITY
+static
+#endif
+int bm_storage_sd_on_state_evt(enum nrf_sdh_state_evt evt, void *ctx)
 {
+	/* Are we ready to change state? */
+	bool is_busy = false;
+
 	switch (evt) {
 	case NRF_SDH_STATE_EVT_ENABLE_PREPARE:
-	case NRF_SDH_STATE_EVT_DISABLE_PREPARE:
-		/* Only allow changing state when idle */
-		state.paused = true;
-		return (state.type != BM_STORAGE_SD_STATE_IDLE);
+	case NRF_SDH_STATE_EVT_DISABLE_PREPARE: {
+		/* Pause queue */
+		is_busy = (bm_storage_sd.queue_state == QUEUE_RUNNING);
+		bm_storage_sd.queue_state = QUEUE_PAUSED;
+		return is_busy;
+	}
 
 	case NRF_SDH_STATE_EVT_ENABLED:
 	case NRF_SDH_STATE_EVT_DISABLED:
+		__ASSERT_NO_MSG(bm_storage_sd.queue_state == QUEUE_IDLE ||
+				bm_storage_sd.queue_state == QUEUE_PAUSED);
+
 		/* Continue executing any operation still in the queue */
-		state.paused = false;
-		state.sd_enabled = (evt == NRF_SDH_STATE_EVT_ENABLED);
+		bm_storage_sd.softdevice_is_enabled = (evt == NRF_SDH_STATE_EVT_ENABLED);
+		bm_storage_sd.queue_state = QUEUE_RUNNING;
 		queue_process();
 		return 0;
 
@@ -368,8 +471,74 @@ static int on_state_evt_change(enum nrf_sdh_state_evt evt, void *ctx)
 		return 0;
 	}
 }
+NRF_SDH_STATE_EVT_OBSERVER(sdh_state_evt, bm_storage_sd_on_state_evt, NULL, HIGH);
 
-const struct bm_storage_info bm_storage_info = {
-	.program_unit = SD_WRITE_BLOCK_SIZE,
-	.no_explicit_erase = true
+#ifndef CONFIG_UNITY
+static
+#endif
+void bm_storage_sd_on_soc_evt(uint32_t evt, void *ctx)
+{
+	bool operation_finished;
+
+	if ((evt != NRF_EVT_FLASH_OPERATION_SUCCESS) &&
+	    (evt != NRF_EVT_FLASH_OPERATION_ERROR)) {
+		/* This is not a FLASH event, return immediately */
+		return;
+	}
+
+	if (bm_storage_sd.queue_state == QUEUE_IDLE) {
+		/* We did not request any operation, ignore this event */
+		return;
+	}
+	if (bm_storage_sd.queue_state == QUEUE_WAITING) {
+		/* We attempted to schedule an operation, but SoftDevice was busy.
+		 * Attempt to schedule the operation now.
+		 */
+		queue_process();
+		return;
+	}
+
+	/* An operation has progressed.
+	 * We need to send an event if it has completed.
+	 * Then, if we are not paused we try to process the next operation,
+	 * otherwise, we let the SoftDevice change state.
+	 */
+	operation_finished = false;
+
+	switch (evt) {
+	case NRF_EVT_FLASH_OPERATION_SUCCESS:
+		operation_finished = on_operation_success(&bm_storage_sd.current_operation);
+		break;
+	case NRF_EVT_FLASH_OPERATION_ERROR:
+		operation_finished = on_operation_failure(&bm_storage_sd.current_operation);
+		break;
+	}
+
+	if (operation_finished) {
+		/* Load a new operation next */
+		bm_storage_sd.operation_state = OP_NONE;
+
+		event_send(&bm_storage_sd.current_operation,
+			   (evt == NRF_EVT_FLASH_OPERATION_SUCCESS) ? 0 : -ETIMEDOUT);
+	}
+
+	if (bm_storage_sd.queue_state == QUEUE_PAUSED) {
+		/* Let SoftDevice state change happen now */
+		nrf_sdh_observer_ready(&sdh_state_evt);
+		return;
+	}
+	if (bm_storage_sd.queue_state == QUEUE_RUNNING) {
+		queue_process();
+		return;
+	}
+}
+NRF_SDH_SOC_OBSERVER(sdh_soc, bm_storage_sd_on_soc_evt, NULL, HIGH);
+
+const struct bm_storage_api bm_storage_sd_api = {
+	.init = bm_storage_sd_init,
+	.uninit = bm_storage_sd_uninit,
+	.read = bm_storage_sd_read,
+	.write = bm_storage_sd_write,
+	.erase = bm_storage_sd_erase,
+	.is_busy = bm_storage_sd_is_busy,
 };
