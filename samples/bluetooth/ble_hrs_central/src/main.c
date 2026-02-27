@@ -21,6 +21,7 @@
 #include <bm/bluetooth/peer_manager/nrf_ble_lesc.h>
 
 #include <bm/bluetooth/ble_gq.h>
+#include <bm/bluetooth/services/ble_bas_client.h>
 #include <bm/bluetooth/services/ble_hrs_client.h>
 #include <bm/bluetooth/services/uuid.h>
 #include <bm/softdevice_handler/nrf_sdh.h>
@@ -45,6 +46,8 @@ BLE_GQ_DEF(ble_gq);
 BLE_DB_DISCOVERY_DEF(ble_db_disc);
 /* Scanning module instance. */
 BLE_SCAN_DEF(ble_scan);
+/* Battery service client instance*/
+BLE_BAS_CLIENT_DEF(ble_bas_client);
 
 /* Current connection handle. */
 static uint16_t conn_handle;
@@ -79,10 +82,10 @@ static uint32_t active_conn_count(atomic_t *conn)
 
 static uint32_t scan_start(bool erase_bonds);
 
-static void db_disc_handler(struct ble_db_discovery *db_discovery,
-			    struct ble_db_discovery_evt *evt)
+static void db_disc_handler(struct ble_db_discovery *db_discovery, struct ble_db_discovery_evt *evt)
 {
 	ble_hrs_on_db_disc_evt(&ble_hrs_client, evt);
+	ble_bas_on_db_disc_evt(&ble_bas_client, evt);
 }
 
 static void pm_evt_handler(const struct pm_evt *evt)
@@ -162,7 +165,7 @@ static void on_ble_evt(const ble_evt_t *ble_evt, void *ctx)
 	case BLE_GATTC_EVT_TIMEOUT:
 		LOG_INF("GATT Client Timeout.");
 		nrf_err = sd_ble_gap_disconnect(ble_evt->evt.gattc_evt.conn_handle,
-					    BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
+						BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
 		if (nrf_err) {
 			LOG_ERR("Failed to disconnect, nrf_error %#x", nrf_err);
 		}
@@ -171,7 +174,7 @@ static void on_ble_evt(const ble_evt_t *ble_evt, void *ctx)
 	case BLE_GATTS_EVT_TIMEOUT:
 		LOG_INF("GATT Server Timeout.");
 		nrf_err = sd_ble_gap_disconnect(ble_evt->evt.gatts_evt.conn_handle,
-					    BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
+						BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
 		if (nrf_err) {
 			LOG_ERR("Failed to disconnect, nrf_error %#x", nrf_err);
 		}
@@ -256,8 +259,8 @@ static void button_handler_disconnect(uint8_t pin, uint8_t action)
 {
 	LOG_INF("Button disconnect");
 
-	uint32_t nrf_err = sd_ble_gap_disconnect(conn_handle,
-						 BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
+	uint32_t nrf_err =
+		sd_ble_gap_disconnect(conn_handle, BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
 	if (nrf_err != 0) {
 		LOG_ERR("ble gap disconnect failed, nrf_error %#x", nrf_err);
 	}
@@ -272,8 +275,8 @@ static void hrs_c_evt_handler(struct ble_hrs_client *hrs, struct ble_hrs_client_
 	case BLE_HRS_CLIENT_EVT_DISCOVERY_COMPLETE:
 		LOG_INF("Heart rate service discovered.");
 
-		nrf_err = ble_hrs_client_handles_assign(hrs, evt->conn_handle,
-							 &evt->params.peer_db);
+		nrf_err =
+			ble_hrs_client_handles_assign(hrs, evt->conn_handle, &evt->params.peer_db);
 		if (nrf_err != 0) {
 			LOG_ERR("ble_hrs_client_handles_assign failed, nrf_error %#x", nrf_err);
 		}
@@ -308,11 +311,9 @@ static void hrs_c_evt_handler(struct ble_hrs_client *hrs, struct ble_hrs_client_
 static uint32_t hrs_c_init(void)
 {
 	uint32_t nrf_err;
-	struct ble_hrs_client_config hrs_client_cfg = {
-		.evt_handler = hrs_c_evt_handler,
-		.gatt_queue = &ble_gq,
-		.db_discovery = &ble_db_disc
-	};
+	struct ble_hrs_client_config hrs_client_cfg = {.evt_handler = hrs_c_evt_handler,
+						       .gatt_queue = &ble_gq,
+						       .db_discovery = &ble_db_disc};
 
 	nrf_err = ble_hrs_client_init(&ble_hrs_client, &hrs_client_cfg);
 	if (nrf_err) {
@@ -320,6 +321,57 @@ static uint32_t hrs_c_init(void)
 	}
 
 	return nrf_err;
+}
+
+static void bas_client_evt_handler(struct ble_bas_client *bas_client,
+				   struct ble_bas_client_evt *bas_client_evt)
+{
+	uint32_t nrf_err;
+
+	switch (bas_client_evt->evt_type) {
+	case BLE_BAS_CLIENT_EVT_DISCOVERY_COMPLETE:
+		nrf_err = ble_bas_client_handles_assign(bas_client, bas_client_evt->conn_handle,
+							&bas_client_evt->bas_db);
+		if (nrf_err) {
+			LOG_ERR("Failed to assign handles, nrf_error %#x", nrf_err);
+		}
+		/** Battery service discovered. Enable notification of Battery Level. */
+		LOG_DBG("Battery Service discovered. Reading battery level.");
+		nrf_err = ble_bas_client_bl_read(bas_client);
+		if (nrf_err) {
+			LOG_ERR("Failed to read battery level characteristic, nrf_error %#x",
+				nrf_err);
+		}
+		LOG_DBG("Enabling Battery Level Notification.");
+		nrf_err = ble_bas_client_bl_notif_enable(bas_client);
+		if (nrf_err) {
+			LOG_ERR("Failed to enable battery level characteristic notifications, "
+				"nrf_error %#x",
+				nrf_err);
+		}
+		break;
+	case BLE_BAS_CLIENT_EVT_BATT_NOTIFICATION:
+		LOG_INF("Battery Level received %d %%.", bas_client_evt->battery_level);
+		break;
+	case BLE_BAS_CLIENT_EVT_BATT_READ_RESP:
+		LOG_INF("Battery Level Read as %d %%.", bas_client_evt->battery_level);
+		break;
+	case BLE_BAS_CLIENT_EVT_ERROR:
+		LOG_ERR("Battery Service client error, nrf_error %#x",
+			bas_client_evt->error.reason);
+		break;
+	default:
+		break;
+	}
+}
+
+static uint32_t bas_c_init(void)
+{
+	struct ble_bas_client_config bas_client_config = {.evt_handler = bas_client_evt_handler,
+							  .gatt_queue = &ble_gq,
+							  .db_discovery = &ble_db_disc};
+
+	return ble_bas_client_init(&ble_bas_client, &bas_client_config);
 }
 
 static uint32_t db_discovery_init(void)
@@ -511,15 +563,12 @@ static uint32_t scan_init(void)
 {
 	uint32_t nrf_err;
 	struct ble_scan_config scan_cfg = {
-		.scan_params = {
-			.active = 0x01,
-			.interval = BLE_GAP_SCAN_INTERVAL_US_MIN * 6,
-			.window = BLE_GAP_SCAN_WINDOW_US_MIN * 6,
-
-			.filter_policy = BLE_GAP_SCAN_FP_ACCEPT_ALL,
-			.timeout = BLE_GAP_SCAN_TIMEOUT_UNLIMITED,
-			.scan_phys = BLE_GAP_PHY_AUTO,
-		},
+		.scan_params = {.active = 0x01,
+				.interval = BLE_GAP_SCAN_INTERVAL_US_MIN * 6,
+				.window = BLE_GAP_SCAN_WINDOW_US_MIN * 6,
+				.filter_policy = BLE_GAP_SCAN_FP_ACCEPT_ALL,
+				.timeout = BLE_GAP_SCAN_TIMEOUT_UNLIMITED,
+				.scan_phys = BLE_GAP_PHY_AUTO},
 		.conn_params = BLE_SCAN_CONN_PARAMS_DEFAULT,
 		.connect_if_match = true,
 		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
@@ -532,11 +581,8 @@ static uint32_t scan_init(void)
 	}
 
 	struct ble_scan_filter_data filter_data = {
-		.uuid_filter.uuid = {
-			.uuid = BLE_UUID_HEART_RATE_SERVICE,
-			.type = BLE_UUID_TYPE_BLE,
-		},
-	};
+		.uuid_filter.uuid = {.uuid = BLE_UUID_HEART_RATE_SERVICE,
+				     .type = BLE_UUID_TYPE_BLE}};
 
 	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_UUID_FILTER, &filter_data);
 	if (nrf_err) {
@@ -544,25 +590,25 @@ static uint32_t scan_init(void)
 	}
 
 #if defined(CONFIG_SAMPLE_USE_TARGET_PERIPHERAL_NAME)
-		filter_data.name_filter.name = CONFIG_SAMPLE_TARGET_PERIPHERAL_NAME;
+	filter_data.name_filter.name = CONFIG_SAMPLE_TARGET_PERIPHERAL_NAME;
 
-		nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_NAME_FILTER, &filter_data);
-		if (nrf_err) {
-			LOG_ERR("nrf_ble_scan_filter_add name failed, nrf_error %#x", nrf_err);
-		}
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_NAME_FILTER, &filter_data);
+	if (nrf_err) {
+		LOG_ERR("nrf_ble_scan_filter_add name failed, nrf_error %#x", nrf_err);
+	}
 #endif /* CONFIG_SAMPLE_USE_TARGET_PERIPHERAL_NAME */
 
 #if defined(CONFIG_SAMPLE_USE_TARGET_PERIPHERAL_ADDR)
-		filter_data.addr_filter.addr = target_periph_addr;
-		nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_ADDR_FILTER, &filter_data);
-		if (nrf_err) {
-			LOG_ERR("nrf_ble_scan_filter_add address failed, nrf_error %#x", nrf_err);
-		}
+	filter_data.addr_filter.addr = target_periph_addr;
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_ADDR_FILTER, &filter_data);
+	if (nrf_err) {
+		LOG_ERR("nrf_ble_scan_filter_add address failed, nrf_error %#x", nrf_err);
+	}
 #endif /* CONFIG_SAMPLE_USE_TARGET_PERIPHERAL_ADDR */
 
-	nrf_err = ble_scan_filters_enable(&ble_scan, BLE_SCAN_UUID_FILTER |
-						     BLE_SCAN_NAME_FILTER |
-						     BLE_SCAN_ADDR_FILTER, false);
+	nrf_err = ble_scan_filters_enable(
+		&ble_scan, BLE_SCAN_UUID_FILTER | BLE_SCAN_NAME_FILTER | BLE_SCAN_ADDR_FILTER,
+		false);
 	if (nrf_err) {
 		LOG_ERR("Failed to enable scan filters, nrf_error %#x", nrf_err);
 	}
@@ -647,6 +693,12 @@ int main(void)
 	nrf_err = hrs_c_init();
 	if (nrf_err) {
 		LOG_ERR("Failed to initialize HRS Client, nrf_error %#x", nrf_err);
+		goto idle;
+	}
+
+	nrf_err = bas_c_init();
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize BAS Client, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 
