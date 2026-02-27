@@ -139,10 +139,10 @@ struct ble_lbs {
  * @retval NRF_SUCCESS If the service was initialized successfully.
  * @retval NRF_ERROR_NULL If @p lbs or @p cfg is NULL.
  * @return In addition, this function may return any error
- *	   returned by the following SoftDevice functions:
- *	   - @ref sd_ble_gatts_service_add()
- *	   - @ref sd_ble_gatts_characteristic_add()
- *	   - @ref sd_ble_uuid_vs_add()
+ *         returned by the following SoftDevice functions:
+ *         - @ref sd_ble_gatts_service_add()
+ *         - @ref sd_ble_gatts_characteristic_add()
+ *         - @ref sd_ble_uuid_vs_add()
  */
 uint32_t ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg);
 
@@ -168,8 +168,8 @@ void ble_lbs_on_ble_evt(const ble_evt_t *ble_evt, void *lbs_instance);
  * @retval NRF_SUCCESS If the notification was sent successfully.
  * @retval NRF_ERROR_NULL If @p lbs is NULL.
  * @return In addition, this function may return any error
- *	   returned by the following SoftDevice functions:
- *	   - @ref sd_ble_gatts_hvx()
+ *         returned by the following SoftDevice functions:
+ *         - @ref sd_ble_gatts_hvx()
  */
 uint32_t ble_lbs_on_button_change(struct ble_lbs *lbs, uint16_t conn_handle, uint8_t button_state);
 

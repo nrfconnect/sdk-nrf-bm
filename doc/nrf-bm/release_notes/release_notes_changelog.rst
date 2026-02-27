@@ -96,6 +96,16 @@ Libraries
       * Changed the :kconfig:option:`CONFIG_BLE_ADV_EXTENDED_ADVERTISING` Kconfig option to be disabled by default and dependent on the new :kconfig:option:`CONFIG_SOFTDEVICE_EXTENDED_ADVERTISING` Kconfig option.
       * Changed the :kconfig:option:`CONFIG_BLE_ADV_DIRECTED_ADVERTISING` Kconfig option to be disabled by default.
 
+* :file:`ble_gatt_db.h`:
+
+   * Added the :kconfig:option:`CONFIG_BLE_GATT_DB_MAX_CHARS` Kconfig option for configuring the number of characteristics in a :c:struct:`ble_gatt_db_srv` structure.
+     The number of characteristics was previously set using the :c:macro:`BLE_GATT_DB_MAX_CHARS` definition in the :file:`ble_gatt_db.h` file.
+   * Fixed spelling of the ``characteristics`` member of the :c:struct:`ble_gatt_db_srv` structure.
+
+* :ref:`lib_ble_db_discovery`:
+
+   * Removed the :c:struct:`ble_db_discovery_user_evt` structure after a rework.
+
 * :ref:`lib_ble_scan`:
 
    * Updated functions to use the ``uint32_t`` type instead of ``int`` when returning nrf_errors.

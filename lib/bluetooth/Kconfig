@@ -16,4 +16,16 @@ rsource "ble_scan/Kconfig"
 rsource "ble_qwr/Kconfig"
 rsource "peer_manager/Kconfig"
 
+menu "Common"
+
+config BLE_GATT_DB_MAX_CHARS
+	int "Maximum number of characteristics in a service record (See ble_gatt_db.h)"
+	default 6
+	help
+	  Maximum number of characteristics that can be stored in the characteristics array of
+	  the GATT database service structure defined in include/bm/bluetooth/ble_gatt_db.h.
+	  The structure is shared by multiple libraries, like ble_db_discovery and peer_manager.
+
+endmenu # Common
+
 endmenu

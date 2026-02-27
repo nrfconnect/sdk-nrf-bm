@@ -23,9 +23,6 @@
 extern "C" {
 #endif
 
-/** @brief The maximum number of characteristics present in a service record. */
-#define BLE_GATT_DB_MAX_CHARS 6
-
 /**
  * @brief Structure for holding the characteristic and the handle of its CCCD present on a server.
  */
@@ -72,7 +69,7 @@ struct ble_gatt_db_srv {
 	 * @brief Array of information related to the characteristics present in the service.
 	 *        This list can extend further than one.
 	 */
-	struct ble_gatt_db_char charateristics[BLE_GATT_DB_MAX_CHARS];
+	struct ble_gatt_db_char characteristics[CONFIG_BLE_GATT_DB_MAX_CHARS];
 };
 
 #ifdef __cplusplus
