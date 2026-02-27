@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 add_subdirectory_ifdef(CONFIG_BLE_BAS ble_bas)
+add_subdirectory_ifdef(CONFIG_BLE_BAS_CLIENT ble_bas_client)
 add_subdirectory_ifdef(CONFIG_BLE_BMS ble_bms)
 add_subdirectory_ifdef(CONFIG_BLE_CGMS ble_cgms)
 add_subdirectory_ifdef(CONFIG_BLE_DIS ble_dis)

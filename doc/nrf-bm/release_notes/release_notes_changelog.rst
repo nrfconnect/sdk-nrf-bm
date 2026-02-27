@@ -206,7 +206,10 @@ Libraries
 Bluetooth LE Services
 ---------------------
 
-* Added the :c:member:`ble_cgms_config.initial_comm_interval` to the :c:struct:`ble_cgms_config` structure to set the initial communication interval.
+* Added:
+
+   * The :ref:`lib_ble_service_bas_client` service.
+   * The :c:member:`ble_cgms_config.initial_comm_interval` to the :c:struct:`ble_cgms_config` structure to set the initial communication interval.
 * Renamed the Bluetooth: Heart Rate Service Central (``ble_hrs_central``) to the :ref:`lib_ble_service_hrs_client` sample.
 * Updated all services to return errors from the SoftDevice directly.
 * Removed the BMS authorization code Kconfig options (:kconfig:option:`CONFIG_BLE_BMS_AUTHORIZATION_CODE` and :kconfig:option:`CONFIG_BLE_BMS_USE_AUTHORIZATION_CODE`) from the service library, as they are only used by the BMS sample.
@@ -244,6 +247,7 @@ Bluetooth LE Services
       * The :c:struct:`ble_hrs_client_evt` structure was aligned with other client services.
       * The ``hrs_db`` structure was renamed to :c:struct:`ble_hrs_handles`.
       * The ``ble_hrm`` structure was renamed to :c:struct:`ble_hrs_measurement`.
+      * The ``params`` union field of the :c:struct:`ble_hrs_client_evt` structure to an anonymous union.
 
    * Fixed a potential buffer over-read when parsing malformed Heart Rate Measurement notifications.
 
@@ -254,10 +258,6 @@ Bluetooth LE Services
 * :ref:`lib_ble_service_hids` service:
 
    * Updated the ``params`` union field of the :c:struct:`ble_hids_evt` structure to an anonymous union.
-
-* :ref:`lib_ble_service_hrs_client` service:
-
-   * Updated the ``params`` union field of the :c:struct:`ble_hrs_client_evt` structure to an anonymous union.
 
 * :ref:`lib_ble_service_bms` service:
 
@@ -330,6 +330,10 @@ Bluetooth LE samples
 * :ref:`ble_hids_mouse_sample` sample:
 
    * Fixed an issue where the sample did not enter or exit boot mode properly based on the HID events.
+
+* :ref:`ble_hrs_central_sample` sample:
+
+   * Added the :ref:`lib_ble_service_bas_client` service to the sample.
 
 * :ref:`ble_nus_sample` sample:
 
