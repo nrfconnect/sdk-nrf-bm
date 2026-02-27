@@ -107,6 +107,16 @@ Bluetooth LE Services
 * Updated all services to return errors from the SoftDevice directly.
 * Removed the BMS authorization code Kconfig options (:kconfig:option:`CONFIG_BLE_BMS_AUTHORIZATION_CODE` and :kconfig:option:`CONFIG_BLE_BMS_USE_AUTHORIZATION_CODE`) from the service library, as they are only used by the BMS sample.
 
+* :ref:`lib_ble_service_hrs_client`:
+
+   * Added:
+
+      * The :c:func:`ble_hrs_client_hrm_notif_disable` function to disable Heart Rate Measurement notifications.
+      * Validation of the :c:member:`ble_hrs_client_config.evt_handler` and :c:member:`ble_hrs_client_config.gatt_queue` configuration fields in :c:func:`ble_hrs_client_init`.
+      * State validation in :c:func:`ble_hrs_client_hrm_notif_enable` and :c:func:`ble_hrs_client_hrm_notif_disable`, returning ``NRF_ERROR_INVALID_STATE`` when the connection or CCCD handle has not been assigned.
+
+   * Fixed a potential buffer over-read when parsing malformed Heart Rate Measurement notifications.
+
 Libraries for NFC
 -----------------
 

@@ -162,6 +162,9 @@ struct ble_hrs_client_config {
  * @param[in] ble_hrs_client_config Heart rate service client configuration.
  *
  * @retval NRF_SUCCESS On successful initialization.
+ * @retval NRF_ERROR_NULL If any of @p ble_hrs_client, @p ble_hrs_client_config, or
+ *         the configuration's @ref ble_hrs_client_config.evt_handler or
+ *         @ref ble_hrs_client_config.gatt_queue fields are NULL.
  * @return Otherwise, this function propagates the error code returned by the
  *         Database Discovery module API @ref ble_db_discovery_service_register.
  */
@@ -190,9 +193,30 @@ void ble_hrs_client_on_ble_evt(const ble_evt_t *ble_evt, void *ctx);
  * @param ble_hrs_client Heart Rate Client structure.
  *
  * @retval NRF_SUCCESS If the SoftDevice is requested to write to the CCCD of the peer.
- * @return Error code returned  by the SoftDevice API @ref sd_ble_gattc_write.
+ * @retval NRF_ERROR_NULL If @p ble_hrs_client is NULL.
+ * @retval NRF_ERROR_INVALID_STATE If the connection handle or CCCD handle has not been
+ *         assigned (e.g. @ref ble_hrs_client_handles_assign has not been called, or
+ *         the peer has disconnected).
+ * @return Otherwise, this function propagates the error code returned by the GATT queue.
  */
 uint32_t ble_hrs_client_hrm_notif_enable(struct ble_hrs_client *ble_hrs_client);
+
+/**
+ * @brief Request the peer to stop sending notification of Heart Rate Measurement.
+ *
+ * @details This function disables notification of the Heart Rate Measurement at the peer
+ *          by writing to the CCCD of the Heart Rate Measurement characteristic.
+ *
+ * @param ble_hrs_client Heart Rate Client structure.
+ *
+ * @retval NRF_SUCCESS If the SoftDevice is requested to write to the CCCD of the peer.
+ * @retval NRF_ERROR_NULL If @p ble_hrs_client is NULL.
+ * @retval NRF_ERROR_INVALID_STATE If the connection handle or CCCD handle has not been
+ *         assigned (e.g. @ref ble_hrs_client_handles_assign has not been called, or
+ *         the peer has disconnected).
+ * @return Otherwise, this function propagates the error code returned by the GATT queue.
+ */
+uint32_t ble_hrs_client_hrm_notif_disable(struct ble_hrs_client *ble_hrs_client);
 
 /**
  * @brief Handle events from the Database Discovery module.
