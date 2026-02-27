@@ -18,7 +18,7 @@ The sample supports the following development kits:
 
    .. group-tab:: Simple board variants
 
-      The following board variants do **not** have DFU capabilities.
+      The following board variants do **not** have DFU capabilities:
 
       .. list-table::
          :header-rows: 1
@@ -43,10 +43,26 @@ The sample supports the following development kits:
            - PCA10188
            - S115
            - bm_nrf54lv10dk/nrf54lv10/cpuapp/s115_softdevice
+         * - `nRF54L15 DK`_
+           - PCA10156
+           - S145
+           - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice
+         * - `nRF54L15 DK`_ (emulating nRF54L10)
+           - PCA10156
+           - S145
+           - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice
+         * - `nRF54L15 DK`_ (emulating nRF54L05)
+           - PCA10156
+           - S145
+           - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice
+         * - `nRF54LV10 DK`_
+           - PCA10188
+           - S145
+           - bm_nrf54lv10dk/nrf54lv10/cpuapp/s145_softdevice
 
    .. group-tab:: MCUboot board variants
 
-      The following board variants have DFU capabilities.
+      The following board variants have DFU capabilities:
 
       .. list-table::
          :header-rows: 1
@@ -67,6 +83,18 @@ The sample supports the following development kits:
            - PCA10156
            - S115
            - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+         * - `nRF54L15 DK`_
+           - PCA10156
+           - S145
+           - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice/mcuboot
+         * - `nRF54L15 DK`_ (emulating nRF54L10)
+           - PCA10156
+           - S145
+           - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice/mcuboot
+         * - `nRF54L15 DK`_ (emulating nRF54L05)
+           - PCA10156
+           - S145
+           - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot
 
 Overview
 ********

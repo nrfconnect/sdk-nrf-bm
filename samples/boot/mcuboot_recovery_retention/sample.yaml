@@ -7,12 +7,18 @@ tests:
     build_only: true
     integration_platforms:
       - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice/mcuboot
     platform_allow:
       - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice/mcuboot
     tags:
       - sysbuild
       - bluetooth
@@ -21,12 +27,14 @@ tests:
     build_only: true
     integration_platforms:
       - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
-      - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
-      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot
     platform_allow:
       - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice/mcuboot
     extra_args:
       - SB_CONFIG_BM_FIRMWARE_LOADER_UART_MCUMGR=y
     tags:
@@ -37,12 +45,14 @@ tests:
     build_only: true
     integration_platforms:
       - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
-      - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
-      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot
     platform_allow:
       - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice/mcuboot
     extra_args:
       - SB_CONFIG_BM_FIRMWARE_LOADER_UART_MCUMGR=y
       - SB_CONFIG_BM_BOOTLOADER_MCUBOOT_SIGNATURE_USING_KMU=n

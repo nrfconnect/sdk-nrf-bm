@@ -34,6 +34,18 @@ The sample supports the following development kits:
      - PCA10156
      - S115
      - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+   * - `nRF54L15 DK`_
+     - PCA10156
+     - S145
+     - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice/mcuboot
+   * - `nRF54L15 DK`_ (emulating nRF54L10)
+     - PCA10156
+     - S145
+     - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice/mcuboot
+   * - `nRF54L15 DK`_ (emulating nRF54L05)
+     - PCA10156
+     - S145
+     - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot
 
 Overview
 ********
@@ -46,12 +58,6 @@ The command sets the retention register for entering the firmware loader mode an
 It then starts advertising the MCUmgr service allowing for a firmware update to be loaded.
 
 For more details on this workflow, see `System reset`_ in Zephyr documentation.
-
-Programming the S115 SoftDevice
-*******************************
-
-The SoftDevice is automatically flashed when programming the board.
-No additional steps are needed for programming the SoftDevice when building with MCUboot firmware loader mode enabled.
 
 Building and running
 ********************
