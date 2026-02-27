@@ -11,9 +11,9 @@
 #include <ble.h>
 #include <ble_gap.h>
 #include <ble_err.h>
-#include <bm/bluetooth/ble_conn_state.h>
 #include <bm/bluetooth/peer_manager/peer_manager_types.h>
 
+#include <modules/conn_state.h>
 #include <modules/peer_data_storage.h>
 #include <modules/peer_database.h>
 #include <modules/id_manager.h>
@@ -41,31 +41,31 @@ static const pm_evt_handler_internal_t evt_handlers[] = {sm_smd_evt_handler};
 
 static bool module_initialized;
 
-static int flag_sec_proc = BLE_CONN_STATE_USER_FLAG_INVALID;
-static int flag_sec_proc_pairing = BLE_CONN_STATE_USER_FLAG_INVALID;
-static int flag_sec_proc_bonding = BLE_CONN_STATE_USER_FLAG_INVALID;
-static int flag_allow_repairing = BLE_CONN_STATE_USER_FLAG_INVALID;
+static int flag_sec_proc = PM_CONN_STATE_USER_FLAG_INVALID;
+static int flag_sec_proc_pairing = PM_CONN_STATE_USER_FLAG_INVALID;
+static int flag_sec_proc_bonding = PM_CONN_STATE_USER_FLAG_INVALID;
+static int flag_allow_repairing = PM_CONN_STATE_USER_FLAG_INVALID;
 
 static ble_gap_lesc_p256_pk_t peer_pk;
 
 static __INLINE bool sec_procedure(uint16_t conn_handle)
 {
-	return ble_conn_state_user_flag_get(conn_handle, flag_sec_proc);
+	return pm_conn_state_user_flag_get(conn_handle, flag_sec_proc);
 }
 
 static __INLINE bool pairing(uint16_t conn_handle)
 {
-	return ble_conn_state_user_flag_get(conn_handle, flag_sec_proc_pairing);
+	return pm_conn_state_user_flag_get(conn_handle, flag_sec_proc_pairing);
 }
 
 static __INLINE bool bonding(uint16_t conn_handle)
 {
-	return ble_conn_state_user_flag_get(conn_handle, flag_sec_proc_bonding);
+	return pm_conn_state_user_flag_get(conn_handle, flag_sec_proc_bonding);
 }
 
 static __INLINE bool allow_repairing(uint16_t conn_handle)
 {
-	return ble_conn_state_user_flag_get(conn_handle, flag_allow_repairing);
+	return pm_conn_state_user_flag_get(conn_handle, flag_allow_repairing);
 }
 
 /**
@@ -153,7 +153,7 @@ static void conn_sec_failure(uint16_t conn_handle, enum pm_conn_sec_procedure pr
 		},
 	};
 
-	ble_conn_state_user_flag_set(conn_handle, flag_sec_proc, false);
+	pm_conn_state_user_flag_set(conn_handle, flag_sec_proc, false);
 
 	evt_send(&evt);
 }
@@ -228,11 +228,11 @@ static void link_secure_failure(uint16_t conn_handle, uint16_t error, uint8_t er
  */
 static void sec_proc_start(uint16_t conn_handle, bool success, enum pm_conn_sec_procedure procedure)
 {
-	ble_conn_state_user_flag_set(conn_handle, flag_sec_proc, success);
+	pm_conn_state_user_flag_set(conn_handle, flag_sec_proc, success);
 	if (success) {
-		ble_conn_state_user_flag_set(conn_handle, flag_sec_proc_pairing,
+		pm_conn_state_user_flag_set(conn_handle, flag_sec_proc_pairing,
 					     (procedure != PM_CONN_SEC_PROCEDURE_ENCRYPTION));
-		ble_conn_state_user_flag_set(conn_handle, flag_sec_proc_bonding,
+		pm_conn_state_user_flag_set(conn_handle, flag_sec_proc_bonding,
 					     (procedure == PM_CONN_SEC_PROCEDURE_BONDING));
 		sec_start_send(conn_handle, procedure);
 	}
@@ -328,7 +328,7 @@ static uint32_t link_secure_central(uint16_t conn_handle, ble_gap_sec_params_t *
 	/* Set the default value for allowing repairing at the start of the sec proc.
 	 * (for central)
 	 */
-	ble_conn_state_user_flag_set(conn_handle, flag_allow_repairing, force_repairing);
+	pm_conn_state_user_flag_set(conn_handle, flag_allow_repairing, force_repairing);
 
 	peer_id = im_peer_id_get_by_conn_handle(conn_handle);
 
@@ -482,7 +482,7 @@ void smd_conn_sec_config_reply(uint16_t conn_handle, struct pm_conn_sec_config *
 	__ASSERT_NO_MSG(module_initialized);
 	__ASSERT_NO_MSG(conn_sec_config != NULL);
 
-	ble_conn_state_user_flag_set(conn_handle, flag_allow_repairing,
+	pm_conn_state_user_flag_set(conn_handle, flag_allow_repairing,
 				     conn_sec_config->allow_repairing);
 }
 
@@ -528,7 +528,7 @@ static void send_params_req(uint16_t conn_handle, const ble_gap_sec_params_t *pe
 static void sec_params_request_process(const ble_gap_evt_t *gap_evt)
 {
 #if defined(CONFIG_SOFTDEVICE_PERIPHERAL)
-	if (ble_conn_state_role(gap_evt->conn_handle) == BLE_GAP_ROLE_PERIPH) {
+	if (pm_conn_state_role(gap_evt->conn_handle) == BLE_GAP_ROLE_PERIPH) {
 		sec_proc_start(gap_evt->conn_handle, true,
 			       gap_evt->params.sec_params_request.peer_params.bond
 				       ? PM_CONN_SEC_PROCEDURE_BONDING
@@ -575,7 +575,7 @@ static void auth_status_success_process(const ble_gap_evt_t *gap_evt)
 	struct pm_peer_data peer_data;
 	bool new_peer_id = false;
 
-	ble_conn_state_user_flag_set(conn_handle, flag_sec_proc, false);
+	pm_conn_state_user_flag_set(conn_handle, flag_sec_proc, false);
 
 	if (!gap_evt->params.auth_status.bonded) {
 		pairing_success_evt_send(gap_evt, false);
@@ -694,12 +694,12 @@ static void conn_sec_update_process(const ble_gap_evt_t *gap_evt)
 		/* This is an encryption procedure (not pairing), so this event marks the end of the
 		 * procedure.
 		 */
-		if (!ble_conn_state_encrypted(gap_evt->conn_handle)) {
+		if (!pm_conn_state_encrypted(gap_evt->conn_handle)) {
 			encryption_failure(gap_evt->conn_handle,
 					   PM_CONN_SEC_ERROR_PIN_OR_KEY_MISSING,
 					   BLE_GAP_SEC_STATUS_SOURCE_REMOTE);
 		} else {
-			ble_conn_state_user_flag_set(gap_evt->conn_handle, flag_sec_proc,
+			pm_conn_state_user_flag_set(gap_evt->conn_handle, flag_sec_proc,
 						     false);
 
 			struct pm_evt evt = {
@@ -723,8 +723,8 @@ static void conn_sec_update_process(const ble_gap_evt_t *gap_evt)
  */
 static void flag_id_init(int *flag_id)
 {
-	if (*flag_id == BLE_CONN_STATE_USER_FLAG_INVALID) {
-		*flag_id = ble_conn_state_user_flag_acquire();
+	if (*flag_id == PM_CONN_STATE_USER_FLAG_INVALID) {
+		*flag_id = pm_conn_state_user_flag_acquire();
 	}
 }
 
@@ -737,12 +737,12 @@ uint32_t smd_init(void)
 	flag_id_init(&flag_sec_proc_bonding);
 	flag_id_init(&flag_allow_repairing);
 
-	if ((flag_sec_proc == BLE_CONN_STATE_USER_FLAG_INVALID) ||
-	    (flag_sec_proc_pairing == BLE_CONN_STATE_USER_FLAG_INVALID) ||
-	    (flag_sec_proc_bonding == BLE_CONN_STATE_USER_FLAG_INVALID) ||
-	    (flag_allow_repairing == BLE_CONN_STATE_USER_FLAG_INVALID)) {
+	if ((flag_sec_proc == PM_CONN_STATE_USER_FLAG_INVALID) ||
+	    (flag_sec_proc_pairing == PM_CONN_STATE_USER_FLAG_INVALID) ||
+	    (flag_sec_proc_bonding == PM_CONN_STATE_USER_FLAG_INVALID) ||
+	    (flag_allow_repairing == PM_CONN_STATE_USER_FLAG_INVALID)) {
 		LOG_ERR("Could not acquire conn_state user flags. Increase "
-			"BLE_CONN_STATE_USER_FLAG_COUNT in the ble_conn_state module.");
+			"PM_CONN_STATE_USER_FLAG_COUNT in the pm_conn_state module.");
 		return NRF_ERROR_INTERNAL;
 	}
 
@@ -832,7 +832,7 @@ uint32_t smd_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *sec_params
 {
 	__ASSERT_NO_MSG(module_initialized);
 
-	uint8_t role = ble_conn_state_role(conn_handle);
+	uint8_t role = pm_conn_state_role(conn_handle);
 	uint32_t nrf_err = NRF_SUCCESS;
 	uint8_t sec_status = BLE_GAP_SEC_STATUS_SUCCESS;
 	ble_gap_sec_keyset_t sec_keyset;
@@ -843,7 +843,7 @@ uint32_t smd_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *sec_params
 		/* Set the default value for allowing repairing at the start of the sec proc. (for
 		 * peripheral)
 		 */
-		ble_conn_state_user_flag_set(conn_handle, flag_allow_repairing, false);
+		pm_conn_state_user_flag_set(conn_handle, flag_allow_repairing, false);
 	}
 #endif /* CONFIG_SOFTDEVICE_PERIPHERAL */
 
@@ -907,7 +907,7 @@ uint32_t smd_link_secure(uint16_t conn_handle, ble_gap_sec_params_t *sec_params,
 {
 	__ASSERT_NO_MSG(module_initialized);
 
-	uint8_t role = ble_conn_state_role(conn_handle);
+	uint8_t role = pm_conn_state_role(conn_handle);
 
 	switch (role) {
 #if defined(CONFIG_SOFTDEVICE_CENTRAL)

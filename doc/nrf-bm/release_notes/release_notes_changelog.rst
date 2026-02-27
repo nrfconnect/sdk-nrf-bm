@@ -100,6 +100,10 @@ Libraries
 
    * Updated functions to use the ``uint32_t`` type instead of ``int`` when returning nrf_errors.
 
+* Bluetooth LE Connection state library:
+
+   * Deprecated the library. Applications and other libraries and services should keep an internal state of required connections instead.
+
 Bluetooth LE Services
 ---------------------
 
