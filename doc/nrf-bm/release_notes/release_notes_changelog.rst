@@ -23,12 +23,14 @@ SDK installation
 S115 SoftDevice
 ===============
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Updated the SoftDevice to v10.0.0-1.prototype.
+  See the SoftDevice release notes for details.
 
 S145 SoftDevice
 ===============
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Updated the SoftDevice to v10.0.0-1.prototype.
+  See the SoftDevice release notes for details.
 
 SoftDevice Handler
 ==================
@@ -40,6 +42,7 @@ Boards
 
 * Added experimental support for PCA10188 (`nRF54LV10 DK`_)
 * Adjusted SRAM sizes for the ``bm_nrf54l15dk`` board target to not overlap with VPR context.
+* Adjusted the board memory layout for all boards to align with the new SoftDevice.
 
 Build system
 ============

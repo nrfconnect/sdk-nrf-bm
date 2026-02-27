@@ -74,17 +74,19 @@
 
 		slot0_partition: partition@a000 {
 			label = "slot0";
-			reg = <0x0000a000 DT_SIZE_K(798)>;
+			reg = <0x0000a000 DT_SIZE_K(802)>;
 		};
 
-		slot1_partition: partition@d1800 {
+		slot1_partition: partition@d2800 {
 			label = "slot1";
-			reg = <0x000d1800 DT_SIZE_K(64)>;
+			reg = <0x000d2800 DT_SIZE_K(64)>;
 		};
 
-		softdevice_partition: partition@e1800 {
+		/* Area from 0xe2800 to 0xe2c00 is unused due to alignment */
+
+		softdevice_partition: partition@e2c00 {
 			label = "softdevice";
-			reg = <0x000e1800 (DT_SIZE_K(109) + 0x200)>;
+			reg = <0x000e2c00 (DT_SIZE_K(104) + 0x200)>;
 		};
 
 		metadata_partition: partition@fce00 {
@@ -105,12 +107,12 @@
 
 	softdevice_static_ram: sram@0 {
 		label = "softdevice_static_ram";
-		reg = <0x0 0x1380>;
+		reg = <0x0 0x1080>;
 	};
 
-	softdevice_dynamic_ram: sram@1380 {
+	softdevice_dynamic_ram: sram@1080 {
 		label = "softdevice_dynamic_ram";
-		reg = <0x1380 DT_SIZE_K(12)>;
+		reg = <0x1080 (DT_SIZE_K(12) + 0x300)>;
 	};
 
 	app_ram: sram@4380 {

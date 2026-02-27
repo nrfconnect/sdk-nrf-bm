@@ -10,6 +10,9 @@
 #include "bm_nrf54l15dk_nrf54l15_cpuapp_common.dtsi"
 
 / {
+	/* Placed at the end of SRAM, but adjusted to 1kB boundary
+	 * (leaving 512 bytes as unused at the end)
+	 */
 	sram@2003f800 {
 		compatible = "zephyr,memory-region", "mmio-sram";
 		reg = <0x2003f800 DT_SIZE_K(1)>;
@@ -74,17 +77,19 @@
 
 		slot0_partition: partition@a000 {
 			label = "slot0";
-			reg = <0x0000a000 DT_SIZE_K(1310)>;
+			reg = <0x0000a000 DT_SIZE_K(1314)>;
 		};
 
-		slot1_partition: partition@151800 {
+		slot1_partition: partition@152800 {
 			label = "slot1";
-			reg = <0x00151800 DT_SIZE_K(64)>;
+			reg = <0x00152800 DT_SIZE_K(64)>;
 		};
 
-		softdevice_partition: partition@161800 {
+		/* Area from 0x162800 to 0x162c00 is unused due to alignment */
+
+		softdevice_partition: partition@162c00 {
 			label = "softdevice";
-			reg = <0x00161800 (DT_SIZE_K(109) + 0x200)>;
+			reg = <0x00162c00 (DT_SIZE_K(104) + 0x200)>;
 		};
 
 		metadata_partition: partition@17ce00 {
@@ -106,12 +111,12 @@
 
 	softdevice_static_ram: sram@0 {
 		label = "softdevice_static_ram";
-		reg = <0x0 0x1380>;
+		reg = <0x0 0x1080>;
 	};
 
-	softdevice_dynamic_ram: sram@1380 {
+	softdevice_dynamic_ram: sram@1080 {
 		label = "softdevice_dynamic_ram";
-		reg = <0x1380 DT_SIZE_K(12)>;
+		reg = <0x1080 (DT_SIZE_K(12) + 0x300)>;
 	};
 
 	app_ram: sram@4380 {
