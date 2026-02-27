@@ -19,7 +19,7 @@ The initialization starts ``GRTC`` and enables ``SYSCOUNTER``, as required by th
 
 When the SoftDevice is enabled, it takes the ownership of the peripherals that it needs.
 They will not be available for application to use.
-The SoftDevice is reusing both the `SoftDevice Controller`_ and the `Multiprotocol Service Layer`_ from the |NCS|.
+The SoftDevice is reusing both the `SoftDevice Controller <SoftDevice Controller Integration_>`_ and the `Multiprotocol Service Layer`_ from the |NCS|.
 See the Integration Notes documentation for these libraries to get an overview of the resource it will be using.
 
 For details on the SoftDevice behavior, see the `S115 SoftDevice Specification`_.

@@ -1,7 +1,8 @@
 s115_10.0.0-1.prototype
 =======================
 
-This version is a major release.
+This version is a major release, adding support for new nRF54L series devices
+and reducing RAM and NVM requirements.
 
 Notes:
 
@@ -13,13 +14,13 @@ SoftDevice properties
 ---------------------
 
 * This SoftDevice variant is compatible with
-  nRF54L05, nRF54L10, and nRF54L15.
+  nRF54LS05.
 
 * The SoftDevice memory requirements for this version are as follows:
 
-  * NVM: **107.0 kB** (0x1AC00 bytes).
+  * NVM: **102.0 kB** (0x19800 bytes).
 
-  * RAM: **4.9 kB** (0x1380 bytes).
+  * RAM: **4.1 kB** (0x1080 bytes).
     This is the minimum required memory. The actual requirements depend on the
     configuration chosen at ``sd_ble_enable()`` time.
 
@@ -32,20 +33,22 @@ SoftDevice properties
 
 * SoftDevice base address:
 
-  * nRF54L05: 0x062000 (``s115_nrf54l05_10.0.0-1.prototype_softdevice.hex``).
+  * nRF54LS05: 0x065400 (``s115_nrf54ls05_10.0.0-1.prototype_softdevice.hex``).
 
-  * nRF54L10: 0x0E2000 (``s115_nrf54l10_10.0.0-1.prototype_softdevice.hex``).
+* The Firmware ID of this SoftDevice is 0x3073.
 
-  * nRF54L15: 0x162000 (``s115_nrf54l15_10.0.0-1.prototype_softdevice.hex``).
 
-* The Firmware ID of this SoftDevice is 0x3056.
+See the changelog of the `SoftDevice Controller`_ and `MPSL`_ for more details about changes in the controller.
 
-New Features
--------------
+.. _SoftDevice Controller: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrfxlib/softdevice_controller/CHANGELOG.html
+.. _MPSL: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrfxlib/mpsl/CHANGELOG.html
 
 Changes
 -------
 
+* SoftDevice
+
+  * Optimized RAM consumption for simple configurations of the SoftDevice. (DRGN-26915)
 
 Limitations
 -----------
