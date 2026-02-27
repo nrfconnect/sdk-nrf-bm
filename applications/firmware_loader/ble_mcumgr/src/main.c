@@ -25,6 +25,8 @@
 #include <zephyr/settings/settings.h>
 #include <bm/settings/bluetooth_name.h>
 #include <zephyr/retention/retention.h>
+#include <bm/storage/bm_rmem.h>
+#include <bm/settings/bluetooth_rmem.h>
 
 LOG_MODULE_REGISTER(app, CONFIG_APP_LOG_LEVEL);
 
@@ -224,6 +226,15 @@ int main(void)
 
 	settings_load();
 #endif
+#if CONFIG_NCS_BM_FLAT_SETTINGS_BLUETOOTH_NAME
+	struct bm_retained_clipboard_ctx clipboard_ctx;
+
+	err = bm_rmem_reader_init(&clipboard_ctx);
+	if (err) {
+		LOG_INF("Failed to initialize retained clipboard reader, err %d", err);
+		/* Error is expected if retained RAM is empty or data are corupted. */
+	}
+#endif
 
 	nrf_err = ble_mcumgr_init(&mcumgr_cfg);
 
@@ -251,13 +262,19 @@ int main(void)
 		return 0;
 	}
 
-#if CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME
+#if CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME || CONFIG_NCS_BM_FLAT_SETTINGS_BLUETOOTH_NAME
 	const char *custom_advertising_name;
 	uint8_t custom_advertising_name_size;
 	ble_gap_conn_sec_mode_t sec_mode = {0};
 
+#if CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME
 	custom_advertising_name = bluetooth_name_value_get();
 	custom_advertising_name_size = strlen(custom_advertising_name);
+#endif
+#if CONFIG_NCS_BM_FLAT_SETTINGS_BLUETOOTH_NAME
+	custom_advertising_name_size =  ble_name_value_get(&clipboard_ctx,
+							   &custom_advertising_name);
+#endif
 
 	if (custom_advertising_name_size > 0) {
 		/* Change advertising name to one from application */
@@ -277,7 +294,7 @@ int main(void)
 			LOG_ERR("Failed to update advertising data, err %d", err);
 			return 0;
 		}
-
+#if CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME
 		/* Clear settings after device name has been set so it does not persist */
 		err = retention_clear(DEVICE_DT_GET(DT_CHOSEN(zephyr_settings_partition)));
 
@@ -285,6 +302,14 @@ int main(void)
 			LOG_ERR("Failed to clear retention area, err %d", err);
 			return 0;
 		}
+#endif
+#if CONFIG_NCS_BM_FLAT_SETTINGS_BLUETOOTH_NAME
+	err = bm_rmem_clear();
+	if (err) {
+		LOG_ERR("Failed to clear retained clipboard, err %d", err);
+		return 0;
+	}
+#endif
 	}
 #endif /* CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME */
 
@@ -294,8 +319,8 @@ int main(void)
 		return 0;
 	}
 
-#if CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME
-	LOG_INF("Advertising as %s", (custom_advertising_name_size > 0 ? custom_advertising_name :
+#if CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME || CONFIG_NCS_BM_FLAT_SETTINGS_BLUETOOTH_NAME
+	LOG_INF("Advertising as %s",  (custom_advertising_name_size > 0 ? custom_advertising_name :
 				      CONFIG_BLE_ADV_NAME));
 #else
 	LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
