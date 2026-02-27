@@ -4,7 +4,6 @@
 
 import time
 from pathlib import Path
-from typing import Any
 
 import pytest
 from pytest_plugins.adapters import nrfutil
@@ -18,39 +17,6 @@ TEST_ROOT_DIR: Path = Path(__file__).parents[1]
 APPLICATION_NAME: str = "mcuboot_recovery_retention"
 EXTRA_IMAGE_SIZE = 0x1000  # 4KB extra to exceed partition size
 TLV_TRAILER_SIZE = 8 * 1024  # 8KB for MCUboot metadata (TLV + trailer)
-
-
-def get_available_ports(dut: DeviceAdapter) -> list[str]:
-    """Return list of UART ports."""
-    serial_number, port = dut.device_config.id, dut.device_config.serial_configs[0].port
-    devices: list[dict[str, Any]] = nrfutil.list_devices()["devices"]
-
-    # if device id is not provided try to find it having its serial port
-    if serial_number is None and port:
-        for device in devices:
-            for serial_port in device["serialPorts"]:
-                if serial_port["path"] == port:
-                    serial_number = device["serialNumber"]
-                    break
-            if serial_number:
-                break
-
-    if serial_number is None:
-        raise ValueError(f"Cannot match port {port} to a device")
-
-    for device in devices:
-        if device["serialNumber"] == serial_number:
-            return [serial_port["path"] for serial_port in device["serialPorts"]]
-
-    raise ValueError(f"Cannot find a device with serial number: {serial_number}")
-
-
-@pytest.fixture
-def mcumgr(dut: DeviceAdapter) -> MCUmgr:
-    # we know that we need the first port for this board and sample
-    serial_port = get_available_ports(dut)[0]
-    mcumgr = MCUmgr.create_for_serial(serial_port)
-    return mcumgr
 
 
 def test_if_uploading_too_large_softdevice_image_is_not_possible(
@@ -132,7 +98,7 @@ def test_if_uploading_too_large_softdevice_image_is_not_possible(
     )
 
 
-def test_dfu_upload_too_large_app(dut: DeviceAdapter, zephyr_base, tmp_path, config_reader):
+def test_dfu_upload_too_large_app(dut: DeviceAdapter, tmp_path, config_reader, serial_port):
     """Test uploading too large application.
 
     Should not be possible to upload an image which does not fit size of a partition.
@@ -184,7 +150,6 @@ def test_dfu_upload_too_large_app(dut: DeviceAdapter, zephyr_base, tmp_path, con
     dut.readlines_until(regex="Jumping to the first image slot", timeout=5)
 
     time.sleep(3)  # wait for the application to start
-    serial_port = get_available_ports(dut)[0]
     # using nrfutil to upload an image due to mcumgr hangs on upload too large image
     ret = nrfutil.image_upload(serial_port, signed_output_zephyr, check=False)
     assert ret.returncode == 1, f"Expected return code 1, but was {ret.returncode}"

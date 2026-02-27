@@ -15,3 +15,22 @@ tests:
     harness_config:
       pytest_root:
         - "../pytest/test_dfu.py"
+
+  boot.mcuboot_recovery_retention.uart.installer_delays:
+    sysbuild: true
+    integration_platforms:
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+    platform_allow:
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+    extra_args:
+      - SB_CONFIG_BM_FIRMWARE_LOADER_UART_MCUMGR=y
+      - installer_CONFIG_APP_BM_INSTALLER_SELF_DELAYS=y
+      - installer_CONFIG_APP_BM_INSTALLER_PRIOR_SELF_DESTRUCTION_DELAY_MS=3000
+    tags:
+      - pytest
+      - dfu
+    timeout: 300
+    harness: pytest
+    harness_config:
+      pytest_root:
+        - "../pytest/test_dfu_installer.py"
