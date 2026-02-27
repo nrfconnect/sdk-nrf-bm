@@ -1,0 +1,8 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+config BOARD_BM_NRF54LS05DK
+	select BOARD_LATE_INIT_HOOK

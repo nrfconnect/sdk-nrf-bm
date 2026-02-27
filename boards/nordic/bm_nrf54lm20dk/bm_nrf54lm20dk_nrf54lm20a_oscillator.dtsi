@@ -1,0 +1,55 @@
+/*
+ * Copyright (c) 2026 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+ */
+
+&hfxo {
+	/* High-frequency external oscillator (HFXO) is required. Status must be "okay". */
+	status = "okay";
+
+	/* Type of load-capacitors to use for the HFXO.
+	 * Options:
+	 *     "internal"  Use internal load-capacitors.
+	 *     "external"  Use external load-capacitors.
+	 */
+	load-capacitors = "internal";
+
+	/* Internal load-capacitance in fF units.
+	 * Only applicable if internal load-capacitors are used for the HFXO.
+	 *
+	 * Default capacitance for the nRF54LM20 DK is 15 pF.
+	 */
+	load-capacitance-femtofarad = <15000>;
+};
+
+&lfxo {
+	/* If low-frequency external oscillator (LFXO) should be used.
+	 * Options:
+	 *     "okay"        Use external oscillator (requires that HW layout has XO).
+	 *     "disabled"    Do not use external oscillator (use internal RC).
+	 */
+	status = "okay";
+
+	/* Type of load-capacitors to use for the LFXO.
+	 * Only applicable if using LFXO (status = "okay").
+	 * Options:
+	 *     "internal"  Use internal load-capacitors.
+	 *     "external"  Use external load-capacitors.
+	 */
+	load-capacitors = "internal";
+
+	/* Internal load-capacitance in fF units.
+	 * Not applicable if external load-capacitors are used for the LFXO.
+	 *
+	 * Default capacitance for the nRF54LM20 DK is 17 pF.
+	 */
+	load-capacitance-femtofarad = <17000>;
+};
+
+&grtc {
+	owned-channels = <0 1 2 3 4 5 6 7 8 9 10 11>;
+	/* Channels 7-11 are reserved for SoftDevice. */
+	child-owned-channels = <7 8 9 10 11>;
+	status = "okay";
+};

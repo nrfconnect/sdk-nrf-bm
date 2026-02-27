@@ -204,6 +204,10 @@ config SOFTDEVICE_FILE
 	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/components/softdevice/nrf54l/s145/s145_nrf54l15_10.0.0-1.prototype_softdevice.hex" if SOFTDEVICE_S145 && SOC_NRF54L15
 	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/components/softdevice/nrf54lv/s115/s115_nrf54lv10_10.0.0-1.prototype_softdevice.hex" if SOFTDEVICE_S115 && SOC_NRF54LV10A
 	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/components/softdevice/nrf54lv/s145/s145_nrf54lv10_10.0.0-1.prototype_softdevice.hex" if SOFTDEVICE_S145 && SOC_NRF54LV10A
+	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/components/softdevice/nrf54lm/s115/s115_nrf54lm20_10.0.0-1.prototype_softdevice.hex" if SOFTDEVICE_S115 && SOC_NRF54LM20A
+	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/components/softdevice/nrf54lm/s145/s145_nrf54lm20_10.0.0-1.prototype_softdevice.hex" if SOFTDEVICE_S145 && SOC_NRF54LM20A
+	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/components/softdevice/nrf54ls/s115/s115_nrf54ls05_10.0.0-1.prototype_softdevice.hex" if SOFTDEVICE_S115 && SOC_NRF54LS05B
+	default "$(ZEPHYR_NRF_BM_MODULE_DIR)/components/softdevice/nrf54ls/s145/s145_nrf54ls05_10.0.0-1.prototype_softdevice.hex" if SOFTDEVICE_S145 && SOC_NRF54LS05B
 	help
 	  Specifies the path to the softdevice hex file.
 
