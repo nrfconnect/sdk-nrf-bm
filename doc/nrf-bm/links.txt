@@ -74,6 +74,7 @@
 .. _`How to flash an application`: https://docs.nordicsemi.com/bundle/nrf-connect-vscode/page/get_started/quick_debug.html#how-to-flash-an-application
 .. _`How to connect to the terminal`: https://docs.nordicsemi.com/bundle/nrf-connect-vscode/page/get_started/quick_debug.html#how-to-connect-to-the-terminal
 .. _`nRF Connect for Desktop`: https://www.nordicsemi.com/Software-and-Tools/Development-Tools/nRF-Connect-for-desktop
+.. _`additional requirements`: https://docs.nordicsemi.com/bundle/nrf-connect-desktop/page/download_cfd.html
 .. _`nRF Connect Device Manager`: https://www.nordicsemi.com/Products/Development-tools/nRF-Connect-Device-Manager
 .. _`nRF Toolbox`: https://www.nordicsemi.com/Software-and-Tools/Development-Tools/nRF-Toolbox
 .. _`Bluetooth Low Energy app`: https://docs.nordicsemi.com/bundle/nrf-connect-ble/page/index.html
