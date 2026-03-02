@@ -1,13 +1,21 @@
 .. _nrf_bm_release_notes_1099:
 
-Changelog for |BMlong| v1.0.99
-##############################
+Changelog for |BMlong| v2.0.0-preview1
+######################################
 
-The most relevant changes that are present on the main branch of the nRF Connect SDK Bare Metal, as compared to the latest official release, are tracked in this file.
+This changelog reflects the most relevant changes from the latest official release.
 
-.. note::
+Highlights
+**********
 
-   This file is a work in progress and might not cover all relevant changes.
+The following are the major changes introduced by the v2.0.0-preview1 tag:
+
+* Introduced the new S115 and S145 SoftDevices: v10.0.0-1.prototype.
+* Added experimental support for the following boards:
+
+   * PCA10188 (`nRF54LV10 DK`_)
+   * PCA10184 (`nRF54LM20 DK`_)
+   * PCA10214 (nRF54LS05 DK)
 
 Changelog
 *********
@@ -17,7 +25,7 @@ The following sections provide detailed lists of changes by component.
 SDK installation
 ================
 
-- Updated the steps to install prerequisites in the :ref:`install_nrf_bm` page.
+* Updated the steps to install prerequisites in the :ref:`install_nrf_bm` page.
   Installation of the recommended version of SEGGER J-Link is now handled by nRF Connect for Desktop.
 
 S115 SoftDevice
@@ -40,13 +48,14 @@ SoftDevice Handler
 Boards
 ======
 
-* Adjusted SRAM sizes for the ``bm_nrf54l15dk`` board target to not overlap with VPR context.
-* Adjusted the board memory layout for all boards to align with the new SoftDevice.
 * Added experimental support for the following boards:
 
    * PCA10188 (`nRF54LV10 DK`_)
    * PCA10184 (`nRF54LM20 DK`_)
    * PCA10214 (nRF54LS05 DK)
+
+* Adjusted SRAM sizes for the ``bm_nrf54l15dk`` board target to not overlap with VPR context.
+* Adjusted the board memory layout for all boards to align with the new SoftDevice.
 
 Build system
 ============
@@ -79,12 +88,12 @@ Drivers
 Libraries
 =========
 
+* Added the :ref:`lib_bm_gpiote` library.
+
 * :ref:`lib_peer_manager` library:
 
    * Removed the ``CONFIG_MBEDTLS_PSA_STATIC_KEY_SLOT_BUFFER_SIZE`` Kconfig option.
      The PSA Crypto core can deduce the key slot buffer size based on the keys enabled in the build, so there is no need to define the size manually.
-
-* Added the :ref:`lib_bm_gpiote` library.
 
 * :ref:`lib_bm_buttons` library:
 
@@ -94,15 +103,15 @@ Libraries
 
    * Added the ``const`` keyword to the configuration structure parameter of the :c:func:`ble_adv_init` function to reflect that the function only reads from the configuration and does not modify it.
 
-   * Fixed:
-
-      * An issue causing fast advertising with allow list to incorrectly send event :c:enumerator:`BLE_ADV_EVT_FAST` when it should have sent event :c:enumerator:`BLE_ADV_EVT_FAST_ALLOW_LIST`.
-      * An issue causing slow advertising with allow list to incorrectly send event :c:enumerator:`BLE_ADV_EVT_SLOW` when it should have sent event :c:enumerator:`BLE_ADV_EVT_SLOW_ALLOW_LIST`.
-
    * Updated:
 
       * Changed the :kconfig:option:`CONFIG_BLE_ADV_EXTENDED_ADVERTISING` Kconfig option to be disabled by default and dependent on the new :kconfig:option:`CONFIG_SOFTDEVICE_EXTENDED_ADVERTISING` Kconfig option.
       * Changed the :kconfig:option:`CONFIG_BLE_ADV_DIRECTED_ADVERTISING` Kconfig option to be disabled by default.
+
+   * Fixed:
+
+      * An issue causing fast advertising with allow list to incorrectly send event :c:enumerator:`BLE_ADV_EVT_FAST` when it should have sent event :c:enumerator:`BLE_ADV_EVT_FAST_ALLOW_LIST`.
+      * An issue causing slow advertising with allow list to incorrectly send event :c:enumerator:`BLE_ADV_EVT_SLOW` when it should have sent event :c:enumerator:`BLE_ADV_EVT_SLOW_ALLOW_LIST`.
 
 * :ref:`lib_ble_scan`:
 
@@ -147,6 +156,8 @@ Samples
 Bluetooth LE samples
 --------------------
 
+* Added the :ref:`peripheral_nfc_pairing_sample`.
+
 * :ref:`ble_bms_sample`:
 
    * Added sample-specific Kconfig options for the BMS authorization code by moving them from the service library scope and renaming them from :kconfig:option:`CONFIG_BLE_BMS_AUTHORIZATION_CODE` and :kconfig:option:`CONFIG_BLE_BMS_USE_AUTHORIZATION_CODE` to :kconfig:option:`CONFIG_APP_BLE_BMS_AUTHORIZATION_CODE` and :kconfig:option:`CONFIG_APP_BLE_BMS_USE_AUTHORIZATION_CODE`.
@@ -167,10 +178,6 @@ Bluetooth LE samples
 
    * Updated to use a dedicated variable to hold the service attribute handle instead of incorrectly using the connection handle variable for this during service initialization.
 
-* :ref:`peripheral_nfc_pairing_sample`:
-
-   * Added the new sample.
-
 NFC samples
 -----------
 
@@ -182,7 +189,7 @@ Peripheral samples
 
 * :ref:`bm_lpuarte_sample` sample:
 
-   * Updated to align with changes to the :ref:`driver_lpuarte` driver.
+  * Updated to align with changes to the :ref:`driver_lpuarte` driver.
 
 DFU samples
 -----------

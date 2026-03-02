@@ -4,6 +4,14 @@
 Introduction
 ############
 
+.. important::
+
+   |BMlong| v2.0.0-preview1 is a development tag used for development purposes.
+   It is not recommended to be used in a production environment.
+   This tag will be replaced by a release in the future.
+
+   For a list of changes in this preview tag, see :ref:`nrf_bm_release_notes_1099`.
+
 The |BMlong| is a streamlined enhancement of the |NCS|, tailored for developers who are working on Bluetooth® LE applications that do not require the complexities of an RTOS or the full suite of advanced features.
 This option is particularly beneficial for applications that require a lightweight, responsive solution.
 
