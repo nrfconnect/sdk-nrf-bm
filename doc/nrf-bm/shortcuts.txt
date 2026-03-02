@@ -7,8 +7,8 @@
 
 .. ### Versions
 
-.. |ncs_release| replace:: v3.2.0
-.. |release| replace:: v1.0.0
+.. |ncs_release| replace:: v3.3.0-preview2
+.. |release| replace:: v2.0.0-preview1
 
 .. |jlink_ver| replace:: v8.76
 
