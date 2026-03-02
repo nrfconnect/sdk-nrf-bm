@@ -11,11 +11,13 @@ Highlights
 The following are the major changes introduced by the v2.0.0-preview1 tag:
 
 * Introduced the new S115 and S145 SoftDevices: v10.0.0-1.prototype.
-* Added experimental support for the following boards:
+* Added experimental support for the following new boards:
 
    * PCA10188 (`nRF54LV10 DK`_)
    * PCA10184 (`nRF54LM20 DK`_)
    * PCA10214 (nRF54LS05 DK)
+
+  Support for the new boards is added in the :ref:`ble_hrs_sample` and :ref:`ble_nus_sample` samples.
 
 Changelog
 *********
@@ -162,6 +164,14 @@ Bluetooth LE samples
 
    * Added sample-specific Kconfig options for the BMS authorization code by moving them from the service library scope and renaming them from :kconfig:option:`CONFIG_BLE_BMS_AUTHORIZATION_CODE` and :kconfig:option:`CONFIG_BLE_BMS_USE_AUTHORIZATION_CODE` to :kconfig:option:`CONFIG_APP_BLE_BMS_AUTHORIZATION_CODE` and :kconfig:option:`CONFIG_APP_BLE_BMS_USE_AUTHORIZATION_CODE`.
 
+* :ref:`ble_hrs_sample` sample:
+
+   * Added support for the new board targets:
+
+     * PCA10188 (`nRF54LV10 DK`_)
+     * PCA10184 (`nRF54LM20 DK`_)
+     * PCA10214 (nRF54LS05 DK)
+
 * :ref:`ble_hids_keyboard_sample`:
 
    * Added support for boot mode.
@@ -171,6 +181,12 @@ Bluetooth LE samples
    * Fixed an issue where the sample did not enter or exit boot mode properly based on the HID events.
 
 * :ref:`ble_nus_sample` sample:
+
+   * Added support for the new board targets:
+
+     * PCA10188 (`nRF54LV10 DK`_)
+     * PCA10184 (`nRF54LM20 DK`_)
+     * PCA10214 (nRF54LS05 DK)
 
    * Updated to align with changes to the :ref:`driver_lpuarte` driver.
 
