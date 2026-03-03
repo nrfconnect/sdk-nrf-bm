@@ -11,6 +11,7 @@ The following is a list of all release notes documents for various releases of t
 
    release_notes/bm_software_maturity
    release_notes/release_notes_changelog
+   release_notes/release_notes_2.0.0-preview1
    release_notes/release_notes_1.0.0
    release_notes/release_notes_0.9.0
    release_notes/release_notes_0.8.0
