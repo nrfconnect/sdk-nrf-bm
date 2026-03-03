@@ -64,20 +64,24 @@ The sample supports the following development kits:
            - S115
            - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
 
-The sample also requires the following pins to be shorted:
+The sample also requires the following pins to be connected, as defined in the boards :file:`board-config.h` header:
 
-   .. list-table:: Pin connections.
-      :widths: auto
-      :header-rows: 1
+  .. include:: /includes/lpuarte_board_connections.txt
 
-      * - Development Kit
-        - nRF54L15 DK pins
-      * - Request-Response Pins
-        - P1.08-P1.09
-      * - UART RX-TX Pins
-        - P1.10-P1.11
+  #. For two-device setup:
 
-Additionally, it requires a logic analyzer.
+    - Device 1 **LPUARTE TX** → Device 2 **LPUARTE RX**
+    - Device 1 **LPUARTE RX** → Device 2 **LPUARTE TX**
+    - Device 1 **LPUARTE REQ** → Device 2 **LPUARTE RDY**
+    - Device 1 **LPUARTE RDY** → Device 2 **LPUARTE REQ**
+    - Connect **GND** between both devices.
+
+  #. For single-device loopback setup:
+
+    - **LPUARTE TX** → **LPUARTE RX**
+    - **LPUARTE REQ** → **LPUARTE RDY**
+
+Additionally, the sample requires a logic analyzer to observe the LPUARTE activity and a current measurement instrument to measure the current.
 
 Overview
 ********
@@ -105,7 +109,7 @@ Testing
 You can test this sample by performing the following steps:
 
 #. Compile and program the application.
-#. Connect the logic analyzer to the shorted pins, to confirm UARTE activity.
+#. Connect the logic analyzer to the LPUARTE pins, to confirm UARTE activity.
    The request/response pins are HIGH in the idle state.
    When a transmission starts, the pins are pulled LOW to signal the start of data transfer.
    At the same time, activity should be visible on the UART RX/TX pins.

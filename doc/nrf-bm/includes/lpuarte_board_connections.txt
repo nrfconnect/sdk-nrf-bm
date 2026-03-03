@@ -1,0 +1,29 @@
+.. list-table:: LPUARTE pin connections (board-config.h).
+   :widths: auto
+   :header-rows: 1
+
+   * - Development Kit
+     - nRF54L15 DK
+     - nRF54LM20 DK
+     - nRF54LS05 DK
+     - nRF54LV10 DK
+   * - LPUARTE TX
+     - P1.11
+     - P1.12
+     - P1.17
+     - P1.17
+   * - LPUARTE RX
+     - P1.12
+     - P1.13
+     - P1.18
+     - P1.18
+   * - LPUARTE REQ
+     - P0.04
+     - P1.14
+     - P1.19
+     - P1.19
+   * - LPUARTE RDY
+     - P1.14
+     - P1.15
+     - P1.20
+     - P1.20

@@ -42,8 +42,12 @@ Boards
    * PCA10184 (`nRF54LM20 DK`_)
    * PCA10214 (nRF54LS05 DK)
 
-* Adjusted SRAM sizes for the ``bm_nrf54l15dk`` board target to not overlap with VPR context.
-* Adjusted the board memory layout for all boards to align with the new SoftDevice.
+* Updated:
+
+   * The SRAM sizes for the ``bm_nrf54l15dk`` board target to not overlap with VPR context.
+   * The board memory layout for all boards to align with the new SoftDevice.
+   * The LPUARTE pins in ``board-config.h`` for ``bm_nrf54l15dk`` to avoid conflicts for LEDs, buttons and other peripherals where possible.
+
 * Disabled all Peripheral Resource Sharing (PRS) boxes for the ``bm_nrf54l15dk`` board variants.
 
 Build system
