@@ -212,6 +212,7 @@ uint32_t ble_bas_init(struct ble_bas *bas, const struct ble_bas_config *bas_conf
  *                                 and not equal to @ref BLE_BAS_BATTERY_LEVEL_LAST.
  * @return In addition, this function may return any error
  *         returned by the following SoftDevice functions:
+ *         - @ref sd_ble_gatts_value_get()
  *         - @ref sd_ble_gatts_value_set()
  *         - @ref sd_ble_gatts_hvx()
  */

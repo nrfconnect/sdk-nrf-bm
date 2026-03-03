@@ -172,31 +172,42 @@ uint32_t ble_bas_battery_level_update(struct ble_bas *bas, uint16_t conn_handle,
 				      uint8_t battery_level)
 {
 	uint32_t nrf_err;
-	ble_gatts_value_t val;
-	ble_gatts_hvx_params_t hvx;
 
 	if (!bas) {
 		return NRF_ERROR_NULL;
 	}
 
+	/* Same value — nothing to do. Use BLE_BAS_BATTERY_LEVEL_LAST to force re-notify. */
+	if (battery_level == bas->battery_level) {
+		return NRF_SUCCESS;
+	}
+
+	/*
+	 * BLE_BAS_BATTERY_LEVEL_LAST re-sends the current level as a notification without updating
+	 * the value. Any other value above 100 is invalid.
+	 */
 	if (battery_level > 100) {
 		if (battery_level == BLE_BAS_BATTERY_LEVEL_LAST) {
-			/* Notify the current value. Do not update the battery level. */
 			battery_level = bas->battery_level;
 		} else {
 			return NRF_ERROR_INVALID_PARAM;
 		}
 	}
 
-	const uint16_t value_handle = bas->battery_level_handles.value_handle;
-
+	/*
+	 * Update the GATT database only if the battery level actually changed.
+	 * When BLE_BAS_BATTERY_LEVEL_LAST is used, battery_level == bas->battery_level at this
+	 * point, so the write is skipped, only the notification matters.
+	 */
 	if (battery_level != bas->battery_level) {
-		val = (ble_gatts_value_t) {
+		ble_gatts_value_t val = {
 			.len = sizeof(battery_level),
 			.p_value = &battery_level,
 		};
 
-		nrf_err = sd_ble_gatts_value_set(conn_handle, value_handle, &val);
+		nrf_err = sd_ble_gatts_value_set(BLE_CONN_HANDLE_INVALID,
+						 bas->battery_level_handles.value_handle,
+						 &val);
 		if (nrf_err) {
 			LOG_ERR("Failed to update battery level, nrf_error %#x", nrf_err);
 			return nrf_err;
@@ -206,14 +217,40 @@ uint32_t ble_bas_battery_level_update(struct ble_bas *bas, uint16_t conn_handle,
 		LOG_DBG("Battery level: %d%%", battery_level);
 	}
 
+	/* No CCCD descriptor exists when notifications are not supported. We are done. */
 	if (!bas->can_notify) {
-		/* We are done. */
+		return NRF_SUCCESS;
+	}
+
+	/* Read the CCCD to check whether the peer has subscribed to notifications. */
+	ble_gatts_value_t cccd_val = {
+		.p_value = (uint8_t *)&(uint16_t){0},
+		.len = sizeof(uint16_t),
+	};
+	nrf_err = sd_ble_gatts_value_get(conn_handle, bas->battery_level_handles.cccd_handle,
+					 &cccd_val);
+	if (nrf_err == BLE_ERROR_INVALID_CONN_HANDLE) {
+		/* Connection no longer valid. Do not notify. */
+		return NRF_SUCCESS;
+	}
+	if (nrf_err == BLE_ERROR_GATTS_SYS_ATTR_MISSING) {
+		/* CCCD value is unknown. Do not notify. */
+		return NRF_SUCCESS;
+	}
+	if (nrf_err) {
+		LOG_ERR("Failed to get Battery Service CCCD value "
+			"for connection %#x, nrf_error %#x", conn_handle, nrf_err);
+		return nrf_err;
+	}
+
+	/* Peer has not subscribed to notifications. We are done. */
+	if (!is_notification_enabled(cccd_val.p_value)) {
 		return NRF_SUCCESS;
 	}
 
 	/* Send notification. */
-	hvx = (ble_gatts_hvx_params_t) {
-		.handle = value_handle,
+	ble_gatts_hvx_params_t hvx = {
+		.handle = bas->battery_level_handles.value_handle,
 		.type   = BLE_GATT_HVX_NOTIFICATION,
 		.p_len  = &(uint16_t){sizeof(battery_level)},
 		.p_data = NULL, /* Use the current battery level characteristic value. */
@@ -221,13 +258,7 @@ uint32_t ble_bas_battery_level_update(struct ble_bas *bas, uint16_t conn_handle,
 
 	nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx);
 	if (nrf_err) {
-		LOG_DBG("Failed to notify battery level, nrf_error %#x", nrf_err);
-
-		if (nrf_err == BLE_ERROR_GATTS_SYS_ATTR_MISSING) {
-			/* CCCD value is unknown. Treat as if notifications are not enabled. */
-			nrf_err = NRF_ERROR_INVALID_STATE;
-		}
-
+		LOG_ERR("Failed to notify battery level, nrf_error %#x", nrf_err);
 		return nrf_err;
 	}
 
