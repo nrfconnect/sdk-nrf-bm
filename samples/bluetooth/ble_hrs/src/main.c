@@ -55,7 +55,6 @@ static struct bm_timer rr_interval_timer;
 static struct bm_timer sensor_contact_timer;
 
 static bool hrs_notif_enabled;
-static bool bas_notif_enabled;
 
 void battery_level_meas_timeout_handler(void *context)
 {
@@ -71,16 +70,10 @@ void battery_level_meas_timeout_handler(void *context)
 		return;
 	}
 
-	if (!bas_notif_enabled) {
-		return;
-	}
-
 	nrf_err = ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level);
 	if (nrf_err) {
-		/* Ignore if not in a connection or notifications disabled in CCCD. */
-		if (nrf_err != NRF_ERROR_NOT_FOUND && nrf_err != NRF_ERROR_INVALID_STATE) {
-			LOG_ERR("Failed to update battery level, nrf_error %#x", nrf_err);
-		}
+		LOG_ERR("Failed to update battery level, nrf_error %#x", nrf_err);
+		return;
 	}
 }
 
@@ -296,10 +289,10 @@ static void ble_bas_evt_handler(struct ble_bas *bas, const struct ble_bas_evt *e
 {
 	switch (evt->evt_type) {
 	case BLE_BAS_EVT_NOTIFICATION_ENABLED:
-		bas_notif_enabled = true;
+		LOG_INF("Battery notification enabled");
 		break;
 	case BLE_BAS_EVT_NOTIFICATION_DISABLED:
-		bas_notif_enabled = false;
+		LOG_INF("Battery notification disabled");
 		break;
 	default:
 		break;
