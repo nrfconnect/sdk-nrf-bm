@@ -1,9 +1,23 @@
-.. _nrf_bm_release_notes_1099:
+.. _nrf_bm_release_notes_200-preview1:
 
-Changelog for |BMlong| v1.0.99
-##############################
+Changelog for |BMlong| v2.0.0-preview1
+######################################
 
 This changelog reflects the most relevant changes from the latest official release.
+
+Highlights
+**********
+
+The following are the major changes introduced by the v2.0.0-preview1 tag:
+
+* Introduced the new S115 and S145 SoftDevices: v10.0.0-1.prototype.
+* Added experimental support for the following new boards:
+
+   * PCA10188 (`nRF54LV10 DK`_)
+   * PCA10184 (`nRF54LM20 DK`_)
+   * PCA10214 (nRF54LS05 DK)
+
+  Support for the new boards is added in the :ref:`ble_hrs_sample` and :ref:`ble_nus_sample` samples.
 
 Changelog
 *********
