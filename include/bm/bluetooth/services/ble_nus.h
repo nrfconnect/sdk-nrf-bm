@@ -130,7 +130,7 @@ struct ble_nus_evt {
 			/** Length of received data. */
 			uint16_t length;
 		} rx_data;
-		/** @ref BLE_BAS_EVT_ERROR event data. */
+		/** @ref BLE_NUS_EVT_ERROR event data. */
 		struct {
 			/** Error reason. */
 			uint32_t reason;
