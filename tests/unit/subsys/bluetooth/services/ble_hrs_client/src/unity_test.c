@@ -383,11 +383,11 @@ void test_ble_hrs_on_db_disc_evt_wrong_service_ignored(void)
 	struct ble_db_discovery_evt evt = {
 		.evt_type = BLE_DB_DISCOVERY_COMPLETE,
 		.conn_handle = CONN_HANDLE,
-		.params.discovered_db.srv_uuid = {
+		.discovered_db.srv_uuid = {
 			.type = BLE_UUID_TYPE_BLE,
 			.uuid = BLE_UUID_BATTERY_SERVICE,
 		},
-		.params.discovered_db.char_count = 0,
+		.discovered_db.char_count = 0,
 	};
 
 	__cmock_ble_db_discovery_service_register_ExpectAndReturn(&db_discovery, NULL, NRF_SUCCESS);
@@ -414,7 +414,7 @@ void test_ble_hrs_on_db_disc_evt_srv_not_found_ignored(void)
 	struct ble_db_discovery_evt evt = {
 		.evt_type = BLE_DB_DISCOVERY_SRV_NOT_FOUND,
 		.conn_handle = CONN_HANDLE,
-		.params.discovered_db.srv_uuid = {
+		.discovered_db.srv_uuid = {
 			.type = BLE_UUID_TYPE_BLE,
 			.uuid = BLE_UUID_HEART_RATE_SERVICE,
 		},
@@ -444,12 +444,12 @@ void test_ble_hrs_on_db_disc_evt_complete_with_hrm_char(void)
 	struct ble_db_discovery_evt evt = {
 		.evt_type = BLE_DB_DISCOVERY_COMPLETE,
 		.conn_handle = CONN_HANDLE,
-		.params.discovered_db.srv_uuid = {
+		.discovered_db.srv_uuid = {
 			.type = BLE_UUID_TYPE_BLE,
 			.uuid = BLE_UUID_HEART_RATE_SERVICE,
 		},
-		.params.discovered_db.char_count = 1,
-		.params.discovered_db.characteristics = {
+		.discovered_db.char_count = 1,
+		.discovered_db.characteristics = {
 			[0] = {
 				.characteristic.uuid.uuid = BLE_UUID_HEART_RATE_MEASUREMENT_CHAR,
 				.characteristic.handle_value = HRM_HANDLE,
@@ -486,12 +486,12 @@ void test_ble_hrs_on_db_disc_evt_hrm_char_at_index_one(void)
 	struct ble_db_discovery_evt evt = {
 		.evt_type = BLE_DB_DISCOVERY_COMPLETE,
 		.conn_handle = CONN_HANDLE,
-		.params.discovered_db.srv_uuid = {
+		.discovered_db.srv_uuid = {
 			.type = BLE_UUID_TYPE_BLE,
 			.uuid = BLE_UUID_HEART_RATE_SERVICE,
 		},
-		.params.discovered_db.char_count = 2,
-		.params.discovered_db.characteristics = {
+		.discovered_db.char_count = 2,
+		.discovered_db.characteristics = {
 			[0] = {
 				.characteristic.uuid.uuid = BLE_UUID_BODY_SENSOR_LOCATION_CHAR,
 				.characteristic.handle_value = 0x000E,
@@ -535,11 +535,11 @@ void test_ble_hrs_on_db_disc_evt_complete_hrs_no_hrm_char(void)
 	struct ble_db_discovery_evt evt = {
 		.evt_type = BLE_DB_DISCOVERY_COMPLETE,
 		.conn_handle = CONN_HANDLE,
-		.params.discovered_db.srv_uuid = {
+		.discovered_db.srv_uuid = {
 			.type = BLE_UUID_TYPE_BLE,
 			.uuid = BLE_UUID_HEART_RATE_SERVICE,
 		},
-		.params.discovered_db.char_count = 0,
+		.discovered_db.char_count = 0,
 	};
 
 	__cmock_ble_db_discovery_service_register_ExpectAndReturn(&db_discovery, NULL, NRF_SUCCESS);
@@ -581,12 +581,12 @@ void test_ble_hrs_on_db_disc_evt_does_not_overwrite_peer_db_when_already_assigne
 	struct ble_db_discovery_evt disc_evt = {
 		.evt_type = BLE_DB_DISCOVERY_COMPLETE,
 		.conn_handle = CONN_HANDLE,
-		.params.discovered_db.srv_uuid = {
+		.discovered_db.srv_uuid = {
 			.type = BLE_UUID_TYPE_BLE,
 			.uuid = BLE_UUID_HEART_RATE_SERVICE,
 		},
-		.params.discovered_db.char_count = 1,
-		.params.discovered_db.characteristics = {
+		.discovered_db.char_count = 1,
+		.discovered_db.characteristics = {
 			[0] = {
 				.characteristic.uuid.uuid = BLE_UUID_HEART_RATE_MEASUREMENT_CHAR,
 				/* different from HRM_HANDLE */
@@ -646,12 +646,12 @@ void test_ble_hrs_on_db_disc_evt_assigns_peer_db_when_conn_handle_set(void)
 	struct ble_db_discovery_evt disc_evt = {
 		.evt_type = BLE_DB_DISCOVERY_COMPLETE,
 		.conn_handle = CONN_HANDLE,
-		.params.discovered_db.srv_uuid = {
+		.discovered_db.srv_uuid = {
 			.type = BLE_UUID_TYPE_BLE,
 			.uuid = BLE_UUID_HEART_RATE_SERVICE,
 		},
-		.params.discovered_db.char_count = 1,
-		.params.discovered_db.characteristics = {
+		.discovered_db.char_count = 1,
+		.discovered_db.characteristics = {
 			[0] = {
 				.characteristic.uuid.uuid = BLE_UUID_HEART_RATE_MEASUREMENT_CHAR,
 				.characteristic.handle_value = HRM_HANDLE,

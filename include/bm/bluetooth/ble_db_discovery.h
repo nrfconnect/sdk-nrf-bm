@@ -88,7 +88,7 @@ struct ble_db_discovery_evt {
 			 */
 			uint32_t reason;
 		} error;
-	} params;
+	};
 };
 
 /* Forward declaration. */
