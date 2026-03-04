@@ -35,8 +35,11 @@ config LOG_BACKEND_BM_UARTE_BUFFER_SIZE
 
 config LOG_BACKEND_BM_UARTE_IRQ_PRIO
 	int "IRQ priority"
-	range 3 7
+	range 2 7
 	default 5
+	help
+	  Sets the interrupt priority of the UARTE peripheral used by the log backend.
+	  Levels are from 2 (highest priority) to 7 (lowest priority).
 
 config LOG_BACKEND_BM_UARTE_USE_HWFC
 	bool "Use hardware flow control"

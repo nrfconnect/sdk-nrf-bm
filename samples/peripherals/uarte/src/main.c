@@ -8,6 +8,7 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 
+#include <bm/bm_irq.h>
 #include <hal/nrf_gpio.h>
 #include <board-config.h>
 #include <nrfx_uarte.h>
@@ -114,9 +115,9 @@ static int uarte_init(void)
 	uarte_config.interrupt_priority = CONFIG_SAMPLE_UARTE_IRQ_PRIO;
 
 	/* We need to connect the IRQ ourselves. */
-	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(BOARD_APP_UARTE_INST),
-			   CONFIG_SAMPLE_UARTE_IRQ_PRIO,
-			   uarte_direct_isr, 0);
+	BM_IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(BOARD_APP_UARTE_INST),
+			      CONFIG_SAMPLE_UARTE_IRQ_PRIO,
+			      uarte_direct_isr, 0);
 
 	irq_enable(NRFX_IRQ_NUMBER_GET(BOARD_APP_UARTE_INST));
 

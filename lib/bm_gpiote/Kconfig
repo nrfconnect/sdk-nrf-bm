@@ -14,7 +14,14 @@ if BM_GPIOTE
 
 config BM_GPIOTE_IRQ_PRIO
 	int "GPIOTE IRQ priority"
+	range 2 7
+	default 5 if SOFTDEVICE
 	default 3
+	help
+	  Sets the interrupt priority of the GPIOTE peripherals used by the library.
+	  Levels are from 2 (highest priority) to 7 (lowest priority).
+	  Interrupt priority level must be greater than 4 (softdevice low priority)
+	  if you want to call into softdevice from the gpiote driver.
 
 module=BM_GPIOTE
 module-str=GPIOTE library

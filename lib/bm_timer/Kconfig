@@ -13,11 +13,12 @@ menuconfig BM_TIMER
 if BM_TIMER
 
 config BM_TIMER_IRQ_PRIO
-	int "Timer interrupt priority (NVIC level)"
-	range 0 8
+	int "Timer IRQ priority"
+	range 2 7
 	default 5 if SOFTDEVICE
 	default 3
 	help
+	  Sets the interrupt priority of the GRTC peripheral interrupt used by the BM Timer library.
 	  Interrupt priority level must be greater than 4 (softdevice low priority)
 	  when softdevice is used.
 

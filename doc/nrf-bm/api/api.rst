@@ -91,6 +91,13 @@ Bare Metal GPIOTE library
 
 .. doxygengroup:: bm_gpiote
 
+.. _api_bm_irq:
+
+Bare Metal IRQ library
+======================
+
+.. doxygengroup:: bm_irq
+
 .. _api_bm_scheduler:
 
 Bare Metal Event Scheduler library

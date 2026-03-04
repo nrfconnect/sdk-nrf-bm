@@ -14,6 +14,7 @@
 #include <zephyr/mgmt/mcumgr/mgmt/callbacks.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/init.h>
+#include <bm/bm_irq.h>
 #include <nrfx_uarte.h>
 #include <board-config.h>
 
@@ -225,9 +226,9 @@ static int bm_uarte_init(void)
 	uarte_config.interrupt_priority = CONFIG_MCUMGR_TRANSPORT_BM_UART_UARTE_IRQ_PRIO;
 
 	/** We need to connect the IRQ ourselves. */
-	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(BOARD_APP_UARTE_INST),
-			   CONFIG_MCUMGR_TRANSPORT_BM_UART_UARTE_IRQ_PRIO,
-			   bm_uart_mcumgr_direct_isr, 0);
+	BM_IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(BOARD_APP_UARTE_INST),
+			      CONFIG_MCUMGR_TRANSPORT_BM_UART_UARTE_IRQ_PRIO,
+			      bm_uart_mcumgr_direct_isr, 0);
 
 	irq_enable(NRFX_IRQ_NUMBER_GET(BOARD_APP_UARTE_INST));
 
