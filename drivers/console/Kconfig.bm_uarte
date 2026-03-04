@@ -18,8 +18,14 @@ config DEPRECATED_UART_NRFX_UARTE_LEGACY_SHIM
 
 config BM_UARTE_CONSOLE_UARTE_IRQ_PRIO
 	int "IRQ priority"
-	range 3 7
-	default 3
+	range 5 7 if SOFTDEVICE
+	range 2 7
+	default 5
+	help
+	  Sets the interrupt priority of the UARTE used by the console.
+	  Levels are from 2 (highest priority) to 7 (lowest priority)
+	  Interrupt priority level must be greater than 4 (SoftDevice low priority)
+	  when SoftDevice is used.
 
 config BM_UARTE_CONSOLE_UARTE_USE_HWFC
 	bool "Use hardware flow control"

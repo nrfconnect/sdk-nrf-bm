@@ -13,6 +13,7 @@
 
 #include <zephyr/sys/__assert.h>
 
+#include <bm/bm_irq.h>
 #include <nrfx_nfct.h>
 #include <nrfx_timer.h>
 #include <hal/nrf_ficr.h>
@@ -82,12 +83,12 @@ int nfc_platform_setup(nfc_lib_cb_resolve_t nfc_lib_cb_resolve, uint8_t *p_irq_p
 {
 	int err;
 
-	IRQ_DIRECT_CONNECT(NFCT_IRQn, CONFIG_BM_NFCT_IRQ_PRIORITY,
-			   nfc_isr_wrapper, 0);
+	BM_IRQ_DIRECT_CONNECT(NFCT_IRQn, CONFIG_BM_NFCT_IRQ_PRIORITY,
+			      nfc_isr_wrapper, 0);
 
 #if NFC_PLATFORM_USE_TIMER_WORKAROUND
-	IRQ_DIRECT_CONNECT(NFC_TIMER_IRQn, CONFIG_BM_NFCT_IRQ_PRIORITY,
-			   nrfx_nfct_workaround_timer_handler, 0);
+	BM_IRQ_DIRECT_CONNECT(NFC_TIMER_IRQn, CONFIG_BM_NFCT_IRQ_PRIORITY,
+			      nrfx_nfct_workaround_timer_handler, 0);
 #endif /* NFC_PLATFORM_USE_TIMER_WORKAROUND */
 
 	*p_irq_priority = CONFIG_BM_NFCT_IRQ_PRIORITY;

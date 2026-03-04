@@ -10,6 +10,7 @@
 #include <zephyr/storage/flash_map.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
+#include <bm/bm_irq.h>
 
 LOG_MODULE_DECLARE(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
 
@@ -48,25 +49,27 @@ static void sd_enable_irq_forwarding(void)
 
 static int irq_init(void)
 {
-#define PRIO_HIGH 0	/* SoftDevice high priority interrupt */
+#define PRIO_IGNORE 2	/* Priority setting used when IRQ_ZERO_LATENCY is enabled where the
+			 * priority value is ignored (value must be set >= 2)
+			 */
 #define PRIO_LOW 4	/* SoftDevice low priority interrupt */
 
-	/* IRQ_ZERO_LATENCY with CONFIG_ZERO_LATENCY_LEVELS equal to 1 (default) forces the priority
-	 * level to 0, ignoring the specified priority.
-	 * On `sd_softdevice_enable()`, the SoftDevice will override the necessary interrupts it
-	 * uses internally with the priority levels it needs.
+	/* IRQ_ZERO_LATENCY with CONFIG_ZERO_LATENCY_LEVELS equal to 1 (default) forces the
+	 * priority level to 0, ignoring the specified priority.
+	 * On `sd_softdevice_enable()`, the SoftDevice will override the necessary interrupts
+	 * it uses internally with the priority levels it needs.
 	 */
-	IRQ_DIRECT_CONNECT(RADIO_0_IRQn, PRIO_HIGH, RADIO_0_IRQHandler, IRQ_ZERO_LATENCY);
-	IRQ_DIRECT_CONNECT(TIMER10_IRQn, PRIO_HIGH, TIMER10_IRQHandler, IRQ_ZERO_LATENCY);
-	IRQ_DIRECT_CONNECT(GRTC_3_IRQn, PRIO_HIGH, GRTC_3_IRQHandler, IRQ_ZERO_LATENCY);
+	BM_IRQ_DIRECT_CONNECT(RADIO_0_IRQn, PRIO_IGNORE, RADIO_0_IRQHandler, IRQ_ZERO_LATENCY);
+	BM_IRQ_DIRECT_CONNECT(TIMER10_IRQn, PRIO_IGNORE, TIMER10_IRQHandler, IRQ_ZERO_LATENCY);
+	BM_IRQ_DIRECT_CONNECT(GRTC_3_IRQn, PRIO_IGNORE, GRTC_3_IRQHandler, IRQ_ZERO_LATENCY);
 
 	/* These are not zero latency. */
-	IRQ_DIRECT_CONNECT(AAR00_CCM00_IRQn, PRIO_LOW, AAR00_CCM00_IRQHandler, 0);
-	IRQ_DIRECT_CONNECT(CLOCK_POWER_IRQn, PRIO_LOW, CLOCK_POWER_SD_IRQHandler, 0);
-	IRQ_DIRECT_CONNECT(ECB00_IRQn, PRIO_LOW, ECB00_IRQHandler, 0);
-	IRQ_DIRECT_CONNECT(SWI00_IRQn, PRIO_LOW, SWI00_IRQHandler, 0);
+	BM_IRQ_DIRECT_CONNECT(AAR00_CCM00_IRQn, PRIO_LOW, AAR00_CCM00_IRQHandler, 0);
+	BM_IRQ_DIRECT_CONNECT(CLOCK_POWER_IRQn, PRIO_LOW, CLOCK_POWER_SD_IRQHandler, 0);
+	BM_IRQ_DIRECT_CONNECT(ECB00_IRQn, PRIO_LOW, ECB00_IRQHandler, 0);
+	BM_IRQ_DIRECT_CONNECT(SWI00_IRQn, PRIO_LOW, SWI00_IRQHandler, 0);
 
-	NVIC_SetPriority(SVCall_IRQn, PRIO_LOW);
+	BM_IRQ_SET_PRIORITY(SVCall_IRQn, PRIO_LOW);
 
 	sd_enable_irq_forwarding();
 

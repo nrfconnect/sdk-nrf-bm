@@ -6,6 +6,7 @@
 
 #include <nrfx_uarte.h>
 #include <bm/drivers/bm_lpuarte.h>
+#include <bm/bm_irq.h>
 #include <bm/bm_timer.h>
 #include <bm/softdevice_handler/nrf_sdh.h>
 
@@ -82,8 +83,9 @@ static int lpuarte_init(void)
 
 	lpu_cfg.uarte_cfg.interrupt_priority = CONFIG_SAMPLE_LPUARTE_IRQ_PRIO;
 
-	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(BOARD_APP_LPUARTE_INST),
-			   CONFIG_SAMPLE_LPUARTE_IRQ_PRIO, lpuarte_direct_isr, 0);
+	BM_IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(BOARD_APP_LPUARTE_INST),
+			      CONFIG_SAMPLE_LPUARTE_IRQ_PRIO,
+			      lpuarte_direct_isr, 0);
 
 	irq_enable(NRFX_IRQ_NUMBER_GET(BOARD_APP_LPUARTE_INST));
 

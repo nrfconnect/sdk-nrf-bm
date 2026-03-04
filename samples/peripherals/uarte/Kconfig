@@ -24,7 +24,13 @@ config SAMPLE_UARTE_PARITY
 
 config SAMPLE_UARTE_IRQ_PRIO
 	int "UARTE IRQ priority"
-	default 5
+	range 2 7
+	default 3
+	help
+	  Sets UART interrupt priority.
+	  Levels are from 2 (highest priority) to 7 (lowest priority)
+	  Interrupt priority level must be greater than 4 (softdevice low priority)
+	  if you want to call into softdevice from the interrupt driver.
 
 module=SAMPLE_UARTE
 module-str=UARTE Sample

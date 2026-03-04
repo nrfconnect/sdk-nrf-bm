@@ -8,7 +8,13 @@ menu "BLE NUS sample"
 
 config SAMPLE_NUS_UART_IRQ_PRIO
 	int "NUS UART IRQ priority"
-	default 3
+	range 2 7
+	default 5
+	help
+	  Sets the interrupt priority of the UARTE peripheral used in the NUS sample.
+	  Levels are from 2 (highest priority) to 7 (lowest priority)
+	  Interrupt priority level must be greater than 4 (softdevice low priority)
+	  if you want to call into softdevice from the interrupt driver.
 
 config SAMPLE_NUS_UART_PARITY
 	bool "BLE UART use parity"

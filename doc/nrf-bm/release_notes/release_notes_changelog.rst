@@ -61,7 +61,7 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Interrupts
 ==========
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+Added the :c:macro:`BM_IRQ_DIRECT_CONNECT` and :c:macro:`BM_IRQ_SET_PRIORITY` macros that should be used when connecting IRQ and setting IRQ priority.
 
 Logging
 =======
@@ -202,4 +202,5 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Documentation
 =============
 
+* Added the :ref:`drivers_alloc_int` page.
 * Improved sample documentation with clearer, more descriptive user guides, including updated explanations of configuration options, hardware connections, and testing procedures.
