@@ -2,12 +2,14 @@ tests:
   mcuboot.kmu.west.provision.basic:
     integration_platforms:
       - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
-      - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
     platform_allow:
       - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice/mcuboot
     tags:
       - kmu
     harness: console
@@ -20,12 +22,14 @@ tests:
   mcuboot.kmu.west.provision.manual_upload_key:
     integration_platforms:
       - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
-      - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
     platform_allow:
       - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice/mcuboot
     tags:
       - pytest
       - kmu
@@ -39,12 +43,14 @@ tests:
   mcuboot.kmu.west.provision.key_revocation:
     integration_platforms:
       - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
-      - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
     platform_allow:
       - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice/mcuboot
     tags:
       - pytest
       - kmu
@@ -63,12 +69,14 @@ tests:
   mcuboot.kmu.west.provision.key_revocation_with_two_slots:
     integration_platforms:
       - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
-      - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
     platform_allow:
       - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice/mcuboot
       - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice/mcuboot
     tags:
       - pytest
       - kmu
