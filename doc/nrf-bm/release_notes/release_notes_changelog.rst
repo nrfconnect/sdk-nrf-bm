@@ -112,6 +112,11 @@ Libraries
 
       * The ``params`` union field of the :c:struct:`ble_db_discovery_evt` structure to an anonymous union.
 
+   * Fixed:
+
+      * An issue where starting a second round of discovery, after either a disconnect or a completed discovery, could result in incorrect internal state.
+        This could eventually lead to insufficient memory for discovering new services.
+
    * Removed:
 
       * The ``ble_db_discovery_user_evt`` structure after a rework.
