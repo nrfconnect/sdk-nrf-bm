@@ -540,7 +540,7 @@ void test_scenario_discover_two_services(void)
 	const struct ble_gatt_db_char *db_char;
 
 	/* Check service 1 discovery result. */
-	db_srv = &db_disc_evt[0].params.discovered_db;
+	db_srv = &db_disc_evt[0].discovered_db;
 	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[0].conn_handle);
 	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv1_uuid, &db_srv->srv_uuid));
 	TEST_ASSERT_EQUAL(2, db_srv->char_count);
@@ -560,7 +560,7 @@ void test_scenario_discover_two_services(void)
 	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->report_ref_handle);
 
 	/* Check service 2 discovery result. */
-	db_srv = &db_disc_evt[1].params.discovered_db;
+	db_srv = &db_disc_evt[1].discovered_db;
 	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[1].conn_handle);
 	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv2_uuid, &db_srv->srv_uuid));
 	TEST_ASSERT_EQUAL(2, db_srv->char_count);
@@ -855,7 +855,7 @@ void test_scenario_discover_one_srvc_with_descriptors(void)
 	const struct ble_gatt_db_char *db_char;
 
 	/* Check service 1 discovery result. */
-	db_srv = &db_disc_evt[0].params.discovered_db;
+	db_srv = &db_disc_evt[0].discovered_db;
 	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[0].conn_handle);
 	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv1_uuid, &db_srv->srv_uuid));
 	TEST_ASSERT_EQUAL(4, db_srv->char_count);
@@ -1046,13 +1046,13 @@ void test_scenario_discover_one_of_three_services_found(void)
 	const struct ble_gatt_db_char *db_char;
 
 	/* Check service 1 discovery result. */
-	db_srv = &db_disc_evt[0].params.discovered_db;
+	db_srv = &db_disc_evt[0].discovered_db;
 	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[0].conn_handle);
 	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv1_uuid, &db_srv->srv_uuid));
 	TEST_ASSERT_EQUAL(0, db_srv->char_count);
 
 	/* Check service 2 discovery result. */
-	db_srv = &db_disc_evt[1].params.discovered_db;
+	db_srv = &db_disc_evt[1].discovered_db;
 	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[1].conn_handle);
 	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv2_uuid, &db_srv->srv_uuid));
 	TEST_ASSERT_EQUAL(1, db_srv->char_count);
@@ -1066,7 +1066,7 @@ void test_scenario_discover_one_of_three_services_found(void)
 	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->report_ref_handle);
 
 	/* Check service 3 discovery result. */
-	db_srv = &db_disc_evt[2].params.discovered_db;
+	db_srv = &db_disc_evt[2].discovered_db;
 	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[2].conn_handle);
 	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv3_uuid, &db_srv->srv_uuid));
 	TEST_ASSERT_EQUAL(0, db_srv->char_count);
@@ -1238,7 +1238,7 @@ void test_scenario_ignore_discovery_responses_for_other_conn_handles(void)
 	const struct ble_gatt_db_char *db_char;
 
 	/* Check service 1 discovery result. */
-	db_srv = &db_disc_evt[0].params.discovered_db;
+	db_srv = &db_disc_evt[0].discovered_db;
 	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[0].conn_handle);
 	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv1_uuid, &db_srv->srv_uuid));
 	TEST_ASSERT_EQUAL(1, db_srv->char_count);
@@ -1455,7 +1455,7 @@ void test_scenario_ble_gq_item_add_no_mem(void)
 	TEST_ASSERT_EQUAL(2, stub_ble_gq_item_add_success_num_calls);
 	TEST_ASSERT_EQUAL(2, db_disc_evt_count);
 	TEST_ASSERT_EQUAL(BLE_DB_DISCOVERY_ERROR, db_disc_evt[0].evt_type);
-	TEST_ASSERT_EQUAL(NRF_ERROR_NO_MEM, db_disc_evt[0].params.error.reason);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NO_MEM, db_disc_evt[0].error.reason);
 	TEST_ASSERT_EQUAL(BLE_DB_DISCOVERY_AVAILABLE, db_disc_evt[1].evt_type);
 
 	/* Restart Discovery. Sends a Primary Service Discovery Request. */
@@ -1489,7 +1489,7 @@ void test_scenario_ble_gq_item_add_no_mem(void)
 	TEST_ASSERT_EQUAL(4, stub_ble_gq_item_add_success_num_calls);
 	TEST_ASSERT_EQUAL(4, db_disc_evt_count);
 	TEST_ASSERT_EQUAL(BLE_DB_DISCOVERY_ERROR, db_disc_evt[2].evt_type);
-	TEST_ASSERT_EQUAL(NRF_ERROR_NO_MEM, db_disc_evt[2].params.error.reason);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NO_MEM, db_disc_evt[2].error.reason);
 	TEST_ASSERT_EQUAL(BLE_DB_DISCOVERY_AVAILABLE, db_disc_evt[3].evt_type);
 }
 

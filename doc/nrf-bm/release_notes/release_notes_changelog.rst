@@ -108,7 +108,13 @@ Libraries
 
 * :ref:`lib_ble_db_discovery`:
 
-   * Removed the :c:struct:`ble_db_discovery_user_evt` structure after a rework.
+   * Updated:
+
+      * The ``params`` union field of the :c:struct:`ble_db_discovery_evt` structure to an anonymous union.
+
+   * Removed:
+
+      * The ``ble_db_discovery_user_evt`` structure after a rework.
 
 * :ref:`lib_ble_scan`:
 

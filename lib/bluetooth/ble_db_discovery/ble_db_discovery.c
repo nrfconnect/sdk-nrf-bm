@@ -79,7 +79,7 @@ static void discovery_error_evt_trigger(struct ble_db_discovery *db_discovery, u
 		struct ble_db_discovery_evt evt = {
 			.evt_type = BLE_DB_DISCOVERY_ERROR,
 			.conn_handle = conn_handle,
-			.params.error.reason = nrf_err,
+			.error.reason = nrf_err,
 		};
 
 		db_discovery->evt_handler(db_discovery, &evt);
@@ -123,7 +123,7 @@ static void discovery_complete_evt_trigger(struct ble_db_discovery *db_discovery
 
 	/* Insert an event into the pending event list. */
 	usr_evt->conn_handle = conn_handle;
-	usr_evt->params.discovered_db = *srv_being_discovered;
+	usr_evt->discovered_db = *srv_being_discovered;
 	usr_evt->evt_type = (is_srv_found == true) ? BLE_DB_DISCOVERY_COMPLETE :
 						     BLE_DB_DISCOVERY_SRV_NOT_FOUND;
 	db_discovery->pending_usr_evt_idx++;
