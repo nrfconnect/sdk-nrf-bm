@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 menuconfig NRF_SDH
-	bool "Softdevice handler"
+	bool "SoftDevice handler"
 	depends on SOFTDEVICE
 
 if NRF_SDH

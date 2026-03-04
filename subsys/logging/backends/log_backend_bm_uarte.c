@@ -8,6 +8,7 @@
 #include <zephyr/logging/log_backend_std.h>
 #include <zephyr/logging/log_msg.h>
 
+#include <bm/bm_irq.h>
 #include <nrfx_uarte.h>
 #include <board-config.h>
 
@@ -48,9 +49,9 @@ static int uarte_init(void)
 	uarte_config.tx_cache.length = sizeof(uarte_tx_buf);
 
 	/** We need to connect the IRQ ourselves. */
-	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(BOARD_CONSOLE_UARTE_INST),
-			   CONFIG_LOG_BACKEND_BM_UARTE_IRQ_PRIO,
-			   log_backend_bm_uarte_direct_isr, 0);
+	BM_IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(BOARD_CONSOLE_UARTE_INST),
+			      CONFIG_LOG_BACKEND_BM_UARTE_IRQ_PRIO,
+			      log_backend_bm_uarte_direct_isr, 0);
 
 	irq_enable(NRFX_IRQ_NUMBER_GET(BOARD_CONSOLE_UARTE_INST));
 

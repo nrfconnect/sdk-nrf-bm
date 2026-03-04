@@ -8,7 +8,11 @@ menu "PWM sample"
 
 config SAMPLE_PWM_IRQ_PRIO
 	int "PWM IRQ priority"
-	default 5
+	range 2 7
+	default 3
+	help
+	  Sets the interrupt priority of the PWM peripheral used in the sample.
+	  Levels are from 2 (highest priority) to 7 (lowest priority).
 
 config SAMPLE_PWM_PLAYBACK_COUNT
 	int "PWM playback count"

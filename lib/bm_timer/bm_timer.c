@@ -5,6 +5,7 @@
  */
 
 #include <bm/bm_timer.h>
+#include <bm/bm_irq.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/__assert.h>
@@ -21,7 +22,7 @@ LOG_MODULE_REGISTER(bm_timer, CONFIG_BM_TIMER_LOG_LEVEL);
 
 static void irq_prio_lvl_configure(void)
 {
-	NVIC_SetPriority(BM_TIMER_IRQn, (uint32_t)CONFIG_BM_TIMER_IRQ_PRIO);
+	BM_IRQ_SET_PRIORITY(BM_TIMER_IRQn, (uint32_t)CONFIG_BM_TIMER_IRQ_PRIO);
 
 	LOG_DBG("Timer IRQ priority level set to %d", CONFIG_BM_TIMER_IRQ_PRIO);
 }

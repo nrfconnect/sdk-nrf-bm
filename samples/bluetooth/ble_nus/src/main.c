@@ -5,6 +5,7 @@
  */
 
 #include <nrf_error.h>
+#include <bm/bm_irq.h>
 #include <string.h>
 #include <ble_gap.h>
 #include <hal/nrf_gpio.h>
@@ -404,8 +405,9 @@ static int uarte_init(void)
 
 	/** We need to connect the IRQ ourselves. */
 
-	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NUS_UARTE_INST),
-			   CONFIG_SAMPLE_NUS_UART_IRQ_PRIO, uarte_direct_isr, 0);
+	BM_IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NUS_UARTE_INST),
+			      CONFIG_SAMPLE_NUS_UART_IRQ_PRIO,
+			      uarte_direct_isr, 0);
 
 	irq_enable(NRFX_IRQ_NUMBER_GET(NUS_UARTE_INST));
 

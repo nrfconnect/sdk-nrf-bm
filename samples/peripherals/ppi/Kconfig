@@ -8,7 +8,11 @@ menu "PPI sample"
 
 config SAMPLE_TIMER_IRQ_PRIO
 	int "Timer IRQ priority"
-	default 5
+	range 2 7
+	default 3
+	help
+	  Sets the interrupt priority of the Timer peripheral used in the sample.
+	  Levels are from 2 (highest priority) to 7 (lowest priority).
 
 config SAMPLE_LED_BLINK_INTERVAL_MS
 	int "LED blink interval in milliseconds"

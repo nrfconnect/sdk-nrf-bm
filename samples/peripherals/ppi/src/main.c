@@ -8,6 +8,7 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 #include <bm/bm_gpiote.h>
+#include <bm/bm_irq.h>
 #include <helpers/nrfx_gppi.h>
 #include <nrfx_gpiote.h>
 #include <nrfx_timer.h>
@@ -64,9 +65,9 @@ int main(void)
 
 	LOG_INF("PPI sample started");
 
-	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_TIMER20),
-			   CONFIG_SAMPLE_TIMER_IRQ_PRIO,
-			   timer_direct_isr, 0);
+	BM_IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_TIMER20),
+			      CONFIG_SAMPLE_TIMER_IRQ_PRIO,
+			      timer_direct_isr, 0);
 
 	err = nrfx_timer_init(&timer_inst, &timer_config, timer_handler);
 	if (err) {

@@ -68,6 +68,9 @@
 .. _`S145 SoftDevice Specification`: https://docs.nordicsemi.com/bundle/sds_s145/page/SDS/s1xx/s145.html
 .. _`S115 SoftDevice API Documentation`: https://docs.nordicsemi.com/bundle/s115-latest/page/index.html
 .. _`S145 SoftDevice API Documentation`: https://docs.nordicsemi.com/bundle/s145-latest/page/index.html
+.. _`Interrupt priority levels`: https://docs.nordicsemi.com/bundle/sds_s115/page/SDS/s1xx/processor_avail_interrupt_latency/exception_mgmt_sd.html
+.. _`Application signals – software interrupts`: https://docs.nordicsemi.com/bundle/sds_s115/page/SDS/s1xx/sd_resource_reqs/app_signal_sw_interrupt.html
+.. _`Zero Latency Interrupts`: https://docs.zephyrproject.org/latest/kernel/services/interrupts.html#zero-latency-interrupts
 
 .. ### Samples
 
