@@ -6,7 +6,7 @@
 
 menu "BLE Peripheral NFC Pairing sample"
 
-module=APP_BLE_PERIPHERAL_NFC_PAIRING
+module=SAMPLE_BLE_PERIPHERAL_NFC_PAIRING
 module-str=BLE Peripheral NFC Pairing sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
