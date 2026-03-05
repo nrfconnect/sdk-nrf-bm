@@ -22,7 +22,7 @@
 #include <zephyr/mgmt/mcumgr/mgmt/mgmt.h>
 #include <zephyr/mgmt/mcumgr/smp/smp.h>
 #include <zephyr/mgmt/mcumgr/mgmt/handlers.h>
-#include <zephyr/mgmt/mcumgr/grp/img_mgmt/img_mgmt.h>
+#include <img_mgmt.h>
 
 #include <mgmt/mcumgr/util/zcbor_bulk.h>
 #include <mgmt/mcumgr/grp/img_mgmt/img_mgmt_priv.h>
@@ -923,8 +923,13 @@ defined(CONFIG_MCUMGR_SMP_COMMAND_STATUS_HOOKS)
 
 		rc = img_mgmt_write_image_data(req.off, req.img_data.value, action.write_bytes,
 						    last);
-		if (rc == 0) {
-			g_img_mgmt_state.off += action.write_bytes;
+		if (rc == 0 || rc == MGMT_ERR_EBUSY) {
+			if (rc == 0) {
+				g_img_mgmt_state.off += action.write_bytes;
+			} else {
+				LOG_DBG("Storage busy. Retry sending the same data chunk.");
+			}
+			rc = 0;
 		} else {
 			/* Write failed, currently not able to recover from this */
 #if defined(CONFIG_MCUMGR_SMP_COMMAND_STATUS_HOOKS)
