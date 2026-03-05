@@ -121,27 +121,6 @@ static int nrf_rram_write(const struct device *dev, off_t addr, const void *data
 		return -EIO;
 	}
 
-	while (1) {
-		int taskid;
-
-		/* Wait for an event. */
-		__WFE();
-
-		/* Clear Event Register */
-		__SEV();
-		__WFE();
-
-		ret = sd_evt_get(&taskid);
-
-		if (!ret && (taskid == NRF_EVT_FLASH_OPERATION_SUCCESS ||
-			     taskid == NRF_EVT_FLASH_OPERATION_ERROR)) {
-			if (taskid != NRF_EVT_FLASH_OPERATION_SUCCESS) {
-				ret = -EIO;
-			}
-
-			break;
-		}
-	}
 
 	barrier_dmem_fence_full(); /* Barrier following our last write. */
 

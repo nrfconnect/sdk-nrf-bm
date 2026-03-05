@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2018-2021 mcumgr authors
+ * Copyright (c) 2022-2023 Nordic Semiconductor ASA
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -7,15 +8,19 @@
 #include <zephyr/kernel.h>
 #include <zephyr/init.h>
 #include <zephyr/drivers/flash.h>
+#include <zephyr/sys/ring_buffer.h>
 #include <zephyr/storage/flash_map.h>
 #include <zephyr/dfu/mcuboot.h>
 #include <zephyr/dfu/flash_img.h>
 #include <zephyr/logging/log.h>
 #include <bootutil/bootutil_public.h>
 #include <assert.h>
+#include <bm/storage/bm_storage.h>
 
 #include <zephyr/mgmt/mcumgr/mgmt/mgmt.h>
-#include <zephyr/mgmt/mcumgr/grp/img_mgmt/img_mgmt.h>
+#include <img_mgmt.h>
+
+#include <bm/storage/bm_storage.h>
 
 #include <mgmt/mcumgr/grp/img_mgmt/img_mgmt_priv.h>
 
@@ -33,6 +38,70 @@ LOG_MODULE_DECLARE(mcumgr_img_grp, CONFIG_MCUMGR_GRP_IMG_LOG_LEVEL);
 #define SLOT4_PARTITION		slot4_partition
 #define SLOT5_PARTITION		slot5_partition
 
+#define S0_PARTITION DT_NODELABEL(slot0_partition)
+#define S0_START DT_REG_ADDR(S0_PARTITION)
+#define S0_SIZE DT_REG_SIZE(S0_PARTITION)
+#define S1_PARTITION DT_NODELABEL(slot1_partition)
+#define S1_START DT_REG_ADDR(S1_PARTITION)
+#define S1_SIZE DT_REG_SIZE(S1_PARTITION)
+#define WORST_CASE_TAIL_WRITES 2
+#define RRAMC_WRITE_BLOCK_SIZE 16
+
+static struct bm_storage s0_storage;
+static struct bm_storage s1_storage;
+
+/* SLOT0_PARTITION and SLOT1_PARTITION are not checked because
+ * there is not conditional code that depends on them. If they do
+ * not exist compilation will fail, but in case if some of other
+ * partitions do not exist, code will compile and will not work
+ * properly.
+ */
+
+#define CHUNK_SZ (16 * RRAMC_WRITE_BLOCK_SIZE)
+#define PKTBUF_SZ (2 * 8 * CHUNK_SZ)
+
+#if defined(BM_STORAGE_BACKEND_SD)
+#define QUEUE_THRESHOLD (CONFIG_BM_STORAGE_BACKEND_SD_QUEUE_SIZE - WORST_CASE_TAIL_WRITES)
+BUILD_ASSERT(CONFIG_BM_STORAGE_BACKEND_SD_QUEUE_SIZE > WORST_CASE_TAIL_WRITES);
+BUILD_ASSERT(((PKTBUF_SZ%CHUNK_SZ) == 0) &&
+	(PKTBUF_SZ >= (CHUNK_SZ * CONFIG_BM_STORAGE_BACKEND_SD_QUEUE_SIZE)));
+#else
+#define QUEUE_THRESHOLD 2
+#endif
+
+RING_BUF_DECLARE(ring_buf, PKTBUF_SZ);
+
+static uint8_t ongoing;
+static int write_offset;
+
+static void bm_storage_evt_handler_writes(struct bm_storage_evt *evt)
+{
+	if (ongoing) {
+		ongoing--;
+	}
+}
+
+struct bm_storage_config s0_config = {
+	.evt_handler = bm_storage_evt_handler_writes,
+	.start_addr = S0_START,
+	.end_addr = S0_START+S0_SIZE,
+};
+
+struct bm_storage_config s1_config = {
+	.evt_handler = bm_storage_evt_handler_writes,
+	.start_addr = S1_START,
+	.end_addr = S1_START+S1_SIZE,
+};
+
+static void storage_init(void)
+{
+	static int storage_initialized;
+	if (!storage_initialized) {
+		bm_storage_init(&s0_storage, &s0_config);
+		bm_storage_init(&s1_storage, &s1_config);
+		storage_initialized = 1;
+	}
+}
 /* SLOT0_PARTITION and SLOT1_PARTITION are not checked because
  * there is not conditional code that depends on them. If they do
  * not exist compilation will fail, but in case if some of other
@@ -346,29 +415,15 @@ int img_mgmt_write_confirmed(void)
 
 int img_mgmt_read(int slot, unsigned int offset, void *dst, unsigned int num_bytes)
 {
-	const struct flash_area *fa;
-	int rc;
-	int area_id = img_mgmt_flash_area_id(slot);
 
-	if (area_id < 0) {
-		return IMG_MGMT_ERR_INVALID_SLOT;
+	storage_init();
+	if (slot == 0) {
+		return bm_storage_read(&s0_storage, s0_storage.start_addr + offset,
+			dst, num_bytes);
+	} else {
+		return bm_storage_read(&s1_storage, s1_storage.start_addr + offset,
+			dst, num_bytes);
 	}
-
-	rc = flash_area_open(area_id, &fa);
-	if (rc != 0) {
-		LOG_ERR("Failed to open flash area ID %u: %d", area_id, rc);
-		return IMG_MGMT_ERR_FLASH_OPEN_FAILED;
-	}
-
-	rc = flash_area_read(fa, offset, dst, num_bytes);
-	flash_area_close(fa);
-
-	if (rc != 0) {
-		LOG_ERR("Failed to read data from flash: %d", rc);
-		return IMG_MGMT_ERR_FLASH_READ_FAILED;
-	}
-
-	return 0;
 }
 
 #if defined(CONFIG_MCUMGR_GRP_IMG_USE_HEAP_FOR_FLASH_IMG_CONTEXT)
@@ -423,19 +478,63 @@ out:
 int img_mgmt_write_image_data(unsigned int offset, const void *data, unsigned int num_bytes,
 			      bool last)
 {
-	static struct flash_img_context ctx;
+
+	int rc = IMG_MGMT_ERR_OK;
+	uint8_t *rb_data;
 
 	if (offset == 0) {
-		if (flash_img_init_id(&ctx, g_img_mgmt_state.area_id) != 0) {
-			return IMG_MGMT_ERR_FLASH_OPEN_FAILED;
+		storage_init();
+	}
+	int rb_freespace = ring_buf_space_get(&ring_buf);
+
+	if ((rb_freespace - ongoing * CHUNK_SZ) < num_bytes) {
+		rc = IMG_MGMT_ERR_BUSY;
+	} else {
+		ring_buf_put(&ring_buf, data, num_bytes);
+	}
+
+	if (last) {
+		int rb_size = ring_buf_size_get(&ring_buf);
+		int pad = CHUNK_SZ - (rb_size % CHUNK_SZ);
+
+		ring_buf_put(&ring_buf, data, pad);
+		LOG_ERR("last size %d pad %d", rb_size, pad);
+		rb_size = ring_buf_get_claim(&ring_buf, &rb_data, PKTBUF_SZ);
+		ring_buf_get_finish(&ring_buf, rb_size);
+		int err = bm_storage_write(&s0_storage, s0_storage.start_addr + write_offset,
+			rb_data, rb_size, NULL);
+
+		if (err) {
+			rc = IMG_MGMT_ERR_INVALID_IMAGE_TOO_LARGE;
+			goto out;
+		}
+		write_offset += rb_size;
+		if (ring_buf_size_get(&ring_buf)) {
+			rb_size = ring_buf_get_claim(&ring_buf, &rb_data, PKTBUF_SZ);
+			ring_buf_get_finish(&ring_buf, rb_size);
+			int err = bm_storage_write(&s0_storage,
+			s0_storage.start_addr + write_offset, rb_data, rb_size, NULL);
+		if (err) {
+			rc = IMG_MGMT_ERR_INVALID_IMAGE_TOO_LARGE;
+			goto out;
+		}
+		write_offset += rb_size;
 		}
 	}
-
-	if (flash_img_buffered_write(&ctx, data, num_bytes, last) != 0) {
-		return IMG_MGMT_ERR_FLASH_WRITE_FAILED;
+	while (ongoing < QUEUE_THRESHOLD && ring_buf_size_get(&ring_buf) >= CHUNK_SZ) {
+		int rb_size = ring_buf_get_claim(&ring_buf, &rb_data, CHUNK_SZ);
+		ring_buf_get_finish(&ring_buf, rb_size);
+		int err = bm_storage_write(&s0_storage, s0_storage.start_addr + write_offset,
+			rb_data, rb_size, NULL);
+		if (err) {
+			rc = IMG_MGMT_ERR_INVALID_IMAGE_TOO_LARGE;
+			goto out;
+		}
+		ongoing++;
+		write_offset += rb_size;
 	}
-
-	return IMG_MGMT_ERR_OK;
+out:
+	return rc;
 }
 #endif
 
