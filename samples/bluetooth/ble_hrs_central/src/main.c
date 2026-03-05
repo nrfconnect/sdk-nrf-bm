@@ -138,6 +138,10 @@ static void on_ble_evt(const ble_evt_t *ble_evt, void *ctx)
 	case BLE_GAP_EVT_DISCONNECTED:
 		LOG_INF("Disconnected, reason %#x", gap_evt->params.disconnected.reason);
 
+		if (conn_handle == gap_evt->conn_handle) {
+			conn_handle = BLE_CONN_HANDLE_INVALID;
+		}
+
 		atomic_clear_bit(&central_conn, idx);
 
 		if (active_conn_count(&central_conn) < CONFIG_NRF_SDH_BLE_CENTRAL_LINK_COUNT) {
@@ -253,13 +257,18 @@ static void allow_list_disable(void)
 
 static void button_handler_allow_list_off(uint8_t pin, uint8_t action)
 {
-	LOG_INF("Button allow list off");
+	if (action != BM_BUTTONS_PRESS) {
+		return;
+	}
+
 	allow_list_disable();
 }
 
 static void button_handler_disconnect(uint8_t pin, uint8_t action)
 {
-	LOG_INF("Button disconnect");
+	if (conn_handle == BLE_CONN_HANDLE_INVALID || action != BM_BUTTONS_PRESS) {
+		return;
+	}
 
 	uint32_t nrf_err = sd_ble_gap_disconnect(conn_handle,
 						 BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
