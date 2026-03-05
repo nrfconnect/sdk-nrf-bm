@@ -7,13 +7,14 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from pytest_plugins.adapters.nrfutil import list_devices
 from twister_harness import DeviceAdapter, MCUmgr
 
 # the `nrf-bm/scripts` directory must be added to the PYTHONPATH
 SCRIPTS_DIR = Path(os.environ.get("ZEPHYR_BASE", "")).parent.joinpath("nrf-bm/scripts")
 if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
+
+from pytest_plugins.adapters.nrfutil import list_devices  # noqa: E402
 
 pytest_plugins = ["pytest_plugins.plugin"]
 
