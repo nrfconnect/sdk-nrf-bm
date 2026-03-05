@@ -58,7 +58,7 @@ Build system
 DFU
 ===
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+Image upload NVM writes are handled in synchronization with SD.
 
 Interrupts
 ==========

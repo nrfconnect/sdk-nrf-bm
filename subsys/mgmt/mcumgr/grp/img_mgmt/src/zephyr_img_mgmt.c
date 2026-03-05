@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2018-2021 mcumgr authors
+ * Copyright (c) 2022-2026 Nordic Semiconductor ASA
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -15,7 +16,7 @@
 #include <assert.h>
 
 #include <zephyr/mgmt/mcumgr/mgmt/mgmt.h>
-#include <zephyr/mgmt/mcumgr/grp/img_mgmt/img_mgmt.h>
+#include <img_mgmt.h>
 
 #include <mgmt/mcumgr/grp/img_mgmt/img_mgmt_priv.h>
 
@@ -28,10 +29,7 @@ LOG_MODULE_DECLARE(mcumgr_img_grp, CONFIG_MCUMGR_GRP_IMG_LOG_LEVEL);
 
 #define SLOT0_PARTITION		slot0_partition
 #define SLOT1_PARTITION		slot1_partition
-#define SLOT2_PARTITION		slot2_partition
-#define SLOT3_PARTITION		slot3_partition
-#define SLOT4_PARTITION		slot4_partition
-#define SLOT5_PARTITION		slot5_partition
+#define S0_SIZE DT_REG_SIZE(DT_NODELABEL(slot0_partition))
 
 /* SLOT0_PARTITION and SLOT1_PARTITION are not checked because
  * there is not conditional code that depends on them. If they do
@@ -343,101 +341,6 @@ int img_mgmt_write_confirmed(void)
 
 	return IMG_MGMT_ERR_OK;
 }
-
-int img_mgmt_read(int slot, unsigned int offset, void *dst, unsigned int num_bytes)
-{
-	const struct flash_area *fa;
-	int rc;
-	int area_id = img_mgmt_flash_area_id(slot);
-
-	if (area_id < 0) {
-		return IMG_MGMT_ERR_INVALID_SLOT;
-	}
-
-	rc = flash_area_open(area_id, &fa);
-	if (rc != 0) {
-		LOG_ERR("Failed to open flash area ID %u: %d", area_id, rc);
-		return IMG_MGMT_ERR_FLASH_OPEN_FAILED;
-	}
-
-	rc = flash_area_read(fa, offset, dst, num_bytes);
-	flash_area_close(fa);
-
-	if (rc != 0) {
-		LOG_ERR("Failed to read data from flash: %d", rc);
-		return IMG_MGMT_ERR_FLASH_READ_FAILED;
-	}
-
-	return 0;
-}
-
-#if defined(CONFIG_MCUMGR_GRP_IMG_USE_HEAP_FOR_FLASH_IMG_CONTEXT)
-int img_mgmt_write_image_data(unsigned int offset, const void *data, unsigned int num_bytes,
-			      bool last)
-{
-	/* Even if K_HEAP_MEM_POOL_SIZE will be able to match size of the structure,
-	 * keep in mind that when application will put the heap under pressure, obtaining
-	 * of a flash image context may not be possible, so plan bigger heap size or
-	 * make sure to limit application pressure on heap when DFU is expected.
-	 */
-	BUILD_ASSERT(K_HEAP_MEM_POOL_SIZE >= (sizeof(struct flash_img_context)),
-		     "Not enough heap mem for flash_img_context.");
-
-	int rc = IMG_MGMT_ERR_OK;
-	static struct flash_img_context *ctx;
-
-	if (offset != 0 && ctx == NULL) {
-		return IMG_MGMT_ERR_FLASH_CONTEXT_NOT_SET;
-	}
-
-	if (offset == 0) {
-		if (ctx != NULL) {
-			return IMG_MGMT_ERR_FLASH_CONTEXT_ALREADY_SET;
-		}
-		ctx = k_malloc(sizeof(struct flash_img_context));
-
-		if (ctx == NULL) {
-			return IMG_MGMT_ERR_NO_FREE_MEMORY;
-		}
-
-		if (flash_img_init_id(ctx, g_img_mgmt_state.area_id) != 0) {
-			rc = IMG_MGMT_ERR_FLASH_OPEN_FAILED;
-			goto out;
-		}
-	}
-
-	if (flash_img_buffered_write(ctx, data, num_bytes, last) != 0) {
-		rc = IMG_MGMT_ERR_FLASH_WRITE_FAILED;
-		goto out;
-	}
-
-out:
-	if (last || rc != MGMT_ERR_EOK) {
-		k_free(ctx);
-		ctx = NULL;
-	}
-
-	return rc;
-}
-#else
-int img_mgmt_write_image_data(unsigned int offset, const void *data, unsigned int num_bytes,
-			      bool last)
-{
-	static struct flash_img_context ctx;
-
-	if (offset == 0) {
-		if (flash_img_init_id(&ctx, g_img_mgmt_state.area_id) != 0) {
-			return IMG_MGMT_ERR_FLASH_OPEN_FAILED;
-		}
-	}
-
-	if (flash_img_buffered_write(&ctx, data, num_bytes, last) != 0) {
-		return IMG_MGMT_ERR_FLASH_WRITE_FAILED;
-	}
-
-	return IMG_MGMT_ERR_OK;
-}
-#endif
 
 int img_mgmt_erase_image_data(unsigned int off, unsigned int num_bytes)
 {
