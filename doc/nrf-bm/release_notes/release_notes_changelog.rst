@@ -58,7 +58,7 @@ Build system
 DFU
 ===
 
-Image upload NVM writes are handled in synchronization with SD.
+* Updated the image upload NVM writes to be handled in synchronization with SD.
 
 Interrupts
 ==========

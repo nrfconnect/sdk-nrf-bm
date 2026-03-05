@@ -191,16 +191,16 @@ enum img_mgmt_id_upload_t {
 };
 
 extern int boot_current_slot;
-extern struct img_mgmt_state g_img_mgmt_state;
+extern struct img_mgmt_state img_mgmt_state;
 
 /** Represents an individual upload request. */
 struct img_mgmt_upload_req {
-	uint32_t image;	/* 0 by default */
-	size_t off;	/* SIZE_MAX if unspecified */
-	size_t size;	/* SIZE_MAX if unspecified */
+	uint32_t image;			/**< 0 by default */
+	size_t off;			/**< SIZE_MAX if unspecified */
+	size_t size;			/**< SIZE_MAX if unspecified */
 	struct zcbor_string img_data;
 	struct zcbor_string data_sha;
-	bool upgrade;			/* Only allow greater version numbers. */
+	bool upgrade;			/**< Only allow greater version numbers. */
 };
 
 /** Global state for upload in progress. */
@@ -235,21 +235,21 @@ struct img_mgmt_upload_action {
 };
 
 /*
- * @brief Read info of an image at the specified slot number
+ * @brief Read info of an image at the specified slot number.
  *
- * @param image_slot	image slot number
- * @param ver		output buffer for image version
- * @param hash		output buffer for image hash
- * @param flags		output buffer for image flags
+ * @param image_slot	Image slot number.
+ * @param ver		Output buffer for image version.
+ * @param hash		Output buffer for image hash.
+ * @param flags		Output buffer for image flags.
  *
  * @return 0 on success, non-zero on failure.
  */
 int img_mgmt_read_info(int image_slot, struct image_version *ver, uint8_t *hash, uint32_t *flags);
 
 /**
- * @brief Get the image version of the currently running application.
+ * @brief Get the image version of the application running currently.
  *
- * @param ver		output buffer for an image version information object.
+ * @param ver		Output buffer for an image version information object.
  *
  * @return 0 on success, non-zero on failure.
  */
@@ -258,26 +258,26 @@ int img_mgmt_my_version(struct image_version *ver);
 /**
  * @brief Format version string from struct image_version
  *
- * @param ver		pointer to image_version object
- * @param dst		output buffer for image version string
+ * @param ver		Pointer to image_version object.
+ * @param dst		Output buffer for image version string.
  *
  * @return Non-negative on success, negative value on error.
  */
 int img_mgmt_ver_str(const struct image_version *ver, char *dst);
 
 /**
- * @brief Get active, running application slot number for an image
+ * @brief Get active, running application slot number for an image.
  *
- * @param image		image number to get active slot for.
+ * @param image		Image number to get active slot for.
  *
  * @return Non-negative slot number
  */
 int img_mgmt_active_slot(int image);
 
 /**
- * @brief Get active image number
+ * @brief Get active image number.
  *
- * Gets 0 based number for running application.
+ * Gets zero-based number for running application.
  *
  * @return Non-negative image number.
  */
@@ -286,11 +286,11 @@ int img_mgmt_active_image(void);
 /**
  * @brief Check if the image slot is in use.
  *
- * The check is based on MCUboot flags, not image contents. This means that
- * slot with image in it, but no bootable flags set, is considered empty.
+ * The check is based on MCUboot flags, not image contents. This means that the
+ * slot with an image in it, but no bootable flags set, is considered empty.
  * Active slot is always in use.
  *
- * @param slot		slot number
+ * @param slot		Slot number.
  *
  * @return 0 if slot is not used, non-0 otherwise.
  */
@@ -307,7 +307,7 @@ int img_mgmt_slot_in_use(int slot);
 int img_mgmt_state_any_pending(void);
 
 /**
- * @brief Returns state flags set to slot.
+ * @brief Return state flags set to the slot.
  *
  * Flags are translated from MCUboot image state flags.
  * Returned value is zero if no flags are set or a combination of:
@@ -316,29 +316,29 @@ int img_mgmt_state_any_pending(void);
  *  IMG_MGMT_STATE_F_ACTIVE
  *  IMG_MGMT_STATE_F_PERMANENT
  *
- * @param query_slot	slot number
+ * @param query_slot	Slot number.
  *
- * @return return the state flags.
+ * @return the state flags.
  *
  */
 uint8_t img_mgmt_state_flags(int query_slot);
 
 /**
- * @brief Sets the pending flag for the specified image slot.
+ * @brief Set the pending flag for the specified image slot.
  *
- * Sets specified image slot to be used as active slot during next boot,
- * either for test or permanently. Non-permanent image will be reverted
- * unless image confirms itself during next boot.
+ * Sets the specified image slot to be used as the active slot during next boot,
+ * either for test or permanently. A non-permanent image will be reverted
+ * unless the image confirms itself during next boot.
  *
- * @param slot		slot number
- * @param permanent	permanent or test only
+ * @param slot		Slot number.
+ * @param permanent	Permanent or test only.
  *
  * @return 0 on success, non-zero on failure
  */
 int img_mgmt_state_set_pending(int slot, int permanent);
 
 /**
- * @brief Confirms the current image state.
+ * @brief Confirm the current image state.
  *
  * Prevents a fallback from occurring on the next reboot if the active image
  * is currently being tested.
@@ -348,10 +348,10 @@ int img_mgmt_state_set_pending(int slot, int permanent);
 int img_mgmt_state_confirm(void);
 
 /**
- * Compares two image version numbers in a semver-compatible way.
+ * Compare two image version numbers in a semver-compatible way.
  *
- * @param a	The first version to compare
- * @param b	The second version to compare
+ * @param a	The first version to compare.
+ * @param b	The second version to compare.
  *
  * @return	-1 if a < b
  * @return	0 if a = b
