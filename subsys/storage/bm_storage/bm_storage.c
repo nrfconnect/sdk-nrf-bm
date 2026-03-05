@@ -132,7 +132,6 @@ int bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void
 	if (!is_within_bounds(dest, len, storage->size)) {
 		return -EINVAL;
 	}
-
 	return storage->api->write(storage, dest, src, len, ctx);
 }
 
