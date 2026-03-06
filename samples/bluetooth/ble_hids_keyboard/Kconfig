@@ -6,6 +6,10 @@
 
 menu "BLE HIDS Keyboard sample"
 
+config SAMPLE_BLE_DEVICE_NAME
+	string "Device name"
+	default "nRF_BM_HIDS_KB"
+
 config SAMPLE_BLE_HIDS_REPORT_FIFO_SIZE
 	int "Report FIFO size"
 	default 10

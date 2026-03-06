@@ -337,7 +337,7 @@ uint32_t ble_adv_allow_list_reply(struct ble_adv *ble_adv,
 uint32_t ble_adv_restart_without_allow_list(struct ble_adv *ble_adv);
 
 /**
- * @brief Function for updating advertising data.
+ * @brief Update advertising data.
  *
  * @details This function can be called if you wish to reconfigure the advertising data The update
  *          will be effective even if advertising has already been started.

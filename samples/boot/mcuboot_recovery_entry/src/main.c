@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
+#include <ble_gap.h>
 #include <bm/softdevice_handler/nrf_sdh.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
 #include <bm/bluetooth/ble_adv.h>
@@ -155,6 +156,7 @@ int main(void)
 {
 	int err;
 	uint32_t nrf_err;
+	ble_gap_conn_sec_mode_t device_name_write_sec;
 	struct ble_adv_config ble_adv_cfg = {
 		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
 		.evt_handler = ble_adv_evt_handler,
@@ -185,6 +187,14 @@ int main(void)
 	err = nrf_sdh_ble_enable(CONFIG_NRF_SDH_BLE_CONN_TAG);
 	if (err) {
 		LOG_ERR("Failed to enable BLE: %d", err);
+		return 0;
+	}
+
+	BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&device_name_write_sec);
+	nrf_err = sd_ble_gap_device_name_set(&device_name_write_sec, CONFIG_SAMPLE_BLE_DEVICE_NAME,
+					     strlen(CONFIG_SAMPLE_BLE_DEVICE_NAME));
+	if (nrf_err) {
+		LOG_ERR("Failed to set device name, nrf_error %#x", nrf_err);
 		return 0;
 	}
 
@@ -227,7 +237,7 @@ int main(void)
 		return 0;
 	}
 
-	LOG_INF("Advertising as: %s", CONFIG_BLE_ADV_NAME);
+	LOG_INF("Advertising as: %s", CONFIG_SAMPLE_BLE_DEVICE_NAME);
 
 	while (notification_sent == false && device_disconnected == false) {
 		log_flush();

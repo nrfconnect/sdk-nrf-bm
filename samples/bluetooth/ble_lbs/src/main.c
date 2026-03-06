@@ -137,7 +137,8 @@ int main(void)
 {
 	int err;
 	uint32_t nrf_err;
-	struct ble_adv_config ble_adv_config = {
+	ble_gap_conn_sec_mode_t device_name_write_sec;
+	struct ble_adv_config ble_adv_cfg = {
 		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
 		.evt_handler = ble_adv_evt_handler,
 		.adv_data = {
@@ -170,6 +171,14 @@ int main(void)
 	}
 
 	LOG_INF("Bluetooth enabled");
+
+	BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&device_name_write_sec);
+	nrf_err = sd_ble_gap_device_name_set(&device_name_write_sec, CONFIG_SAMPLE_BLE_DEVICE_NAME,
+					     strlen(CONFIG_SAMPLE_BLE_DEVICE_NAME));
+	if (nrf_err) {
+		LOG_ERR("Failed to set device name, nrf_error %#x", nrf_err);
+		goto idle;
+	}
 
 	led_init();
 	LOG_INF("LEDs enabled");
@@ -210,12 +219,12 @@ int main(void)
 	ble_uuid_t adv_uuid_list[] = {
 		{ .uuid = BLE_UUID_LBS_SERVICE, .type = ble_lbs.uuid_type },
 	};
-	ble_adv_config.sr_data.uuid_lists.complete.uuid = &adv_uuid_list[0];
-	ble_adv_config.sr_data.uuid_lists.complete.len = ARRAY_SIZE(adv_uuid_list);
+	ble_adv_cfg.sr_data.uuid_lists.complete.uuid = &adv_uuid_list[0];
+	ble_adv_cfg.sr_data.uuid_lists.complete.len = ARRAY_SIZE(adv_uuid_list);
 
 	LOG_INF("Services initialized");
 
-	nrf_err = ble_adv_init(&ble_adv, &ble_adv_config);
+	nrf_err = ble_adv_init(&ble_adv, &ble_adv_cfg);
 	if (nrf_err) {
 		LOG_ERR("Failed to initialize BLE advertising, nrf_error %#x", nrf_err);
 		goto idle;
@@ -227,7 +236,7 @@ int main(void)
 		goto idle;
 	}
 
-	LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
+	LOG_INF("Advertising as %s", CONFIG_SAMPLE_BLE_DEVICE_NAME);
 
 	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
 	LOG_INF("BLE LBS sample initialized");

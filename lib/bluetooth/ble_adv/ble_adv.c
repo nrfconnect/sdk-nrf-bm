@@ -258,7 +258,6 @@ uint32_t ble_adv_conn_cfg_tag_set(struct ble_adv *ble_adv, uint8_t ble_cfg_tag)
 uint32_t ble_adv_init(struct ble_adv *ble_adv, const struct ble_adv_config *ble_adv_config)
 {
 	uint32_t nrf_err;
-	ble_gap_conn_sec_mode_t sec_mode;
 
 	if (!ble_adv || !ble_adv_config || !ble_adv_config->evt_handler) {
 		return NRF_ERROR_NULL;
@@ -271,14 +270,6 @@ uint32_t ble_adv_init(struct ble_adv *ble_adv, const struct ble_adv_config *ble_
 	ble_adv->evt_handler = ble_adv_config->evt_handler;
 
 	memset(&ble_adv->peer_address, 0x00, sizeof(ble_adv->peer_address));
-
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&sec_mode);
-	nrf_err = sd_ble_gap_device_name_set(&sec_mode, CONFIG_BLE_ADV_NAME,
-					     strlen(CONFIG_BLE_ADV_NAME));
-	if (nrf_err) {
-		LOG_ERR("Failed to set advertising name, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
-	}
 
 	ble_adv->adv_data.adv_data.p_data = ble_adv->enc_adv_data[0];
 	ble_adv->adv_data.adv_data.len = adv_data_size_max_get();

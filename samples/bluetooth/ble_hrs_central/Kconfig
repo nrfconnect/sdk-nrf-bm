@@ -6,6 +6,10 @@
 
 menu "BLE HRS central sample"
 
+config SAMPLE_BLE_DEVICE_NAME
+	string "Device name"
+	default "nRF_BM_HRS_C"
+
 config SAMPLE_USE_TARGET_PERIPHERAL_NAME
 	bool "Use target peripheral name"
 	default y

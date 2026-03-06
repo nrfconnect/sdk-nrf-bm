@@ -64,8 +64,6 @@
 #define AD_UUID_16_DATA_SIZE sizeof(uint16_t)
 #define AD_UUID_128_DATA_SIZE 8*sizeof(uint16_t)
 
-static const ble_gap_conn_sec_mode_t sec_mode_open = BLE_GAP_CONN_SEC_MODE_OPEN;
-
 static const ble_gap_adv_params_t init_adv_params = {
 	.properties.type = BLE_GAP_ADV_TYPE_CONNECTABLE_SCANNABLE_UNDIRECTED,
 	.interval = BLE_GAP_ADV_INTERVAL_MAX,
@@ -221,10 +219,6 @@ static void init_success(void)
 		},
 	};
 
-	__cmock_sd_ble_gap_device_name_set_ExpectWithArrayAndReturn(
-		&sec_mode_open, 1, CONFIG_BLE_ADV_NAME, sizeof(CONFIG_BLE_ADV_NAME),
-		sizeof(CONFIG_BLE_ADV_NAME) - 1, NRF_SUCCESS);
-
 	__cmock_sd_ble_gap_adv_set_configure_ExpectWithArrayAndReturn(
 		&(uint8_t){BLE_GAP_ADV_SET_HANDLE_NOT_SET}, 1,
 		NULL, 0,
@@ -244,10 +238,6 @@ static void init_without_ad_flags(void)
 		.conn_cfg_tag = TEST_CONN_CFG_TAG,
 		.evt_handler = ble_adv_evt_handler,
 	};
-
-	__cmock_sd_ble_gap_device_name_set_ExpectWithArrayAndReturn(
-		&sec_mode_open, 1, CONFIG_BLE_ADV_NAME, sizeof(CONFIG_BLE_ADV_NAME),
-		sizeof(CONFIG_BLE_ADV_NAME) - 1, NRF_SUCCESS);
 
 	__cmock_sd_ble_gap_adv_set_configure_ExpectWithArrayAndReturn(
 		&(uint8_t){BLE_GAP_ADV_SET_HANDLE_NOT_SET}, 1,
@@ -837,22 +827,6 @@ void test_ble_adv_init_error_null(void)
 
 	nrf_err = ble_adv_init(&ble_adv, &cfg);
 	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
-}
-
-void test_ble_adv_init_error_invalid_param(void)
-{
-	uint32_t nrf_err;
-	struct ble_adv_config cfg = {
-		.conn_cfg_tag = TEST_CONN_CFG_TAG,
-		.evt_handler = ble_adv_evt_handler,
-	};
-
-	__cmock_sd_ble_gap_device_name_set_ExpectWithArrayAndReturn(
-		&sec_mode_open, 1, CONFIG_BLE_ADV_NAME, sizeof(CONFIG_BLE_ADV_NAME),
-		sizeof(CONFIG_BLE_ADV_NAME) - 1, NRF_ERROR_INVALID_ADDR);
-
-	nrf_err = ble_adv_init(&ble_adv, &cfg);
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, nrf_err);
 }
 
 void test_ble_adv_conn_cfg_tag_set_success(void)

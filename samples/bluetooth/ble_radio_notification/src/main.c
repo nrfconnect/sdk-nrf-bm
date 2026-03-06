@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
+#include <ble_gap.h>
 #include <bm/softdevice_handler/nrf_sdh.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
 #include <bm/bluetooth/ble_adv.h>
@@ -95,6 +96,7 @@ int main(void)
 {
 	int err;
 	uint32_t nrf_err;
+	ble_gap_conn_sec_mode_t device_name_write_sec;
 
 	struct ble_adv_config ble_adv_cfg = {
 		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
@@ -134,6 +136,14 @@ int main(void)
 
 	LOG_INF("Bluetooth enabled");
 
+	BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&device_name_write_sec);
+	nrf_err = sd_ble_gap_device_name_set(&device_name_write_sec, CONFIG_SAMPLE_BLE_DEVICE_NAME,
+					     strlen(CONFIG_SAMPLE_BLE_DEVICE_NAME));
+	if (nrf_err) {
+		LOG_ERR("Failed to set device name, nrf_error %#x", nrf_err);
+		goto idle;
+	}
+
 	nrf_err = ble_conn_params_evt_handler_set(on_conn_params_evt);
 	if (nrf_err) {
 		LOG_ERR("Failed to setup conn param event handler, nrf_error %#x", nrf_err);
@@ -152,7 +162,7 @@ int main(void)
 		goto idle;
 	}
 
-	LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
+	LOG_INF("Advertising as %s", CONFIG_SAMPLE_BLE_DEVICE_NAME);
 
 	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
 	LOG_INF("BLE Radio Notification sample initialized");

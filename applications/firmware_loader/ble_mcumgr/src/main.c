@@ -174,6 +174,7 @@ int main(void)
 {
 	int err;
 	uint32_t nrf_err;
+	ble_gap_conn_sec_mode_t device_name_write_sec;
 	struct ble_adv_config ble_adv_cfg = {
 		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
 		.evt_handler = ble_adv_evt_handler,
@@ -212,6 +213,14 @@ int main(void)
 
 	LOG_INF("Bluetooth enabled");
 
+	BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&device_name_write_sec);
+	nrf_err = sd_ble_gap_device_name_set(&device_name_write_sec,
+					     CONFIG_APP_FIRMWARE_LOADER_BLE_DEVICE_NAME,
+					     strlen(CONFIG_APP_FIRMWARE_LOADER_BLE_DEVICE_NAME));
+	if (nrf_err) {
+		LOG_ERR("Failed to set device name, nrf_error %#x", nrf_err);
+	}
+
 #if CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME
 	/* Initialize setting subsystem with SRAM retention backend
 	 * for fetching ADV device name provided by the application.
@@ -245,36 +254,20 @@ int main(void)
 	ble_adv_cfg.sr_data.uuid_lists.complete.uuid = &adv_uuid_list[0];
 	ble_adv_cfg.sr_data.uuid_lists.complete.len = ARRAY_SIZE(adv_uuid_list);
 
-	nrf_err = ble_adv_init(&ble_adv, &ble_adv_cfg);
-	if (nrf_err) {
-		LOG_ERR("Failed to initialize advertising, nrf_error %#x", nrf_err);
-		return 0;
-	}
-
 #if CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME
 	const char *custom_advertising_name;
 	uint8_t custom_advertising_name_size;
-	ble_gap_conn_sec_mode_t sec_mode = {0};
 
 	custom_advertising_name = bluetooth_name_value_get();
 	custom_advertising_name_size = strlen(custom_advertising_name);
 
 	if (custom_advertising_name_size > 0) {
 		/* Change advertising name to one from application */
-		BLE_GAP_CONN_SEC_MODE_SET_OPEN(&sec_mode);
-		err = sd_ble_gap_device_name_set(&sec_mode, custom_advertising_name,
-						 custom_advertising_name_size);
-
-		if (err) {
-			LOG_ERR("Failed to change advertising name, err %d", err);
-			return 0;
-		}
-
-		err = ble_adv_data_encode(&ble_adv_cfg.adv_data, ble_adv.enc_adv_data[0],
-					  &ble_adv.adv_data.adv_data.len);
-
-		if (err) {
-			LOG_ERR("Failed to update advertising data, err %d", err);
+		nrf_err = sd_ble_gap_device_name_set(&device_name_write_sec,
+						     custom_advertising_name,
+						     custom_advertising_name_size);
+		if (nrf_err) {
+			LOG_ERR("Failed to change advertising name, nrf_err %#x", nrf_err);
 			return 0;
 		}
 
@@ -288,6 +281,12 @@ int main(void)
 	}
 #endif /* CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME */
 
+	nrf_err = ble_adv_init(&ble_adv, &ble_adv_cfg);
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize advertising, nrf_error %#x", nrf_err);
+		return 0;
+	}
+
 	nrf_err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
 	if (nrf_err) {
 		LOG_ERR("Failed to start advertising, nrf_error %#x", nrf_err);
@@ -296,9 +295,9 @@ int main(void)
 
 #if CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME
 	LOG_INF("Advertising as %s", (custom_advertising_name_size > 0 ? custom_advertising_name :
-				      CONFIG_BLE_ADV_NAME));
+				      CONFIG_APP_FIRMWARE_LOADER_BLE_DEVICE_NAME));
 #else
-	LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
+	LOG_INF("Advertising as %s", CONFIG_APP_FIRMWARE_LOADER_BLE_DEVICE_NAME);
 #endif /* CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME */
 
 	while (notification_sent == false && device_disconnected == false) {
