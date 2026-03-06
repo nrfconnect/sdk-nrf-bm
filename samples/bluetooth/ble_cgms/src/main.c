@@ -18,6 +18,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <ble.h>
+#include <ble_gap.h>
 #include <hal/nrf_gpio.h>
 #include <bm/bluetooth/ble_adv.h>
 #include <bm/bluetooth/ble_conn_params.h>
@@ -731,8 +732,9 @@ static uint32_t advertising_init(void)
 	ble_uuid_t adv_uuid_list[] = {
 		{ .uuid = BLE_UUID_CGM_SERVICE, .type = BLE_UUID_TYPE_BLE },
 	};
-	struct ble_adv_config config = {
+	struct ble_adv_config ble_adv_cfg = {
 		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
+		.evt_handler = ble_adv_evt_handler,
 		.adv_data = {
 			.name_type = BLE_ADV_DATA_FULL_NAME,
 			.include_appearance = true,
@@ -742,11 +744,9 @@ static uint32_t advertising_init(void)
 			.len = ARRAY_SIZE(adv_uuid_list),
 			.uuid = &adv_uuid_list[0],
 		},
-
-		.evt_handler = ble_adv_evt_handler,
 	};
 
-	nrf_err = ble_adv_init(&ble_adv, &config);
+	nrf_err = ble_adv_init(&ble_adv, &ble_adv_cfg);
 	if (nrf_err) {
 		LOG_ERR("BLE advertising init failed, nrf_error %#x", nrf_err);
 		return nrf_err;
@@ -822,6 +822,7 @@ int main(void)
 	int err;
 	uint32_t nrf_err;
 	bool erase_bonds = false;
+	ble_gap_conn_sec_mode_t device_name_write_sec;
 
 	LOG_INF("BLE CGMS sample started");
 
@@ -838,6 +839,15 @@ int main(void)
 	if (err) {
 		goto idle;
 	}
+
+	BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&device_name_write_sec);
+	nrf_err = sd_ble_gap_device_name_set(&device_name_write_sec, CONFIG_SAMPLE_BLE_DEVICE_NAME,
+					     strlen(CONFIG_SAMPLE_BLE_DEVICE_NAME));
+	if (nrf_err) {
+		LOG_ERR("Failed to set device name, nrf_error %#x", nrf_err);
+		goto idle;
+	}
+
 	nrf_err = peer_manager_init();
 	if (nrf_err) {
 		LOG_ERR("Failed to initialize Peer Manager, nrf_error %#x", nrf_err);
@@ -868,7 +878,7 @@ int main(void)
 		goto idle;
 	}
 
-	LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
+	LOG_INF("Advertising as %s", CONFIG_SAMPLE_BLE_DEVICE_NAME);
 
 	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
 	LOG_INF("BLE CGMS sample initialized");

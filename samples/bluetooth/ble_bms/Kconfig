@@ -6,6 +6,10 @@
 
 menu "BLE BMS sample"
 
+config SAMPLE_BLE_DEVICE_NAME
+	string "Device name"
+	default "nRF_BM_BMS"
+
 config SAMPLE_QWR_MEM_BUFF_SIZE
 	int "QWR memory buffer size"
 	default 512

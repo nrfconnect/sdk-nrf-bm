@@ -10,6 +10,7 @@
 #include <nrf_soc.h>
 #include <hal/nrf_gpio.h>
 #include <ble.h>
+#include <ble_gap.h>
 #include <bm/bm_buttons.h>
 
 #include <bm/bluetooth/ble_scan.h>
@@ -574,6 +575,7 @@ int main(void)
 {
 	int err;
 	uint32_t nrf_err;
+	ble_gap_conn_sec_mode_t device_name_write_sec;
 	static struct bm_buttons_config configs[] = {
 		{
 			.pin_number = BOARD_PIN_BTN_0,
@@ -625,6 +627,14 @@ int main(void)
 	}
 
 	LOG_INF("Bluetooth enabled");
+
+	BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&device_name_write_sec);
+	nrf_err = sd_ble_gap_device_name_set(&device_name_write_sec, CONFIG_SAMPLE_BLE_DEVICE_NAME,
+					     strlen(CONFIG_SAMPLE_BLE_DEVICE_NAME));
+	if (nrf_err) {
+		LOG_ERR("Failed to set device name, nrf_error %#x", nrf_err);
+		goto idle;
+	}
 
 	nrf_err = gatt_init();
 	if (nrf_err) {

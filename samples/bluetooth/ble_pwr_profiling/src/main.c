@@ -549,7 +549,7 @@ static void adv_data_update_and_start(enum adv_mode adv_mode)
 
 	adv_mode_current = adv_mode;
 
-	LOG_INF("Advertising as %s", CONFIG_SAMPLE_BLE_PWR_PROFILING_ADV_NAME);
+	LOG_INF("Advertising as %s", CONFIG_SAMPLE_BLE_DEVICE_NAME);
 }
 
 static void button_handler(uint8_t pin, uint8_t action)
@@ -578,15 +578,6 @@ static void button_handler(uint8_t pin, uint8_t action)
 static uint32_t adv_init(void)
 {
 	uint32_t nrf_err;
-	ble_gap_conn_sec_mode_t sec_mode = {0};
-
-	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&sec_mode);
-	nrf_err = sd_ble_gap_device_name_set(&sec_mode, CONFIG_SAMPLE_BLE_PWR_PROFILING_ADV_NAME,
-					     strlen(CONFIG_SAMPLE_BLE_PWR_PROFILING_ADV_NAME));
-	if (nrf_err) {
-		LOG_ERR("Failed to set advertising name, nrf_error %#x", nrf_err);
-		return nrf_err;
-	}
 
 	gap_adv_data.adv_data.p_data = enc_adv_data[0];
 	gap_adv_data.adv_data.len = BLE_GAP_ADV_SET_DATA_SIZE_MAX;
@@ -611,6 +602,7 @@ int main(void)
 	int err;
 	uint32_t nrf_err;
 	uint8_t uuid_type;
+	ble_gap_conn_sec_mode_t device_name_write_sec;
 	struct ble_qwr_config qwr_config = {
 		.evt_handler = on_ble_qwr_evt,
 	};
@@ -684,6 +676,14 @@ int main(void)
 	}
 
 	LOG_INF("Bluetooth enabled");
+
+	BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&device_name_write_sec);
+	nrf_err = sd_ble_gap_device_name_set(&device_name_write_sec, CONFIG_SAMPLE_BLE_DEVICE_NAME,
+					     strlen(CONFIG_SAMPLE_BLE_DEVICE_NAME));
+	if (nrf_err) {
+		LOG_ERR("Failed to set advertising name, nrf_error %#x", nrf_err);
+		return nrf_err;
+	}
 
 	nrf_err = ble_qwr_init(&ble_qwr, &qwr_config);
 	if (nrf_err) {

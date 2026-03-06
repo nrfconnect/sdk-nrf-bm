@@ -6,6 +6,10 @@
 
 menu "BLE LBS sample"
 
+config SAMPLE_BLE_DEVICE_NAME
+	string "Device name"
+	default "nRF_BM_LBS"
+
 module=SAMPLE_BLE_LBS
 module-str=BLE LED Button Service Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
