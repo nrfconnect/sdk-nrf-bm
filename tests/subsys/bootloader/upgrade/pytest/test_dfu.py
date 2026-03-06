@@ -19,6 +19,7 @@ EXTRA_IMAGE_SIZE = 0x1000  # 4KB extra to exceed partition size
 TLV_TRAILER_SIZE = 8 * 1024  # 8KB for MCUboot metadata (TLV + trailer)
 
 
+# not relevant for s145_softdevice
 def test_if_uploading_too_large_softdevice_image_is_not_possible(
     dut: DeviceAdapter, request: pytest.FixtureRequest, mcumgr: MCUmgr
 ):
