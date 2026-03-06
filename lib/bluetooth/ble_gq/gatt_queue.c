@@ -285,7 +285,7 @@ static void req_queue_purge_schedule(const struct ble_gq *gq, uint16_t conn_id)
 	}
 
 	/* Assert if there was no space in array to schedule purge of a request queue. */
-	__ASSERT_NO_MSG(idx == gq->max_conns);
+	__ASSERT_NO_MSG(idx != gq->max_conns);
 }
 
 /* Find connection ID for the provided connection handle within the GATT queue instance registery.
