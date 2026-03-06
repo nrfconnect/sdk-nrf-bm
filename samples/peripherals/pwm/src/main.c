@@ -7,6 +7,7 @@
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
+#include <bm/bm_irq.h>
 #include <nrfx_pwm.h>
 #include <hal/nrf_gpio.h>
 #include <board-config.h>
@@ -57,9 +58,9 @@ int main(void)
 
 	LOG_INF("PWM sample started");
 
-	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(PWM_INST),
-			   CONFIG_SAMPLE_PWM_IRQ_PRIO,
-			   pwm_direct_isr, 0);
+	BM_IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(PWM_INST),
+			      CONFIG_SAMPLE_PWM_IRQ_PRIO,
+			      pwm_direct_isr, 0);
 
 	err = nrfx_pwm_init(&pwm_instance, &config, pwm_handler, &pwm_instance);
 	if (err) {

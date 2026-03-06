@@ -19,7 +19,13 @@ config SAMPLE_LPUARTE_PARITY
 
 config SAMPLE_LPUARTE_IRQ_PRIO
 	int "LPUARTE IRQ priority"
+	range 2 7
 	default 5
+	help
+	  Sets LPUARTE interrupt priority.
+	  Levels are from 2 (highest priority) to 7 (lowest priority)
+	  Interrupt priority level must be greater than 4 (softdevice low priority)
+	  if you want to call into softdevice from the interrupt driver.
 
 config SAMPLE_LPUARTE_INIT_LED
 	bool "LED indicating if application has been initialized"

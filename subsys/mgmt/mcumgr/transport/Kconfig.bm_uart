@@ -29,7 +29,11 @@ config MCUMGR_TRANSPORT_BM_UART_UARTE_PARITY
 
 config MCUMGR_TRANSPORT_BM_UART_UARTE_IRQ_PRIO
 	int "UARTE IRQ priority"
+	range 2 7
 	default 3
+	help
+	  Sets MCU manager UARTE interrupt priority.
+	  Levels are from 2 (highest priority) to 7 (lowest priority)
 
 config MCUMGR_TRANSPORT_BM_UART_RX_BUF_SIZE
 	int "Size of receive buffer for mcumgr fragments received over UART, in bytes"

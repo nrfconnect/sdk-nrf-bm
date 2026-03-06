@@ -7,6 +7,7 @@
 #include <zephyr/sys/printk-hooks.h>
 #include <zephyr/sys/libc-hooks.h>
 
+#include <bm/bm_irq.h>
 #include <nrfx_uarte.h>
 
 #include <board-config.h>
@@ -43,9 +44,9 @@ static int uarte_init(void)
 	uarte_config.interrupt_priority = CONFIG_BM_UARTE_CONSOLE_UARTE_IRQ_PRIO;
 
 	/** We need to connect the IRQ ourselves. */
-	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(BOARD_CONSOLE_UARTE_INST),
-			   CONFIG_BM_UARTE_CONSOLE_UARTE_IRQ_PRIO,
-			   console_bm_uarte_direct_isr, 0);
+	BM_IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(BOARD_CONSOLE_UARTE_INST),
+			      CONFIG_BM_UARTE_CONSOLE_UARTE_IRQ_PRIO,
+			      console_bm_uarte_direct_isr, 0);
 
 	irq_enable(NRFX_IRQ_NUMBER_GET(BOARD_CONSOLE_UARTE_INST));
 

@@ -7,6 +7,7 @@
 #include <nrf_sdm.h>
 #include <nrf_soc.h>
 #include <bm/softdevice_handler/nrf_sdh.h>
+#include <bm/bm_irq.h>
 #include <bm/bm_scheduler.h>
 #include <zephyr/toolchain.h>
 #include <zephyr/logging/log.h>
@@ -374,7 +375,8 @@ ISR_DIRECT_DECLARE(sd_direct_isr)
 
 static int sd_irq_init(void)
 {
-	IRQ_DIRECT_CONNECT(SD_EVT_IRQn, 4, sd_direct_isr, 0);
+	BM_IRQ_DIRECT_CONNECT(SD_EVT_IRQn, SD_EVT_IRQ_PRI,
+			      sd_direct_isr, 0);
 	irq_enable(SD_EVT_IRQn);
 
 	return 0;

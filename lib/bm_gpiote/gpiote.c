@@ -5,6 +5,7 @@
  */
 
 #include <stdint.h>
+#include <bm/bm_irq.h>
 #include <bm/bm_gpiote.h>
 #include <nrfx_gpiote.h>
 #include <zephyr/irq.h>
@@ -37,7 +38,7 @@ struct bm_gpiote_inst {
 	}
 
 #define BM_GPIOTE_IRQ_CONNECT(periph_name, prefix, idx, off_code)                                  \
-	IRQ_DIRECT_CONNECT(                                                                        \
+	BM_IRQ_DIRECT_CONNECT(                                                                     \
 		NRFX_IRQ_NUMBER_GET(NRF_GPIOTE_INST_GET(idx)) + NRF_GPIOTE_IRQ_GROUP,              \
 		CONFIG_BM_GPIOTE_IRQ_PRIO, NRFX_CONCAT_3(gpiote_, idx, _direct_isr), 0)
 

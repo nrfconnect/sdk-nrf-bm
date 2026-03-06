@@ -26,7 +26,12 @@ endchoice # BLE_RADIO_NOTIFICATION_TYPE
 
 config BLE_RADIO_NOTIFICATION_IRQ_PRIO
 	int "BLE Radio Notification IRQ priority"
-	default 3
+	range 5 7
+	default 5
+	help
+	  Sets the interrupt priority of the BLE radio notification event (SWI02).
+	  Levels are from 5 (highest priority) to 7 (lowest priority)
+	  Interrupt priority level must be greater than 4 (softdevice low priority).
 
 module=BLE_RADIO_NOTIFICATION
 module-str=BLE Radio Notification
