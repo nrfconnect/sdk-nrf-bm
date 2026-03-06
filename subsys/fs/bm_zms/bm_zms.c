@@ -52,8 +52,6 @@ static atomic_t queued_op_cnt;
 /* Queue of bm_zms operations. */
 RING_BUF_DECLARE(zms_fifo, CONFIG_BM_ZMS_OP_QUEUE_SIZE * sizeof(zms_op_t));
 
-/* Internal write buffer for padding data that is not a multiple of the program unit. */
-static __ALIGN(4) uint8_t bm_zms_internal_buf[ZMS_BLOCK_SIZE];
 
 static int zms_prev_ate(struct bm_zms_fs *fs, uint64_t *addr, struct zms_ate *ate);
 static int zms_ate_valid(struct bm_zms_fs *fs, const struct zms_ate *entry);
@@ -314,7 +312,7 @@ static void zms_event_handler(struct bm_storage_evt *p_evt)
 	atomic_set(&queue_process_start, true);
 	atomic_set(&cur_op_result, p_evt->result);
 
-	if (p_evt->dispatch_type == BM_STORAGE_EVT_DISPATCH_ASYNC) {
+	if (p_evt->is_async) {
 		queue_process();
 	}
 }
@@ -402,29 +400,29 @@ static void zms_lookup_cache_invalidate(struct bm_zms_fs *fs, uint32_t sector)
 
 #endif /* CONFIG_BM_ZMS_LOOKUP_CACHE */
 
-/* Helper to compute offset given the address */
+/* Helper to compute a partition-relative offset from a ZMS virtual address */
 static inline off_t zms_addr_to_offset(struct bm_zms_fs *fs, uint64_t addr)
 {
-	return fs->offset + (fs->sector_size * SECTOR_NUM(addr)) + SECTOR_OFFSET(addr);
+	return (fs->sector_size * SECTOR_NUM(addr)) + SECTOR_OFFSET(addr);
 }
 
 /* Helper to round down len to the closest multiple of write_block_size  */
 static inline size_t zms_round_down_write_block_size(struct bm_zms_fs *fs, size_t len)
 {
-	return len & ~(fs->zms_bm_storage.nvm_info->program_unit - 1U);
+	return len & ~(fs->nvm_info->wear_unit - 1U);
 }
 
 /* Helper to round up len to multiple of write_block_size */
 static inline size_t zms_round_up_write_block_size(struct bm_zms_fs *fs, size_t len)
 {
-	return (len + (fs->zms_bm_storage.nvm_info->program_unit - 1U)) &
-	       ~(fs->zms_bm_storage.nvm_info->program_unit - 1U);
+	return (len + (fs->nvm_info->wear_unit - 1U)) &
+	       ~(fs->nvm_info->wear_unit - 1U);
 }
 
 /* zms_al_size returns size aligned to fs->write_block_size */
 static inline size_t zms_al_size(struct bm_zms_fs *fs, size_t len)
 {
-	size_t write_block_size = fs->zms_bm_storage.nvm_info->program_unit;
+	size_t write_block_size = fs->nvm_info->wear_unit;
 
 	if (write_block_size <= 1U) {
 		return len;
@@ -699,9 +697,8 @@ static void zms_al_wrt_next_op(struct bm_zms_fs *fs)
 static int zms_flash_al_wrt(struct bm_zms_fs *fs)
 {
 	const uint8_t *data8;
-	int rc = 0;
 	off_t offset;
-	size_t blen = 0;
+	size_t len;
 
 	if (!cur_op.len) {
 		zms_al_wrt_next_op(fs);
@@ -719,30 +716,14 @@ static int zms_flash_al_wrt(struct bm_zms_fs *fs)
 		 */
 		data8 = (const uint8_t *)cur_op.data;
 	}
+
 	offset = zms_addr_to_offset(fs, cur_op.addr);
+	len = cur_op.len;
 
-	blen = zms_round_down_write_block_size(fs, cur_op.len);
-	if (blen > 0) {
-		cur_op.len -= blen;
-		cur_op.blen = (cur_op.len) ? blen : 0;
-		zms_al_wrt_next_op(fs);
-		return bm_storage_write(&fs->zms_bm_storage, offset, data8, blen,
-					(void *)&cur_op);
-	}
-	if (cur_op.len) {
-		memcpy(bm_zms_internal_buf, data8 + cur_op.blen, cur_op.len);
-		(void)memset(bm_zms_internal_buf + cur_op.len,
-			     fs->zms_bm_storage.nvm_info->erase_value,
-			     fs->zms_bm_storage.nvm_info->program_unit - cur_op.len);
-		cur_op.len = 0;
-		zms_al_wrt_next_op(fs);
-		return bm_storage_write(&fs->zms_bm_storage, offset + cur_op.blen,
-					bm_zms_internal_buf,
-					fs->zms_bm_storage.nvm_info->program_unit,
-					(void *)&cur_op);
-	}
+	cur_op.len = 0;
 
-	return rc;
+	zms_al_wrt_next_op(fs);
+	return bm_storage_write(&fs->zms_bm_storage, offset, data8, len, (void *)&cur_op);
 }
 
 /* basic flash read from bm_zms address */
@@ -879,7 +860,7 @@ static int zms_flash_erase_sector(struct bm_zms_fs *fs, uint64_t addr)
 {
 	int rc;
 	off_t offset;
-	bool ebw_required = !fs->zms_bm_storage.nvm_info->no_explicit_erase;
+	bool ebw_required = fs->nvm_info->is_erase_before_write;
 
 	if (!ebw_required) {
 		/* Do nothing for devices that do not have erase capability */
@@ -906,7 +887,7 @@ static int zms_flash_erase_sector(struct bm_zms_fs *fs, uint64_t addr)
 		return rc;
 	}
 
-	if (zms_flash_cmp_const(fs, addr, fs->zms_bm_storage.nvm_info->erase_value,
+	if (zms_flash_cmp_const(fs, addr, fs->nvm_info->erase_value,
 				fs->sector_size)) {
 		LOG_ERR("Failure while erasing the sector at offset 0x%lx", (long)offset);
 		rc = -EIO;
@@ -1232,7 +1213,7 @@ static int zms_sector_close(struct bm_zms_fs *fs)
 		 *   - Next 256th cycle the leading cycle_cnt is 0, this ATE becomes
 		 *     valid even if it is not the case.
 		 */
-		memset(&cur_op.ate_entry, fs->zms_bm_storage.nvm_info->erase_value,
+		memset(&cur_op.ate_entry, fs->nvm_info->erase_value,
 		       sizeof(struct zms_ate));
 		if (SECTOR_OFFSET(fs->ate_wra) && (fs->ate_wra > fs->data_wra)) {
 			cur_op.len = sizeof(struct zms_ate);
@@ -2007,8 +1988,11 @@ int bm_zms_mount(struct bm_zms_fs *fs, const struct bm_zms_fs_config *config)
 
 	struct bm_storage_config conf = {
 		.evt_handler = zms_event_handler,
-		.start_addr = fs->offset,
-		.end_addr = fs->offset + fs->sector_size * fs->sector_count,
+		.api = config->storage_api,
+		.addr = fs->offset,
+		.size = fs->sector_size * fs->sector_count,
+		.flags.is_wear_aligned = true,
+		.flags.is_write_padded = true,
 	};
 
 	ret = bm_storage_init(&fs->zms_bm_storage, &conf);
@@ -2017,8 +2001,10 @@ int bm_zms_mount(struct bm_zms_fs *fs, const struct bm_zms_fs_config *config)
 		return -EIO;
 	}
 
+	fs->nvm_info = bm_storage_nvm_info_get(&fs->zms_bm_storage);
+
 	fs->ate_size = zms_al_size(fs, sizeof(struct zms_ate));
-	write_block_size = fs->zms_bm_storage.nvm_info->program_unit;
+	write_block_size = fs->nvm_info->wear_unit;
 
 	/* check that the write block size is supported */
 	if (write_block_size > ZMS_BLOCK_SIZE || write_block_size == 0) {
@@ -2029,9 +2015,9 @@ int bm_zms_mount(struct bm_zms_fs *fs, const struct bm_zms_fs_config *config)
 	/* When the device need erase operations before write let's check that
 	 * sector size is a multiple of pagesize
 	 */
-	if (!fs->zms_bm_storage.nvm_info->no_explicit_erase) {
+	if (fs->nvm_info->is_erase_before_write) {
 		if (!fs->sector_size ||
-		    fs->sector_size % fs->zms_bm_storage.nvm_info->erase_unit) {
+		    fs->sector_size % fs->nvm_info->wear_unit) {
 			LOG_ERR("Invalid sector size");
 			return -EINVAL;
 		}

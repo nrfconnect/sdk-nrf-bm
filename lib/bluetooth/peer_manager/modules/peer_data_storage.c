@@ -346,6 +346,7 @@ uint32_t pds_init(void)
 		.sector_size = CONFIG_PM_BM_ZMS_SECTOR_SIZE,
 		.sector_count = (PEER_MANAGER_PARTITION_SIZE / CONFIG_PM_BM_ZMS_SECTOR_SIZE),
 		.evt_handler = bm_zms_evt_handler,
+		.storage_api = &bm_storage_sd_api,
 	};
 
 	err = bm_zms_mount(&fs, &config);

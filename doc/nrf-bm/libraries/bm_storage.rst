@@ -26,10 +26,14 @@ Select a storage backend by enabling one of the following Kconfig options:
 * :kconfig:option:`CONFIG_BM_STORAGE_BACKEND_RRAM` – RRAM backend. The events reported are synchronous.
 * :kconfig:option:`CONFIG_BM_STORAGE_BACKEND_SD` – SoftDevice backend. The events reported are asynchronous.
 
+The selected backend's API instance is made available through the :file:`include/bm/storage/bm_storage_backends.h` header, which is included transitively by :file:`include/bm/storage/bm_storage.h`.
+
 SoftDevice backend options:
 
 * :kconfig:option:`CONFIG_BM_STORAGE_BACKEND_SD_QUEUE_SIZE` – Queue size for pending operations.
 * :kconfig:option:`CONFIG_BM_STORAGE_BACKEND_SD_MAX_RETRIES` – Maximum retries if the SoftDevice is busy.
+* :kconfig:option:`CONFIG_BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE` - Maximum number of bytes to write in a single call to ``sd_flash_write()``.
+* :kconfig:option:`CONFIG_BM_STORAGE_BACKEND_SD_ERASE_BLOCKS` – Batch erase operations up to ``_MAX_WRITE_SIZE`` bytes at once.
 
 Initialization
 ==============
@@ -39,7 +43,26 @@ Each storage instance is represented by a :c:struct:`bm_storage` structure.
 To initialize a storage instance, use the :c:func:`bm_storage_init` function, providing a configuration struct :c:struct:`bm_storage_config` with the following information:
 
 * :c:member:`bm_storage_config.evt_handler` – Event callback.
-* :c:member:`bm_storage_config.start_addr` and :c:member:`bm_storage_config.end_addr` – Accessible address range.
+* :c:member:`bm_storage_config.api` – Backend API implementation (for example, ``&bm_storage_sd_api`` or ``&bm_storage_rram_api``).
+* :c:member:`bm_storage_config.addr` and :c:member:`bm_storage_config.size` – Partition starting address and size.
+
+The following example shows how to initialize a storage instance with a backend API:
+
+.. code-block:: c
+
+   #include <bm/storage/bm_storage.h>
+
+   struct bm_storage storage;
+   struct bm_storage_config config = {
+       .evt_handler = my_handler,
+       .api = &bm_storage_sd_api,
+       .addr = PARTITION_ADDR,
+       .size = PARTITION_SIZE,
+   };
+
+   bm_storage_init(&storage, &config);
+
+All read, write, and erase operations use offsets relative to the partition start (0-based).
 
 You can uninitialize a storage instance with the :c:func:`bm_storage_uninit` function.
 
@@ -52,38 +75,34 @@ Read
 ====
 
 Use the :c:func:`bm_storage_read` function to copy data from NVM into RAM.
-The data length must be a multiple of the backend’s program unit and within the configured region.
-
-.. note::
-
-   The program unit is the smallest block of data that the backend can write in a single operation.
-   Both the destination address and the length must be aligned to this size.
-   The program unit is reported by :c:member:`bm_storage_info.program_unit`.
 
 Write
 =====
 
 Use the :c:func:`bm_storage_write` function to write data to NVM.
-Writes are validated against alignment and range, and completion is reported through :c:member:`bm_storage.evt_handler`.
+The completion of the operation is reported by the :c:enum:`BM_STORAGE_EVT_WRITE_RESULT` event.
 
 .. note::
 
-   Writes must be aligned to the backend’s program unit, reported by :c:member:`bm_storage_info.program_unit`.
-   This ensures that both the write address and the write length are correct for the underlying memory technology.
+   The program unit is the minimum programmable block in NVM.
+   Write operations must start at an address aligned by the program unit and use a length that is a multiple of this value.
+
+   If :c:member:`bm_storage_config.flags.is_wear_aligned` is set during initialization, the wear unit (:c:member:`bm_storage_info.wear_unit`) is used for alignment instead.
 
 Erase
 =====
 
 Use the :c:func:`bm_storage_erase` function to erase a region in NVM.
-``len`` must be a multiple of the erase unit.
-If not supported by the backend, the call may return ``NRF_ERROR_NOT_SUPPORTED``.
-This means that the backend does not require the region to be erased before another write operation.
+The completion of the operation is reported by the :c:enum:`BM_STORAGE_EVT_ERASE_RESULT` event.
 
 .. note::
 
    The erase unit is the minimum erasable block in NVM.
    Erase operations must start at an address aligned by the erase unit and use a length that is a multiple of this value.
    The erase unit is reported by :c:member:`bm_storage_info.erase_unit`.
+
+When the erase operation is not supported by the hardware, the backend will emulate it by writing the memory’s erased value to the NVM area.
+If the erase operation is emulated, the alignment requirements are the same as those for the write operation.
 
 Busy state
 ==========
@@ -125,7 +144,8 @@ Dependencies
 API documentation
 *****************
 
-| Header file: :file:`include/bm_storage.h`
+| Header file: :file:`include/bm/storage/bm_storage.h`
+| Header file: :file:`include/bm/storage/bm_storage_backends.h`
 | Source files: :file:`lib/bm_storage/`
 
 :ref:`Storage library API reference <api_storage>`
