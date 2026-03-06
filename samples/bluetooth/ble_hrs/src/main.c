@@ -372,7 +372,7 @@ static void advertising_start(bool erase_bonds)
 		if (nrf_err) {
 			LOG_ERR("Failed to start advertising, nrf_error %#x", nrf_err);
 		} else {
-			LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
+			LOG_INF("Advertising as %s", CONFIG_SAMPLE_BLE_DEVICE_NAME);
 		}
 	}
 }
@@ -446,6 +446,8 @@ int main(void)
 	};
 	struct ble_adv_config ble_adv_cfg = {
 		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
+		.device_name = CONFIG_SAMPLE_BLE_DEVICE_NAME,
+		.device_name_len = strlen(CONFIG_SAMPLE_BLE_DEVICE_NAME),
 		.evt_handler = ble_adv_evt_handler,
 		.adv_data = {
 			.name_type = BLE_ADV_DATA_FULL_NAME,

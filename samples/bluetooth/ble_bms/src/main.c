@@ -561,6 +561,8 @@ int main(void)
 
 	struct ble_adv_config ble_adv_cfg = {
 		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
+		.device_name = CONFIG_SAMPLE_BLE_DEVICE_NAME,
+		.device_name_len = strlen(CONFIG_SAMPLE_BLE_DEVICE_NAME),
 		.evt_handler = ble_adv_evt_handler,
 		.adv_data = {
 			.name_type = BLE_ADV_DATA_FULL_NAME,
@@ -570,7 +572,7 @@ int main(void)
 		.sr_data.uuid_lists.complete = {
 			.uuid = &adv_uuid_list[0],
 			.len = ARRAY_SIZE(adv_uuid_list),
-		}
+		},
 	};
 
 	struct ble_bms_config bms_cfg = {
@@ -695,7 +697,7 @@ int main(void)
 		goto idle;
 	}
 
-	LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
+	LOG_INF("Advertising as %s", CONFIG_SAMPLE_BLE_DEVICE_NAME);
 
 	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
 	LOG_INF("BLE BMS sample initialized");

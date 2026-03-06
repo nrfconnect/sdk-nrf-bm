@@ -157,6 +157,8 @@ int main(void)
 	uint32_t nrf_err;
 	struct ble_adv_config ble_adv_cfg = {
 		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
+		.device_name = CONFIG_SAMPLE_BLE_DEVICE_NAME,
+		.device_name_len = strlen(CONFIG_SAMPLE_BLE_DEVICE_NAME),
 		.evt_handler = ble_adv_evt_handler,
 		.adv_data = {
 			.name_type = BLE_ADV_DATA_FULL_NAME,
@@ -227,7 +229,7 @@ int main(void)
 		return 0;
 	}
 
-	LOG_INF("Advertising as: %s", CONFIG_BLE_ADV_NAME);
+	LOG_INF("Advertising as: %s", CONFIG_SAMPLE_BLE_DEVICE_NAME);
 
 	while (notification_sent == false && device_disconnected == false) {
 		log_flush();
