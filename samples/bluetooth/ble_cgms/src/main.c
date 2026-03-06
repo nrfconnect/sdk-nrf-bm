@@ -593,6 +593,31 @@ static void button_handler(uint8_t pin, uint8_t action)
 		if (glucose_concentration < CONFIG_SAMPLE_GLUCOSE_CONCENTRATION_MIN) {
 			glucose_concentration = CONFIG_SAMPLE_GLUCOSE_CONCENTRATION_MAX;
 		}
+
+		LOG_INF("New adv name");
+
+		uint32_t nrf_err = ble_adv_device_name_set(&ble_adv, "HELLO WORLD", strlen("HELLO WORLD"));
+		if (nrf_err) {
+			LOG_ERR("Failed to set device name");
+		}
+
+		const struct ble_adv_data adv = {
+			.name_type = BLE_ADV_DATA_FULL_NAME,
+			.include_appearance = true,
+			.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE,
+		};
+
+		ble_uuid_t adv_uuid_list[] = {
+			{ .uuid = BLE_UUID_CGM_SERVICE, .type = BLE_UUID_TYPE_BLE },
+		};
+		const struct ble_adv_data sr = {
+			.uuid_lists.complete = {
+				.len = ARRAY_SIZE(adv_uuid_list),
+				.uuid = &adv_uuid_list[0],
+			},
+		};
+
+		nrf_err = ble_adv_data_update(&ble_adv, &adv, &sr);
 		break;
 	case BOARD_PIN_BTN_3:
 		LOG_INF("Increase GL Concentration");
