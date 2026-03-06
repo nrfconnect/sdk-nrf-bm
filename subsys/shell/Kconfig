@@ -1,0 +1,15 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "Shell"
+
+# Disable the shell log backend
+config SHELL_LOG_BACKEND
+	default n
+
+rsource "backends/Kconfig"
+
+endmenu
