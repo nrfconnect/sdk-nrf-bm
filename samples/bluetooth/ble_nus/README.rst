@@ -139,7 +139,7 @@ The sample can be tested in two ways, depending on the selected UART configurati
       #. Connect to the kit with a terminal emulator (for example, the `Serial Terminal app`_) for both UARTs.
       #. Reset the kit.
       #. Observe that the device is advertising under the default name ``nRF_BM_NUS``.
-         You can configure this name using the :kconfig:option:`CONFIG_BLE_ADV_NAME` Kconfig option.
+         You can configure this name using the :kconfig:option:`CONFIG_SAMPLE_BLE_DEVICE_NAME` Kconfig option.
          For information on how to do this, see `Configuring Kconfig`_.
       #. Observe that the text ``BLE NUS sample initialized`` is printed on the COM listener running on the computer.
       #. Connect to your device using the `nRF Toolbox`_ mobile application with the :guilabel:`Universal Asynchronous Receiver/Transmitter (UART)` service.

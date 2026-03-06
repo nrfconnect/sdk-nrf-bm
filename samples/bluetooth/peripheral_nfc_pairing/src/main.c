@@ -46,7 +46,7 @@ static uint16_t peer_id = PM_PEER_ID_INVALID;
 static ble_gap_lesc_oob_data_t *oob_local;
 static uint8_t conn_cnt;
 static uint8_t tk_value[NFC_NDEF_LE_OOB_REC_TK_LEN];
-static const char device_name[] = CONFIG_BLE_ADV_NAME;
+static const char device_name[] = CONFIG_SAMPLE_BLE_DEVICE_NAME;
 
 /* Buffer used to hold an NFC NDEF message. */
 static uint8_t ndef_msg_buf[NDEF_MSG_BUF_SIZE];
@@ -501,6 +501,8 @@ int main(void)
 
 	struct ble_adv_config ble_adv_cfg = {
 		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
+		.device_name = CONFIG_SAMPLE_BLE_DEVICE_NAME,
+		.device_name_len = strlen(CONFIG_SAMPLE_BLE_DEVICE_NAME),
 		.evt_handler = ble_adv_evt_handler,
 		.adv_data = {
 			.name_type = BLE_ADV_DATA_FULL_NAME,

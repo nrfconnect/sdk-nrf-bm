@@ -78,7 +78,6 @@ The library is enabled and configured using the Kconfig system:
   * :kconfig:option:`CONFIG_BLE_ADV` - Enables the advertising library.
   * :kconfig:option:`CONFIG_BLE_ADV_DATA` - Enables the advertising and scan response data encoder.
     You can enable this without :kconfig:option:`CONFIG_BLE_ADV` if the full library is not required.
-  * :kconfig:option:`CONFIG_BLE_ADV_NAME` - Sets the advertising name of the device.
   * :kconfig:option:`CONFIG_BLE_ADV_RESTART_ON_DISCONNECT`- Starts advertising upon disconnect.
 
 * Directed advertising settings:

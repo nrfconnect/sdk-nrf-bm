@@ -112,7 +112,7 @@ Testing
 #. Reset the kit.
 #. In the Serial Terminal, observe that the ``BLE CGMS sample initialized`` message is printed.
 #. Observe that the device is advertising under the default name ``nRF_BM_CGMS``.
-   You can configure this name using the ``CONFIG_BLE_ADV_NAME`` Kconfig option.
+   You can configure this name using the ``CONFIG_SAMPLE_BLE_DEVICE_NAME`` Kconfig option.
    For information on how to do this, see `Configuring Kconfig`_.
 #. Connect to your device using the `nRF Toolbox`_ mobile application with the :guilabel:`Continuous Glucose` service.
 

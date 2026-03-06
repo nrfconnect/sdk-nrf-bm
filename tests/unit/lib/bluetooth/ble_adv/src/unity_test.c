@@ -215,6 +215,8 @@ static void init_success(void)
 	uint32_t nrf_err;
 	struct ble_adv_config cfg = {
 		.conn_cfg_tag = TEST_CONN_CFG_TAG,
+		.device_name = CONFIG_TEST_BLE_DEVICE_NAME,
+		.device_name_len = strlen(CONFIG_TEST_BLE_DEVICE_NAME),
 		.evt_handler = ble_adv_evt_handler,
 		.adv_data = {
 			.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE,
@@ -222,8 +224,8 @@ static void init_success(void)
 	};
 
 	__cmock_sd_ble_gap_device_name_set_ExpectWithArrayAndReturn(
-		&sec_mode_open, 1, CONFIG_BLE_ADV_NAME, sizeof(CONFIG_BLE_ADV_NAME),
-		sizeof(CONFIG_BLE_ADV_NAME) - 1, NRF_SUCCESS);
+		&sec_mode_open, 1, CONFIG_TEST_BLE_DEVICE_NAME, sizeof(CONFIG_TEST_BLE_DEVICE_NAME),
+		sizeof(CONFIG_TEST_BLE_DEVICE_NAME) - 1, NRF_SUCCESS);
 
 	__cmock_sd_ble_gap_adv_set_configure_ExpectWithArrayAndReturn(
 		&(uint8_t){BLE_GAP_ADV_SET_HANDLE_NOT_SET}, 1,
@@ -242,12 +244,14 @@ static void init_without_ad_flags(void)
 	uint32_t nrf_err;
 	struct ble_adv_config cfg = {
 		.conn_cfg_tag = TEST_CONN_CFG_TAG,
+		.device_name = CONFIG_TEST_BLE_DEVICE_NAME,
+		.device_name_len = strlen(CONFIG_TEST_BLE_DEVICE_NAME),
 		.evt_handler = ble_adv_evt_handler,
 	};
 
 	__cmock_sd_ble_gap_device_name_set_ExpectWithArrayAndReturn(
-		&sec_mode_open, 1, CONFIG_BLE_ADV_NAME, sizeof(CONFIG_BLE_ADV_NAME),
-		sizeof(CONFIG_BLE_ADV_NAME) - 1, NRF_SUCCESS);
+		&sec_mode_open, 1, CONFIG_TEST_BLE_DEVICE_NAME, sizeof(CONFIG_TEST_BLE_DEVICE_NAME),
+		sizeof(CONFIG_TEST_BLE_DEVICE_NAME) - 1, NRF_SUCCESS);
 
 	__cmock_sd_ble_gap_adv_set_configure_ExpectWithArrayAndReturn(
 		&(uint8_t){BLE_GAP_ADV_SET_HANDLE_NOT_SET}, 1,
@@ -880,15 +884,17 @@ void test_ble_adv_init_error_invalid_param(void)
 	uint32_t nrf_err;
 	struct ble_adv_config cfg = {
 		.conn_cfg_tag = TEST_CONN_CFG_TAG,
+		.device_name = CONFIG_TEST_BLE_DEVICE_NAME,
+		.device_name_len = strlen(CONFIG_TEST_BLE_DEVICE_NAME),
 		.evt_handler = ble_adv_evt_handler,
 	};
 
 	__cmock_sd_ble_gap_device_name_set_ExpectWithArrayAndReturn(
-		&sec_mode_open, 1, CONFIG_BLE_ADV_NAME, sizeof(CONFIG_BLE_ADV_NAME),
-		sizeof(CONFIG_BLE_ADV_NAME) - 1, NRF_ERROR_INVALID_ADDR);
+		&sec_mode_open, 1, CONFIG_TEST_BLE_DEVICE_NAME, sizeof(CONFIG_TEST_BLE_DEVICE_NAME),
+		sizeof(CONFIG_TEST_BLE_DEVICE_NAME) - 1, NRF_ERROR_INVALID_ADDR);
 
 	nrf_err = ble_adv_init(&ble_adv, &cfg);
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, nrf_err);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_ADDR, nrf_err);
 }
 
 void test_ble_adv_conn_cfg_tag_set_success(void)

@@ -6,6 +6,10 @@
 
 menu "BLE MCUmgr sample"
 
+config FIRMWARE_LOADER_BLE_DEVICE_NAME
+	string "Device name"
+	default "nRF_BM_MCUmgr"
+
 module=APP
 module-str=BLE MCUmgr Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
