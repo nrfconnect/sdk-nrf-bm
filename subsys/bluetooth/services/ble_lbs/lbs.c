@@ -157,17 +157,58 @@ uint32_t ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg)
 uint32_t ble_lbs_on_button_change(struct ble_lbs *lbs, uint16_t conn_handle, uint8_t button_state)
 {
 	uint32_t nrf_err;
-	uint16_t len = sizeof(button_state);
 
 	if (!lbs) {
 		return NRF_ERROR_NULL;
 	}
 
+	/* Update button state in the GATT database. */
+	uint16_t len = sizeof(button_state);
+
+	ble_gatts_value_t button_val = {
+		.len = len,
+		.p_value = &button_state,
+	};
+
+	nrf_err = sd_ble_gatts_value_set(BLE_CONN_HANDLE_INVALID,
+					 lbs->button_char_handles.value_handle, &button_val);
+	if (nrf_err) {
+		LOG_ERR("Failed to update button state, nrf_error %#x", nrf_err);
+		return nrf_err;
+	}
+
+	/* Read the CCCD to check whether the peer has subscribed to notifications. */
+	ble_gatts_value_t cccd_val = {
+		.p_value = (uint8_t *)&(uint16_t){0},
+		.len = sizeof(uint16_t),
+	};
+	nrf_err = sd_ble_gatts_value_get(conn_handle, lbs->button_char_handles.cccd_handle,
+					 &cccd_val);
+	if (nrf_err == BLE_ERROR_INVALID_CONN_HANDLE) {
+		/* Connection no longer valid. Do not notify. */
+		return NRF_SUCCESS;
+	}
+	if (nrf_err == BLE_ERROR_GATTS_SYS_ATTR_MISSING) {
+		/* CCCD value is unknown. Do not notify. */
+		return NRF_SUCCESS;
+	}
+	if (nrf_err) {
+		LOG_ERR("Failed to get LED Button Service CCCD value for "
+			"connection %#x, nrf_error %#x", conn_handle, nrf_err);
+		return nrf_err;
+	}
+
+	/* Peer has not subscribed to notifications. */
+	if (!is_notification_enabled(cccd_val.p_value)) {
+		return NRF_SUCCESS;
+	}
+
+	/* Send notification. */
 	ble_gatts_hvx_params_t hvx = {
-		.type = BLE_GATT_HVX_NOTIFICATION,
 		.handle = lbs->button_char_handles.value_handle,
-		.p_data = &button_state,
+		.type = BLE_GATT_HVX_NOTIFICATION,
 		.p_len = &len,
+		.p_data = NULL, /* Use the current button state characteristic value. */
 	};
 
 	nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx);
