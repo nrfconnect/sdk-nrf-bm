@@ -15,6 +15,7 @@
 BLE_DB_DISCOVERY_DEF(db_discovery);
 static struct ble_gq ble_gatt_queue;
 
+static struct ble_gatt_db_srv db_disc_srv[8];
 static struct ble_db_discovery_evt db_disc_evt[8];
 static uint32_t db_disc_evt_count;
 
@@ -52,11 +53,23 @@ static const ble_uuid_t rrd_uuid = {
 static void db_discovery_evt_handler(struct ble_db_discovery *db_discovery,
 				     struct ble_db_discovery_evt *evt)
 {
-	if (db_disc_evt_count >= ARRAY_SIZE(db_disc_evt)) {
+	if (db_disc_evt_count >= ARRAY_SIZE(db_disc_evt) &&
+	    db_disc_evt_count >= ARRAY_SIZE(db_disc_srv)) {
 		TEST_FAIL_MESSAGE("Not enough space to store all generated db_discovery events.");
 	}
 
-	db_disc_evt[db_disc_evt_count++] = *evt;
+	db_disc_evt[db_disc_evt_count] = *evt;
+
+	switch (evt->evt_type) {
+	case BLE_DB_DISCOVERY_COMPLETE:
+		/* Copy out the full result of the discovery from the pointer in the event. */
+		db_disc_srv[db_disc_evt_count] = *(db_disc_evt[db_disc_evt_count].discovered_db);
+		break;
+	default:
+		break;
+	}
+
+	db_disc_evt_count++;
 }
 
 static const struct ble_db_discovery_config db_disc_config = {
@@ -540,7 +553,7 @@ void test_scenario_discover_two_services(void)
 	const struct ble_gatt_db_char *db_char;
 
 	/* Check service 1 discovery result. */
-	db_srv = &db_disc_evt[0].discovered_db;
+	db_srv = db_disc_evt[0].discovered_db;
 	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[0].conn_handle);
 	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv1_uuid, &db_srv->srv_uuid));
 	TEST_ASSERT_EQUAL(2, db_srv->char_count);
@@ -560,7 +573,7 @@ void test_scenario_discover_two_services(void)
 	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->report_ref_handle);
 
 	/* Check service 2 discovery result. */
-	db_srv = &db_disc_evt[1].discovered_db;
+	db_srv = db_disc_evt[1].discovered_db;
 	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[1].conn_handle);
 	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv2_uuid, &db_srv->srv_uuid));
 	TEST_ASSERT_EQUAL(2, db_srv->char_count);
@@ -885,7 +898,7 @@ void test_scenario_two_back_to_back_discoveries(void)
 	const struct ble_gatt_db_char *db_char;
 
 	/* Check service 1 discovery result. */
-	db_srv = &db_disc_evt[0].discovered_db;
+	db_srv = db_disc_evt[0].discovered_db;
 	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[0].conn_handle);
 	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv1_uuid, &db_srv->srv_uuid));
 	TEST_ASSERT_EQUAL(2, db_srv->char_count);
@@ -905,7 +918,7 @@ void test_scenario_two_back_to_back_discoveries(void)
 	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->report_ref_handle);
 
 	/* Check service 2 discovery result. */
-	db_srv = &db_disc_evt[1].discovered_db;
+	db_srv = db_disc_evt[1].discovered_db;
 	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[1].conn_handle);
 	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv2_uuid, &db_srv->srv_uuid));
 	TEST_ASSERT_EQUAL(2, db_srv->char_count);
@@ -1056,7 +1069,7 @@ void test_scenario_two_back_to_back_discoveries(void)
 	TEST_ASSERT_EQUAL(BLE_DB_DISCOVERY_AVAILABLE, db_disc_evt[5].evt_type);
 
 	/* Check service 1 discovery result. */
-	db_srv = &db_disc_evt[3].discovered_db;
+	db_srv = db_disc_evt[3].discovered_db;
 	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[3].conn_handle);
 	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv1_uuid, &db_srv->srv_uuid));
 	TEST_ASSERT_EQUAL(1, db_srv->char_count);
@@ -1070,7 +1083,7 @@ void test_scenario_two_back_to_back_discoveries(void)
 	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->report_ref_handle);
 
 	/* Check service 2 discovery result. */
-	db_srv = &db_disc_evt[4].discovered_db;
+	db_srv = db_disc_evt[4].discovered_db;
 	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[4].conn_handle);
 	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv2_uuid, &db_srv->srv_uuid));
 	TEST_ASSERT_EQUAL(1, db_srv->char_count);
@@ -1359,7 +1372,7 @@ void test_scenario_discover_one_srvc_with_descriptors(void)
 	const struct ble_gatt_db_char *db_char;
 
 	/* Check service 1 discovery result. */
-	db_srv = &db_disc_evt[0].discovered_db;
+	db_srv = db_disc_evt[0].discovered_db;
 	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[0].conn_handle);
 	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv1_uuid, &db_srv->srv_uuid));
 	TEST_ASSERT_EQUAL(4, db_srv->char_count);
@@ -1534,6 +1547,7 @@ void test_scenario_discover_one_of_three_services_found(void)
 			.conn_handle = test_conn_handle,
 		},
 	};
+
 	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
 	TEST_ASSERT_EQUAL(4, stub_ble_gq_item_add_success_num_calls);
 
@@ -1550,13 +1564,11 @@ void test_scenario_discover_one_of_three_services_found(void)
 	const struct ble_gatt_db_char *db_char;
 
 	/* Check service 1 discovery result. */
-	db_srv = &db_disc_evt[0].discovered_db;
 	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[0].conn_handle);
-	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv1_uuid, &db_srv->srv_uuid));
-	TEST_ASSERT_EQUAL(0, db_srv->char_count);
+	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv1_uuid, &db_disc_evt[0].srv_uuid));
 
 	/* Check service 2 discovery result. */
-	db_srv = &db_disc_evt[1].discovered_db;
+	db_srv = db_disc_evt[1].discovered_db;
 	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[1].conn_handle);
 	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv2_uuid, &db_srv->srv_uuid));
 	TEST_ASSERT_EQUAL(1, db_srv->char_count);
@@ -1570,10 +1582,8 @@ void test_scenario_discover_one_of_three_services_found(void)
 	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->report_ref_handle);
 
 	/* Check service 3 discovery result. */
-	db_srv = &db_disc_evt[2].discovered_db;
 	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[2].conn_handle);
-	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv3_uuid, &db_srv->srv_uuid));
-	TEST_ASSERT_EQUAL(0, db_srv->char_count);
+	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv3_uuid, &db_disc_evt[2].srv_uuid));
 }
 
 static uint32_t stub_ble_gq_item_add_scenario_ignore_other_conn_handles(
@@ -1742,7 +1752,7 @@ void test_scenario_ignore_discovery_responses_for_other_conn_handles(void)
 	const struct ble_gatt_db_char *db_char;
 
 	/* Check service 1 discovery result. */
-	db_srv = &db_disc_evt[0].discovered_db;
+	db_srv = db_disc_evt[0].discovered_db;
 	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[0].conn_handle);
 	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv1_uuid, &db_srv->srv_uuid));
 	TEST_ASSERT_EQUAL(1, db_srv->char_count);
@@ -2003,6 +2013,7 @@ void setUp(void)
 	memset(&db_discovery, 0, sizeof(db_discovery));
 
 	/* Clear the database event global variables before each test. */
+	memset(db_disc_srv, 0xFF, sizeof(db_disc_srv));
 	memset(db_disc_evt, 0xFF, sizeof(db_disc_evt));
 	db_disc_evt_count = 0;
 
