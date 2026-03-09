@@ -127,9 +127,14 @@ static void discovery_complete_evt_trigger(struct ble_db_discovery *db_discovery
 
 	/* Insert an event into the pending event list. */
 	usr_evt->conn_handle = conn_handle;
-	usr_evt->discovered_db = *srv_being_discovered;
-	usr_evt->evt_type = (is_srv_found == true) ? BLE_DB_DISCOVERY_COMPLETE :
-						     BLE_DB_DISCOVERY_SRV_NOT_FOUND;
+	if (is_srv_found) {
+		usr_evt->evt_type = BLE_DB_DISCOVERY_COMPLETE;
+		usr_evt->discovered_db = srv_being_discovered;
+	} else {
+		usr_evt->evt_type = BLE_DB_DISCOVERY_SRV_NOT_FOUND;
+		usr_evt->srv_uuid = srv_being_discovered->srv_uuid;
+	}
+
 	db_discovery->pending_usr_evt_idx++;
 
 	if (db_discovery->pending_usr_evt_idx == db_discovery->num_registered_uuids) {
