@@ -151,6 +151,8 @@ Libraries
    * Updated:
 
       * The ``params`` union field of the :c:struct:`ble_db_discovery_evt` structure to an anonymous union.
+      * The :c:enumerator:`BLE_DB_DISCOVERY_COMPLETE` event to pass the service discovery result by-reference instead of by-value.
+        This removes one copy operation for each :c:enumerator:`BLE_DB_DISCOVERY_COMPLETE` event and significantly reduces the size of both :c:struct:`ble_db_discovery_evt` and :c:struct:`ble_db_discovery` structures.
 
    * Fixed:
 

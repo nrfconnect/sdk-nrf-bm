@@ -69,16 +69,18 @@ struct ble_db_discovery_evt {
 	uint16_t conn_handle;
 	union {
 		/**
-		 * @brief Parameters for
-		 * - @ref BLE_DB_DISCOVERY_COMPLETE
-		 * - @ref BLE_DB_DISCOVERY_SRV_NOT_FOUND
+		 * @brief Parameters for @ref BLE_DB_DISCOVERY_COMPLETE.
 		 *
-		 * Contains information about the GATT Database at the server.
+		 * Result of one service discovery at the server's GATT Database.
 		 *
-		 * Only the UUID field will be filled when the event type is
-		 * @ref BLE_DB_DISCOVERY_SRV_NOT_FOUND.
+		 * This points to data stored in the ble_db_discovery instance.
+		 * The pointer should be considered invalid after returning from the event handler.
 		 */
-		struct ble_gatt_db_srv discovered_db;
+		const struct ble_gatt_db_srv *discovered_db;
+		/**
+		 * @brief Parameters for @ref BLE_DB_DISCOVERY_SRV_NOT_FOUND.
+		 */
+		ble_uuid_t srv_uuid;
 		/**
 		 * @brief Parameters for @ref BLE_DB_DISCOVERY_ERROR.
 		 */
