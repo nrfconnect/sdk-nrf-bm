@@ -157,23 +157,63 @@ uint32_t ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg)
 uint32_t ble_lbs_on_button_change(struct ble_lbs *lbs, uint16_t conn_handle, uint8_t button_state)
 {
 	uint32_t nrf_err;
-	uint16_t len = sizeof(button_state);
+	bool notify;
 
 	if (!lbs) {
 		return NRF_ERROR_NULL;
 	}
 
-	ble_gatts_hvx_params_t hvx = {
-		.type = BLE_GATT_HVX_NOTIFICATION,
-		.handle = lbs->button_char_handles.value_handle,
-		.p_data = &button_state,
-		.p_len = &len,
+	/* Get CCCD notify status for connection */
+	ble_gatts_value_t val = {
+		.p_value = (uint8_t *)&(uint16_t){0},
+		.len = sizeof(uint16_t),
 	};
-
-	nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx);
-	if (nrf_err) {
-		LOG_ERR("Failed to notify button change, nrf_error %#x", nrf_err);
+	nrf_err = sd_ble_gatts_value_get(conn_handle, lbs->button_char_handles.cccd_handle, &val);
+	if (nrf_err == NRF_SUCCESS) {
+		/* CCCD read success. Check if peer has enabled notifications. */
+		notify = is_notification_enabled(val.p_value);
+	} else if (nrf_err == BLE_ERROR_INVALID_CONN_HANDLE) {
+		/* Connection no longer valid. Do not notify. */
+		notify = false;
+	} else if (nrf_err == BLE_ERROR_GATTS_SYS_ATTR_MISSING) {
+		/* CCCD value is unknown. Do not notify. */
+		notify = false;
+	} else {
+		LOG_ERR("Failed to get LED Button Service CCCD value for "
+			"connection %#x, nrf_error %#x", conn_handle, nrf_err);
 		return nrf_err;
+	}
+
+	uint16_t len = sizeof(button_state);
+
+	if (notify) {
+		/* Update button state in the GATT database and notify the connected peer */
+		ble_gatts_hvx_params_t hvx = {0};
+
+		hvx.type = BLE_GATT_HVX_NOTIFICATION;
+		hvx.handle = lbs->button_char_handles.value_handle;
+		hvx.p_len = &len;
+		hvx.p_data = &button_state;
+
+		nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx);
+		if (nrf_err) {
+			LOG_ERR("Failed to notify button change, nrf_error %#x", nrf_err);
+			return nrf_err;
+		}
+	} else {
+		/* Update button state in the GATT database without notifying connected peer */
+		ble_gatts_value_t gatts_value = {0};
+
+		gatts_value.len = len;
+		gatts_value.p_value = &button_state;
+
+		nrf_err = sd_ble_gatts_value_set(BLE_CONN_HANDLE_INVALID,
+						 lbs->button_char_handles.value_handle,
+						 &gatts_value);
+		if (nrf_err) {
+			LOG_ERR("Failed to update button change, nrf_error %#x", nrf_err);
+			return nrf_err;
+		}
 	}
 
 	return NRF_SUCCESS;
