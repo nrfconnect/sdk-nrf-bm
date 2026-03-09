@@ -727,51 +727,79 @@ void ble_hids_on_ble_evt(const ble_evt_t *ble_evt, void *context);
 uint32_t ble_hids_init(struct ble_hids *hids, const struct ble_hids_config *hids_cfg);
 
 /**
- * @brief Function for sending Input Report.
+ * @brief Send an Input Report notification.
  *
- * @details Sends data on an Input Report characteristic.
+ * @details Sends the input report and updates the per-connection context
+ *          if the notification bit in the CCCD is set for @p conn_handle.
  *
  * @param[in] hids HID Service structure.
- * @param[in] conn_handle  Connection handle, where the notification will be sent.
+ * @param[in] conn_handle Connection handle.
  * @param[in] report HID input report.
  *
  * @retval NRF_SUCCESS On success.
- * @retval NRF_ERROR_NULL If @p hids or @p data are @c NULL.
- * @retval NRF_ERROR_NOT_FOUND Unknown connection handle.
- * @retval NRF_ERROR_INVALID_PARAM Report index @p rep_index is invalid.
- * @retval NRF_ERROR_DATA_SIZE Report data length @p len exceeds maximum characteristic length.
+ * @retval NRF_ERROR_NULL If @p hids, @p report, or @p report->data are @c NULL.
+ * @retval NRF_ERROR_INVALID_PARAM If @p report->report_index is out of range.
+ * @retval NRF_ERROR_INVALID_STATE If the peer has not enabled notifications on this input
+ *         report CCCD.
+ * @retval NRF_ERROR_NOT_FOUND If no client context exists for @p conn_handle.
+ * @retval NRF_ERROR_NO_MEM If @p conn_handle exceeds the maximum link count.
+ * @retval NRF_ERROR_DATA_SIZE If report data length exceeds the maximum characteristic length.
+ * @return In addition, this function may return any error
+ *         returned by the following SoftDevice functions:
+ *         - @ref sd_ble_gatts_value_get()
+ *         - @ref sd_ble_gatts_hvx()
  */
 uint32_t ble_hids_inp_rep_send(struct ble_hids *hids, uint16_t conn_handle,
 			       struct ble_hids_input_report *report);
 
 /**
- * @brief Function for sending Boot Keyboard Input Report.
+ * @brief Send a Boot Keyboard Input Report notification.
  *
- * @details Sends data on an Boot Keyboard Input Report characteristic.
+ * @details Sends the input report and updates the per-connection context
+ *          if the notification bit in the CCCD is set for @p conn_handle.
  *
  * @param[in] hids HID Service structure.
- * @param[in] conn_handle Connection handle, where the notification will be sent.
+ * @param[in] conn_handle Connection handle.
  * @param[in] report Boot keyboard input report.
  *
  * @retval NRF_SUCCESS On success.
- * @retval NRF_ERROR_NULL If @p hids or @p report are @c NULL.
- * @retval NRF_ERROR_NOT_FOUND Unknown connection handle.
+ * @retval NRF_ERROR_NULL If @p hids, @p report, or @p report->data are @c NULL.
+ * @retval NRF_ERROR_INVALID_STATE If the peer has not enabled notifications on the boot
+ *         keyboard input report CCCD.
+ * @retval NRF_ERROR_NOT_FOUND If no client context exists for @p conn_handle.
+ * @retval NRF_ERROR_NO_MEM If @p conn_handle exceeds the maximum link count.
+ * @retval NRF_ERROR_DATA_SIZE If report data length exceeds
+ *         @ref BLE_HIDS_BOOT_KB_INPUT_REPORT_MAX_SIZE.
+ * @return In addition, this function may return any error
+ *         returned by the following SoftDevice functions:
+ *         - @ref sd_ble_gatts_value_get()
+ *         - @ref sd_ble_gatts_hvx()
  */
 uint32_t ble_hids_boot_kb_inp_rep_send(struct ble_hids *hids, uint16_t conn_handle,
 				       struct ble_hids_boot_keyboard_input_report *report);
 
 /**
- * @brief Function for sending Boot Mouse Input Report.
+ * @brief Send a Boot Mouse Input Report notification.
  *
- * @details Sends data on an Boot Mouse Input Report characteristic.
+ * @details Sends the input report and updates the per-connection context
+ *          if the notification bit in the CCCD is set for @p conn_handle.
  *
  * @param[in] hids HID Service structure.
- * @param[in] conn_handle Connection handle, where the notification will be sent.
- * @param[in] report Boot Mouse input report.
+ * @param[in] conn_handle Connection handle.
+ * @param[in] report Boot mouse input report.
  *
  * @retval NRF_SUCCESS On success.
  * @retval NRF_ERROR_NULL If @p hids or @p report are @c NULL.
- * @retval NRF_ERROR_NOT_FOUND Unknown connection handle.
+ * @retval NRF_ERROR_INVALID_STATE If the peer has not enabled notifications on the boot
+ *         mouse input report CCCD.
+ * @retval NRF_ERROR_NOT_FOUND If no client context exists for @p conn_handle.
+ * @retval NRF_ERROR_NO_MEM If @p conn_handle exceeds the maximum link count.
+ * @retval NRF_ERROR_DATA_SIZE If total report length exceeds
+ *         @ref BLE_HIDS_BOOT_MOUSE_INPUT_REPORT_MAX_SIZE.
+ * @return In addition, this function may return any error
+ *         returned by the following SoftDevice functions:
+ *         - @ref sd_ble_gatts_value_get()
+ *         - @ref sd_ble_gatts_hvx()
  */
 uint32_t ble_hids_boot_mouse_inp_rep_send(struct ble_hids *hids, uint16_t conn_handle,
 					  struct ble_hids_boot_mouse_input_report *report);
