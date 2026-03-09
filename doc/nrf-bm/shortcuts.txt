@@ -10,8 +10,6 @@
 .. |ncs_release| replace:: v3.3.0-preview2
 .. |release| replace:: v2.0.0-preview1
 
-.. |jlink_ver| replace:: v8.76
-
 .. ### Other shortcuts
 
 .. |nfc_nfct_driver_note| replace:: If you are using debug messages in the NFCT driver, the driver might not be working properly if you have :kconfig:option:`CONFIG_LOG_MODE_IMMEDIATE` enabled.
