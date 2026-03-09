@@ -79,12 +79,14 @@ static void lpuarte_rx_handler(char *data, size_t data_len)
 
 	LOG_INF("Sending data over BLE NUS, len %d", len);
 
+	/*
+	 * Retry when the SoftDevice notification queue is full.
+	 * sd_ble_gatts_hvx returns NRF_ERROR_RESOURCES when UART data
+	 * arrives faster than the radio can transmit notifications.
+	 */
 	do {
 		nrf_err = ble_nus_data_send(&ble_nus, data, &len, conn_handle);
-		if ((nrf_err) &&
-		    (nrf_err != NRF_ERROR_INVALID_STATE) &&
-		    (nrf_err != NRF_ERROR_RESOURCES) &&
-		    (nrf_err != NRF_ERROR_NOT_FOUND)) {
+		if ((nrf_err) && (nrf_err != NRF_ERROR_RESOURCES)) {
 			LOG_ERR("Failed to send NUS data, nrf_error %#x", nrf_err);
 			return;
 		}
@@ -116,12 +118,14 @@ static void uarte_rx_handler(char *data, size_t data_len)
 			len = rx_buf_idx;
 			LOG_INF("Sending data over BLE NUS, len %d", len);
 
+			/*
+			 * Retry when the SoftDevice notification queue is full.
+			 * sd_ble_gatts_hvx returns NRF_ERROR_RESOURCES when UART data
+			 * arrives faster than the radio can transmit notifications.
+			 */
 			do {
 				nrf_err = ble_nus_data_send(&ble_nus, rx_buf, &len, conn_handle);
-				if ((nrf_err) &&
-				    (nrf_err != NRF_ERROR_INVALID_STATE) &&
-				    (nrf_err != NRF_ERROR_RESOURCES) &&
-				    (nrf_err != NRF_ERROR_NOT_FOUND)) {
+				if ((nrf_err) && (nrf_err != NRF_ERROR_RESOURCES)) {
 					LOG_ERR("Failed to send NUS data, nrf_error %#x", nrf_err);
 					return;
 				}
@@ -325,10 +329,6 @@ static void ble_nus_evt_handler(struct ble_nus *nus, const struct ble_nus_evt *e
 {
 	const char newline = '\n';
 	int err;
-
-	if (evt->evt_type == BLE_NUS_EVT_ERROR) {
-		LOG_ERR("NUS error event, error %d", evt->error.reason);
-	}
 
 	if (evt->evt_type != BLE_NUS_EVT_RX_DATA) {
 		return;
