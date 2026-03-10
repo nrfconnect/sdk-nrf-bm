@@ -222,19 +222,22 @@ uint32_t ble_hrs_init(struct ble_hrs *hrs, const struct ble_hrs_config *hrs_conf
 void ble_hrs_conn_params_evt(struct ble_hrs *hrs, const struct ble_conn_params_evt *conn_param_evt);
 
 /**
- * @brief Function for sending heart rate measurement if notification has been enabled.
+ * @brief Update heart rate measurement.
  *
- * @details The application calls this function after having performed a heart rate measurement.
- *          If notification has been enabled, the heart rate measurement data is encoded and sent to
- *          the client.
+ * @details Updates the heart rate measurement in the GATT database and sends
+ *          notification depending on connection. Checks if the peer has notifications
+ *          enabled (CCCD written). If enabled, notification is sent automatically.
+ *          Otherwise, only the GATT database value is updated.
  *
  * @param hrs Heart rate service.
- * @param heart_rate heart rate Measurement.
+ * @param heart_rate Heart rate measurement.
  *
  * @retval NRF_SUCCESS On success.
  * @retval NRF_ERROR_NULL If @p hrs is @c NULL.
  * @return In addition, this function may return any error
  *         returned by the following SoftDevice functions:
+ *         - @ref sd_ble_gatts_value_get()
+ *         - @ref sd_ble_gatts_value_set()
  *         - @ref sd_ble_gatts_hvx()
  */
 uint32_t ble_hrs_heart_rate_measurement_send(struct ble_hrs *hrs, uint16_t heart_rate);
