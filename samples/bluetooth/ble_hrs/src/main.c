@@ -54,8 +54,6 @@ static struct bm_timer heart_rate_timer;
 static struct bm_timer rr_interval_timer;
 static struct bm_timer sensor_contact_timer;
 
-static bool hrs_notif_enabled;
-
 void battery_level_meas_timeout_handler(void *context)
 {
 	int err;
@@ -71,7 +69,6 @@ void battery_level_meas_timeout_handler(void *context)
 	}
 
 	nrf_err = ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level);
-
 	if (nrf_err) {
 		LOG_ERR("Failed to update battery level, nrf_error %#x", nrf_err);
 		return;
@@ -93,16 +90,10 @@ static void heart_rate_meas_timeout_handler(void *context)
 		return;
 	}
 
-	if (!hrs_notif_enabled) {
-		return;
-	}
-
 	nrf_err = ble_hrs_heart_rate_measurement_send(&ble_hrs, (uint16_t)heart_rate);
 	if (nrf_err) {
-		/* Ignore if not in a connection or notifications disabled in CCCD. */
-		if (nrf_err != NRF_ERROR_NOT_FOUND && nrf_err != NRF_ERROR_INVALID_STATE) {
-			LOG_ERR("Failed to update heart rate measurement, nrf_error %#x", nrf_err);
-		}
+		LOG_ERR("Failed to update heart rate measurement, nrf_error %#x", nrf_err);
+		return;
 	}
 
 	/* Disable RR Interval recording every third heart rate measurement.
@@ -254,6 +245,8 @@ void on_conn_params_evt(const struct ble_conn_params_evt *evt)
 {
 	uint32_t nrf_err;
 
+	ble_hrs_conn_params_evt(&ble_hrs, evt);
+
 	switch (evt->evt_type) {
 	case BLE_CONN_PARAMS_EVT_REJECTED:
 		nrf_err = sd_ble_gap_disconnect(evt->conn_handle,
@@ -264,10 +257,6 @@ void on_conn_params_evt(const struct ble_conn_params_evt *evt)
 		} else {
 			LOG_ERR("Disconnected from peer, unacceptable conn params");
 		}
-		break;
-
-	case BLE_CONN_PARAMS_EVT_ATT_MTU_UPDATED:
-		ble_hrs_conn_params_evt(&ble_hrs, evt);
 		break;
 
 	default:
@@ -304,10 +293,10 @@ static void ble_hrs_evt_handler(struct ble_hrs *hrs, const struct ble_hrs_evt *e
 {
 	switch (evt->evt_type) {
 	case BLE_HRS_EVT_NOTIFICATION_ENABLED:
-		hrs_notif_enabled = true;
+		LOG_INF("Heart Rate notification enabled");
 		break;
 	case BLE_HRS_EVT_NOTIFICATION_DISABLED:
-		hrs_notif_enabled = false;
+		LOG_INF("Heart Rate notification disabled");
 		break;
 	default:
 		break;
@@ -380,23 +369,6 @@ static void pm_evt_handler(const struct pm_evt *p_evt)
 	switch (p_evt->evt_id) {
 	case PM_EVT_PEERS_DELETE_SUCCEEDED:
 		advertising_start(false);
-		break;
-	case PM_EVT_LOCAL_DB_CACHE_APPLIED:
-		/*
-		 * Peer manager restores CCCDs from flash on reconnect with bonded devices
-		 * But local notification flags aren't updated
-		 * Read CCCDs and sync manually
-		 */
-		uint32_t nrf_err;
-		ble_gatts_value_t val = {
-			.p_value = (uint8_t *)&(uint16_t){0},
-			.len = sizeof(uint16_t),
-		};
-
-		nrf_err = sd_ble_gatts_value_get(p_evt->conn_handle, ble_hrs.hrm_handles.cccd_handle, &val);
-		if (!nrf_err) {
-			hrs_notif_enabled = is_notification_enabled(val.p_value);
-		}
 		break;
 	default:
 		break;
