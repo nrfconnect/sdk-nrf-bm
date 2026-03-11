@@ -5,11 +5,10 @@
 #
 
 menuconfig BLE_DB_DISCOVERY
-	bool "BLE database discovery [EXPERIMENTAL]"
+	bool "BLE database discovery"
 	depends on SOFTDEVICE_CENTRAL
 	depends on NRF_SDH_BLE
 	depends on BLE_GATT_QUEUE
-	select EXPERIMENTAL
 
 if BLE_DB_DISCOVERY
 

@@ -160,7 +160,7 @@ See table below for a summary of supported libraries.
      - Yes
      -
      -
-     - Experimental
+     -
    * - ``ble_conn_params``
      - Yes
      - Name unchanged
