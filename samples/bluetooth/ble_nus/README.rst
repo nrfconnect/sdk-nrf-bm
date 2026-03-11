@@ -131,9 +131,9 @@ LED 1:
 
 .. note::
 
-  LEDs are only used in the normal UARTE configuration. In LPUARTE mode, LEDs are disabled to avoid interfering with the RX pin and to allow proper low-power operation.
+  LEDs are only used in the normal UARTE configuration. In LPUARTE mode, LEDs are disabled to allow proper low-power operation.
 
-  In LPUARTE mode, LED 1 may appear on even when no device is connected for some development kits because it shares pin with the RX signal; RX activity can toggle the LED, which is expected behavior.
+  In LPUARTE mode, the LEDs may appear on even when no device is connected for some development kits because it shares pins with the LPUARTE; RX or TX activity can toggle the LED, which is expected behavior.
 
 Building and running
 ********************
@@ -181,20 +181,22 @@ The sample can be tested in two ways, depending on the selected UART configurati
 
       1. Build the sample with the LPUARTE configuration by adding the extra Kconfig fragment :file:`lpuarte.conf`.
       #. Flash the sample to your device(s).
-      #. Connect the pins as described below, as defined in :file:`board-config.h`.
+      #. Connect the pins as described below, as defined in the boards :file:`board-config.h` header.
+
+         .. include:: /includes/lpuarte_board_connections.txt
 
          #. For Two-device setup:
 
-            - Device 1 **TX (P1.11)** → Device 2 **RX (P1.10)**
-            - Device 1 **RX (P1.10)** → Device 2 **TX (P1.11)**
-            - Device 1 **REQ (P1.08)** → Device 2 **RDY (P1.09)**
-            - Device 1 **RDY (P1.09)** → Device 2 **REQ (P1.08)**
+            - Device 1 **LPUARTE TX** → Device 2 **LPUARTE RX**
+            - Device 1 **LPUARTE RX** → Device 2 **LPUARTE TX**
+            - Device 1 **LPUARTE REQ** → Device 2 **LPUARTE RDY**
+            - Device 1 **LPUARTE RDY** → Device 2 **LPUARTE REQ**
             - Connect **GND** between both devices.
 
          #. For Single-device loopback setup:
 
-            - **TX (P1.11)** → **RX (P1.10)**
-            - **REQ (P1.08)** → **RDY (P1.09)**
+            - **LPUARTE TX** → **LPUARTE RX**
+            - **LPUARTE REQ** → **LPUARTE RDY**
 
       #. Power on the device(s).
       #. Connect the phone(s) to the device(s) using the `nRF Toolbox`_ mobile application with the :guilabel:`Universal Asynchronous Receiver/Transmitter (UART)` service.
@@ -206,4 +208,4 @@ The sample can be tested in two ways, depending on the selected UART configurati
       .. note::
 
          With the LPUARTE configuration, the console is used only for application logging and not for NUS data.
-         Output on the NUS TX line is handled as input on the NUS RX line on the same device (loopback) or as NUS input on the other device when using two devices.
+         Output on the NUS LPUARTE TX line is handled as input on the NUS LPUARTE RX line on the same device (loopback) or as NUS input on the other device when using two devices.
