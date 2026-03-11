@@ -5,6 +5,7 @@
  */
 
 #include <nrf_error.h>
+#include <bm/bm_irq.h>
 #include <nrf_soc.h>
 #include <stdlib.h>
 
@@ -54,8 +55,9 @@ uint32_t ble_radio_notification_init(uint32_t distance,
 	evt_handler = notif_evt_handler;
 
 	/* Initialize Radio Notification software interrupt */
-	IRQ_DIRECT_CONNECT(RADIO_NOTIFICATION_IRQn, CONFIG_BLE_RADIO_NOTIFICATION_IRQ_PRIO,
-			   radio_notification_isr, 0);
+	BM_IRQ_DIRECT_CONNECT(RADIO_NOTIFICATION_IRQn,
+			      CONFIG_BLE_RADIO_NOTIFICATION_IRQ_PRIO,
+			      radio_notification_isr, 0);
 
 	NVIC_ClearPendingIRQ(RADIO_NOTIFICATION_IRQn);
 	NVIC_EnableIRQ(RADIO_NOTIFICATION_IRQn);

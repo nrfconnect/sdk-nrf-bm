@@ -150,7 +150,7 @@ config BM_FIRMWARE_LOADER_NONE
 config BM_FIRMWARE_LOADER_BT_MCUMGR
 	bool "Bluetooth MCUmgr"
 	help
-	  Include Bluetooth MCUmgr image as the firmware loader image to use (uses Softdevice).
+	  Include Bluetooth MCUmgr image as the firmware loader image to use (uses SoftDevice).
 
 config BM_FIRMWARE_LOADER_UART_MCUMGR
 	bool "UART MCUmgr"
@@ -179,7 +179,7 @@ endif
 endif
 
 choice SOFTDEVICE_SELECTION
-	prompt "Softdevice selection"
+	prompt "SoftDevice selection"
 
 config SOFTDEVICE_NONE
 	bool "None"

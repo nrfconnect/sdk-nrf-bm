@@ -16,13 +16,14 @@ if BM_NFC_PLATFORM
 
 config BM_NFCT_IRQ_PRIORITY
 	int "NFCT interrupt priority for Bare Metal"
-	range 0 5 if ZERO_LATENCY_IRQS
-	range 0 6
-	default 3 if SOFTDEVICE
-	default 1
+	range 2 7
+	default 5 if SOFTDEVICE
+	default 3
 	help
 	  Sets NFC interrupt priority.
-	  Levels are from 0 (highest priority) to 6 (lowest priority)
+	  Levels are from 2 (highest priority) to 7 (lowest priority).
+	  Interrupt priority level must be greater than 4 (SoftDevice low priority)
+	  if you want to call into SoftDevice from the NFC driver.
 
 
 module = BM_NFC_PLATFORM
