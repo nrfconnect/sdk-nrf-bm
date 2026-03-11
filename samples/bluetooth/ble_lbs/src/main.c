@@ -137,8 +137,10 @@ int main(void)
 {
 	int err;
 	uint32_t nrf_err;
-	struct ble_adv_config ble_adv_config = {
+	struct ble_adv_config ble_adv_cfg = {
 		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
+		.device_name = CONFIG_SAMPLE_BLE_DEVICE_NAME,
+		.device_name_len = strlen(CONFIG_SAMPLE_BLE_DEVICE_NAME),
 		.evt_handler = ble_adv_evt_handler,
 		.adv_data = {
 			.name_type = BLE_ADV_DATA_FULL_NAME,
@@ -210,12 +212,12 @@ int main(void)
 	ble_uuid_t adv_uuid_list[] = {
 		{ .uuid = BLE_UUID_LBS_SERVICE, .type = ble_lbs.uuid_type },
 	};
-	ble_adv_config.sr_data.uuid_lists.complete.uuid = &adv_uuid_list[0];
-	ble_adv_config.sr_data.uuid_lists.complete.len = ARRAY_SIZE(adv_uuid_list);
+	ble_adv_cfg.sr_data.uuid_lists.complete.uuid = &adv_uuid_list[0];
+	ble_adv_cfg.sr_data.uuid_lists.complete.len = ARRAY_SIZE(adv_uuid_list);
 
 	LOG_INF("Services initialized");
 
-	nrf_err = ble_adv_init(&ble_adv, &ble_adv_config);
+	nrf_err = ble_adv_init(&ble_adv, &ble_adv_cfg);
 	if (nrf_err) {
 		LOG_ERR("Failed to initialize BLE advertising, nrf_error %#x", nrf_err);
 		goto idle;
@@ -227,7 +229,7 @@ int main(void)
 		goto idle;
 	}
 
-	LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
+	LOG_INF("Advertising as %s", CONFIG_SAMPLE_BLE_DEVICE_NAME);
 
 	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
 	LOG_INF("BLE LBS sample initialized");

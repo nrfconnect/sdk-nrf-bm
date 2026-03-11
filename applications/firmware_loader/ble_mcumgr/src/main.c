@@ -181,6 +181,8 @@ int main(void)
 			.name_type = BLE_ADV_DATA_FULL_NAME,
 			.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE,
 		},
+		.device_name = CONFIG_APP_FIRMWARE_LOADER_BLE_DEVICE_NAME,
+		.device_name_len = strlen(CONFIG_APP_FIRMWARE_LOADER_BLE_DEVICE_NAME),
 	};
 	ble_uuid_t adv_uuid_list[] = {
 		{
@@ -296,9 +298,9 @@ int main(void)
 
 #if CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME
 	LOG_INF("Advertising as %s", (custom_advertising_name_size > 0 ? custom_advertising_name :
-				      CONFIG_BLE_ADV_NAME));
+				      CONFIG_APP_FIRMWARE_LOADER_BLE_DEVICE_NAME));
 #else
-	LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
+	LOG_INF("Advertising as %s", CONFIG_APP_FIRMWARE_LOADER_BLE_DEVICE_NAME);
 #endif /* CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME */
 
 	while (notification_sent == false && device_disconnected == false) {

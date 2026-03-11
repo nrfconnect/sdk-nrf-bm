@@ -6,6 +6,10 @@
 
 menu "MCUboot recovery entry sample"
 
+config SAMPLE_BLE_DEVICE_NAME
+	string "Device name"
+	default "nRF_BM_Entry"
+
 module=SAMPLE
 module-str=MCUboot recovery entry
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"

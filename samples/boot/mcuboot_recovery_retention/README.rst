@@ -72,7 +72,7 @@ Testing
 #. Reset the DK.
 #. Observe that the device boots and reboots into firmware loader mode and then advertises with the default name ``nRF_BM_MCUmgr``.
 
-   You can configure this name using the ``CONFIG_BLE_ADV_NAME`` Kconfig option of the ``firmware_loader`` image.
+   You can configure this name using the ``CONFIG_SAMPLE_BLE_DEVICE_NAME`` Kconfig option of the ``firmware_loader`` image.
    For information on how to do this, see `Configuring Kconfig`_.
 #. Connect to your device using the `nRF Connect Device Manager`_ mobile application.
 #. Under the :guilabel:`image` tab, tap :guilabel:`Advanced`.

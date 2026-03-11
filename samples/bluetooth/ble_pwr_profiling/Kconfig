@@ -7,7 +7,7 @@
 menu "BLE Power Profiling sample"
 
 config SAMPLE_BLE_PWR_PROFILING_ADV_NAME
-	string "Advertising name"
+	string "Device name"
 	default "Nordic_Power_Profiling"
 
 config SAMPLE_BLE_PWR_PROFILING_CONN_ADVERTISING_TIMEOUT

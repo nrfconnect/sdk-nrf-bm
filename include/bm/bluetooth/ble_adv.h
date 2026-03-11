@@ -235,6 +235,14 @@ struct ble_adv_config {
 	 * @brief Connection configuration tag.
 	 */
 	uint8_t conn_cfg_tag;
+	/**
+	 * @brief Device name.
+	 */
+	uint8_t *device_name;
+	/**
+	 * @brief Device name length
+	 */
+	uint16_t device_name_len;
 };
 
 /**
@@ -254,6 +262,7 @@ void ble_adv_on_ble_evt(const ble_evt_t *ble_evt, void *ble_adv);
  * @retval NRF_SUCCESS On success.
  * @retval NRF_ERROR_NULL If @p ble_adv or @p ble_adv_config are @c NULL.
  * @retval NRF_ERROR_INVALID_PARAM If the configuration @p ble_adv_config is invalid.
+ * @return Any error from @c sd_ble_gap_device_name_set on failure.
  */
 uint32_t ble_adv_init(struct ble_adv *ble_adv, const struct ble_adv_config *ble_adv_config);
 
@@ -337,7 +346,25 @@ uint32_t ble_adv_allow_list_reply(struct ble_adv *ble_adv,
 uint32_t ble_adv_restart_without_allow_list(struct ble_adv *ble_adv);
 
 /**
- * @brief Function for updating advertising data.
+ * @brief Set device name.
+ *
+ * @details This function can be called if you want to reconfigure the device name.
+ *
+ * @note An update to the device name must be followed by a call to @c ble_adv_data_update for the
+ *       changes to be visible in the advertising data or scan response.
+ *
+ * @param[in] ble_adv Advertising Module instance.
+ * @param[in] device_name Device name.
+ * @param[in] device_name_len Size of the device name.
+ *
+ * @retval NRF_ERROR_NULL @p ble_adv or @p device_name is @c NULL.
+ * @return Any error from @c sd_ble_gap_device_name_set on failure.
+ */
+uint32_t ble_adv_device_name_set(struct ble_adv *ble_adv, const uint8_t *device_name,
+				 uint16_t device_name_len);
+
+/**
+ * @brief Update advertising data.
  *
  * @details This function can be called if you wish to reconfigure the advertising data The update
  *          will be effective even if advertising has already been started.

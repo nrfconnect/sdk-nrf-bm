@@ -91,9 +91,13 @@ Libraries
 
    * Updated to use the :ref:`lib_bm_gpiote` library.
 
-* :ref:`lib_ble_adv`:
+* :ref:`lib_ble_adv` library:
 
-   * Added the ``const`` keyword to the configuration structure parameter of the :c:func:`ble_adv_init` function to reflect that the function only reads from the configuration and does not modify it.
+   * Added:
+
+      * The ``const`` keyword to the configuration structure parameter of the :c:func:`ble_adv_init` function to reflect that the function only reads from the configuration and does not modify it.
+      * The advertising name to the configuration structure of the :c:func:`ble_adv_init` function.
+      * The :c:func:`ble_adv_device_name_set` function to set the device name.
 
    * Updated:
 
@@ -106,11 +110,15 @@ Libraries
       * An issue causing slow advertising with allow list to incorrectly send event :c:enumerator:`BLE_ADV_EVT_SLOW` when it should have sent event :c:enumerator:`BLE_ADV_EVT_SLOW_ALLOW_LIST`.
       * An issue in the data module where the short name would not be matched in certain cases.
 
-* :ref:`lib_ble_db_discovery`:
+* :ref:`lib_ble_db_discovery` library:
 
-   * Removed the :c:struct:`ble_db_discovery_user_evt` structure after a rework.
+   * Removed:
 
-* :ref:`lib_ble_scan`:
+      * The :c:struct:`ble_db_discovery_user_evt` structure after a rework.
+      * The ``CONFIG_BLE_ADV_NAME`` Kconfig option.
+        Instead, you can provide the advertising name in the configuration during initialization and update it by calling the :c:func:`ble_adv_device_name_set` function.
+
+* :ref:`lib_ble_scan` library:
 
    * Added the :c:struct:`ble_scan_filter_data` structure as input to the :c:func:`ble_scan_filter_add` function.
    * Updated functions to use the ``uint32_t`` type instead of ``int`` when returning nrf_errors.
