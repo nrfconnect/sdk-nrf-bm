@@ -218,7 +218,7 @@ void pm_handler_on_pm_evt(const struct pm_evt *pm_evt)
 		conn_secure(pm_evt->conn_handle, false);
 	} else if (pm_evt->evt_id == PM_EVT_ERROR_UNEXPECTED) {
 		LOG_ERR("Asserting.");
-		APP_ERROR_CHECK(pm_evt->params.error_unexpected.error);
+		APP_ERROR_CHECK(pm_evt->error_unexpected.error);
 	}
 }
 
@@ -282,9 +282,9 @@ void pm_handler_flash_clean(const struct pm_evt *pm_evt)
 		/* PM_CONN_SEC_PROCEDURE_ENCRYPTION in case peer was not recognized at connection
 		 * time.
 		 */
-		if ((pm_evt->params.conn_sec_succeeded.procedure ==
+		if ((pm_evt->conn_sec_succeeded.procedure ==
 		     PM_CONN_SEC_PROCEDURE_BONDING) ||
-		    (pm_evt->params.conn_sec_succeeded.procedure ==
+		    (pm_evt->conn_sec_succeeded.procedure ==
 		     PM_CONN_SEC_PROCEDURE_ENCRYPTION)) {
 			rank_highest(pm_evt->peer_id);
 		}
@@ -346,14 +346,14 @@ void pm_handler_pm_evt_log(const struct pm_evt *pm_evt)
 			"procedure: %s",
 			roles_str[pm_conn_state_role(pm_evt->conn_handle)],
 			pm_evt->conn_handle,
-			sec_procedure_str[pm_evt->params.conn_sec_start.procedure]);
+			sec_procedure_str[pm_evt->conn_sec_start.procedure]);
 		break;
 
 	case PM_EVT_CONN_SEC_SUCCEEDED:
 		LOG_INF("Connection secured: role: %s, conn_handle: %d, procedure: %s",
 			roles_str[pm_conn_state_role(pm_evt->conn_handle)],
 			pm_evt->conn_handle,
-			sec_procedure_str[pm_evt->params.conn_sec_start.procedure]);
+			sec_procedure_str[pm_evt->conn_sec_start.procedure]);
 		break;
 
 	case PM_EVT_CONN_SEC_FAILED:
@@ -361,10 +361,10 @@ void pm_handler_pm_evt_log(const struct pm_evt *pm_evt)
 			"%s, error: %d",
 			roles_str[pm_conn_state_role(pm_evt->conn_handle)],
 			pm_evt->conn_handle,
-			sec_procedure_str[pm_evt->params.conn_sec_start.procedure],
-			pm_evt->params.conn_sec_failed.error);
+			sec_procedure_str[pm_evt->conn_sec_start.procedure],
+			pm_evt->conn_sec_failed.error);
 		LOG_DBG("Error (decoded): %s",
-			sec_err_string_get(pm_evt->params.conn_sec_failed.error));
+			sec_err_string_get(pm_evt->conn_sec_failed.error));
 		break;
 
 	case PM_EVT_CONN_SEC_CONFIG_REQ:
@@ -381,15 +381,15 @@ void pm_handler_pm_evt_log(const struct pm_evt *pm_evt)
 
 	case PM_EVT_ERROR_UNEXPECTED:
 		LOG_ERR("Unexpected fatal error occurred: error: %s",
-			nrf_strerror_get(pm_evt->params.error_unexpected.error));
+			nrf_strerror_get(pm_evt->error_unexpected.error));
 		break;
 
 	case PM_EVT_PEER_DATA_UPDATE_SUCCEEDED:
 		LOG_INF("Peer data updated in flash: peer_id: %d, data_id: %s, action: %s%s",
 			pm_evt->peer_id,
-			data_id_str[pm_evt->params.peer_data_update_succeeded.data_id],
-			data_action_str[pm_evt->params.peer_data_update_succeeded.action],
-			pm_evt->params.peer_data_update_succeeded.flash_changed
+			data_id_str[pm_evt->peer_data_update_succeeded.data_id],
+			data_action_str[pm_evt->peer_data_update_succeeded.action],
+			pm_evt->peer_data_update_succeeded.flash_changed
 				? ""
 				: ", no change");
 		break;
@@ -398,9 +398,9 @@ void pm_handler_pm_evt_log(const struct pm_evt *pm_evt)
 		/* This can happen if the SoftDevice is too busy with BLE operations. */
 		LOG_WRN("Peer data updated failed: peer_id: %d, data_id: %s, action: %s, error: %s",
 			pm_evt->peer_id,
-			data_id_str[pm_evt->params.peer_data_update_failed.data_id],
-			data_action_str[pm_evt->params.peer_data_update_succeeded.action],
-			nrf_strerror_get(pm_evt->params.peer_data_update_failed.error));
+			data_id_str[pm_evt->peer_data_update_failed.data_id],
+			data_action_str[pm_evt->peer_data_update_succeeded.action],
+			nrf_strerror_get(pm_evt->peer_data_update_failed.error));
 		break;
 
 	case PM_EVT_PEER_DELETE_SUCCEEDED:
@@ -409,7 +409,7 @@ void pm_handler_pm_evt_log(const struct pm_evt *pm_evt)
 
 	case PM_EVT_PEER_DELETE_FAILED:
 		LOG_ERR("Peer deletion failed: peer_id: %d, error: %s", pm_evt->peer_id,
-			nrf_strerror_get(pm_evt->params.peer_delete_failed.error));
+			nrf_strerror_get(pm_evt->peer_delete_failed.error));
 		break;
 
 	case PM_EVT_PEERS_DELETE_SUCCEEDED:
@@ -418,7 +418,7 @@ void pm_handler_pm_evt_log(const struct pm_evt *pm_evt)
 
 	case PM_EVT_PEERS_DELETE_FAILED:
 		LOG_ERR("All peer deletion failed: error: %s",
-			nrf_strerror_get(pm_evt->params.peers_delete_failed_evt.error));
+			nrf_strerror_get(pm_evt->peers_delete_failed_evt.error));
 		break;
 
 	case PM_EVT_LOCAL_DB_CACHE_APPLIED:
@@ -450,7 +450,7 @@ void pm_handler_pm_evt_log(const struct pm_evt *pm_evt)
 
 	case PM_EVT_FLASH_GARBAGE_COLLECTION_FAILED:
 		LOG_WRN("Flash garbage collection failed with error %s.",
-			nrf_strerror_get(pm_evt->params.garbage_collection_failed.error));
+			nrf_strerror_get(pm_evt->garbage_collection_failed.error));
 		break;
 
 	default:

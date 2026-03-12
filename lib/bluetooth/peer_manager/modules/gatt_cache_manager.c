@@ -125,7 +125,7 @@ static void send_unexpected_error(uint16_t conn_handle, uint32_t nrf_err)
 	struct pm_evt error_evt = {
 		.evt_id = PM_EVT_ERROR_UNEXPECTED,
 		.conn_handle = conn_handle,
-		.params.error_unexpected = {
+		.error_unexpected = {
 			.error = nrf_err,
 		},
 	};
@@ -500,8 +500,8 @@ void gcm_im_evt_handler(struct pm_evt *event)
 void gcm_pdb_evt_handler(struct pm_evt *event)
 {
 	if (event->evt_id == PM_EVT_PEER_DATA_UPDATE_SUCCEEDED &&
-	    event->params.peer_data_update_succeeded.action == PM_PEER_DATA_OP_UPDATE) {
-		switch (event->params.peer_data_update_succeeded.data_id) {
+	    event->peer_data_update_succeeded.action == PM_PEER_DATA_OP_UPDATE) {
+		switch (event->peer_data_update_succeeded.data_id) {
 		case PM_PEER_DATA_ID_BONDING: {
 			uint16_t conn_handle = im_conn_handle_get(event->peer_id);
 

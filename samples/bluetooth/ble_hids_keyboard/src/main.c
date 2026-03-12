@@ -716,8 +716,8 @@ static void pm_evt_handler(const struct pm_evt *evt)
 		break;
 
 	case PM_EVT_PEER_DATA_UPDATE_SUCCEEDED:
-		if (evt->params.peer_data_update_succeeded.flash_changed &&
-		    (evt->params.peer_data_update_succeeded.data_id == PM_PEER_DATA_ID_BONDING)) {
+		if (evt->peer_data_update_succeeded.flash_changed &&
+		    (evt->peer_data_update_succeeded.data_id == PM_PEER_DATA_ID_BONDING)) {
 			LOG_INF("New bond, add the peer to the allow list if possible");
 			/* Note: You should check on what kind of allow list policy your
 			 * application should use.
