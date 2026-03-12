@@ -124,6 +124,7 @@ Libraries
    * Added the :kconfig:option:`CONFIG_BLE_GATT_DB_MAX_CHARS` Kconfig option for configuring the number of characteristics in a :c:struct:`ble_gatt_db_srv` structure.
      The number of characteristics was previously set using the :c:macro:`BLE_GATT_DB_MAX_CHARS` definition in the :file:`ble_gatt_db.h` file.
    * Fixed spelling of the ``characteristics`` member of the :c:struct:`ble_gatt_db_srv` structure.
+   * Updated the ``params`` union field of the :c:struct:`pm_evt` structure to an anonymous union.
    * Removed the ``CONFIG_MBEDTLS_PSA_STATIC_KEY_SLOT_BUFFER_SIZE`` Kconfig option.
      The PSA Crypto core can deduce the key slot buffer size based on the keys enabled in the build, so there is no need to define the size manually.
 

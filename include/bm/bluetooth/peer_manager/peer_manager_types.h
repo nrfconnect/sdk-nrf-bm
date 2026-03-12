@@ -494,7 +494,7 @@ struct pm_evt {
 		 *        event.
 		 */
 		struct pm_failure_evt garbage_collection_failed;
-	} params;
+	};
 };
 
 /**
