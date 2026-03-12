@@ -106,7 +106,7 @@ struct ble_hrs_client_evt {
 			/** Error reason */
 			uint32_t reason;
 		} error;
-	} params;
+	};
 };
 
 /** Forward declaration. */

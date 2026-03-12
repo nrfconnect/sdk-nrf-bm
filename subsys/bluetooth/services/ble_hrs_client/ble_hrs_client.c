@@ -32,14 +32,14 @@ static
 void ble_hrs_client_on_ble_gq_event(const struct ble_gq_req *req, struct ble_gq_evt *gq_evt)
 {
 	struct ble_hrs_client *ble_hrs_client = (struct ble_hrs_client *)req->ctx;
-	struct ble_hrs_client_evt evt = {0};
+	struct ble_hrs_client_evt evt = {
+		.evt_type = BLE_HRS_CLIENT_EVT_ERROR,
+		.conn_handle = gq_evt->conn_handle,
+		.error.reason = gq_evt->error.reason,
+	};
 
 	switch (gq_evt->evt_type) {
 	case BLE_GQ_EVT_ERROR:
-		evt.evt_type = BLE_HRS_CLIENT_EVT_ERROR;
-		evt.conn_handle = gq_evt->conn_handle;
-		evt.params.error.reason = gq_evt->error.reason;
-
 		ble_hrs_client->evt_handler(ble_hrs_client, &evt);
 		break;
 	}
@@ -54,7 +54,7 @@ static void on_hvx(struct ble_hrs_client *ble_hrs_client, const ble_evt_t *ble_e
 	struct ble_hrs_client_evt ble_hrs_client_evt = {
 		.evt_type = BLE_HRS_CLIENT_EVT_HRM_NOTIFICATION,
 		.conn_handle = ble_hrs_client->conn_handle,
-		.params.hrm.rr_intervals_cnt = 0,
+		.hrm.rr_intervals_cnt = 0,
 	};
 
 	/* Check if the event is on the link for this instance. */
@@ -90,10 +90,10 @@ static void on_hvx(struct ble_hrs_client *ble_hrs_client, const ble_evt_t *ble_e
 	/* All mandatory bytes are guaranteed present from here. */
 	if (!(flags & HRM_FLAG_MASK_HR_16BIT)) {
 		/* 8-bit heart rate value received. */
-		ble_hrs_client_evt.params.hrm.hr_value = hvx->data[index++];
+		ble_hrs_client_evt.hrm.hr_value = hvx->data[index++];
 	} else {
 		/* 16-bit heart rate value received. */
-		ble_hrs_client_evt.params.hrm.hr_value = sys_get_le16(&hvx->data[index]);
+		ble_hrs_client_evt.hrm.hr_value = sys_get_le16(&hvx->data[index]);
 		index += sizeof(uint16_t);
 	}
 
@@ -103,10 +103,10 @@ static void on_hvx(struct ble_hrs_client *ble_hrs_client, const ble_evt_t *ble_e
 			if ((index + sizeof(uint16_t)) > hvx->len) {
 				break;
 			}
-			ble_hrs_client_evt.params.hrm.rr_intervals[i] =
+			ble_hrs_client_evt.hrm.rr_intervals[i] =
 				sys_get_le16(&hvx->data[index]);
 			index += sizeof(uint16_t);
-			ble_hrs_client_evt.params.hrm.rr_intervals_cnt++;
+			ble_hrs_client_evt.hrm.rr_intervals_cnt++;
 		}
 	}
 
@@ -148,8 +148,8 @@ void ble_hrs_on_db_disc_evt(struct ble_hrs_client *ble_hrs_client,
 
 		if (db_char->characteristic.uuid.uuid == BLE_UUID_HEART_RATE_MEASUREMENT_CHAR) {
 			/* Found Heart Rate characteristic. Store CCCD handle and break. */
-			hrs_c_evt.params.peer_db.hrm_cccd_handle = db_char->cccd_handle;
-			hrs_c_evt.params.peer_db.hrm_handle = db_char->characteristic.handle_value;
+			hrs_c_evt.peer_db.hrm_cccd_handle = db_char->cccd_handle;
+			hrs_c_evt.peer_db.hrm_handle = db_char->characteristic.handle_value;
 			break;
 		}
 	}
@@ -160,7 +160,7 @@ void ble_hrs_on_db_disc_evt(struct ble_hrs_client *ble_hrs_client,
 	if (ble_hrs_client->conn_handle != BLE_CONN_HANDLE_INVALID) {
 		if ((hrs_db->hrm_cccd_handle == BLE_GATT_HANDLE_INVALID) &&
 		    (hrs_db->hrm_handle == BLE_GATT_HANDLE_INVALID)) {
-			ble_hrs_client->peer_hrs_db = hrs_c_evt.params.peer_db;
+			ble_hrs_client->peer_hrs_db = hrs_c_evt.peer_db;
 		}
 	}
 
