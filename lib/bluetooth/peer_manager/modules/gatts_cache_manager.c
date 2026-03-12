@@ -101,7 +101,7 @@ static void service_changed_pending_set(void)
 					nrf_strerror_get(nrf_err),
 					current_sc_store_peer_id);
 				evt.evt_id = PM_EVT_ERROR_UNEXPECTED;
-				evt.params.error_unexpected.error = nrf_err;
+				evt.error_unexpected.error = nrf_err;
 				evt_send(&evt);
 			}
 			break;

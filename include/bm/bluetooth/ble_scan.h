@@ -211,7 +211,7 @@ struct ble_scan_evt {
 			/** Error reason. */
 			uint32_t reason;
 		} error;
-	} params;
+	};
 };
 
 /**

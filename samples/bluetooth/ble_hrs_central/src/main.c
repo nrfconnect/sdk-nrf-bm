@@ -273,7 +273,7 @@ static void hrs_c_evt_handler(struct ble_hrs_client *hrs, struct ble_hrs_client_
 		LOG_INF("Heart rate service discovered.");
 
 		nrf_err = ble_hrs_client_handles_assign(hrs, evt->conn_handle,
-							 &evt->params.peer_db);
+							 &evt->peer_db);
 		if (nrf_err != 0) {
 			LOG_ERR("ble_hrs_client_handles_assign failed, nrf_error %#x", nrf_err);
 		}
@@ -287,14 +287,14 @@ static void hrs_c_evt_handler(struct ble_hrs_client *hrs, struct ble_hrs_client_
 		break;
 
 	case BLE_HRS_CLIENT_EVT_HRM_NOTIFICATION:
-		LOG_INF("Heart Rate = %d.", evt->params.hrm.hr_value);
-		if (evt->params.hrm.rr_intervals_cnt != 0) {
+		LOG_INF("Heart Rate = %d.", evt->hrm.hr_value);
+		if (evt->hrm.rr_intervals_cnt != 0) {
 			uint32_t rr_avg = 0;
 
-			for (uint32_t i = 0; i < evt->params.hrm.rr_intervals_cnt; i++) {
-				rr_avg += evt->params.hrm.rr_intervals[i];
+			for (uint32_t i = 0; i < evt->hrm.rr_intervals_cnt; i++) {
+				rr_avg += evt->hrm.rr_intervals[i];
 			}
-			rr_avg = rr_avg / evt->params.hrm.rr_intervals_cnt;
+			rr_avg = rr_avg / evt->hrm.rr_intervals_cnt;
 			LOG_INF("rr_interval (avg) = %d.", rr_avg);
 		}
 		break;
@@ -464,7 +464,7 @@ static void scan_evt_handler(const struct ble_scan_evt *scan_evt)
 		break;
 
 	case BLE_SCAN_EVT_CONNECTING_ERROR:
-		nrf_err = scan_evt->params.connecting_err.reason;
+		nrf_err = scan_evt->connecting_err.reason;
 		LOG_INF("Scan connecting error");
 		break;
 
@@ -482,7 +482,7 @@ static void scan_evt_handler(const struct ble_scan_evt *scan_evt)
 		break;
 
 	case BLE_SCAN_EVT_CONNECTED: {
-		const ble_gap_evt_connected_t *p_connected = scan_evt->params.connected.connected;
+		const ble_gap_evt_connected_t *p_connected = scan_evt->connected.connected;
 
 		LOG_INF("Connecting to target %02x%02x%02x%02x%02x%02x",
 			p_connected->peer_addr.addr[0], p_connected->peer_addr.addr[1],

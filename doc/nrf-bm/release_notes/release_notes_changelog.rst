@@ -84,6 +84,7 @@ Libraries
    * Added the :kconfig:option:`CONFIG_BLE_GATT_DB_MAX_CHARS` Kconfig option for configuring the number of characteristics in a :c:struct:`ble_gatt_db_srv` structure.
      The number of characteristics was previously set using the :c:macro:`BLE_GATT_DB_MAX_CHARS` definition in the :file:`ble_gatt_db.h` file.
    * Fixed spelling of the ``characteristics`` member of the :c:struct:`ble_gatt_db_srv` structure.
+   * Updated the ``params`` union field of the :c:struct:`pm_evt` structure to an anonymous union.
    * Removed the ``CONFIG_MBEDTLS_PSA_STATIC_KEY_SLOT_BUFFER_SIZE`` Kconfig option.
      The PSA Crypto core can deduce the key slot buffer size based on the keys enabled in the build, so there is no need to define the size manually.
 
@@ -113,13 +114,16 @@ Libraries
 * :ref:`lib_ble_scan`:
 
    * Added the :c:struct:`ble_scan_filter_data` structure as input to the :c:func:`ble_scan_filter_add` function.
-   * Updated functions to use the ``uint32_t`` type instead of ``int`` when returning nrf_errors.
+   * Updated:
+
+      * The functions to use the ``uint32_t`` type instead of ``int`` when returning nrf_errors.
+      * The ``params`` union field of the :c:struct:`ble_scan_evt` structure to an anonymous union.
+      * The ``allow_list_used`` function was renamed to :c:func:`ble_scan_is_allow_list_used`.
+      * The name of the :c:type:`ble_gap_evt_adv_report_t` fields in the :c:struct:`ble_scan_evt` struct to ``adv_report``.
+
    * Fixed an issue with active scanning where the multifilter match was used.
      A match would not be triggered unless the data for all types of enabled filters were provided in either the advertising or scan response data.
      Now the data can be provided in a mix of the advertising and scan response data.
-   * Renamed the ``allow_list_used`` function to :c:func:`ble_scan_is_allow_list_used`.
-   * Aligned the name of the :c:type:`ble_gap_evt_adv_report_t` fields in the :c:struct:`ble_scan_evt` struct to ``adv_report``.
-
 
 * Bluetooth LE Connection state library:
 
@@ -131,6 +135,14 @@ Bluetooth LE Services
 * Renamed the Bluetooth: Heart Rate Service Central (``ble_hrs_central``) to the :ref:`lib_ble_service_hrs_client` sample.
 * Updated all services to return errors from the SoftDevice directly.
 * Removed the BMS authorization code Kconfig options (:kconfig:option:`CONFIG_BLE_BMS_AUTHORIZATION_CODE` and :kconfig:option:`CONFIG_BLE_BMS_USE_AUTHORIZATION_CODE`) from the service library, as they are only used by the BMS sample.
+
+* :ref:`lib_ble_service_hids` service:
+
+   * Updated the ``params`` union field of the :c:struct:`ble_hids_evt` structure to an anonymous union.
+
+* :ref:`lib_ble_service_hrs_client` service:
+
+   * Updated the ``params`` union field of the :c:struct:`ble_hrs_client_evt` structure to an anonymous union.
 
 Libraries for NFC
 -----------------
