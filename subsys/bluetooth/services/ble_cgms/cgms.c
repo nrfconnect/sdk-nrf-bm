@@ -201,6 +201,7 @@ uint32_t ble_cgms_init(struct ble_cgms *cgms, const struct ble_cgms_config *cgms
 	cgms->evt_handler = cgms_cfg->evt_handler;
 	cgms->gatt_queue = cgms_cfg->gatt_queue;
 	cgms->feature = cgms_cfg->feature;
+	cgms->comm_interval = cgms_cfg->initial_comm_interval;
 	cgms->sensor_status = cgms_cfg->initial_sensor_status;
 	cgms->session_run_time = cgms_cfg->initial_run_time;
 	cgms->is_session_started = false;

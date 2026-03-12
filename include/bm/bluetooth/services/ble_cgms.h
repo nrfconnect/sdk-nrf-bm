@@ -411,6 +411,8 @@ struct ble_cgms_config {
 	struct ble_cgms_status initial_sensor_status;
 	/** Run time. */
 	uint16_t initial_run_time;
+	/** Initial communication interval. */
+	uint8_t initial_comm_interval;
 	/** Characteristic security. */
 	struct {
 		/** Feature characteristic */
