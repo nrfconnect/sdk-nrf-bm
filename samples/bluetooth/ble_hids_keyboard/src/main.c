@@ -297,8 +297,8 @@ static void on_hid_rep_char_write(const struct ble_hids_evt *evt)
 	uint8_t report_val;
 	uint8_t report_index;
 
-	if (evt->params.char_write.char_id.report_type == BLE_HIDS_REPORT_TYPE_OUTPUT) {
-		report_index = evt->params.char_write.char_id.report_index;
+	if (evt->char_write.char_id.report_type == BLE_HIDS_REPORT_TYPE_OUTPUT) {
+		report_index = evt->char_write.char_id.report_index;
 
 		if (report_index == OUTPUT_REPORT_INDEX) {
 			/* This code assumes that the output report is one byte long.

@@ -135,6 +135,10 @@ Bluetooth LE Services
 * Updated all services to return errors from the SoftDevice directly.
 * Removed the BMS authorization code Kconfig options (:kconfig:option:`CONFIG_BLE_BMS_AUTHORIZATION_CODE` and :kconfig:option:`CONFIG_BLE_BMS_USE_AUTHORIZATION_CODE`) from the service library, as they are only used by the BMS sample.
 
+* :ref:`lib_ble_service_hids` service:
+
+   * Updated the ``params`` union field of the :c:struct:`ble_hids_evt` structure to an anonymous union.
+
 Libraries for NFC
 -----------------
 

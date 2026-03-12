@@ -146,14 +146,14 @@ static void on_hids_evt(struct ble_hids *hids, const struct ble_hids_evt *evt)
 {
 	switch (evt->evt_type) {
 	case BLE_HIDS_EVT_NOTIF_DISABLED:
-		char_evt_id = evt->params.notification.char_id;
+		char_evt_id = evt->notification.char_id;
 		TEST_ASSERT_TRUE(hids_evt_expected);
 		hids_evt_expected = false;
 		hids_evt_requested = true;
 		break;
 
 	case BLE_HIDS_EVT_NOTIF_ENABLED:
-		char_evt_id = evt->params.notification.char_id;
+		char_evt_id = evt->notification.char_id;
 		TEST_ASSERT_TRUE(hids_evt_expected);
 		hids_evt_expected = false;
 		hids_evt_requested = true;
@@ -162,17 +162,17 @@ static void on_hids_evt(struct ble_hids *hids, const struct ble_hids_evt *evt)
 	case BLE_HIDS_EVT_REP_CHAR_WRITE:
 		TEST_ASSERT_TRUE(hids_evt_expected);
 
-		char_write_evt.char_id = evt->params.char_write.char_id;
-		char_write_evt.data = evt->params.char_write.data;
-		char_write_evt.len = evt->params.char_write.len;
-		char_write_evt.offset = evt->params.char_write.offset;
+		char_write_evt.char_id = evt->char_write.char_id;
+		char_write_evt.data = evt->char_write.data;
+		char_write_evt.len = evt->char_write.len;
+		char_write_evt.offset = evt->char_write.offset;
 
 		hids_evt_expected = false;
 		hids_evt_requested = true;
 		break;
 
 	case BLE_HIDS_EVT_REPORT_READ:
-		char_evt_id = evt->params.char_auth_read.char_id;
+		char_evt_id = evt->char_auth_read.char_id;
 		hids_evt_expected = false;
 		hids_evt_requested = true;
 		break;
@@ -190,7 +190,7 @@ static void on_hids_evt(struct ble_hids *hids, const struct ble_hids_evt *evt)
 		TEST_ASSERT_TRUE(error_expected);
 		error_expected = false;
 		error_requested = true;
-		error = evt->params.error.reason;
+		error = evt->error.reason;
 		break;
 
 	default:
