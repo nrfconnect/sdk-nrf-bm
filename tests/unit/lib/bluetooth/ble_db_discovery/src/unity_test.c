@@ -15,7 +15,8 @@
 BLE_DB_DISCOVERY_DEF(db_discovery);
 static struct ble_gq ble_gatt_queue;
 
-static struct ble_db_discovery_evt db_disc_evt[4];
+static struct ble_gatt_db_srv db_disc_srv[8];
+static struct ble_db_discovery_evt db_disc_evt[8];
 static uint32_t db_disc_evt_count;
 
 static uint16_t test_conn_handle;
@@ -52,11 +53,23 @@ static const ble_uuid_t rrd_uuid = {
 static void db_discovery_evt_handler(struct ble_db_discovery *db_discovery,
 				     struct ble_db_discovery_evt *evt)
 {
-	if (db_disc_evt_count >= ARRAY_SIZE(db_disc_evt)) {
+	if (db_disc_evt_count >= ARRAY_SIZE(db_disc_evt) &&
+	    db_disc_evt_count >= ARRAY_SIZE(db_disc_srv)) {
 		TEST_FAIL_MESSAGE("Not enough space to store all generated db_discovery events.");
 	}
 
-	db_disc_evt[db_disc_evt_count++] = *evt;
+	db_disc_evt[db_disc_evt_count] = *evt;
+
+	switch (evt->evt_type) {
+	case BLE_DB_DISCOVERY_COMPLETE:
+		/* Copy out the full result of the discovery from the pointer in the event. */
+		db_disc_srv[db_disc_evt_count] = *(db_disc_evt[db_disc_evt_count].discovered_db);
+		break;
+	default:
+		break;
+	}
+
+	db_disc_evt_count++;
 }
 
 static const struct ble_db_discovery_config db_disc_config = {
@@ -540,7 +553,7 @@ void test_scenario_discover_two_services(void)
 	const struct ble_gatt_db_char *db_char;
 
 	/* Check service 1 discovery result. */
-	db_srv = &db_disc_evt[0].params.discovered_db;
+	db_srv = db_disc_evt[0].discovered_db;
 	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[0].conn_handle);
 	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv1_uuid, &db_srv->srv_uuid));
 	TEST_ASSERT_EQUAL(2, db_srv->char_count);
@@ -560,7 +573,7 @@ void test_scenario_discover_two_services(void)
 	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->report_ref_handle);
 
 	/* Check service 2 discovery result. */
-	db_srv = &db_disc_evt[1].params.discovered_db;
+	db_srv = db_disc_evt[1].discovered_db;
 	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[1].conn_handle);
 	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv2_uuid, &db_srv->srv_uuid));
 	TEST_ASSERT_EQUAL(2, db_srv->char_count);
@@ -574,6 +587,510 @@ void test_scenario_discover_two_services(void)
 	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->report_ref_handle);
 	db_char = &db_srv->characteristics[1];
 	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv2_char2_uuid, &db_char->characteristic.uuid));
+	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->cccd_handle);
+	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->ext_prop_handle);
+	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->user_desc_handle);
+	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->report_ref_handle);
+}
+
+static uint32_t stub_ble_gq_item_scenario_two_back_to_back_discoveries(
+	const struct ble_gq *gatt_queue, struct ble_gq_req *req, uint16_t conn_handle,
+	int cmock_num_calls)
+{
+	stub_ble_gq_item_add_success_num_calls = cmock_num_calls + 1;
+
+	TEST_ASSERT_EQUAL_PTR(&ble_gatt_queue, gatt_queue);
+	TEST_ASSERT_EQUAL(test_conn_handle, conn_handle);
+
+	TEST_ASSERT_NOT_NULL(req->evt_handler);
+	TEST_ASSERT_EQUAL_PTR(&db_discovery, req->ctx);
+
+	switch (stub_ble_gq_item_add_success_num_calls) {
+	/* Discovery 1 of 2. */
+	case 1:
+		/* Check service 1 discovery request. */
+		TEST_ASSERT_EQUAL(BLE_GQ_REQ_SRV_DISCOVERY, req->type);
+		TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv1_uuid, &req->gattc_srv_disc.srvc_uuid));
+		TEST_ASSERT_EQUAL(CONFIG_BLE_DB_DISCOVERY_SRV_DISC_START_HANDLE,
+				  req->gattc_srv_disc.start_handle);
+		break;
+	case 2:
+		/* Check characteristic 1 discovery request (service 1). */
+		TEST_ASSERT_EQUAL(BLE_GQ_REQ_CHAR_DISCOVERY, req->type);
+		TEST_ASSERT_EQUAL(0x0001, req->gattc_char_disc.start_handle);
+		TEST_ASSERT_EQUAL(0x0005, req->gattc_char_disc.end_handle);
+		break;
+	case 3:
+		/* Check characteristic 2 discovery request (service 1). */
+		TEST_ASSERT_EQUAL(BLE_GQ_REQ_CHAR_DISCOVERY, req->type);
+		TEST_ASSERT_EQUAL(0x0004, req->gattc_char_disc.start_handle);
+		TEST_ASSERT_EQUAL(0x0005, req->gattc_char_disc.end_handle);
+		break;
+	case 4:
+		/* Check service 2 discovery request. */
+		TEST_ASSERT_EQUAL(BLE_GQ_REQ_SRV_DISCOVERY, req->type);
+		TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv2_uuid, &req->gattc_srv_disc.srvc_uuid));
+		TEST_ASSERT_EQUAL(CONFIG_BLE_DB_DISCOVERY_SRV_DISC_START_HANDLE,
+				  req->gattc_srv_disc.start_handle);
+		break;
+	case 5:
+		/* Check characteristic 1 discovery request (service 2). */
+		TEST_ASSERT_EQUAL(BLE_GQ_REQ_CHAR_DISCOVERY, req->type);
+		TEST_ASSERT_EQUAL(0x0007, req->gattc_char_disc.start_handle);
+		TEST_ASSERT_EQUAL(0xFFFF, req->gattc_char_disc.end_handle);
+		break;
+	case 6:
+		/* Check characteristic 2 discovery request (service 2). */
+		TEST_ASSERT_EQUAL(BLE_GQ_REQ_CHAR_DISCOVERY, req->type);
+		TEST_ASSERT_EQUAL(0x000A, req->gattc_char_disc.start_handle);
+		TEST_ASSERT_EQUAL(0xFFFF, req->gattc_char_disc.end_handle);
+		break;
+	case 7:
+		/* Check characteristic 3 discovery request (service 2). */
+		TEST_ASSERT_EQUAL(BLE_GQ_REQ_CHAR_DISCOVERY, req->type);
+		TEST_ASSERT_EQUAL(0x000C, req->gattc_char_disc.start_handle);
+		TEST_ASSERT_EQUAL(0xFFFF, req->gattc_char_disc.end_handle);
+		break;
+	case 8:
+		/* Check descriptor discovery request (service 2). */
+		TEST_ASSERT_EQUAL(BLE_GQ_REQ_DESC_DISCOVERY, req->type);
+		TEST_ASSERT_EQUAL(0x000C, req->gattc_desc_disc.start_handle);
+		TEST_ASSERT_EQUAL(0xFFFF, req->gattc_desc_disc.end_handle);
+		break;
+
+	/* Discovery 2 of 2. */
+	case 9:
+		/* Check service 1 discovery request. */
+		TEST_ASSERT_EQUAL(BLE_GQ_REQ_SRV_DISCOVERY, req->type);
+		TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv1_uuid, &req->gattc_srv_disc.srvc_uuid));
+		TEST_ASSERT_EQUAL(CONFIG_BLE_DB_DISCOVERY_SRV_DISC_START_HANDLE,
+				  req->gattc_srv_disc.start_handle);
+		break;
+	case 10:
+		/* Check characteristic 1 discovery request (service 1). */
+		TEST_ASSERT_EQUAL(BLE_GQ_REQ_CHAR_DISCOVERY, req->type);
+		TEST_ASSERT_EQUAL(0x0011, req->gattc_char_disc.start_handle);
+		TEST_ASSERT_EQUAL(0x0013, req->gattc_char_disc.end_handle);
+		break;
+	case 11:
+		/* Check service 2 discovery request. */
+		TEST_ASSERT_EQUAL(BLE_GQ_REQ_SRV_DISCOVERY, req->type);
+		TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv2_uuid, &req->gattc_srv_disc.srvc_uuid));
+		TEST_ASSERT_EQUAL(CONFIG_BLE_DB_DISCOVERY_SRV_DISC_START_HANDLE,
+				  req->gattc_srv_disc.start_handle);
+		break;
+	case 12:
+		/* Check characteristic 1 discovery request (service 2). */
+		TEST_ASSERT_EQUAL(BLE_GQ_REQ_CHAR_DISCOVERY, req->type);
+		TEST_ASSERT_EQUAL(0x0017, req->gattc_char_disc.start_handle);
+		TEST_ASSERT_EQUAL(0xFFFF, req->gattc_char_disc.end_handle);
+		break;
+	case 13:
+		/* Check characteristic 2 discovery request (service 2). */
+		TEST_ASSERT_EQUAL(BLE_GQ_REQ_CHAR_DISCOVERY, req->type);
+		TEST_ASSERT_EQUAL(0x001A, req->gattc_char_disc.start_handle);
+		TEST_ASSERT_EQUAL(0xFFFF, req->gattc_char_disc.end_handle);
+		break;
+	case 14:
+		/* Check descriptor discovery request (service 2). */
+		TEST_ASSERT_EQUAL(BLE_GQ_REQ_DESC_DISCOVERY, req->type);
+		TEST_ASSERT_EQUAL(0x001A, req->gattc_desc_disc.start_handle);
+		TEST_ASSERT_EQUAL(0xFFFF, req->gattc_desc_disc.end_handle);
+		break;
+	default:
+		TEST_FAIL();
+	}
+	return NRF_SUCCESS;
+}
+
+void test_scenario_two_back_to_back_discoveries(void)
+{
+	uint32_t nrf_err;
+	ble_evt_t evt;
+	ble_gattc_handle_range_t range;
+
+	__cmock_ble_gq_item_add_Stub(stub_ble_gq_item_scenario_two_back_to_back_discoveries);
+	__cmock_ble_gq_conn_handle_register_ExpectAndReturn(&ble_gatt_queue, test_conn_handle,
+							    NRF_SUCCESS);
+
+	nrf_err = ble_db_discovery_init(&db_discovery, &db_disc_config);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	/* Register UUID of service 1. */
+	nrf_err = ble_db_discovery_service_register(&db_discovery, &srv1_uuid);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	/* Register UUID of service 2. */
+	nrf_err = ble_db_discovery_service_register(&db_discovery, &srv2_uuid);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	/* Discovery 1 of 2. */
+
+	/* Start Discovery. Sends a Primary Service Discovery Request. */
+	nrf_err = ble_db_discovery_start(&db_discovery, test_conn_handle);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+	TEST_ASSERT_EQUAL(1, stub_ble_gq_item_add_success_num_calls);
+	TEST_ASSERT_EQUAL(0, db_disc_evt_count);
+
+	/* Simulate a Primary Service Discovery Response from SoftDevice (service 1).
+	 * A Characteristic Discovery Request is expected sent in response to this.
+	 */
+	range = (ble_gattc_handle_range_t) {.start_handle = 0x0001, .end_handle = 0x0005};
+	evt = (ble_evt_t) {
+		.header.evt_id = BLE_GATTC_EVT_PRIM_SRVC_DISC_RSP,
+		.evt.gattc_evt = {
+			.gatt_status = BLE_GATT_STATUS_SUCCESS,
+			.conn_handle = test_conn_handle,
+			.params.prim_srvc_disc_rsp = {
+				.count = 1,
+				.services[0] = {.uuid = srv1_uuid, .handle_range = range},
+			},
+		},
+	};
+	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
+	TEST_ASSERT_EQUAL(2, stub_ble_gq_item_add_success_num_calls);
+	TEST_ASSERT_EQUAL(0, db_disc_evt_count);
+
+	/* Simulate a Characteristic Discovery Response from SoftDevice. (char 1 of service 1).
+	 * Another Characteristic Discovery Request is expected sent in response to this.
+	 */
+	evt = (ble_evt_t) {
+		.header.evt_id = BLE_GATTC_EVT_CHAR_DISC_RSP,
+		.evt.gattc_evt = {
+			.gatt_status = BLE_GATT_STATUS_SUCCESS,
+			.conn_handle = test_conn_handle,
+			.params.char_disc_rsp = {
+				.count = 1,
+				.chars[0] = {
+					.uuid = srv1_char1_uuid,
+					.handle_decl = 0x0002,
+					.handle_value = 0x0003,
+				},
+			},
+		},
+	};
+	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
+	TEST_ASSERT_EQUAL(3, stub_ble_gq_item_add_success_num_calls);
+	TEST_ASSERT_EQUAL(0, db_disc_evt_count);
+
+	/* Simulate a Characteristic Discovery Response from SoftDevice. (char 2 of service 1).
+	 * A Service Discovery Request (next service) is expected sent in response to this.
+	 */
+	evt = (ble_evt_t) {
+		.header.evt_id = BLE_GATTC_EVT_CHAR_DISC_RSP,
+		.evt.gattc_evt = {
+			.gatt_status = BLE_GATT_STATUS_SUCCESS,
+			.conn_handle = test_conn_handle,
+			.params.char_disc_rsp = {
+				.count = 1,
+				.chars[0] = {
+					.uuid = srv1_char2_uuid,
+					.handle_decl = 0x0004,
+					.handle_value = 0x0005,
+				},
+			},
+		},
+	};
+	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
+	TEST_ASSERT_EQUAL(4, stub_ble_gq_item_add_success_num_calls);
+	TEST_ASSERT_EQUAL(0, db_disc_evt_count);
+
+	/* Simulate a Primary Service Discovery Response from SoftDevice (service 2).
+	 * A Characteristic Discovery Request is expected sent in response to this.
+	 */
+	range = (ble_gattc_handle_range_t) {.start_handle = 0x0007, .end_handle = 0xFFFF};
+	evt = (ble_evt_t) {
+		.header.evt_id = BLE_GATTC_EVT_PRIM_SRVC_DISC_RSP,
+		.evt.gattc_evt = {
+			.gatt_status = BLE_GATT_STATUS_SUCCESS,
+			.conn_handle = test_conn_handle,
+			.params.prim_srvc_disc_rsp = {
+				.count = 1,
+				.services[0] = {.uuid = srv2_uuid, .handle_range = range},
+			},
+		},
+	};
+	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
+	TEST_ASSERT_EQUAL(5, stub_ble_gq_item_add_success_num_calls);
+	TEST_ASSERT_EQUAL(0, db_disc_evt_count);
+
+	/* Simulate a Characteristic Discovery Response from SoftDevice. (char 1 of service 2).
+	 * A Characteristic Discovery Request is expected sent in response to this.
+	 */
+	evt = (ble_evt_t) {
+		.header.evt_id = BLE_GATTC_EVT_CHAR_DISC_RSP,
+		.evt.gattc_evt = {
+			.gatt_status = BLE_GATT_STATUS_SUCCESS,
+			.conn_handle = test_conn_handle,
+			.params.char_disc_rsp = {
+				.count = 1,
+				.chars[0] = {
+					.uuid = srv2_char1_uuid,
+					.handle_decl = 0x0008,
+					.handle_value = 0x0009,
+				},
+			},
+		},
+	};
+	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
+	TEST_ASSERT_EQUAL(6, stub_ble_gq_item_add_success_num_calls);
+	TEST_ASSERT_EQUAL(0, db_disc_evt_count);
+
+	/* Simulate a Characteristic Discovery Response from SoftDevice. (char 2 of service 2).
+	 * A Characteristic Discovery Request is expected sent in response to this.
+	 */
+	evt = (ble_evt_t) {
+		.header.evt_id = BLE_GATTC_EVT_CHAR_DISC_RSP,
+		.evt.gattc_evt = {
+			.gatt_status = BLE_GATT_STATUS_SUCCESS,
+			.conn_handle = test_conn_handle,
+			.params.char_disc_rsp = {
+				.count = 1,
+				.chars[0] = {
+					.uuid = srv2_char2_uuid,
+					.handle_decl = 0x000A,
+					.handle_value = 0x000B,
+				},
+			},
+		},
+	};
+	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
+	TEST_ASSERT_EQUAL(7, stub_ble_gq_item_add_success_num_calls);
+	TEST_ASSERT_EQUAL(0, db_disc_evt_count);
+
+	/* Simulate a Characteristic Discovery Response from SoftDevice. (No more chars found).
+	 * A Descriptor Discovery Request is expected sent in response to this.
+	 */
+	evt = (ble_evt_t) {
+		.header.evt_id = BLE_GATTC_EVT_CHAR_DISC_RSP,
+		.evt.gattc_evt = {
+			.gatt_status = BLE_GATT_STATUS_ATTERR_ATTRIBUTE_NOT_FOUND,
+			.conn_handle = test_conn_handle,
+		},
+	};
+	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
+	TEST_ASSERT_EQUAL(8, stub_ble_gq_item_add_success_num_calls);
+	TEST_ASSERT_EQUAL(0, db_disc_evt_count);
+
+	/* Simulate Descriptor Discovery Response from SoftDevice (No descriptors found).
+	 *
+	 * Discovery completed!
+	 */
+	evt = (ble_evt_t) {
+		.header.evt_id = BLE_GATTC_EVT_DESC_DISC_RSP,
+		.evt.gattc_evt = {
+			.gatt_status = BLE_GATT_STATUS_ATTERR_ATTRIBUTE_NOT_FOUND,
+			.conn_handle = test_conn_handle,
+		},
+	};
+	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
+	TEST_ASSERT_EQUAL(8, stub_ble_gq_item_add_success_num_calls);
+
+	/* Expect a BLE_DB_DISCOVERY_COMPLETE event for each registered service (two services).
+	 * Then, expect a BLE_DB_DISCOVERY_AVAILABLE event.
+	 */
+	TEST_ASSERT_EQUAL(3, db_disc_evt_count);
+	TEST_ASSERT_EQUAL(BLE_DB_DISCOVERY_COMPLETE, db_disc_evt[0].evt_type);
+	TEST_ASSERT_EQUAL(BLE_DB_DISCOVERY_COMPLETE, db_disc_evt[1].evt_type);
+	TEST_ASSERT_EQUAL(BLE_DB_DISCOVERY_AVAILABLE, db_disc_evt[2].evt_type);
+
+	const struct ble_gatt_db_srv *db_srv;
+	const struct ble_gatt_db_char *db_char;
+
+	/* Check service 1 discovery result. */
+	db_srv = db_disc_evt[0].discovered_db;
+	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[0].conn_handle);
+	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv1_uuid, &db_srv->srv_uuid));
+	TEST_ASSERT_EQUAL(2, db_srv->char_count);
+	TEST_ASSERT_EQUAL(0x0001, db_srv->handle_range.start_handle);
+	TEST_ASSERT_EQUAL(0x0005, db_srv->handle_range.end_handle);
+	db_char = &db_srv->characteristics[0];
+	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv1_char1_uuid, &db_char->characteristic.uuid));
+	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->cccd_handle);
+	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->ext_prop_handle);
+	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->user_desc_handle);
+	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->report_ref_handle);
+	db_char = &db_srv->characteristics[1];
+	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv1_char2_uuid, &db_char->characteristic.uuid));
+	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->cccd_handle);
+	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->ext_prop_handle);
+	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->user_desc_handle);
+	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->report_ref_handle);
+
+	/* Check service 2 discovery result. */
+	db_srv = db_disc_evt[1].discovered_db;
+	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[1].conn_handle);
+	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv2_uuid, &db_srv->srv_uuid));
+	TEST_ASSERT_EQUAL(2, db_srv->char_count);
+	TEST_ASSERT_EQUAL(0x0007, db_srv->handle_range.start_handle);
+	TEST_ASSERT_EQUAL(0xFFFF, db_srv->handle_range.end_handle);
+	db_char = &db_srv->characteristics[0];
+	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv2_char1_uuid, &db_char->characteristic.uuid));
+	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->cccd_handle);
+	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->ext_prop_handle);
+	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->user_desc_handle);
+	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->report_ref_handle);
+	db_char = &db_srv->characteristics[1];
+	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv2_char2_uuid, &db_char->characteristic.uuid));
+	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->cccd_handle);
+	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->ext_prop_handle);
+	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->user_desc_handle);
+	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->report_ref_handle);
+
+	/* Discovery 2 of 2. */
+
+	test_conn_handle++;
+
+	__cmock_ble_gq_conn_handle_register_ExpectAndReturn(&ble_gatt_queue, test_conn_handle,
+							    NRF_SUCCESS);
+
+	/* Start Discovery. Sends a Primary Service Discovery Request. */
+	nrf_err = ble_db_discovery_start(&db_discovery, test_conn_handle);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+	TEST_ASSERT_EQUAL(9, stub_ble_gq_item_add_success_num_calls);
+	TEST_ASSERT_EQUAL(3, db_disc_evt_count);
+
+	/* Simulate a Primary Service Discovery Response from SoftDevice (service 1).
+	 * A Characteristic Discovery Request is expected sent in response to this.
+	 */
+	range = (ble_gattc_handle_range_t) {.start_handle = 0x0011, .end_handle = 0x0013};
+	evt = (ble_evt_t) {
+		.header.evt_id = BLE_GATTC_EVT_PRIM_SRVC_DISC_RSP,
+		.evt.gattc_evt = {
+			.gatt_status = BLE_GATT_STATUS_SUCCESS,
+			.conn_handle = test_conn_handle,
+			.params.prim_srvc_disc_rsp = {
+				.count = 1,
+				.services[0] = {.uuid = srv1_uuid, .handle_range = range},
+			},
+		},
+	};
+	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
+	TEST_ASSERT_EQUAL(10, stub_ble_gq_item_add_success_num_calls);
+	TEST_ASSERT_EQUAL(3, db_disc_evt_count);
+
+	/* Simulate a Characteristic Discovery Response from SoftDevice. (char 1 of service 1).
+	 * Another Characteristic Discovery Request is expected sent in response to this.
+	 */
+	evt = (ble_evt_t) {
+		.header.evt_id = BLE_GATTC_EVT_CHAR_DISC_RSP,
+		.evt.gattc_evt = {
+			.gatt_status = BLE_GATT_STATUS_SUCCESS,
+			.conn_handle = test_conn_handle,
+			.params.char_disc_rsp = {
+				.count = 1,
+				.chars[0] = {
+					.uuid = srv1_char1_uuid,
+					.handle_decl = 0x0012,
+					.handle_value = 0x0013,
+				},
+			},
+		},
+	};
+	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
+	TEST_ASSERT_EQUAL(11, stub_ble_gq_item_add_success_num_calls);
+	TEST_ASSERT_EQUAL(3, db_disc_evt_count);
+
+	/* Simulate a Primary Service Discovery Response from SoftDevice (service 2).
+	 * A Characteristic Discovery Request is expected sent in response to this.
+	 */
+	range = (ble_gattc_handle_range_t) {.start_handle = 0x0017, .end_handle = 0xFFFF};
+	evt = (ble_evt_t) {
+		.header.evt_id = BLE_GATTC_EVT_PRIM_SRVC_DISC_RSP,
+		.evt.gattc_evt = {
+			.gatt_status = BLE_GATT_STATUS_SUCCESS,
+			.conn_handle = test_conn_handle,
+			.params.prim_srvc_disc_rsp = {
+				.count = 1,
+				.services[0] = {.uuid = srv2_uuid, .handle_range = range},
+			},
+		},
+	};
+	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
+	TEST_ASSERT_EQUAL(12, stub_ble_gq_item_add_success_num_calls);
+	TEST_ASSERT_EQUAL(3, db_disc_evt_count);
+
+	/* Simulate a Characteristic Discovery Response from SoftDevice. (char 1 of service 2).
+	 * A Characteristic Discovery Request is expected sent in response to this.
+	 */
+	evt = (ble_evt_t) {
+		.header.evt_id = BLE_GATTC_EVT_CHAR_DISC_RSP,
+		.evt.gattc_evt = {
+			.gatt_status = BLE_GATT_STATUS_SUCCESS,
+			.conn_handle = test_conn_handle,
+			.params.char_disc_rsp = {
+				.count = 1,
+				.chars[0] = {
+					.uuid = srv2_char1_uuid,
+					.handle_decl = 0x0018,
+					.handle_value = 0x0019,
+				},
+			},
+		},
+	};
+	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
+	TEST_ASSERT_EQUAL(13, stub_ble_gq_item_add_success_num_calls);
+	TEST_ASSERT_EQUAL(3, db_disc_evt_count);
+
+	/* Simulate a Characteristic Discovery Response from SoftDevice. (No more chars found).
+	 * A Descriptor Discovery Request is expected sent in response to this.
+	 */
+	evt = (ble_evt_t) {
+		.header.evt_id = BLE_GATTC_EVT_CHAR_DISC_RSP,
+		.evt.gattc_evt = {
+			.gatt_status = BLE_GATT_STATUS_ATTERR_ATTRIBUTE_NOT_FOUND,
+			.conn_handle = test_conn_handle,
+		},
+	};
+	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
+	TEST_ASSERT_EQUAL(14, stub_ble_gq_item_add_success_num_calls);
+	TEST_ASSERT_EQUAL(3, db_disc_evt_count);
+
+	/* Simulate Descriptor Discovery Response from SoftDevice (No descriptors found).
+	 *
+	 * Discovery completed!
+	 */
+	evt = (ble_evt_t) {
+		.header.evt_id = BLE_GATTC_EVT_DESC_DISC_RSP,
+		.evt.gattc_evt = {
+			.gatt_status = BLE_GATT_STATUS_ATTERR_ATTRIBUTE_NOT_FOUND,
+			.conn_handle = test_conn_handle,
+		},
+	};
+	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
+	TEST_ASSERT_EQUAL(14, stub_ble_gq_item_add_success_num_calls);
+
+	/* Expect a BLE_DB_DISCOVERY_COMPLETE event for each registered service (two services).
+	 * Then, expect a BLE_DB_DISCOVERY_AVAILABLE event.
+	 */
+	TEST_ASSERT_EQUAL(6, db_disc_evt_count);
+	TEST_ASSERT_EQUAL(BLE_DB_DISCOVERY_COMPLETE, db_disc_evt[3].evt_type);
+	TEST_ASSERT_EQUAL(BLE_DB_DISCOVERY_COMPLETE, db_disc_evt[4].evt_type);
+	TEST_ASSERT_EQUAL(BLE_DB_DISCOVERY_AVAILABLE, db_disc_evt[5].evt_type);
+
+	/* Check service 1 discovery result. */
+	db_srv = db_disc_evt[3].discovered_db;
+	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[3].conn_handle);
+	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv1_uuid, &db_srv->srv_uuid));
+	TEST_ASSERT_EQUAL(1, db_srv->char_count);
+	TEST_ASSERT_EQUAL(0x0011, db_srv->handle_range.start_handle);
+	TEST_ASSERT_EQUAL(0x0013, db_srv->handle_range.end_handle);
+	db_char = &db_srv->characteristics[0];
+	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv1_char1_uuid, &db_char->characteristic.uuid));
+	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->cccd_handle);
+	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->ext_prop_handle);
+	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->user_desc_handle);
+	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->report_ref_handle);
+
+	/* Check service 2 discovery result. */
+	db_srv = db_disc_evt[4].discovered_db;
+	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[4].conn_handle);
+	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv2_uuid, &db_srv->srv_uuid));
+	TEST_ASSERT_EQUAL(1, db_srv->char_count);
+	TEST_ASSERT_EQUAL(0x0017, db_srv->handle_range.start_handle);
+	TEST_ASSERT_EQUAL(0xFFFF, db_srv->handle_range.end_handle);
+	db_char = &db_srv->characteristics[0];
+	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv2_char1_uuid, &db_char->characteristic.uuid));
 	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->cccd_handle);
 	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->ext_prop_handle);
 	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->user_desc_handle);
@@ -855,7 +1372,7 @@ void test_scenario_discover_one_srvc_with_descriptors(void)
 	const struct ble_gatt_db_char *db_char;
 
 	/* Check service 1 discovery result. */
-	db_srv = &db_disc_evt[0].params.discovered_db;
+	db_srv = db_disc_evt[0].discovered_db;
 	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[0].conn_handle);
 	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv1_uuid, &db_srv->srv_uuid));
 	TEST_ASSERT_EQUAL(4, db_srv->char_count);
@@ -1030,6 +1547,7 @@ void test_scenario_discover_one_of_three_services_found(void)
 			.conn_handle = test_conn_handle,
 		},
 	};
+
 	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
 	TEST_ASSERT_EQUAL(4, stub_ble_gq_item_add_success_num_calls);
 
@@ -1046,13 +1564,11 @@ void test_scenario_discover_one_of_three_services_found(void)
 	const struct ble_gatt_db_char *db_char;
 
 	/* Check service 1 discovery result. */
-	db_srv = &db_disc_evt[0].params.discovered_db;
 	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[0].conn_handle);
-	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv1_uuid, &db_srv->srv_uuid));
-	TEST_ASSERT_EQUAL(0, db_srv->char_count);
+	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv1_uuid, &db_disc_evt[0].srv_uuid));
 
 	/* Check service 2 discovery result. */
-	db_srv = &db_disc_evt[1].params.discovered_db;
+	db_srv = db_disc_evt[1].discovered_db;
 	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[1].conn_handle);
 	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv2_uuid, &db_srv->srv_uuid));
 	TEST_ASSERT_EQUAL(1, db_srv->char_count);
@@ -1066,10 +1582,8 @@ void test_scenario_discover_one_of_three_services_found(void)
 	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, db_char->report_ref_handle);
 
 	/* Check service 3 discovery result. */
-	db_srv = &db_disc_evt[2].params.discovered_db;
 	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[2].conn_handle);
-	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv3_uuid, &db_srv->srv_uuid));
-	TEST_ASSERT_EQUAL(0, db_srv->char_count);
+	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv3_uuid, &db_disc_evt[2].srv_uuid));
 }
 
 static uint32_t stub_ble_gq_item_add_scenario_ignore_other_conn_handles(
@@ -1238,7 +1752,7 @@ void test_scenario_ignore_discovery_responses_for_other_conn_handles(void)
 	const struct ble_gatt_db_char *db_char;
 
 	/* Check service 1 discovery result. */
-	db_srv = &db_disc_evt[0].params.discovered_db;
+	db_srv = db_disc_evt[0].discovered_db;
 	TEST_ASSERT_EQUAL(test_conn_handle, db_disc_evt[0].conn_handle);
 	TEST_ASSERT_TRUE(BLE_UUID_EQ(&srv1_uuid, &db_srv->srv_uuid));
 	TEST_ASSERT_EQUAL(1, db_srv->char_count);
@@ -1455,7 +1969,7 @@ void test_scenario_ble_gq_item_add_no_mem(void)
 	TEST_ASSERT_EQUAL(2, stub_ble_gq_item_add_success_num_calls);
 	TEST_ASSERT_EQUAL(2, db_disc_evt_count);
 	TEST_ASSERT_EQUAL(BLE_DB_DISCOVERY_ERROR, db_disc_evt[0].evt_type);
-	TEST_ASSERT_EQUAL(NRF_ERROR_NO_MEM, db_disc_evt[0].params.error.reason);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NO_MEM, db_disc_evt[0].error.reason);
 	TEST_ASSERT_EQUAL(BLE_DB_DISCOVERY_AVAILABLE, db_disc_evt[1].evt_type);
 
 	/* Restart Discovery. Sends a Primary Service Discovery Request. */
@@ -1489,7 +2003,7 @@ void test_scenario_ble_gq_item_add_no_mem(void)
 	TEST_ASSERT_EQUAL(4, stub_ble_gq_item_add_success_num_calls);
 	TEST_ASSERT_EQUAL(4, db_disc_evt_count);
 	TEST_ASSERT_EQUAL(BLE_DB_DISCOVERY_ERROR, db_disc_evt[2].evt_type);
-	TEST_ASSERT_EQUAL(NRF_ERROR_NO_MEM, db_disc_evt[2].params.error.reason);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NO_MEM, db_disc_evt[2].error.reason);
 	TEST_ASSERT_EQUAL(BLE_DB_DISCOVERY_AVAILABLE, db_disc_evt[3].evt_type);
 }
 
@@ -1499,6 +2013,7 @@ void setUp(void)
 	memset(&db_discovery, 0, sizeof(db_discovery));
 
 	/* Clear the database event global variables before each test. */
+	memset(db_disc_srv, 0xFF, sizeof(db_disc_srv));
 	memset(db_disc_evt, 0xFF, sizeof(db_disc_evt));
 	db_disc_evt_count = 0;
 

@@ -13,11 +13,15 @@
 #include <bm/bluetooth/ble_gq.h>
 #include <bm/bluetooth/services/uuid.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/sys/__assert.h>
 
 LOG_MODULE_REGISTER(ble_db_disc, CONFIG_BLE_DB_DISCOVERY_LOG_LEVEL);
 
 static inline struct ble_gatt_db_srv *curr_discovered_srv_get(struct ble_db_discovery *db_discovery)
 {
+	__ASSERT(db_discovery->curr_srv_idx < CONFIG_BLE_DB_DISCOVERY_MAX_SRV,
+		 "Service index out of range");
+
 	return &(db_discovery->services[db_discovery->curr_srv_idx]);
 }
 
@@ -79,7 +83,7 @@ static void discovery_error_evt_trigger(struct ble_db_discovery *db_discovery, u
 		struct ble_db_discovery_evt evt = {
 			.evt_type = BLE_DB_DISCOVERY_ERROR,
 			.conn_handle = conn_handle,
-			.params.error.reason = nrf_err,
+			.error.reason = nrf_err,
 		};
 
 		db_discovery->evt_handler(db_discovery, &evt);
@@ -123,9 +127,14 @@ static void discovery_complete_evt_trigger(struct ble_db_discovery *db_discovery
 
 	/* Insert an event into the pending event list. */
 	usr_evt->conn_handle = conn_handle;
-	usr_evt->params.discovered_db = *srv_being_discovered;
-	usr_evt->evt_type = (is_srv_found == true) ? BLE_DB_DISCOVERY_COMPLETE :
-						     BLE_DB_DISCOVERY_SRV_NOT_FOUND;
+	if (is_srv_found) {
+		usr_evt->evt_type = BLE_DB_DISCOVERY_COMPLETE;
+		usr_evt->discovered_db = srv_being_discovered;
+	} else {
+		usr_evt->evt_type = BLE_DB_DISCOVERY_SRV_NOT_FOUND;
+		usr_evt->srv_uuid = srv_being_discovered->srv_uuid;
+	}
+
 	db_discovery->pending_usr_evt_idx++;
 
 	if (db_discovery->pending_usr_evt_idx == db_discovery->num_registered_uuids) {
@@ -548,16 +557,23 @@ static void on_descriptor_discovery_rsp(struct ble_db_discovery *const db_discov
 static uint32_t discovery_start(struct ble_db_discovery *const db_discovery, uint16_t conn_handle)
 {
 	int nrf_err;
-	struct ble_gatt_db_srv *const srv_being_discovered = curr_discovered_srv_get(db_discovery);
+	struct ble_gatt_db_srv *srv_being_discovered;
 
 	nrf_err = ble_gq_conn_handle_register(db_discovery->gatt_queue, conn_handle);
 	if (nrf_err) {
 		return nrf_err;
 	}
 
+	db_discovery->srv_count = 0;
+	db_discovery->curr_char_idx = 0;
+	db_discovery->curr_srv_idx = 0;
+	db_discovery->discoveries_count = 0;
 	db_discovery->conn_handle = conn_handle;
+	db_discovery->pending_usr_evt_idx = 0;
 
+	srv_being_discovered = curr_discovered_srv_get(db_discovery);
 	srv_being_discovered->srv_uuid = db_discovery->registered_uuids[db_discovery->curr_srv_idx];
+	srv_being_discovered->char_count = 0;
 
 	LOG_DBG("Starting discovery of service with UUID %#x on connection handle %#x",
 		srv_being_discovered->srv_uuid.uuid, conn_handle);

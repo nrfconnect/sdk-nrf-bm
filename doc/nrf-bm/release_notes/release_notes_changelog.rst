@@ -106,9 +106,24 @@ Libraries
       * An issue causing slow advertising with allow list to incorrectly send event :c:enumerator:`BLE_ADV_EVT_SLOW` when it should have sent event :c:enumerator:`BLE_ADV_EVT_SLOW_ALLOW_LIST`.
       * An issue in the data module where the short name would not be matched in certain cases.
 
-* :ref:`lib_ble_db_discovery`:
+* :ref:`lib_ble_db_discovery` library:
 
-   * Removed the :c:struct:`ble_db_discovery_user_evt` structure after a rework.
+   The library is now supported.
+
+   * Updated:
+
+      * The ``params`` union field of the :c:struct:`ble_db_discovery_evt` structure to an anonymous union.
+      * The :c:enumerator:`BLE_DB_DISCOVERY_COMPLETE` event to pass the service discovery result by-reference instead of by-value.
+        This removes one copy operation for each :c:enumerator:`BLE_DB_DISCOVERY_COMPLETE` event and significantly reduces the size of both :c:struct:`ble_db_discovery_evt` and :c:struct:`ble_db_discovery` structures.
+
+   * Fixed:
+
+      * An issue where starting a second round of discovery, after either a disconnect or a completed discovery, could result in incorrect internal state.
+        This could eventually lead to insufficient memory for discovering new services.
+
+   * Removed:
+
+      * The ``ble_db_discovery_user_evt`` structure after a rework.
 
 * :ref:`lib_ble_scan`:
 
