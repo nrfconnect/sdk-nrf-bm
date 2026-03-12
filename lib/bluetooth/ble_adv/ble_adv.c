@@ -127,7 +127,6 @@ static void on_terminated(struct ble_adv *ble_adv, const ble_evt_t *ble_evt)
 
 static uint32_t flags_set(struct ble_adv *ble_adv, uint8_t flags)
 {
-	uint32_t nrf_err;
 	uint8_t *parsed_flags;
 
 	parsed_flags = ble_adv_data_parse(ble_adv->adv_data.adv_data.p_data,
@@ -139,13 +138,6 @@ static uint32_t flags_set(struct ble_adv *ble_adv, uint8_t flags)
 	}
 
 	*parsed_flags = flags;
-
-	nrf_err = sd_ble_gap_adv_set_configure(&ble_adv->adv_handle, &ble_adv->adv_data,
-					       &ble_adv->adv_params);
-	if (nrf_err) {
-		LOG_ERR("Failed to set advertising flags, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
-	}
 
 	return NRF_SUCCESS;
 }
