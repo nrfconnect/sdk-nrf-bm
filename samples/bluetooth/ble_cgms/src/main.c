@@ -251,6 +251,7 @@ static uint32_t services_init(void)
 	struct ble_cgms_config cgms_config = {
 		.evt_handler = cgms_evt_handler,
 		.gatt_queue = &ble_gatt_gueue,
+		.initial_comm_interval = CONFIG_SAMPLE_GLUCOSE_MEAS_INTERVAL,
 		.initial_run_time = 20,
 		.initial_sensor_status = {
 			.time_offset = 0x00,
@@ -288,18 +289,13 @@ static uint32_t services_init(void)
 	}
 
 	/* Initialize Glucose Service */
-	ble_cgms.comm_interval = CONFIG_SAMPLE_GLUCOSE_MEAS_INTERVAL;
-
 	nrf_err = ble_cgms_init(&ble_cgms, &cgms_config);
 	if (nrf_err) {
 		LOG_ERR("Failed to initialize CGMS service, nrf_error %#x", nrf_err);
 		return nrf_err;
 	}
 
-	ble_cgms.comm_interval = CONFIG_SAMPLE_GLUCOSE_MEAS_INTERVAL;
-
 	/* Add a basic battery measurement with only mandatory fields */
-
 	nrf_err = ble_bas_init(&ble_bas, &bas_config);
 	if (nrf_err) {
 		LOG_ERR("Failed to initialize BAS service, nrf_error %#x", nrf_err);

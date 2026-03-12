@@ -120,14 +120,15 @@ Libraries
    * Renamed the ``allow_list_used`` function to :c:func:`ble_scan_is_allow_list_used`.
    * Aligned the name of the :c:type:`ble_gap_evt_adv_report_t` fields in the :c:struct:`ble_scan_evt` struct to ``adv_report``.
 
-
 * Bluetooth LE Connection state library:
 
-   * Deprecated the library. Applications and other libraries and services should keep an internal state of required connections instead.
+   * Deprecated the library.
+     Applications and other libraries and services should keep an internal state of required connections instead.
 
 Bluetooth LE Services
 ---------------------
 
+* Added the :c:member:`ble_cgms_config.initial_comm_interval` to the :c:struct:`ble_cgms_config` structure to set the initial communication interval.
 * Renamed the Bluetooth: Heart Rate Service Central (``ble_hrs_central``) to the :ref:`lib_ble_service_hrs_client` sample.
 * Updated all services to return errors from the SoftDevice directly.
 * Removed the BMS authorization code Kconfig options (:kconfig:option:`CONFIG_BLE_BMS_AUTHORIZATION_CODE` and :kconfig:option:`CONFIG_BLE_BMS_USE_AUTHORIZATION_CODE`) from the service library, as they are only used by the BMS sample.
