@@ -42,7 +42,7 @@ static void ble_scan_connect_with_target(const struct ble_scan *scan,
 	if (nrf_err) {
 		LOG_ERR("Connection failed, nrf_error %#x", nrf_err);
 		if (scan->evt_handler) {
-			scan_evt.params.connecting_err.reason = nrf_err;
+			scan_evt.connecting_err.reason = nrf_err;
 			scan->evt_handler(&scan_evt);
 		}
 	}
@@ -666,7 +666,7 @@ static void ble_scan_on_adv_report(struct ble_scan *scan,
 	/* If the allow list is used, do not check the filters and return. */
 	if (ble_scan_is_allow_list_used(scan)) {
 		scan_evt.evt_type = BLE_SCAN_EVT_ALLOW_LIST_ADV_REPORT;
-		scan_evt.params.allow_list_adv_report.adv_report = adv_report;
+		scan_evt.allow_list_adv_report.adv_report = adv_report;
 		scan->evt_handler(&scan_evt);
 
 		if (scan->connect_if_match) {
@@ -710,7 +710,7 @@ static void ble_scan_on_adv_report(struct ble_scan *scan,
 			/* Number of filters matched. */
 			filter_match_cnt++;
 			/* Information about the filters matched. */
-			scan_evt.params.filter_match.filter_match.address_filter_match = true;
+			scan_evt.filter_match.filter_match.address_filter_match = true;
 		}
 	}
 #endif /* CONFIG_BLE_SCAN_ADDRESS_COUNT */
@@ -723,7 +723,7 @@ static void ble_scan_on_adv_report(struct ble_scan *scan,
 		    (active_match_all && adv_name_compare(scan, adv_data, adv_data_len))) {
 			filter_match_cnt++;
 
-			scan_evt.params.filter_match.filter_match.name_filter_match = true;
+			scan_evt.filter_match.filter_match.name_filter_match = true;
 		}
 	}
 #endif /* CONFIG_BLE_SCAN_NAME_COUNT */
@@ -736,7 +736,7 @@ static void ble_scan_on_adv_report(struct ble_scan *scan,
 		    (active_match_all && adv_short_name_compare(scan, adv_data, adv_data_len))) {
 			filter_match_cnt++;
 
-			scan_evt.params.filter_match.filter_match.short_name_filter_match = true;
+			scan_evt.filter_match.filter_match.short_name_filter_match = true;
 		}
 	}
 #endif /* CONFIG_BLE_SCAN_SHORT_NAME_COUNT */
@@ -749,7 +749,7 @@ static void ble_scan_on_adv_report(struct ble_scan *scan,
 		    (active_match_all && adv_uuid_compare(scan, adv_data, adv_data_len))) {
 			filter_match_cnt++;
 
-			scan_evt.params.filter_match.filter_match.uuid_filter_match = true;
+			scan_evt.filter_match.filter_match.uuid_filter_match = true;
 		}
 	}
 #endif /* CONFIG_BLE_SCAN_UUID_COUNT */
@@ -762,7 +762,7 @@ static void ble_scan_on_adv_report(struct ble_scan *scan,
 		    (active_match_all && adv_appearance_compare(scan, adv_data, adv_data_len))) {
 			filter_match_cnt++;
 
-			scan_evt.params.filter_match.filter_match.appearance_filter_match = true;
+			scan_evt.filter_match.filter_match.appearance_filter_match = true;
 		}
 	}
 #endif /* CONFIG_BLE_SCAN_APPEARANCE_COUNT */
@@ -772,7 +772,7 @@ static void ble_scan_on_adv_report(struct ble_scan *scan,
 	 */
 	if (scan->scan_filters.all_filters_mode && (filter_match_cnt == filter_cnt)) {
 		scan_evt.evt_type = BLE_SCAN_EVT_FILTER_MATCH;
-		scan_evt.params.filter_match.adv_report = adv_report;
+		scan_evt.filter_match.adv_report = adv_report;
 		if (scan->connect_if_match) {
 			(void)sd_ble_gap_scan_stop();
 			ble_scan_connect_with_target(scan, adv_report);
@@ -782,14 +782,14 @@ static void ble_scan_on_adv_report(struct ble_scan *scan,
 		 * notification to the main application.
 		 */
 		scan_evt.evt_type = BLE_SCAN_EVT_FILTER_MATCH;
-		scan_evt.params.filter_match.adv_report = adv_report;
+		scan_evt.filter_match.adv_report = adv_report;
 		if (scan->connect_if_match) {
 			(void)sd_ble_gap_scan_stop();
 			ble_scan_connect_with_target(scan, adv_report);
 		}
 	} else {
 		scan_evt.evt_type = BLE_SCAN_EVT_NOT_FOUND;
-		scan_evt.params.not_found.adv_report = adv_report;
+		scan_evt.not_found.adv_report = adv_report;
 	}
 
 	/* If the event handler is not NULL, notify the main application. */
@@ -810,7 +810,7 @@ static void ble_scan_on_timeout(const struct ble_scan *scan,
 	struct ble_scan_evt scan_evt = {
 		.evt_type = BLE_SCAN_EVT_SCAN_TIMEOUT,
 		.scan_params = &scan->scan_params,
-		.params.timeout.src = timeout->src,
+		.timeout.src = timeout->src,
 	};
 
 	if (timeout->src == BLE_GAP_TIMEOUT_SRC_SCAN) {
@@ -826,8 +826,8 @@ static void ble_scan_on_connected_evt(const struct ble_scan *scan,
 {
 	struct ble_scan_evt scan_evt = {
 		.evt_type = BLE_SCAN_EVT_CONNECTED,
-		.params.connected.connected = &gap_evt->params.connected,
-		.params.connected.conn_handle = gap_evt->conn_handle,
+		.connected.connected = &gap_evt->params.connected,
+		.connected.conn_handle = gap_evt->conn_handle,
 		.scan_params = &scan->scan_params,
 	};
 

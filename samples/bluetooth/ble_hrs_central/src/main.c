@@ -464,7 +464,7 @@ static void scan_evt_handler(const struct ble_scan_evt *scan_evt)
 		break;
 
 	case BLE_SCAN_EVT_CONNECTING_ERROR:
-		nrf_err = scan_evt->params.connecting_err.reason;
+		nrf_err = scan_evt->connecting_err.reason;
 		LOG_INF("Scan connecting error");
 		break;
 
@@ -482,7 +482,7 @@ static void scan_evt_handler(const struct ble_scan_evt *scan_evt)
 		break;
 
 	case BLE_SCAN_EVT_CONNECTED: {
-		const ble_gap_evt_connected_t *p_connected = scan_evt->params.connected.connected;
+		const ble_gap_evt_connected_t *p_connected = scan_evt->connected.connected;
 
 		LOG_INF("Connecting to target %02x%02x%02x%02x%02x%02x",
 			p_connected->peer_addr.addr[0], p_connected->peer_addr.addr[1],
