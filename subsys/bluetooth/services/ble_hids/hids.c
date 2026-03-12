@@ -121,7 +121,7 @@ static void on_connect(struct ble_hids *hids, const ble_evt_t *ble_evt)
 	if (nrf_err) {
 		struct ble_hids_evt evt = {
 			.evt_type = BLE_HIDS_EVT_ERROR,
-			.params.error.reason = nrf_err,
+			.error.reason = nrf_err,
 			.conn_handle = ble_evt->evt.gap_evt.conn_handle,
 		};
 
@@ -152,7 +152,7 @@ static void on_connect(struct ble_hids *hids, const ble_evt_t *ble_evt)
 		if (nrf_err) {
 			struct ble_hids_evt evt = {
 				.evt_type = BLE_HIDS_EVT_ERROR,
-				.params.error.reason = nrf_err,
+				.error.reason = nrf_err,
 				.conn_handle = ble_evt->evt.gap_evt.conn_handle,
 			};
 
@@ -172,7 +172,7 @@ static void on_control_point_write(struct ble_hids *hids, const ble_evt_t *ble_e
 	if (nrf_err) {
 		struct ble_hids_evt evt = {
 			.evt_type = BLE_HIDS_EVT_ERROR,
-			.params.error.reason = nrf_err,
+			.error.reason = nrf_err,
 			.conn_handle = ble_evt->evt.gatts_evt.conn_handle,
 		};
 
@@ -224,7 +224,7 @@ static void on_protocol_mode_write(struct ble_hids *hids, const ble_evt_t *ble_e
 	if (nrf_err) {
 		struct ble_hids_evt evt = {
 			.evt_type = BLE_HIDS_EVT_ERROR,
-			.params.error.reason = nrf_err,
+			.error.reason = nrf_err,
 			.conn_handle = ble_evt->evt.gatts_evt.conn_handle,
 		};
 
@@ -278,7 +278,7 @@ void on_protocol_mode_read_auth(struct ble_hids *hids, const ble_evt_t *ble_evt)
 	if (nrf_err) {
 		struct ble_hids_evt evt = {
 			.evt_type = BLE_HIDS_EVT_ERROR,
-			.params.error.reason = nrf_err,
+			.error.reason = nrf_err,
 			.conn_handle = ble_evt->evt.gatts_evt.conn_handle,
 		};
 
@@ -302,7 +302,7 @@ void on_protocol_mode_read_auth(struct ble_hids *hids, const ble_evt_t *ble_evt)
 		if (nrf_err) {
 			struct ble_hids_evt evt = {
 				.evt_type = BLE_HIDS_EVT_ERROR,
-				.params.error.reason = nrf_err,
+				.error.reason = nrf_err,
 				.conn_handle = ble_evt->evt.gatts_evt.conn_handle,
 			};
 
@@ -322,6 +322,8 @@ static void on_report_cccd_write(struct ble_hids *hids, struct ble_hids_char_id 
 		if (hids->evt_handler != NULL) {
 			struct ble_hids_evt evt = {
 				.conn_handle = ble_evt->evt.gatts_evt.conn_handle,
+				.notification.char_id = *char_id,
+				.ble_evt = ble_evt,
 			};
 
 			if (is_notification_enabled(evt_write->data)) {
@@ -329,8 +331,6 @@ static void on_report_cccd_write(struct ble_hids *hids, struct ble_hids_char_id 
 			} else {
 				evt.evt_type = BLE_HIDS_EVT_NOTIF_DISABLED;
 			}
-			evt.params.notification.char_id = *char_id;
-			evt.ble_evt = ble_evt;
 
 			hids->evt_handler(hids, &evt);
 		}
@@ -351,7 +351,7 @@ static void on_report_value_write(struct ble_hids *hids, const ble_evt_t *ble_ev
 	if (nrf_err) {
 		struct ble_hids_evt evt = {
 			.evt_type = BLE_HIDS_EVT_ERROR,
-			.params.error.reason = nrf_err,
+			.error.reason = nrf_err,
 			.conn_handle = ble_evt->evt.gatts_evt.conn_handle,
 		};
 
@@ -371,14 +371,13 @@ static void on_report_value_write(struct ble_hids *hids, const ble_evt_t *ble_ev
 	if (hids->evt_handler != NULL) {
 		struct ble_hids_evt evt = {
 			.conn_handle = ble_evt->evt.gatts_evt.conn_handle,
+			.evt_type = BLE_HIDS_EVT_REP_CHAR_WRITE,
+			.char_write.char_id = *char_id,
+			.char_write.offset = ble_evt->evt.gatts_evt.params.write.offset,
+			.char_write.len = ble_evt->evt.gatts_evt.params.write.len,
+			.char_write.data = ble_evt->evt.gatts_evt.params.write.data,
+			.ble_evt = ble_evt,
 		};
-
-		evt.evt_type = BLE_HIDS_EVT_REP_CHAR_WRITE;
-		evt.params.char_write.char_id = *char_id;
-		evt.params.char_write.offset = ble_evt->evt.gatts_evt.params.write.offset;
-		evt.params.char_write.len = ble_evt->evt.gatts_evt.params.write.len;
-		evt.params.char_write.data = ble_evt->evt.gatts_evt.params.write.data;
-		evt.ble_evt = ble_evt;
 
 		hids->evt_handler(hids, &evt);
 	}
@@ -398,7 +397,7 @@ static void on_report_value_read_auth(struct ble_hids *hids, struct ble_hids_cha
 	if (nrf_err) {
 		struct ble_hids_evt evt = {
 			.evt_type = BLE_HIDS_EVT_ERROR,
-			.params.error.reason = nrf_err,
+			.error.reason = nrf_err,
 			.conn_handle = ble_evt->evt.gatts_evt.conn_handle,
 		};
 
@@ -425,7 +424,7 @@ static void on_report_value_read_auth(struct ble_hids *hids, struct ble_hids_cha
 		if (nrf_err) {
 			struct ble_hids_evt evt = {
 				.evt_type = BLE_HIDS_EVT_ERROR,
-				.params.error.reason = nrf_err,
+				.error.reason = nrf_err,
 				.conn_handle = ble_evt->evt.gap_evt.conn_handle,
 			};
 
@@ -439,11 +438,11 @@ static void on_report_value_read_auth(struct ble_hids *hids, struct ble_hids_cha
 	if (hids->evt_handler != NULL) {
 		struct ble_hids_evt evt = {
 			.conn_handle = ble_evt->evt.gap_evt.conn_handle,
+			.evt_type = BLE_HIDS_EVT_REPORT_READ,
+			.char_auth_read.char_id = *char_id,
+			.ble_evt = ble_evt,
 		};
 
-		evt.evt_type = BLE_HIDS_EVT_REPORT_READ;
-		evt.params.char_auth_read.char_id = *char_id;
-		evt.ble_evt = ble_evt;
 
 		hids->evt_handler(hids, &evt);
 	}

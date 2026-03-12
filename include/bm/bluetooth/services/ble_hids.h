@@ -349,7 +349,7 @@ struct ble_hids_evt {
 			 */
 			uint32_t reason;
 		} error;
-	} params;
+	};
 };
 
 /**
