@@ -736,13 +736,13 @@ void test_ble_scan_on_ble_evt_adv_report_device_address(void)
 
 	ble_evt_send(&ble_evt);
 	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_FILTER_MATCH, scan_event.evt_type);
-	TEST_ASSERT_EQUAL(1, scan_event.params.filter_match.filter_match.address_filter_match);
-	TEST_ASSERT_EQUAL(0, scan_event.params.filter_match.filter_match.name_filter_match);
-	TEST_ASSERT_EQUAL(0, scan_event.params.filter_match.filter_match.short_name_filter_match);
-	TEST_ASSERT_EQUAL(0, scan_event.params.filter_match.filter_match.appearance_filter_match);
-	TEST_ASSERT_EQUAL(0, scan_event.params.filter_match.filter_match.uuid_filter_match);
+	TEST_ASSERT_EQUAL(1, scan_event.filter_match.filter_match.address_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.name_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.short_name_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.appearance_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.uuid_filter_match);
 	TEST_ASSERT_EQUAL_PTR(&ble_evt.evt.gap_evt.params.adv_report,
-			      scan_event.params.filter_match.adv_report);
+			      scan_event.filter_match.adv_report);
 }
 
 void test_ble_scan_on_ble_evt_adv_report_device_name_not_found(void)
@@ -799,13 +799,13 @@ void test_ble_scan_on_ble_evt_adv_report_device_name(void)
 
 	ble_evt_send(&ble_evt);
 	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_FILTER_MATCH, scan_event.evt_type);
-	TEST_ASSERT_EQUAL(0, scan_event.params.filter_match.filter_match.address_filter_match);
-	TEST_ASSERT_EQUAL(1, scan_event.params.filter_match.filter_match.name_filter_match);
-	TEST_ASSERT_EQUAL(0, scan_event.params.filter_match.filter_match.short_name_filter_match);
-	TEST_ASSERT_EQUAL(0, scan_event.params.filter_match.filter_match.appearance_filter_match);
-	TEST_ASSERT_EQUAL(0, scan_event.params.filter_match.filter_match.uuid_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.address_filter_match);
+	TEST_ASSERT_EQUAL(1, scan_event.filter_match.filter_match.name_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.short_name_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.appearance_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.uuid_filter_match);
 	TEST_ASSERT_EQUAL_PTR(&ble_evt.evt.gap_evt.params.adv_report,
-			      scan_event.params.filter_match.adv_report);
+			      scan_event.filter_match.adv_report);
 }
 
 void test_ble_scan_on_ble_evt_adv_report_device_short_name_not_found(void)
@@ -872,13 +872,13 @@ void test_ble_scan_on_ble_evt_adv_report_device_short_name(void)
 
 	ble_evt_send(&ble_evt);
 	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_FILTER_MATCH, scan_event.evt_type);
-	TEST_ASSERT_EQUAL(0, scan_event.params.filter_match.filter_match.address_filter_match);
-	TEST_ASSERT_EQUAL(0, scan_event.params.filter_match.filter_match.name_filter_match);
-	TEST_ASSERT_EQUAL(1, scan_event.params.filter_match.filter_match.short_name_filter_match);
-	TEST_ASSERT_EQUAL(0, scan_event.params.filter_match.filter_match.appearance_filter_match);
-	TEST_ASSERT_EQUAL(0, scan_event.params.filter_match.filter_match.uuid_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.address_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.name_filter_match);
+	TEST_ASSERT_EQUAL(1, scan_event.filter_match.filter_match.short_name_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.appearance_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.uuid_filter_match);
 	TEST_ASSERT_EQUAL_PTR(&ble_evt.evt.gap_evt.params.adv_report,
-			      scan_event.params.filter_match.adv_report);
+			      scan_event.filter_match.adv_report);
 }
 
 void test_ble_scan_on_ble_evt_adv_report_device_appearance_not_found(void)
@@ -943,13 +943,13 @@ void test_ble_scan_on_ble_evt_adv_report_device_appearance(void)
 
 	ble_evt_send(&ble_evt);
 	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_FILTER_MATCH, scan_event.evt_type);
-	TEST_ASSERT_EQUAL(0, scan_event.params.filter_match.filter_match.address_filter_match);
-	TEST_ASSERT_EQUAL(0, scan_event.params.filter_match.filter_match.name_filter_match);
-	TEST_ASSERT_EQUAL(0, scan_event.params.filter_match.filter_match.short_name_filter_match);
-	TEST_ASSERT_EQUAL(1, scan_event.params.filter_match.filter_match.appearance_filter_match);
-	TEST_ASSERT_EQUAL(0, scan_event.params.filter_match.filter_match.uuid_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.address_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.name_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.short_name_filter_match);
+	TEST_ASSERT_EQUAL(1, scan_event.filter_match.filter_match.appearance_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.uuid_filter_match);
 	TEST_ASSERT_EQUAL_PTR(&ble_evt.evt.gap_evt.params.adv_report,
-			      scan_event.params.filter_match.adv_report);
+			      scan_event.filter_match.adv_report);
 }
 
 void test_ble_scan_on_ble_evt_adv_report_device_name_and_appearance(void)
@@ -1022,11 +1022,11 @@ void test_ble_scan_on_ble_evt_adv_report_device_name_and_appearance(void)
 	ble_evt_send(&ble_evt_appearance);
 
 	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_FILTER_MATCH, scan_event.evt_type);
-	TEST_ASSERT_EQUAL(0, scan_event.params.filter_match.filter_match.address_filter_match);
-	TEST_ASSERT_EQUAL(1, scan_event.params.filter_match.filter_match.name_filter_match);
-	TEST_ASSERT_EQUAL(0, scan_event.params.filter_match.filter_match.short_name_filter_match);
-	TEST_ASSERT_EQUAL(1, scan_event.params.filter_match.filter_match.appearance_filter_match);
-	TEST_ASSERT_EQUAL(0, scan_event.params.filter_match.filter_match.uuid_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.address_filter_match);
+	TEST_ASSERT_EQUAL(1, scan_event.filter_match.filter_match.name_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.short_name_filter_match);
+	TEST_ASSERT_EQUAL(1, scan_event.filter_match.filter_match.appearance_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.uuid_filter_match);
 }
 
 void test_ble_scan_on_ble_evt_adv_report_device_uuid_not_found(void)
@@ -1099,13 +1099,13 @@ void test_ble_scan_on_ble_evt_adv_report_device_uuid(void)
 
 	ble_evt_send(&ble_evt);
 	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_FILTER_MATCH, scan_event.evt_type);
-	TEST_ASSERT_EQUAL(0, scan_event.params.filter_match.filter_match.address_filter_match);
-	TEST_ASSERT_EQUAL(0, scan_event.params.filter_match.filter_match.name_filter_match);
-	TEST_ASSERT_EQUAL(0, scan_event.params.filter_match.filter_match.short_name_filter_match);
-	TEST_ASSERT_EQUAL(0, scan_event.params.filter_match.filter_match.appearance_filter_match);
-	TEST_ASSERT_EQUAL(1, scan_event.params.filter_match.filter_match.uuid_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.address_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.name_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.short_name_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.appearance_filter_match);
+	TEST_ASSERT_EQUAL(1, scan_event.filter_match.filter_match.uuid_filter_match);
 	TEST_ASSERT_EQUAL_PTR(&ble_evt.evt.gap_evt.params.adv_report,
-			      scan_event.params.filter_match.adv_report);
+			      scan_event.filter_match.adv_report);
 }
 
 void test_ble_scan_on_ble_evt_adv_report_device_uuid_connect(void)
@@ -1227,7 +1227,7 @@ void test_ble_scan_on_ble_evt_timeout(void)
 
 	ble_evt_send(&ble_evt);
 	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_SCAN_TIMEOUT, scan_event.evt_type);
-	TEST_ASSERT_EQUAL(BLE_GAP_TIMEOUT_SRC_SCAN, scan_event.params.timeout.src);
+	TEST_ASSERT_EQUAL(BLE_GAP_TIMEOUT_SRC_SCAN, scan_event.timeout.src);
 }
 
 void test_ble_scan_on_ble_evt_connected(void)
@@ -1246,8 +1246,8 @@ void test_ble_scan_on_ble_evt_connected(void)
 
 	ble_evt_send(&ble_evt);
 	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_CONNECTED, scan_event.evt_type);
-	TEST_ASSERT_EQUAL(1, scan_event.params.connected.connected->role);
-	TEST_ASSERT_EQUAL(CONN_HANDLE, scan_event.params.connected.conn_handle);
+	TEST_ASSERT_EQUAL(1, scan_event.connected.connected->role);
+	TEST_ASSERT_EQUAL(CONN_HANDLE, scan_event.connected.conn_handle);
 }
 
 void setUp(void)
