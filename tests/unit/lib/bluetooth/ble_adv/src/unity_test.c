@@ -370,9 +370,6 @@ static uint32_t stub_sd_ble_gap_adv_set_configure_directed_hd_success(
 
 	switch (cmock_num_calls) {
 	case 0:
-#if defined(CONFIG_BLE_ADV_USE_ALLOW_LIST)
-	case 1:
-#endif /* CONFIG_BLE_ADV_USE_ALLOW_LIST */
 #if defined(CONFIG_BLE_ADV_DIRECTED_ADVERTISING_HIGH_DUTY)
 		TEST_ASSERT_ADV_MODE_DIRECTED_HD(p_adv_handle, p_adv_data, p_adv_params);
 #elif defined(CONFIG_BLE_ADV_DIRECTED_ADVERTISING)
@@ -399,9 +396,6 @@ static uint32_t stub_sd_ble_gap_adv_set_configure_directed_success(
 
 	switch (cmock_num_calls) {
 	case 0:
-#if defined(CONFIG_BLE_ADV_USE_ALLOW_LIST)
-	case 1:
-#endif /* CONFIG_BLE_ADV_USE_ALLOW_LIST */
 #if defined(CONFIG_BLE_ADV_DIRECTED_ADVERTISING)
 		TEST_ASSERT_ADV_MODE_DIRECTED(p_adv_handle, p_adv_data, p_adv_params);
 #elif defined(CONFIG_BLE_ADV_FAST_ADVERTISING)
@@ -426,9 +420,6 @@ static uint32_t stub_sd_ble_gap_adv_set_configure_fast_success(
 
 	switch (cmock_num_calls) {
 	case 0:
-#if defined(CONFIG_BLE_ADV_USE_ALLOW_LIST)
-	case 1:
-#endif /* CONFIG_BLE_ADV_USE_ALLOW_LIST */
 #if defined(CONFIG_BLE_ADV_FAST_ADVERTISING)
 		TEST_ASSERT_ADV_MODE_FAST(p_adv_handle, p_adv_data, p_adv_params, AL_CHECK_EVAL());
 #elif defined(CONFIG_BLE_ADV_SLOW_ADVERTISING)
@@ -451,9 +442,6 @@ static uint32_t stub_sd_ble_gap_adv_set_configure_slow_success(
 
 	switch (cmock_num_calls) {
 	case 0:
-#if defined(CONFIG_BLE_ADV_USE_ALLOW_LIST)
-	case 1:
-#endif /* CONFIG_BLE_ADV_USE_ALLOW_LIST */
 #if defined(CONFIG_BLE_ADV_SLOW_ADVERTISING)
 		TEST_ASSERT_ADV_MODE_SLOW(p_adv_handle, p_adv_data, p_adv_params, AL_CHECK_EVAL());
 #endif /* CONFIG_BLE_ADV_xxx */
@@ -474,20 +462,12 @@ static uint32_t stub_sd_ble_gap_adv_set_configure_restart_slow_without_allow_lis
 
 	switch (cmock_num_calls) {
 	case 0:
-#if defined(CONFIG_BLE_ADV_USE_ALLOW_LIST)
-	case 1:
-#endif /* CONFIG_BLE_ADV_USE_ALLOW_LIST */
 #if defined(CONFIG_BLE_ADV_SLOW_ADVERTISING)
 		TEST_ASSERT_ADV_MODE_SLOW(p_adv_handle, p_adv_data, p_adv_params, AL_CHECK_EVAL());
 #endif /* CONFIG_BLE_ADV_xxx */
 		break;
 
-	case 2:
-#if defined(CONFIG_BLE_ADV_USE_ALLOW_LIST)
-	case 3:
-#else
 	case 1:
-#endif /* CONFIG_BLE_ADV_USE_ALLOW_LIST */
 #if defined(CONFIG_BLE_ADV_SLOW_ADVERTISING)
 		TEST_ASSERT_ADV_MODE_SLOW(p_adv_handle, p_adv_data, p_adv_params, false);
 #endif /* CONFIG_BLE_ADV_xxx */
@@ -508,20 +488,12 @@ static uint32_t stub_sd_ble_gap_adv_set_configure_adv_set_terminated_fast_to_slo
 
 	switch (cmock_num_calls) {
 	case 0:
-#if defined(CONFIG_BLE_ADV_USE_ALLOW_LIST)
-	case 1:
-#endif /* CONFIG_BLE_ADV_USE_ALLOW_LIST */
 #if defined(CONFIG_BLE_ADV_FAST_ADVERTISING)
 		TEST_ASSERT_ADV_MODE_FAST(p_adv_handle, p_adv_data, p_adv_params, AL_CHECK_EVAL());
 #endif /* CONFIG_BLE_ADV_xxx */
 		break;
 
-#if defined(CONFIG_BLE_ADV_USE_ALLOW_LIST)
-	case 2:
-	case 3:
-#else
 	case 1:
-#endif /* CONFIG_BLE_ADV_USE_ALLOW_LIST */
 #if defined(CONFIG_BLE_ADV_SLOW_ADVERTISING)
 		TEST_ASSERT_ADV_MODE_SLOW(p_adv_handle, p_adv_data, p_adv_params, AL_CHECK_EVAL());
 #endif /* CONFIG_BLE_ADV_xxx */
@@ -656,17 +628,12 @@ void test_ble_adv_on_ble_evt_adv_set_terminated_fast_to_slow_success(void)
 
 	nrf_err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+	TEST_ASSERT_EQUAL(1, stub_sd_ble_gap_adv_set_configure_num_calls);
 
 	if (IS_ENABLED(CONFIG_BLE_ADV_USE_ALLOW_LIST)) {
-		/* When using allow list, the adv flags in the AD data must be updated.
-		 * This is done with an additional call to sd_ble_gap_adv_set_configure().
-		 * Expect the function to be called twice if allow list is enabled.
-		 */
-		TEST_ASSERT_EQUAL(2, stub_sd_ble_gap_adv_set_configure_num_calls);
 		evts_raised_cnt_expectation_set(BLE_ADV_EVT_ALLOW_LIST_REQUEST, 1);
 		evts_raised_cnt_expectation_set(BLE_ADV_EVT_FAST_ALLOW_LIST, 1);
 	} else {
-		TEST_ASSERT_EQUAL(1, stub_sd_ble_gap_adv_set_configure_num_calls);
 		evts_raised_cnt_expectation_set(BLE_ADV_EVT_FAST, 1);
 	}
 	TEST_ASSERT_TRUE(evts_raised_cnt_expectations_met());
@@ -687,13 +654,12 @@ void test_ble_adv_on_ble_evt_adv_set_terminated_fast_to_slow_success(void)
 						     NRF_SUCCESS);
 
 	ble_adv_on_ble_evt(&ble_evt_adv_set_terminated, (void *)&ble_adv);
+	TEST_ASSERT_EQUAL(2, stub_sd_ble_gap_adv_set_configure_num_calls);
 
 	if (IS_ENABLED(CONFIG_BLE_ADV_USE_ALLOW_LIST)) {
-		TEST_ASSERT_EQUAL(4, stub_sd_ble_gap_adv_set_configure_num_calls);
 		evts_raised_cnt_expectation_set(BLE_ADV_EVT_ALLOW_LIST_REQUEST, 1);
 		evts_raised_cnt_expectation_set(BLE_ADV_EVT_SLOW_ALLOW_LIST, 1);
 	} else {
-		TEST_ASSERT_EQUAL(2, stub_sd_ble_gap_adv_set_configure_num_calls);
 		evts_raised_cnt_expectation_set(BLE_ADV_EVT_SLOW, 1);
 	}
 	TEST_ASSERT_TRUE(evts_raised_cnt_expectations_met());
@@ -741,21 +707,19 @@ void test_ble_adv_on_ble_evt_restart_advertising_on_disconnect_success(void)
 		evts_raised_cnt_expectation_set(BLE_ADV_EVT_PEER_ADDR_REQUEST, 1);
 		evts_raised_cnt_expectation_set(BLE_ADV_EVT_DIRECTED, 1);
 	} else if (IS_ENABLED(CONFIG_BLE_ADV_FAST_ADVERTISING)) {
+		TEST_ASSERT_EQUAL(1, stub_sd_ble_gap_adv_set_configure_num_calls);
 		if (IS_ENABLED(CONFIG_BLE_ADV_USE_ALLOW_LIST)) {
-			TEST_ASSERT_EQUAL(2, stub_sd_ble_gap_adv_set_configure_num_calls);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_ALLOW_LIST_REQUEST, 1);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_FAST_ALLOW_LIST, 1);
 		} else {
-			TEST_ASSERT_EQUAL(1, stub_sd_ble_gap_adv_set_configure_num_calls);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_FAST, 1);
 		}
 	} else if (IS_ENABLED(CONFIG_BLE_ADV_SLOW_ADVERTISING)) {
+		TEST_ASSERT_EQUAL(1, stub_sd_ble_gap_adv_set_configure_num_calls);
 		if (IS_ENABLED(CONFIG_BLE_ADV_USE_ALLOW_LIST)) {
-			TEST_ASSERT_EQUAL(2, stub_sd_ble_gap_adv_set_configure_num_calls);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_ALLOW_LIST_REQUEST, 1);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_SLOW_ALLOW_LIST, 1);
 		} else {
-			TEST_ASSERT_EQUAL(1, stub_sd_ble_gap_adv_set_configure_num_calls);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_SLOW, 1);
 		}
 	} else {
@@ -842,8 +806,8 @@ void test_ble_adv_on_ble_evt_restart_advertising_on_disconnect_error(void)
 		}
 		evts_raised_cnt_expectation_set(BLE_ADV_EVT_ERROR, 1);
 	} else {
-		evts_raised_cnt_expectation_set(BLE_ADV_EVT_IDLE, 1);
 		TEST_ASSERT_EQUAL(0, stub_sd_ble_gap_adv_set_configure_num_calls);
+		evts_raised_cnt_expectation_set(BLE_ADV_EVT_IDLE, 1);
 	}
 	TEST_ASSERT_TRUE(evts_raised_cnt_expectations_met());
 }
@@ -955,21 +919,19 @@ void test_ble_adv_start_directed_hd_success(void)
 		evts_raised_cnt_expectation_set(BLE_ADV_EVT_PEER_ADDR_REQUEST, 1);
 		evts_raised_cnt_expectation_set(BLE_ADV_EVT_DIRECTED, 1);
 	} else if (IS_ENABLED(CONFIG_BLE_ADV_FAST_ADVERTISING)) {
+		TEST_ASSERT_EQUAL(1, stub_sd_ble_gap_adv_set_configure_num_calls);
 		if (IS_ENABLED(CONFIG_BLE_ADV_USE_ALLOW_LIST)) {
-			TEST_ASSERT_EQUAL(2, stub_sd_ble_gap_adv_set_configure_num_calls);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_ALLOW_LIST_REQUEST, 1);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_FAST_ALLOW_LIST, 1);
 		} else {
-			TEST_ASSERT_EQUAL(1, stub_sd_ble_gap_adv_set_configure_num_calls);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_FAST, 1);
 		}
 	} else if (IS_ENABLED(CONFIG_BLE_ADV_SLOW_ADVERTISING)) {
+		TEST_ASSERT_EQUAL(1, stub_sd_ble_gap_adv_set_configure_num_calls);
 		if (IS_ENABLED(CONFIG_BLE_ADV_USE_ALLOW_LIST)) {
-			TEST_ASSERT_EQUAL(2, stub_sd_ble_gap_adv_set_configure_num_calls);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_ALLOW_LIST_REQUEST, 1);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_SLOW_ALLOW_LIST, 1);
 		} else {
-			TEST_ASSERT_EQUAL(1, stub_sd_ble_gap_adv_set_configure_num_calls);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_SLOW, 1);
 		}
 	} else {
@@ -1006,21 +968,19 @@ void test_ble_adv_start_directed_success(void)
 		evts_raised_cnt_expectation_set(BLE_ADV_EVT_PEER_ADDR_REQUEST, 1);
 		evts_raised_cnt_expectation_set(BLE_ADV_EVT_DIRECTED, 1);
 	} else if (IS_ENABLED(CONFIG_BLE_ADV_FAST_ADVERTISING)) {
+		TEST_ASSERT_EQUAL(1, stub_sd_ble_gap_adv_set_configure_num_calls);
 		if (IS_ENABLED(CONFIG_BLE_ADV_USE_ALLOW_LIST)) {
-			TEST_ASSERT_EQUAL(2, stub_sd_ble_gap_adv_set_configure_num_calls);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_ALLOW_LIST_REQUEST, 1);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_FAST_ALLOW_LIST, 1);
 		} else {
-			TEST_ASSERT_EQUAL(1, stub_sd_ble_gap_adv_set_configure_num_calls);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_FAST, 1);
 		}
 	} else if (IS_ENABLED(CONFIG_BLE_ADV_SLOW_ADVERTISING)) {
+		TEST_ASSERT_EQUAL(1, stub_sd_ble_gap_adv_set_configure_num_calls);
 		if (IS_ENABLED(CONFIG_BLE_ADV_USE_ALLOW_LIST)) {
-			TEST_ASSERT_EQUAL(2, stub_sd_ble_gap_adv_set_configure_num_calls);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_ALLOW_LIST_REQUEST, 1);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_SLOW_ALLOW_LIST, 1);
 		} else {
-			TEST_ASSERT_EQUAL(1, stub_sd_ble_gap_adv_set_configure_num_calls);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_SLOW, 1);
 		}
 	} else {
@@ -1055,25 +1015,19 @@ void test_ble_adv_start_fast_success(void)
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	if (IS_ENABLED(CONFIG_BLE_ADV_FAST_ADVERTISING)) {
+		TEST_ASSERT_EQUAL(1, stub_sd_ble_gap_adv_set_configure_num_calls);
 		if (IS_ENABLED(CONFIG_BLE_ADV_USE_ALLOW_LIST)) {
-			/* When using allow list, the adv flags in the AD data must be updated.
-			 * This is done with an additional call to sd_ble_gap_adv_set_configure().
-			 * Expect the function to be called twice if allow list is enabled.
-			 */
-			TEST_ASSERT_EQUAL(2, stub_sd_ble_gap_adv_set_configure_num_calls);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_ALLOW_LIST_REQUEST, 1);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_FAST_ALLOW_LIST, 1);
 		} else {
-			TEST_ASSERT_EQUAL(1, stub_sd_ble_gap_adv_set_configure_num_calls);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_FAST, 1);
 		}
 	} else if (IS_ENABLED(CONFIG_BLE_ADV_SLOW_ADVERTISING)) {
+		TEST_ASSERT_EQUAL(1, stub_sd_ble_gap_adv_set_configure_num_calls);
 		if (IS_ENABLED(CONFIG_BLE_ADV_USE_ALLOW_LIST)) {
-			TEST_ASSERT_EQUAL(2, stub_sd_ble_gap_adv_set_configure_num_calls);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_ALLOW_LIST_REQUEST, 1);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_SLOW_ALLOW_LIST, 1);
 		} else {
-			TEST_ASSERT_EQUAL(1, stub_sd_ble_gap_adv_set_configure_num_calls);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_SLOW, 1);
 		}
 	} else {
@@ -1122,16 +1076,11 @@ void test_ble_adv_start_slow_success(void)
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	if (IS_ENABLED(CONFIG_BLE_ADV_SLOW_ADVERTISING)) {
+		TEST_ASSERT_EQUAL(1, stub_sd_ble_gap_adv_set_configure_num_calls);
 		if (IS_ENABLED(CONFIG_BLE_ADV_USE_ALLOW_LIST)) {
-			/* When using allow list, the adv flags in the AD data must be updated.
-			 * This is done with an additional call to sd_ble_gap_adv_set_configure().
-			 * Expect the function to be called twice if allow list is enabled.
-			 */
-			TEST_ASSERT_EQUAL(2, stub_sd_ble_gap_adv_set_configure_num_calls);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_ALLOW_LIST_REQUEST, 1);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_SLOW_ALLOW_LIST, 1);
 		} else {
-			TEST_ASSERT_EQUAL(1, stub_sd_ble_gap_adv_set_configure_num_calls);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_SLOW, 1);
 		}
 	} else {
@@ -1155,7 +1104,6 @@ void test_ble_adv_start_slow_error_invalid_param(void)
 
 	nrf_err = ble_adv_start(&ble_adv, BLE_ADV_MODE_SLOW);
 	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, nrf_err);
-
 	TEST_ASSERT_EQUAL(0, stub_sd_ble_gap_adv_set_configure_num_calls);
 }
 
@@ -1236,21 +1184,19 @@ void test_ble_adv_peer_addr_reply_error_invalid_param(void)
 	evts_raised_cnt_expectation_set(BLE_ADV_EVT_PEER_ADDR_REQUEST, 1);
 
 	if (IS_ENABLED(CONFIG_BLE_ADV_FAST_ADVERTISING)) {
+		TEST_ASSERT_EQUAL(1, stub_sd_ble_gap_adv_set_configure_num_calls);
 		if (IS_ENABLED(CONFIG_BLE_ADV_USE_ALLOW_LIST)) {
-			TEST_ASSERT_EQUAL(2, stub_sd_ble_gap_adv_set_configure_num_calls);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_ALLOW_LIST_REQUEST, 1);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_FAST_ALLOW_LIST, 1);
 		} else {
-			TEST_ASSERT_EQUAL(1, stub_sd_ble_gap_adv_set_configure_num_calls);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_FAST, 1);
 		}
 	} else if (IS_ENABLED(CONFIG_BLE_ADV_SLOW_ADVERTISING)) {
+		TEST_ASSERT_EQUAL(1, stub_sd_ble_gap_adv_set_configure_num_calls);
 		if (IS_ENABLED(CONFIG_BLE_ADV_USE_ALLOW_LIST)) {
-			TEST_ASSERT_EQUAL(2, stub_sd_ble_gap_adv_set_configure_num_calls);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_ALLOW_LIST_REQUEST, 1);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_SLOW_ALLOW_LIST, 1);
 		} else {
-			TEST_ASSERT_EQUAL(1, stub_sd_ble_gap_adv_set_configure_num_calls);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_SLOW, 1);
 		}
 	} else {
@@ -1307,16 +1253,11 @@ void test_ble_adv_restart_without_allow_list_slow_success(void)
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	if (IS_ENABLED(CONFIG_BLE_ADV_SLOW_ADVERTISING)) {
+		TEST_ASSERT_EQUAL(1, stub_sd_ble_gap_adv_set_configure_num_calls);
 		if (IS_ENABLED(CONFIG_BLE_ADV_USE_ALLOW_LIST)) {
-			/* When using allow list, the adv flags in the AD data must be updated.
-			 * This is done with an additional call to sd_ble_gap_adv_set_configure().
-			 * Expect the function to be called twice if allow list is enabled.
-			 */
-			TEST_ASSERT_EQUAL(2, stub_sd_ble_gap_adv_set_configure_num_calls);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_ALLOW_LIST_REQUEST, 1);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_SLOW_ALLOW_LIST, 1);
 		} else {
-			TEST_ASSERT_EQUAL(1, stub_sd_ble_gap_adv_set_configure_num_calls);
 			evts_raised_cnt_expectation_set(BLE_ADV_EVT_SLOW, 1);
 		}
 	} else {
@@ -1340,17 +1281,7 @@ void test_ble_adv_restart_without_allow_list_slow_success(void)
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	if (IS_ENABLED(CONFIG_BLE_ADV_SLOW_ADVERTISING)) {
-		if (IS_ENABLED(CONFIG_BLE_ADV_USE_ALLOW_LIST)) {
-			/* When restarting without allow list, the adv flags in the AD data
-			 * must be updated. This is done with an additional call to
-			 * sd_ble_gap_adv_set_configure(), in addition to the one in
-			 * ble_adv_start(). Therefore, expect the sd_ble_gap_adv_set_configure()
-			 * function to be called two more times.
-			 */
-			TEST_ASSERT_EQUAL(4, stub_sd_ble_gap_adv_set_configure_num_calls);
-		} else {
-			TEST_ASSERT_EQUAL(3, stub_sd_ble_gap_adv_set_configure_num_calls);
-		}
+		TEST_ASSERT_EQUAL(2, stub_sd_ble_gap_adv_set_configure_num_calls);
 		evts_raised_cnt_expectation_set(BLE_ADV_EVT_SLOW, 1);
 	} else {
 		TEST_ASSERT_EQUAL(0, stub_sd_ble_gap_adv_set_configure_num_calls);
