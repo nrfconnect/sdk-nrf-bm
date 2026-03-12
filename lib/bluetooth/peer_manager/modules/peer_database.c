@@ -383,7 +383,7 @@ static bool write_buf_store_in_event(struct pdb_buffer_record *write_buffer_reco
 			event.evt_id = PM_EVT_STORAGE_FULL;
 		} else {
 			event.evt_id = PM_EVT_ERROR_UNEXPECTED;
-			event.params.error_unexpected.error = nrf_err;
+			event.error_unexpected.error = nrf_err;
 
 			LOG_ERR("Some peer data was not properly written to flash. "
 				"write_buf_store() returned %s for peer_id: %d",
@@ -440,11 +440,11 @@ void pdb_pds_evt_handler(struct pm_evt *event)
 	bool retry_flash_full = false;
 
 	write_buffer_record =
-		write_buffer_record_find_stored(event->params.peer_data_update_succeeded.token);
+		write_buffer_record_find_stored(event->peer_data_update_succeeded.token);
 
 	switch (event->evt_id) {
 	case PM_EVT_PEER_DATA_UPDATE_SUCCEEDED:
-		if ((event->params.peer_data_update_succeeded.action == PM_PEER_DATA_OP_UPDATE) &&
+		if ((event->peer_data_update_succeeded.action == PM_PEER_DATA_OP_UPDATE) &&
 		    (write_buffer_record != NULL)) {
 			/* The write came from PDB. */
 			write_buffer_record_release(write_buffer_record);
@@ -452,7 +452,7 @@ void pdb_pds_evt_handler(struct pm_evt *event)
 		break;
 
 	case PM_EVT_PEER_DATA_UPDATE_FAILED:
-		if ((event->params.peer_data_update_succeeded.action == PM_PEER_DATA_OP_UPDATE) &&
+		if ((event->peer_data_update_succeeded.action == PM_PEER_DATA_OP_UPDATE) &&
 		    (write_buffer_record != NULL)) {
 			/* The write came from PDB, retry. */
 			write_buffer_record->store_token = PM_STORE_TOKEN_INVALID;

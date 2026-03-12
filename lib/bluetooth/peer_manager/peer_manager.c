@@ -92,27 +92,27 @@ void pm_pdb_evt_handler(struct pm_evt *pdb_evt)
 	switch (pdb_evt->evt_id) {
 #if defined(CONFIG_PM_PEER_RANKS)
 	case PM_EVT_PEER_DATA_UPDATE_SUCCEEDED:
-		if (pdb_evt->params.peer_data_update_succeeded.action == PM_PEER_DATA_OP_UPDATE) {
+		if (pdb_evt->peer_data_update_succeeded.action == PM_PEER_DATA_OP_UPDATE) {
 			if ((peer_rank_token != PM_STORE_TOKEN_INVALID) &&
-			    (peer_rank_token == pdb_evt->params.peer_data_update_succeeded.token)) {
+			    (peer_rank_token == pdb_evt->peer_data_update_succeeded.token)) {
 				peer_rank_token = PM_STORE_TOKEN_INVALID;
 				highest_ranked_peer = pdb_evt->peer_id;
 
-				pdb_evt->params.peer_data_update_succeeded.token =
+				pdb_evt->peer_data_update_succeeded.token =
 					PM_STORE_TOKEN_INVALID;
 			} else if (peer_rank_initialized &&
 				   (pdb_evt->peer_id == highest_ranked_peer) &&
-				   (pdb_evt->params.peer_data_update_succeeded.data_id ==
+				   (pdb_evt->peer_data_update_succeeded.data_id ==
 				    PM_PEER_DATA_ID_PEER_RANK)) {
 				/* Update peer rank variable if highest ranked peer has changed its
 				 * rank.
 				 */
 				rank_vars_update();
 			}
-		} else if (pdb_evt->params.peer_data_update_succeeded.action ==
+		} else if (pdb_evt->peer_data_update_succeeded.action ==
 			   PM_PEER_DATA_OP_DELETE) {
 			if (peer_rank_initialized && (pdb_evt->peer_id == highest_ranked_peer) &&
-			    (pdb_evt->params.peer_data_update_succeeded.data_id ==
+			    (pdb_evt->peer_data_update_succeeded.data_id ==
 			     PM_PEER_DATA_ID_PEER_RANK)) {
 				/* Update peer rank variable if highest ranked peer has deleted its
 				 * rank.
@@ -123,13 +123,13 @@ void pm_pdb_evt_handler(struct pm_evt *pdb_evt)
 		break;
 
 	case PM_EVT_PEER_DATA_UPDATE_FAILED:
-		if (pdb_evt->params.peer_data_update_succeeded.action == PM_PEER_DATA_OP_UPDATE) {
+		if (pdb_evt->peer_data_update_succeeded.action == PM_PEER_DATA_OP_UPDATE) {
 			if ((peer_rank_token != PM_STORE_TOKEN_INVALID) &&
-			    (peer_rank_token == pdb_evt->params.peer_data_update_failed.token)) {
+			    (peer_rank_token == pdb_evt->peer_data_update_failed.token)) {
 				peer_rank_token = PM_STORE_TOKEN_INVALID;
 				current_highest_peer_rank -= 1;
 
-				pdb_evt->params.peer_data_update_succeeded.token =
+				pdb_evt->peer_data_update_succeeded.token =
 					PM_STORE_TOKEN_INVALID;
 			}
 		}
@@ -182,8 +182,8 @@ void pm_pdb_evt_handler(struct pm_evt *pdb_evt)
 			pm_delete_all_evt.evt_id = PM_EVT_PEERS_DELETE_FAILED;
 			pm_delete_all_evt.peer_id = PM_PEER_ID_INVALID;
 			pm_delete_all_evt.conn_handle = BLE_CONN_HANDLE_INVALID;
-			pm_delete_all_evt.params.peers_delete_failed_evt.error =
-				pdb_evt->params.peer_delete_failed.error;
+			pm_delete_all_evt.peers_delete_failed_evt.error =
+				pdb_evt->peer_delete_failed.error;
 
 			send_evt = false;
 
@@ -272,9 +272,9 @@ static bool is_conn_handle_excluded(const ble_evt_t *ble_evt)
 		pm_conn_config_req_evt.peer_id = PM_PEER_ID_INVALID;
 		pm_conn_config_req_evt.conn_handle = conn_handle;
 
-		pm_conn_config_req_evt.params.conn_config_req.peer_params =
+		pm_conn_config_req_evt.conn_config_req.peer_params =
 			&ble_evt->evt.gap_evt.params.connected;
-		pm_conn_config_req_evt.params.conn_config_req.context = &is_excluded;
+		pm_conn_config_req_evt.conn_config_req.context = &is_excluded;
 
 		evt_send(&pm_conn_config_req_evt);
 		pm_conn_state_user_flag_set(conn_handle, flag_conn_excluded, is_excluded);
@@ -1118,11 +1118,11 @@ uint32_t pm_peer_rank_highest(uint16_t peer_id)
 			pm_evt.evt_id = PM_EVT_PEER_DATA_UPDATE_SUCCEEDED;
 			pm_evt.conn_handle = im_conn_handle_get(peer_id);
 			pm_evt.peer_id = peer_id;
-			pm_evt.params.peer_data_update_succeeded.data_id =
+			pm_evt.peer_data_update_succeeded.data_id =
 				PM_PEER_DATA_ID_PEER_RANK;
-			pm_evt.params.peer_data_update_succeeded.action = PM_PEER_DATA_OP_UPDATE;
-			pm_evt.params.peer_data_update_succeeded.token = PM_STORE_TOKEN_INVALID;
-			pm_evt.params.peer_data_update_succeeded.flash_changed = false;
+			pm_evt.peer_data_update_succeeded.action = PM_PEER_DATA_OP_UPDATE;
+			pm_evt.peer_data_update_succeeded.token = PM_STORE_TOKEN_INVALID;
+			pm_evt.peer_data_update_succeeded.flash_changed = false;
 
 			evt_send(&pm_evt);
 		} else {

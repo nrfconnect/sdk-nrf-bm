@@ -101,7 +101,7 @@ static void send_unexpected_error(uint16_t peer_id, uint32_t nrf_err)
 	struct pm_evt error_evt = {
 		.evt_id = PM_EVT_ERROR_UNEXPECTED,
 		.peer_id = peer_id,
-		.params.error_unexpected = {
+		.error_unexpected = {
 			.error = nrf_err,
 		},
 	};
@@ -203,34 +203,34 @@ static void bm_zms_evt_handler(const struct bm_zms_evt *evt)
 		}
 		break;
 	case BM_ZMS_EVT_WRITE:
-		pds_evt.params.peer_data_update_succeeded.data_id = data_id;
-		pds_evt.params.peer_data_update_succeeded.action = PM_PEER_DATA_OP_UPDATE;
-		pds_evt.params.peer_data_update_succeeded.token = evt->id;
+		pds_evt.peer_data_update_succeeded.data_id = data_id;
+		pds_evt.peer_data_update_succeeded.action = PM_PEER_DATA_OP_UPDATE;
+		pds_evt.peer_data_update_succeeded.token = evt->id;
 
 		if (evt->result == 0) {
 			pds_evt.evt_id = PM_EVT_PEER_DATA_UPDATE_SUCCEEDED;
-			pds_evt.params.peer_data_update_succeeded.flash_changed = true;
+			pds_evt.peer_data_update_succeeded.flash_changed = true;
 		} else {
 			LOG_ERR("BM_ZMS write failed with error %d", evt->result);
 			pds_evt.evt_id = PM_EVT_PEER_DATA_UPDATE_FAILED;
-			pds_evt.params.peer_data_update_failed.error = NRF_ERROR_INTERNAL;
+			pds_evt.peer_data_update_failed.error = NRF_ERROR_INTERNAL;
 		}
 
 		pds_evt_send(&pds_evt);
 		break;
 	case BM_ZMS_EVT_DELETE:
 		if (!peer_id_is_deleted(peer_id)) {
-			pds_evt.params.peer_data_update_succeeded.data_id = data_id;
-			pds_evt.params.peer_data_update_succeeded.action = PM_PEER_DATA_OP_DELETE;
-			pds_evt.params.peer_data_update_succeeded.token = evt->id;
+			pds_evt.peer_data_update_succeeded.data_id = data_id;
+			pds_evt.peer_data_update_succeeded.action = PM_PEER_DATA_OP_DELETE;
+			pds_evt.peer_data_update_succeeded.token = evt->id;
 
 			if (evt->result == 0) {
 				pds_evt.evt_id = PM_EVT_PEER_DATA_UPDATE_SUCCEEDED;
-				pds_evt.params.peer_data_update_succeeded.flash_changed = true;
+				pds_evt.peer_data_update_succeeded.flash_changed = true;
 			} else {
 				LOG_ERR("BM_ZMS delete failed with error %d", evt->result);
 				pds_evt.evt_id = PM_EVT_PEER_DATA_UPDATE_FAILED;
-				pds_evt.params.peer_data_update_failed.error = NRF_ERROR_INTERNAL;
+				pds_evt.peer_data_update_failed.error = NRF_ERROR_INTERNAL;
 			}
 
 			pds_evt_send(&pds_evt);
@@ -244,7 +244,7 @@ static void bm_zms_evt_handler(const struct bm_zms_evt *evt)
 				atomic_dec(&delete_counter);
 
 				pds_evt.evt_id = PM_EVT_PEER_DELETE_FAILED;
-				pds_evt.params.peer_delete_failed.error = NRF_ERROR_INTERNAL;
+				pds_evt.peer_delete_failed.error = NRF_ERROR_INTERNAL;
 				pds_evt_send(&pds_evt);
 			} else {
 				uint32_t next_entry_id;

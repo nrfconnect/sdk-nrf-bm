@@ -141,7 +141,7 @@ static void send_unexpected_error(uint16_t conn_handle, uint32_t nrf_err)
 {
 	struct pm_evt error_evt = new_evt(PM_EVT_ERROR_UNEXPECTED, conn_handle);
 
-	error_evt.params.error_unexpected.error = nrf_err;
+	error_evt.error_unexpected.error = nrf_err;
 	evt_send(&error_evt);
 }
 
@@ -193,12 +193,12 @@ static void events_send_from_err_code(uint16_t conn_handle, uint32_t nrf_err,
 
 			struct pm_evt evt = new_evt(PM_EVT_CONN_SEC_FAILED, conn_handle);
 
-			evt.params.conn_sec_failed.procedure =
+			evt.conn_sec_failed.procedure =
 				((sec_params != NULL) && sec_params->bond)
 					? PM_CONN_SEC_PROCEDURE_BONDING
 					: PM_CONN_SEC_PROCEDURE_PAIRING;
-			evt.params.conn_sec_failed.error_src = BLE_GAP_SEC_STATUS_SOURCE_LOCAL;
-			evt.params.conn_sec_failed.error = PM_CONN_SEC_ERROR_SMP_TIMEOUT;
+			evt.conn_sec_failed.error_src = BLE_GAP_SEC_STATUS_SOURCE_LOCAL;
+			evt.conn_sec_failed.error = PM_CONN_SEC_ERROR_SMP_TIMEOUT;
 			evt_send(&evt);
 		} else {
 			LOG_ERR("Could not perform security procedure. smd_params_reply() or "
@@ -222,8 +222,8 @@ static void params_req_send(uint16_t conn_handle, const ble_gap_sec_params_t *pe
 {
 	struct pm_evt evt = new_evt(PM_EVT_CONN_SEC_PARAMS_REQ, conn_handle);
 
-	evt.params.conn_sec_params_req.peer_params = peer_params;
-	evt.params.conn_sec_params_req.context = context;
+	evt.conn_sec_params_req.peer_params = peer_params;
+	evt.conn_sec_params_req.context = context;
 
 	evt_send(&evt);
 }
@@ -341,7 +341,7 @@ static void smd_params_reply_perform(uint16_t conn_handle,
 static __INLINE void params_req_process(const struct pm_evt *event)
 {
 	smd_params_reply_perform(event->conn_handle,
-				 event->params.conn_sec_params_req.peer_params);
+				 event->conn_sec_params_req.peer_params);
 }
 
 uint32_t sm_conn_sec_status_get(uint16_t conn_handle, struct pm_conn_sec_status *conn_sec_status)
@@ -395,9 +395,9 @@ static void sec_req_process(const struct pm_evt *event)
 		null_params = true;
 	} else if (pm_conn_state_encrypted(event->conn_handle)) {
 		struct pm_conn_sec_status sec_status_req = {
-			.bonded = event->params.peripheral_security_req.bond,
-			.mitm_protected = event->params.peripheral_security_req.mitm,
-			.lesc = event->params.peripheral_security_req.lesc,
+			.bonded = event->peripheral_security_req.bond,
+			.mitm_protected = event->peripheral_security_req.mitm,
+			.lesc = event->peripheral_security_req.lesc,
 		};
 
 		force_repairing = !sm_sec_is_sufficient(event->conn_handle, &sec_status_req);

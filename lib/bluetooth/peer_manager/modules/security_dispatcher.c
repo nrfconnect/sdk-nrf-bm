@@ -93,7 +93,7 @@ static void sec_start_send(uint16_t conn_handle, enum pm_conn_sec_procedure proc
 	struct pm_evt evt = {
 		.evt_id = PM_EVT_CONN_SEC_START,
 		.conn_handle = conn_handle,
-		.params.conn_sec_start = {
+		.conn_sec_start = {
 			.procedure = procedure,
 		},
 	};
@@ -112,7 +112,7 @@ static void send_unexpected_error(uint16_t conn_handle, uint32_t nrf_err)
 	struct pm_evt error_evt = {
 		.evt_id = PM_EVT_ERROR_UNEXPECTED,
 		.conn_handle = conn_handle,
-		.params.error_unexpected = {
+		.error_unexpected = {
 			.error = nrf_err,
 		},
 	};
@@ -146,7 +146,7 @@ static void conn_sec_failure(uint16_t conn_handle, enum pm_conn_sec_procedure pr
 	struct pm_evt evt = {
 		.evt_id = PM_EVT_CONN_SEC_FAILED,
 		.conn_handle = conn_handle,
-		.params.conn_sec_failed = {
+		.conn_sec_failed = {
 			.procedure = procedure,
 			.error = error,
 			.error_src = error_src,
@@ -368,7 +368,7 @@ static void sec_request_process(const ble_gap_evt_t *gap_evt)
 		.conn_handle = gap_evt->conn_handle
 	};
 
-	memcpy(&evt.params.peripheral_security_req, &gap_evt->params.sec_request,
+	memcpy(&evt.peripheral_security_req, &gap_evt->params.sec_request,
 	       sizeof(ble_gap_evt_sec_request_t));
 
 	evt_send(&evt);
@@ -512,7 +512,7 @@ static void send_params_req(uint16_t conn_handle, const ble_gap_sec_params_t *pe
 	struct pm_evt evt = {
 		.evt_id = PM_EVT_CONN_SEC_PARAMS_REQ,
 		.conn_handle = conn_handle,
-		.params.conn_sec_params_req = {
+		.conn_sec_params_req = {
 			.peer_params = peer_params,
 		},
 	};
@@ -550,7 +550,7 @@ static void pairing_success_evt_send(const ble_gap_evt_t *gap_evt, bool data_sto
 	struct pm_evt evt = {
 		.evt_id = PM_EVT_CONN_SEC_SUCCEEDED,
 		.conn_handle = gap_evt->conn_handle,
-		.params.conn_sec_succeeded = {
+		.conn_sec_succeeded = {
 			.procedure = gap_evt->params.auth_status.bonded
 				? PM_CONN_SEC_PROCEDURE_BONDING : PM_CONN_SEC_PROCEDURE_PAIRING,
 			.data_stored = data_stored,
@@ -705,7 +705,7 @@ static void conn_sec_update_process(const ble_gap_evt_t *gap_evt)
 			struct pm_evt evt = {
 				.evt_id = PM_EVT_CONN_SEC_SUCCEEDED,
 				.conn_handle = gap_evt->conn_handle,
-				.params.conn_sec_succeeded = {
+				.conn_sec_succeeded = {
 					.procedure = PM_CONN_SEC_PROCEDURE_ENCRYPTION,
 					.data_stored = false,
 				},
