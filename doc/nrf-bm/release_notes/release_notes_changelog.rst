@@ -206,6 +206,10 @@ Bluetooth LE Services
 
    * Updated the ``params`` union field of the :c:struct:`ble_hids_evt` structure to an anonymous union.
 
+* :ref:`lib_ble_service_hrs_client` service:
+
+   * Updated the ``params`` union field of the :c:struct:`ble_hrs_client_evt` structure to an anonymous union.
+
 Libraries for NFC
 -----------------
 

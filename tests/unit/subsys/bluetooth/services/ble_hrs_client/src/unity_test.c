@@ -177,7 +177,7 @@ void test_ble_hrs_client_handles_assign(void)
 
 	TEST_ASSERT_TRUE(evt_handler_called);
 	TEST_ASSERT_EQUAL(BLE_HRS_CLIENT_EVT_HRM_NOTIFICATION, last_evt.evt_type);
-	TEST_ASSERT_EQUAL(0x48, last_evt.params.hrm.hr_value);
+	TEST_ASSERT_EQUAL(0x48, last_evt.hrm.hr_value);
 }
 
 void test_ble_hrs_client_handles_assign_null_peer_handles(void)
@@ -368,7 +368,7 @@ void test_ble_hrs_client_on_ble_gq_event_error_delivers_evt(void)
 	TEST_ASSERT_TRUE(evt_handler_called);
 	TEST_ASSERT_EQUAL(BLE_HRS_CLIENT_EVT_ERROR, last_evt.evt_type);
 	TEST_ASSERT_EQUAL(CONN_HANDLE, last_evt.conn_handle);
-	TEST_ASSERT_EQUAL(ERROR, last_evt.params.error.reason);
+	TEST_ASSERT_EQUAL(ERROR, last_evt.error.reason);
 }
 
 void test_ble_hrs_on_db_disc_evt_wrong_service_ignored(void)
@@ -479,8 +479,8 @@ void test_ble_hrs_on_db_disc_evt_complete_with_hrm_char(void)
 	TEST_ASSERT_TRUE(evt_handler_called);
 	TEST_ASSERT_EQUAL(BLE_HRS_CLIENT_EVT_DISCOVERY_COMPLETE, last_evt.evt_type);
 	TEST_ASSERT_EQUAL(CONN_HANDLE, last_evt.conn_handle);
-	TEST_ASSERT_EQUAL(HRM_CCCD_HANDLE, last_evt.params.peer_db.hrm_cccd_handle);
-	TEST_ASSERT_EQUAL(HRM_HANDLE, last_evt.params.peer_db.hrm_handle);
+	TEST_ASSERT_EQUAL(HRM_CCCD_HANDLE, last_evt.peer_db.hrm_cccd_handle);
+	TEST_ASSERT_EQUAL(HRM_HANDLE, last_evt.peer_db.hrm_handle);
 }
 
 void test_ble_hrs_on_db_disc_evt_hrm_char_at_index_one(void)
@@ -528,8 +528,8 @@ void test_ble_hrs_on_db_disc_evt_hrm_char_at_index_one(void)
 
 	TEST_ASSERT_TRUE(evt_handler_called);
 	TEST_ASSERT_EQUAL(BLE_HRS_CLIENT_EVT_DISCOVERY_COMPLETE, last_evt.evt_type);
-	TEST_ASSERT_EQUAL(HRM_CCCD_HANDLE, last_evt.params.peer_db.hrm_cccd_handle);
-	TEST_ASSERT_EQUAL(HRM_HANDLE, last_evt.params.peer_db.hrm_handle);
+	TEST_ASSERT_EQUAL(HRM_CCCD_HANDLE, last_evt.peer_db.hrm_cccd_handle);
+	TEST_ASSERT_EQUAL(HRM_HANDLE, last_evt.peer_db.hrm_handle);
 }
 
 void test_ble_hrs_on_db_disc_evt_complete_hrs_no_hrm_char(void)
@@ -570,8 +570,8 @@ void test_ble_hrs_on_db_disc_evt_complete_hrs_no_hrm_char(void)
 	TEST_ASSERT_EQUAL(BLE_HRS_CLIENT_EVT_DISCOVERY_COMPLETE, last_evt.evt_type);
 	TEST_ASSERT_EQUAL(CONN_HANDLE, last_evt.conn_handle);
 	/* No HRM char found: peer_db handles remain invalid (zero) */
-	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, last_evt.params.peer_db.hrm_cccd_handle);
-	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, last_evt.params.peer_db.hrm_handle);
+	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, last_evt.peer_db.hrm_cccd_handle);
+	TEST_ASSERT_EQUAL(BLE_GATT_HANDLE_INVALID, last_evt.peer_db.hrm_handle);
 }
 
 void test_ble_hrs_on_db_disc_evt_does_not_overwrite_peer_db_when_already_assigned(void)
@@ -646,7 +646,7 @@ void test_ble_hrs_on_db_disc_evt_does_not_overwrite_peer_db_when_already_assigne
 
 	TEST_ASSERT_TRUE(evt_handler_called);
 	TEST_ASSERT_EQUAL(BLE_HRS_CLIENT_EVT_HRM_NOTIFICATION, last_evt.evt_type);
-	TEST_ASSERT_EQUAL(0x48, last_evt.params.hrm.hr_value);
+	TEST_ASSERT_EQUAL(0x48, last_evt.hrm.hr_value);
 }
 
 void test_ble_hrs_on_db_disc_evt_assigns_peer_db_when_conn_handle_set(void)
@@ -714,7 +714,7 @@ void test_ble_hrs_on_db_disc_evt_assigns_peer_db_when_conn_handle_set(void)
 
 	TEST_ASSERT_TRUE(evt_handler_called);
 	TEST_ASSERT_EQUAL(BLE_HRS_CLIENT_EVT_HRM_NOTIFICATION, last_evt.evt_type);
-	TEST_ASSERT_EQUAL(0x48, last_evt.params.hrm.hr_value);
+	TEST_ASSERT_EQUAL(0x48, last_evt.hrm.hr_value);
 }
 
 void test_ble_hrs_client_on_ble_evt_disconnected_clears_handles(void)
@@ -812,7 +812,7 @@ void test_ble_hrs_client_on_ble_evt_disconnected_wrong_conn_ignored(void)
 
 	TEST_ASSERT_TRUE(evt_handler_called);
 	TEST_ASSERT_EQUAL(BLE_HRS_CLIENT_EVT_HRM_NOTIFICATION, last_evt.evt_type);
-	TEST_ASSERT_EQUAL(0x48, last_evt.params.hrm.hr_value);
+	TEST_ASSERT_EQUAL(0x48, last_evt.hrm.hr_value);
 }
 
 void test_ble_hrs_client_on_ble_evt_hvx_8bit_hr(void)
@@ -855,8 +855,8 @@ void test_ble_hrs_client_on_ble_evt_hvx_8bit_hr(void)
 
 	TEST_ASSERT_TRUE(evt_handler_called);
 	TEST_ASSERT_EQUAL(BLE_HRS_CLIENT_EVT_HRM_NOTIFICATION, last_evt.evt_type);
-	TEST_ASSERT_EQUAL(0x48, last_evt.params.hrm.hr_value);
-	TEST_ASSERT_EQUAL(0, last_evt.params.hrm.rr_intervals_cnt);
+	TEST_ASSERT_EQUAL(0x48, last_evt.hrm.hr_value);
+	TEST_ASSERT_EQUAL(0, last_evt.hrm.rr_intervals_cnt);
 }
 
 void test_ble_hrs_client_on_ble_evt_hvx_16bit_hr(void)
@@ -899,7 +899,7 @@ void test_ble_hrs_client_on_ble_evt_hvx_16bit_hr(void)
 
 	TEST_ASSERT_TRUE(evt_handler_called);
 	TEST_ASSERT_EQUAL(BLE_HRS_CLIENT_EVT_HRM_NOTIFICATION, last_evt.evt_type);
-	TEST_ASSERT_EQUAL(0x1234, last_evt.params.hrm.hr_value);
+	TEST_ASSERT_EQUAL(0x1234, last_evt.hrm.hr_value);
 }
 
 void test_ble_hrs_client_on_ble_evt_hvx_with_rr_intervals(void)
@@ -944,10 +944,10 @@ void test_ble_hrs_client_on_ble_evt_hvx_with_rr_intervals(void)
 
 	TEST_ASSERT_TRUE(evt_handler_called);
 	TEST_ASSERT_EQUAL(BLE_HRS_CLIENT_EVT_HRM_NOTIFICATION, last_evt.evt_type);
-	TEST_ASSERT_EQUAL(0x48, last_evt.params.hrm.hr_value);
-	TEST_ASSERT_EQUAL(2, last_evt.params.hrm.rr_intervals_cnt);
-	TEST_ASSERT_EQUAL(256, last_evt.params.hrm.rr_intervals[0]);
-	TEST_ASSERT_EQUAL(512, last_evt.params.hrm.rr_intervals[1]);
+	TEST_ASSERT_EQUAL(0x48, last_evt.hrm.hr_value);
+	TEST_ASSERT_EQUAL(2, last_evt.hrm.rr_intervals_cnt);
+	TEST_ASSERT_EQUAL(256, last_evt.hrm.rr_intervals[0]);
+	TEST_ASSERT_EQUAL(512, last_evt.hrm.rr_intervals[1]);
 }
 
 void test_ble_hrs_client_on_ble_evt_hvx_zero_len_ignored(void)
@@ -1112,10 +1112,10 @@ void test_ble_hrs_client_on_ble_evt_hvx_rr_truncated(void)
 
 	TEST_ASSERT_TRUE(evt_handler_called);
 	TEST_ASSERT_EQUAL(BLE_HRS_CLIENT_EVT_HRM_NOTIFICATION, last_evt.evt_type);
-	TEST_ASSERT_EQUAL(0x48, last_evt.params.hrm.hr_value);
+	TEST_ASSERT_EQUAL(0x48, last_evt.hrm.hr_value);
 	/* Only 1 complete RR pair; the trailing byte is ignored */
-	TEST_ASSERT_EQUAL(1, last_evt.params.hrm.rr_intervals_cnt);
-	TEST_ASSERT_EQUAL(256, last_evt.params.hrm.rr_intervals[0]);
+	TEST_ASSERT_EQUAL(1, last_evt.hrm.rr_intervals_cnt);
+	TEST_ASSERT_EQUAL(256, last_evt.hrm.rr_intervals[0]);
 }
 
 void test_ble_hrs_client_on_ble_evt_hvx_wrong_handle_ignored(void)
