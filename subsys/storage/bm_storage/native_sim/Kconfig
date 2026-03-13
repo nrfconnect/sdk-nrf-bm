@@ -1,0 +1,12 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "Native sim backend"
+
+config BM_STORAGE_BACKEND_NATIVE_SIM_ASYNC
+	bool "Asynchronous execution of storage operations"
+
+endmenu
