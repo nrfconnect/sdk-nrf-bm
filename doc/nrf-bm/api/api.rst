@@ -268,6 +268,13 @@ Battery Service
 
 .. doxygengroup:: ble_bas
 
+.. _api_ble_bas_client:
+
+Nordic Battery Service (BAS) Client
+===================================
+
+.. doxygengroup:: ble_bas_client
+
 .. _api_ble_bms:
 
 Bond Management Service

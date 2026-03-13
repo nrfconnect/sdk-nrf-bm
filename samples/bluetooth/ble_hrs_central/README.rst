@@ -7,7 +7,7 @@ Bluetooth: Heart Rate Service Central
    :local:
    :depth: 2
 
-The Heart Rate Service Central sample demonstrates how you can implement the Heart Rate profile as a client using |BMlong|.
+The Heart Rate Service Central sample demonstrates how you can implement the Heart Rate and Battery Level profiles as a client using |BMlong|.
 
 Requirements
 ************
@@ -69,7 +69,7 @@ Overview
 
 This sample scans for devices that advertise with the :ref:`lib_ble_service_hrs` UUID (0x180D) and initiates a connection when a device is found.
 When a device is connected, the sample starts the service discovery procedure.
-If this succeeds, the sample subscribes to the Heart Rate Measurement characteristic to receive heart rate notifications.
+If this succeeds, the sample subscribes to the Heart Rate Measurement characteristic to receive heart rate notifications and the Battery Level characteristic to receive battery level notifications.
 
 .. _ble_hrs_central_sample_testing:
 
@@ -109,4 +109,4 @@ Complete the following steps to test the sample:
 #. Program the other development kit with the :ref:`ble_hrs_sample` sample and reset it.
 #. Observe that the ``Scan filter match`` message is printed, followed by ``Connecting to target`` and ``Connected``.
 #. Observe that the ``Heart rate service discovered.`` message is printed.
-#. Observe that the device starts receiving heart rate measurement notifications.
+#. Observe that the device starts receiving heart rate and battery level measurement notifications.
