@@ -49,9 +49,10 @@ To deinitialize the library, call the :c:func:`bm_buttons_deinit` function.
 Dependencies
 ************
 
-This library uses the following |BMshort| libraries:
+This library has the following |BMshort| dependencies:
 
-* Timer - :kconfig:option:`CONFIG_BM_TIMER`
+* :ref:`lib_bm_timer` - :kconfig:option:`CONFIG_BM_TIMER`
+* :ref:`lib_bm_gpiote` - :kconfig:option:`CONFIG_BM_GPIOTE`
 
 API documentation
 *****************

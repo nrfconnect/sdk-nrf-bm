@@ -43,13 +43,14 @@ Upon Heart Rate Service discovery, the application can call the :c:func:`ble_hrs
 Dependencies
 ************
 
-This library uses the following |BMshort| libraries:
+This service has the following |BMshort| dependencies:
 
-* SoftDevice - :kconfig:option:`CONFIG_SOFTDEVICE`
-* :ref:`lib_nrf_sdh` - :kconfig:option:`CONFIG_NRF_SDH`
+* SoftDevice (central role) - :kconfig:option:`CONFIG_SOFTDEVICE_CENTRAL`
+* :ref:`lib_nrf_sdh` (Bluetooth LE) - :kconfig:option:`CONFIG_NRF_SDH_BLE`
 * :ref:`lib_ble_db_discovery` - :kconfig:option:`CONFIG_BLE_DB_DISCOVERY`
+* :ref:`lib_ble_gatt_queue` - :kconfig:option:`CONFIG_BLE_GATT_QUEUE`
 
-The library is expected to be used with the :ref:`lib_ble_scan` |BMshort| library - :kconfig:option:`CONFIG_BLE_SCAN`.
+The service is typically used with the :ref:`lib_ble_scan` |BMshort| library - :kconfig:option:`CONFIG_BLE_SCAN`.
 
 API documentation
 *****************

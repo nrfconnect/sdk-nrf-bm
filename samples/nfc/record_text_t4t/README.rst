@@ -130,7 +130,7 @@ After programming the sample to your development kit, complete the following ste
 Dependencies
 ************
 
-This sample uses the following |BMshort| libraries:
+This sample has the following |BMshort| dependencies:
 
 * :ref:`nfc_ndef`
 * :ref:`nfc_text`

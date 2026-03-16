@@ -254,10 +254,11 @@ Example code:
 Dependencies
 ************
 
-This library uses the following |BMshort| libraries:
+This library has the following |BMshort| dependencies:
 
-* SoftDevice - :kconfig:option:`CONFIG_SOFTDEVICE`
-* SoftDevice handler - :kconfig:option:`CONFIG_NRF_SDH`
+* SoftDevice (central role) - :kconfig:option:`CONFIG_SOFTDEVICE_CENTRAL`
+* :ref:`lib_nrf_sdh` (Bluetooth LE) - :kconfig:option:`CONFIG_NRF_SDH_BLE`
+* Advertising data - :kconfig:option:`CONFIG_BLE_ADV_DATA`
 
 API documentation
 *****************

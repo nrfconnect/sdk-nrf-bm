@@ -55,10 +55,10 @@ When it receives an Execute Write request, it calls the callback function with a
 Dependencies
 ************
 
-This library uses the following |BMshort| libraries:
+This library has the following |BMshort| dependencies:
 
 * SoftDevice - :kconfig:option:`CONFIG_SOFTDEVICE`
-* SoftDevice handler - :kconfig:option:`CONFIG_NRF_SDH`
+* :ref:`lib_nrf_sdh` (Bluetooth LE) - :kconfig:option:`CONFIG_NRF_SDH_BLE`
 
 API documentation
 *****************
