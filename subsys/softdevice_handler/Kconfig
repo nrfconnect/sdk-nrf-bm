@@ -214,6 +214,14 @@ config NRF_SDH_BLE_VS_UUID_COUNT
 config NRF_SDH_BLE_SERVICE_CHANGED
 	bool "Include the Service Changed characteristic in the Attribute Table"
 
+config NRF_SDH_BLE_LOG_SD_RAM_USAGE
+	bool "Log RAM usage on BLE enable"
+	help
+	  The amount of RAM needed by the SoftDevice changes based on the configuration.
+	  This enables logging of SoftDevice RAM usage and also the SoftDevice RAM end address.
+	  The reported SoftDevice RAM end address can be used to tweak the application RAM start
+	  address. For instance to maximize RAM for the application.
+
 endmenu
 
 endif # NRF_SDH_BLE
