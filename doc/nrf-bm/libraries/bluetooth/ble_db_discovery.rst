@@ -66,10 +66,10 @@ When all discovery result events have been passed to the event handler, an addit
 Dependencies
 ************
 
-This library uses the following |BMshort| libraries:
+This library uses the following |BMshort| libraries and Kconfig options:
 
-* SoftDevice - :kconfig:option:`CONFIG_SOFTDEVICE`
-* :ref:`lib_nrf_sdh` - :kconfig:option:`CONFIG_NRF_SDH`
+* SoftDevice (central role) - :kconfig:option:`CONFIG_SOFTDEVICE_CENTRAL`
+* :ref:`lib_nrf_sdh` (BLE) - :kconfig:option:`CONFIG_NRF_SDH_BLE`
 * :ref:`lib_ble_gatt_queue` - :kconfig:option:`CONFIG_BLE_GATT_QUEUE`
 
 API documentation

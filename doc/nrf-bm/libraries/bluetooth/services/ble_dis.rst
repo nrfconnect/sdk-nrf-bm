@@ -53,10 +53,9 @@ When enabled, the module will add the Device Information Service with informatio
 Dependencies
 ************
 
-This library uses the following |BMshort| libraries:
+This service uses the following |BMshort| Kconfig options:
 
 * SoftDevice - :kconfig:option:`CONFIG_SOFTDEVICE`
-* SoftDevice handler - :kconfig:option:`CONFIG_NRF_SDH`
 
 API documentation
 *****************

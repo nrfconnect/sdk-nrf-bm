@@ -30,10 +30,12 @@ The MCUmgr Bluetooth service UUID type can be retrieved by calling the :c:func:`
 Dependencies
 ************
 
-This library uses the following |BMshort| libraries:
+This service uses the following |BMshort| libraries and Kconfig options:
 
-* SoftDevice - :kconfig:option:`CONFIG_SOFTDEVICE`
-* SoftDevice handler - :kconfig:option:`CONFIG_NRF_SDH`
+* SoftDevice (peripheral role) - :kconfig:option:`CONFIG_SOFTDEVICE_PERIPHERAL`
+* :ref:`lib_nrf_sdh` (BLE) - :kconfig:option:`CONFIG_NRF_SDH_BLE`
+* :ref:`lib_ble_conn_params` - :kconfig:option:`CONFIG_BLE_CONN_PARAMS`
+* NCS BM MCUmgr - :kconfig:option:`CONFIG_NCS_BM_MCUMGR`
 
 API documentation
 *****************
