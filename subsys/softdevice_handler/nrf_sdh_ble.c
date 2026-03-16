@@ -30,6 +30,8 @@ BUILD_ASSERT(PERIPHERAL_LINKS + CENTRAL_LINKS <= CONFIG_NRF_SDH_BLE_TOTAL_LINK_C
 
 extern bool sdh_state_evt_observer_notify(enum nrf_sdh_state_evt state);
 
+static uint32_t sd_ram_size;
+
 const char *nrf_sdh_ble_evt_to_str(uint32_t evt)
 {
 	int err;
@@ -144,6 +146,11 @@ const char *nrf_sdh_ble_evt_to_str(uint32_t evt)
 		(void)err;
 		return buf;
 	}
+}
+
+uint32_t nrf_sdh_ble_sd_ram_usage_get(void)
+{
+	return sd_ram_size;
 }
 
 static int default_cfg_set(void)
@@ -273,6 +280,8 @@ int nrf_sdh_ble_enable(uint8_t conn_cfg_tag)
 	}
 
 	LOG_DBG("SoftDevice BLE enabled");
+
+	sd_ram_size = app_ram_minimum - SD_RAM_START;
 
 	(void)sdh_state_evt_observer_notify(NRF_SDH_STATE_EVT_BLE_ENABLED);
 
