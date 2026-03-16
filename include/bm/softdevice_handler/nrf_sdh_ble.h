@@ -86,6 +86,15 @@ int nrf_sdh_ble_enable(uint8_t conn_cfg_tag);
 const char *nrf_sdh_ble_evt_to_str(uint32_t evt);
 
 /**
+ * @brief Get the SoftDevice RAM usage.
+ *
+ * The value is only valid after enabling Bluetooth LE with @ref nrf_sdh_ble_enable.
+ *
+ * @return SoftDevice RAM usage in bytes.
+ */
+uint32_t nrf_sdh_ble_sd_ram_usage_get(void);
+
+/**
  * @brief Get the assigned index for a connection handle.
  *
  * The returned value can be used for indexing into arrays where each element is associated
