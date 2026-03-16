@@ -13,6 +13,7 @@
 #include <zephyr/logging/log.h>
 
 #define APP_RAM_START DT_REG_ADDR(DT_CHOSEN(zephyr_sram))
+#define SD_RAM_START DT_REG_ADDR(DT_NODELABEL(cpuapp_sram))
 
 LOG_MODULE_DECLARE(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
 
@@ -240,18 +241,22 @@ int nrf_sdh_ble_enable(uint8_t conn_cfg_tag)
 {
 	int err;
 	uint32_t app_ram_minimum = APP_RAM_START;
-	const uint32_t app_ram_start_link = APP_RAM_START;
 
 	default_cfg_set();
 
-	LOG_DBG("Application RAM starts at 0x%x", app_ram_start_link);
-
 	err = sd_ble_enable(&app_ram_minimum);
-	if (app_ram_minimum > app_ram_start_link) {
-		LOG_ERR("Insufficient RAM allocated for the SoftDevice (have %#x, need %#x)",
-			app_ram_start_link, app_ram_minimum);
-	} else if (app_ram_minimum != app_ram_start_link) {
-		LOG_DBG("Application RAM start location can be adjusted to %#x", app_ram_minimum);
+	if (app_ram_minimum > APP_RAM_START) {
+		LOG_ERR("Insufficient RAM allocated for the SoftDevice! Change application RAM "
+			"start address from %#x to >= %#x", APP_RAM_START, app_ram_minimum);
+	} else if ((app_ram_minimum < APP_RAM_START) &&
+		   IS_ENABLED(CONFIG_NRF_SDH_BLE_LOG_SD_RAM_USAGE)) {
+		LOG_INF("Application RAM start address can be lowered from %#x to %#x",
+			APP_RAM_START, app_ram_minimum);
+	}
+
+	if (IS_ENABLED(CONFIG_NRF_SDH_BLE_LOG_SD_RAM_USAGE)) {
+		LOG_INF("SoftDevice RAM location: %#x - %#x, size: %d bytes",
+			SD_RAM_START, app_ram_minimum, (app_ram_minimum - SD_RAM_START));
 	}
 
 	if (err) {
