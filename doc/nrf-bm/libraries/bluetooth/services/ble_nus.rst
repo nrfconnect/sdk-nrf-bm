@@ -39,10 +39,11 @@ The application can send data to the peer by calling the :c:func:`ble_nus_data_s
 Dependencies
 ************
 
-This library uses the following |BMshort| libraries:
+This service has the following |BMshort| dependencies:
 
-* SoftDevice - :kconfig:option:`CONFIG_SOFTDEVICE`
-* SoftDevice handler - :kconfig:option:`CONFIG_NRF_SDH`
+* SoftDevice (peripheral role) - :kconfig:option:`CONFIG_SOFTDEVICE_PERIPHERAL`
+* :ref:`lib_nrf_sdh` (Bluetooth LE) - :kconfig:option:`CONFIG_NRF_SDH_BLE`
+* :ref:`lib_ble_queued_writes` - :kconfig:option:`CONFIG_BLE_QWR`
 
 API documentation
 *****************

@@ -59,10 +59,11 @@ For a full list of events see the :c:enum:`ble_bms_evt_type` enum.
 Dependencies
 ************
 
-This library uses the following |BMshort| libraries:
+This service has the following |BMshort| dependencies:
 
-* SoftDevice - :kconfig:option:`CONFIG_SOFTDEVICE`
-* SoftDevice handler - :kconfig:option:`CONFIG_NRF_SDH`
+* SoftDevice (peripheral role) - :kconfig:option:`CONFIG_SOFTDEVICE_PERIPHERAL`
+* :ref:`lib_nrf_sdh` (Bluetooth LE) - :kconfig:option:`CONFIG_NRF_SDH_BLE`
+* :ref:`lib_ble_queued_writes` - :kconfig:option:`CONFIG_BLE_QWR`
 
 API documentation
 *****************

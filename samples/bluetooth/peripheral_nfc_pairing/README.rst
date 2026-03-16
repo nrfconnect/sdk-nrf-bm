@@ -154,7 +154,7 @@ Testing
 Dependencies
 ************
 
-This sample uses the following |BMshort| NFC libraries:
+This sample has the following |BMshort| dependencies:
 
 * :ref:`nfc_t4t_ndef_file_readme`
 * :ref:`nfc_ndef`

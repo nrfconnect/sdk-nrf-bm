@@ -39,7 +39,9 @@ To process these deferred events, call the :c:func:`bm_scheduler_process` functi
 Dependencies
 ************
 
-This library does not have any dependencies.
+This library has the following dependencies:
+
+* Kernel memory pool - :kconfig:option:`CONFIG_KERNEL_MEM_POOL`
 
 API documentation
 *****************

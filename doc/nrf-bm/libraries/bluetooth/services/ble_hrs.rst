@@ -54,10 +54,11 @@ To set the body sensor location, call the :c:func:`ble_hrs_body_sensor_location_
 Dependencies
 ************
 
-This library uses the following |BMshort| libraries:
+This service has the following |BMshort| dependencies:
 
-* SoftDevice - :kconfig:option:`CONFIG_SOFTDEVICE`
-* SoftDevice handler - :kconfig:option:`CONFIG_NRF_SDH`
+* SoftDevice (peripheral role) - :kconfig:option:`CONFIG_SOFTDEVICE_PERIPHERAL`
+* :ref:`lib_nrf_sdh` (Bluetooth LE) - :kconfig:option:`CONFIG_NRF_SDH_BLE`
+* :ref:`lib_ble_conn_params` (ATT MTU handling) - :kconfig:option:`CONFIG_BLE_CONN_PARAMS_AUTO_ATT_MTU`
 
 API documentation
 *****************

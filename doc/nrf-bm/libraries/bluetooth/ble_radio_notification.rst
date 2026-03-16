@@ -48,10 +48,9 @@ The usage of this library is demonstrated in the :ref:`ble_radio_ntf_sample` sam
 Dependencies
 ************
 
-This library uses the following |BMshort| libraries:
+This library has the following |BMshort| dependencies:
 
 * SoftDevice - :kconfig:option:`CONFIG_SOFTDEVICE`
-* SoftDevice handler - :kconfig:option:`CONFIG_NRF_SDH`
 
 API documentation
 *****************
