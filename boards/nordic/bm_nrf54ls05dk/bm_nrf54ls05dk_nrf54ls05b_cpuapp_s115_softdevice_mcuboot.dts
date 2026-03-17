@@ -10,9 +10,9 @@
 #include "bm_nrf54ls05dk_nrf54ls05b_cpuapp_common.dtsi"
 
 / {
-	clipboard_partition: sram@20017c00 {
+	clipboard_partition: sram@20017f00 {
 		compatible = "zephyr,memory-region", "mmio-sram";
-		reg = <0x20017c00 DT_SIZE_K(1)>;
+		reg = <0x20017f00 DT_SIZE_K(1)>;
 		zephyr,memory-region = "RetainedMem";
 		status = "okay";
 	};
