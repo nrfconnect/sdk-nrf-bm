@@ -233,6 +233,12 @@ config NRF_SDH_STR_TABLES
 	  Compile a table of stringified SoftDevice events for nrf_sdh_ble_evt_to_str() and
 	  nrf_sdh_soc_evt_to_str(). Disable to save non-volatile memory.
 
+config NRF_SDH_LOG_SD_INFO
+	bool "Log SoftDevice information on enable"
+	help
+	  Log SoftDevice ID, version, firmware ID and unique string when enabling the SoftDevice.
+	  Log Link Layer version when enabling Bluetooth LE.
+
 module=NRF_SDH
 module-str= SoftDevice handler
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"

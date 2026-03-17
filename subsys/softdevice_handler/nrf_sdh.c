@@ -7,10 +7,12 @@
 #include <nrf_sdm.h>
 #include <nrf_soc.h>
 #include <bm/softdevice_handler/nrf_sdh.h>
+#include <bm/softdevice_handler/nrf_sdh_info.h>
 #include <bm/bm_irq.h>
 #include <bm/bm_scheduler.h>
 #include <zephyr/toolchain.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/storage/flash_map.h>
 #include <zephyr/sys/atomic.h>
 #include <zephyr/sys/iterable_sections.h>
 
@@ -128,6 +130,16 @@ static int nrf_sdh_enable(void)
 		.hfclk_latency = CONFIG_NRF_SDH_CLOCK_HFCLK_LATENCY,
 		.hfint_ctiv = CONFIG_NRF_SDH_CLOCK_HFINT_CALIBRATION_INTERVAL,
 	};
+
+	if (IS_ENABLED(CONFIG_NRF_SDH_LOG_SD_INFO)) {
+		const uint32_t base = FIXED_PARTITION_OFFSET(softdevice_partition);
+		const struct nrf_sdh_info_version sd_ver = nrf_sdh_info_version_get(base);
+		const struct nrf_sdh_info_unique_str sd_unique = nrf_sdh_info_unique_str_get(base);
+
+		LOG_INF("Found S%u v%u.%u.%u, firmware_id: %#x", sd_ver.id, sd_ver.major,
+			sd_ver.minor, sd_ver.bugfix, sd_ver.fwid);
+		LOG_INF("sd_unique_str: %s", sd_unique.str);
+	}
 
 	err = sd_softdevice_enable(&clock_lf_cfg, softdevice_fault_handler);
 	if (err) {
