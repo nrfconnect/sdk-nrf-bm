@@ -169,6 +169,37 @@ Bluetooth LE Services
 ---------------------
 
 * Added the :c:member:`ble_cgms_config.initial_comm_interval` to the :c:struct:`ble_cgms_config` structure to set the initial communication interval.
+
+* API alignment (BAS, HIDS, HRS, LBS, NUS):
+
+   * Send/update functions now read the CCCD notification state from the SoftDevice via :c:func:`sd_ble_gatts_value_get` and either send a notification (if the peer enabled it) or only update the local GATT database.
+   * Callers no longer need to handle :c:enumerator:`BLE_ERROR_GATTS_SYS_ATTR_MISSING` or similar cases; error handling is internal to the services. Samples and unit tests were updated accordingly.
+
+* ble_bas:
+
+   * Removed :c:func:`ble_bas_battery_level_notify`.
+   * :c:func:`ble_bas_battery_level_update` now performs both update and optional notification in one call. Handles :c:enumerator:`BLE_CONN_HANDLE_INVALID` and :c:enumerator:`BLE_ERROR_GATTS_SYS_ATTR_MISSING` internally.
+
+* ble_hids:
+
+   * :c:func:`ble_hids_inp_rep_send`, :c:func:`ble_hids_boot_kb_inp_rep_send`, and :c:func:`ble_hids_boot_mouse_inp_rep_send` check CCCD before sending.
+   * The keyboard sample no longer needs a special case for :c:enumerator:`BLE_ERROR_GATTS_SYS_ATTR_MISSING`. Unit tests updated for new branches.
+
+* ble_hrs:
+
+   * :c:func:`ble_hrs_heart_rate_measurement_send` now updates the GATT value and notifies if CCCD is enabled.
+   * Removed :c:member:`conn_handle` from the :c:struct:`ble_hrs` struct. Connection handle is now passed as an argument to :c:func:`ble_hrs_heart_rate_measurement_send`, :c:func:`ble_hrs_body_sensor_location_set`, and :c:func:`ble_hrs_conn_params_evt`.
+   * Added :c:member:`conn_count` to track active connections. :c:func:`ble_hrs_sensor_contact_supported_set` cannot be called while any connection is active. HRS sample and unit tests updated.
+
+* ble_lbs:
+
+   * :c:func:`ble_lbs_on_button_change` now updates the button state in the GATT database and sends a notification when the peer has enabled CCCD. Sample updated.
+
+* ble_nus:
+
+   * :c:func:`ble_nus_data_send` now reads CCCD via :c:func:`sd_ble_gatts_value_get` and sends via :c:func:`sd_ble_gatts_hvx` or updates only the local GATT database.
+   * Removed :c:struct:`ble_nus_client_context` and :c:func:`ble_nus_client_context_get`. NUS sample error handling simplified (only :c:enumerator:`NRF_ERROR_RESOURCES` remains). Unit tests updated.
+
 * Renamed the Bluetooth: Heart Rate Service Central (``ble_hrs_central``) to the :ref:`lib_ble_service_hrs_client` sample.
 * Updated all services to return errors from the SoftDevice directly.
 * Removed the BMS authorization code Kconfig options (:kconfig:option:`CONFIG_BLE_BMS_AUTHORIZATION_CODE` and :kconfig:option:`CONFIG_BLE_BMS_USE_AUTHORIZATION_CODE`) from the service library, as they are only used by the BMS sample.
