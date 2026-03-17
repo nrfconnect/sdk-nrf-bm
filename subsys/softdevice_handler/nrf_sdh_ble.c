@@ -259,6 +259,14 @@ int nrf_sdh_ble_enable(uint8_t conn_cfg_tag)
 		return err;
 	}
 
+	if (IS_ENABLED(CONFIG_NRF_SDH_LOG_SD_INFO)) {
+		ble_version_t ll_ver = {0};
+
+		(void)sd_ble_version_get(&ll_ver);
+		LOG_INF("SoftDevice Link Layer version %u.%u", ll_ver.version_number,
+			ll_ver.subversion_number);
+	}
+
 	LOG_DBG("SoftDevice BLE enabled");
 
 	(void)sdh_state_evt_observer_notify(NRF_SDH_STATE_EVT_BLE_ENABLED);
