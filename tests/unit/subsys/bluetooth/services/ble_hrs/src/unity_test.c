@@ -164,7 +164,6 @@ void test_ble_hrs_sensor_contact_supported_set(void)
 	uint32_t nrf_err;
 	struct ble_hrs hrs = {0};
 
-	hrs.conn_handle = BLE_CONN_HANDLE_INVALID;
 	/* Set sensor contact supported to true */
 	nrf_err = ble_hrs_sensor_contact_supported_set(&hrs, true);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
@@ -225,13 +224,13 @@ void test_ble_hrs_body_sensor_location_set_success(void)
 	struct ble_hrs hrs = {0};
 	uint8_t body_sensor_location = BLE_HRS_BODY_SENSOR_LOCATION_FINGER;
 
-	__cmock_sd_ble_gatts_value_set_ExpectAndReturn(hrs.conn_handle,
+	__cmock_sd_ble_gatts_value_set_ExpectAndReturn(CONN_HANDLE,
 						       hrs.bsl_handles.value_handle,
 						       NULL,
 						       NRF_SUCCESS);
 	__cmock_sd_ble_gatts_value_set_IgnoreArg_p_value();
 
-	nrf_err = ble_hrs_body_sensor_location_set(&hrs, body_sensor_location);
+	nrf_err = ble_hrs_body_sensor_location_set(&hrs, CONN_HANDLE, body_sensor_location);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
@@ -241,13 +240,13 @@ void test_ble_hrs_body_sensor_location_set_invalid_param(void)
 	struct ble_hrs hrs = {0};
 	uint8_t body_sensor_location = BLE_HRS_BODY_SENSOR_LOCATION_FINGER;
 
-	__cmock_sd_ble_gatts_value_set_ExpectAndReturn(hrs.conn_handle,
+	__cmock_sd_ble_gatts_value_set_ExpectAndReturn(CONN_HANDLE,
 						       hrs.bsl_handles.value_handle,
 						       NULL,
 						       ERROR);
 	__cmock_sd_ble_gatts_value_set_IgnoreArg_p_value();
 
-	nrf_err = ble_hrs_body_sensor_location_set(&hrs, body_sensor_location);
+	nrf_err = ble_hrs_body_sensor_location_set(&hrs, CONN_HANDLE, body_sensor_location);
 	TEST_ASSERT_EQUAL(ERROR, nrf_err);
 }
 
@@ -256,7 +255,7 @@ void test_ble_hrs_body_sensor_location_set_null(void)
 	uint32_t nrf_err;
 	uint8_t body_sensor_location = BLE_HRS_BODY_SENSOR_LOCATION_FINGER;
 
-	nrf_err = ble_hrs_body_sensor_location_set(NULL, body_sensor_location);
+	nrf_err = ble_hrs_body_sensor_location_set(NULL, CONN_HANDLE, body_sensor_location);
 	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 }
 
@@ -266,7 +265,7 @@ void test_ble_hrs_heart_rate_measurement_send_null(void)
 {
 	uint32_t nrf_err;
 
-	nrf_err = ble_hrs_heart_rate_measurement_send(NULL, 72);
+	nrf_err = ble_hrs_heart_rate_measurement_send(NULL, CONN_HANDLE, 72);
 	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 }
 
@@ -274,10 +273,18 @@ void test_ble_hrs_heart_rate_measurement_send_no_connection(void)
 {
 	uint32_t nrf_err;
 	struct ble_hrs hrs = {
-		.conn_handle = BLE_CONN_HANDLE_INVALID,
+		.hrm_handles.cccd_handle = HRM_CCCD_HANDLE,
+		.max_hrm_len = 20,
 	};
 
-	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, 72);
+	__cmock_sd_ble_gatts_value_get_ExpectAnyArgsAndReturn(BLE_ERROR_INVALID_CONN_HANDLE);
+
+	__cmock_sd_ble_gatts_value_set_ExpectAndReturn(BLE_CONN_HANDLE_INVALID, 0, NULL,
+						       NRF_SUCCESS);
+	__cmock_sd_ble_gatts_value_set_IgnoreArg_handle();
+	__cmock_sd_ble_gatts_value_set_IgnoreArg_p_value();
+
+	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, BLE_CONN_HANDLE_INVALID, 72);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
@@ -285,14 +292,13 @@ void test_ble_hrs_heart_rate_measurement_send_cccd_unexpected_error(void)
 {
 	uint32_t nrf_err;
 	struct ble_hrs hrs = {
-		.conn_handle = CONN_HANDLE,
 		.hrm_handles.cccd_handle = HRM_CCCD_HANDLE,
 		.max_hrm_len = 20,
 	};
 
 	__cmock_sd_ble_gatts_value_get_ExpectAnyArgsAndReturn(NRF_ERROR_INVALID_PARAM);
 
-	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, 72);
+	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, CONN_HANDLE, 72);
 	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, nrf_err);
 }
 
@@ -300,7 +306,6 @@ void test_ble_hrs_heart_rate_measurement_send_notify_success(void)
 {
 	uint32_t nrf_err;
 	struct ble_hrs hrs = {
-		.conn_handle = CONN_HANDLE,
 		.hrm_handles.cccd_handle = HRM_CCCD_HANDLE,
 		.hrm_handles.value_handle = HRM_VALUE_HANDLE,
 		.max_hrm_len = 20,
@@ -311,7 +316,7 @@ void test_ble_hrs_heart_rate_measurement_send_notify_success(void)
 	__cmock_sd_ble_gatts_hvx_ExpectAndReturn(CONN_HANDLE, NULL, NRF_SUCCESS);
 	__cmock_sd_ble_gatts_hvx_IgnoreArg_p_hvx_params();
 
-	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, 72);
+	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, CONN_HANDLE, 72);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
@@ -319,7 +324,6 @@ void test_ble_hrs_heart_rate_measurement_send_notify_error(void)
 {
 	uint32_t nrf_err;
 	struct ble_hrs hrs = {
-		.conn_handle = CONN_HANDLE,
 		.hrm_handles.cccd_handle = HRM_CCCD_HANDLE,
 		.hrm_handles.value_handle = HRM_VALUE_HANDLE,
 		.max_hrm_len = 20,
@@ -330,7 +334,7 @@ void test_ble_hrs_heart_rate_measurement_send_notify_error(void)
 	__cmock_sd_ble_gatts_hvx_ExpectAndReturn(CONN_HANDLE, NULL, ERROR);
 	__cmock_sd_ble_gatts_hvx_IgnoreArg_p_hvx_params();
 
-	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, 72);
+	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, CONN_HANDLE, 72);
 	TEST_ASSERT_EQUAL(ERROR, nrf_err);
 }
 
@@ -338,7 +342,6 @@ void test_ble_hrs_heart_rate_measurement_send_notif_disabled(void)
 {
 	uint32_t nrf_err;
 	struct ble_hrs hrs = {
-		.conn_handle = CONN_HANDLE,
 		.hrm_handles.cccd_handle = HRM_CCCD_HANDLE,
 		.hrm_handles.value_handle = HRM_VALUE_HANDLE,
 		.max_hrm_len = 20,
@@ -350,7 +353,7 @@ void test_ble_hrs_heart_rate_measurement_send_notif_disabled(void)
 						       HRM_VALUE_HANDLE, NULL, NRF_SUCCESS);
 	__cmock_sd_ble_gatts_value_set_IgnoreArg_p_value();
 
-	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, 72);
+	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, CONN_HANDLE, 72);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
@@ -358,7 +361,6 @@ void test_ble_hrs_heart_rate_measurement_send_notif_disabled_value_set_err(void)
 {
 	uint32_t nrf_err;
 	struct ble_hrs hrs = {
-		.conn_handle = CONN_HANDLE,
 		.hrm_handles.cccd_handle = HRM_CCCD_HANDLE,
 		.hrm_handles.value_handle = HRM_VALUE_HANDLE,
 		.max_hrm_len = 20,
@@ -370,7 +372,7 @@ void test_ble_hrs_heart_rate_measurement_send_notif_disabled_value_set_err(void)
 						       HRM_VALUE_HANDLE, NULL, ERROR);
 	__cmock_sd_ble_gatts_value_set_IgnoreArg_p_value();
 
-	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, 72);
+	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, CONN_HANDLE, 72);
 	TEST_ASSERT_EQUAL(ERROR, nrf_err);
 }
 
@@ -378,7 +380,6 @@ void test_ble_hrs_heart_rate_measurement_send_sys_attr_missing(void)
 {
 	uint32_t nrf_err;
 	struct ble_hrs hrs = {
-		.conn_handle = CONN_HANDLE,
 		.hrm_handles.cccd_handle = HRM_CCCD_HANDLE,
 		.hrm_handles.value_handle = HRM_VALUE_HANDLE,
 		.max_hrm_len = 20,
@@ -390,7 +391,7 @@ void test_ble_hrs_heart_rate_measurement_send_sys_attr_missing(void)
 						       HRM_VALUE_HANDLE, NULL, NRF_SUCCESS);
 	__cmock_sd_ble_gatts_value_set_IgnoreArg_p_value();
 
-	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, 72);
+	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, CONN_HANDLE, 72);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
@@ -400,7 +401,6 @@ void test_ble_hrs_send_sensor_contact_detected(void)
 	/* is_sensor_contact_detected flag set in encoded output. */
 	uint32_t nrf_err;
 	struct ble_hrs hrs = {
-		.conn_handle = CONN_HANDLE,
 		.hrm_handles.cccd_handle = HRM_CCCD_HANDLE,
 		.hrm_handles.value_handle = HRM_VALUE_HANDLE,
 		.max_hrm_len = 20,
@@ -414,7 +414,7 @@ void test_ble_hrs_send_sensor_contact_detected(void)
 						       HRM_VALUE_HANDLE, NULL, NRF_SUCCESS);
 	__cmock_sd_ble_gatts_value_set_IgnoreArg_p_value();
 
-	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, 72);
+	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, CONN_HANDLE, 72);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
@@ -423,7 +423,6 @@ void test_ble_hrs_send_16bit_heart_rate(void)
 	/* heart_rate > 255 triggers 16-bit encoding. */
 	uint32_t nrf_err;
 	struct ble_hrs hrs = {
-		.conn_handle = CONN_HANDLE,
 		.hrm_handles.cccd_handle = HRM_CCCD_HANDLE,
 		.hrm_handles.value_handle = HRM_VALUE_HANDLE,
 		.max_hrm_len = 20,
@@ -435,7 +434,7 @@ void test_ble_hrs_send_16bit_heart_rate(void)
 						       HRM_VALUE_HANDLE, NULL, NRF_SUCCESS);
 	__cmock_sd_ble_gatts_value_set_IgnoreArg_p_value();
 
-	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, 300);
+	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, CONN_HANDLE, 300);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
@@ -444,7 +443,6 @@ void test_ble_hrs_send_with_rr_intervals(void)
 	/* rr_interval_count > 0 encodes RR intervals into the payload */
 	uint32_t nrf_err;
 	struct ble_hrs hrs = {
-		.conn_handle = CONN_HANDLE,
 		.hrm_handles.cccd_handle = HRM_CCCD_HANDLE,
 		.hrm_handles.value_handle = HRM_VALUE_HANDLE,
 		.max_hrm_len = 20,
@@ -458,7 +456,7 @@ void test_ble_hrs_send_with_rr_intervals(void)
 						       HRM_VALUE_HANDLE, NULL, NRF_SUCCESS);
 	__cmock_sd_ble_gatts_value_set_IgnoreArg_p_value();
 
-	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, 72);
+	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, CONN_HANDLE, 72);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 	TEST_ASSERT_EQUAL(0, hrs.rr_interval_count);
 }
@@ -468,7 +466,6 @@ void test_ble_hrs_send_rr_intervals_overflow(void)
 	/* max_hrm_len too small to fit all RR intervals, triggers memmove */
 	uint32_t nrf_err;
 	struct ble_hrs hrs = {
-		.conn_handle = CONN_HANDLE,
 		.hrm_handles.cccd_handle = HRM_CCCD_HANDLE,
 		.hrm_handles.value_handle = HRM_VALUE_HANDLE,
 		/* flags(1) + hr(1) = 2 bytes, only room for 1 rr_interval (2 bytes) */
@@ -483,7 +480,7 @@ void test_ble_hrs_send_rr_intervals_overflow(void)
 						       HRM_VALUE_HANDLE, NULL, NRF_SUCCESS);
 	__cmock_sd_ble_gatts_value_set_IgnoreArg_p_value();
 
-	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, 72);
+	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, CONN_HANDLE, 72);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 	/* 1 interval fit, 2 remaining moved to start. */
 	TEST_ASSERT_EQUAL(2, hrs.rr_interval_count);
@@ -495,29 +492,27 @@ void test_ble_hrs_send_rr_intervals_overflow(void)
 
 void test_ble_hrs_on_ble_evt_connected(void)
 {
-	struct ble_hrs hrs = {
-		.conn_handle = BLE_CONN_HANDLE_INVALID,
-	};
+	struct ble_hrs hrs = {0};
 	const ble_evt_t evt = {
 		.header.evt_id = BLE_GAP_EVT_CONNECTED,
 		.evt.gap_evt.conn_handle = CONN_HANDLE,
 	};
 
 	ble_hrs_on_ble_evt(&evt, &hrs);
-	TEST_ASSERT_EQUAL(CONN_HANDLE, hrs.conn_handle);
+	TEST_ASSERT_EQUAL(1, hrs.conn_count);
 }
 
 void test_ble_hrs_on_ble_evt_disconnected(void)
 {
 	struct ble_hrs hrs = {
-		.conn_handle = CONN_HANDLE,
+		.conn_count = 1,
 	};
 	const ble_evt_t evt = {
 		.header.evt_id = BLE_GAP_EVT_DISCONNECTED,
 	};
 
 	ble_hrs_on_ble_evt(&evt, &hrs);
-	TEST_ASSERT_EQUAL(BLE_CONN_HANDLE_INVALID, hrs.conn_handle);
+	TEST_ASSERT_EQUAL(0, hrs.conn_count);
 }
 
 void test_ble_hrs_on_ble_evt_write(void)
@@ -655,7 +650,6 @@ void test_ble_hrs_init_bsl_char_add_fail(void)
 void test_ble_hrs_conn_params_evt_mtu_updated(void)
 {
 	struct ble_hrs hrs = {
-		.conn_handle = CONN_HANDLE,
 		.max_hrm_len = 0,
 	};
 	const struct ble_conn_params_evt evt = {
@@ -665,14 +659,13 @@ void test_ble_hrs_conn_params_evt_mtu_updated(void)
 	};
 
 	/* max_hrm_len = att_mtu - 3 (ATT header) */
-	ble_hrs_conn_params_evt(&hrs, &evt);
+	ble_hrs_conn_params_evt(&hrs, CONN_HANDLE, &evt);
 	TEST_ASSERT_EQUAL(TEST_ATT_MTU - 3, hrs.max_hrm_len);
 }
 
 void test_ble_hrs_conn_params_evt_wrong_conn_handle(void)
 {
 	struct ble_hrs hrs = {
-		.conn_handle = CONN_HANDLE,
 		.max_hrm_len = 20,
 	};
 	const struct ble_conn_params_evt evt = {
@@ -682,14 +675,13 @@ void test_ble_hrs_conn_params_evt_wrong_conn_handle(void)
 	};
 
 	/* conn_handle mismatch => no change */
-	ble_hrs_conn_params_evt(&hrs, &evt);
+	ble_hrs_conn_params_evt(&hrs, CONN_HANDLE, &evt);
 	TEST_ASSERT_EQUAL(20, hrs.max_hrm_len);
 }
 
 void test_ble_hrs_conn_params_evt_wrong_evt_type(void)
 {
 	struct ble_hrs hrs = {
-		.conn_handle = CONN_HANDLE,
 		.max_hrm_len = 20,
 	};
 	const struct ble_conn_params_evt evt = {
@@ -699,7 +691,7 @@ void test_ble_hrs_conn_params_evt_wrong_evt_type(void)
 	};
 
 	/* Wrong event type => no change */
-	ble_hrs_conn_params_evt(&hrs, &evt);
+	ble_hrs_conn_params_evt(&hrs, CONN_HANDLE, &evt);
 	TEST_ASSERT_EQUAL(20, hrs.max_hrm_len);
 }
 

@@ -157,11 +157,11 @@ struct ble_hrs {
 	 */
 	uint16_t service_handle;
 	/**
-	 * @brief Handle of the current connection.
+	 * @brief Number of active connections.
 	 *
-	 * Provided by the BLE stack. Is BLE_CONN_HANDLE_INVALID if not in a connection.
+	 * Incremented on BLE_GAP_EVT_CONNECTED, decremented on BLE_GAP_EVT_DISCONNECTED.
 	 */
-	uint16_t conn_handle;
+	uint8_t conn_count;
 	/**
 	 * @brief Handles related to the heart rate measurement characteristic.
 	 */
@@ -217,9 +217,11 @@ uint32_t ble_hrs_init(struct ble_hrs *hrs, const struct ble_hrs_config *hrs_conf
  * @details Handles all events from the conn params library of interest to the heart rate service.
  *
  * @param hrs Heart rate service.
+ * @param conn_handle Connection handle.
  * @param conn_params_evt Event received from the conn params library.
  */
-void ble_hrs_conn_params_evt(struct ble_hrs *hrs, const struct ble_conn_params_evt *conn_param_evt);
+void ble_hrs_conn_params_evt(struct ble_hrs *hrs, uint16_t conn_handle,
+			     const struct ble_conn_params_evt *conn_params_evt);
 
 /**
  * @brief Update heart rate measurement.
@@ -230,6 +232,7 @@ void ble_hrs_conn_params_evt(struct ble_hrs *hrs, const struct ble_conn_params_e
  *          Otherwise, only the GATT database value is updated.
  *
  * @param hrs Heart rate service.
+ * @param conn_handle Connection handle.
  * @param heart_rate Heart rate measurement.
  *
  * @retval NRF_SUCCESS On success.
@@ -240,7 +243,8 @@ void ble_hrs_conn_params_evt(struct ble_hrs *hrs, const struct ble_conn_params_e
  *         - @ref sd_ble_gatts_value_set()
  *         - @ref sd_ble_gatts_hvx()
  */
-uint32_t ble_hrs_heart_rate_measurement_send(struct ble_hrs *hrs, uint16_t heart_rate);
+uint32_t ble_hrs_heart_rate_measurement_send(struct ble_hrs *hrs, uint16_t conn_handle,
+					     uint16_t heart_rate);
 
 /**
  * @brief Function for adding a RR Interval measurement to the RR Interval buffer.
@@ -300,6 +304,7 @@ uint32_t ble_hrs_sensor_contact_detected_update(struct ble_hrs *hrs,
  *          to the client the next time the client reads the Body Sensor Location characteristic.
  *
  * @param hrs Heart rate service.
+ * @param conn_handle Connection handle.
  * @param body_sensor_location New body sensor location.
  *
  * @retval NRF_SUCCESS On success.
@@ -308,7 +313,8 @@ uint32_t ble_hrs_sensor_contact_detected_update(struct ble_hrs *hrs,
  *         returned by the following SoftDevice functions:
  *         - @ref sd_ble_gatts_value_set()
  */
-uint32_t ble_hrs_body_sensor_location_set(struct ble_hrs *hrs, uint8_t body_sensor_location);
+uint32_t ble_hrs_body_sensor_location_set(struct ble_hrs *hrs, uint16_t conn_handle,
+					  uint8_t body_sensor_location);
 
 #ifdef __cplusplus
 }

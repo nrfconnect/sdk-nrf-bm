@@ -90,7 +90,7 @@ static void heart_rate_meas_timeout_handler(void *context)
 		return;
 	}
 
-	nrf_err = ble_hrs_heart_rate_measurement_send(&ble_hrs, (uint16_t)heart_rate);
+	nrf_err = ble_hrs_heart_rate_measurement_send(&ble_hrs, conn_handle, (uint16_t)heart_rate);
 	if (nrf_err) {
 		LOG_ERR("Failed to update heart rate measurement, nrf_error %#x", nrf_err);
 		return;
@@ -245,7 +245,7 @@ void on_conn_params_evt(const struct ble_conn_params_evt *evt)
 {
 	uint32_t nrf_err;
 
-	ble_hrs_conn_params_evt(&ble_hrs, evt);
+	ble_hrs_conn_params_evt(&ble_hrs, conn_handle, evt);
 
 	switch (evt->evt_type) {
 	case BLE_CONN_PARAMS_EVT_REJECTED:
