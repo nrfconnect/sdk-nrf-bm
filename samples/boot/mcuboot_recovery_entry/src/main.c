@@ -15,7 +15,6 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 #include <zephyr/mgmt/mcumgr/mgmt/callbacks.h>
-#include <zephyr/settings/settings.h>
 
 LOG_MODULE_REGISTER(sample, CONFIG_SAMPLE_LOG_LEVEL);
 
@@ -187,17 +186,6 @@ int main(void)
 		LOG_ERR("Failed to enable BLE: %d", err);
 		return 0;
 	}
-
-#if CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME
-	/* Initialize setting subsystem with SRAM retention backend
-	 * for setup ADV device name to the firmware loader
-	 */
-	err = settings_subsys_init();
-
-	if (err) {
-		LOG_ERR("Failed to enable settings: %d", err);
-	}
-#endif
 
 	LOG_INF("Bluetooth enabled");
 
