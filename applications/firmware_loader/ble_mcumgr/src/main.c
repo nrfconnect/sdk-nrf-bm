@@ -22,9 +22,6 @@
 #include <zephyr/sys/reboot.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
-#include <zephyr/settings/settings.h>
-#include <bm/settings/bluetooth_name.h>
-#include <zephyr/retention/retention.h>
 #include <bm/storage/bm_rmem.h>
 #include <bm/storage/ble_rmem.h>
 
@@ -223,18 +220,6 @@ int main(void)
 		LOG_ERR("Failed to set device name, nrf_error %#x", nrf_err);
 	}
 
-#if CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME
-	/* Initialize setting subsystem with SRAM retention backend
-	 * for fetching ADV device name provided by the application.
-	 */
-	err = settings_subsys_init();
-
-	if (err) {
-		LOG_ERR("Failed to enable settings, err %d", err);
-	}
-
-	settings_load();
-#endif
 #if CONFIG_BM_FLAT_SETTINGS_BLUETOOTH_NAME
 	struct bm_retained_clipboard_ctx clipboard_ctx;
 
@@ -265,19 +250,13 @@ int main(void)
 	ble_adv_cfg.sr_data.uuid_lists.complete.uuid = &adv_uuid_list[0];
 	ble_adv_cfg.sr_data.uuid_lists.complete.len = ARRAY_SIZE(adv_uuid_list);
 
-#if CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME || CONFIG_BM_FLAT_SETTINGS_BLUETOOTH_NAME
+#if CONFIG_BM_FLAT_SETTINGS_BLUETOOTH_NAME
 	const char *custom_advertising_name;
 	uint8_t custom_advertising_name_size;
 	char log_name_buffer[BLE_RMEM_MAX_NAME_SIZE + 1];
 
-#if CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME
-	custom_advertising_name = bluetooth_name_value_get();
-	custom_advertising_name_size = strlen(custom_advertising_name);
-#endif
-#if CONFIG_BM_FLAT_SETTINGS_BLUETOOTH_NAME
-	custom_advertising_name_size =  ble_rmem_adv_name_get(&clipboard_ctx,
-							      &custom_advertising_name);
-#endif
+	custom_advertising_name_size = ble_rmem_adv_name_get(&clipboard_ctx,
+							     &custom_advertising_name);
 
 	if (custom_advertising_name_size > 0) {
 		if (custom_advertising_name_size > BLE_RMEM_MAX_NAME_SIZE) {
@@ -297,24 +276,13 @@ int main(void)
 		memcpy(log_name_buffer, custom_advertising_name, custom_advertising_name_size);
 		log_name_buffer[custom_advertising_name_size] = '\0';
 #endif
-#if CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME
-		/* Clear settings after device name has been set so it does not persist */
-		err = retention_clear(DEVICE_DT_GET(DT_CHOSEN(zephyr_settings_partition)));
-
-		if (err) {
-			LOG_ERR("Failed to clear retention area, err %d", err);
-			return 0;
-		}
-#endif
-#if CONFIG_BM_FLAT_SETTINGS_BLUETOOTH_NAME
 		err = bm_rmem_clear(&clipboard_ctx);
 		if (err) {
 			LOG_ERR("Failed to clear retained clipboard, err %d", err);
 			return 0;
 		}
-#endif
 	}
-#endif /* CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME */
+#endif /* CONFIG_BM_FLAT_SETTINGS_BLUETOOTH_NAME */
 
 	nrf_err = ble_adv_init(&ble_adv, &ble_adv_cfg);
 	if (nrf_err) {
@@ -328,14 +296,14 @@ int main(void)
 		return 0;
 	}
 
-#if CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME || CONFIG_BM_FLAT_SETTINGS_BLUETOOTH_NAME
+#if CONFIG_BM_FLAT_SETTINGS_BLUETOOTH_NAME
 	LOG_INF("Advertising as %s", (custom_advertising_name_size > 0 ? log_name_buffer :
 		CONFIG_APP_FIRMWARE_LOADER_BLE_DEVICE_NAME));
 	/* Suppress Unused variable warning when LOG are disabled */
 	ARG_UNUSED(log_name_buffer);
 #else
 	LOG_INF("Advertising as %s", CONFIG_APP_FIRMWARE_LOADER_BLE_DEVICE_NAME);
-#endif /* CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME */
+#endif /* CONFIG_BM_FLAT_SETTINGS_BLUETOOTH_NAME */
 
 	while (notification_sent == false && device_disconnected == false) {
 		log_flush();
