@@ -73,7 +73,7 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Drivers
 =======
 
-* :ref:`driver_lpuarte`:
+* :ref:`driver_lpuarte` driver:
 
    * Updated to use the :ref:`lib_bm_gpiote` library.
    * Removed the ``gpiote_inst`` and ``gpiote_inst_num`` members from the :c:struct:`bm_lpuarte_config` structure.
@@ -132,7 +132,7 @@ Libraries
 
    * Updated to use the :ref:`lib_bm_gpiote` library.
 
-* :ref:`lib_ble_adv`:
+* :ref:`lib_ble_adv` library:
 
    * Added the ``const`` keyword to the configuration structure parameter of the :c:func:`ble_adv_init` function to reflect that the function only reads from the configuration and does not modify it.
 
@@ -166,7 +166,7 @@ Libraries
 
       * The ``ble_db_discovery_user_evt`` structure after a rework.
 
-* :ref:`lib_ble_scan`:
+* :ref:`lib_ble_scan` library:
 
    * Added the :c:struct:`ble_scan_filter_data` structure as input to the :c:func:`ble_scan_filter_add` function.
    * Updated:
@@ -245,7 +245,7 @@ Bluetooth LE samples
 
 * Added the :ref:`peripheral_nfc_pairing_sample`.
 
-* :ref:`ble_bms_sample`:
+* :ref:`ble_bms_sample` sample:
 
    * Added sample-specific Kconfig options for the BMS authorization code by moving them from the service library scope and renaming them from ``CONFIG_BLE_BMS_AUTHORIZATION_CODE`` and ``CONFIG_BLE_BMS_USE_AUTHORIZATION_CODE`` to :kconfig:option:`CONFIG_APP_BLE_BMS_AUTHORIZATION_CODE` and :kconfig:option:`CONFIG_APP_BLE_BMS_USE_AUTHORIZATION_CODE`.
 
@@ -257,11 +257,11 @@ Bluetooth LE samples
      * PCA10184 (`nRF54LM20 DK`_)
      * PCA10214 (nRF54LS05 DK)
 
-* :ref:`ble_hids_keyboard_sample`:
+* :ref:`ble_hids_keyboard_sample` sample:
 
    * Added support for boot mode.
 
-* :ref:`ble_hids_mouse_sample`:
+* :ref:`ble_hids_mouse_sample` sample:
 
    * Fixed an issue where the sample did not enter or exit boot mode properly based on the HID events.
 
@@ -275,7 +275,7 @@ Bluetooth LE samples
 
    * Updated to align with changes to the :ref:`driver_lpuarte` driver.
 
-* :ref:`ble_pwr_profiling_sample`:
+* :ref:`ble_pwr_profiling_sample` sample:
 
    * Updated to use a dedicated variable to hold the service attribute handle instead of incorrectly using the connection handle variable for this during service initialization.
 
