@@ -208,9 +208,13 @@ config NRF_SDH_BLE_GATT_MAX_MTU_SIZE
 
 config NRF_SDH_BLE_GATTS_ATTR_TAB_SIZE
 	int "Attribute Table size in bytes"
+	range 248 $(UINT32_MAX)
 	default 1408
 	help
-	  The size must be a multiple of 4.
+	  Size of the Attribute Table in the SoftDevice. Increasing this number allows for more
+	  services and characteristics to be added to the Attribute Table in the SoftDevice.
+	  Increasing this number will increase the amount of dynamic RAM required by the SoftDevice.
+	  The minimum size is BLE_GATTS_ATTR_TAB_SIZE_MIN. The size must be a multiple of 4.
 
 config NRF_SDH_BLE_VS_UUID_COUNT
 	int "Number of vendor-specific UUIDs"
