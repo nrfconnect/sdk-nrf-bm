@@ -4,18 +4,6 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-menu "Settings"
-	depends on SETTINGS
-
-config NCS_BM_SETTINGS_BLUETOOTH_NAME
-	bool "Bluetooth name [EXPERIMENTAL]"
-	select EXPERIMENTAL
-	help
-	  If enabled, settings handlers for support BLE advertising name
-	  sharing under `fw_loader/adv_name` key are included into the build.
-
-endmenu
-
 config BM_FLAT_SETTINGS_BLUETOOTH_NAME
 	bool "Bluetooth name settings clipboard"
 	select BM_RMEM_CLIPBOARD
