@@ -13,9 +13,9 @@
 	/* Placed at the end of SRAM, but adjusted to 1kB boundary
 	 * (leaving 320 bytes as unused at the end)
 	 */
-	clipboard_partition: sram@2002f800 {
+	clipboard_partition: sram@2002fb00 {
 		compatible = "zephyr,memory-region", "mmio-sram";
-		reg = <0x2002f800 DT_SIZE_K(1)>;
+		reg = <0x2002fb00 0x100>;
 		zephyr,memory-region = "RetainedMem";
 		status = "okay";
 	};
@@ -91,8 +91,8 @@
 	 * to adjust sram size to not overlap with retainedmem
 	 * (here we ignore the extra 320 bytes at the top end)
 	 */
-	reg = <0x20000080 (DT_SIZE_K(191) - DT_SIZE_K(1) - 0x80)>;
-	ranges = <0x0 0x20000080 (DT_SIZE_K(191) - DT_SIZE_K(1) - 0x80)>;
+	reg = <0x20000080 (DT_SIZE_K(191) - 0x100 - 0x80)>;
+	ranges = <0x0 0x20000080 (DT_SIZE_K(191) - 0x100 - 0x80)>;
 
 	softdevice_static_ram: sram@0 {
 		label = "softdevice_static_ram";
