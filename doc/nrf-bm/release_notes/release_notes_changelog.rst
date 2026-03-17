@@ -169,6 +169,34 @@ Bluetooth LE Services
 ---------------------
 
 * Added the :c:member:`ble_cgms_config.initial_comm_interval` to the :c:struct:`ble_cgms_config` structure to set the initial communication interval.
+
+* API alignment (BAS, HIDS, HRS, LBS, NUS):
+
+   * Send/update functions read the CCCD notification state from the SoftDevice via :c:func:`sd_ble_gatts_value_get`. Per-library behavior when notifications are disabled or the CCCD cannot be read is described in the sections below.
+
+* :ref:`lib_ble_service_bas`:
+
+   * Removed :c:func:`ble_bas_battery_level_notify`.
+   * :c:func:`ble_bas_battery_level_update` now performs update and notification in one call.
+
+* :ref:`lib_ble_service_hids`:
+
+   * :c:func:`ble_hids_inp_rep_send`, :c:func:`ble_hids_boot_kb_inp_rep_send`, and :c:func:`ble_hids_boot_mouse_inp_rep_send` read the CCCD via :c:func:`sd_ble_gatts_value_get` and send via :c:func:`sd_ble_gatts_hvx` when notifications are enabled; otherwise they return :c:enumerator:`NRF_ERROR_INVALID_STATE` and do not update the per-connection host context or the characteristic value locally.
+   * The keyboard sample no longer needs a special case for :c:enumerator:`BLE_ERROR_GATTS_SYS_ATTR_MISSING`.
+
+* :ref:`lib_ble_service_hrs`:
+
+   * :c:func:`ble_hrs_heart_rate_measurement_send` now notifies only if CCCD is enabled.
+
+* :ref:`lib_ble_service_lbs`:
+
+   * :c:func:`ble_lbs_on_button_change` now updates the button state in the GATT database and sends a notification when the peer has enabled CCCD.
+
+* :ref:`lib_ble_service_nus`:
+
+   * :c:func:`ble_nus_data_send` reads the CCCD via :c:func:`sd_ble_gatts_value_get` and sends via :c:func:`sd_ble_gatts_hvx` when notifications are enabled; otherwise it returns an error and does not update the TX attribute value locally.
+   * Removed :c:struct:`ble_nus_client_context` and :c:func:`ble_nus_client_context_get`. NUS sample error handling simplified (only :c:enumerator:`NRF_ERROR_RESOURCES` remains).
+
 * Renamed the Bluetooth: Heart Rate Service Central (``ble_hrs_central``) to the :ref:`lib_ble_service_hrs_client` sample.
 * Updated all services to return errors from the SoftDevice directly.
 * Removed the BMS authorization code Kconfig options (:kconfig:option:`CONFIG_BLE_BMS_AUTHORIZATION_CODE` and :kconfig:option:`CONFIG_BLE_BMS_USE_AUTHORIZATION_CODE`) from the service library, as they are only used by the BMS sample.
