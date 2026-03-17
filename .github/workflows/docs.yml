@@ -161,7 +161,7 @@ jobs:
         working-directory: sdk-nrf-bm/nrf-bm
         run: |
           COMMENT="comment.txt"
-          PREFIX="${{ vars.NCS_BM_DOC_PR_HOSTING_URL }}/PR-${{ github.event.pull_request.number }}/"
+          PREFIX="https://ncsbmdoc.z6.web.core.windows.net/ncs-bm/PR-${{ github.event.pull_request.number }}/"
 
           echo "You can find the documentation preview for this PR [here](${PREFIX})." >> $COMMENT
 
