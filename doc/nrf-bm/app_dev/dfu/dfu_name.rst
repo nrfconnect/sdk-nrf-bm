@@ -21,15 +21,11 @@ Enabling the feature
 To enable this feature for a sysbuild project, use the :kconfig:option:`SB_CONFIG_BM_APP_CAN_SETUP_FIRMWARE_LOADER_NAME` Kconfig option.
 Otherwise, enable the following Kconfig options in both the application and the firmware loader configuration:
 
-* :kconfig:option:`CONFIG_RETAINED_MEM` - Enables the use of retained memory.
 * :kconfig:option:`CONFIG_RETENTION` - Allows the retention of data across device reboots.
-* :kconfig:option:`CONFIG_SETTINGS`- Enables the settings management subsystem.
-* :kconfig:option:`CONFIG_SETTINGS_RETENTION`- Enables retention backend implementation of settings subsystem.
-* :kconfig:option:`CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME`- Enables setting handlers required for Bluetooth name sharing support.
+* :kconfig:option:`CONFIG_BM_FLAT_SETTINGS_BLUETOOTH_NAME` - Enables settings handlers for Bluetooth name sharing using the retention clipboard (key ``fw_loader/adv_name``). Selects the inter-application retention clipboard in SRAM.
 
-Additionally, the application must enable the MCUmgr settings group using the following Kconfig options:
+Additionally, the application must enable the MCUmgr settings group:
 
-* :kconfig:option:`CONFIG_MCUMGR_GRP_SETTINGS`- Enables the MCUmgr settings group.
-* :kconfig:option:`CONFIG_SETTINGS_RUNTIME`- Allows runtime modification of settings.
+* :kconfig:option:`CONFIG_MCUMGR_GRP_SETTINGS` - Enables the MCUmgr settings group (available when :kconfig:option:`CONFIG_BM_FLAT_SETTINGS_BLUETOOTH_NAME` is enabled).
 
 This feature is used in the :ref:`ble_mcuboot_recovery_entry_sample` sample.
