@@ -534,7 +534,7 @@ uint16_t ble_qwr_evt_handler(struct ble_qwr *qwr, const struct ble_qwr_evt *qwr_
 {
 	switch (qwr_evt->evt_type) {
 	case BLE_QWR_EVT_ERROR:
-		LOG_ERR("QWR error event, nrf_error 0x%x", qwr_evt->error.reason);
+		LOG_ERR("QWR error event, nrf_error %#x", qwr_evt->error.reason);
 		break;
 	case BLE_QWR_EVT_EXECUTE_WRITE:
 		LOG_INF("QWR execute write event");

@@ -301,7 +301,7 @@ int bm_buttons_init(const struct bm_buttons_config *configs, uint8_t num_configs
 	err = bm_timer_init(&global.timer, BM_TIMER_MODE_SINGLE_SHOT,
 			      detection_delay_timeout_handler);
 	if (err) {
-		LOG_ERR("bm_timer_init failed, err: %d", err);
+		LOG_ERR("bm_timer_init failed, err %d", err);
 		return -EIO;
 	}
 

@@ -63,13 +63,13 @@ int main(void)
 
 	err = bm_buttons_init(configs, ARRAY_SIZE(configs), BM_BUTTONS_DETECTION_DELAY_MIN_US);
 	if (err) {
-		LOG_ERR("Failed to initialize buttons, err: %d", err);
+		LOG_ERR("Failed to initialize buttons, err %d", err);
 		goto idle;
 	}
 
 	err = bm_buttons_enable();
 	if (err) {
-		LOG_ERR("Failed to enable buttons, err: %d", err);
+		LOG_ERR("Failed to enable buttons, err %d", err);
 		goto idle;
 	}
 
@@ -86,7 +86,7 @@ int main(void)
 
 	err = bm_buttons_deinit();
 	if (err) {
-		LOG_ERR("Failed to deinitialize buttons, err: %d", err);
+		LOG_ERR("Failed to deinitialize buttons, err %d", err);
 		goto idle;
 	}
 

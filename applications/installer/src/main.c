@@ -90,7 +90,7 @@ int main(void)
 	checksum_calculated = crc32_ieee((void *)update_data, installer_data_size);
 	memcpy(&checksum_expected, &update_data->checksum, sizeof(checksum_expected));
 
-	LOG_DBG("Checksum - calculated: %u, expected: %u", checksum_calculated, checksum_expected);
+	LOG_DBG("Checksum - calculated %u, expected %u", checksum_calculated, checksum_expected);
 
 	if (checksum_calculated == checksum_expected) {
 		while (i < CONFIG_BM_INSTALL_IMAGES) {
@@ -103,11 +103,11 @@ int main(void)
 
 			LOG_DBG("Image %d:", i);
 			LOG_DBG("\tStart address: 0x%lx:", update_data->images[i].start_address);
-			LOG_DBG("\tSize: 0x%x:", update_data->images[i].image_size);
+			LOG_DBG("\tSize: %#x:", update_data->images[i].image_size);
 			LOG_DBG("\tData address: 0x%lx:",
 				update_data->images[i].data_offset_address);
-			LOG_DBG("\tData size: 0x%x:", update_data->images[i].data_image_size);
-			LOG_DBG("\tImage ID: 0x%x:", update_data->images[i].image_id);
+			LOG_DBG("\tData size: %#x:", update_data->images[i].data_image_size);
+			LOG_DBG("\tImage ID: %#x:", update_data->images[i].image_id);
 			LOG_DBG("\tImage checksum (calculated): %u", checksum_calculated);
 			LOG_DBG("\tImage checksum (expected): %u", checksum_expected);
 
@@ -188,11 +188,11 @@ int main(void)
 					rc = flash_area_erase(&fa, pos, PROCESS_SECTOR_SIZE);
 
 					if (rc) {
-						LOG_ERR("Erase failed: %d, at: 0x%x, size: %d",
+						LOG_ERR("Erase failed: %d, at: %#x, size: %d",
 							rc, pos, PROCESS_SECTOR_SIZE);
 						goto erase_header;
 					} else {
-						LOG_DBG("Erase OK at: 0x%x, size: %d", pos,
+						LOG_DBG("Erase OK at: %#x, size: %d", pos,
 							PROCESS_SECTOR_SIZE);
 					}
 				}
@@ -201,11 +201,11 @@ int main(void)
 				rc = flash_area_write(&fa, pos, (void *)read_pos, process_size);
 
 				if (rc) {
-					LOG_ERR("Write failed: %d, at: 0x%x, size: %d", rc, pos,
+					LOG_ERR("Write failed: %d, at: %#x, size: %d", rc, pos,
 						process_size);
 					goto erase_header;
 				} else {
-					LOG_DBG("Write OK at: 0x%x, size: %d", pos, process_size);
+					LOG_DBG("Write OK at: %#x, size: %d", pos, process_size);
 				}
 			}
 

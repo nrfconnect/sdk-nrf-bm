@@ -88,7 +88,7 @@ static uint32_t tk_value_generate(void)
 	uint32_t nrf_err = sd_rand_application_vector_get(tk_value, sizeof(tk_value));
 
 	if (nrf_err != NRF_SUCCESS) {
-		LOG_ERR("Random TK value generation failed: %d\n", nrf_err);
+		LOG_ERR("Random TK value generation failed, nrf_err %#x", nrf_err);
 		return nrf_err;
 	}
 
@@ -104,13 +104,13 @@ static uint32_t paring_key_generate(void)
 	nrf_err = nrf_ble_lesc_keypair_generate();
 
 	if (nrf_err != NRF_SUCCESS) {
-		LOG_ERR("Error while generating LESC key pair: %d\n", nrf_err);
+		LOG_ERR("Error while generating LESC key pair, nrf_err %#x", nrf_err);
 		return nrf_err;
 	}
 
 	nrf_err = nrf_ble_lesc_own_oob_data_generate();
 	if (nrf_err != NRF_SUCCESS) {
-		LOG_ERR("Error while generating LESC own OOB data: %d\n", nrf_err);
+		LOG_ERR("Error while generating LESC own OOB data, nrf_err %#x", nrf_err);
 		return nrf_err;
 	}
 
@@ -134,7 +134,7 @@ static void allow_list_set(enum pm_peer_id_list_skip skip)
 		LOG_ERR("Failed to get peer id list, nrf_error %#x", nrf_err);
 	}
 
-	LOG_INF("Number of peers added to the allow list: %d, max %d",
+	LOG_INF("%d peers added to the allow list, max %d",
 		peer_id_count, BLE_GAP_WHITELIST_ADDR_MAX_COUNT);
 
 	nrf_err = pm_allow_list_set(peer_ids, peer_id_count);
@@ -549,7 +549,7 @@ int main(void)
 
 	nrf_err = peer_manager_init();
 	if (nrf_err != NRF_SUCCESS) {
-		LOG_ERR("Failed to initialize Peer Manager, nrf_error %x", nrf_err);
+		LOG_ERR("Failed to initialize Peer Manager, nrf_error %#x", nrf_err);
 		goto fail;
 	}
 

@@ -153,7 +153,7 @@ int img_mgmt_get_next_boot_slot(int image, enum img_mgmt_next_boot_type *type)
 		LOG_DBG("Unexpected swap state %d", state);
 		return -1;
 	}
-	LOG_DBG("(%d, *) => slot = %d, type = %d", image, slot, lt);
+	LOG_DBG("(%d, *) => slot: %d, type: %d", image, slot, lt);
 
 	if (type != NULL) {
 		*type = lt;

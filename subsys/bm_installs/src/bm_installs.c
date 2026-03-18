@@ -185,7 +185,7 @@ int bm_installs_write(struct bm_installs *data)
 						      empty_data, sizeof(empty_data));
 
 				if (rc) {
-					LOG_ERR("Failed to erase: %d", rc);
+					LOG_ERR("Failed to erase, rc %d", rc);
 					return rc;
 				}
 			}

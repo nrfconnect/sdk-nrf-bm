@@ -274,7 +274,7 @@ static uint32_t compute_and_give_dhkey(struct lesc_peer_pub_key *peer_public_key
 		LOG_ERR("psa_raw_key_agreement() returned status %d", status);
 	}
 
-	LOG_INF("Calling sd_ble_gap_lesc_dhkey_reply(sec_status=0x%x) on conn_handle: %d",
+	LOG_INF("Calling sd_ble_gap_lesc_dhkey_reply(sec_status: %#x) on conn_handle: %d",
 		sec_status, peer_public_key->conn_handle);
 
 	return sd_ble_gap_lesc_dhkey_reply(peer_public_key->conn_handle, sec_status, p_dh_key);
@@ -361,7 +361,7 @@ void nrf_ble_lesc_on_ble_evt(const ble_evt_t *ble_evt)
 		if (ble_evt->evt.gap_evt.params.lesc_dhkey_request.oobd_req) {
 			nrf_err = lesc_oob_data_set(conn_handle);
 			if (nrf_err) {
-				LOG_ERR("sd_ble_gap_lesc_oob_data_set() returned error 0x%x.",
+				LOG_ERR("sd_ble_gap_lesc_oob_data_set() returned error %#x.",
 					nrf_err);
 				ble_lesc_internal_error = true;
 			}
