@@ -287,7 +287,7 @@ static void hrs_c_evt_handler(struct ble_hrs_client *hrs, struct ble_hrs_client_
 		break;
 
 	case BLE_HRS_CLIENT_EVT_HRM_NOTIFICATION:
-		LOG_INF("Heart Rate = %d.", evt->hrm.hr_value);
+		LOG_INF("Heart Rate %d.", evt->hrm.hr_value);
 		if (evt->hrm.rr_intervals_cnt != 0) {
 			uint32_t rr_avg = 0;
 
@@ -295,7 +295,7 @@ static void hrs_c_evt_handler(struct ble_hrs_client *hrs, struct ble_hrs_client_
 				rr_avg += evt->hrm.rr_intervals[i];
 			}
 			rr_avg = rr_avg / evt->hrm.rr_intervals_cnt;
-			LOG_INF("rr_interval (avg) = %d.", rr_avg);
+			LOG_INF("rr_interval (avg) %d", rr_avg);
 		}
 		break;
 
@@ -433,12 +433,12 @@ static void conn_params_evt_handler(const struct ble_conn_params_evt *evt)
 {
 	switch (evt->evt_type) {
 	case BLE_CONN_PARAMS_EVT_ATT_MTU_UPDATED:
-		LOG_INF("GATT ATT MTU on connection 0x%x changed to %d.", evt->conn_handle,
+		LOG_INF("GATT ATT MTU on connection %#x changed to %d.", evt->conn_handle,
 			evt->att_mtu);
 		break;
 
 	case BLE_CONN_PARAMS_EVT_DATA_LENGTH_UPDATED:
-		LOG_INF("Data length for connection 0x%x updated to %d.", evt->conn_handle,
+		LOG_INF("Data length for connection %#x updated to %d.", evt->conn_handle,
 			evt->data_length.rx);
 		break;
 

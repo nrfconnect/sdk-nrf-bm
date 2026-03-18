@@ -666,7 +666,7 @@ void gcm_ble_evt_handler(const ble_evt_t *ble_evt)
 		    BLE_GATT_STATUS_ATTERR_ATTRIBUTE_NOT_FOUND) {
 			/* Store 0. */
 		} else if (ble_evt->evt.gattc_evt.gatt_status != BLE_GATT_STATUS_SUCCESS) {
-			LOG_WRN("Unexpected GATT status while getting CAR char value: 0x%x",
+			LOG_WRN("Unexpected GATT status while getting CAR char value: %#x",
 				ble_evt->evt.gattc_evt.gatt_status);
 			/* Store 0. */
 		} else {
@@ -710,7 +710,7 @@ void gcm_ble_evt_handler(const ble_evt_t *ble_evt)
 		pm_conn_state_user_flag_set(conn_handle, flag_car_value_queried, false);
 
 		if (ble_evt->evt.gattc_evt.gatt_status != BLE_GATT_STATUS_SUCCESS) {
-			LOG_WRN("Unexpected GATT status while getting CAR char value: 0x%x",
+			LOG_WRN("Unexpected GATT status while getting CAR char value: %#x",
 				ble_evt->evt.gattc_evt.gatt_status);
 			/* Store 0. */
 		} else {

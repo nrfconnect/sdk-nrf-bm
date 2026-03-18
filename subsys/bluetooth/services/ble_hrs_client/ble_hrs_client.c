@@ -67,7 +67,7 @@ static void on_hvx(struct ble_hrs_client *ble_hrs_client, const ble_evt_t *ble_e
 		return;
 	}
 
-	LOG_DBG("HVX link=0x%x hrm_handle=0x%x",
+	LOG_DBG("HVX link: %#x hrm_handle: %#x",
 		hvx->handle, ble_hrs_client->peer_hrs_db.hrm_handle);
 
 	/* Need at least 1 byte to read the flags. */
@@ -216,7 +216,7 @@ static uint32_t cccd_configure(struct ble_hrs_client *ble_hrs_client, bool enabl
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	LOG_DBG("CCCD cfg cccd_handle=0x%x conn_handle=0x%x",
+	LOG_DBG("CCCD cfg cccd_handle: %#x conn_handle; %#x",
 		ble_hrs_client->peer_hrs_db.hrm_cccd_handle, ble_hrs_client->conn_handle);
 
 	uint8_t cccd[BLE_CCCD_VALUE_LEN];

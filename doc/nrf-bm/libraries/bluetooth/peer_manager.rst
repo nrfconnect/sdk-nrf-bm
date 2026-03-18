@@ -181,13 +181,13 @@ The following code example shows how the Peer Manager is initialized:
 
       nrf_err = pm_sec_params_set(&sec_param);
       if (nrf_err) {
-         LOG_ERR("pm_sec_params_set() failed, nrf_error 0x%x", nrf_err);
+         LOG_ERR("pm_sec_params_set() failed, nrf_error %#x", nrf_err);
          return nrf_err;
       }
 
       nrf_err = pm_register(pm_evt_handler);
       if (nrf_err) {
-         LOG_ERR("pm_register() failed, nrf_error 0x%x", nrf_err);
+         LOG_ERR("pm_register() failed, nrf_error %#x", nrf_err);
          return nrf_err;
       }
 

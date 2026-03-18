@@ -200,7 +200,7 @@ int img_mgmt_get_next_boot_slot(int image, enum img_mgmt_next_boot_type *type)
 		LOG_DBG("Unexpected swap state %d", state);
 		return -1;
 	}
-	LOG_DBG("(%d, *) => slot = %d, type = %d", image, slot, lt);
+	LOG_DBG("(%d, *) => slot: %d, type: %d", image, slot, lt);
 
 	if (type != NULL) {
 		*type = lt;
@@ -269,7 +269,7 @@ int img_mgmt_get_next_boot_slot(int image, enum img_mgmt_next_boot_type *type)
 		/* We do not really know what will happen, as we can not
 		 * read states from bootloader.
 		 */
-		LOG_ERR("img_mgmt_read_info_failed rca = %d, rcs = %d",
+		LOG_ERR("img_mgmt_read_info_failed, rca: %d, rcs: %d",
 			rca, rcs);
 		goto out;
 	}
@@ -687,7 +687,7 @@ int img_mgmt_set_next_boot_slot(int slot, bool confirm)
 	int next_boot_slot = img_mgmt_get_next_boot_slot(image, &type);
 
 	LOG_DBG("(%d, %s)", slot, confirm ? "confirm" : "test");
-	LOG_DBG("aimg = %d, img = %d, aslot = %d, slot = %d, nbs = %d",
+	LOG_DBG("aimg: %d, img: %d, aslot: %d, slot: %d, nbs: %d",
 		img_mgmt_active_image(), image, active_slot, slot, next_boot_slot);
 
 	/* MCUmgr should not allow to confirm non-active image slots to prevent
@@ -769,7 +769,7 @@ int img_mgmt_set_next_boot_slot(int slot, bool confirm)
 	int active_image = img_mgmt_active_image();
 
 	LOG_DBG("(%d, %s)", slot, confirm ? "confirm" : "test");
-	LOG_DBG("aimg = %d, aslot = %d, slot = %d",
+	LOG_DBG("aimg: %d, aslot: %d, slot: %d",
 		active_image, active_slot, slot);
 
 	if (slot == active_slot && !confirm) {
