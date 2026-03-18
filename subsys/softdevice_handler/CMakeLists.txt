@@ -8,6 +8,7 @@ zephyr_linker_sources(SECTIONS sdh.ld)
 zephyr_linker_sources(DATA_SECTIONS sdh_ram.ld)
 zephyr_library_sources(
   nrf_sdh.c
+  nrf_sdh_info.c
   nrf_sdh_soc.c
   irq_connect.c
 )
