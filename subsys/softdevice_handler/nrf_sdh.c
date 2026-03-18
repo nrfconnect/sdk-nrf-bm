@@ -139,6 +139,15 @@ static int nrf_sdh_enable(void)
 		LOG_INF("Found S%d v%d.%d.%d, firmware_id: %#x", sd_ver.id, sd_ver.major,
 			sd_ver.minor, sd_ver.bugfix, sd_ver.fwid);
 		LOG_INF("sd_unique_str: %s", sd_unique.str);
+
+		if ((sd_ver.id != SD_VARIANT_ID) || (sd_ver.major != SD_MAJOR_VERSION) ||
+		    (sd_ver.minor != SD_MINOR_VERSION) || (sd_ver.bugfix != SD_BUGFIX_VERSION)) {
+			LOG_WRN("Application was compiled with S%d v%d.%d.%d, which is different "
+				"from the SoftDevice found on the device (S%d v%d.%d.%d).",
+				SD_VARIANT_ID, SD_MAJOR_VERSION, SD_MINOR_VERSION,
+				SD_BUGFIX_VERSION, sd_ver.id, sd_ver.major, sd_ver.minor,
+				sd_ver.bugfix);
+		}
 	}
 
 	err = sd_softdevice_enable(&clock_lf_cfg, softdevice_fault_handler);
