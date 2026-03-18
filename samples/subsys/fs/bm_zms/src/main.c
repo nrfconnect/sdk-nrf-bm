@@ -106,7 +106,7 @@ static int delete_and_verify_items(struct bm_zms_fs *fs, uint32_t id)
 
 	return 0;
 error1:
-	LOG_ERR("Error while deleting item rc=%d", rc);
+	LOG_ERR("Error while deleting item, rc %d", rc);
 	return rc;
 error2:
 	LOG_ERR("Error, Delete failed item should not be present");
@@ -119,25 +119,25 @@ static int delete_basic_items(struct bm_zms_fs *fs)
 
 	rc = delete_and_verify_items(fs, IP_ADDRESS_ID);
 	if (rc) {
-		LOG_ERR("Error while deleting item %x rc=%d", IP_ADDRESS_ID, rc);
+		LOG_ERR("Error while deleting item %x, rc %d", IP_ADDRESS_ID, rc);
 		return rc;
 	}
 
 	rc = delete_and_verify_items(fs, KEY_VALUE_ID);
 	if (rc) {
-		LOG_ERR("Error while deleting item %x rc=%d", KEY_VALUE_ID, rc);
+		LOG_ERR("Error while deleting item %x, rc %d", KEY_VALUE_ID, rc);
 		return rc;
 	}
 
 	rc = delete_and_verify_items(fs, CNT_ID);
 	if (rc) {
-		LOG_ERR("Error while deleting item %x rc=%d", CNT_ID, rc);
+		LOG_ERR("Error while deleting item %x, rc %d", CNT_ID, rc);
 		return rc;
 	}
 
 	rc = delete_and_verify_items(fs, LONG_DATA_ID);
 	if (rc) {
-		LOG_ERR("Error while deleting item %x rc=%d", LONG_DATA_ID, rc);
+		LOG_ERR("Error while deleting item %x, rc %d", LONG_DATA_ID, rc);
 	}
 
 	return rc;
@@ -176,14 +176,14 @@ int main(void)
 	/* Let's mount and clear the existing storage partition to reset the conditions. */
 	rc = bm_zms_mount(&fs, &config);
 	if (rc) {
-		LOG_ERR("Storage Init failed, rc=%d", rc);
+		LOG_ERR("Storage Init failed, rc %d", rc);
 		goto idle;
 	}
 	wait_for_mount();
 
 	rc = bm_zms_clear(&fs);
 	if (rc < 0) {
-		LOG_ERR("Error while cleaning the storage, rc=%d", rc);
+		LOG_ERR("Error while cleaning the storage, rc %d", rc);
 		goto idle;
 	}
 	wait_for_clear();
@@ -195,7 +195,7 @@ int main(void)
 	for (i = 0; i < CONFIG_SAMPLE_BM_ZMS_ITERATIONS_MAX; i++) {
 		rc = bm_zms_mount(&fs, &config);
 		if (rc) {
-			LOG_ERR("Storage Init failed, rc=%d", rc);
+			LOG_ERR("Storage Init failed, rc %d", rc);
 			goto idle;
 		}
 		wait_for_mount();
@@ -209,14 +209,14 @@ int main(void)
 		if (rc > 0) {
 			/* item was found, show it */
 			buf[rc] = '\0';
-			LOG_INF("ID: %u, IP Address: %s", IP_ADDRESS_ID, buf);
+			LOG_INF("Id %u, IP Address %s", IP_ADDRESS_ID, buf);
 		}
 		/* Rewriting ADDRESS IP even if we found it */
 		strncpy(buf, "172.16.254.1", sizeof(buf) - 1);
 		LOG_INF("Adding IP_ADDRESS %s at id %u", buf, IP_ADDRESS_ID);
 		rc = bm_zms_write(&fs, IP_ADDRESS_ID, &buf, strlen(buf));
 		if (rc < 0) {
-			LOG_ERR("Error while writing Entry rc=%d", rc);
+			LOG_ERR("Failed writing entry, rc %d", rc);
 			goto idle;
 		}
 		wait_for_write();
@@ -226,14 +226,14 @@ int main(void)
 		 */
 		rc = bm_zms_read(&fs, KEY_VALUE_ID, &key, sizeof(key));
 		if (rc > 0) { /* item was found, show it */
-			LOG_INF("Id: %x", KEY_VALUE_ID);
+			LOG_INF("Id %x", KEY_VALUE_ID);
 			LOG_HEXDUMP_INF(key, sizeof(key), "Key:");
 		}
 		/* Rewriting KEY_VALUE even if we found it */
 		LOG_INF("Adding key/value at id %x", KEY_VALUE_ID);
 		rc = bm_zms_write(&fs, KEY_VALUE_ID, &key, sizeof(key));
 		if (rc < 0) {
-			LOG_ERR("Error while writing Entry rc=%d", rc);
+			LOG_ERR("Failed writing entry, rc %d", rc);
 			goto idle;
 		}
 		wait_for_write();
@@ -243,7 +243,7 @@ int main(void)
 		 */
 		rc = bm_zms_read(&fs, CNT_ID, &i_cnt, sizeof(i_cnt));
 		if (rc > 0) { /* item was found, show it */
-			LOG_INF("Id: %d, loop_cnt: %u", CNT_ID, i_cnt);
+			LOG_INF("Id %d, loop_cnt %u", CNT_ID, i_cnt);
 			if ((i > 0) && (i_cnt != (i - 1))) {
 				LOG_ERR("Error loop_cnt %u must be %d", i_cnt, i - 1);
 				goto idle;
@@ -252,7 +252,7 @@ int main(void)
 		LOG_INF("Adding counter at id %u", CNT_ID);
 		rc = bm_zms_write(&fs, CNT_ID, &i, sizeof(i));
 		if (rc < 0) {
-			LOG_ERR("Error while writing Entry rc=%d", rc);
+			LOG_ERR("Failed writing entry, rc %d", rc);
 			goto idle;
 		}
 		wait_for_write();
@@ -263,7 +263,7 @@ int main(void)
 		rc = bm_zms_read(&fs, LONG_DATA_ID, &longarray, sizeof(longarray));
 		if (rc > 0) {
 			/* item was found, show it */
-			LOG_INF("Id: %d", LONG_DATA_ID);
+			LOG_INF("Id %d", LONG_DATA_ID);
 			LOG_HEXDUMP_INF(longarray, sizeof(longarray),
 				      "Longarray:");
 		}
@@ -271,7 +271,7 @@ int main(void)
 		LOG_INF("Adding Longarray at id %d", LONG_DATA_ID);
 		rc = bm_zms_write(&fs, LONG_DATA_ID, &longarray, sizeof(longarray));
 		if (rc < 0) {
-			LOG_ERR("Error while writing Entry rc=%d", rc);
+			LOG_ERR("Failed writing entry, rc %d", rc);
 			goto idle;
 		}
 		wait_for_write();
@@ -286,7 +286,7 @@ int main(void)
 	}
 
 	if (i != CONFIG_SAMPLE_BM_ZMS_ITERATIONS_MAX) {
-		LOG_ERR("Error: Something went wrong at iteration %u rc=%d", i, rc);
+		LOG_ERR("Something went wrong at iteration %u, rc %d", i, rc);
 		goto idle;
 	}
 
@@ -303,11 +303,11 @@ int main(void)
 	/* Calculate free space and verify that it is 0 */
 	free_space = bm_zms_calc_free_space(&fs);
 	if (free_space < 0) {
-		LOG_ERR("Error while computing free space, rc=%d", free_space);
+		LOG_ERR("Failed to compute free space, rc %d", free_space);
 		goto idle;
 	}
 	if (free_space > 0) {
-		LOG_ERR("Error: free_space should be 0, computed %u", free_space);
+		LOG_ERR("free_space should be 0, computed %u", free_space);
 		goto idle;
 	}
 	LOG_INF("Memory is full let's delete all items");
@@ -315,13 +315,13 @@ int main(void)
 	for (uint32_t n = 0; n < id; n++) {
 		rc = delete_and_verify_items(&fs, n);
 		if (rc) {
-			LOG_ERR("Error deleting at id %u", n);
+			LOG_ERR("Failed deleting at id %u, rc %d", n, rc);
 			goto idle;
 		}
 	}
 	rc = delete_basic_items(&fs);
 	if (rc) {
-		LOG_ERR("Error deleting basic items");
+		LOG_ERR("Error deleting basic items, rc %d", rc);
 		goto idle;
 	}
 
@@ -330,7 +330,7 @@ int main(void)
 	 */
 	free_space = bm_zms_calc_free_space(&fs);
 	if (free_space < 0) {
-		LOG_ERR("Error while computing free space, rc=%d", free_space);
+		LOG_ERR("Failed to compute free space, rc %d", free_space);
 		goto idle;
 	}
 	LOG_INF("Free space in storage is %u bytes", free_space);
@@ -338,7 +338,7 @@ int main(void)
 	/* Let's clean the storage now */
 	rc = bm_zms_clear(&fs);
 	if (rc < 0) {
-		LOG_ERR("Error while cleaning the storage, rc=%d", rc);
+		LOG_ERR("Failed to clean the storage, rc %d", rc);
 		goto idle;
 	}
 	wait_for_clear();

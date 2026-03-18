@@ -92,7 +92,7 @@ void bm_zms_test_evt_handler(const struct bm_zms_evt *evt)
 #if defined(CONFIG_BOARD_NATIVE_SIM)
 		k_sem_give(&mount_sem);
 #endif
-		zassert_true(evt->result == 0, "bm_zms_mount call failure: %d",
+		zassert_true(evt->result == 0, "bm_zms_mount call failed, res %d",
 			     evt->result);
 		break;
 	case BM_ZMS_EVT_CLEAR:
@@ -100,7 +100,7 @@ void bm_zms_test_evt_handler(const struct bm_zms_evt *evt)
 #if defined(CONFIG_BOARD_NATIVE_SIM)
 		k_sem_give(&clear_sem);
 #endif
-		zassert_true(evt->result == 0, "bm_zms_clear call failure: %d",
+		zassert_true(evt->result == 0, "bm_zms_clear call failed, res %d",
 			     evt->result);
 		break;
 	case BM_ZMS_EVT_WRITE:
@@ -157,7 +157,7 @@ static void after(void *data)
 		int err;
 
 		err = bm_zms_clear(&fixture->fs);
-		zassert_true(err == 0, "zms_clear call failure: %d", err);
+		zassert_true(err == 0, "zms_clear call failed, err %d", err);
 		wait_for_clear();
 	}
 
@@ -206,7 +206,7 @@ ZTEST_F(bm_zms, test_bm_zms_write)
 	int err;
 
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
-	zassert_true(err == 0, "zms_mount call failure: %d", err);
+	zassert_true(err == 0, "zms_mount call failed, err %d", err);
 	wait_for_mount();
 
 	execute_long_pattern_write(TEST_DATA_ID, &fixture->fs);
@@ -226,7 +226,7 @@ ZTEST_F(bm_zms, test_zms_gc)
 
 	err = bm_zms_mount(&fixture->fs, &fixture->config);
 	wait_for_mount();
-	zassert_true(err == 0, "zms_mount call failure: %d", err);
+	zassert_true(err == 0, "zms_mount call failed, err %d", err);
 
 	for (int i = 0; i < max_writes; i++) {
 		uint8_t id = (i % max_id);

@@ -94,7 +94,7 @@ static void read_glucose_measurement(void)
 		},
 	};
 
-	LOG_INF("Read glucose measurement: %dmg/dL", glucose_concentration);
+	LOG_INF("Read glucose measurement %dmg/dL", glucose_concentration);
 
 	ble_cgms_meas_create(&ble_cgms, &rec);
 }
@@ -544,10 +544,10 @@ static void num_comp_reply(uint16_t conn_handle, bool accept)
 	uint32_t nrf_err;
 
 	if (accept) {
-		LOG_INF("Numeric Match. Conn handle: %d", conn_handle);
+		LOG_INF("Numeric Match. Conn handle %d", conn_handle);
 		key_type = BLE_GAP_AUTH_KEY_TYPE_PASSKEY;
 	} else {
-		LOG_INF("Numeric REJECT. Conn handle: %d", conn_handle);
+		LOG_INF("Numeric REJECT. Conn handle %d", conn_handle);
 		key_type = BLE_GAP_AUTH_KEY_TYPE_NONE;
 	}
 
@@ -614,7 +614,7 @@ static void allow_list_set(enum pm_peer_id_list_skip skip)
 		LOG_ERR("Failed to get peer id list, nrf_error %#x", nrf_err);
 	}
 
-	LOG_INF("Number of peers added to the allow list: %d, max %d",
+	LOG_INF("%d peers added to the allow list, max %d",
 		peer_id_count, BLE_GAP_WHITELIST_ADDR_MAX_COUNT);
 
 	nrf_err = pm_allow_list_set(peer_ids, peer_id_count);
@@ -796,13 +796,13 @@ static int buttons_leds_init(bool *erase_bonds)
 	err = bm_buttons_init(btn_configs, ARRAY_SIZE(btn_configs),
 			      BM_BUTTONS_DETECTION_DELAY_MIN_US);
 	if (err) {
-		LOG_ERR("bm_buttons_init error: %d", err);
+		LOG_ERR("bm_buttons_init failed, err %d", err);
 		return err;
 	}
 
 	err = bm_buttons_enable();
 	if (err) {
-		LOG_ERR("bm_buttons_enable error: %d", err);
+		LOG_ERR("bm_buttons_enable failed, err %d", err);
 		return err;
 	}
 

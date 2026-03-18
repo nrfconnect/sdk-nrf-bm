@@ -233,9 +233,9 @@ completed:
 			/* print information about sectors layout after init. */
 			LOG_INF("%u Sectors of %u bytes", cur_op.fs->sector_count,
 				cur_op.fs->sector_size);
-			LOG_INF("alloc wra: %llu, %llx", SECTOR_NUM(cur_op.fs->ate_wra),
+			LOG_INF("alloc wra %llu, %llx", SECTOR_NUM(cur_op.fs->ate_wra),
 				SECTOR_OFFSET(cur_op.fs->ate_wra));
-			LOG_INF("data wra: %llu, %llx", SECTOR_NUM(cur_op.fs->data_wra),
+			LOG_INF("data wra %llu, %llx", SECTOR_NUM(cur_op.fs->data_wra),
 				SECTOR_OFFSET(cur_op.fs->data_wra));
 		}
 
@@ -2293,8 +2293,8 @@ ssize_t bm_zms_read_hist(struct bm_zms_fs *fs, uint32_t id, void *data, size_t l
 		if (len >= wlk_ate.len) {
 			computed_data_crc = crc32_ieee(data, wlk_ate.len);
 			if (computed_data_crc != wlk_ate.data_crc) {
-				LOG_ERR("Invalid data CRC: ATE_CRC=0x%08X, "
-					"computed_data_crc=0x%08X",
+				LOG_ERR("Invalid data CRC, ATE_CRC: 0x%08X, "
+					"computed_data_crc: 0x%08X",
 					wlk_ate.data_crc, computed_data_crc);
 				return -EIO;
 			}

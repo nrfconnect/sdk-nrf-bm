@@ -193,13 +193,13 @@ int main(void)
 		1,
 		BM_BUTTONS_DETECTION_DELAY_MIN_US);
 	if (err) {
-		LOG_ERR("Failed to initialize buttons, err: %d", err);
+		LOG_ERR("Failed to initialize buttons, err %d", err);
 		goto idle;
 	}
 
 	err = bm_buttons_enable();
 	if (err) {
-		LOG_ERR("Failed to enable button detection, err: %d", err);
+		LOG_ERR("Failed to enable button detection, err %d", err);
 		goto idle;
 	}
 

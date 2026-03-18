@@ -39,7 +39,7 @@ static void sd_enable_irq_forwarding(void)
 	softdevice_vector_forward_address += CONFIG_ROM_START_OFFSET;
 #endif
 
-	LOG_INF("SoftDevice forward address: 0x%x", softdevice_vector_forward_address);
+	LOG_INF("SoftDevice forward address: %#x", softdevice_vector_forward_address);
 
 	log_flush();
 
