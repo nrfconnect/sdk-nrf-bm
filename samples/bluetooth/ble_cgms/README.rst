@@ -135,11 +135,11 @@ Testing
    Note that the kit has two UARTs, where only one will output the log.
 #. Reset the kit.
 #. In the Serial Terminal, observe that the ``BLE CGMS sample initialized`` message is printed.
-#. Observe that the device is advertising under the default name ``nRF_BM_CGMS``.
+#. Observe that the ``Advertising as nRF_BM_CGMS`` message is printed.
    You can configure this name using the :kconfig:option:`CONFIG_SAMPLE_BLE_DEVICE_NAME` Kconfig option.
    For information on how to do this, see `Configuring Kconfig`_.
 #. Connect to your device using the `nRF Toolbox`_ mobile application with the :guilabel:`Continuous Glucose` service.
-
+    If the device is not advertising, reset the board with the :guilabel:`Reset Board` option in |VSC| or by pressing the reset button on the development kit.
 #. Your mobile phone should now attempt to pair with your device to encrypt the link.
    When prompted, check that the passkeys are the same before confirming by pressing **Button 0** on the kit and confirming on the mobile phone.
 

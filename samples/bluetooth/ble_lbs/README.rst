@@ -126,9 +126,10 @@ Make sure that these are installed before starting the testing procedure.
 1. Compile and program the application.
 #. In the Serial Terminal, observe that the ``BLE LBS sample initialized`` message is printed.
 #. Observe that the ``Advertising as nRF_BM_LBS`` message is printed.
+   You can configure the advertising name using the :kconfig:option:`CONFIG_SAMPLE_BLE_DEVICE_NAME` Kconfig option.
+   For information on how to do this, see `Configuring Kconfig`_.
 #. In nRF Connect for Desktop, scan for advertising devices.
-   Your device should be advertising as ``nRF_BM_LBS``.
-   If the device is not advertising, you might need to use the :guilabel:`Reset Board` option in |VSC|.
+    If the device is not advertising, reset the board with the :guilabel:`Reset Board` option in |VSC| or by pressing the reset button on the development kit.
 #. :guilabel:`Connect` to your device.
    The terminal output in |VSC| indicates ``Peer connected``.
 #. In nRF Connect for Desktop, go to :guilabel:`Nordic LED and Button Service` and change :guilabel:`Blinky LED state` to :guilabel:`01`.

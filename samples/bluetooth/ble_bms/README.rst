@@ -130,10 +130,12 @@ Testing
 #. Reset the kit.
 #. In the Serial Terminal, observe that the ``BLE BMS sample initialized`` message is printed.
 #. Observe that the ``Advertising as nRF_BM_BMS`` message is printed.
+   You can configure the advertising name using the :kconfig:option:`CONFIG_SAMPLE_BLE_DEVICE_NAME` Kconfig option.
+   For information on how to do this, see `Configuring Kconfig`_.
 #. Open `nRF Connect for Desktop`_.
 #. Open the `Bluetooth Low Energy app`_ and select the connected device that is used for communication.
 #. Connect to the device from the app.
-   The device is advertising as ``nRF_BM_BMS``.
+    If the device is not advertising, reset the board with the :guilabel:`Reset Board` option in |VSC| or by pressing the reset button on the development kit.
 #. Bind with the device:
 
    a. Click the :guilabel:`Settings` button for the device in the app.
