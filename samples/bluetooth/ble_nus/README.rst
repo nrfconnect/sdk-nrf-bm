@@ -166,11 +166,12 @@ The sample can be tested in two ways, depending on the selected UART configurati
          One instance is used for logging (if enabled with :kconfig:option:`CONFIG_LOG`), while the other is used for the NUS service.
       #. Connect to the kit with a terminal emulator (for example, the `Serial Terminal app`_) for both UARTs.
       #. Reset the kit.
-      #. Observe that the device is advertising under the default name ``nRF_BM_NUS``.
+      #. Observe that the text ``BLE NUS sample initialized`` is printed on the COM listener running on the computer.
+      #. Observe that the ``Advertising as nRF_BM_NUS`` message is printed.
          You can configure this name using the :kconfig:option:`CONFIG_SAMPLE_BLE_DEVICE_NAME` Kconfig option.
          For information on how to do this, see `Configuring Kconfig`_.
-      #. Observe that the text ``BLE NUS sample initialized`` is printed on the COM listener running on the computer.
       #. Connect to your device using the `nRF Toolbox`_ mobile application with the :guilabel:`Universal Asynchronous Receiver/Transmitter (UART)` service.
+          If the device is not advertising, reset the board with the :guilabel:`Reset Board` option in |VSC| or by pressing the reset button on the development kit.
       #. Write a text in the second COM listener running on the computer and press Enter.
       #. Write a text in the terminal on the mobile phone and press :guilabel:`Send`.
          Observe that the text is displayed in the second COM listener running on the computer.
