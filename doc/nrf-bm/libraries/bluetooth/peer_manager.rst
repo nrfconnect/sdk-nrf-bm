@@ -439,12 +439,12 @@ The following example shows how to use the :c:func:`pm_allow_list_set` function 
 Dependencies
 ************
 
-This library uses the following |BMshort| libraries:
+This library uses the following |BMshort| libraries and Kconfig options:
 
 * SoftDevice - :kconfig:option:`CONFIG_SOFTDEVICE`
-* SoftDevice handler - :kconfig:option:`CONFIG_NRF_SDH`
-* Timer library - :kconfig:option:`CONFIG_BM_TIMER`
-* Bare Metal Zephyr Memory Storage - :kconfig:option:`CONFIG_BM_ZMS`
+* :ref:`lib_nrf_sdh` (BLE) - :kconfig:option:`CONFIG_NRF_SDH_BLE`
+* :ref:`lib_bm_timer` - :kconfig:option:`CONFIG_BM_TIMER`
+* :ref:`lib_bm_zms` - :kconfig:option:`CONFIG_BM_ZMS`
 
 LESC Dependencies
 =================

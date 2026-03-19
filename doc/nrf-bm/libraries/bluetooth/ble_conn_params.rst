@@ -135,10 +135,11 @@ When a radio PHY mode update procedure completes, the Bluetooth LE connection pa
 Dependencies
 ************
 
-This library uses the following |BMshort| libraries:
+This library uses the following |BMshort| libraries and Kconfig options:
 
 * SoftDevice - :kconfig:option:`CONFIG_SOFTDEVICE`
 * SoftDevice handler - :kconfig:option:`CONFIG_NRF_SDH`
+* :ref:`lib_nrf_sdh` (BLE) - :kconfig:option:`CONFIG_NRF_SDH_BLE`
 
 API documentation
 *****************

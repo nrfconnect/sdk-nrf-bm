@@ -348,6 +348,15 @@ Cache size
 * Each additional cache entry will add 8 bytes to your RAM usage.
   Cache size should be carefully chosen.
 
+Dependencies
+************
+
+This library selects the following Kconfig options:
+
+* :ref:`lib_storage` - :kconfig:option:`CONFIG_BM_STORAGE`
+* CRC - :kconfig:option:`CONFIG_CRC`
+* Ring buffer - :kconfig:option:`CONFIG_RING_BUFFER`
+
 API Reference
 *************
 

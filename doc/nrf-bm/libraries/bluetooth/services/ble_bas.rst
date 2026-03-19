@@ -42,10 +42,10 @@ To notify the battery level, the application can call the :c:func:`ble_bas_batte
 Dependencies
 ************
 
-This library uses the following |BMshort| libraries:
+This service uses the following |BMshort| Kconfig options:
 
-* SoftDevice - :kconfig:option:`CONFIG_SOFTDEVICE`
-* SoftDevice handler - :kconfig:option:`CONFIG_NRF_SDH`
+* SoftDevice (peripheral role) - :kconfig:option:`CONFIG_SOFTDEVICE_PERIPHERAL`
+* :ref:`lib_nrf_sdh` (BLE) - :kconfig:option:`CONFIG_NRF_SDH_BLE`
 
 API documentation
 *****************

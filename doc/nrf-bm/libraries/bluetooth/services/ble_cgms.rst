@@ -49,10 +49,12 @@ The :c:func:`ble_cgms_srt_set` function allows the application to set the Sessio
 Dependencies
 ************
 
-This library uses the following |BMshort| libraries:
+This service uses the following |BMshort| libraries and Kconfig options:
 
-* SoftDevice - :kconfig:option:`CONFIG_SOFTDEVICE`
-* SoftDevice handler - :kconfig:option:`CONFIG_NRF_SDH`
+* SoftDevice (peripheral role) - :kconfig:option:`CONFIG_SOFTDEVICE_PERIPHERAL`
+* :ref:`lib_nrf_sdh` (BLE) - :kconfig:option:`CONFIG_NRF_SDH_BLE`
+* Record Access Control Point - :kconfig:option:`CONFIG_BLE_RACP`
+* :ref:`lib_ble_gatt_queue` - :kconfig:option:`CONFIG_BLE_GATT_QUEUE`
 
 API documentation
 *****************

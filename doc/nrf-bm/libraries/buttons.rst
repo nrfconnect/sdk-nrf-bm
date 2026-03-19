@@ -51,7 +51,8 @@ Dependencies
 
 This library uses the following |BMshort| libraries:
 
-* Timer - :kconfig:option:`CONFIG_BM_TIMER`
+* :ref:`lib_bm_timer` - :kconfig:option:`CONFIG_BM_TIMER`
+* :ref:`lib_bm_gpiote` - :kconfig:option:`CONFIG_BM_GPIOTE`
 
 API documentation
 *****************
