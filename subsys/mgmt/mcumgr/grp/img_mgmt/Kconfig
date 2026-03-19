@@ -162,6 +162,14 @@ config MCUMGR_GRP_IMG_SLOT_INFO_HOOKS
 	  This will enable the slot info function hooks which can be used to add additional
 	  information to responses.
 
+config MCUMGR_GRP_IMG_IMAGE_BUFFER_CHUNK_SZ
+	int "NVM write chunk size"
+	default 2048
+	range 16 4096
+	help
+	  This sets how much data is buffered before passing to non volatile memory.
+	  It has to be multiple of NVM write block size.
+
 module = MCUMGR_GRP_IMG
 module-str = MCUMGR_GRP_IMG
 source "subsys/logging/Kconfig.template.log_config"
