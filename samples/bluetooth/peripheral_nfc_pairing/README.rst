@@ -28,7 +28,7 @@ The sample supports the following development kits:
 
    .. group-tab:: Simple board variants
 
-      The following board variants do **not** have DFU capabilities.
+      The following board variants do **not** have DFU capabilities:
 
       .. list-table::
          :header-rows: 1

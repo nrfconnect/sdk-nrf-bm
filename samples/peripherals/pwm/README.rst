@@ -51,6 +51,14 @@ The sample supports the following development kits:
            - PCA10156
            - S145
            - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice
+         * - `nRF54LM20 DK`_
+           - PCA10184
+           - S115
+           - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice
+         * - `nRF54LM20 DK`_
+           - PCA10184
+           - S145
+           - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s145_softdevice
 
    .. group-tab:: MCUboot board variants
 
@@ -95,9 +103,11 @@ The sample initializes a PWM instance that blinks **LED 1** and **LED 3** on the
 
 .. note::
 
-  The PWM signal can be exposed only on GPIO pins that belong to the same domain as the target pin.
-  For the nRF54L Series, there is only one domain which contains both PWM and GPIO: PWM20/21/22 and GPIO Port P1.
-  Therefore, for these devices, only LEDs connected to P1 can work with PWM - for the nRF54L15 DK these are **LED 1** and **LED 3**.
+  This sample uses GPIO pins connected to LEDs to demonstrate PWM functionality.
+  The PWM signal can only be exposed on GPIO pins that belong to the same domain as the PWM instance.
+  This limits which LEDs on a given DK can be used.
+  For example, on the nRF54L Series, PWM20/21/22 and GPIO Port P1 share the same domain.
+  Therefore, on the nRF54L15 DK, only LEDs connected to P1 work with PWM: **LED 1** and **LED 3**.
 
 User interface
 **************
