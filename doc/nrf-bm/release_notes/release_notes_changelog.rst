@@ -253,6 +253,8 @@ Samples
 
 * Aligned LED and button behavior across samples.
 
+* All samples that are compatible with the new board targets PCA10188 (`nRF54LV10 DK`_), PCA10184 (`nRF54LM20 DK`_), and PCA10214 (nRF54LS05 DK) have been updated to reflect support for these boards.
+
 Bluetooth LE samples
 --------------------
 
@@ -262,15 +264,7 @@ Bluetooth LE samples
 
    * Added sample-specific Kconfig options for the BMS authorization code by moving them from the service library scope and renaming them from ``CONFIG_BLE_BMS_AUTHORIZATION_CODE`` and ``CONFIG_BLE_BMS_USE_AUTHORIZATION_CODE`` to :kconfig:option:`CONFIG_APP_BLE_BMS_AUTHORIZATION_CODE` and :kconfig:option:`CONFIG_APP_BLE_BMS_USE_AUTHORIZATION_CODE`.
 
-* :ref:`ble_hrs_sample` sample:
-
-   * Added support for the new board targets:
-
-     * PCA10188 (`nRF54LV10 DK`_)
-     * PCA10184 (`nRF54LM20 DK`_)
-     * PCA10214 (nRF54LS05 DK)
-
-* :ref:`ble_hids_keyboard_sample` sample:
+* :ref:`ble_hids_keyboard_sample`:
 
    * Added support for boot mode.
 
@@ -279,12 +273,6 @@ Bluetooth LE samples
    * Fixed an issue where the sample did not enter or exit boot mode properly based on the HID events.
 
 * :ref:`ble_nus_sample` sample:
-
-   * Added support for the new board targets:
-
-     * PCA10188 (`nRF54LV10 DK`_)
-     * PCA10184 (`nRF54LM20 DK`_)
-     * PCA10214 (nRF54LS05 DK)
 
    * Updated to align with changes to the :ref:`driver_lpuarte` driver.
 
