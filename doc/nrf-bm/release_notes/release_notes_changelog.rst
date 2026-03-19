@@ -131,14 +131,22 @@ Libraries
 
    * Updated to use the :ref:`lib_bm_gpiote` library.
 
-* :ref:`lib_ble_adv`:
+* :ref:`lib_ble_adv` library:
 
-   * Added the ``const`` keyword to the configuration structure parameter of the :c:func:`ble_adv_init` function to reflect that the function only reads from the configuration and does not modify it.
+   * Added:
+
+      * The ``const`` keyword to the configuration structure parameter of the :c:func:`ble_adv_init` function to reflect that the function only reads from the configuration and does not modify it.
+      * The advertising name to the configuration structure of the :c:func:`ble_adv_init` function.
 
    * Updated:
 
       * The :kconfig:option:`CONFIG_BLE_ADV_EXTENDED_ADVERTISING` Kconfig option to be disabled by default and dependent on the new :kconfig:option:`CONFIG_SOFTDEVICE_EXTENDED_ADVERTISING` Kconfig option.
       * The :kconfig:option:`CONFIG_BLE_ADV_DIRECTED_ADVERTISING` Kconfig option to be disabled by default.
+
+   * Removed:
+
+      * The ``CONFIG_BLE_ADV_NAME`` Kconfig option.
+        Instead, the application must set the device name by calling the :c:func:`sd_ble_gap_device_name_set` function.
 
    * Fixed:
 
@@ -165,7 +173,7 @@ Libraries
 
       * The ``ble_db_discovery_user_evt`` structure after a rework.
 
-* :ref:`lib_ble_scan`:
+* :ref:`lib_ble_scan` library:
 
    * Added the :c:struct:`ble_scan_filter_data` structure as input to the :c:func:`ble_scan_filter_add` function.
    * Updated functions to use the ``uint32_t`` type instead of ``int`` when returning nrf_errors.

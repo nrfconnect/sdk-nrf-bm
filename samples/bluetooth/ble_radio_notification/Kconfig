@@ -6,6 +6,10 @@
 
 menu "BLE Radio Notification sample"
 
+config SAMPLE_BLE_DEVICE_NAME
+	string "Device name"
+	default "nRF_BM_Radio_Ntf"
+
 config SAMPLE_BLE_RADIO_NOTIFICATION_DISTANCE_US
 	int "Distance between the active notification signal and start of radio event preparation"
 	range 50 5500

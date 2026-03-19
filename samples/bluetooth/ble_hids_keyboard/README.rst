@@ -142,9 +142,10 @@ Testing
 1. Compile and program the application.
 #. In the Serial Terminal, using the `Serial Terminal app`_ or |VSC|, observe that the ``BLE HIDS Keyboard sample initialized`` message is printed.
 #. Observe that the ``Advertising as nRF_BM_HIDS_KB`` message is printed.
+   You can configure the advertising name using the :kconfig:option:`CONFIG_SAMPLE_BLE_DEVICE_NAME` Kconfig option.
+   For information on how to do this, see `Configuring Kconfig`_.
 #. On your computer or mobile phone, open the Bluetooth settings and scan for advertising devices.
-   Your device should be advertising as ``nRF_BM_HIDS_KB``.
-   If the device is not advertising, you might need to use the :guilabel:`Reset Board` option in |VSC|.
+    If the device is not advertising, reset the board with the :guilabel:`Reset Board` option in |VSC| or by pressing the reset button on the development kit.
 #. :guilabel:`Connect` to your device.
 
    After having connected, your computer or mobile phone may attempt to pair or bond with your device in order to encrypt the link.

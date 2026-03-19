@@ -15,6 +15,7 @@
 #include <bm/nfc/ndef/le_oob_rec.h>
 
 #include <nrf_soc.h>
+#include <ble_gap.h>
 #include <bm/softdevice_handler/nrf_sdh.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
 #include <bm/bluetooth/ble_adv.h>
@@ -46,7 +47,7 @@ static uint16_t peer_id = PM_PEER_ID_INVALID;
 static ble_gap_lesc_oob_data_t *oob_local;
 static uint8_t conn_cnt;
 static uint8_t tk_value[NFC_NDEF_LE_OOB_REC_TK_LEN];
-static const char device_name[] = CONFIG_BLE_ADV_NAME;
+static const char device_name[] = CONFIG_SAMPLE_BLE_DEVICE_NAME;
 
 /* Buffer used to hold an NFC NDEF message. */
 static uint8_t ndef_msg_buf[NDEF_MSG_BUF_SIZE];
@@ -495,6 +496,7 @@ int main(void)
 	int err;
 	uint32_t nrf_err;
 	bool erase_bonds;
+	ble_gap_conn_sec_mode_t device_name_write_sec;
 	struct ble_dis_config dis_config = {
 		.sec_mode = BLE_DIS_CONFIG_SEC_MODE_DEFAULT,
 	};
@@ -536,6 +538,14 @@ int main(void)
 	}
 
 	LOG_INF("Bluetooth is enabled!");
+
+	BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&device_name_write_sec);
+	nrf_err = sd_ble_gap_device_name_set(&device_name_write_sec, device_name,
+					     strlen(device_name));
+	if (nrf_err != NRF_SUCCESS) {
+		LOG_ERR("Failed to set device name, nrf_error %#x", nrf_err);
+		goto fail;
+	}
 
 	nrf_err = peer_manager_init();
 	if (nrf_err != NRF_SUCCESS) {
