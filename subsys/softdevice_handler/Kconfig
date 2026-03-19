@@ -198,14 +198,23 @@ config NRF_SDH_BLE_GAP_EVENT_LENGTH
 
 config NRF_SDH_BLE_GATT_MAX_MTU_SIZE
 	int "Maximum MTU size"
-	range 23 65535
+	range 23 $(UINT16_MAX)
 	default 23
+	help
+	  Maximum size of an ATT packet the SoftDevice can send or receive.
+	  Increasing this number will increase the size of internal buffers in the SoftDevice
+	  and hence, the amount of dynamic RAM required by the SoftDevice.
+	  The minimum size is BLE_GATT_ATT_MTU_DEFAULT.
 
 config NRF_SDH_BLE_GATTS_ATTR_TAB_SIZE
 	int "Attribute Table size in bytes"
+	range 248 $(UINT32_MAX)
 	default 1408
 	help
-	  The size must be a multiple of 4.
+	  Size of the Attribute Table in the SoftDevice. Increasing this number allows for more
+	  services and characteristics to be added to the Attribute Table in the SoftDevice.
+	  Increasing this number will increase the amount of dynamic RAM required by the SoftDevice.
+	  The minimum size is BLE_GATTS_ATTR_TAB_SIZE_MIN. The size must be a multiple of 4.
 
 config NRF_SDH_BLE_VS_UUID_COUNT
 	int "Number of vendor-specific UUIDs"
@@ -213,6 +222,14 @@ config NRF_SDH_BLE_VS_UUID_COUNT
 
 config NRF_SDH_BLE_SERVICE_CHANGED
 	bool "Include the Service Changed characteristic in the Attribute Table"
+
+config NRF_SDH_BLE_LOG_SD_RAM_USAGE
+	bool "Log RAM usage on BLE enable"
+	help
+	  The amount of RAM needed by the SoftDevice changes based on the configuration.
+	  This enables logging of SoftDevice RAM usage and also the SoftDevice RAM end address.
+	  The reported SoftDevice RAM end address can be used to tweak the application RAM start
+	  address. For instance to maximize RAM for the application.
 
 endmenu
 
@@ -232,6 +249,12 @@ config NRF_SDH_STR_TABLES
 	help
 	  Compile a table of stringified SoftDevice events for nrf_sdh_ble_evt_to_str() and
 	  nrf_sdh_soc_evt_to_str(). Disable to save non-volatile memory.
+
+config NRF_SDH_LOG_SD_INFO
+	bool "Log SoftDevice information on enable"
+	help
+	  Log SoftDevice ID, version, firmware ID and unique string when enabling the SoftDevice.
+	  Log Link Layer version when enabling Bluetooth LE.
 
 module=NRF_SDH
 module-str= SoftDevice handler

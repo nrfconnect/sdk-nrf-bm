@@ -31,7 +31,16 @@ S145 SoftDevice
 SoftDevice Handler
 ==================
 
-* Updated the :c:macro:`NRF_SDH_STATE_EVT_OBSERVER` and :c:macro:`NRF_SDH_STACK_EVT_OBSERVER` macros to not declare the handler prototype.
+* Added:
+
+   * The :kconfig:option:`CONFIG_NRF_SDH_LOG_SD_INFO` Kconfig option to log SoftDevice information like version and firmware ID when enabling the SoftDevice.
+   * The :kconfig:option:`CONFIG_NRF_SDH_BLE_LOG_SD_RAM_USAGE` Kconfig option to log SoftDevice RAM usage and the application RAM minimum address when enabling Bluetooth LE in the SoftDevice.
+   * The :c:func:`nrf_sdh_ble_sd_ram_usage_get` function for returning the number of bytes used/required for SoftDevice RAM.
+
+* Updated:
+
+   * The :c:macro:`NRF_SDH_STATE_EVT_OBSERVER` and :c:macro:`NRF_SDH_STACK_EVT_OBSERVER` macros to not declare the handler prototype.
+   * The log error message when there is insufficient RAM for the SoftDevice when enabling Bluetooth LE in the SoftDevice.
 
 Boards
 ======

@@ -13,6 +13,7 @@
 #include <zephyr/logging/log.h>
 
 #define APP_RAM_START DT_REG_ADDR(DT_CHOSEN(zephyr_sram))
+#define SD_RAM_START DT_REG_ADDR(DT_NODELABEL(cpuapp_sram))
 
 LOG_MODULE_DECLARE(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
 
@@ -28,6 +29,8 @@ BUILD_ASSERT(PERIPHERAL_LINKS + CENTRAL_LINKS <= CONFIG_NRF_SDH_BLE_TOTAL_LINK_C
 	     "Invalid link configuration");
 
 extern bool sdh_state_evt_observer_notify(enum nrf_sdh_state_evt state);
+
+static uint32_t sd_ram_size;
 
 const char *nrf_sdh_ble_evt_to_str(uint32_t evt)
 {
@@ -145,6 +148,11 @@ const char *nrf_sdh_ble_evt_to_str(uint32_t evt)
 	}
 }
 
+uint32_t nrf_sdh_ble_sd_ram_usage_get(void)
+{
+	return sd_ram_size;
+}
+
 static int default_cfg_set(void)
 {
 	int err;
@@ -240,18 +248,22 @@ int nrf_sdh_ble_enable(uint8_t conn_cfg_tag)
 {
 	int err;
 	uint32_t app_ram_minimum = APP_RAM_START;
-	const uint32_t app_ram_start_link = APP_RAM_START;
 
 	default_cfg_set();
 
-	LOG_DBG("Application RAM starts at 0x%x", app_ram_start_link);
-
 	err = sd_ble_enable(&app_ram_minimum);
-	if (app_ram_minimum > app_ram_start_link) {
-		LOG_ERR("Insufficient RAM allocated for the SoftDevice (have %#x, need %#x)",
-			app_ram_start_link, app_ram_minimum);
-	} else if (app_ram_minimum != app_ram_start_link) {
-		LOG_DBG("Application RAM start location can be adjusted to %#x", app_ram_minimum);
+	if (app_ram_minimum > APP_RAM_START) {
+		LOG_ERR("Insufficient RAM allocated for the SoftDevice! Change application RAM "
+			"start address from %#x to >= %#x", APP_RAM_START, app_ram_minimum);
+	} else if ((app_ram_minimum < APP_RAM_START) &&
+		   IS_ENABLED(CONFIG_NRF_SDH_BLE_LOG_SD_RAM_USAGE)) {
+		LOG_INF("Application RAM start address can be lowered from %#x to %#x",
+			APP_RAM_START, app_ram_minimum);
+	}
+
+	if (IS_ENABLED(CONFIG_NRF_SDH_BLE_LOG_SD_RAM_USAGE)) {
+		LOG_INF("SoftDevice RAM location: %#x - %#x, size: %d bytes",
+			SD_RAM_START, app_ram_minimum, (app_ram_minimum - SD_RAM_START));
 	}
 
 	if (err) {
@@ -259,7 +271,17 @@ int nrf_sdh_ble_enable(uint8_t conn_cfg_tag)
 		return err;
 	}
 
+	if (IS_ENABLED(CONFIG_NRF_SDH_LOG_SD_INFO)) {
+		ble_version_t ll_ver = {0};
+
+		(void)sd_ble_version_get(&ll_ver);
+		LOG_INF("SoftDevice Link Layer version %d.%d", ll_ver.version_number,
+			ll_ver.subversion_number);
+	}
+
 	LOG_DBG("SoftDevice BLE enabled");
+
+	sd_ram_size = app_ram_minimum - SD_RAM_START;
 
 	(void)sdh_state_evt_observer_notify(NRF_SDH_STATE_EVT_BLE_ENABLED);
 
