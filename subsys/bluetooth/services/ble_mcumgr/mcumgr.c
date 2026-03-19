@@ -120,11 +120,11 @@ static void on_write(struct ble_mcumgr *service, const ble_evt_t *ble_evt)
 
 		started = (smp_reassembly_expected(&smp_ncs_bm_bt_transport) >= 0);
 
-		LOG_DBG("Started = %s, buf len = %d", started ? "true" : "false", evt_write->len);
+		LOG_DBG("Started: %s, buf len: %d", started ? "true" : "false", evt_write->len);
 
 		ret = smp_reassembly_collect(&smp_ncs_bm_bt_transport, evt_write->data,
 					     evt_write->len);
-		LOG_DBG("Collect = %d", ret);
+		LOG_DBG("Collect: %d", ret);
 
 		/*
 		 * Collection can fail only due to failing to allocate memory or by receiving

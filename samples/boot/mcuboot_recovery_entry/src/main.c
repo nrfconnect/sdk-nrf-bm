@@ -127,7 +127,7 @@ static void ble_adv_evt_handler(struct ble_adv *adv, const struct ble_adv_evt *a
 {
 	switch (adv_evt->evt_type) {
 	case BLE_ADV_EVT_ERROR:
-		LOG_ERR("Advertising error: %#x", adv_evt->error.reason);
+		LOG_ERR("Advertising failed, err %#x", adv_evt->error.reason);
 		break;
 	default:
 		break;
@@ -176,7 +176,7 @@ int main(void)
 
 	err = nrf_sdh_enable_request();
 	if (err) {
-		LOG_ERR("Failed to enable SoftDevice: %d", err);
+		LOG_ERR("Failed to enable SoftDevice, err %d", err);
 		return 0;
 	}
 
@@ -184,7 +184,7 @@ int main(void)
 
 	err = nrf_sdh_ble_enable(CONFIG_NRF_SDH_BLE_CONN_TAG);
 	if (err) {
-		LOG_ERR("Failed to enable BLE: %d", err);
+		LOG_ERR("Failed to enable BLE, err %d", err);
 		return 0;
 	}
 
@@ -195,7 +195,7 @@ int main(void)
 	err = settings_subsys_init();
 
 	if (err) {
-		LOG_ERR("Failed to enable settings: %d", err);
+		LOG_ERR("Failed to enable settings, err %d", err);
 	}
 #endif
 
@@ -227,7 +227,7 @@ int main(void)
 		return 0;
 	}
 
-	LOG_INF("Advertising as: %s", CONFIG_BLE_ADV_NAME);
+	LOG_INF("Advertising as %s", CONFIG_BLE_ADV_NAME);
 
 	while (notification_sent == false && device_disconnected == false) {
 		log_flush();

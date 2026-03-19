@@ -25,7 +25,7 @@ int main(void)
 	if (rc == 0) {
 		sys_reboot(SYS_REBOOT_WARM);
 	} else {
-		LOG_INF("Error, failed to set boot mode: %d", rc);
+		LOG_INF("Failed to set boot mode, rc %d", rc);
 	}
 
 	return 0;

@@ -357,7 +357,7 @@ void pm_handler_pm_evt_log(const struct pm_evt *pm_evt)
 		break;
 
 	case PM_EVT_CONN_SEC_FAILED:
-		LOG_INF("Connection security failed: role: %s, conn_handle: 0x%x, procedure: "
+		LOG_INF("Connection security failed: role: %s, conn_handle: %#x, procedure: "
 			"%s, error: %d",
 			roles_str[pm_conn_state_role(pm_evt->conn_handle)],
 			pm_evt->conn_handle,
@@ -454,7 +454,7 @@ void pm_handler_pm_evt_log(const struct pm_evt *pm_evt)
 		break;
 
 	default:
-		LOG_WRN("Unexpected PM event ID: 0x%x.", pm_evt->evt_id);
+		LOG_WRN("Unexpected PM event ID: %#x.", pm_evt->evt_id);
 		break;
 	}
 }
@@ -483,7 +483,7 @@ void pm_handler_disconnect_on_insufficient_sec(const struct pm_evt *pm_evt,
 			uint32_t nrf_err = sd_ble_gap_disconnect(
 				pm_evt->conn_handle, BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
 			APP_ERROR_CHECK(nrf_err);
-			LOG_ERR("sd_ble_gap_disconnect() error 0x%x", nrf_err);
+			LOG_ERR("sd_ble_gap_disconnect() error %#x", nrf_err);
 		}
 	}
 }
@@ -518,8 +518,8 @@ void pm_handler_secure_on_error(const ble_evt_t *ble_evt)
 		     BLE_GATT_STATUS_ATTERR_INSUF_ENCRYPTION) ||
 		    (ble_evt->evt.gattc_evt.gatt_status ==
 		     BLE_GATT_STATUS_ATTERR_INSUF_AUTHENTICATION)) {
-			LOG_INF("GATTC procedure (evt id 0x%x) failed because it needs "
-				"encryption. Bonding: conn_handle=%d",
+			LOG_INF("GATTC procedure (evt id %#x) failed because it needs "
+				"encryption. Bonding conn_handle: %d",
 				ble_evt->header.evt_id,
 				ble_evt->evt.gattc_evt.conn_handle);
 			conn_secure(ble_evt->evt.gattc_evt.conn_handle, true);

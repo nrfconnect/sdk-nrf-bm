@@ -148,7 +148,7 @@ static int storage_writes(void)
 	/* Prepare writes. */
 	outstanding_writes = 2;
 
-	LOG_INF("Writing in Partition A, addr: 0x%08X, size: %d", storage_a.addr,
+	LOG_INF("Writing in Partition A, addr 0x%08X, size %d", storage_a.addr,
 		sizeof(input_a));
 
 	err = bm_storage_write(&storage_a, 0, input_a, sizeof(input_a), NULL);
@@ -157,7 +157,7 @@ static int storage_writes(void)
 		return err;
 	}
 
-	LOG_INF("Writing in Partition B, addr: 0x%08X, size: %d", storage_b.addr,
+	LOG_INF("Writing in Partition B, addr 0x%08X, size %d", storage_b.addr,
 		sizeof(input_b));
 
 	err = bm_storage_write(&storage_b, 0, input_b, sizeof(input_b), NULL);
@@ -177,7 +177,7 @@ static int storage_erases(void)
 	/* Prepare writes. */
 	outstanding_writes = 2;
 
-	LOG_INF("Erasing in Partition A, addr: 0x%08X, size: %d", storage_a.addr,
+	LOG_INF("Erasing in Partition A, addr 0x%08X, size %d", storage_a.addr,
 		sizeof(erase));
 
 	err = bm_storage_write(&storage_a, 0, erase, sizeof(erase), NULL);
@@ -186,7 +186,7 @@ static int storage_erases(void)
 		return err;
 	}
 
-	LOG_INF("Erasing in Partition B, addr: 0x%08X, size: %d", storage_b.addr,
+	LOG_INF("Erasing in Partition B, addr 0x%08X, size %d", storage_b.addr,
 		sizeof(erase));
 
 	err = bm_storage_write(&storage_b, 0, erase, sizeof(erase), NULL);
@@ -209,7 +209,7 @@ static int storage_reads(void)
 		return err;
 	}
 
-	LOG_HEXDUMP_INF(output, sizeof(output), "output A:");
+	LOG_HEXDUMP_INF(output, sizeof(output), "output A");
 
 	memset(output, 0, sizeof(output));
 
@@ -219,7 +219,7 @@ static int storage_reads(void)
 		return err;
 	}
 
-	LOG_HEXDUMP_INF(output, sizeof(output), "output B:");
+	LOG_HEXDUMP_INF(output, sizeof(output), "output B");
 
 	return 0;
 }

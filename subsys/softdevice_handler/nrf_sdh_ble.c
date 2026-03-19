@@ -244,7 +244,7 @@ int nrf_sdh_ble_enable(uint8_t conn_cfg_tag)
 
 	default_cfg_set();
 
-	LOG_DBG("Application RAM starts at 0x%x", app_ram_start_link);
+	LOG_DBG("Application RAM starts at %#x", app_ram_start_link);
 
 	err = sd_ble_enable(&app_ram_minimum);
 	if (app_ram_minimum > app_ram_start_link) {

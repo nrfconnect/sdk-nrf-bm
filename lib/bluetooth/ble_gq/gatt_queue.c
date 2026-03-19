@@ -48,7 +48,7 @@ static uint32_t gattc_write_store(struct k_heap *data_pool, const struct ble_gq_
 		return NRF_ERROR_NO_MEM;
 	}
 
-	LOG_DBG("Allocated heap memory with addr: %#lx", (uintptr_t)data);
+	LOG_DBG("Allocated heap memory with addr %#lx", (uintptr_t)data);
 
 	/* Copy relevant data to the allocated heap space. */
 	memcpy(data, (void *)gattc_write->p_value, gattc_write->len);
@@ -77,7 +77,7 @@ static uint32_t gatts_hvx_store(struct k_heap *data_pool, const struct ble_gq_re
 		return NRF_ERROR_NO_MEM;
 	}
 
-	LOG_DBG("Allocated heap memory with addr: %#lx", (uintptr_t)data);
+	LOG_DBG("Allocated heap memory with addr %#lx", (uintptr_t)data);
 
 	/* Copy relevant data to the allocated heap space. */
 	memcpy(&data[0], (void *)gatts_hvx->p_len, sizeof(uint16_t));
@@ -114,7 +114,7 @@ static void request_error_handle(const struct ble_gq_req *req, uint16_t conn_han
 	};
 
 	if (nrf_err == NRF_SUCCESS) {
-		LOG_DBG("SD GATT procedure (%d) succeeded on connection handle: %d.", req->type,
+		LOG_DBG("SD GATT procedure (%d) succeeded on connection handle %d.", req->type,
 			conn_handle);
 	} else {
 		LOG_DBG("SD GATT procedure (%d) failed on connection handle %d with nrf_error %#x",
@@ -171,7 +171,7 @@ static bool request_process(const struct ble_gq_req *req, uint16_t conn_handle)
 		break;
 	default:
 		nrf_err = NRF_ERROR_NOT_SUPPORTED;
-		LOG_WRN("Unimplemented GATT request with type: %d", req->type);
+		LOG_WRN("Unimplemented GATT request with type %d", req->type);
 		break;
 	}
 
@@ -263,7 +263,7 @@ static void req_queues_purge(const struct ble_gq *gq)
 			continue;
 		}
 
-		LOG_DBG("Purging request queue with id: %d", conn_id);
+		LOG_DBG("Purging request queue with id %d", conn_id);
 
 		req_queue_clear(gq, conn_id);
 		gq->purge_list[i] = gq->max_conns;
