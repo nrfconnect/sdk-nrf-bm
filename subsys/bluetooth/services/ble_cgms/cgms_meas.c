@@ -7,8 +7,8 @@
 #include <string.h>
 #include <zephyr/sys/byteorder.h>
 #include <ble.h>
+#include <bm/bluetooth/ble_common.h>
 #include <bm/bluetooth/services/ble_cgms.h>
-#include <bm/bluetooth/services/common.h>
 #include <bm/bluetooth/services/uuid.h>
 #include "cgms_meas.h"
 #include "cgms_db.h"

@@ -13,8 +13,8 @@
 #include <nrf_soc.h>
 #include <bm/softdevice_handler/nrf_sdh.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
+#include <bm/bluetooth/ble_common.h>
 #include <bm/bluetooth/ble_conn_params.h>
-#include <bm/bluetooth/services/common.h>
 #include <bm/bluetooth/services/uuid.h>
 #include <bm/bluetooth/services/ble_mcumgr.h>
 

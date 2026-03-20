@@ -7,8 +7,8 @@
 #include <nrf_error.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <bm/bluetooth/ble_common.h>
 #include <bm/bluetooth/services/ble_nus.h>
-#include <bm/bluetooth/services/common.h>
 #include <bm/bluetooth/services/uuid.h>
 
 #include <zephyr/logging/log.h>

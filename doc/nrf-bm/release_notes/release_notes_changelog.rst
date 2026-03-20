@@ -256,6 +256,11 @@ Utils
 
    * Moved the :file:`ble_date_time.h` header file from :file:`include/bm/bluetooth/services/` to :file:`include/bm/bluetooth/`.
 
+* ``ble_common.h``:
+
+   * Renamed the ``common.h`` header file to :file:`ble_common.h`.
+   * Moved the :file:`ble_common.h` header file from :file:`include/bm/bluetooth/services/` to :file:`include/bm/bluetooth/`.
+
 Samples
 =======
 

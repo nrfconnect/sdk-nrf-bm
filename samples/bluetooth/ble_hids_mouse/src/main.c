@@ -11,8 +11,8 @@
 #include <ble_types.h>
 #include <hal/nrf_gpio.h>
 #include <bm/bluetooth/ble_adv.h>
+#include <bm/bluetooth/ble_common.h>
 #include <bm/bluetooth/ble_qwr.h>
-#include <bm/bluetooth/services/common.h>
 #include <bm/bluetooth/services/uuid.h>
 #include <bm/bluetooth/services/ble_bas.h>
 #include <bm/bluetooth/services/ble_dis.h>

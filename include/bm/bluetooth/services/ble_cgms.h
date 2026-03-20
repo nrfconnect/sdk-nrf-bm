@@ -24,9 +24,9 @@
 
 #include <stdint.h>
 
+#include <bm/bluetooth/ble_common.h>
 #include <bm/bluetooth/ble_gq.h>
 #include <bm/bluetooth/ble_racp.h>
-#include <bm/bluetooth/services/common.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
 #include <zephyr/sys/util.h>
 

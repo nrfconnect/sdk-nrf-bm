@@ -11,9 +11,9 @@
 #include <ble_gap.h>
 #include <ble_types.h>
 #include <ble_gatts.h>
+#include <bm/bluetooth/ble_common.h>
 #include <bm/bluetooth/services/ble_hids.h>
 #include <bm/bluetooth/services/uuid.h>
-#include <bm/bluetooth/services/common.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
 #include <zephyr/toolchain.h>
 #include <zephyr/logging/log.h>

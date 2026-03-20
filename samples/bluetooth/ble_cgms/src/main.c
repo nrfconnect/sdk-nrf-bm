@@ -21,11 +21,11 @@
 #include <ble_gap.h>
 #include <hal/nrf_gpio.h>
 #include <bm/bluetooth/ble_adv.h>
+#include <bm/bluetooth/ble_common.h>
 #include <bm/bluetooth/ble_conn_params.h>
 #include <bm/bluetooth/peer_manager/nrf_ble_lesc.h>
 #include <bm/bluetooth/peer_manager/peer_manager.h>
 #include <bm/bluetooth/peer_manager/peer_manager_handler.h>
-#include <bm/bluetooth/services/common.h>
 #include <bm/bluetooth/services/uuid.h>
 #include <bm/bluetooth/services/ble_bas.h>
 #include <bm/bluetooth/services/ble_cgms.h>
