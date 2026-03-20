@@ -18,10 +18,8 @@
 
 LOG_MODULE_REGISTER(ble_hrs, CONFIG_BLE_HRS_LOG_LEVEL);
 
-/* Length of ATT header. Opcode (1 byte) and attribute handle (2 bytes). */
-#define ATT_HEADER_LENGTH 3
 /* Macro for calculating max ATT data/payload size from max ATT GATT MTU size. */
-#define MAX_HRM_LEN_CALC(max_mtu_size) ((max_mtu_size) - ATT_HEADER_LENGTH)
+#define MAX_HRM_LEN_CALC(max_mtu_size) ((max_mtu_size) - ATT_OPCODE_LEN - ATT_HANDLE_LEN)
 
 /* Initial Heart Rate Measurement value. */
 #define INITIAL_VALUE_HRM 0
