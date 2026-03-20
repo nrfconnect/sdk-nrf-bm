@@ -18,7 +18,7 @@
 #define BLE_DIS_H__
 
 #include <stdint.h>
-#include <bm/bluetooth/services/common.h>
+#include <bm/bluetooth/ble_common.h>
 
 #ifdef __cplusplus
 extern "C" {

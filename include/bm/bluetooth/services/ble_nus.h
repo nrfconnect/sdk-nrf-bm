@@ -17,7 +17,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <ble.h>
-#include <bm/bluetooth/services/common.h>
+#include <bm/bluetooth/ble_common.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
 
 #ifdef __cplusplus
@@ -61,14 +61,11 @@ void ble_nus_on_ble_evt(const ble_evt_t *ble_evt, void *context);
 		},                                                                                 \
 	}
 
-#define OPCODE_LENGTH 1
-#define HANDLE_LENGTH 2
-
 /**
  * @brief Macro for calculating maximum length of data (in bytes) that can be transmitted to
  *        the peer by the Nordic UART service module, given the ATT MTU size.
  */
-#define BLE_NUS_MAX_DATA_LEN_CALC(mtu_size) ((mtu_size) - OPCODE_LENGTH - HANDLE_LENGTH)
+#define BLE_NUS_MAX_DATA_LEN_CALC(mtu_size) ((mtu_size) - ATT_OPCODE_LEN - ATT_HANDLE_LEN)
 
 /**
  * @brief Maximum length of data (in bytes) that can be transmitted to the peer by the Nordic UART

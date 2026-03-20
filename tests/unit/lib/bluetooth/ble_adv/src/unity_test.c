@@ -12,7 +12,7 @@
 
 #include <bm/bluetooth/ble_adv.h>
 #include <bm/bluetooth/ble_adv_data.h>
-#include <bm/bluetooth/services/common.h>
+#include <bm/bluetooth/ble_common.h>
 
 #include <zephyr/sys/printk.h>
 #include <zephyr/sys/util.h>

@@ -5,14 +5,9 @@
  */
 
 /** @file
- * @brief Contains definition of ble_date_time structure.
- */
-
-/** @file
  *
- * @defgroup ble_sdk_srv_date_time BLE Date Time characteristic type
+ * @defgroup ble_date_time_char BLE Date Time characteristic type
  * @{
- * @ingroup ble_sdk_lib
  * @brief Definition of struct ble_date_time type.
  */
 

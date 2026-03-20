@@ -15,8 +15,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <ble.h>
+#include <bm/bluetooth/ble_common.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
-#include <bm/bluetooth/services/common.h>
 
 #ifdef __cplusplus
 extern "C" {

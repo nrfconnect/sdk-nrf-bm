@@ -9,9 +9,9 @@
 #include <string.h>
 #include <ble.h>
 #include <ble_gatts.h>
+#include <bm/bluetooth/ble_common.h>
 #include <bm/bluetooth/ble_gq.h>
 #include <bm/bluetooth/services/ble_cgms.h>
-#include <bm/bluetooth/services/common.h>
 #include <bm/bluetooth/services/uuid.h>
 
 #include "cgms_racp.h"

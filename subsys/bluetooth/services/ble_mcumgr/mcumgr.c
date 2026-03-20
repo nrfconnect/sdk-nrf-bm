@@ -13,8 +13,8 @@
 #include <nrf_soc.h>
 #include <bm/softdevice_handler/nrf_sdh.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
+#include <bm/bluetooth/ble_common.h>
 #include <bm/bluetooth/ble_conn_params.h>
-#include <bm/bluetooth/services/common.h>
 #include <bm/bluetooth/services/uuid.h>
 #include <bm/bluetooth/services/ble_mcumgr.h>
 
@@ -28,14 +28,11 @@
 
 LOG_MODULE_REGISTER(mcumgr, CONFIG_BLE_MCUMGR_LOG_LEVEL);
 
-#define OPCODE_LENGTH 1
-#define HANDLE_LENGTH 2
-
 /**
  * @brief Macro for calculating maximum length of data (in bytes) that can be transmitted to
- *        the peer over GATT, given the ATT MTU size.
+ *        the peer in one ATT write or notification packet, given the ATT MTU size.
  */
-#define BLE_GATT_MAX_DATA_LEN_CALC(mtu_size) ((mtu_size) - OPCODE_LENGTH - HANDLE_LENGTH)
+#define BLE_GATT_MAX_DATA_LEN_CALC(mtu_size) ((mtu_size) - ATT_OPCODE_LEN - ATT_HANDLE_LEN)
 
 /**
  * @brief Maximum length of data (in bytes) that can be transmitted to the peer over GATT

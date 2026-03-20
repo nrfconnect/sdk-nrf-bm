@@ -8,9 +8,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+#include <bm/bluetooth/ble_common.h>
 #include <bm/bluetooth/ble_conn_params.h>
 #include <bm/bluetooth/services/ble_hrs.h>
-#include <bm/bluetooth/services/common.h>
 #include <bm/bluetooth/services/uuid.h>
 #include <zephyr/sys/util.h>
 #include <zephyr/sys/__assert.h>

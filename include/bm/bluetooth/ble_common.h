@@ -4,43 +4,86 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#ifndef BLE_SERVICES_COMMON_H__
-#define BLE_SERVICES_COMMON_H__
+/** @file
+ *
+ * @defgroup bm_ble_common BLE common
+ * @{
+ * @brief Definitions of common macros and helper functions.
+ */
 
-#include <ble.h>
+#ifndef BLE_COMMON_H__
+#define BLE_COMMON_H__
+
+#include <stdbool.h>
+#include <stdint.h>
 #include <ble_gap.h>
+#include <ble_gatt.h>
 #include <zephyr/sys/byteorder.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-static inline uint16_t is_notification_enabled(const uint8_t *gatts_write_data)
+/**
+ * @brief Length of the Attribute Opcode parameter in an Attribute PDU.
+ */
+#define ATT_OPCODE_LEN sizeof(uint8_t)
+
+/**
+ * @brief Length of the Attribute Handle parameter in an Attribute PDU.
+ */
+#define ATT_HANDLE_LEN sizeof(uint16_t)
+
+/**
+ * @brief Calculate how many 32-bit words are needed to hold n_bytes.
+ *
+ * @param[in] n_bytes Number of bytes.
+ *
+ * @return Number of 32-bit words.
+ */
+#define BYTES_TO_WORDS(n_bytes) (((n_bytes) + 3) >> 2)
+
+/**
+ * @brief Read CCCD value from data and check if notifications are enabled.
+ *
+ * @param[in] gatts_value Pointer to CCCD value.
+ *
+ * @return true if notifications are enabled, false if not.
+ */
+static inline bool is_notification_enabled(const uint8_t *gatts_value)
 {
-	const uint16_t cccd_val = sys_get_le16(gatts_write_data);
+	const uint16_t cccd_val = sys_get_le16(gatts_value);
 
 	return (cccd_val & BLE_GATT_HVX_NOTIFICATION);
 }
 
-static inline uint16_t is_indication_enabled(const uint8_t *gatts_write_data)
+/**
+ * @brief Read CCCD value from data and check if indications are enabled.
+ *
+ * @param[in] gatts_value Pointer to CCCD value.
+ *
+ * @return true if indications are enabled, false if not.
+ */
+static inline bool is_indication_enabled(const uint8_t *gatts_value)
 {
-	const uint16_t cccd_val = sys_get_le16(gatts_write_data);
+	const uint16_t cccd_val = sys_get_le16(gatts_value);
 
 	return (cccd_val & BLE_GATT_HVX_INDICATION);
 }
 
-#define gap_conn_sec_mode_from_u8(x)                                                               \
-	{                                                                                          \
-		.sm = ((x) >> 4) & 0xf, .lv = (x) & 0xf,                                           \
-	}
-
+/**
+ * @brief Compare GAP connection security mode.
+ *
+ * @param[in] a First conn_sec_mode value.
+ * @param[in] b Second conn_sec_mode value.
+ *
+ * @return true if the GAP connection security modes are equal, false if not.
+ */
 static inline bool ble_gap_conn_sec_mode_equal(const ble_gap_conn_sec_mode_t *a,
 					       const ble_gap_conn_sec_mode_t *b)
 {
 	return (a->sm == b->sm) && (a->lv == b->lv);
 }
-
-#define BYTES_TO_WORDS(n_bytes) (((n_bytes) + 3) >> 2)
 
 /**
  * @brief Set sec_mode to have no access rights.
@@ -91,4 +134,6 @@ static inline bool ble_gap_conn_sec_mode_equal(const ble_gap_conn_sec_mode_t *a,
 }
 #endif
 
-#endif /* BLE_SERVICES_COMMON_H__ */
+#endif /* BLE_COMMON_H__ */
+
+/** @} */
