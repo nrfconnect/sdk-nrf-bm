@@ -251,6 +251,8 @@ Utils
 
    * Renamed the ``common.h`` header file to :file:`ble_common.h`.
    * Moved the :file:`ble_common.h` header file from :file:`include/bm/bluetooth/services/` to :file:`include/bm/bluetooth/`.
+   * Removed the ``gap_conn_sec_mode_from_u8`` function from the :file:`ble_common.h` file.
+     Use the :c:macro:`BLE_GAP_CONN_SEC_MODE_OPEN` and similar macros instead.
 
 Samples
 =======
