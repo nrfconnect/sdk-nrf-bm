@@ -7,8 +7,8 @@
 #ifndef BLE_COMMON_H__
 #define BLE_COMMON_H__
 
-#include <ble.h>
 #include <ble_gap.h>
+#include <ble_gatt.h>
 #include <zephyr/sys/byteorder.h>
 
 #ifdef __cplusplus
