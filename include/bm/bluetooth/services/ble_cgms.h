@@ -67,14 +67,11 @@ extern "C" {
 		},                                                                                 \
 	}
 
-#define OPCODE_LENGTH 1
-#define HANDLE_LENGTH 2
-
 /**
  * @brief Macro for calculating maximum length of data (in bytes) that can be transmitted to
- *        the peer in one ATT packet, given the ATT MTU size.
+ *        the peer in one ATT write or notification packet, given the ATT MTU size.
  */
-#define BLE_CGMS_DATA_MAX_LEN_CALC(mtu_size) ((mtu_size) - OPCODE_LENGTH - HANDLE_LENGTH)
+#define BLE_CGMS_DATA_MAX_LEN_CALC(mtu_size) ((mtu_size) - ATT_OPCODE_LEN - ATT_HANDLE_LEN)
 
 /**
  * @name CGM Feature characteristic defines

@@ -15,6 +15,7 @@
 #define BLE_COMMON_H__
 
 #include <stdbool.h>
+#include <stdint.h>
 #include <ble_gap.h>
 #include <ble_gatt.h>
 #include <zephyr/sys/byteorder.h>
@@ -22,6 +23,16 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**
+ * @brief Length of the Attribute Opcode parameter in an Attribute PDU.
+ */
+#define ATT_OPCODE_LEN sizeof(uint8_t)
+
+/**
+ * @brief Length of the Attribute Handle parameter in an Attribute PDU.
+ */
+#define ATT_HANDLE_LEN sizeof(uint16_t)
 
 /**
  * @brief Calculate how many 32-bit words are needed to hold n_bytes.
