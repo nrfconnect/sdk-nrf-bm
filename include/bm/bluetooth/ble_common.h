@@ -36,11 +36,6 @@ static inline uint16_t is_indication_enabled(const uint8_t *gatts_write_data)
 	return (cccd_val & BLE_GATT_HVX_INDICATION);
 }
 
-#define gap_conn_sec_mode_from_u8(x)                                                               \
-	{                                                                                          \
-		.sm = ((x) >> 4) & 0xf, .lv = (x) & 0xf,                                           \
-	}
-
 static inline bool ble_gap_conn_sec_mode_equal(const ble_gap_conn_sec_mode_t *a,
 					       const ble_gap_conn_sec_mode_t *b)
 {
