@@ -15,14 +15,6 @@
 
 LOG_MODULE_REGISTER(ble_nus, CONFIG_BLE_NUS_LOG_LEVEL);
 
-static struct ble_nus_client_context *ble_nus_client_context_get(struct ble_nus *nus,
-								 uint16_t conn_handle)
-{
-	const int idx = nrf_sdh_ble_idx_get(conn_handle);
-
-	return ((idx >= 0) ? &nus->contexts[idx] : NULL);
-}
-
 static uint32_t nus_rx_char_add(struct ble_nus *nus, const struct ble_nus_config *cfg)
 {
 	ble_uuid_t char_uuid = {
@@ -103,35 +95,16 @@ static void on_connect(struct ble_nus *nus, const ble_evt_t *ble_evt)
 		.evt_type = BLE_NUS_EVT_COMM_STARTED,
 		.conn_handle = conn_handle,
 	};
-	uint8_t cccd_value[2];
+
+	/* Check the host's CCCD value to inform of readiness to send data */
 	ble_gatts_value_t gatts_val = {
-		.p_value = cccd_value,
-		.len = sizeof(cccd_value),
-		.offset = 0,
+		.p_value = (uint8_t *)&(uint16_t){0},
+		.len = sizeof(uint16_t),
 	};
-	struct ble_nus_client_context *ctx;
 
-	ctx = ble_nus_client_context_get(nus, conn_handle);
-	if (ctx == NULL) {
-		LOG_ERR("Could not fetch nus context for connection handle %#x", conn_handle);
-		evt.evt_type = BLE_NUS_EVT_ERROR;
-		evt.error.reason = NRF_ERROR_NOT_FOUND;
-		if (nus->evt_handler != NULL) {
-			nus->evt_handler(nus, &evt);
-		}
-	}
-
-	/* Check the hosts CCCD value to inform of readiness to send data using the
-	 * RX characteristic
-	 */
 	nrf_err = sd_ble_gatts_value_get(conn_handle, nus->tx_handles.cccd_handle, &gatts_val);
 	if ((nrf_err == NRF_SUCCESS) && (nus->evt_handler != NULL) &&
 	    is_notification_enabled(gatts_val.p_value)) {
-		if (ctx != NULL) {
-			ctx->is_notification_enabled = true;
-		}
-
-		evt.link_ctx = ctx;
 		nus->evt_handler(nus, &evt);
 	}
 }
@@ -149,34 +122,16 @@ static void on_write(struct ble_nus *nus, const ble_evt_t *ble_evt)
 	struct ble_nus_evt evt = {
 		.conn_handle = conn_handle,
 	};
-	struct ble_nus_client_context *ctx;
-
-	ctx = ble_nus_client_context_get(nus, conn_handle);
-	if (ctx == NULL) {
-		LOG_ERR("Could not fetch nus context for connection handle %#x", conn_handle);
-		evt.evt_type = BLE_NUS_EVT_ERROR;
-		evt.error.reason = NRF_ERROR_NOT_FOUND;
-		if (nus->evt_handler != NULL) {
-			nus->evt_handler(nus, &evt);
-		}
-	}
-
-	LOG_DBG("Link ctx %p", ctx);
-	evt.link_ctx = ctx;
 
 	if ((evt_write->handle == nus->tx_handles.cccd_handle) && (evt_write->len == 2)) {
-		if (ctx != NULL) {
-			if (is_notification_enabled(evt_write->data)) {
-				ctx->is_notification_enabled = true;
-				evt.evt_type = BLE_NUS_EVT_COMM_STARTED;
-			} else {
-				ctx->is_notification_enabled = false;
-				evt.evt_type = BLE_NUS_EVT_COMM_STOPPED;
-			}
+		if (is_notification_enabled(evt_write->data)) {
+			evt.evt_type = BLE_NUS_EVT_COMM_STARTED;
+		} else {
+			evt.evt_type = BLE_NUS_EVT_COMM_STOPPED;
+		}
 
-			if (nus->evt_handler != NULL) {
-				nus->evt_handler(nus, &evt);
-			}
+		if (nus->evt_handler != NULL) {
+			nus->evt_handler(nus, &evt);
 		}
 	} else if ((evt_write->handle == nus->rx_handles.value_handle) &&
 		   (nus->evt_handler != NULL)) {
@@ -198,21 +153,24 @@ static void on_write(struct ble_nus *nus, const ble_evt_t *ble_evt)
  */
 static void on_hvx_tx_complete(struct ble_nus *nus, const ble_evt_t *ble_evt)
 {
+	/* Check if peer still has notifications enabled */
 	const uint16_t conn_handle = ble_evt->evt.gatts_evt.conn_handle;
-	struct ble_nus_evt evt = {
-		.evt_type = BLE_NUS_EVT_TX_RDY,
-		.conn_handle = conn_handle,
+
+	ble_gatts_value_t val = {
+		.p_value = (uint8_t *)&(uint16_t){0},
+		.len = sizeof(uint16_t),
 	};
-	struct ble_nus_client_context *ctx;
 
-	ctx = ble_nus_client_context_get(nus, conn_handle);
-	if (ctx == NULL) {
-		LOG_ERR("Could not fetch nus context for connection handle %#x", conn_handle);
-		return;
-	}
+	uint32_t nrf_err = sd_ble_gatts_value_get(conn_handle, nus->tx_handles.cccd_handle, &val);
 
-	if ((ctx->is_notification_enabled) && (nus->evt_handler != NULL)) {
-		evt.link_ctx = ctx;
+	if ((nrf_err == NRF_SUCCESS) &&
+	    is_notification_enabled(val.p_value) &&
+	    (nus->evt_handler != NULL)) {
+		struct ble_nus_evt evt = {
+			.evt_type = BLE_NUS_EVT_TX_RDY,
+			.conn_handle = conn_handle,
+		};
+
 		nus->evt_handler(nus, &evt);
 	}
 }
@@ -287,22 +245,68 @@ uint32_t ble_nus_init(struct ble_nus *nus, const struct ble_nus_config *cfg)
 		return nrf_err;
 	}
 
-	return 0;
+	return NRF_SUCCESS;
 }
 
 uint32_t ble_nus_data_send(struct ble_nus *nus, uint8_t *data,
 			   uint16_t *len, uint16_t conn_handle)
 {
-	ble_gatts_hvx_params_t hvx = { 0 };
+	uint32_t nrf_err;
+	bool notify;
 
 	if (!nus || !data || !len) {
 		return NRF_ERROR_NULL;
 	}
 
-	hvx.type = BLE_GATT_HVX_NOTIFICATION;
-	hvx.handle = nus->tx_handles.value_handle;
-	hvx.p_data = data;
-	hvx.p_len = len;
+	/* Get CCCD notify status for connection */
+	ble_gatts_value_t val = {
+		.p_value = (uint8_t *)&(uint16_t){0},
+		.len = sizeof(uint16_t),
+	};
+	nrf_err = sd_ble_gatts_value_get(conn_handle, nus->tx_handles.cccd_handle, &val);
+	if (nrf_err == NRF_SUCCESS) {
+		/* CCCD read success. Check if peer has enabled notifications. */
+		notify = is_notification_enabled(val.p_value);
+	} else if (nrf_err == BLE_ERROR_INVALID_CONN_HANDLE) {
+		/* Connection no longer valid. Do not notify. */
+		notify = false;
+	} else if (nrf_err == BLE_ERROR_GATTS_SYS_ATTR_MISSING) {
+		/* CCCD value is unknown. Do not notify. */
+		notify = false;
+	} else {
+		LOG_ERR("Failed to get NUS CCCD value for connection %#x, nrf_error %#x",
+			conn_handle, nrf_err);
+		return nrf_err;
+	}
 
-	return sd_ble_gatts_hvx(conn_handle, &hvx);
+	if (notify) {
+		/* Update TX characteristic in the GATT database and notify the connected peer */
+		ble_gatts_hvx_params_t hvx = {0};
+
+		hvx.type = BLE_GATT_HVX_NOTIFICATION;
+		hvx.handle = nus->tx_handles.value_handle;
+		hvx.p_data = data;
+		hvx.p_len = len;
+
+		nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx);
+		if (nrf_err) {
+			LOG_ERR("Failed to notify NUS TX data, nrf_error %#x", nrf_err);
+			return nrf_err;
+		}
+	} else {
+		/* Update TX characteristic in the GATT database without notifying connected peer */
+		ble_gatts_value_t gatts_value = {0};
+
+		gatts_value.len = *len;
+		gatts_value.p_value = data;
+
+		nrf_err = sd_ble_gatts_value_set(BLE_CONN_HANDLE_INVALID,
+						 nus->tx_handles.value_handle, &gatts_value);
+		if (nrf_err) {
+			LOG_ERR("Failed to update NUS TX data, nrf_error %#x", nrf_err);
+			return nrf_err;
+		}
+	}
+
+	return NRF_SUCCESS;
 }

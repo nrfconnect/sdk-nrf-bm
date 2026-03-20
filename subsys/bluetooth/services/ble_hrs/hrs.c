@@ -67,8 +67,12 @@ static uint8_t hrm_encode(struct ble_hrs *hrs, uint16_t heart_rate, uint8_t *enc
 	}
 	for (i = 0; i < hrs->rr_interval_count; i++) {
 		if (len + sizeof(uint16_t) > hrs->max_hrm_len) {
-			/* Not all stored rr_interval values can fit into the encoded hrm,
-			 * move the remaining values to the start of the buffer.
+			/* Not all buffered rr_interval values can fit into one notification payload
+			 * (limited by the negotiated ATT MTU). Move the remaining values to the
+			 * start of the buffer so they are included in the next measurement.
+			 * If rr_interval values are added faster than they can be drained,
+			 * the oldest values will eventually be discarded by
+			 * ble_hrs_rr_interval_add() when the buffer is full.
 			 */
 			memmove(&hrs->rr_interval[0], &hrs->rr_interval[i],
 				(hrs->rr_interval_count - i) * sizeof(uint16_t));
@@ -152,13 +156,13 @@ static uint32_t body_sensor_location_char_add(struct ble_hrs *hrs, const struct 
 static void on_connect(struct ble_hrs *hrs, const ble_gap_evt_t *gap_evt)
 {
 	hrs->max_hrm_len = MAX_HRM_LEN_CALC(BLE_GATT_ATT_MTU_DEFAULT);
-	hrs->conn_handle = gap_evt->conn_handle;
+	hrs->conn_count++;
 }
 
 static void on_disconnect(struct ble_hrs *hrs, const ble_gap_evt_t *gap_evt)
 {
 	ARG_UNUSED(gap_evt);
-	hrs->conn_handle = BLE_CONN_HANDLE_INVALID;
+	hrs->conn_count--;
 }
 
 static void on_write(struct ble_hrs *hrs, const ble_gatts_evt_t *gatts_evt)
@@ -224,7 +228,7 @@ uint32_t ble_hrs_init(struct ble_hrs *hrs, const struct ble_hrs_config *cfg)
 
 	/* Initialize service structure. */
 	hrs->evt_handler = cfg->evt_handler;
-	hrs->conn_handle = BLE_CONN_HANDLE_INVALID;
+	hrs->conn_count = 0;
 	hrs->rr_interval_count = 0;
 	hrs->max_hrm_len = MAX_HRM_LEN_CALC(BLE_GATT_ATT_MTU_DEFAULT);
 	hrs->is_sensor_contact_supported = cfg->is_sensor_contact_supported;
@@ -259,33 +263,70 @@ uint32_t ble_hrs_init(struct ble_hrs *hrs, const struct ble_hrs_config *cfg)
 	return NRF_SUCCESS;
 }
 
-uint32_t ble_hrs_heart_rate_measurement_send(struct ble_hrs *hrs, uint16_t heart_rate)
+uint32_t ble_hrs_heart_rate_measurement_send(struct ble_hrs *hrs, uint16_t conn_handle,
+					     uint16_t heart_rate)
 {
 	uint32_t nrf_err;
-	ble_gatts_hvx_params_t hvx = {0};
-	uint8_t encoded_hrm[MAX_HRM_LEN_CALC(CONFIG_NRF_SDH_BLE_GATT_MAX_MTU_SIZE)];
-	uint16_t len;
+	bool notify;
 
 	if (!hrs) {
 		return NRF_ERROR_NULL;
 	}
 
-	LOG_INF("Heart rate: %d bpm", heart_rate);
-
-	/* Prepare heart rate measurement notification data */
-	len = hrm_encode(hrs, heart_rate, encoded_hrm);
-
-	/* Notify */
-	hvx.type = BLE_GATT_HVX_NOTIFICATION;
-	hvx.handle = hrs->hrm_handles.value_handle;
-	hvx.p_len = &len;
-	hvx.p_data = encoded_hrm;
-
-	nrf_err = sd_ble_gatts_hvx(hrs->conn_handle, &hvx);
-	if (nrf_err) {
-		LOG_ERR("Failed to notify heart rate measurement, nrf_error %#x", nrf_err);
+	/* Get CCCD notify status for connection */
+	ble_gatts_value_t val = {
+		.p_value = (uint8_t *)&(uint16_t){0},
+		.len = sizeof(uint16_t),
+	};
+	nrf_err = sd_ble_gatts_value_get(conn_handle, hrs->hrm_handles.cccd_handle, &val);
+	if (nrf_err == NRF_SUCCESS) {
+		/* CCCD read success. Check if peer has enabled notifications. */
+		notify = is_notification_enabled(val.p_value);
+	} else if (nrf_err == BLE_ERROR_INVALID_CONN_HANDLE) {
+		/* Connection no longer valid. Do not notify. */
+		notify = false;
+	} else if (nrf_err == BLE_ERROR_GATTS_SYS_ATTR_MISSING) {
+		/* CCCD value is unknown. Do not notify. */
+		notify = false;
+	} else {
+		LOG_ERR("Failed to get Heart Rate Service CCCD value for "
+			"connection %#x, nrf_error %#x", conn_handle, nrf_err);
 		return nrf_err;
 	}
+
+	uint8_t encoded_hrm[MAX_HRM_LEN_CALC(CONFIG_NRF_SDH_BLE_GATT_MAX_MTU_SIZE)];
+	uint16_t len = hrm_encode(hrs, heart_rate, encoded_hrm);
+
+	if (notify) {
+		/* Update heart rate in the GATT database and notify the connected peer */
+		ble_gatts_hvx_params_t hvx = {0};
+
+		hvx.type = BLE_GATT_HVX_NOTIFICATION;
+		hvx.handle = hrs->hrm_handles.value_handle;
+		hvx.p_len = &len;
+		hvx.p_data = encoded_hrm;
+
+		nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx);
+		if (nrf_err) {
+			LOG_ERR("Failed to notify heart rate measurement, nrf_error %#x", nrf_err);
+			return nrf_err;
+		}
+	} else {
+		/* Update heart rate in the GATT database without notifying connected peer */
+		ble_gatts_value_t gatts_value = {0};
+
+		gatts_value.len = len;
+		gatts_value.p_value = encoded_hrm;
+
+		nrf_err = sd_ble_gatts_value_set(BLE_CONN_HANDLE_INVALID,
+						hrs->hrm_handles.value_handle, &gatts_value);
+		if (nrf_err) {
+			LOG_ERR("Failed to update heart rate measurement, nrf_error %#x", nrf_err);
+			return nrf_err;
+		}
+	}
+
+	LOG_DBG("Heart rate: %d bpm", heart_rate);
 
 	return NRF_SUCCESS;
 }
@@ -297,6 +338,11 @@ uint32_t ble_hrs_rr_interval_add(struct ble_hrs *hrs, uint16_t rr_interval)
 	}
 
 	if (hrs->rr_interval_count == CONFIG_BLE_HRS_MAX_BUFFERED_RR_INTERVALS) {
+		/**
+		 * Buffer is full, discard the oldest value by shifting all entries down by one.
+		 * This can happen when rr_interval values are added faster than
+		 * hrm_encode() can drain them into measurement updates.
+		 */
 		memmove(&hrs->rr_interval[0], &hrs->rr_interval[1],
 			(CONFIG_BLE_HRS_MAX_BUFFERED_RR_INTERVALS - 1) * sizeof(uint16_t));
 		hrs->rr_interval_count--;
@@ -319,8 +365,8 @@ uint32_t ble_hrs_sensor_contact_supported_set(struct ble_hrs *hrs, bool is_senso
 		return NRF_ERROR_NULL;
 	}
 
-	/* Check if we are connected to peer. */
-	if (hrs->conn_handle != BLE_CONN_HANDLE_INVALID) {
+	/* Cannot modify sensor contact support while connected. */
+	if (hrs->conn_count != 0) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
@@ -339,7 +385,8 @@ uint32_t ble_hrs_sensor_contact_detected_update(struct ble_hrs *hrs,
 	return NRF_SUCCESS;
 }
 
-uint32_t ble_hrs_body_sensor_location_set(struct ble_hrs *hrs, uint8_t body_sensor_location)
+uint32_t ble_hrs_body_sensor_location_set(struct ble_hrs *hrs,
+					  uint16_t conn_handle, uint8_t body_sensor_location)
 {
 	uint32_t nrf_err;
 	ble_gatts_value_t gatts_value = {
@@ -351,7 +398,7 @@ uint32_t ble_hrs_body_sensor_location_set(struct ble_hrs *hrs, uint8_t body_sens
 		return NRF_ERROR_NULL;
 	}
 
-	nrf_err = sd_ble_gatts_value_set(hrs->conn_handle, hrs->bsl_handles.value_handle,
+	nrf_err = sd_ble_gatts_value_set(conn_handle, hrs->bsl_handles.value_handle,
 					 &gatts_value);
 	if (nrf_err) {
 		LOG_ERR("Failed to update body sensor location, nrf_error %#x", nrf_err);
@@ -361,12 +408,14 @@ uint32_t ble_hrs_body_sensor_location_set(struct ble_hrs *hrs, uint8_t body_sens
 	return NRF_SUCCESS;
 }
 
-void ble_hrs_conn_params_evt(struct ble_hrs *hrs, const struct ble_conn_params_evt *conn_params_evt)
+void ble_hrs_conn_params_evt(struct ble_hrs *hrs,
+			     uint16_t conn_handle,
+			     const struct ble_conn_params_evt *conn_params_evt)
 {
 	__ASSERT(hrs, "hrs is NULL");
 	__ASSERT(conn_params_evt, "GATT event is NULL");
 
-	if ((hrs->conn_handle == conn_params_evt->conn_handle)
+	if ((conn_handle == conn_params_evt->conn_handle)
 	    && (conn_params_evt->evt_type == BLE_CONN_PARAMS_EVT_ATT_MTU_UPDATED)) {
 		hrs->max_hrm_len = MAX_HRM_LEN_CALC(conn_params_evt->att_mtu);
 	}

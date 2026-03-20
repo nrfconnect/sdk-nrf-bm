@@ -141,6 +141,20 @@ uint32_t stub_sd_ble_gatts_hvx_different_len(uint16_t conn_handle,
 	return NRF_SUCCESS;
 }
 
+static uint32_t stub_sd_ble_gatts_value_get_notif_enabled(uint16_t conn_handle, uint16_t handle,
+							  ble_gatts_value_t *p_value, int calls)
+{
+	*p_value->p_value = BLE_GATT_HVX_NOTIFICATION;
+	return NRF_SUCCESS;
+}
+
+static uint32_t stub_sd_ble_gatts_value_get_notif_disabled(uint16_t conn_handle, uint16_t handle,
+							   ble_gatts_value_t *p_value, int calls)
+{
+	*p_value->p_value = 0x00;
+	return NRF_SUCCESS;
+}
+
 /* Hids event handler. */
 static void on_hids_evt(struct ble_hids *hids, const struct ble_hids_evt *evt)
 {
@@ -417,6 +431,26 @@ static void emulate_ble_rw_authorize_evt(struct ble_hids *ble_hids,
 	}
 }
 
+/* link_ctx_get() tests. */
+void test_link_ctx_get_unaligned_ctx_size(void)
+{
+	/* Trigger link_ctx_size % BYTES_PER_WORD != 0 path via ble_hids_outp_rep_get. */
+	uint32_t err;
+	uint8_t report_val[OUTPUT_REPORT_1_LEN];
+	struct ble_hids ble_hids = INITIALIZED_HIDS;
+
+	output_report[0].len = OUTPUT_REPORT_1_LEN;
+	input_report[0].len = INPUT_REPORT_1_LEN;
+	input_report[1].len = INPUT_REPORT_2_LEN;
+
+	/* Force link_ctx_size to a non-word-aligned value. */
+	*(uint16_t *)&ble_hids.link_ctx_storage.link_ctx_size = 3;
+
+	err = ble_hids_outp_rep_get(&ble_hids, 0, OUTPUT_REPORT_1_LEN, 0, CONN_HANDLE,
+				    report_val);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, err);
+}
+
 /* Test ble_hids_init with NULL pointer. */
 void test_ble_hids_init_null(void)
 {
@@ -480,6 +514,91 @@ void test_struct_ble_hids_config_too_much_rep(void)
 	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, err);
 }
 
+/* includes_add() loop coverage. */
+void test_ble_hids_init_include_add_error(void)
+{
+	/* sd_ble_gatts_include_add returns error inside the loop. */
+	uint32_t err;
+	uint8_t report_madata[] = REPORT_MA_DATA_1;
+	uint16_t included_service_handle = 0x0010;
+	struct ble_hids_config ble_hids_init_obj = {
+		.evt_handler = on_hids_evt,
+		.report_map = {
+			.len = sizeof(report_madata),
+			.data = report_madata,
+		},
+		.hid_information = {
+			.bcd_hid = BASE_USB_HID_SPEC_VERSION,
+		},
+		.included_services_count = 1,
+		.included_services_array = &included_service_handle,
+		.sec_mode = BLE_HIDS_CONFIG_SEC_MODE_DEFAULT_KEYBOARD,
+	};
+	struct ble_hids ble_hids = {
+		.link_ctx_storage = {
+			.max_links_cnt = CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT,
+			.link_ctx_size = sizeof(uint32_t) * BYTES_TO_WORDS(BLE_HIDS_LINK_CTX_SIZE),
+		},
+	};
+
+	__cmock_sd_ble_gatts_service_add_ExpectAndReturn(BLE_GATTS_SRVC_TYPE_PRIMARY, NULL,
+							 &ble_hids.service_handle, NRF_SUCCESS);
+	__cmock_sd_ble_gatts_service_add_IgnoreArg_p_uuid();
+
+	__cmock_sd_ble_gatts_include_add_ExpectAndReturn(ble_hids.service_handle,
+							 included_service_handle, NULL,
+							 NRF_ERROR_NOT_FOUND);
+	__cmock_sd_ble_gatts_include_add_IgnoreArg_p_include_handle();
+
+	err = ble_hids_init(&ble_hids, &ble_hids_init_obj);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NOT_FOUND, err);
+}
+
+void test_ble_hids_init_include_add_success(void)
+{
+	/* sd_ble_gatts_include_add succeeds, then fail on next step to keep test short. */
+	uint32_t err;
+	uint8_t report_madata[] = REPORT_MA_DATA_1;
+	uint16_t included_service_handle = 0x0010;
+	struct ble_hids_config ble_hids_init_obj = {
+		.evt_handler = on_hids_evt,
+		.report_map = {
+			.len = sizeof(report_madata),
+			.data = report_madata,
+		},
+		.hid_information = {
+			.bcd_hid = BASE_USB_HID_SPEC_VERSION,
+		},
+		.included_services_count = 1,
+		.included_services_array = &included_service_handle,
+		.sec_mode = BLE_HIDS_CONFIG_SEC_MODE_DEFAULT_KEYBOARD,
+	};
+	struct ble_hids ble_hids = {
+		.link_ctx_storage = {
+			.max_links_cnt = CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT,
+			.link_ctx_size = sizeof(uint32_t) * BYTES_TO_WORDS(BLE_HIDS_LINK_CTX_SIZE),
+		},
+	};
+
+	__cmock_sd_ble_gatts_service_add_ExpectAndReturn(BLE_GATTS_SRVC_TYPE_PRIMARY, NULL,
+							 &ble_hids.service_handle, NRF_SUCCESS);
+	__cmock_sd_ble_gatts_service_add_IgnoreArg_p_uuid();
+
+	__cmock_sd_ble_gatts_include_add_ExpectAndReturn(ble_hids.service_handle,
+							 included_service_handle, NULL,
+							 NRF_SUCCESS);
+	__cmock_sd_ble_gatts_include_add_IgnoreArg_p_include_handle();
+
+	/* Fail on next char add so we don't mock the rest. */
+	__cmock_sd_ble_gatts_characteristic_add_ExpectAndReturn(
+		ble_hids.service_handle, NULL, NULL, &ble_hids.protocol_mode_handles,
+		NRF_ERROR_NO_MEM);
+	__cmock_sd_ble_gatts_characteristic_add_IgnoreArg_p_char_md();
+	__cmock_sd_ble_gatts_characteristic_add_IgnoreArg_p_attr_char_value();
+
+	err = ble_hids_init(&ble_hids, &ble_hids_init_obj);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NO_MEM, err);
+}
 
 /* Test ble_hids_init with keyboard. */
 void test_ble_hids_init_kb_no_mem(void)
@@ -1288,16 +1407,126 @@ void test_ble_hids_init_kb_correct(void)
 
 	err = ble_hids_init(&ble_hids, &ble_hids_init_obj);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
-	TEST_ASSERT_NOT_NULL(ble_hids.inp_rep_init_array);
-	TEST_ASSERT_NOT_NULL(ble_hids.outp_rep_init_array);
-	TEST_ASSERT_NOT_NULL(ble_hids.feature_rep_init_array);
-	TEST_ASSERT_EQUAL_UINT8(ble_hids_init_obj.input_report_count, ble_hids.input_report_count);
-	TEST_ASSERT_EQUAL_UINT8(ble_hids_init_obj.output_report_count,
-				ble_hids.output_report_count);
-	TEST_ASSERT_EQUAL_UINT8(ble_hids_init_obj.feature_report_count,
-				ble_hids.feature_report_count);
 }
 
+/* ext_rep_ref_num set but ext_rep_ref pointer is NULL. */
+void test_ble_hids_init_ext_rep_ref_null(void)
+{
+	uint32_t err;
+	uint8_t report_madata[] = REPORT_MA_DATA_1;
+	struct ble_hids_config ble_hids_init_obj = {
+		.evt_handler = on_hids_evt,
+		.input_report_count = 1,
+		.input_report = input_report,
+		.output_report_count = 1,
+		.output_report = output_report,
+		.feature_report_count = 1,
+		.feature_report = feature_report,
+		.report_map = {
+			.len = sizeof(report_madata),
+			.data = report_madata,
+			.ext_rep_ref_num = 1,
+			.ext_rep_ref = NULL,
+		},
+		.hid_information = {
+			.bcd_hid = BASE_USB_HID_SPEC_VERSION,
+			.b_country_code = 0,
+			.flags = {
+				.remote_wake = 1,
+				.normally_connectable = 1,
+			},
+		},
+		.included_services_count = 0,
+		.included_services_array = NULL,
+		.sec_mode = BLE_HIDS_CONFIG_SEC_MODE_DEFAULT_KEYBOARD,
+	};
+	struct ble_hids ble_hids = {
+		.link_ctx_storage = {
+			.max_links_cnt = CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT,
+			.link_ctx_size = sizeof(uint32_t) * BYTES_TO_WORDS(BLE_HIDS_LINK_CTX_SIZE),
+		},
+	};
+	struct ble_hids_report_config *p_input_report;
+	struct ble_hids_report_config *p_output_report;
+	struct ble_hids_report_config *p_feature_report;
+
+	p_input_report = &input_report[INPUT_REPORT_KEYS_INDEX];
+	p_input_report->len = INPUT_REPORT_KEYS_MAX_LEN;
+	p_input_report->report_id = INPUT_REP_REF_ID;
+	p_input_report->report_type = BLE_HIDS_REPORT_TYPE_INPUT;
+	p_input_report->sec_mode.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	p_input_report->sec_mode.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	p_input_report->sec_mode.cccd_write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+
+	p_output_report = &output_report[OUTPUT_REPORT_INDEX];
+	p_output_report->len = OUTPUT_REPORT_MAX_LEN;
+	p_output_report->report_id = OUTPUT_REP_REF_ID;
+	p_output_report->report_type = BLE_HIDS_REPORT_TYPE_OUTPUT;
+	p_output_report->sec_mode.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	p_output_report->sec_mode.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+
+	p_feature_report = &feature_report[FEATURE_REPORT_INDEX];
+	p_feature_report->len = FEATURE_REPORT_MAX_LEN;
+	p_feature_report->report_id = FEATURE_REP_REF_ID;
+	p_feature_report->report_type = BLE_HIDS_REPORT_TYPE_FEATURE;
+	p_feature_report->sec_mode.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	p_feature_report->sec_mode.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+	p_feature_report->sec_mode.cccd_write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM;
+
+	__cmock_sd_ble_gatts_service_add_ExpectAndReturn(BLE_GATTS_SRVC_TYPE_PRIMARY, NULL,
+							 &ble_hids.service_handle, NRF_SUCCESS);
+	__cmock_sd_ble_gatts_service_add_IgnoreArg_p_uuid();
+
+	__cmock_sd_ble_gatts_characteristic_add_ExpectAndReturn(ble_hids.service_handle, NULL, NULL,
+								&ble_hids.protocol_mode_handles,
+								NRF_SUCCESS);
+	__cmock_sd_ble_gatts_characteristic_add_IgnoreArg_p_char_md();
+	__cmock_sd_ble_gatts_characteristic_add_IgnoreArg_p_attr_char_value();
+
+	__cmock_sd_ble_gatts_characteristic_add_ExpectAndReturn(ble_hids.service_handle, NULL, NULL,
+							&ble_hids.inp_rep_array[0].char_handles,
+							NRF_SUCCESS);
+	__cmock_sd_ble_gatts_characteristic_add_IgnoreArg_p_char_md();
+	__cmock_sd_ble_gatts_characteristic_add_IgnoreArg_p_attr_char_value();
+
+	__cmock_sd_ble_gatts_descriptor_add_ExpectAndReturn(
+		ble_hids.inp_rep_array[0].char_handles.value_handle, NULL,
+		&ble_hids.inp_rep_array[0].ref_handle, NRF_SUCCESS);
+	__cmock_sd_ble_gatts_descriptor_add_IgnoreArg_p_attr();
+
+	__cmock_sd_ble_gatts_characteristic_add_ExpectAndReturn(ble_hids.service_handle, NULL, NULL,
+							&ble_hids.outp_rep_array[0].char_handles,
+							NRF_SUCCESS);
+	__cmock_sd_ble_gatts_characteristic_add_IgnoreArg_p_char_md();
+	__cmock_sd_ble_gatts_characteristic_add_IgnoreArg_p_attr_char_value();
+
+	__cmock_sd_ble_gatts_descriptor_add_ExpectAndReturn(
+		ble_hids.outp_rep_array[0].char_handles.value_handle, NULL,
+		&ble_hids.outp_rep_array[0].ref_handle, NRF_SUCCESS);
+	__cmock_sd_ble_gatts_descriptor_add_IgnoreArg_p_attr();
+
+	__cmock_sd_ble_gatts_characteristic_add_ExpectAndReturn(ble_hids.service_handle, NULL, NULL,
+		&ble_hids.feature_rep_array[0].char_handles,
+		NRF_SUCCESS);
+	__cmock_sd_ble_gatts_characteristic_add_IgnoreArg_p_char_md();
+	__cmock_sd_ble_gatts_characteristic_add_IgnoreArg_p_attr_char_value();
+
+	__cmock_sd_ble_gatts_descriptor_add_ExpectAndReturn(
+		ble_hids.feature_rep_array[0].char_handles.value_handle, NULL,
+		&ble_hids.feature_rep_array[0].ref_handle, NRF_SUCCESS);
+	__cmock_sd_ble_gatts_descriptor_add_IgnoreArg_p_attr();
+
+	/* rep_map characteristic add succeeds, then hits ext_rep_ref_num != 0 && NULL check. */
+	__cmock_sd_ble_gatts_characteristic_add_ExpectAndReturn(ble_hids.service_handle, NULL, NULL,
+		&ble_hids.rep_map_handles, NRF_SUCCESS);
+	__cmock_sd_ble_gatts_characteristic_add_IgnoreArg_p_char_md();
+	__cmock_sd_ble_gatts_characteristic_add_IgnoreArg_p_attr_char_value();
+
+	err = ble_hids_init(&ble_hids, &ble_hids_init_obj);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, err);
+}
+
+/* ble_hids_inp_rep_send() tests. */
 void test_ble_hids_inp_rep_send_error_null(void)
 {
 	uint32_t err;
@@ -1338,17 +1567,26 @@ void test_ble_hids_inp_rep_send_error_invalid_state(void)
 	uint32_t err;
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
 	uint8_t data[] = {0xC0, 0xC1};
-	struct ble_hids_input_report report;
+	struct ble_hids_input_report report = {
+		.data = data,
+		.len = INPUT_REPORT_2_LEN,
+		.report_index = 1,
+	};
 
 	input_report[0].len = INPUT_REPORT_1_LEN;
 	input_report[1].len = INPUT_REPORT_2_LEN;
 
-	/* Invalid connection handle. */
-	report.data = data;
-	report.len = INPUT_REPORT_2_LEN;
-	report.report_index = 1;
+	__cmock_sd_ble_gatts_value_get_ExpectAnyArgsAndReturn(BLE_ERROR_INVALID_CONN_HANDLE);
+
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(BLE_CONN_HANDLE_INVALID, CONN_IDX);
+
+	__cmock_sd_ble_gatts_value_set_ExpectAndReturn(BLE_CONN_HANDLE_INVALID, 0, NULL,
+						       NRF_SUCCESS);
+	__cmock_sd_ble_gatts_value_set_IgnoreArg_handle();
+	__cmock_sd_ble_gatts_value_set_IgnoreArg_p_value();
+
 	err = ble_hids_inp_rep_send(&ble_hids, BLE_CONN_HANDLE_INVALID, &report);
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, err);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
 }
 
 void test_ble_hids_inp_rep_send_error_not_found(void)
@@ -1361,6 +1599,8 @@ void test_ble_hids_inp_rep_send_error_not_found(void)
 	input_report[0].len = INPUT_REPORT_1_LEN;
 	input_report[1].len = INPUT_REPORT_2_LEN;
 
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_enabled);
+
 	/* ctx_link_get_error */
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, -1);
 
@@ -1372,8 +1612,6 @@ void test_ble_hids_inp_rep_send_error_not_found(void)
 void test_ble_hids_inp_rep_send_error_data_size(void)
 {
 	uint32_t err;
-	uint16_t len = 0;
-	void *host_redata;
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
 	uint8_t data[] = {0xC0, 0xC1};
 	struct ble_hids_input_report report;
@@ -1381,9 +1619,7 @@ void test_ble_hids_inp_rep_send_error_data_size(void)
 	input_report[0].len = INPUT_REPORT_1_LEN;
 	input_report[1].len = INPUT_REPORT_2_LEN;
 
-	hvx_params.p_len = &len;
-	host_redata = (void *)((uint8_t *)ble_hids.link_ctx_storage.ctx_data_pool +
-				 CONN_IDX * ble_hids.link_ctx_storage.link_ctx_size);
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_enabled);
 
 	/* Data length bigger than input report max length. */
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
@@ -1391,6 +1627,8 @@ void test_ble_hids_inp_rep_send_error_data_size(void)
 	report.data = data, report.len = INPUT_REPORT_2_LEN + 1, report.report_index = 1,
 	err = ble_hids_inp_rep_send(&ble_hids, CONN_HANDLE, &report);
 	TEST_ASSERT_EQUAL(NRF_ERROR_DATA_SIZE, err);
+
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_enabled);
 
 	/* Actual bytes written count is other than data length. */
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
@@ -1407,8 +1645,6 @@ void test_ble_hids_inp_rep_send_error_data_size(void)
 void test_ble_hids_inp_rep_send_error_invalid_addr(void)
 {
 	uint32_t err;
-	uint16_t len = 0;
-	void *host_redata;
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
 	uint8_t data[] = {0xC0, 0xC1};
 	struct ble_hids_input_report report;
@@ -1416,9 +1652,7 @@ void test_ble_hids_inp_rep_send_error_invalid_addr(void)
 	input_report[0].len = INPUT_REPORT_1_LEN;
 	input_report[1].len = INPUT_REPORT_2_LEN;
 
-	hvx_params.p_len = &len;
-	host_redata = (void *)((uint8_t *)ble_hids.link_ctx_storage.ctx_data_pool +
-				 CONN_IDX * ble_hids.link_ctx_storage.link_ctx_size);
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_enabled);
 
 	/* gatts_hvx error. */
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
@@ -1430,25 +1664,119 @@ void test_ble_hids_inp_rep_send_error_invalid_addr(void)
 	err = ble_hids_inp_rep_send(&ble_hids, CONN_HANDLE, &report);
 	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_ADDR, err);
 }
-void test_ble_hids_inp_rep_send(void)
+
+void test_ble_hids_inp_rep_send_cccd_unexpected_error(void)
 {
 	uint32_t err;
-	uint16_t len = 0;
-	uint8_t offset =
-		sizeof(struct ble_hids_client_context) + BLE_HIDS_BOOT_KB_INPUT_REPORT_MAX_SIZE +
-		BLE_HIDS_BOOT_KB_OUTPUT_REPORT_MAX_SIZE + BLE_HIDS_BOOT_MOUSE_INPUT_REPORT_MAX_SIZE;
-	void *host_redata;
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
 	uint8_t data[] = {0xC0, 0xC1};
-	struct ble_hids_input_report report;
-	uint8_t *exp_data;
+	struct ble_hids_input_report report = {
+		.data = data,
+		.len = INPUT_REPORT_2_LEN,
+		.report_index = 1,
+	};
 
 	input_report[0].len = INPUT_REPORT_1_LEN;
 	input_report[1].len = INPUT_REPORT_2_LEN;
 
-	hvx_params.p_len = &len;
-	host_redata = (void *)((uint8_t *)ble_hids.link_ctx_storage.ctx_data_pool +
-				 CONN_IDX * ble_hids.link_ctx_storage.link_ctx_size);
+	__cmock_sd_ble_gatts_value_get_ExpectAnyArgsAndReturn(NRF_ERROR_INVALID_PARAM);
+
+	err = ble_hids_inp_rep_send(&ble_hids, CONN_HANDLE, &report);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, err);
+}
+
+void test_ble_hids_inp_rep_send_cccd_sys_attr_missing(void)
+{
+	uint32_t err;
+	struct ble_hids ble_hids = INITIALIZED_HIDS;
+	uint8_t data[] = {0xC0, 0xC1};
+	struct ble_hids_input_report report = {
+		.data = data,
+		.len = INPUT_REPORT_2_LEN,
+		.report_index = 1,
+	};
+
+	input_report[0].len = INPUT_REPORT_1_LEN;
+	input_report[1].len = INPUT_REPORT_2_LEN;
+
+	__cmock_sd_ble_gatts_value_get_ExpectAnyArgsAndReturn(BLE_ERROR_GATTS_SYS_ATTR_MISSING);
+
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
+
+	__cmock_sd_ble_gatts_value_set_ExpectAndReturn(BLE_CONN_HANDLE_INVALID, 0, NULL,
+						       NRF_SUCCESS);
+	__cmock_sd_ble_gatts_value_set_IgnoreArg_handle();
+	__cmock_sd_ble_gatts_value_set_IgnoreArg_p_value();
+
+	err = ble_hids_inp_rep_send(&ble_hids, CONN_HANDLE, &report);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
+}
+
+void test_ble_hids_inp_rep_send_cccd_notif_disabled(void)
+{
+	uint32_t err;
+	struct ble_hids ble_hids = INITIALIZED_HIDS;
+	uint8_t data[] = {0xC0, 0xC1};
+	struct ble_hids_input_report report = {
+		.data = data,
+		.len = INPUT_REPORT_2_LEN,
+		.report_index = 1,
+	};
+
+	input_report[0].len = INPUT_REPORT_1_LEN;
+	input_report[1].len = INPUT_REPORT_2_LEN;
+
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_disabled);
+
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
+
+	__cmock_sd_ble_gatts_value_set_ExpectAndReturn(BLE_CONN_HANDLE_INVALID, 0, NULL,
+						       NRF_SUCCESS);
+	__cmock_sd_ble_gatts_value_set_IgnoreArg_handle();
+	__cmock_sd_ble_gatts_value_set_IgnoreArg_p_value();
+
+	err = ble_hids_inp_rep_send(&ble_hids, CONN_HANDLE, &report);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
+}
+
+void test_ble_hids_inp_rep_send_cccd_notif_disabled_value_set_err(void)
+{
+	uint32_t err;
+	struct ble_hids ble_hids = INITIALIZED_HIDS;
+	uint8_t data[] = {0xC0, 0xC1};
+	struct ble_hids_input_report report = {
+		.data = data,
+		.len = INPUT_REPORT_2_LEN,
+		.report_index = 1,
+	};
+
+	input_report[0].len = INPUT_REPORT_1_LEN;
+	input_report[1].len = INPUT_REPORT_2_LEN;
+
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_disabled);
+
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
+
+	__cmock_sd_ble_gatts_value_set_ExpectAndReturn(BLE_CONN_HANDLE_INVALID, 0, NULL,
+						       NRF_ERROR_INVALID_ADDR);
+	__cmock_sd_ble_gatts_value_set_IgnoreArg_handle();
+	__cmock_sd_ble_gatts_value_set_IgnoreArg_p_value();
+
+	err = ble_hids_inp_rep_send(&ble_hids, CONN_HANDLE, &report);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_ADDR, err);
+}
+
+void test_ble_hids_inp_rep_send(void)
+{
+	uint32_t err;
+	struct ble_hids ble_hids = INITIALIZED_HIDS;
+	uint8_t data[] = {0xC0, 0xC1};
+	struct ble_hids_input_report report;
+
+	input_report[0].len = INPUT_REPORT_1_LEN;
+	input_report[1].len = INPUT_REPORT_2_LEN;
+
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_enabled);
 
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
 
@@ -1457,13 +1785,12 @@ void test_ble_hids_inp_rep_send(void)
 
 	report.data = data;
 	report.len = INPUT_REPORT_2_LEN;
-	report.report_index = 1, err = ble_hids_inp_rep_send(&ble_hids, CONN_HANDLE, &report);
+	report.report_index = 1;
+	err = ble_hids_inp_rep_send(&ble_hids, CONN_HANDLE, &report);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
-
-	exp_data = (uint8_t *)host_redata + offset + INPUT_REPORT_1_LEN;
-	TEST_ASSERT_EQUAL_MEMORY(data, exp_data, INPUT_REPORT_2_LEN);
 }
 
+/* ble_hids_boot_kb_inp_rep_send() tests. */
 void test_ble_hids_boot_kb_inp_rep_send_error_null(void)
 {
 	uint32_t err;
@@ -1486,16 +1813,24 @@ void test_ble_hids_boot_kb_inp_rep_send_error_null(void)
 void test_ble_hids_boot_kb_inp_rep_send_error_invalid_state(void)
 {
 	uint32_t err;
-	struct ble_hids_boot_keyboard_input_report report;
-
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
 	uint8_t data[] = {0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7};
+	struct ble_hids_boot_keyboard_input_report report = {
+		.data = data,
+		.len = BLE_HIDS_BOOT_KB_INPUT_REPORT_MAX_SIZE,
+	};
 
-	/* Test invalid connection handle. */
-	report.data = data;
-	report.len = BLE_HIDS_BOOT_KB_INPUT_REPORT_MAX_SIZE;
+	__cmock_sd_ble_gatts_value_get_ExpectAnyArgsAndReturn(BLE_ERROR_INVALID_CONN_HANDLE);
+
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(BLE_CONN_HANDLE_INVALID, CONN_IDX);
+
+	__cmock_sd_ble_gatts_value_set_ExpectAndReturn(BLE_CONN_HANDLE_INVALID, 0, NULL,
+						       NRF_SUCCESS);
+	__cmock_sd_ble_gatts_value_set_IgnoreArg_handle();
+	__cmock_sd_ble_gatts_value_set_IgnoreArg_p_value();
+
 	err = ble_hids_boot_kb_inp_rep_send(&ble_hids, BLE_CONN_HANDLE_INVALID, &report);
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, err);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
 }
 
 void test_ble_hids_boot_kb_inp_rep_send_error_not_found(void)
@@ -1505,6 +1840,8 @@ void test_ble_hids_boot_kb_inp_rep_send_error_not_found(void)
 
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
 	uint8_t data[] = {0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7};
+
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_enabled);
 
 	/* ctx_link_get_error */
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, -1);
@@ -1518,17 +1855,12 @@ void test_ble_hids_boot_kb_inp_rep_send_error_not_found(void)
 void test_ble_hids_boot_kb_inp_rep_send_error_invalid_attr_handle(void)
 {
 	uint32_t err;
-	uint16_t len = 0;
-	void *host_redata;
-	ble_gatts_hvx_params_t hvx_params;
 	struct ble_hids_boot_keyboard_input_report report;
 
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
 	uint8_t data[] = {0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7};
 
-	hvx_params.p_len = &len;
-	host_redata = (void *)((uint8_t *)ble_hids.link_ctx_storage.ctx_data_pool +
-				 CONN_IDX * ble_hids.link_ctx_storage.link_ctx_size);
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_enabled);
 
 	/* gatts_hvx error */
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
@@ -1545,17 +1877,12 @@ void test_ble_hids_boot_kb_inp_rep_send_error_invalid_attr_handle(void)
 void test_ble_hids_boot_kb_inp_rep_send_error_data_size(void)
 {
 	uint32_t err;
-	uint16_t len = 0;
-	void *host_redata;
-	ble_gatts_hvx_params_t hvx_params;
 	struct ble_hids_boot_keyboard_input_report report;
 
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
 	uint8_t data[] = {0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7};
 
-	hvx_params.p_len = &len;
-	host_redata = (void *)((uint8_t *)ble_hids.link_ctx_storage.ctx_data_pool +
-				 CONN_IDX * ble_hids.link_ctx_storage.link_ctx_size);
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_enabled);
 
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
 
@@ -1578,24 +1905,117 @@ void test_ble_hids_boot_kb_inp_rep_send_error_data_size(void)
 	TEST_ASSERT_EQUAL(NRF_ERROR_DATA_SIZE, err);
 }
 
+void test_ble_hids_boot_kb_inp_rep_send_cccd_unexpected_error(void)
+{
+	uint32_t err;
+	struct ble_hids ble_hids = INITIALIZED_HIDS;
+	uint8_t data[] = {0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7};
+	struct ble_hids_boot_keyboard_input_report report = {
+		.data = data,
+		.len = BLE_HIDS_BOOT_KB_INPUT_REPORT_MAX_SIZE,
+	};
+
+	__cmock_sd_ble_gatts_value_get_ExpectAnyArgsAndReturn(NRF_ERROR_INVALID_PARAM);
+
+	err = ble_hids_boot_kb_inp_rep_send(&ble_hids, CONN_HANDLE, &report);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, err);
+}
+
+void test_ble_hids_boot_kb_inp_rep_send_cccd_sys_attr_missing(void)
+{
+	uint32_t err;
+	struct ble_hids ble_hids = INITIALIZED_HIDS;
+	uint8_t data[] = {0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7};
+	struct ble_hids_boot_keyboard_input_report report = {
+		.data = data,
+		.len = BLE_HIDS_BOOT_KB_INPUT_REPORT_MAX_SIZE,
+	};
+
+	__cmock_sd_ble_gatts_value_get_ExpectAnyArgsAndReturn(BLE_ERROR_GATTS_SYS_ATTR_MISSING);
+
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
+
+	__cmock_sd_ble_gatts_value_set_ExpectAndReturn(BLE_CONN_HANDLE_INVALID, 0, NULL,
+						       NRF_SUCCESS);
+	__cmock_sd_ble_gatts_value_set_IgnoreArg_handle();
+	__cmock_sd_ble_gatts_value_set_IgnoreArg_p_value();
+
+	err = ble_hids_boot_kb_inp_rep_send(&ble_hids, CONN_HANDLE, &report);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
+}
+
+void test_ble_hids_boot_kb_inp_rep_send_cccd_notif_disabled(void)
+{
+	uint32_t err;
+	struct ble_hids ble_hids = INITIALIZED_HIDS;
+	uint8_t data[] = {0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7};
+	struct ble_hids_boot_keyboard_input_report report = {
+		.data = data,
+		.len = BLE_HIDS_BOOT_KB_INPUT_REPORT_MAX_SIZE,
+	};
+
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_disabled);
+
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
+
+	__cmock_sd_ble_gatts_value_set_ExpectAndReturn(BLE_CONN_HANDLE_INVALID, 0, NULL,
+						       NRF_SUCCESS);
+	__cmock_sd_ble_gatts_value_set_IgnoreArg_handle();
+	__cmock_sd_ble_gatts_value_set_IgnoreArg_p_value();
+
+	err = ble_hids_boot_kb_inp_rep_send(&ble_hids, CONN_HANDLE, &report);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
+}
+
+void test_ble_hids_boot_kb_inp_rep_send_cccd_notif_disabled_value_set_err(void)
+{
+	uint32_t err;
+	struct ble_hids ble_hids = INITIALIZED_HIDS;
+	uint8_t data[] = {0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7};
+	struct ble_hids_boot_keyboard_input_report report = {
+		.data = data,
+		.len = BLE_HIDS_BOOT_KB_INPUT_REPORT_MAX_SIZE,
+	};
+
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_disabled);
+
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
+
+	__cmock_sd_ble_gatts_value_set_ExpectAndReturn(BLE_CONN_HANDLE_INVALID, 0, NULL,
+						       NRF_ERROR_INVALID_ADDR);
+	__cmock_sd_ble_gatts_value_set_IgnoreArg_handle();
+	__cmock_sd_ble_gatts_value_set_IgnoreArg_p_value();
+
+	err = ble_hids_boot_kb_inp_rep_send(&ble_hids, CONN_HANDLE, &report);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_ADDR, err);
+}
+
+void test_ble_hids_boot_kb_inp_rep_send_error_report_too_long(void)
+{
+	uint32_t err;
+	struct ble_hids ble_hids = INITIALIZED_HIDS;
+	uint8_t data[] = {0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8};
+	struct ble_hids_boot_keyboard_input_report report = {
+		.data = data,
+		.len = BLE_HIDS_BOOT_KB_INPUT_REPORT_MAX_SIZE + 1,
+	};
+
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_enabled);
+
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
+
+	err = ble_hids_boot_kb_inp_rep_send(&ble_hids, CONN_HANDLE, &report);
+	TEST_ASSERT_EQUAL(NRF_ERROR_DATA_SIZE, err);
+}
+
 void test_ble_hids_boot_kb_inp_rep_send(void)
 {
 	uint32_t err;
-	uint16_t len = 0;
-	void *host_redata;
-	uint8_t offset = sizeof(struct ble_hids_client_context);
-	ble_gatts_hvx_params_t hvx_params;
-	struct ble_hids_boot_keyboard_input_report report;
-
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
 	uint8_t data[] = {0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7};
+	struct ble_hids_boot_keyboard_input_report report;
 
-	hvx_params.p_len = &len;
-	host_redata = (void *)((uint8_t *)ble_hids.link_ctx_storage.ctx_data_pool +
-				 CONN_IDX * ble_hids.link_ctx_storage.link_ctx_size);
-
-	/* Test success */
-	len = INPUT_REPORT_KEYS_MAX_LEN;
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_enabled);
 
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
 
@@ -1606,12 +2026,9 @@ void test_ble_hids_boot_kb_inp_rep_send(void)
 	report.len = BLE_HIDS_BOOT_KB_INPUT_REPORT_MAX_SIZE;
 	err = ble_hids_boot_kb_inp_rep_send(&ble_hids, CONN_HANDLE, &report);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
-
-	uint8_t *stored_data = (uint8_t *)host_redata + offset;
-
-	TEST_ASSERT_EQUAL_MEMORY(data, stored_data, sizeof(data));
 }
 
+/* ble_hids_boot_mouse_inp_rep_send() tests. */
 void test_ble_hids_boot_mouse_inp_rep_send_error_null(void)
 {
 	uint32_t err;
@@ -1632,25 +2049,32 @@ void test_ble_hids_boot_mouse_inp_rep_send_error_null(void)
 
 void test_ble_hids_boot_mouse_inp_rep_send_error_invalid_state(void)
 {
-	struct ble_hids ble_hids = INITIALIZED_HIDS;
 	uint32_t err;
-	struct ble_hids_boot_mouse_input_report report;
+	struct ble_hids ble_hids = INITIALIZED_HIDS;
+	struct ble_hids_boot_mouse_input_report report = {
+		.buttons = 0x00,
+		.delta_x = DEFAULT_X_DELTA,
+		.delta_y = DEFAULT_Y_DELTA,
+		.optional_data_len = 0,
+	};
 
-	/* Test invalid connection handle. */
-	report.buttons = 0x00;
-	report.delta_x = DEFAULT_X_DELTA;
-	report.delta_y = DEFAULT_Y_DELTA;
-	report.optional_data_len = 0;
+	__cmock_sd_ble_gatts_value_get_ExpectAnyArgsAndReturn(BLE_ERROR_INVALID_CONN_HANDLE);
+
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(BLE_CONN_HANDLE_INVALID, CONN_IDX);
+
+	__cmock_sd_ble_gatts_value_set_ExpectAndReturn(BLE_CONN_HANDLE_INVALID, 0, NULL,
+						       NRF_SUCCESS);
+	__cmock_sd_ble_gatts_value_set_IgnoreArg_handle();
+	__cmock_sd_ble_gatts_value_set_IgnoreArg_p_value();
+
 	err = ble_hids_boot_mouse_inp_rep_send(&ble_hids, BLE_CONN_HANDLE_INVALID, &report);
-	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, err);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
 }
 
 void test_ble_hids_boot_mouse_inp_rep_send_error_data_size(void)
 {
 	uint32_t err;
-	uint16_t len = 0;
 	uint16_t optional_data_len = BLE_HIDS_BOOT_MOUSE_INPUT_REPORT_MAX_SIZE;
-	ble_gatts_hvx_params_t hvx_params;
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
 	struct ble_hids_boot_mouse_input_report report;
 
@@ -1663,7 +2087,7 @@ void test_ble_hids_boot_mouse_inp_rep_send_error_data_size(void)
 	TEST_ASSERT_EQUAL(NRF_ERROR_DATA_SIZE, err);
 
 	/* Test. Actual bytes written count is other than data length. */
-	hvx_params.p_len = &len;
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_enabled);
 
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
 
@@ -1680,12 +2104,10 @@ void test_ble_hids_boot_mouse_inp_rep_send_error_data_size(void)
 void test_ble_hids_boot_mouse_inp_rep_send_error_not_found(void)
 {
 	uint32_t err;
-	void *host_redata;
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
 	struct ble_hids_boot_mouse_input_report report;
 
-	host_redata = (void *)((uint8_t *)ble_hids.link_ctx_storage.ctx_data_pool +
-				 CONN_IDX * ble_hids.link_ctx_storage.link_ctx_size);
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_enabled);
 
 	/* Test link_ctx_get error. */
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, -1);
@@ -1701,12 +2123,10 @@ void test_ble_hids_boot_mouse_inp_rep_send_error_not_found(void)
 void test_ble_hids_boot_mouse_inp_rep_send_error_forbidden(void)
 {
 	uint32_t err;
-	void *host_redata;
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
 	struct ble_hids_boot_mouse_input_report report;
 
-	host_redata = (void *)((uint8_t *)ble_hids.link_ctx_storage.ctx_data_pool +
-				 CONN_IDX * ble_hids.link_ctx_storage.link_ctx_size);
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_enabled);
 
 	/* Test gatts_hvx error. */
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
@@ -1722,26 +2142,106 @@ void test_ble_hids_boot_mouse_inp_rep_send_error_forbidden(void)
 	TEST_ASSERT_EQUAL(NRF_ERROR_FORBIDDEN, err);
 }
 
+void test_ble_hids_boot_mouse_inp_rep_send_cccd_unexpected_error(void)
+{
+	uint32_t err;
+	struct ble_hids ble_hids = INITIALIZED_HIDS;
+	struct ble_hids_boot_mouse_input_report report = {
+		.buttons = 0x00,
+		.delta_x = DEFAULT_X_DELTA,
+		.delta_y = DEFAULT_Y_DELTA,
+		.optional_data_len = 0,
+	};
+
+	__cmock_sd_ble_gatts_value_get_ExpectAnyArgsAndReturn(NRF_ERROR_INVALID_PARAM);
+
+	err = ble_hids_boot_mouse_inp_rep_send(&ble_hids, CONN_HANDLE, &report);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, err);
+}
+
+void test_ble_hids_boot_mouse_inp_rep_send_cccd_sys_attr_missing(void)
+{
+	uint32_t err;
+	struct ble_hids ble_hids = INITIALIZED_HIDS;
+	struct ble_hids_boot_mouse_input_report report = {
+		.buttons = 0x00,
+		.delta_x = DEFAULT_X_DELTA,
+		.delta_y = DEFAULT_Y_DELTA,
+		.optional_data_len = 0,
+	};
+
+	__cmock_sd_ble_gatts_value_get_ExpectAnyArgsAndReturn(BLE_ERROR_GATTS_SYS_ATTR_MISSING);
+
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
+
+	__cmock_sd_ble_gatts_value_set_ExpectAndReturn(BLE_CONN_HANDLE_INVALID, 0, NULL,
+						       NRF_SUCCESS);
+	__cmock_sd_ble_gatts_value_set_IgnoreArg_handle();
+	__cmock_sd_ble_gatts_value_set_IgnoreArg_p_value();
+
+	err = ble_hids_boot_mouse_inp_rep_send(&ble_hids, CONN_HANDLE, &report);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
+}
+
+void test_ble_hids_boot_mouse_inp_rep_send_cccd_notif_disabled(void)
+{
+	uint32_t err;
+	struct ble_hids ble_hids = INITIALIZED_HIDS;
+	struct ble_hids_boot_mouse_input_report report = {
+		.buttons = 0x00,
+		.delta_x = DEFAULT_X_DELTA,
+		.delta_y = DEFAULT_Y_DELTA,
+		.optional_data_len = 0,
+	};
+
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_disabled);
+
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
+
+	__cmock_sd_ble_gatts_value_set_ExpectAndReturn(BLE_CONN_HANDLE_INVALID, 0, NULL,
+						       NRF_SUCCESS);
+	__cmock_sd_ble_gatts_value_set_IgnoreArg_handle();
+	__cmock_sd_ble_gatts_value_set_IgnoreArg_p_value();
+
+	err = ble_hids_boot_mouse_inp_rep_send(&ble_hids, CONN_HANDLE, &report);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
+}
+
+void test_ble_hids_boot_mouse_inp_rep_send_cccd_notif_disabled_value_set_err(void)
+{
+	uint32_t err;
+	struct ble_hids ble_hids = INITIALIZED_HIDS;
+	struct ble_hids_boot_mouse_input_report report = {
+		.buttons = 0x00,
+		.delta_x = DEFAULT_X_DELTA,
+		.delta_y = DEFAULT_Y_DELTA,
+		.optional_data_len = 0,
+	};
+
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_disabled);
+
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
+
+	__cmock_sd_ble_gatts_value_set_ExpectAndReturn(BLE_CONN_HANDLE_INVALID, 0, NULL,
+						       NRF_ERROR_INVALID_ADDR);
+	__cmock_sd_ble_gatts_value_set_IgnoreArg_handle();
+	__cmock_sd_ble_gatts_value_set_IgnoreArg_p_value();
+
+	err = ble_hids_boot_mouse_inp_rep_send(&ble_hids, CONN_HANDLE, &report);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_ADDR, err);
+}
+
 void test_ble_hids_boot_mouse_inp_rep_send(void)
 {
 	uint32_t err;
-	uint16_t len = 0;
 	uint8_t optional_data[] = {0xE0, 0xE1, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7};
-	uint16_t optional_data_len = BLE_HIDS_BOOT_MOUSE_INPUT_REPORT_MAX_SIZE;
-	void *host_redata;
+	uint16_t optional_data_len;
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
-	uint8_t data_exp[BLE_HIDS_BOOT_MOUSE_INPUT_REPORT_MAX_SIZE];
-	uint8_t *data;
-	uint8_t offset = sizeof(struct ble_hids_client_context) +
-			 BLE_HIDS_BOOT_KB_INPUT_REPORT_MAX_SIZE +
-			 BLE_HIDS_BOOT_KB_OUTPUT_REPORT_MAX_SIZE;
 	struct ble_hids_boot_mouse_input_report report;
 
-	host_redata = (void *)((uint8_t *)ble_hids.link_ctx_storage.ctx_data_pool +
-				 CONN_IDX * ble_hids.link_ctx_storage.link_ctx_size);
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_enabled);
 
-	len = BOOT_MOUSE_INPUT_REPORT_MIN_LEN;
-
+	/* Test success without optional data. */
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
 
 	__cmock_sd_ble_gatts_hvx_ExpectAndReturn(CONN_HANDLE, NULL, NRF_SUCCESS);
@@ -1757,7 +2257,6 @@ void test_ble_hids_boot_mouse_inp_rep_send(void)
 	/* Test success with max length of optional data. */
 	optional_data_len =
 		BLE_HIDS_BOOT_MOUSE_INPUT_REPORT_MAX_SIZE - BOOT_MOUSE_INPUT_REPORT_MIN_LEN;
-	len = BOOT_MOUSE_INPUT_REPORT_MIN_LEN + optional_data_len;
 
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
 
@@ -1771,14 +2270,6 @@ void test_ble_hids_boot_mouse_inp_rep_send(void)
 	report.optional_data_len = optional_data_len;
 	err = ble_hids_boot_mouse_inp_rep_send(&ble_hids, CONN_HANDLE, &report);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, err);
-
-	data_exp[0] = 0;
-	data_exp[1] = DEFAULT_X_DELTA;
-	data_exp[2] = DEFAULT_Y_DELTA;
-	memcpy(&data_exp[3], optional_data, optional_data_len);
-
-	data = (uint8_t *)host_redata + offset;
-	TEST_ASSERT_EQUAL_MEMORY(data_exp, data, len);
 }
 
 void test_ble_hids_outp_rep_get_error_null(void)
@@ -1860,16 +2351,12 @@ void test_ble_hids_outp_rep_get_error_invalid_length(void)
 	uint32_t err;
 	uint8_t offset = 1;
 	uint8_t report_val[OUTPUT_REPORT_1_LEN + OUTPUT_REPORT_2_LEN];
-	void *host_redata;
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
 
 	output_report[0].len = OUTPUT_REPORT_1_LEN;
 	output_report[1].len = OUTPUT_REPORT_2_LEN;
 	input_report[0].len = INPUT_REPORT_1_LEN;
 	input_report[1].len = INPUT_REPORT_2_LEN;
-
-	host_redata = (void *)((uint8_t *)ble_hids.link_ctx_storage.ctx_data_pool +
-				 CONN_IDX * ble_hids.link_ctx_storage.link_ctx_size);
 
 	/* Test invalid data length. */
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
@@ -1929,11 +2416,8 @@ void test_ble_hids_outp_rep_get(void)
 void test_on_ble_connected_evt_error_not_found(void)
 {
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
-	void *p_client;
 
 	ble_hids.protocol_mode_handles.value_handle = PROTOCOL_VALUE_HANDLE;
-	p_client = (void *)((uint8_t *)ble_hids.link_ctx_storage.ctx_data_pool +
-			    CONN_IDX * ble_hids.link_ctx_storage.link_ctx_size);
 
 	/* Test link_ctx_error. */
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, -1);
@@ -1949,13 +2433,8 @@ void test_on_ble_connected_evt_error_not_found(void)
 void test_on_ble_connected_evt_error_invalid_addr(void)
 {
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
-	void *p_client;
 
 	ble_hids.protocol_mode_handles.value_handle = PROTOCOL_VALUE_HANDLE;
-	p_client = (void *)((uint8_t *)ble_hids.link_ctx_storage.ctx_data_pool +
-			    CONN_IDX * ble_hids.link_ctx_storage.link_ctx_size);
-
-	error_requested = false;
 
 	/* Test value set gatts error. */
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
@@ -1976,21 +2455,10 @@ void test_on_ble_connected_evt_error_invalid_addr(void)
 void test_on_ble_connected_evt(void)
 {
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
-	void *p_client;
 
 	ble_hids.protocol_mode_handles.value_handle = PROTOCOL_VALUE_HANDLE;
-	p_client = (void *)((uint8_t *)ble_hids.link_ctx_storage.ctx_data_pool +
-			    CONN_IDX * ble_hids.link_ctx_storage.link_ctx_size);
-
-	struct ble_hids_client_context *p_client_contex =
-		(struct ble_hids_client_context *)p_client;
-
-	error_requested = false;
-	error = NRF_SUCCESS;
 
 	/* Test success. */
-	p_client_contex->protocol_mode = 0x25;
-
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
 
 	__cmock_sd_ble_gatts_value_set_ExpectAndReturn(
@@ -1999,7 +2467,6 @@ void test_on_ble_connected_evt(void)
 
 	emulate_ble_connected_evt(&ble_hids);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, error);
-	TEST_ASSERT_EQUAL(CONFIG_BLE_HIDS_DEFAULT_PROTOCOL_MODE, p_client_contex->protocol_mode);
 }
 
 #define HIDS_CONTROL_POINT_SUSPEND 0x00
@@ -2009,16 +2476,9 @@ void test_on_ble_connected_evt(void)
 void test_on_control_point_error_not_found(void)
 {
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
-	void *host;
-	uint8_t data[] = {
-		HIDS_CONTROL_POINT_SUSPEND
-	};
+	uint8_t data[] = {HIDS_CONTROL_POINT_SUSPEND};
 	uint16_t len = sizeof(data);
 
-	/* Test on_control_point_write. */
-	host = NULL;
-
-	/* link_ctx_get fail. */
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, -1);
 
 	error_expected = true;
@@ -2031,23 +2491,8 @@ void test_on_control_point_error_not_found(void)
 void test_on_control_point_suspend(void)
 {
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
-	void *host;
 	uint8_t data[] = {HIDS_CONTROL_POINT_SUSPEND};
 	uint16_t len = sizeof(data);
-	struct ble_hids_client_context *ctx_data;
-
-	/* Test on_control_point_write. */
-	host = NULL;
-
-	error_requested = false;
-
-	/* Test success. */
-	host = (void *)((uint8_t *)ble_hids.link_ctx_storage.ctx_data_pool +
-			  CONN_IDX * ble_hids.link_ctx_storage.link_ctx_size);
-
-	ctx_data = (struct ble_hids_client_context *)host;
-
-	ctx_data->ctrl_pt = 0x98;
 
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
 
@@ -2055,30 +2500,13 @@ void test_on_control_point_suspend(void)
 	emulate_ble_write_evt(&ble_hids, ON_WRITE_CONTROL_PONT, data, len);
 
 	TEST_ASSERT_TRUE(hids_evt_requested);
-	TEST_ASSERT_EQUAL(HIDS_CONTROL_POINT_SUSPEND, ctx_data->ctrl_pt);
-	hids_evt_requested = false;
 }
 
 void test_on_control_point_exit_suspend(void)
 {
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
-	void *host;
 	uint8_t data[] = {HIDS_CONTROL_POINT_EXIT_SUSPEND};
 	uint16_t len = sizeof(data);
-	struct ble_hids_client_context *ctx_data;
-
-	/* Test on_control_point_write. */
-	host = NULL;
-
-	error_requested = false;
-
-	/* Test success. */
-	host = (void *)((uint8_t *)ble_hids.link_ctx_storage.ctx_data_pool +
-			  CONN_IDX * ble_hids.link_ctx_storage.link_ctx_size);
-
-	ctx_data = (struct ble_hids_client_context *)host;
-
-	ctx_data->ctrl_pt = 0x98;
 
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
 
@@ -2086,25 +2514,15 @@ void test_on_control_point_exit_suspend(void)
 	emulate_ble_write_evt(&ble_hids, ON_WRITE_CONTROL_PONT, data, len);
 
 	TEST_ASSERT_TRUE(hids_evt_requested);
-	TEST_ASSERT_EQUAL(HIDS_CONTROL_POINT_EXIT_SUSPEND, ctx_data->ctrl_pt);
-	hids_evt_requested = false;
 }
 
 void test_on_protocols_mode_error_not_found(void)
 {
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
-	void *host;
 	uint8_t data[] = {0x01};
 	uint16_t len = sizeof(data);
 
-	struct ble_hids_client_context exp_context = {
-		.protocol_mode = 1,
-		.ctrl_pt = 0,
-	};
-	/* Test on_protocols mode. */
-	host = NULL;
-
-	/* Test link_ctx_get_fails. */
+	/* Report mode - link_ctx_get fails. */
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, -1);
 
 	error_expected = true;
@@ -2113,13 +2531,9 @@ void test_on_protocols_mode_error_not_found(void)
 	TEST_ASSERT_EQUAL(NRF_ERROR_NOT_FOUND, error);
 	TEST_ASSERT_TRUE(error_requested);
 
-	/* Test on_protocols mode. Boot mode entered. */
+	/* Boot mode - link_ctx_get fails. */
 	data[0] = 0;
-	exp_context.protocol_mode = 0;
-	exp_context.ctrl_pt = 0;
-	host = NULL;
 
-	/* Test link_ctx_get_fails. */
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, -1);
 
 	error_expected = true;
@@ -2127,51 +2541,24 @@ void test_on_protocols_mode_error_not_found(void)
 
 	TEST_ASSERT_EQUAL(NRF_ERROR_NOT_FOUND, error);
 	TEST_ASSERT_TRUE(error_requested);
-
-	error_requested = false;
 }
 
 void test_on_protocols_mode(void)
 {
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
-	void *host;
 	uint8_t data[] = {0x01};
 	uint16_t len = sizeof(data);
 
-	struct ble_hids_client_context exp_context = {
-		.protocol_mode = 1,
-		.ctrl_pt = 0,
-	};
-	/* Test on_protocols mode. */
-	host = NULL;
-
-	error_requested = false;
-
-	/* Test success. */
-	host = (void *)((uint8_t *)ble_hids.link_ctx_storage.ctx_data_pool +
-			  CONN_IDX * ble_hids.link_ctx_storage.link_ctx_size);
-
+	/* Report mode entered. */
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
 
 	hids_evt_expected = true;
 	emulate_ble_write_evt(&ble_hids, ON_WRITE_PROTOCOLS_MODE, data, len);
 
 	TEST_ASSERT_TRUE(hids_evt_requested);
-	TEST_ASSERT_EQUAL_MEMORY(&exp_context, (struct ble_hids_client_context *)host,
-				 sizeof(exp_context));
-	hids_evt_requested = false;
 
-	/* Test on_protocols mode. Boot mode entered. */
+	/* Boot mode entered. */
 	data[0] = 0;
-	exp_context.protocol_mode = 0;
-	exp_context.ctrl_pt = 0;
-	host = NULL;
-
-	error_requested = false;
-
-	/* Test success. */
-	host = (void *)((uint8_t *)ble_hids.link_ctx_storage.ctx_data_pool +
-			  CONN_IDX * ble_hids.link_ctx_storage.link_ctx_size);
 
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
 
@@ -2179,9 +2566,6 @@ void test_on_protocols_mode(void)
 	emulate_ble_write_evt(&ble_hids, ON_WRITE_PROTOCOLS_MODE, data, len);
 
 	TEST_ASSERT_TRUE(hids_evt_requested);
-	TEST_ASSERT_EQUAL_MEMORY(&exp_context, (struct ble_hids_client_context *)host,
-				 sizeof(exp_context));
-	hids_evt_requested = false;
 }
 
 void test_on_kb_inp_cccd_handle_test(void)
@@ -2235,10 +2619,7 @@ void test_on_kb_inp_handle_value(void)
 {
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
 	uint8_t data[] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09};
-	uint16_t len = 2;
-	uint8_t *report;
-	void *host = NULL;
-	uint8_t data_offset = sizeof(struct ble_hids_client_context);
+	uint16_t len;
 
 	struct char_write char_write_exp = {
 		.char_id.uuid = BLE_UUID_BOOT_KEYBOARD_INPUT_REPORT_CHAR,
@@ -2249,30 +2630,22 @@ void test_on_kb_inp_handle_value(void)
 		.data = data,
 	};
 
-	error_requested = false;
-
-	/* Test to long data. */
+	/* Test too long data. */
 	len = 9;
-	host = (void *)((uint8_t *)ble_hids.link_ctx_storage.ctx_data_pool +
-			  CONN_IDX * ble_hids.link_ctx_storage.link_ctx_size);
 
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
 
 	hids_evt_expected = false;
-
 	emulate_ble_write_evt(&ble_hids, ON_KB_INP_VALUE, data, len);
 
 	TEST_ASSERT_FALSE(hids_evt_requested);
 
 	/* Test success. */
 	len = 8;
-	host = (void *)((uint8_t *)ble_hids.link_ctx_storage.ctx_data_pool +
-			  CONN_IDX * ble_hids.link_ctx_storage.link_ctx_size);
 
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
 
 	hids_evt_expected = true;
-
 	emulate_ble_write_evt(&ble_hids, ON_KB_INP_VALUE, data, len);
 
 	TEST_ASSERT_TRUE(hids_evt_requested);
@@ -2280,11 +2653,6 @@ void test_on_kb_inp_handle_value(void)
 	TEST_ASSERT_EQUAL_UINT16(char_write_exp.len, char_write_evt.len);
 	TEST_ASSERT_EQUAL_MEMORY(&char_write_exp.char_id, &char_write_evt.char_id,
 				 sizeof(char_write_exp.char_id));
-
-	hids_evt_requested = false;
-
-	report = (uint8_t *)host + data_offset;
-	TEST_ASSERT_EQUAL_MEMORY(data, report, len);
 }
 
 void test_on_kb_outp_value_test(void)
@@ -2292,9 +2660,6 @@ void test_on_kb_outp_value_test(void)
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
 	uint8_t data[] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09};
 	uint16_t len = 1;
-	uint8_t *report;
-	void *host = NULL;
-	uint8_t data_offset = sizeof(struct ble_hids_client_context);
 
 	struct char_write char_write_exp = {
 		.char_id.uuid = BLE_UUID_BOOT_KEYBOARD_OUTPUT_REPORT_CHAR,
@@ -2305,14 +2670,9 @@ void test_on_kb_outp_value_test(void)
 		.data = data,
 	};
 
-	/* Test success. */
-	host = (void *)((uint8_t *)ble_hids.link_ctx_storage.ctx_data_pool +
-			  CONN_IDX * ble_hids.link_ctx_storage.link_ctx_size);
-
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
 
 	hids_evt_expected = true;
-
 	emulate_ble_write_evt(&ble_hids, ON_KB_OUTP_VALUE, data, len);
 
 	TEST_ASSERT_TRUE(hids_evt_requested);
@@ -2320,10 +2680,6 @@ void test_on_kb_outp_value_test(void)
 	TEST_ASSERT_EQUAL_UINT16(char_write_exp.len, char_write_evt.len);
 	TEST_ASSERT_EQUAL_MEMORY(&char_write_exp.char_id, &char_write_evt.char_id,
 				 sizeof(char_write_exp.char_id));
-	hids_evt_requested = false;
-
-	report = (uint8_t *)host + data_offset + BLE_HIDS_BOOT_KB_INPUT_REPORT_MAX_SIZE;
-	TEST_ASSERT_EQUAL_MEMORY(data, report, len);
 }
 
 void test_on_mouse_inp_cccd(void)
@@ -2351,9 +2707,6 @@ void test_on_mouse_inp_value(void)
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
 	uint8_t data[] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08};
 	uint16_t len = BLE_HIDS_BOOT_MOUSE_INPUT_REPORT_MAX_SIZE;
-	uint8_t *report;
-	void *host = NULL;
-	uint8_t data_offset = sizeof(struct ble_hids_client_context);
 
 	struct char_write char_write_exp = {
 		.char_id.uuid = BLE_UUID_BOOT_MOUSE_INPUT_REPORT_CHAR,
@@ -2364,14 +2717,9 @@ void test_on_mouse_inp_value(void)
 		.data = data,
 	};
 
-	/* Test success. */
-	host = (void *)((uint8_t *)ble_hids.link_ctx_storage.ctx_data_pool +
-			  CONN_IDX * ble_hids.link_ctx_storage.link_ctx_size);
-
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
 
 	hids_evt_expected = true;
-
 	emulate_ble_write_evt(&ble_hids, ON_MOUSE_INP_VALUE, data, len);
 
 	TEST_ASSERT_TRUE(hids_evt_requested);
@@ -2379,11 +2727,6 @@ void test_on_mouse_inp_value(void)
 	TEST_ASSERT_EQUAL_UINT16(char_write_exp.len, char_write_evt.len);
 	TEST_ASSERT_EQUAL_MEMORY(&char_write_exp.char_id, &char_write_evt.char_id,
 				 sizeof(char_write_exp.char_id));
-	hids_evt_requested = false;
-
-	report = (uint8_t *)host + data_offset + BLE_HIDS_BOOT_KB_INPUT_REPORT_MAX_SIZE +
-		   BLE_HIDS_BOOT_KB_OUTPUT_REPORT_MAX_SIZE;
-	TEST_ASSERT_EQUAL_MEMORY(data, report, len);
 }
 
 void test_on_inp_rep_cccd(void)
@@ -2429,41 +2772,127 @@ void test_on_rep_value_identify_error_too_long_data(void)
 {
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
 	uint8_t data[] = {0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5};
-	uint8_t empty_data[FEATURE_REPORT_3_LEN] = {0};
 	uint16_t len = FEATURE_REPORT_3_LEN + 1;
-	uint8_t *report;
-	void *host = NULL;
-	uint8_t data_offset =
-		sizeof(struct ble_hids_client_context) + BLE_HIDS_BOOT_KB_INPUT_REPORT_MAX_SIZE +
-		BLE_HIDS_BOOT_KB_OUTPUT_REPORT_MAX_SIZE + BLE_HIDS_BOOT_MOUSE_INPUT_REPORT_MAX_SIZE;
-
-	/* Test last feature report. */
-	/* Test to long data */
-	host = (void *)((uint8_t *)ble_hids.link_ctx_storage.ctx_data_pool +
-			  CONN_IDX * ble_hids.link_ctx_storage.link_ctx_size);
 
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
 
 	hids_evt_expected = false;
-
 	emulate_ble_write_evt(&ble_hids, ON_REP_VALUE_IDENTIFY, data, len);
 
-	report = (uint8_t *)host + data_offset + INPUT_REPORT_1_LEN + INPUT_REPORT_2_LEN +
-		   OUTPUT_REPORT_1_LEN + OUTPUT_REPORT_2_LEN + FEATURE_REPORT_1_LEN +
-		   FEATURE_REPORT_2_LEN;
-	TEST_ASSERT_EQUAL_MEMORY(empty_data, report, len - 1);
+	TEST_ASSERT_FALSE(hids_evt_requested);
+}
+
+void test_on_rep_value_identify_input_report(void)
+{
+	struct ble_hids ble_hids = INITIALIZED_HIDS;
+	uint8_t data[] = {0xA0, 0xA1, 0xA2};
+	uint16_t len = INPUT_REPORT_1_LEN;
+
+	struct char_write char_write_exp = {
+		.char_id.uuid = BLE_UUID_REPORT_CHAR,
+		.char_id.report_type = BLE_HIDS_REPORT_TYPE_INPUT,
+		.char_id.report_index = 0,
+		.offset = 0,
+		.len = INPUT_REPORT_1_LEN,
+		.data = data,
+	};
+
+	ble_evt_t ble_evt = {
+		.header.evt_id = BLE_GATTS_EVT_WRITE,
+		.evt.gatts_evt.conn_handle = CONN_HANDLE,
+	};
+	ble_gatts_evt_write_t *evt_write = &ble_evt.evt.gatts_evt.params.write;
+	static uint8_t write_evt_data[sizeof(ble_evt_t) + GATTS_WRITE_MAX_DATA_LEN];
+	uint8_t offset = offsetof(ble_evt_t, evt.gatts_evt.params.write.data);
+
+	input_report[0].len = INPUT_REPORT_1_LEN;
+	input_report[1].len = INPUT_REPORT_2_LEN;
+
+	output_report[0].len = OUTPUT_REPORT_1_LEN;
+	output_report[1].len = OUTPUT_REPORT_2_LEN;
+
+	feature_report[0].len = FEATURE_REPORT_1_LEN;
+	feature_report[1].len = FEATURE_REPORT_2_LEN;
+	feature_report[2].len = FEATURE_REPORT_3_LEN;
+
+	ble_hids.inp_rep_array[0].char_handles.value_handle = REPORT_VALUE_HANDLE;
+
+	evt_write->handle = REPORT_VALUE_HANDLE;
+	evt_write->len = len;
+
+	memcpy(write_evt_data, &ble_evt, sizeof(ble_evt_t));
+	memcpy(write_evt_data + offset, data, len);
+
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
+
+	hids_evt_expected = true;
+	ble_hids_on_ble_evt((ble_evt_t *)write_evt_data, &ble_hids);
+
+	TEST_ASSERT_TRUE(hids_evt_requested);
+	TEST_ASSERT_EQUAL_MEMORY(char_write_exp.data, char_write_evt.data, char_write_exp.len);
+	TEST_ASSERT_EQUAL_UINT16(char_write_exp.len, char_write_evt.len);
+	TEST_ASSERT_EQUAL_MEMORY(&char_write_exp.char_id, &char_write_evt.char_id,
+				 sizeof(char_write_exp.char_id));
+}
+
+void test_on_rep_value_identify_output_report(void)
+{
+	struct ble_hids ble_hids = INITIALIZED_HIDS;
+	uint8_t data[] = {0xD0};
+	uint16_t len = OUTPUT_REPORT_1_LEN;
+
+	struct char_write char_write_exp = {
+		.char_id.uuid = BLE_UUID_REPORT_CHAR,
+		.char_id.report_type = BLE_HIDS_REPORT_TYPE_OUTPUT,
+		.char_id.report_index = 0,
+		.offset = 0,
+		.len = OUTPUT_REPORT_1_LEN,
+		.data = data,
+	};
+
+	ble_evt_t ble_evt = {
+		.header.evt_id = BLE_GATTS_EVT_WRITE,
+		.evt.gatts_evt.conn_handle = CONN_HANDLE,
+	};
+	ble_gatts_evt_write_t *evt_write = &ble_evt.evt.gatts_evt.params.write;
+	static uint8_t write_evt_data[sizeof(ble_evt_t) + GATTS_WRITE_MAX_DATA_LEN];
+	uint8_t offset = offsetof(ble_evt_t, evt.gatts_evt.params.write.data);
+
+	input_report[0].len = INPUT_REPORT_1_LEN;
+	input_report[1].len = INPUT_REPORT_2_LEN;
+
+	output_report[0].len = OUTPUT_REPORT_1_LEN;
+	output_report[1].len = OUTPUT_REPORT_2_LEN;
+
+	feature_report[0].len = FEATURE_REPORT_1_LEN;
+	feature_report[1].len = FEATURE_REPORT_2_LEN;
+	feature_report[2].len = FEATURE_REPORT_3_LEN;
+
+	ble_hids.outp_rep_array[0].char_handles.value_handle = REPORT_VALUE_HANDLE;
+
+	evt_write->handle = REPORT_VALUE_HANDLE;
+	evt_write->len = len;
+
+	memcpy(write_evt_data, &ble_evt, sizeof(ble_evt_t));
+	memcpy(write_evt_data + offset, data, len);
+
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
+
+	hids_evt_expected = true;
+	ble_hids_on_ble_evt((ble_evt_t *)write_evt_data, &ble_hids);
+
+	TEST_ASSERT_TRUE(hids_evt_requested);
+	TEST_ASSERT_EQUAL_MEMORY(char_write_exp.data, char_write_evt.data, char_write_exp.len);
+	TEST_ASSERT_EQUAL_UINT16(char_write_exp.len, char_write_evt.len);
+	TEST_ASSERT_EQUAL_MEMORY(&char_write_exp.char_id, &char_write_evt.char_id,
+				 sizeof(char_write_exp.char_id));
 }
 
 void test_on_rep_value_identify(void)
 {
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
 	uint8_t data[] = {0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5};
-	uint16_t len = FEATURE_REPORT_3_LEN + 1;
-	uint8_t *report;
-	void *host = NULL;
-	uint8_t data_offset =
-		sizeof(struct ble_hids_client_context) + BLE_HIDS_BOOT_KB_INPUT_REPORT_MAX_SIZE +
-		BLE_HIDS_BOOT_KB_OUTPUT_REPORT_MAX_SIZE + BLE_HIDS_BOOT_MOUSE_INPUT_REPORT_MAX_SIZE;
+	uint16_t len = FEATURE_REPORT_3_LEN;
 
 	struct char_write char_write_exp = {
 		.char_id.uuid = BLE_UUID_REPORT_CHAR,
@@ -2474,19 +2903,9 @@ void test_on_rep_value_identify(void)
 		.data = data,
 	};
 
-	host = (void *)((uint8_t *)ble_hids.link_ctx_storage.ctx_data_pool +
-			  CONN_IDX * ble_hids.link_ctx_storage.link_ctx_size);
-
-	report = (uint8_t *)host + data_offset + INPUT_REPORT_1_LEN + INPUT_REPORT_2_LEN +
-		   OUTPUT_REPORT_1_LEN + OUTPUT_REPORT_2_LEN + FEATURE_REPORT_1_LEN +
-		   FEATURE_REPORT_2_LEN;
-
-	len = FEATURE_REPORT_3_LEN;
-
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
 
 	hids_evt_expected = true;
-
 	emulate_ble_write_evt(&ble_hids, ON_REP_VALUE_IDENTIFY, data, len);
 
 	TEST_ASSERT_TRUE(hids_evt_requested);
@@ -2494,9 +2913,6 @@ void test_on_rep_value_identify(void)
 	TEST_ASSERT_EQUAL_UINT16(char_write_exp.len, char_write_evt.len);
 	TEST_ASSERT_EQUAL_MEMORY(&char_write_exp.char_id, &char_write_evt.char_id,
 				 sizeof(char_write_exp.char_id));
-	TEST_ASSERT_EQUAL_MEMORY(data, report, len);
-
-	hids_evt_requested = false;
 }
 
 void test_on_protocol_mode_rw_auth_test_error_not_found(void)
@@ -2522,7 +2938,6 @@ void test_on_protocol_mode_rw_auth_test_error_not_found(void)
 void test_on_protocol_mode_rw_auth_test_error_invalid_state(void)
 {
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
-	void *host = NULL;
 
 	/* Test event type other than BLE_GATTS_AUTHORIZE_TYPE_READ. */
 	hids_evt_expected = false;
@@ -2530,9 +2945,6 @@ void test_on_protocol_mode_rw_auth_test_error_invalid_state(void)
 	TEST_ASSERT_FALSE(hids_evt_requested);
 
 	/* Test gatts rw authorize reply fail. */
-	host = (void *)((uint8_t *)ble_hids.link_ctx_storage.ctx_data_pool +
-			  CONN_IDX * ble_hids.link_ctx_storage.link_ctx_size);
-
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
 
 	__cmock_sd_ble_gatts_rw_authorize_reply_ExpectAndReturn(CONN_HANDLE, NULL,
@@ -2590,7 +3002,6 @@ void test_on_boot_kb_inp_rep_rw_auth_error_not_found(void)
 void test_on_boot_kb_inp_rep_rw_auth_error_timeout(void)
 {
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
-	void *host = NULL;
 
 	/* Test event type other than BLE_GATTS_AUTHORIZE_TYPE_READ. */
 	hids_evt_expected = false;
@@ -2599,9 +3010,6 @@ void test_on_boot_kb_inp_rep_rw_auth_error_timeout(void)
 	TEST_ASSERT_FALSE(hids_evt_requested);
 
 	/* Test gatts rw authorize reply fail. */
-	host = (void *)((uint8_t *)ble_hids.link_ctx_storage.ctx_data_pool +
-			  CONN_IDX * ble_hids.link_ctx_storage.link_ctx_size);
-
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
 
 	__cmock_sd_ble_gatts_rw_authorize_reply_ExpectAndReturn(CONN_HANDLE, NULL,
@@ -2683,7 +3091,6 @@ void test_on_boot_kb_outp_rep_rw_auth_test_error_not_found(void)
 void test_on_boot_kb_outp_rep_rw_auth_test_error_timeout(void)
 {
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
-	void *host = NULL;
 
 	/* Test event type other than BLE_GATTS_AUTHORIZE_TYPE_READ. */
 	hids_evt_expected = false;
@@ -2692,9 +3099,6 @@ void test_on_boot_kb_outp_rep_rw_auth_test_error_timeout(void)
 	TEST_ASSERT_FALSE(hids_evt_requested);
 
 	/* Test gatts rw authorize reply fail. */
-	host = (void *)((uint8_t *)ble_hids.link_ctx_storage.ctx_data_pool +
-			  CONN_IDX * ble_hids.link_ctx_storage.link_ctx_size);
-
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
 
 	__cmock_sd_ble_gatts_rw_authorize_reply_ExpectAndReturn(CONN_HANDLE, NULL,
@@ -2761,7 +3165,6 @@ void test_on_boot_mouse_inp_rep_rw_auth_error_not_found(void)
 void test_on_boot_mouse_inp_rep_rw_auth_error_timeout(void)
 {
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
-	void *host = NULL;
 
 	/* Test event type other than BLE_GATTS_AUTHORIZE_TYPE_READ. */
 	hids_evt_expected = false;
@@ -2770,9 +3173,6 @@ void test_on_boot_mouse_inp_rep_rw_auth_error_timeout(void)
 	TEST_ASSERT_FALSE(hids_evt_requested);
 
 	/* Test gatts rw authorize reply fail. */
-	host = (void *)((uint8_t *)ble_hids.link_ctx_storage.ctx_data_pool +
-			  CONN_IDX * ble_hids.link_ctx_storage.link_ctx_size);
-
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
 
 	__cmock_sd_ble_gatts_rw_authorize_reply_ExpectAndReturn(CONN_HANDLE, NULL,
@@ -2839,7 +3239,6 @@ void test_on_inp_rep_rw_auth_error_not_found(void)
 void test_on_inp_rep_rw_auth_error_timeout(void)
 {
 	struct ble_hids ble_hids = INITIALIZED_HIDS;
-	void *host = NULL;
 
 	/* Test event type other than BLE_GATTS_AUTHORIZE_TYPE_READ. */
 	hids_evt_expected = false;
@@ -2848,9 +3247,6 @@ void test_on_inp_rep_rw_auth_error_timeout(void)
 	TEST_ASSERT_FALSE(hids_evt_requested);
 
 	/* Test gatts rw authorize reply fail. */
-	host = (void *)((uint8_t *)ble_hids.link_ctx_storage.ctx_data_pool +
-			  CONN_IDX * ble_hids.link_ctx_storage.link_ctx_size);
-
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, CONN_IDX);
 
 	__cmock_sd_ble_gatts_rw_authorize_reply_ExpectAndReturn(CONN_HANDLE, NULL,
