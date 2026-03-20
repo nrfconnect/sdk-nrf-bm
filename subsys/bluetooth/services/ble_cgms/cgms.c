@@ -7,9 +7,9 @@
 #include <nrf_error.h>
 #include <stdint.h>
 
+#include <bm/bluetooth/ble_date_time.h>
 #include <bm/bluetooth/ble_gq.h>
 #include <bm/bluetooth/ble_racp.h>
-#include <bm/bluetooth/services/ble_date_time.h>
 #include <bm/bluetooth/services/ble_cgms.h>
 #include <bm/bluetooth/services/uuid.h>
 #include "cgms_db.h"

@@ -240,6 +240,13 @@ Libraries for NFC
 
 * Added NFC libraries for NFC Connection Handover and Bluetooth LE Out-of-Band (OOB) pairing.
 
+Utils
+-----
+
+* :ref:`api_ble_date_time_char`:
+
+   * Moved the :file:`ble_date_time.h` header file from :file:`include/bm/bluetooth/services/` to :file:`include/bm/bluetooth/`.
+
 Samples
 =======
 
