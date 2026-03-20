@@ -9,10 +9,10 @@
 #include <string.h>
 #include <ble_gap.h>
 #include <nrf_soc.h>
-#include <bm/bluetooth/services/common.h>
 #include <bm/bm_timer.h>
 #include <bm/bm_buttons.h>
 #include <bm/bluetooth/ble_adv_data.h>
+#include <bm/bluetooth/ble_common.h>
 #include <bm/bluetooth/ble_conn_params.h>
 #include <bm/bluetooth/ble_qwr.h>
 #include <bm/softdevice_handler/nrf_sdh.h>
