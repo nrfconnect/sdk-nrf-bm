@@ -1,0 +1,13 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+config BM_RMEM_CLIPBOARD
+	bool "Inter application RAM Clipboard"
+	help
+	  If enabled, instance of simple inter application
+	  clipboard storage on retained RAM area is supported.
+	  The storage is using RAM memory region described in the DTS node
+	  assigned by ncsbm,clipboard-partition chosen.
