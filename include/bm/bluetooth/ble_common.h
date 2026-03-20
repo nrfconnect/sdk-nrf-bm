@@ -4,6 +4,13 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
+/** @file
+ *
+ * @defgroup bm_ble_common BLE common
+ * @{
+ * @brief Definitions of common macros and helper functions.
+ */
+
 #ifndef BLE_COMMON_H__
 #define BLE_COMMON_H__
 
@@ -128,3 +135,5 @@ static inline bool ble_gap_conn_sec_mode_equal(const ble_gap_conn_sec_mode_t *a,
 #endif
 
 #endif /* BLE_COMMON_H__ */
+
+/** @} */
