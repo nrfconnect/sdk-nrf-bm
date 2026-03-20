@@ -6,8 +6,8 @@
 #include <stdint.h>
 #include <string.h>
 #include <ble.h>
+#include <bm/bluetooth/ble_common.h>
 #include <bm/bluetooth/ble_gq.h>
-#include <bm/bluetooth/services/common.h>
 #include <bm/bluetooth/services/uuid.h>
 
 #include "cgms_db.h"

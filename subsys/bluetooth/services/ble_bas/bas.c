@@ -6,8 +6,8 @@
 
 #include <nrf_error.h>
 #include <string.h>
+#include <bm/bluetooth/ble_common.h>
 #include <bm/bluetooth/services/ble_bas.h>
-#include <bm/bluetooth/services/common.h>
 #include <bm/bluetooth/services/uuid.h>
 #include <zephyr/logging/log.h>
 

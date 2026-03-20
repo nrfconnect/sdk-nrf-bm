@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <bm/bluetooth/services/ble_bms.h>
-#include <bm/bluetooth/services/common.h>
 #include <bm/bluetooth/services/uuid.h>
 #include <bm/bluetooth/ble_qwr.h>
 

@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#ifndef BLE_SERVICES_COMMON_H__
-#define BLE_SERVICES_COMMON_H__
+#ifndef BLE_COMMON_H__
+#define BLE_COMMON_H__
 
 #include <ble.h>
 #include <ble_gap.h>
@@ -91,4 +91,4 @@ static inline bool ble_gap_conn_sec_mode_equal(const ble_gap_conn_sec_mode_t *a,
 }
 #endif
 
-#endif /* BLE_SERVICES_COMMON_H__ */
+#endif /* BLE_COMMON_H__ */
