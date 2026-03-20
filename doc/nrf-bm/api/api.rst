@@ -356,7 +356,9 @@ Characteristic UUID definitions
 
 .. doxygengroup:: UUID_CHARACTERISTICS
 
+.. _api_ble_date_time_char:
+
 Bluetooth LE Date Time characteristic type
 ==========================================
 
-.. doxygengroup:: ble_sdk_srv_date_time
+.. doxygengroup:: ble_date_time_char
