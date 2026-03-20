@@ -14,6 +14,7 @@
 #ifndef BLE_COMMON_H__
 #define BLE_COMMON_H__
 
+#include <stdbool.h>
 #include <ble_gap.h>
 #include <ble_gatt.h>
 #include <zephyr/sys/byteorder.h>
@@ -22,14 +23,14 @@
 extern "C" {
 #endif
 
-static inline uint16_t is_notification_enabled(const uint8_t *gatts_write_data)
+static inline bool is_notification_enabled(const uint8_t *gatts_write_data)
 {
 	const uint16_t cccd_val = sys_get_le16(gatts_write_data);
 
 	return (cccd_val & BLE_GATT_HVX_NOTIFICATION);
 }
 
-static inline uint16_t is_indication_enabled(const uint8_t *gatts_write_data)
+static inline bool is_indication_enabled(const uint8_t *gatts_write_data)
 {
 	const uint16_t cccd_val = sys_get_le16(gatts_write_data);
 

@@ -262,6 +262,7 @@ Utils
    * Moved the :file:`ble_common.h` header file from :file:`include/bm/bluetooth/services/` to :file:`include/bm/bluetooth/`.
    * Removed the ``gap_conn_sec_mode_from_u8`` function from the :file:`ble_common.h` file.
      Use the :c:macro:`BLE_GAP_CONN_SEC_MODE_OPEN` and similar macros instead.
+   * Updated the return value of the :c:func:`is_notification_enabled` and :c:func:`is_indication_enabled` functions to ``bool`` to reflect that it returns a boolean value and not an ``uint16_t``.
 
 Samples
 =======
