@@ -18,7 +18,7 @@ SoftDevice properties
 
 * The SoftDevice memory requirements for this version are as follows:
 
-  * NVM: **102.0 kB** (0x19800 bytes).
+  * NVM: **101.0 kB** (0x19400 bytes).
 
   * RAM: **4.1 kB** (0x1080 bytes).
     This is the minimum required memory. The actual requirements depend on the
@@ -33,9 +33,9 @@ SoftDevice properties
 
 * SoftDevice base address:
 
-  * nRF54LM20: 0x1E3400 (``s115_nrf54lm20_10.0.0-1.prototype_softdevice.hex``).
+  * nRF54LM20: 0x1e3800 (``s115_nrf54lm20_10.0.0-1.prototype_softdevice.hex``).
 
-* The Firmware ID of this SoftDevice is 0x3073.
+* The Firmware ID of this SoftDevice is 0x308C.
 
 
 See the changelog of the `SoftDevice Controller`_ and `MPSL`_ for more details about changes in the controller.
@@ -49,6 +49,21 @@ Changes
 * SoftDevice
 
   * Optimized RAM consumption for simple configurations of the SoftDevice. (DRGN-26915)
+
+  * The event ``NRF_EVT_RADIO_CANCELED`` was never generated and has been removed. (DRGN-27894)
+
+* GAP
+
+  * ``ble_gap_evt_scan_req_report_t`` now includes the Received Signal Strength Indication
+    of the received scan request. (DRGN-27726)
+
+Bug Fixes
+---------
+
+* GAP
+
+  * Fixed an issue where the SoftDevice did not provide LTK to application.
+    That happened if LESC bonding was run without IRK distribution at least in one direction. (DRGN-27912)
 
 Limitations
 -----------
