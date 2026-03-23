@@ -36,6 +36,14 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/**
+ * @defgroup nrf_sd_def SoftDevice definitions
+ * @{
+ *
+ * @brief Peripherals reserved by SoftDevice.
+ *
+ */
+
 #ifndef NRF_SD_DEF_H__
 #define NRF_SD_DEF_H__
 
@@ -66,8 +74,12 @@ extern "C" {
 
 #define SD_SWI_USED               0x00000007uL /**< Software interrupts utilized by SoftDevice (not available to the application). */
 
+#define SD_TIMESLOT_TIMER0        NRF_TIMER10 /**< TIMER instance utilized by SoftDevice (not available to the application). */
+
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* NRF_SD_DEF_H__ */
+
+/**@} */

@@ -438,6 +438,8 @@ enum BLE_GAP_TX_POWER_ROLES
 #define BLE_GAP_DEVNAME_MAX_LEN                  248     /**< Maximum number of octets in device name. */
 /**@} */
 
+/**@brief Received Signal Strength Indication (RSSI) not available. */
+#define BLE_GAP_RSSI_UNAVAILABLE 127
 
 /**@brief Disable RSSI events for connections */
 #define BLE_GAP_RSSI_THRESHOLD_INVALID 0xFF
@@ -1020,8 +1022,8 @@ typedef struct
 /**@brief Event structure for @ref BLE_GAP_EVT_RSSI_CHANGED. */
 typedef struct
 {
-  int8_t  rssi;                                 /**< Received Signal Strength Indication in dBm.
-                                                     @note ERRATA-153 and ERRATA-225 require the rssi sample to be compensated based on a temperature measurement. */
+  int8_t  rssi;                                 /**< Received Signal Strength Indication (RSSI) in dBm.
+                                                     @ref BLE_GAP_RSSI_UNAVAILABLE if RSSI is unavailable. */
   uint8_t ch_index;                             /**< Data Channel Index on which the Signal Strength is measured (0-36). */
 } ble_gap_evt_rssi_changed_t;
 
@@ -1039,6 +1041,8 @@ typedef struct
 typedef struct
 {
   uint8_t                 adv_handle;        /**< Advertising handle for the advertising set which received the Scan Request */
+  int8_t                  rssi;              /**< Received Signal Strength Indication (RSSI) in dBm.
+                                                  @ref BLE_GAP_RSSI_UNAVAILABLE if RSSI is unavailable. */
   ble_gap_addr_t          peer_addr;         /**< Bluetooth address of the peer device. If the peer_addr resolved: @ref ble_gap_addr_t::addr_id_peer is set to 1
                                                   and the address is the device's identity address. */
 } ble_gap_evt_scan_req_report_t;
@@ -2147,7 +2151,6 @@ SVCALL(SD_BLE_GAP_RSSI_STOP, uint32_t, sd_ble_gap_rssi_stop(uint16_t conn_handle
  *
  *        @ref sd_ble_gap_rssi_start must be called to start reporting RSSI before using this function. @ref NRF_ERROR_NOT_FOUND
  *        will be returned until RSSI was sampled for the first time after calling @ref sd_ble_gap_rssi_start.
- * @note ERRATA-153 and ERRATA-225 require the rssi sample to be compensated based on a temperature measurement.
  * @mscs
  * @mmsc{@ref BLE_GAP_CENTRAL_RSSI_READ_MSC}
  * @endmscs

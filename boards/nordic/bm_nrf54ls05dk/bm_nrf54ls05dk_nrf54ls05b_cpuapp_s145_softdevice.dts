@@ -27,14 +27,14 @@
 
 		slot0_partition: partition@0 {
 			label = "slot0";
-			reg = <0x00000000 DT_SIZE_K(359)>;
+			reg = <0x00000000 DT_SIZE_K(362)>;
 		};
 
-		storage_partition: partition@59c00 {
+		storage_partition: partition@5a800 {
 			compatible = "fixed-subpartitions";
 			label = "storage";
-			reg = <0x00059c00 DT_SIZE_K(8)>;
-			ranges = <0x0 0x59c00 DT_SIZE_K(8)>;
+			reg = <0x0005a800 DT_SIZE_K(8)>;
+			ranges = <0x0 0x5a800 DT_SIZE_K(8)>;
 			#address-cells = <1>;
 			#size-cells = <1>;
 
@@ -49,9 +49,9 @@
 			};
 		};
 
-		softdevice_partition: partition@5bc00 {
+		softdevice_partition: partition@5c800 {
 			label = "softdevice";
-			reg = <0x0005bc00 DT_SIZE_K(140)>;
+			reg = <0x0005c800 DT_SIZE_K(137)>;
 		};
 		/* Area from 0x7ec00 to end of nvm (1 kB) is unused
 		 * due to placement of SD to fit with DFU
