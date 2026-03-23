@@ -41,7 +41,7 @@ static uint32_t ctrlpt_char_add(struct ble_bms *bms, const struct ble_bms_config
 		.vloc = BLE_GATTS_VLOC_STACK,
 		.wr_auth = true,
 		.vlen = true,
-		.write_perm = bms_config->ctrlpt_sec,
+		.write_perm = bms_config->sec_mode.ctrlpt_char.write,
 	};
 	ble_gatts_attr_t attr_char_value = {
 		.p_uuid = &char_uuid,
@@ -123,7 +123,7 @@ static uint32_t feature_char_add(struct ble_bms *bms, const struct ble_bms_confi
 	init_value_len = feature_encode(&bms->feature, encoded_feature);
 	attr_char_value.init_len = init_value_len;
 	attr_char_value.max_len = init_value_len;
-	attr_md.read_perm = bms_config->feature_sec;
+	attr_md.read_perm = bms_config->sec_mode.feature_char.read;
 
 	nrf_err = sd_ble_gatts_characteristic_add(bms->service_handle, &char_md, &attr_char_value,
 						  &bms->feature_handles);

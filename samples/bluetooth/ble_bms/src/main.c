@@ -587,8 +587,7 @@ int main(void)
 #endif
 
 		.qwr = &ble_qwr,
-		.ctrlpt_sec = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
-		.feature_sec = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,
+		.sec_mode = BLE_BMS_CONFIG_SEC_MODE_DEFAULT,
 	};
 
 	struct ble_qwr_config qwr_config = {
