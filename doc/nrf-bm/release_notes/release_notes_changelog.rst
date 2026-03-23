@@ -219,6 +219,11 @@ Bluetooth LE Services
 
    * Updated the ``params`` union field of the :c:struct:`ble_hrs_client_evt` structure to an anonymous union.
 
+* :ref:`lib_ble_service_bms` service:
+
+   * Updated the security configuration of the :c:struct:`ble_bms_config` structure to align with other services.
+     Added the :c:macro:`BLE_BMS_CONFIG_SEC_MODE_DEFAULT` macro to set the default security configuration.
+
 Libraries for NFC
 -----------------
 

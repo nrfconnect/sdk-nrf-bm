@@ -43,6 +43,13 @@ extern "C" {
 	static struct ble_bms _name;                                                               \
 	NRF_SDH_BLE_OBSERVER(_name##_obs, ble_bms_on_ble_evt, &_name, HIGH)
 
+/** @brief Default security configuration. */
+#define BLE_BMS_CONFIG_SEC_MODE_DEFAULT                                                            \
+	{                                                                                          \
+		.feature_char.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                            \
+		.ctrlpt_char.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                            \
+	}
+
 /** Maximum length of the Bond Management Control Point Characteristic (in bytes). */
 #define BLE_BMS_CTRLPT_MAX_LEN 128
 /** Maximum length of the Bond Management Control Point Authorization Code (in bytes). */
@@ -241,14 +248,22 @@ struct ble_bms_config {
 	ble_bms_evt_handler_t evt_handler;
 	/** Initial value for features of the service. */
 	struct ble_bms_features feature;
-	/** Initial security level for the Feature characteristic. */
-	ble_gap_conn_sec_mode_t feature_sec;
-	/** Initial security level for the Control Point characteristic. */
-	ble_gap_conn_sec_mode_t ctrlpt_sec;
 	/** Pointer to the initialized Queued Write contexts. */
 	struct ble_qwr *qwr;
 	/** Initialized Queue Write contexts count. */
 	uint8_t qwr_count;
+	struct {
+		/** Security level for the feature characteristic. */
+		struct {
+			/** Security requirement for reading feature characteristic value. */
+			ble_gap_conn_sec_mode_t read;
+		} feature_char;
+		/** Security level for the control point characteristic. */
+		struct {
+			/** Security requirement for writing control point characteristic value. */
+			ble_gap_conn_sec_mode_t write;
+		} ctrlpt_char;
+	} sec_mode;
 };
 
 /**@brief Status information for the service. */

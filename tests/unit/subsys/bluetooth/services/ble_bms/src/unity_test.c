@@ -289,8 +289,8 @@ void test_ble_bms_init_error_feature_add_no_mem(void)
 	uint32_t nrf_err;
 	struct ble_bms_config bms_cfg = {
 		.evt_handler = bms_evt_handler,
-		.feature_sec.lv = FEATURE_SEC_LV,
-		.feature_sec.sm = FEATURE_SEC_SM,
+		.sec_mode.feature_char.read.lv = FEATURE_SEC_LV,
+		.sec_mode.feature_char.read.sm = FEATURE_SEC_SM,
 		.feature = {
 			.delete_all_auth = true,
 			.delete_requesting  = true,
@@ -312,10 +312,10 @@ void test_ble_bms_init_error_ctrlpt_add_no_mem(void)
 	uint32_t nrf_err;
 	struct ble_bms_config bms_cfg = {
 		.evt_handler = bms_evt_handler,
-		.feature_sec.lv = FEATURE_SEC_LV,
-		.feature_sec.sm = FEATURE_SEC_SM,
-		.ctrlpt_sec.lv = CTRLPT_SEC_LV,
-		.ctrlpt_sec.sm = CTRLPT_SEC_SM,
+		.sec_mode.feature_char.read.lv = FEATURE_SEC_LV,
+		.sec_mode.feature_char.read.sm = FEATURE_SEC_SM,
+		.sec_mode.ctrlpt_char.write.lv = CTRLPT_SEC_LV,
+		.sec_mode.ctrlpt_char.write.sm = CTRLPT_SEC_SM,
 		.feature = {
 			.delete_all_auth = true,
 			.delete_requesting  = true,
@@ -337,10 +337,10 @@ void test_ble_bms_init_error_qwr_attr_register_no_mem(void)
 	uint32_t nrf_err;
 	struct ble_bms_config bms_cfg = {
 		.evt_handler = bms_evt_handler,
-		.feature_sec.lv = FEATURE_SEC_LV,
-		.feature_sec.sm = FEATURE_SEC_SM,
-		.ctrlpt_sec.lv = CTRLPT_SEC_LV,
-		.ctrlpt_sec.sm = CTRLPT_SEC_SM,
+		.sec_mode.feature_char.read.lv = FEATURE_SEC_LV,
+		.sec_mode.feature_char.read.sm = FEATURE_SEC_SM,
+		.sec_mode.ctrlpt_char.write.lv = CTRLPT_SEC_LV,
+		.sec_mode.ctrlpt_char.write.sm = CTRLPT_SEC_SM,
 		.feature = {
 			.delete_all_auth = true,
 			.delete_requesting  = true,
@@ -379,10 +379,10 @@ void test_ble_bms_init(void)
 	uint32_t nrf_err;
 	struct ble_bms_config bms_cfg = {
 		.evt_handler = bms_evt_handler,
-		.feature_sec.lv = FEATURE_SEC_LV,
-		.feature_sec.sm = FEATURE_SEC_SM,
-		.ctrlpt_sec.lv = CTRLPT_SEC_LV,
-		.ctrlpt_sec.sm = CTRLPT_SEC_SM,
+		.sec_mode.feature_char.read.lv = FEATURE_SEC_LV,
+		.sec_mode.feature_char.read.sm = FEATURE_SEC_SM,
+		.sec_mode.ctrlpt_char.write.lv = CTRLPT_SEC_LV,
+		.sec_mode.ctrlpt_char.write.sm = CTRLPT_SEC_SM,
 		.feature = {
 			.delete_all_auth = true,
 			.delete_requesting  = true,
@@ -407,10 +407,10 @@ void test_ble_bms_init_support_none(void)
 	uint32_t nrf_err;
 	struct ble_bms_config bms_cfg = {
 		.evt_handler = bms_evt_handler,
-		.feature_sec.lv = FEATURE_SEC_LV,
-		.feature_sec.sm = FEATURE_SEC_SM,
-		.ctrlpt_sec.lv = CTRLPT_SEC_LV,
-		.ctrlpt_sec.sm = CTRLPT_SEC_SM,
+		.sec_mode.feature_char.read.lv = FEATURE_SEC_LV,
+		.sec_mode.feature_char.read.sm = FEATURE_SEC_SM,
+		.sec_mode.ctrlpt_char.write.lv = CTRLPT_SEC_LV,
+		.sec_mode.ctrlpt_char.write.sm = CTRLPT_SEC_SM,
 		.feature = {
 		},
 		.qwr = &ble_qwr,
@@ -432,10 +432,10 @@ void test_ble_bms_init_support_all(void)
 	uint32_t nrf_err;
 	struct ble_bms_config bms_cfg = {
 		.evt_handler = bms_evt_handler,
-		.feature_sec.lv = FEATURE_SEC_LV,
-		.feature_sec.sm = FEATURE_SEC_SM,
-		.ctrlpt_sec.lv = CTRLPT_SEC_LV,
-		.ctrlpt_sec.sm = CTRLPT_SEC_SM,
+		.sec_mode.feature_char.read.lv = FEATURE_SEC_LV,
+		.sec_mode.feature_char.read.sm = FEATURE_SEC_SM,
+		.sec_mode.ctrlpt_char.write.lv = CTRLPT_SEC_LV,
+		.sec_mode.ctrlpt_char.write.sm = CTRLPT_SEC_SM,
 		.feature = {
 			.delete_all = true,
 			.delete_all_auth = true,
