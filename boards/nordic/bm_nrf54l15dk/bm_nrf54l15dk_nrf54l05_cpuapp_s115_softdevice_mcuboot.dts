@@ -74,19 +74,17 @@
 
 		slot0_partition: partition@a000 {
 			label = "slot0";
-			reg = <0x0000a000 DT_SIZE_K(290)>;
+			reg = <0x0000a000 DT_SIZE_K(292)>;
 		};
 
-		slot1_partition: partition@52800 {
+		slot1_partition: partition@53000 {
 			label = "slot1";
-			reg = <0x00052800 DT_SIZE_K(64)>;
+			reg = <0x00053000 DT_SIZE_K(64)>;
 		};
 
-		/* Area from 0x62800 to 0x62c00 is unused due to alignment */
-
-		softdevice_partition: partition@62c00 {
+		softdevice_partition: partition@63000 {
 			label = "softdevice";
-			reg = <0x00062c00 (DT_SIZE_K(104) + 0x200)>;
+			reg = <0x00063000 (DT_SIZE_K(103) + 0x200)>;
 		};
 
 		metadata_partition: partition@7ce00 {

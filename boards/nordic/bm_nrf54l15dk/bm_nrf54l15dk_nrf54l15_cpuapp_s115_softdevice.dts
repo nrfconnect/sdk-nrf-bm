@@ -27,14 +27,14 @@
 
 		slot0_partition: partition@0 {
 			label = "slot0";
-			reg = <0x00000000 DT_SIZE_K(1413)>;
+			reg = <0x00000000 DT_SIZE_K(1414)>;
 		};
 
-		storage_partition: partition@161400 {
+		storage_partition: partition@161800 {
 			compatible = "fixed-subpartitions";
 			label = "storage";
-			reg = <0x00161400 DT_SIZE_K(8)>;
-			ranges = <0x0 0x161400 DT_SIZE_K(8)>;
+			reg = <0x00161800 DT_SIZE_K(8)>;
+			ranges = <0x0 0x161800 DT_SIZE_K(8)>;
 			#address-cells = <1>;
 			#size-cells = <1>;
 
@@ -49,9 +49,9 @@
 			};
 		};
 
-		softdevice_partition: partition@163400 {
+		softdevice_partition: partition@163800 {
 			label = "softdevice";
-			reg = <0x00163400 DT_SIZE_K(102)>;
+			reg = <0x00163800 DT_SIZE_K(101)>;
 		};
 	};
 };
