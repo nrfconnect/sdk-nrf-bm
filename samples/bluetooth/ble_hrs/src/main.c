@@ -260,6 +260,8 @@ void on_conn_params_evt(const struct ble_conn_params_evt *evt)
 {
 	uint32_t nrf_err;
 
+	ble_hrs_conn_params_evt(&ble_hrs, evt);
+
 	switch (evt->evt_type) {
 	case BLE_CONN_PARAMS_EVT_REJECTED:
 		nrf_err = sd_ble_gap_disconnect(evt->conn_handle,
@@ -270,10 +272,6 @@ void on_conn_params_evt(const struct ble_conn_params_evt *evt)
 		} else {
 			LOG_ERR("Disconnected from peer, unacceptable conn params");
 		}
-		break;
-
-	case BLE_CONN_PARAMS_EVT_ATT_MTU_UPDATED:
-		ble_hrs_conn_params_evt(&ble_hrs, evt);
 		break;
 
 	default:
