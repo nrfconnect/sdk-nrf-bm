@@ -205,7 +205,7 @@ See table below for a summary of supported libraries.
      - Yes
      - ``ble_scan``
      -
-     - Experimental
+     -
    * - ``ble_link_ctx_manager``
      - No
      -
