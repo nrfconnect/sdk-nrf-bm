@@ -161,7 +161,7 @@ static void on_ble_evt(const ble_evt_t *ble_evt, void *ctx)
 		break;
 
 	case BLE_GATTC_EVT_TIMEOUT:
-		LOG_INF("GATT Client Timeout.");
+		LOG_INF("GATT Client Timeout");
 		nrf_err = sd_ble_gap_disconnect(ble_evt->evt.gattc_evt.conn_handle,
 					    BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
 		if (nrf_err) {
@@ -170,7 +170,7 @@ static void on_ble_evt(const ble_evt_t *ble_evt, void *ctx)
 		break;
 
 	case BLE_GATTS_EVT_TIMEOUT:
-		LOG_INF("GATT Server Timeout.");
+		LOG_INF("GATT Server Timeout");
 		nrf_err = sd_ble_gap_disconnect(ble_evt->evt.gatts_evt.conn_handle,
 					    BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
 		if (nrf_err) {
@@ -240,7 +240,7 @@ static uint32_t delete_bonds(void)
 static void allow_list_disable(void)
 {
 	if (!allow_list_disabled) {
-		LOG_INF("allow list temporarily disabled.");
+		LOG_INF("allow list temporarily disabled");
 		allow_list_disabled = true;
 		ble_scan_stop(&ble_scan);
 		scan_start(false);
@@ -264,17 +264,17 @@ static void button_handler_disconnect(uint8_t pin, uint8_t action)
 	}
 }
 
-static void hrs_c_evt_handler(struct ble_hrs_client *hrs, struct ble_hrs_client_evt *evt)
+static void hrs_c_evt_handler(struct ble_hrs_client *hrs, const struct ble_hrs_client_evt *evt)
 {
 
 	uint32_t nrf_err;
 
 	switch (evt->evt_type) {
 	case BLE_HRS_CLIENT_EVT_DISCOVERY_COMPLETE:
-		LOG_INF("Heart rate service discovered.");
+		LOG_INF("Heart rate service discovered");
 
 		nrf_err = ble_hrs_client_handles_assign(hrs, evt->conn_handle,
-							 &evt->peer_db);
+							&evt->discovery_complete.handles);
 		if (nrf_err != 0) {
 			LOG_ERR("ble_hrs_client_handles_assign failed, nrf_error %#x", nrf_err);
 		}
@@ -288,20 +288,20 @@ static void hrs_c_evt_handler(struct ble_hrs_client *hrs, struct ble_hrs_client_
 		break;
 
 	case BLE_HRS_CLIENT_EVT_HRM_NOTIFICATION:
-		LOG_INF("Heart Rate %d.", evt->hrm.hr_value);
-		if (evt->hrm.rr_intervals_cnt != 0) {
+		LOG_INF("Heart Rate %d.", evt->hrm_notification.hr_value);
+		if (evt->hrm_notification.rr_intervals_cnt != 0) {
 			uint32_t rr_avg = 0;
 
-			for (uint32_t i = 0; i < evt->hrm.rr_intervals_cnt; i++) {
-				rr_avg += evt->hrm.rr_intervals[i];
+			for (uint32_t i = 0; i < evt->hrm_notification.rr_intervals_cnt; i++) {
+				rr_avg += evt->hrm_notification.rr_intervals[i];
 			}
-			rr_avg = rr_avg / evt->hrm.rr_intervals_cnt;
+			rr_avg = rr_avg / evt->hrm_notification.rr_intervals_cnt;
 			LOG_INF("rr_interval (avg) %d", rr_avg);
 		}
 		break;
 
 	default:
-		LOG_WRN("Unhandled hrs event %d", evt->evt_type);
+		LOG_WRN("Unhandled HRS event %d", evt->evt_type);
 		break;
 	}
 }
@@ -434,12 +434,12 @@ static void conn_params_evt_handler(const struct ble_conn_params_evt *evt)
 {
 	switch (evt->evt_type) {
 	case BLE_CONN_PARAMS_EVT_ATT_MTU_UPDATED:
-		LOG_INF("GATT ATT MTU on connection %#x changed to %d.", evt->conn_handle,
+		LOG_INF("GATT ATT MTU on connection %#x changed to %d", evt->conn_handle,
 			evt->att_mtu);
 		break;
 
 	case BLE_CONN_PARAMS_EVT_DATA_LENGTH_UPDATED:
-		LOG_INF("Data length for connection %#x updated to %d.", evt->conn_handle,
+		LOG_INF("Data length for connection %#x updated to %d", evt->conn_handle,
 			evt->data_length.rx);
 		break;
 
@@ -461,7 +461,7 @@ static void scan_evt_handler(const struct ble_scan_evt *scan_evt)
 	case BLE_SCAN_EVT_ALLOW_LIST_REQUEST:
 		on_allow_list_req();
 		allow_list_disabled = false;
-		LOG_INF("allow list request.");
+		LOG_INF("Allow list request");
 		break;
 
 	case BLE_SCAN_EVT_CONNECTING_ERROR:
@@ -470,7 +470,7 @@ static void scan_evt_handler(const struct ble_scan_evt *scan_evt)
 		break;
 
 	case BLE_SCAN_EVT_SCAN_TIMEOUT:
-		LOG_INF("Scan timed out.");
+		LOG_INF("Scan timed out");
 		scan_start(false);
 		break;
 
@@ -479,7 +479,7 @@ static void scan_evt_handler(const struct ble_scan_evt *scan_evt)
 		break;
 
 	case BLE_SCAN_EVT_ALLOW_LIST_ADV_REPORT:
-		LOG_INF("allow list advertise report.");
+		LOG_INF("Allow list advertise report");
 		break;
 
 	case BLE_SCAN_EVT_CONNECTED: {
@@ -671,11 +671,11 @@ int main(void)
 	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
 	LOG_INF("BLE HRS Central sample initialized");
 
+idle:
 	while (true) {
 #if defined(CONFIG_PM_LESC)
 		(void)nrf_ble_lesc_request_handler();
 #endif
-idle:
 		log_flush();
 
 		k_cpu_idle();

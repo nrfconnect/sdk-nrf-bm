@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 - 2025 Nordic Semiconductor ASA
+ * Copyright (c) 2012 - 2026 Nordic Semiconductor ASA
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
@@ -31,7 +31,7 @@ static
 #endif
 void ble_hrs_client_on_ble_gq_event(const struct ble_gq_req *req, struct ble_gq_evt *gq_evt)
 {
-	struct ble_hrs_client *ble_hrs_client = (struct ble_hrs_client *)req->ctx;
+	struct ble_hrs_client *hrs_client = (struct ble_hrs_client *)req->ctx;
 	struct ble_hrs_client_evt evt = {
 		.evt_type = BLE_HRS_CLIENT_EVT_ERROR,
 		.conn_handle = gq_evt->conn_handle,
@@ -40,35 +40,35 @@ void ble_hrs_client_on_ble_gq_event(const struct ble_gq_req *req, struct ble_gq_
 
 	switch (gq_evt->evt_type) {
 	case BLE_GQ_EVT_ERROR:
-		ble_hrs_client->evt_handler(ble_hrs_client, &evt);
+		hrs_client->evt_handler(hrs_client, &evt);
 		break;
 	}
 }
 
-static void on_hvx(struct ble_hrs_client *ble_hrs_client, const ble_evt_t *ble_evt)
+static void on_hvx(struct ble_hrs_client *hrs_client, const ble_evt_t *ble_evt)
 {
 	uint8_t flags;
 	uint32_t min_len;
 	uint32_t index;
 	const ble_gattc_evt_hvx_t *hvx = &ble_evt->evt.gattc_evt.params.hvx;
-	struct ble_hrs_client_evt ble_hrs_client_evt = {
+	struct ble_hrs_client_evt hrs_client_evt = {
 		.evt_type = BLE_HRS_CLIENT_EVT_HRM_NOTIFICATION,
-		.conn_handle = ble_hrs_client->conn_handle,
-		.hrm.rr_intervals_cnt = 0,
+		.conn_handle = hrs_client->conn_handle,
+		.hrm_notification.rr_intervals_cnt = 0,
 	};
 
 	/* Check if the event is on the link for this instance. */
-	if (ble_hrs_client->conn_handle != ble_evt->evt.gattc_evt.conn_handle) {
+	if (hrs_client->conn_handle != ble_evt->evt.gattc_evt.conn_handle) {
 		return;
 	}
 
 	/* Check if this is a heart rate notification. */
-	if (hvx->handle != ble_hrs_client->peer_hrs_db.hrm_handle) {
+	if (hvx->handle != hrs_client->handles.hrm_handle) {
 		return;
 	}
 
 	LOG_DBG("HVX link: %#x hrm_handle: %#x",
-		hvx->handle, ble_hrs_client->peer_hrs_db.hrm_handle);
+		hvx->handle, hrs_client->handles.hrm_handle);
 
 	/* Need at least 1 byte to read the flags. */
 	if (hvx->len < 1) {
@@ -90,10 +90,10 @@ static void on_hvx(struct ble_hrs_client *ble_hrs_client, const ble_evt_t *ble_e
 	/* All mandatory bytes are guaranteed present from here. */
 	if (!(flags & HRM_FLAG_MASK_HR_16BIT)) {
 		/* 8-bit heart rate value received. */
-		ble_hrs_client_evt.hrm.hr_value = hvx->data[index++];
+		hrs_client_evt.hrm_notification.hr_value = hvx->data[index++];
 	} else {
 		/* 16-bit heart rate value received. */
-		ble_hrs_client_evt.hrm.hr_value = sys_get_le16(&hvx->data[index]);
+		hrs_client_evt.hrm_notification.hr_value = sys_get_le16(&hvx->data[index]);
 		index += sizeof(uint16_t);
 	}
 
@@ -103,53 +103,55 @@ static void on_hvx(struct ble_hrs_client *ble_hrs_client, const ble_evt_t *ble_e
 			if ((index + sizeof(uint16_t)) > hvx->len) {
 				break;
 			}
-			ble_hrs_client_evt.hrm.rr_intervals[i] =
+			hrs_client_evt.hrm_notification.rr_intervals[i] =
 				sys_get_le16(&hvx->data[index]);
 			index += sizeof(uint16_t);
-			ble_hrs_client_evt.hrm.rr_intervals_cnt++;
+			hrs_client_evt.hrm_notification.rr_intervals_cnt++;
 		}
 	}
 
-	ble_hrs_client->evt_handler(ble_hrs_client, &ble_hrs_client_evt);
+	hrs_client->evt_handler(hrs_client, &hrs_client_evt);
 }
 
-static void on_disconnected(struct ble_hrs_client *ble_hrs_client, const ble_evt_t *ble_evt)
+static void on_disconnected(struct ble_hrs_client *hrs_client, const ble_evt_t *ble_evt)
 {
-	if (ble_hrs_client->conn_handle == ble_evt->evt.gap_evt.conn_handle) {
-		ble_hrs_client->conn_handle = BLE_CONN_HANDLE_INVALID;
-		ble_hrs_client->peer_hrs_db.hrm_cccd_handle = BLE_GATT_HANDLE_INVALID;
-		ble_hrs_client->peer_hrs_db.hrm_handle = BLE_GATT_HANDLE_INVALID;
+	if (hrs_client->conn_handle == ble_evt->evt.gap_evt.conn_handle) {
+		hrs_client->conn_handle = BLE_CONN_HANDLE_INVALID;
+		hrs_client->handles.hrm_cccd_handle = BLE_GATT_HANDLE_INVALID;
+		hrs_client->handles.hrm_handle = BLE_GATT_HANDLE_INVALID;
 	}
 }
 
-void ble_hrs_on_db_disc_evt(struct ble_hrs_client *ble_hrs_client,
-			    const struct ble_db_discovery_evt *evt)
+void ble_hrs_on_db_disc_evt(struct ble_hrs_client *hrs_client,
+			    const struct ble_db_discovery_evt *db_discovery_evt)
 {
-	__ASSERT(ble_hrs_client, "HRS client instance is NULL");
-	__ASSERT(evt, "Discovery event is NULL");
+	__ASSERT(hrs_client, "HRS client instance is NULL");
+	__ASSERT(db_discovery_evt, "Discovery event is NULL");
 
 	const struct ble_gatt_db_char *db_char;
-	struct ble_hrs_client_evt hrs_c_evt = {
+	struct ble_hrs_client_evt hrs_client_evt = {
 		.evt_type = BLE_HRS_CLIENT_EVT_DISCOVERY_COMPLETE,
-		.conn_handle = evt->conn_handle,
+		.conn_handle = db_discovery_evt->conn_handle,
 	};
-	struct hrs_db *hrs_db = &ble_hrs_client->peer_hrs_db;
+	struct ble_hrs_handles *handles = &hrs_client->handles;
 
 	/* Check if the Heart Rate Service was discovered. */
-	if (evt->evt_type != BLE_DB_DISCOVERY_COMPLETE ||
-	    evt->discovered_db->srv_uuid.uuid != BLE_UUID_HEART_RATE_SERVICE ||
-	    evt->discovered_db->srv_uuid.type != BLE_UUID_TYPE_BLE) {
+	if (db_discovery_evt->evt_type != BLE_DB_DISCOVERY_COMPLETE ||
+	    db_discovery_evt->discovered_db->srv_uuid.uuid != BLE_UUID_HEART_RATE_SERVICE ||
+	    db_discovery_evt->discovered_db->srv_uuid.type != BLE_UUID_TYPE_BLE) {
 		return;
 	}
 
 	/* Find the CCCD Handle of the Heart Rate Measurement characteristic. */
-	for (uint32_t i = 0; i < evt->discovered_db->char_count; i++) {
-		db_char = &evt->discovered_db->characteristics[i];
+	for (uint32_t i = 0; i < db_discovery_evt->discovered_db->char_count; i++) {
+		db_char = &db_discovery_evt->discovered_db->characteristics[i];
 
 		if (db_char->characteristic.uuid.uuid == BLE_UUID_HEART_RATE_MEASUREMENT_CHAR) {
 			/* Found Heart Rate characteristic. Store CCCD handle and break. */
-			hrs_c_evt.peer_db.hrm_cccd_handle = db_char->cccd_handle;
-			hrs_c_evt.peer_db.hrm_handle = db_char->characteristic.handle_value;
+			hrs_client_evt.discovery_complete.handles.hrm_cccd_handle =
+				db_char->cccd_handle;
+			hrs_client_evt.discovery_complete.handles.hrm_handle =
+				db_char->characteristic.handle_value;
 			break;
 		}
 	}
@@ -157,67 +159,67 @@ void ble_hrs_on_db_disc_evt(struct ble_hrs_client *ble_hrs_client,
 	LOG_DBG("HRS discovered");
 
 	/* If the instance has been assigned prior to db_discovery, assign the db_handles. */
-	if (ble_hrs_client->conn_handle != BLE_CONN_HANDLE_INVALID) {
-		if ((hrs_db->hrm_cccd_handle == BLE_GATT_HANDLE_INVALID) &&
-		    (hrs_db->hrm_handle == BLE_GATT_HANDLE_INVALID)) {
-			ble_hrs_client->peer_hrs_db = hrs_c_evt.peer_db;
+	if (hrs_client->conn_handle != BLE_CONN_HANDLE_INVALID) {
+		if ((handles->hrm_cccd_handle == BLE_GATT_HANDLE_INVALID) &&
+		    (handles->hrm_handle == BLE_GATT_HANDLE_INVALID)) {
+			hrs_client->handles = hrs_client_evt.discovery_complete.handles;
 		}
 	}
 
-	ble_hrs_client->evt_handler(ble_hrs_client, &hrs_c_evt);
+	hrs_client->evt_handler(hrs_client, &hrs_client_evt);
 }
 
-uint32_t ble_hrs_client_init(struct ble_hrs_client *ble_hrs_client,
-			      struct ble_hrs_client_config *ble_hrs_client_init)
+uint32_t ble_hrs_client_init(struct ble_hrs_client *hrs_client,
+			     const struct ble_hrs_client_config *hrs_client_config)
 {
 	ble_uuid_t hrs_uuid = {
 		.type = BLE_UUID_TYPE_BLE,
 		.uuid = BLE_UUID_HEART_RATE_SERVICE,
 	};
 
-	if (!ble_hrs_client || !ble_hrs_client_init) {
+	if (!hrs_client || !hrs_client_config) {
 		return NRF_ERROR_NULL;
 	}
 
-	if (!ble_hrs_client_init->evt_handler || !ble_hrs_client_init->gatt_queue) {
+	if (!hrs_client_config->evt_handler || !hrs_client_config->gatt_queue) {
 		return NRF_ERROR_NULL;
 	}
 
-	ble_hrs_client->evt_handler = ble_hrs_client_init->evt_handler;
-	ble_hrs_client->gatt_queue = ble_hrs_client_init->gatt_queue;
-	ble_hrs_client->conn_handle = BLE_CONN_HANDLE_INVALID;
-	ble_hrs_client->peer_hrs_db.hrm_cccd_handle = BLE_GATT_HANDLE_INVALID;
-	ble_hrs_client->peer_hrs_db.hrm_handle = BLE_GATT_HANDLE_INVALID;
+	hrs_client->evt_handler = hrs_client_config->evt_handler;
+	hrs_client->gatt_queue = hrs_client_config->gatt_queue;
+	hrs_client->conn_handle = BLE_CONN_HANDLE_INVALID;
+	hrs_client->handles.hrm_cccd_handle = BLE_GATT_HANDLE_INVALID;
+	hrs_client->handles.hrm_handle = BLE_GATT_HANDLE_INVALID;
 
-	return ble_db_discovery_service_register(ble_hrs_client_init->db_discovery, &hrs_uuid);
+	return ble_db_discovery_service_register(hrs_client_config->db_discovery, &hrs_uuid);
 }
 
-void ble_hrs_client_on_ble_evt(const ble_evt_t *ble_evt, void *ble_hrs_client)
+void ble_hrs_client_on_ble_evt(const ble_evt_t *ble_evt, void *hrs_client)
 {
 	__ASSERT(ble_evt, "BLE event is NULL");
-	__ASSERT(ble_hrs_client, "HRS central instance is NULL");
+	__ASSERT(hrs_client, "HRS central instance is NULL");
 
 	switch (ble_evt->header.evt_id) {
 	case BLE_GATTC_EVT_HVX:
-		on_hvx(ble_hrs_client, ble_evt);
+		on_hvx(hrs_client, ble_evt);
 		break;
 	case BLE_GAP_EVT_DISCONNECTED:
-		on_disconnected(ble_hrs_client, ble_evt);
+		on_disconnected(hrs_client, ble_evt);
 		break;
 	default:
 		break;
 	}
 }
 
-static uint32_t cccd_configure(struct ble_hrs_client *ble_hrs_client, bool enable)
+static uint32_t cccd_configure(struct ble_hrs_client *hrs_client, bool enable)
 {
-	if (ble_hrs_client->conn_handle == BLE_CONN_HANDLE_INVALID ||
-	    ble_hrs_client->peer_hrs_db.hrm_cccd_handle == BLE_GATT_HANDLE_INVALID) {
+	if (hrs_client->conn_handle == BLE_CONN_HANDLE_INVALID ||
+	    hrs_client->handles.hrm_cccd_handle == BLE_GATT_HANDLE_INVALID) {
 		return NRF_ERROR_INVALID_STATE;
 	}
 
 	LOG_DBG("CCCD cfg cccd_handle: %#x conn_handle; %#x",
-		ble_hrs_client->peer_hrs_db.hrm_cccd_handle, ble_hrs_client->conn_handle);
+		hrs_client->handles.hrm_cccd_handle, hrs_client->conn_handle);
 
 	uint8_t cccd[BLE_CCCD_VALUE_LEN];
 
@@ -225,48 +227,48 @@ static uint32_t cccd_configure(struct ble_hrs_client *ble_hrs_client, bool enabl
 	struct ble_gq_req hrs_c_req = {
 		.type = BLE_GQ_REQ_GATTC_WRITE,
 		.evt_handler = ble_hrs_client_on_ble_gq_event,
-		.ctx = ble_hrs_client,
-		.gattc_write.handle = ble_hrs_client->peer_hrs_db.hrm_cccd_handle,
+		.ctx = hrs_client,
+		.gattc_write.handle = hrs_client->handles.hrm_cccd_handle,
 		.gattc_write.len = BLE_CCCD_VALUE_LEN,
 		.gattc_write.p_value = cccd,
 		.gattc_write.write_op = BLE_GATT_OP_WRITE_REQ,
 	};
 
-	return ble_gq_item_add(ble_hrs_client->gatt_queue, &hrs_c_req,
-			       ble_hrs_client->conn_handle);
+	return ble_gq_item_add(hrs_client->gatt_queue, &hrs_c_req,
+			       hrs_client->conn_handle);
 }
 
-uint32_t ble_hrs_client_hrm_notif_enable(struct ble_hrs_client *ble_hrs_client)
+uint32_t ble_hrs_client_hrm_notif_enable(struct ble_hrs_client *hrs_client)
 {
-	if (!ble_hrs_client) {
+	if (!hrs_client) {
 		return NRF_ERROR_NULL;
 	}
 
-	return cccd_configure(ble_hrs_client, true);
+	return cccd_configure(hrs_client, true);
 }
 
-uint32_t ble_hrs_client_hrm_notif_disable(struct ble_hrs_client *ble_hrs_client)
+uint32_t ble_hrs_client_hrm_notif_disable(struct ble_hrs_client *hrs_client)
 {
-	if (!ble_hrs_client) {
+	if (!hrs_client) {
 		return NRF_ERROR_NULL;
 	}
 
-	return cccd_configure(ble_hrs_client, false);
+	return cccd_configure(hrs_client, false);
 }
 
-uint32_t ble_hrs_client_handles_assign(struct ble_hrs_client *ble_hrs_client,
+uint32_t ble_hrs_client_handles_assign(struct ble_hrs_client *hrs_client,
 					uint16_t conn_handle,
-					const struct hrs_db *p_peer_hrs_handles)
+					const struct ble_hrs_handles *handles)
 {
-	if (!ble_hrs_client) {
+	if (!hrs_client) {
 		return NRF_ERROR_NULL;
 	}
 
-	ble_hrs_client->conn_handle = conn_handle;
+	hrs_client->conn_handle = conn_handle;
 
-	if (p_peer_hrs_handles) {
-		ble_hrs_client->peer_hrs_db = *p_peer_hrs_handles;
+	if (handles) {
+		hrs_client->handles = *handles;
 	}
 
-	return ble_gq_conn_handle_register(ble_hrs_client->gatt_queue, conn_handle);
+	return ble_gq_conn_handle_register(hrs_client->gatt_queue, conn_handle);
 }
