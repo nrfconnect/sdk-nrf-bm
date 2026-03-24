@@ -219,6 +219,12 @@ Bluetooth LE Services
       * Validation of the :c:member:`ble_hrs_client_config.evt_handler` and :c:member:`ble_hrs_client_config.gatt_queue` configuration fields in :c:func:`ble_hrs_client_init`.
       * State validation in :c:func:`ble_hrs_client_hrm_notif_enable` and :c:func:`ble_hrs_client_hrm_notif_disable`, returning :c:macro:`NRF_ERROR_INVALID_STATE` when the connection or CCCD handle has not been assigned.
 
+   * Updated:
+
+      * The :c:struct:`ble_hrs_client_evt` structure was aligned with other client services.
+      * The ``hrs_db`` structure was renamed to :c:struct:`ble_hrs_handles`.
+      * The ``ble_hrm`` structure was renamed to :c:struct:`ble_hrs_measurement`.
+
    * Fixed a potential buffer over-read when parsing malformed Heart Rate Measurement notifications.
 
 * :ref:`lib_ble_service_hids` service:

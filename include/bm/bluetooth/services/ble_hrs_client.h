@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 - 2025 Nordic Semiconductor ASA
+ * Copyright (c) 2012 - 2026 Nordic Semiconductor ASA
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
@@ -8,19 +8,19 @@
  *
  * @defgroup ble_hrs_client Heart Rate Service Client
  * @{
- * @brief    Heart Rate Service Client.
+ * @brief Heart Rate Service Client.
  *
- * @details  This library contains the APIs and types exposed by the Heart Rate Service Client
- *           library. The application can use these APIs and types to perform the discovery of
- *           Heart Rate Service at the peer and to interact with it.
+ * @details This library contains the APIs and types exposed by the Heart Rate Service Client
+ *          library. The application can use these APIs and types to perform the discovery of
+ *          Heart Rate Service at the peer and to interact with it.
  *
- * @warning  Currently, this library only supports the Heart Rate Measurement characteristic. This
- *           means that it is able to enable notification of the characteristic at the peer and
- *           is able to receive Heart Rate Measurement notifications from the peer. It does not
- *           support the Body Sensor Location and the Heart Rate Control Point characteristics.
- *           When a Heart Rate Measurement is received, this library decodes only the
- *           Heart Rate Measurement value field (both 8-bit and 16-bit) and provides it to
- *           the application.
+ * @warning Currently, this library only supports the Heart Rate Measurement characteristic. This
+ *          means that it is able to enable notification of the characteristic at the peer and
+ *          is able to receive Heart Rate Measurement notifications from the peer. It does not
+ *          support the Body Sensor Location and the Heart Rate Control Point characteristics.
+ *          When a Heart Rate Measurement is received, this library decodes only the
+ *          Heart Rate Measurement value field (both 8-bit and 16-bit) and RR intervals and
+ *          provides it to the application.
  */
 
 #ifndef BLE_HRS_CLIENT_H__
@@ -42,9 +42,9 @@ extern "C" {
  * @param _name Name of the instance.
  * @hideinitializer
  */
-#define BLE_HRS_CLIENT_DEF(_name)                                                                 \
-	static struct ble_hrs_client _name;                                                       \
-	NRF_SDH_BLE_OBSERVER(_name##_obs, ble_hrs_client_on_ble_evt, &_name, USER_LOW)
+#define BLE_HRS_CLIENT_DEF(_name)                                                                  \
+	static struct ble_hrs_client _name;                                                        \
+	NRF_SDH_BLE_OBSERVER(_name##_obs, ble_hrs_client_on_ble_evt, &_name, HIGH)
 
 /**
  * @brief HRS Client event type.
@@ -63,7 +63,7 @@ enum ble_hrs_client_evt_type {
 /**
  * @brief Heart Rate Measurement received from the peer.
  */
-struct ble_hrm {
+struct ble_hrs_measurement {
 	/** Heart Rate Value. */
 	uint16_t hr_value;
 	/** Number of RR intervals. */
@@ -75,7 +75,7 @@ struct ble_hrm {
 /**
  * @brief Database for handles related to the Heart Rate Service found on the peer.
  */
-struct hrs_db {
+struct ble_hrs_handles {
 	/** Handle of the CCCD of the Heart Rate Measurement characteristic. */
 	uint16_t hrm_cccd_handle;
 	/** Handle of the Heart Rate Measurement characteristic, as provided by the SoftDevice. */
@@ -91,17 +91,14 @@ struct ble_hrs_client_evt {
 	/** Connection handle on which the Heart Rate service was discovered on the peer device. */
 	uint16_t conn_handle;
 	union {
-		/** Handles related to the Heart Rate, found on the peer device.
-		 *  This is filled if the evt_type is @ref BLE_HRS_CLIENT_EVT_DISCOVERY_COMPLETE.
-		 */
-		struct hrs_db peer_db;
-		/** Heart Rate Measurement received. This is filled if the evt_type
-		 *  is @ref BLE_HRS_CLIENT_EVT_HRM_NOTIFICATION.
-		 */
-		struct ble_hrm hrm;
-		/** Error event. This is filled if the evt_type
-		 *  is @ref BLE_HRS_CLIENT_EVT_ERROR.
-		 */
+		/** @ref BLE_HRS_CLIENT_EVT_DISCOVERY_COMPLETE event data. */
+		struct {
+			/** Handles related to the Heart Rate, found on the peer device. */
+			struct ble_hrs_handles handles;
+		} discovery_complete;
+		/** @ref BLE_HRS_CLIENT_EVT_HRM_NOTIFICATION event data. */
+		struct ble_hrs_measurement hrm_notification;
+		/** @ref BLE_HRS_CLIENT_EVT_ERROR event data. */
 		struct {
 			/** Error reason */
 			uint32_t reason;
@@ -118,8 +115,8 @@ struct ble_hrs_client;
  * @details This is the type of the event handler that is to be provided by the application
  *          of this module to receive events.
  */
-typedef void (*ble_hrs_client_evt_handler_t)(struct ble_hrs_client *ble_hrs_client,
-					      struct ble_hrs_client_evt *evt);
+typedef void (*ble_hrs_client_evt_handler_t)(struct ble_hrs_client *hrs_client,
+					     const struct ble_hrs_client_evt *evt);
 
 /**
  * @brief Heart Rate Client.
@@ -128,7 +125,7 @@ struct ble_hrs_client {
 	/** Connection handle, as provided by the SoftDevice. */
 	uint16_t conn_handle;
 	/** Handles related to HRS on the peer. */
-	struct hrs_db peer_hrs_db;
+	struct ble_hrs_handles handles;
 	/** Application event handler to be called when there
 	 *  is an event related to the Heart Rate Service.
 	 */
@@ -158,18 +155,18 @@ struct ble_hrs_client_config {
  *          The module looks for the presence of a Heart Rate Service instance at the peer
  *          when a discovery is started.
  *
- * @param[in] ble_hrs_client Heart Rate Client structure.
- * @param[in] ble_hrs_client_config Heart rate service client configuration.
+ * @param[in, out] hrs_client Heart Rate Client structure.
+ * @param[in] hrs_client_config Heart rate service client configuration.
  *
- * @retval NRF_SUCCESS On successful initialization.
- * @retval NRF_ERROR_NULL If any of @p ble_hrs_client, @p ble_hrs_client_config, or
+ * @retval NRF_SUCCESS On success.
+ * @retval NRF_ERROR_NULL If any of @p hrs_client, @p hrs_client_config, or
  *         the configuration's @ref ble_hrs_client_config.evt_handler or
  *         @ref ble_hrs_client_config.gatt_queue fields are NULL.
- * @return Otherwise, this function propagates the error code returned by the
- *         Database Discovery module API @ref ble_db_discovery_service_register.
+ * @return In addition, this function may return any error returned by the following functions:
+ *         - @ref ble_db_discovery_service_register()
  */
-uint32_t ble_hrs_client_init(struct ble_hrs_client *ble_hrs_client,
-			      struct ble_hrs_client_config *ble_hrs_client_config);
+uint32_t ble_hrs_client_init(struct ble_hrs_client *hrs_client,
+			     const struct ble_hrs_client_config *hrs_client_config);
 
 /**
  * @brief Handle Bluetooth LE events from the SoftDevice.
@@ -179,7 +176,7 @@ uint32_t ble_hrs_client_init(struct ble_hrs_client *ble_hrs_client,
  *          the event's data to update interval variables and, if necessary, send events to the
  *          application.
  *
- * @param[in] ble_evt Bluetooth LE event.
+ * @param[in, out] ble_evt Bluetooth LE event.
  * @param[in] ctx Heart Rate Client structure.
  */
 void ble_hrs_client_on_ble_evt(const ble_evt_t *ble_evt, void *ctx);
@@ -190,16 +187,17 @@ void ble_hrs_client_on_ble_evt(const ble_evt_t *ble_evt, void *ctx);
  * @details This function enables notification of the Heart Rate Measurement at the peer
  *          by writing to the CCCD of the Heart Rate Measurement characteristic.
  *
- * @param ble_hrs_client Heart Rate Client structure.
+ * @param hrs_client Heart Rate Client structure.
  *
- * @retval NRF_SUCCESS If the SoftDevice is requested to write to the CCCD of the peer.
+ * @retval NRF_SUCCESS On success.
  * @retval NRF_ERROR_NULL If @p ble_hrs_client is NULL.
  * @retval NRF_ERROR_INVALID_STATE If the connection handle or CCCD handle has not been
- *         assigned (e.g. @ref ble_hrs_client_handles_assign has not been called, or
+ *         assigned (for example, @ref ble_hrs_client_handles_assign has not been called, or
  *         the peer has disconnected).
- * @return Otherwise, this function propagates the error code returned by the GATT queue.
+ * @return In addition, this function may return any error returned by the following functions:
+ *         - @ref ble_gq_item_add()
  */
-uint32_t ble_hrs_client_hrm_notif_enable(struct ble_hrs_client *ble_hrs_client);
+uint32_t ble_hrs_client_hrm_notif_enable(struct ble_hrs_client *hrs_client);
 
 /**
  * @brief Request the peer to stop sending notification of Heart Rate Measurement.
@@ -207,16 +205,17 @@ uint32_t ble_hrs_client_hrm_notif_enable(struct ble_hrs_client *ble_hrs_client);
  * @details This function disables notification of the Heart Rate Measurement at the peer
  *          by writing to the CCCD of the Heart Rate Measurement characteristic.
  *
- * @param ble_hrs_client Heart Rate Client structure.
+ * @param hrs_client Heart Rate Client structure.
  *
- * @retval NRF_SUCCESS If the SoftDevice is requested to write to the CCCD of the peer.
+ * @retval NRF_SUCCESS On success.
  * @retval NRF_ERROR_NULL If @p ble_hrs_client is NULL.
  * @retval NRF_ERROR_INVALID_STATE If the connection handle or CCCD handle has not been
- *         assigned (e.g. @ref ble_hrs_client_handles_assign has not been called, or
+ *         assigned (for example, @ref ble_hrs_client_handles_assign has not been called, or
  *         the peer has disconnected).
- * @return Otherwise, this function propagates the error code returned by the GATT queue.
+ * @return In addition, this function may return any error returned by the following functions:
+ *         - @ref ble_gq_item_add()
  */
-uint32_t ble_hrs_client_hrm_notif_disable(struct ble_hrs_client *ble_hrs_client);
+uint32_t ble_hrs_client_hrm_notif_disable(struct ble_hrs_client *hrs_client);
 
 /**
  * @brief Handle events from the Database Discovery module.
@@ -228,12 +227,12 @@ uint32_t ble_hrs_client_hrm_notif_disable(struct ble_hrs_client *ble_hrs_client)
  *          Service was discovered at the peer. The function also populates the event with
  *          service-related information before providing it to the application.
  *
- * @param[in] ble_hrs_client Heart Rate Client structure instance for
+ * @param[in, out] hrs_client Heart Rate Client structure instance for
  * associating the link.
  * @param[in] evt Event received from the Database Discovery module.
  *
  */
-void ble_hrs_on_db_disc_evt(struct ble_hrs_client *ble_hrs_client,
+void ble_hrs_on_db_disc_evt(struct ble_hrs_client *hrs_client,
 			    const struct ble_db_discovery_evt *evt);
 
 /**
@@ -245,16 +244,20 @@ void ble_hrs_on_db_disc_evt(struct ble_hrs_client *ble_hrs_client,
  *          instance of this module. The connection handle and attribute handles are
  *          provided from the discovery event @ref BLE_HRS_CLIENT_EVT_DISCOVERY_COMPLETE.
  *
- * @param[in] ble_hrs_client Heart Rate Client structure instance for
+ * @param[in, out] hrs_client Heart Rate Client structure instance for
  * associating the link.
  * @param[in] conn_handle Connection handle to associate with the given Heart Rate
- * Client Instance.
+ * Client instance.
  * @param[in] peer_hrs_handles Attribute handles for the HRS server you want this HRS_C
  * client to interact with.
+ *
+ * @retval NRF_SUCCESS On success.
+ * @retval NRF_ERROR_NULL If @c hrs_client is NULL.
+ * @return In addition, this function may return any error returned by the following functions:
+ *         - @ref ble_gq_conn_handle_register()
  */
-uint32_t ble_hrs_client_handles_assign(struct ble_hrs_client *ble_hrs_client,
-					uint16_t conn_handle,
-					const struct hrs_db *peer_hrs_handles);
+uint32_t ble_hrs_client_handles_assign(struct ble_hrs_client *hrs_client, uint16_t conn_handle,
+				       const struct ble_hrs_handles *peer_hrs_handles);
 
 #ifdef __cplusplus
 }
