@@ -185,6 +185,7 @@ Libraries
 
 * :ref:`lib_ble_scan` library:
 
+   * The library is now supported.
    * Added the :c:struct:`ble_scan_filter_data` structure as input to the :c:func:`ble_scan_filter_add` function.
    * Updated:
 

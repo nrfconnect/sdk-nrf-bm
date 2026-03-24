@@ -5,11 +5,10 @@
 #
 
 menuconfig BLE_SCAN
-	bool "Bluetooth LE Scan [EXPERIMENTAL]"
+	bool "Bluetooth LE Scan"
 	depends on SOFTDEVICE_CENTRAL
 	depends on NRF_SDH_BLE
 	depends on BLE_ADV_DATA
-	select EXPERIMENTAL
 
 if BLE_SCAN
 
