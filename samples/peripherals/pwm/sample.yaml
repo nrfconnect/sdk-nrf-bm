@@ -20,5 +20,7 @@ tests:
       - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice
       - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice/mcuboot
       - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice
+      - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice/mcuboot
       - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s145_softdevice
+      - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s145_softdevice/mcuboot
     tags: ci_build
