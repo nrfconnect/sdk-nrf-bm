@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-menu "BLE NUS sample"
+menu "Bluetooth LE NUS sample"
 
 config SAMPLE_BLE_DEVICE_NAME
 	string "Device name"
@@ -21,7 +21,7 @@ config SAMPLE_NUS_UART_IRQ_PRIO
 	  if you want to call into SoftDevice from the interrupt driver.
 
 config SAMPLE_NUS_UART_PARITY
-	bool "BLE UART use parity"
+	bool "Bluetooth LE UART use parity"
 
 config SAMPLE_NUS_LPUARTE
 	bool "NUS Low Power UARTE"
@@ -43,7 +43,7 @@ config SAMPLE_NUS_UART_RX_BUF_SIZE
 	  UART RX is double buffered, so the actual buffer will be twice as large.
 
 module=SAMPLE_BLE_NUS
-module-str=BLE NUS Sample
+module-str=Bluetooth LE NUS Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
 endmenu # "BLE NUS sample"

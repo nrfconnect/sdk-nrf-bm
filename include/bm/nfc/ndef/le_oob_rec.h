@@ -51,19 +51,19 @@ enum nfc_ndef_le_oob_rec_le_role {
 };
 
 /**
- * @brief Macro for including Appearance BLE AD Type to the
+ * @brief Macro for including Appearance Bluetooth LE AD Type to the
  *        @ref nfc_ndef_le_oob_rec_payload_desc descriptor.
  */
 #define NFC_NDEF_LE_OOB_REC_APPEARANCE(value) ((uint16_t []) {value})
 
 /**
- * @brief Macro for including Flags BLE AD Type to the
+ * @brief Macro for including Flags Bluetooth LE AD Type to the
  *        @ref nfc_ndef_le_oob_rec_payload_desc descriptor.
  */
 #define NFC_NDEF_LE_OOB_REC_FLAGS(value) ((uint8_t []) {value})
 
 /**
- * @brief Macro for including LE Role BLE AD Type to the
+ * @brief Macro for including LE Role Bluetooth LE AD Type to the
  *        @ref nfc_ndef_le_oob_rec_payload_desc descriptor.
  */
 #define NFC_NDEF_LE_OOB_REC_LE_ROLE(value) \

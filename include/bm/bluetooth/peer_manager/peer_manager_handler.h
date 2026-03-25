@@ -10,7 +10,7 @@
  * @defgroup pm_handler Peer Manager Standard Event Handlers
  * @ingroup peer_manager
  * @{
- * @brief Standard event handlers implementing some best practices for BLE security.
+ * @brief Standard event handlers implementing some best practices for Bluetooth LE security.
  */
 
 #ifndef PEER_MANAGER_HANDLER_H__
@@ -107,9 +107,9 @@ void pm_handler_disconnect_on_insufficient_sec(const struct pm_evt *pm_evt,
  * This function starts security when receiving a @ref BLE_GAP_EVT_CONNECTED event. This is
  * affected by @ref PM_HANDLER_SEC_DELAY_MS.
  *
- * @note In normal circumstances, this function should be called for every BLE event.
+ * @note In normal circumstances, this function should be called for every Bluetooth LE event.
  *
- * @param[in] ble_evt  BLE event to handle.
+ * @param[in] ble_evt Event to handle.
  */
 void pm_handler_secure_on_connection(const ble_evt_t *ble_evt);
 
@@ -126,9 +126,9 @@ void pm_handler_secure_on_connection(const ble_evt_t *ble_evt);
  *       the server does not send any response, even on error. Instead, the write will be
  *       silently dropped by the server.
  *
- * @note In normal circumstances, this function should be called for every BLE event.
+ * @note In normal circumstances, this function should be called for every Bluetooth LE event.
  *
- * @param[in] ble_evt  BLE event to handle.
+ * @param[in] ble_evt Event to handle.
  */
 void pm_handler_secure_on_error(const ble_evt_t *ble_evt);
 

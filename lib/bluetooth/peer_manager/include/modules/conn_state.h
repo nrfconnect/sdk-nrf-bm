@@ -9,10 +9,10 @@
  *
  * @defgroup pm_conn_state Peer Manager connection state
  * @{
- * @brief Module for storing data on BLE connections.
+ * @brief Module for storing data on Bluetooth LE connections.
  *
  * @details This module stores certain states for each connection, which can be queried by
- *          connection handle. The module uses BLE events to keep the states updated.
+ *          connection handle. The module uses Bluetooth LE events to keep the states updated.
  *
  *          In addition to the preprogrammed states, this module can also keep track of a number of
  *          binary user states, or user flags. These are reset to 0 for new connections, but
@@ -71,7 +71,7 @@ struct pm_conn_state_conn_handle_list {
 typedef void (*pm_conn_state_user_function_t)(uint16_t conn_handle, void *ctx);
 
 /**
- * @defgroup pm_conn_state_functions BLE connection state functions
+ * @defgroup pm_conn_state_functions Bluetooth LE connection state functions
  * @{
  */
 

@@ -6,9 +6,9 @@
 
 /** @file
  *
- * @defgroup ble_mcumgr BLE MCUmgr Service library
+ * @defgroup ble_mcumgr Bluetooth LE MCUmgr Service library
  * @{
- * @brief Library for handling MCUmgr over BLE.
+ * @brief Library for handling MCUmgr over Bluetooth LE.
  */
 
 #ifndef BLE_MCUMGR_H__

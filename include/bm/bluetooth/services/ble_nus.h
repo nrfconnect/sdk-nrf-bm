@@ -6,9 +6,9 @@
 
 /** @file
  *
- * @defgroup ble_nus BLE Nordic UART Service library
+ * @defgroup ble_nus Bluetooth LE Nordic UART Service library
  * @{
- * @brief Library for handling UART over BLE.
+ * @brief Library for handling UART over Bluetooth LE.
  */
 
 #ifndef BLE_NUS_H__
@@ -208,7 +208,7 @@ struct ble_nus {
 uint32_t ble_nus_init(struct ble_nus *nus, const struct ble_nus_config *nus_config);
 
 /**
- * @brief Function for handling the Nordic UART Service's BLE events.
+ * @brief Function for handling the Nordic UART Service's Bluetooth LE events.
  *
  * @details The Nordic UART Service expects the application to call this function each time an
  *          event is received from the SoftDevice. This function processes the event if it

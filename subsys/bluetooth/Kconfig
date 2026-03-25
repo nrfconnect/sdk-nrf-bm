@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-menu "SoftDevice BLE services"
+menu "SoftDevice Bluetooth LE services"
 
 rsource "services/Kconfig"
 

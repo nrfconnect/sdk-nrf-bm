@@ -10,7 +10,7 @@ menuconfig NRF_SDH
 if NRF_SDH
 
 config NRF_SDH_BLE
-	bool "BLE events"
+	bool "Bluetooth LE events"
 	default y
 
 choice
@@ -160,14 +160,14 @@ endmenu
 
 if NRF_SDH_BLE
 
-menu "Default BLE configuration"
+menu "Default Bluetooth LE configuration"
 
 config NRF_SDH_BLE_CONN_TAG
 	int "Connection tag"
 	range 1 255
 	default 99
 	help
-	  Connection tag to use for BLE configuration.
+	  Connection tag to use for Bluetooth LE configuration.
 
 config NRF_SDH_BLE_PERIPHERAL_LINK_COUNT
 	int "Maximum number of peripheral links"

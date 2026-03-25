@@ -400,7 +400,7 @@ struct ble_cgms_status {
 struct ble_cgms_config {
 	/** Event handler to be called for handling events in the CGM Service. */
 	ble_cgms_evt_handler_t evt_handler;
-	/** Pointer to BLE GATT Queue instance. */
+	/** Pointer to Bluetooth LE GATT Queue instance. */
 	const struct ble_gq *gatt_queue;
 	/** Features supported by the service. */
 	struct ble_cgms_feature feature;
@@ -535,15 +535,15 @@ struct ble_cgms_char_handles {
 struct ble_cgms {
 	/** Event handler to be called for handling events in the CGM Service. */
 	ble_cgms_evt_handler_t evt_handler;
-	/** Pointer to BLE GATT Queue instance. */
+	/** Pointer to Bluetooth LE GATT Queue instance. */
 	const struct ble_gq  *gatt_queue;
 	/** Error handler to be called in case of an error from SoftDevice. */
 	ble_gq_evt_handler_t ble_gq_evt_handler;
-	/** Handle of the CGM Service (as provided by the BLE stack). */
+	/** Handle of the CGM Service (as provided by the Bluetooth LE stack). */
 	uint16_t service_handle;
 	/** GATTS characteristic handles for the different characteristics in the service. */
 	struct ble_cgms_char_handles char_handles;
-	/** Handle of the current connection (as provided by the BLE stack;
+	/** Handle of the current connection (as provided by the Bluetooth LE stack;
 	 *  @ref BLE_CONN_HANDLE_INVALID if not in a connection).
 	 */
 	uint16_t conn_handle;
@@ -590,11 +590,11 @@ struct ble_cgms {
 uint32_t ble_cgms_init(struct ble_cgms *cgms, const struct ble_cgms_config *cgms_init);
 
 /**
- * @brief Function for handling the application's BLE stack events.
+ * @brief Function for handling the application's Bluetooth LE stack events.
  *
- * @details Handles all events from the BLE stack that are of interest to the CGM Service.
+ * @details Handles all events from the Bluetooth LE stack that are of interest to the CGM Service.
  *
- * @param[in] ble_evt Event received from the BLE stack.
+ * @param[in] ble_evt Event received.
  * @param[in] context Instance of the CGM Service.
  */
 void ble_cgms_on_ble_evt(const ble_evt_t *ble_evt, void *context);

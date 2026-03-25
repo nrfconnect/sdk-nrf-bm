@@ -49,7 +49,7 @@ When it receives an Execute Write request, it calls the callback function with a
 
 * To authorize the request, the callback function must return ``BLE_GATT_STATUS_SUCCESS``.
   The module then writes all received data and notifies the GATT server that the data is ready to use by calling the callback function again, this time with a :c:enum:`BLE_QWR_EVT_EXECUTE_WRITE` event.
-* To reject the request (for example, because the received data is not valid or the application is busy), the callback function must return a BLE GATT status code other than ``BLE_GATT_STATUS_SUCCESS``.
+* To reject the request (for example, because the received data is not valid or the application is busy), the callback function must return a Bluetooth LE GATT status code other than ``BLE_GATT_STATUS_SUCCESS``.
   The module then deletes the received data.
 
 Dependencies

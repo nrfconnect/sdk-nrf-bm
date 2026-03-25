@@ -38,9 +38,9 @@ static struct mgmt_callback os_mgmt_reboot_callback = {
 };
 
 /**
- * @brief BLE event handler.
+ * @brief Bluetooth LE event handler.
  *
- * @param[in] evt BLE event.
+ * @param[in] evt Bluetooth LE event.
  * @param[in] ctx Context.
  */
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)

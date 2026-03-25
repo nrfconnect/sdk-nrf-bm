@@ -178,8 +178,8 @@ struct nrf_sdh_stack_evt_observer {
  * @brief Register a SoftDevice stack event observer.
  *
  * A SoftDevice stack event observer receives all events from the SoftDevice. These events can be
- * either BLE or SoC events. If you need to receive BLE or SoC events separately, use
- * @ref NRF_SDH_BLE_OBSERVER or @ref NRF_SDH_SOC_OBSERVER respectively.
+ * either Bluetooth LE or SoC events. If you need to receive Bluetooth LE or SoC events separately,
+ * use @ref NRF_SDH_BLE_OBSERVER or @ref NRF_SDH_SOC_OBSERVER respectively.
  *
  * @param _observer Name of the observer.
  * @param _handler Stack event handler.

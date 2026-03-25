@@ -6,7 +6,7 @@
 
 /** @file
  *
- * @defgroup ble_db_discovery BLE Nordic database discovery library
+ * @defgroup ble_db_discovery Bluetooth LE Nordic database discovery library
  * @{
  * @brief Library for discovery of a service and its characteristics at the peer server.
  */
@@ -31,7 +31,7 @@
 	NRF_SDH_BLE_OBSERVER(_name##_obs, ble_db_discovery_on_ble_evt, &_name, HIGH)
 
 /**
- * @brief BLE database discovery event type.
+ * @brief Bluetooth LE database discovery event type.
  */
 enum ble_db_discovery_evt_type {
 	/**
@@ -56,7 +56,7 @@ enum ble_db_discovery_evt_type {
 };
 
 /**
- * @brief BLE database discovery event.
+ * @brief Bluetooth LE database discovery event.
  */
 struct ble_db_discovery_evt {
 	/**
@@ -103,7 +103,7 @@ typedef void (*ble_db_discovery_evt_handler)(struct ble_db_discovery *db_discove
 					     struct ble_db_discovery_evt *evt);
 
 /**
- * @brief BLE database discovery configuration.
+ * @brief Bluetooth LE database discovery configuration.
  */
 struct ble_db_discovery_config {
 	/**
@@ -111,13 +111,13 @@ struct ble_db_discovery_config {
 	 */
 	ble_db_discovery_evt_handler evt_handler;
 	/**
-	 * @brief Pointer to BLE GATT Queue instance.
+	 * @brief Pointer to Bluetooth LE GATT Queue instance.
 	 */
 	const struct ble_gq *gatt_queue;
 };
 
 /**
- * @brief BLE database discovery.
+ * @brief Bluetooth LE database discovery.
  */
 struct ble_db_discovery {
 	/**
@@ -135,7 +135,7 @@ struct ble_db_discovery {
 	 */
 	ble_db_discovery_evt_handler evt_handler;
 	/**
-	 * @brief BLE GATT Queue instance.
+	 * @brief Bluetooth LE GATT Queue instance.
 	 */
 	const struct ble_gq *gatt_queue;
 	/**
@@ -241,10 +241,10 @@ uint32_t ble_db_discovery_service_register(struct ble_db_discovery *db_discovery
 					   const ble_uuid_t *uuid);
 
 /**
- * @brief Application's BLE Stack event handler.
+ * @brief Application's Bluetooth LE Stack event handler.
  *
- * @param[in] ble_evt BLE event received.
- * @param[in,out] context BLE DB discovery instance.
+ * @param[in] ble_evt Event received.
+ * @param[in,out] context DB discovery instance.
  */
 void ble_db_discovery_on_ble_evt(const ble_evt_t *ble_evt, void *context);
 

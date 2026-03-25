@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-menu "BLE Power Profiling sample"
+menu "Bluetooth LE Power Profiling sample"
 
 config SAMPLE_BLE_DEVICE_NAME
 	string "Device name"
@@ -47,6 +47,6 @@ module=SAMPLE_BLE_PWR_PROFILING
 module-str=BLE Power Profiling Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
-endmenu # "BLE Power Profiling sample"
+endmenu # "Bluetooth LE Power Profiling sample"
 
 source "Kconfig.zephyr"

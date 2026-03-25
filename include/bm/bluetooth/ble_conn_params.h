@@ -6,9 +6,9 @@
 
 /**
  * @file
- * @defgroup ble_conn_params BLE Connection Parameter Library
+ * @defgroup ble_conn_params Bluetooth LE Connection Parameter Library
  * @{
- * @brief API for the BLE Connection Parameter library in BareMetal option.
+ * @brief API for the Bluetooth LE Connection Parameter library in BareMetal option.
  */
 
 #ifndef BLE_CONN_PARAMS_H__
@@ -22,7 +22,7 @@ extern "C" {
 #endif
 
 /**
- * @brief BLE connection parameter event types.
+ * @brief Bluetooth LE connection parameter event types.
  */
 enum ble_conn_params_evt_type {
 	/**
@@ -66,7 +66,7 @@ struct ble_conn_params_data_length {
 };
 
 /**
- * @brief BLE connection parameter event.
+ * @brief Bluetooth LE connection parameter event.
  */
 struct ble_conn_params_evt {
 	/**
@@ -113,7 +113,7 @@ struct ble_conn_params_evt {
 };
 
 /**
- * @brief BLE connection parameters event handler prototype.
+ * @brief Bluetooth LE connection parameters event handler prototype.
  */
 typedef void (*ble_conn_params_evt_handler_t)(const struct ble_conn_params_evt *evt);
 

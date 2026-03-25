@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-menu "BLE HRS central sample"
+menu "Bluetooth LE HRS central sample"
 
 config SAMPLE_BLE_DEVICE_NAME
 	string "Device name"
@@ -38,6 +38,6 @@ module=SAMPLE_BLE_HRS_CENTRAL
 module-str=BLE Heart Rate Central Service Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
-endmenu # "BLE HRS central sample"
+endmenu # "Bluetooth LE HRS central sample"
 
 source "Kconfig.zephyr"

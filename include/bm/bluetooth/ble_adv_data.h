@@ -181,7 +181,7 @@ struct ble_adv_data {
  * of Advertising packet or Scan Response packet, or a payload of NFC message intended for
  * initiating the Out-of-Band pairing.
  *
- * @param[in] ble_adv_data BLE advertising data context.
+ * @param[in] ble_adv_data Bluetooth LE advertising data context.
  * @param[out] buf  Output buffer.
  * @param[in,out] len Size of @p buf on input, length of encoded data on output.
  *

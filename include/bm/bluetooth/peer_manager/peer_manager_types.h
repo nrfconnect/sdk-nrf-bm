@@ -167,7 +167,9 @@ struct pm_conn_sec_config {
 
 /** @brief Data associated with a bond to a peer. */
 struct pm_peer_data_bonding {
-	/** @brief The BLE role of the local device during bonding. See @ref BLE_GAP_ROLES. */
+	/** @brief The Bluetooth LE role of the local device during bonding.
+	 *  See @ref BLE_GAP_ROLES.
+	 */
 	uint8_t own_role;
 	/** @brief The peer's Bluetooth address and identity resolution key (IRK). */
 	ble_gap_id_key_t peer_ble_id;
@@ -222,8 +224,8 @@ enum pm_evt_id {
 	/**
 	 * @brief A new connection has been established. This event is a wrapper for
 	 *        @ref BLE_GAP_EVT_CONNECTED event and contains its parameters. Reply with
-	 *        @ref pm_conn_exclude before the event handler returns to exclude BLE events
-	 *        targeting this connection from being handled by the Peer Manager
+	 *        @ref pm_conn_exclude before the event handler returns to exclude Bluetooth LE
+	 *        events targeting this connection from being handled by the Peer Manager.
 	 */
 	PM_EVT_CONN_CONFIG_REQ,
 	/**

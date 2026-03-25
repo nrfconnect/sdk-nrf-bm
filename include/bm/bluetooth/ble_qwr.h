@@ -14,7 +14,7 @@
  * @details This module handles prepare write, execute write, and cancel write
  * commands. It also manages memory requests related to these operations.
  *
- * @note The application must propagate BLE stack events to this module by calling
+ * @note The application must propagate Bluetooth LE stack events to this module by calling
  *       @ref ble_qwr_on_ble_evt().
  */
 
@@ -180,11 +180,12 @@ uint32_t ble_qwr_init(struct ble_qwr *qwr, const struct ble_qwr_config *qwr_conf
 uint32_t ble_qwr_conn_handle_assign(struct ble_qwr *qwr, uint16_t conn_handle);
 
 /**
- * @brief Function for handling BLE stack events.
+ * @brief Function for handling Bluetooth LE stack events.
  *
- * @details Handles all events from the BLE stack that are of interest to the Queued Writes module.
+ * @details Handles all events from the Bluetooth LE stack that are of interest to the
+ *          Queued Writes module.
  *
- * @param[in] ble_evt Event received from the BLE stack.
+ * @param[in] ble_evt Event received.
  * @param[in] context Queued Writes structure.
  */
 void ble_qwr_on_ble_evt(const ble_evt_t *ble_evt, void *context);

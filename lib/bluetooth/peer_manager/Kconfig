@@ -56,8 +56,8 @@ config PM_LESC
 
 	help
 	  If enabled, you need to call nrf_ble_lesc_request_handler() in the main loop to
-	  respond to LESC-related BLE events. If LESC support is not required, disable this option
-	  to reduce memory usage.
+	  respond to LESC-related Bluetooth LE events. If LESC support is not required, disable this
+	  option to reduce memory usage.
 
 if PM_LESC
 

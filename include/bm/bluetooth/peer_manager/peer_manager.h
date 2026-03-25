@@ -9,9 +9,9 @@
  *
  * @defgroup peer_manager Peer Manager
  * @{
- * @brief Module for managing BLE bonding, which includes controlling encryption and pairing
- *        procedures as well as persistently storing different pieces of data that must be stored
- *        when bonded.
+ * @brief Module for managing Bluetooth LE bonding, which includes controlling encryption and
+ *        pairing procedures as well as persistently storing different pieces of data that must be
+ *        stored when bonded.
  *
  * @details The API consists of functions for configuring the pairing and encryption behavior of the
  *          device and functions for manipulating the stored data.
@@ -141,12 +141,12 @@ uint32_t pm_sec_params_set(ble_gap_sec_params_t *sec_params);
 uint32_t pm_conn_secure(uint16_t conn_handle, bool force_repairing);
 
 /**
- * @brief Exclude a connection from the BLE event flow that is handled inside the Peer Manager.
+ * @brief Exclude a connection from the Bluetooth LE event flow handled inside the Peer Manager.
  *
  * @details This function is optional, and must be called in reply to a @ref PM_EVT_CONN_CONFIG_REQ
  *          event, before the Peer Manager event handler returns. If it is not called in time,
- *          BLE events for a connection handle passed in the @ref PM_EVT_CONN_CONFIG_REQ event will
- *          be normally handled by the Peer Manager.
+ *          Bluetooth LE events for a connection handle passed in the
+ *          @ref PM_EVT_CONN_CONFIG_REQ event will be normally handled by the Peer Manager.
  *
  * @param[in] conn_handle  The connection to be excluded.
  * @param[in] context      The context found in the request event that this function replies to.
@@ -357,7 +357,7 @@ uint32_t pm_device_identities_list_set(const uint16_t *peers, uint32_t peer_cnt)
  * @retval NRF_SUCCESS                     If the identity address was set successfully.
  * @retval NRF_ERROR_NULL                  If @p addr is NULL.
  * @retval NRF_ERROR_INVALID_ADDR          If the @p addr pointer is invalid.
- * @retval BLE_ERROR_GAP_INVALID_BLE_ADDR  If the BLE address is invalid.
+ * @retval BLE_ERROR_GAP_INVALID_BLE_ADDR  If the Bluetooth LE address is invalid.
  * @retval NRF_ERROR_BUSY                  If the SoftDevice was busy. Process SoftDevice events
  *                                         and retry.
  * @retval NRF_ERROR_INVALID_STATE         If the Peer Manager is not initialized or if this
@@ -397,7 +397,7 @@ uint32_t pm_id_addr_get(ble_gap_addr_t *addr);
  * @retval NRF_ERROR_BUSY           If the operation could not be performed at this time.
  *                                  Process SoftDevice events and retry.
  * @retval NRF_ERROR_INVALID_PARAM  If the address type is invalid.
- * @retval NRF_ERROR_INVALID_STATE  If this function is called while BLE roles using
+ * @retval NRF_ERROR_INVALID_STATE  If this function is called while Bluetooth LE roles using
  *                                  privacy are enabled.
  * @retval NRF_ERROR_INVALID_STATE  If the Peer Manager is not initialized.
  */

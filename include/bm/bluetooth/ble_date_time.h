@@ -6,7 +6,7 @@
 
 /** @file
  *
- * @defgroup ble_date_time_char BLE Date Time characteristic type
+ * @defgroup ble_date_time_char Bluetooth LE Date Time characteristic type
  * @{
  * @brief Definition of struct ble_date_time type.
  */
