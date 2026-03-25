@@ -7,13 +7,13 @@ Bluetooth: GATT Queue
    :local:
    :depth: 2
 
-The Bluetooth Low Energy® GATT Queue library can be used to buffer BLE GATT requests if the SoftDevice is not able to handle them at the moment.
+The Bluetooth Low Energy® GATT Queue library can be used to buffer Bluetooth LE GATT requests if the SoftDevice is not able to handle them at the moment.
 
 Overview
 ********
 
-If the SoftDevice is not able to handle the GATT request at the moment, the BLE GATT Queue library buffers the request.
-Later on, when the corresponding BLE event indicates that the SoftDevice may be free, the request is retried.
+If the SoftDevice is not able to handle the GATT request at the moment, the Bluetooth LE GATT Queue library buffers the request.
+Later on, when the corresponding Bluetooth LE event indicates that the SoftDevice may be free, the request is retried.
 This library can be used in multiple connections scenario.
 
 The library currently handles the following types of GATT requests:
@@ -25,7 +25,7 @@ The library currently handles the following types of GATT requests:
 * Descriptor Discovery (See ``sd_ble_gattc_descriptors_discover``)
 * Notify or Indicate an attribute value. (See ``sd_ble_gatts_hvx``)
 
-The BLE GATT Queue can be used with BLE service clients and other BLE libraries that issue GATT requests to the SoftDevice.
+The GATT Queue can be used with Bluetooth LE service clients and other libraries that issue GATT requests to the SoftDevice.
 
 Configuration
 *************
@@ -51,11 +51,11 @@ The module does not require other initialization than adding the library instanc
 Usage
 *****
 
-Once defined, you can register a connection handle in the BLE Gatt Queue (BLE GQ) instance by calling the :c:func:`ble_gq_conn_handle_register` function.
-From this point forward, the BLE GQ instance can handle GATT requests associated with the handle until the connection is no longer valid (for example when a disconnect event occurs).
+Once defined, you can register a connection handle in the Bluetooth LE GATT Queue instance by calling the :c:func:`ble_gq_conn_handle_register` function.
+From this point forward, the GATT Queue instance can handle GATT requests associated with the handle until the connection is no longer valid (for example when a disconnect event occurs).
 
-To add a GATT request to the BLE GQ instance, call the :c:func:`ble_gq_item_add` function.
-This function adds a request to the BLE GQ instance and allocates the necessary memory for data that can be held within the request descriptor.
+To add a GATT request to the Gatt Queue instance, call the :c:func:`ble_gq_item_add` function.
+This function adds a request to the GATT Queue instance and allocates the necessary memory for data that can be held within the request descriptor.
 If the SoftDevice is free and the queue is empty, the request will be processed immediately.
 Otherwise, the request is queued and processed later.
 

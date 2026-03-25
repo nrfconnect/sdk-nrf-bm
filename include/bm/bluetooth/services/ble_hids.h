@@ -30,7 +30,7 @@ extern "C" {
  *
  * Define a HID service instance and register it as a Bluetooth event observer.
  *
- * @param _name Name of BLE HIDS instance.
+ * @param _name Name of Bluetooth LE HIDS instance.
  */
 #define BLE_HIDS_DEF(_name)                                                                        \
 	static struct ble_hids _name = {                                                           \
@@ -139,7 +139,7 @@ struct ble_hids_input_report {
 };
 
 /**
- * @brief BLE HID service boot keyboard input report.
+ * @brief Bluetooth LE HID service boot keyboard input report.
  */
 struct ble_hids_boot_keyboard_input_report {
 	/**
@@ -153,7 +153,7 @@ struct ble_hids_boot_keyboard_input_report {
 };
 
 /**
- * @brief BLE HID service boot mouse input report.
+ * @brief Bluetooth LE HID service boot mouse input report.
  */
 struct ble_hids_boot_mouse_input_report {
 	/**
@@ -292,7 +292,7 @@ struct ble_hids_evt {
 	 */
 	uint16_t conn_handle;
 	/**
-	 * @brief BLE event.
+	 * @brief Bluetooth LE event.
 	 */
 	const ble_evt_t *ble_evt;
 	/**
@@ -617,7 +617,7 @@ struct ble_hids {
 	 */
 	ble_hids_evt_handler_t evt_handler;
 	/**
-	 * @brief Handle of HID Service (as provided by the BLE stack).
+	 * @brief Handle of HID Service (as provided by the Bluetooth LE stack).
 	 */
 	uint16_t service_handle;
 	/**
@@ -700,14 +700,14 @@ struct ble_hids {
 };
 
 /**
- * @brief Function for handling the Application's BLE Stack events.
+ * @brief Function for handling the Application's Bluetooth LE Stack events.
  *
- * @details Handles all events from the BLE stack of interest to the HID Service.
+ * @details Handles all events from the Bluetooth LE stack of interest to the HID Service.
  *
  * @note This function is registered with a NRF_SDH_BLE_OBSERVER and is called automatically
  *       by the SoftDevice Handler.
  *
- * @param[in] ble_evt Event received from the BLE stack.
+ * @param[in] ble_evt Event received.
  * @param[in] context HID Service structure.
  */
 void ble_hids_on_ble_evt(const ble_evt_t *ble_evt, void *context);

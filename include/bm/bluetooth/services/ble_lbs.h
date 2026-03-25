@@ -113,10 +113,10 @@ struct ble_lbs_config {
 };
 
 /**
- * @brief BLE Button Service structure.
+ * @brief Bluetooth LE Button Service structure.
  */
 struct ble_lbs {
-	/** @brief Handle of LED Button Service (as provided by the BLE stack). */
+	/** @brief Handle of LED Button Service (as provided by the Bluetooth LE stack). */
 	uint16_t service_handle;
 	/** @brief Handles related to the LED Characteristic. */
 	ble_gatts_char_handles_t led_char_handles;
@@ -147,12 +147,12 @@ struct ble_lbs {
 uint32_t ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg);
 
 /**
- * @brief Function for handling the application's BLE stack events.
+ * @brief Function for handling the application's Bluetooth LE stack events.
  *
- * @details This function handles all events from the BLE stack that are of interest to the LED
- *          Button Service.
+ * @details This function handles all events from the Bluetooth LE stack that are of interest to the
+ *          LED Button Service.
  *
- * @param[in] ble_evt      Event received from the BLE stack.
+ * @param[in] ble_evt      Event received.
  * @param[in] lbs_instance LED Button Service structure.
  */
 void ble_lbs_on_ble_evt(const ble_evt_t *ble_evt, void *lbs_instance);

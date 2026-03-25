@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-menu "BLE Peripheral NFC Pairing sample"
+menu "Bluetooth LE Peripheral NFC Pairing sample"
 
 config SAMPLE_BLE_DEVICE_NAME
 	string "Device name"
@@ -14,6 +14,6 @@ module=SAMPLE_BLE_PERIPHERAL_NFC_PAIRING
 module-str=BLE Peripheral NFC Pairing sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
-endmenu # "BLE Peripheral NFC Pairing sample"
+endmenu # "Bluetooth LE Peripheral NFC Pairing sample"
 
 source "Kconfig.zephyr"

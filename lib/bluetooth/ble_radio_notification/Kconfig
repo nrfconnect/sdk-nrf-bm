@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 menuconfig BLE_RADIO_NOTIFICATION
-	bool "BLE Radio Notification"
+	bool "Bluetooth LE Radio Notification"
 	depends on SOFTDEVICE
 
 if BLE_RADIO_NOTIFICATION
@@ -25,11 +25,11 @@ config BLE_RADIO_NOTIFICATION_ON_BOTH
 endchoice # BLE_RADIO_NOTIFICATION_TYPE
 
 config BLE_RADIO_NOTIFICATION_IRQ_PRIO
-	int "BLE Radio Notification IRQ priority"
+	int "Bluetooth LE Radio Notification IRQ priority"
 	range 5 7
 	default 5
 	help
-	  Sets the interrupt priority of the BLE radio notification event (SWI02).
+	  Sets the interrupt priority of the Bluetooth LE radio notification event (SWI02).
 	  Levels are from 5 (highest priority) to 7 (lowest priority).
 	  Interrupt priority level must be greater than 4 (SoftDevice low priority).
 

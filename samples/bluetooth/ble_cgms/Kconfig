@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-menu "BLE CGMS sample"
+menu "Bluetooth LE CGMS sample"
 
 config SAMPLE_BLE_DEVICE_NAME
 	string "Device name"
@@ -42,7 +42,7 @@ config SAMPLE_GLUCOSE_CONCENTRATION_MIN
 	int "Minimum glucose concentration (mg/dL)"
 	default 5
 
-endmenu # "BLE CGMS sample"
+endmenu # "Bluetooth LE CGMS sample"
 
 module=SAMPLE_BLE_CGMS
 module-str=BLE CGMS Sample

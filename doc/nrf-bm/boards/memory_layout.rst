@@ -49,7 +49,7 @@ RRAM partitions
      - Firmware loader / secondary slot for DFU. Present only in MCUboot configurations.
    * - SoftDevice
      - ``softdevice``
-     - Nordic SoftDevice BLE stack binary.
+     - Nordic SoftDevice Bluetooth LE stack binary.
    * - Metadata
      - ``metadata``
      - MCUboot metadata region. Present only in MCUboot configurations.

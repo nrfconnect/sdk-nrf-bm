@@ -6,10 +6,10 @@
 
 /** @file
  *
- * @defgroup nrf_sdh_ble BLE support in SoftDevice Handler
+ * @defgroup nrf_sdh_ble Bluetooth LE support in SoftDevice Handler
  * @{
  * @ingroup  nrf_sdh
- * @brief    Declarations of types and functions required for BLE stack support.
+ * @brief    Declarations of types and functions required for Bluetooth LE stack support.
  */
 
 #ifndef NRF_SDH_BLE_H__
@@ -25,21 +25,21 @@ extern "C" {
 #endif
 
 /**
- * @brief Size of the buffer for a BLE event.
+ * @brief Size of the buffer for a Bluetooth LE event.
  */
 #define NRF_SDH_BLE_EVT_BUF_SIZE BLE_EVT_LEN_MAX(CONFIG_NRF_SDH_BLE_GATT_MAX_MTU_SIZE)
 
 /**
- * @brief BLE stack event handler.
+ * @brief Bluetooth LE stack event handler.
  */
 typedef void (*nrf_sdh_ble_evt_handler_t)(const ble_evt_t *ble_evt, void *context);
 
 /**
- * @brief BLE event observer.
+ * @brief Bluetooth LE event observer.
  */
 struct nrf_sdh_ble_evt_observer {
 	/**
-	 * @brief BLE event handler.
+	 * @brief Bluetooth LE event handler.
 	 */
 	nrf_sdh_ble_evt_handler_t handler;
 	/**
@@ -49,7 +49,7 @@ struct nrf_sdh_ble_evt_observer {
 };
 
 /**
- * @brief Register a SoftDevice BLE event observer.
+ * @brief Register a SoftDevice Bluetooth LE event observer.
  *
  * @param _observer Name of the observer.
  * @param _handler State request handler.
@@ -75,7 +75,7 @@ struct nrf_sdh_ble_evt_observer {
 int nrf_sdh_ble_enable(uint8_t conn_cfg_tag);
 
 /**
- * @brief Stringify a SoftDevice BLE event.
+ * @brief Stringify a SoftDevice Bluetooth LE event.
  *
  * If :option:`CONFIG_NRF_SDH_STR_TABLES` is enabled, returns the event name.
  * Otherwise, returns the supplied integer as a string.

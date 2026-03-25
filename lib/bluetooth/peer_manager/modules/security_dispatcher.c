@@ -717,7 +717,7 @@ static void conn_sec_update_process(const ble_gap_evt_t *gap_evt)
 }
 
 /**
- * @brief Function for initializing a BLE Connection State user flag.
+ * @brief Function for initializing a Bluetooth LE Connection State user flag.
  *
  * @param[out] flag_id  The flag to initialize.
  */

@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 menuconfig BLE_GATT_QUEUE
-	bool "BLE GATT Queue"
+	bool "Bluetooth LE GATT Queue"
 	depends on SOFTDEVICE
 	depends on NRF_SDH_BLE
 

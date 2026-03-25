@@ -14,7 +14,7 @@ if BM_SCHEDULER
 
 config BM_SCHEDULER_BUF_SIZE
 	int "Event buffer size"
-	# Maximum BLE event length is 500 (w/ 247 MTU)
+	# Maximum Bluetooth LE event length is 500 (w/ 247 MTU)
 	default 512
 	help
 	  Size of the buffer that events will be copied into.

@@ -159,7 +159,7 @@ struct ble_hrs {
 	/**
 	 * @brief Handle of the current connection.
 	 *
-	 * Provided by the BLE stack. Is BLE_CONN_HANDLE_INVALID if not in a connection.
+	 * Provided by the Bluetooth LE stack. Is BLE_CONN_HANDLE_INVALID if not in a connection.
 	 */
 	uint16_t conn_handle;
 	/**

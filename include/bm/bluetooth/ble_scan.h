@@ -9,7 +9,7 @@
  *
  * @defgroup ble_scan Scan Library
  * @{
- * @brief Library for handling the BLE scanning.
+ * @brief Library for handling the Bluetooth LE scanning.
  *
  * @details The Scan Library offers several criteria for filtering the devices available for
  *          connection. It can also be used without filtering.
@@ -215,7 +215,7 @@ struct ble_scan_evt {
 };
 
 /**
- * @brief BLE Scan event handler type.
+ * @brief Bluetooth LE Scan event handler type.
  */
 typedef void (*ble_scan_evt_handler_t)(const struct ble_scan_evt *scan_evt);
 
@@ -359,7 +359,7 @@ struct ble_scan_filters {
  * @brief Scan instance configuration.
  */
 struct ble_scan_config {
-	/** BLE GAP scan parameters required to initialize the module.
+	/** Bluetooth LE GAP scan parameters required to initialize the module.
 	 *  Can be set to @c BLE_SCAN_SCAN_PARAMS_DEFAULT for default configuration.
 	 */
 	ble_gap_scan_params_t scan_params;
@@ -565,9 +565,9 @@ uint32_t ble_scan_all_filter_remove(struct ble_scan *scan);
 uint32_t ble_scan_params_set(struct ble_scan *scan, const ble_gap_scan_params_t *scan_params);
 
 /**
- * @brief Handler for BLE stack events.
+ * @brief Handler for Bluetooth LE stack events.
  *
- * @param[in] ble_evt BLE event.
+ * @param[in] ble_evt Bluetooth LE event.
  * @param[in,out] scan Scan library instance.
  */
 void ble_scan_on_ble_evt(const ble_evt_t *ble_evt, void *scan);

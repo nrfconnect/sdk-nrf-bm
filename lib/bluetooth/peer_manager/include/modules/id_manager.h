@@ -73,11 +73,11 @@ bool im_master_ids_compare(const ble_gap_master_id_t *master_id1,
 			   const ble_gap_master_id_t *master_id2);
 
 /**
- * @brief Function for getting the BLE address used by the peer when connecting.
+ * @brief Function for getting the Bluetooth LE address used by the peer when connecting.
  *
  * @param[in]  conn_handle  The connection handle.
- * @param[out] ble_addr     The BLE address used by the peer when the connection specified by
- *                          conn_handle was established. Cannot be NULL.
+ * @param[out] ble_addr     The Bluetooth LE address used by the peer when the connection specified
+ *                          by the conn_handle was established. Cannot be NULL.
  *
  * @retval NRF_SUCCESS                   The address was found and copied.
  * @retval BLE_ERROR_INVALID_CONN_HANDLE conn_handle does not refer to an active connection.
@@ -188,8 +188,8 @@ uint32_t im_id_addr_get(ble_gap_addr_t *addr);
  * @retval NRF_ERROR_INVALID_PARAM  If the address type is not valid.
  * @retval NRF_ERROR_BUSY           If the request could not be processed at this time.
  *                                  Process SoftDevice events and retry.
- * @retval NRF_ERROR_INVALID_STATE  Privacy settings cannot be changed while BLE roles using
- *                                  privacy are enabled.
+ * @retval NRF_ERROR_INVALID_STATE  Privacy settings cannot be changed while Bluetooth LE roles
+ *                                  using privacy are enabled.
  */
 uint32_t im_privacy_set(const ble_gap_privacy_params_t *privacy_params);
 

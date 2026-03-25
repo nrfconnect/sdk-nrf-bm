@@ -5,7 +5,7 @@
 #
 
 menuconfig BLE_RACP
-	bool "BLE Record Access Control Point"
+	bool "Bluetooth LE Record Access Control Point"
 
 if BLE_RACP
 

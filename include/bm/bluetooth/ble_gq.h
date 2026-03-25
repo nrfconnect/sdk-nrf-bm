@@ -8,11 +8,11 @@
  *
  * @defgroup ble_gq GATT Queue
  * @{
- * @brief  Queue for the BLE GATT requests.
+ * @brief  Queue for the Bluetooth LE GATT requests.
  *
- * @details The BLE GATT Queue (BGQ) module can be used to queue BLE GATT requests if the
+ * @details The Bluetooth LE GATT Queue module can be used to queue GATT requests if the
  *          SoftDevice is not able to handle them at the moment. In this case, processing of
- *          the queued request is postponed. Later on, when the corresponding BLE event indicates
+ *          the queued request is postponed. Later on, when the corresponding event indicates
  *          that the SoftDevice may be free, the request is retried.
  */
 
@@ -33,7 +33,8 @@ extern "C" {
 #endif
 
 /**
- * @brief Macro for defining a BLE GATT queue instance with default parameters from Kconfig.
+ * @brief Macro for defining a Bluetooth LE GATT queue instance with default parameters from
+ *        Kconfig.
  *
  * @param _name Name of the instance.
  */
@@ -42,7 +43,7 @@ extern "C" {
 			  (CONFIG_BLE_GQ_MAX_CONNECTIONS * CONFIG_BLE_GQ_QUEUE_SIZE))
 
 /**
- * @brief Macro for defining a BLE GATT queue instance.
+ * @brief Macro for defining a Bluetooth LE GATT queue instance.
  *
  * @param _name            Name of the instance.
  * @param _max_conns       Maximum number of connection handles that can be registered.
@@ -92,7 +93,7 @@ extern "C" {
 #define BLE_GQ_REQ_QUEUE_INIT(i, _name) SYS_SLIST_STATIC_INIT(&((_name)[i]))
 
 /**
- * @brief BLE GATT request types.
+ * @brief Bluetooth LE GATT request types.
  */
 enum ble_gq_req_type {
 	/**
@@ -163,7 +164,7 @@ struct ble_gq_req;
 typedef void (*ble_gq_evt_handler_t)(const struct ble_gq_req *req, struct ble_gq_evt *evt);
 
 /**
- * @brief Structure to hold a BLE GATT request.
+ * @brief Structure to hold a Bluetooth LE GATT request.
  */
 struct ble_gq_req {
 	/**
@@ -232,7 +233,7 @@ struct ble_gq_req {
 };
 
 /**
- * @brief BLE GATT Queue.
+ * @brief Bluetooth LE GATT Queue.
  */
 struct ble_gq {
 	/**
@@ -299,13 +300,13 @@ uint32_t ble_gq_item_add(const struct ble_gq *gatt_queue, struct ble_gq_req *req
 uint32_t ble_gq_conn_handle_register(const struct ble_gq *gatt_queue, uint16_t conn_handle);
 
 /**
- * @brief Handle BLE events from the SoftDevice.
+ * @brief Handle Bluetooth LE events from the SoftDevice.
  *
- * @details This function handles the BLE events received from the SoftDevice. If a BLE
+ * @details This function handles the Bluetooth LE events received from the SoftDevice. If an
  *          event is relevant to the BGQ module, it is used to update internal variables,
  *          process queued GATT requests and, if necessary, send errors to the application.
  *
- * @param[in] ble_evt     Pointer to the BLE event.
+ * @param[in] ble_evt     Pointer to the event.
  * @param[in] gatt_queue  Pointer to the @ref ble_gq instance.
  */
 void ble_gq_on_ble_evt(const ble_evt_t *ble_evt, void *gatt_queue);

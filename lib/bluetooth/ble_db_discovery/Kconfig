@@ -5,7 +5,7 @@
 #
 
 menuconfig BLE_DB_DISCOVERY
-	bool "BLE database discovery"
+	bool "Bluetooth LE database discovery"
 	depends on SOFTDEVICE_CENTRAL
 	depends on NRF_SDH_BLE
 	depends on BLE_GATT_QUEUE

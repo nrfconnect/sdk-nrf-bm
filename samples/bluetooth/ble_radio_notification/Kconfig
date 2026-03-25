@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-menu "BLE Radio Notification sample"
+menu "Bluetooth LE Radio Notification sample"
 
 config SAMPLE_BLE_DEVICE_NAME
 	string "Device name"
@@ -19,6 +19,6 @@ module=SAMPLE_BLE_RADIO_NOTIFICATION
 module-str=BLE Radio Notification Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
-endmenu # "BLE Radio Notification sample"
+endmenu # "Bluetooth LE Radio Notification sample"
 
 source "Kconfig.zephyr"

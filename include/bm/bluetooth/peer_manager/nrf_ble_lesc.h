@@ -112,11 +112,11 @@ void nrf_ble_lesc_peer_oob_data_handler_set(nrf_ble_lesc_peer_oob_data_handler h
 uint32_t nrf_ble_lesc_request_handler(void);
 
 /**
- * @brief Handle BLE stack events.
+ * @brief Handle Bluetooth LE stack events.
  *
- * @details This function handles events from the BLE stack that are of interest to the module.
+ * @details This function handles events from the Bluetooth LE stack that are of interest.
  *
- * @param[in] ble_evt  Event received from the BLE stack.
+ * @param[in] ble_evt  Event received from the Bluetooth LE stack.
  */
 void nrf_ble_lesc_on_ble_evt(const ble_evt_t *ble_evt);
 

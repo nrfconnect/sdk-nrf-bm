@@ -288,9 +288,9 @@ static bool is_conn_handle_excluded(const ble_evt_t *ble_evt)
 }
 
 /**
- * @brief Function for handling BLE events.
+ * @brief Function for handling Bluetooth LE events.
  *
- * @param[in]   ble_evt       Event received from the BLE stack.
+ * @param[in]   ble_evt       Event received from the Bluetooth LE stack.
  * @param[in]   context       Context.
  */
 static void ble_evt_handler(const ble_evt_t *ble_evt, void *context)

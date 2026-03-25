@@ -6,11 +6,11 @@
 
 /** @file
  *
- * @defgroup ble_adv BLE advertising library
+ * @defgroup ble_adv Bluetooth LE advertising library
  * @{
- * @brief Library for handling connectable BLE advertising.
+ * @brief Library for handling connectable Bluetooth LE advertising.
  *
- *  The BLE advertising library supports only applications with a single peripheral link.
+ *  The Bluetooth LE advertising library supports only applications with a single peripheral link.
  */
 
 #ifndef BLE_ADV_H__
@@ -28,7 +28,7 @@ extern "C" {
 #endif
 
 /**
- * @brief Declare an instance of a BLE advertising library.
+ * @brief Declare an instance of a Bluetooth LE advertising library.
  */
 #define BLE_ADV_DEF(instance)                                                                      \
 	static struct ble_adv instance;                                                            \
@@ -140,12 +140,12 @@ struct ble_adv_evt {
 struct ble_adv;
 
 /**
- * @brief BLE advertising event handler.
+ * @brief Bluetooth LE advertising event handler.
  */
 typedef void (*ble_adv_evt_handler_t)(struct ble_adv *adv, const struct ble_adv_evt *adv_evt);
 
 /**
- * @brief BLE advertising instance.
+ * @brief Bluetooth LE advertising instance.
  */
 struct ble_adv {
 	/**
@@ -165,7 +165,7 @@ struct ble_adv {
 	 */
 	uint8_t adv_handle;
 	/**
-	 * @brief BLE connection handle.
+	 * @brief Bluetooth LE connection handle.
 	 */
 	uint16_t conn_handle;
 	/**
@@ -238,17 +238,17 @@ struct ble_adv_config {
 };
 
 /**
- * @brief Library's BLE event handler.
+ * @brief Library's Bluetooth LE event handler.
  *
- * @param[in] ble_evt BLE stack event.
+ * @param[in] ble_evt Bluetooth LE stack event.
  * @param[in] ble_adv Advertising Module instance.
  */
 void ble_adv_on_ble_evt(const ble_evt_t *ble_evt, void *ble_adv);
 
 /**
- * @brief Initialize the BLE advertising library.
+ * @brief Initialize the Bluetooth LE advertising library.
  *
- * @param[in] ble_adv BLE advertising instance.
+ * @param[in] ble_adv Bluetooth LE advertising instance.
  * @param[in] ble_adv_config Initialization configuration.
  *
  * @retval NRF_SUCCESS On success.
@@ -260,7 +260,7 @@ uint32_t ble_adv_init(struct ble_adv *ble_adv, const struct ble_adv_config *ble_
 /**
  * @brief Set the connection configuration tag used for connections.
  *
- * @param[in] ble_adv BLE advertising instance.
+ * @param[in] ble_adv Bluetooth LE advertising instance.
  * @param[in] ble_cfg_tag Connection configuration tag.
  *
  * @retval NRF_SUCCESS On success.
@@ -274,7 +274,7 @@ uint32_t ble_adv_conn_cfg_tag_set(struct ble_adv *ble_adv, uint8_t ble_cfg_tag);
  * If the given advertising mode @p mode is not enabled,
  * advertising is started in the next supported mode.
  *
- * @param[in] ble_adv BLE advertising instance.
+ * @param[in] ble_adv Bluetooth LE advertising instance.
  * @param[in] mode Desired advertising mode.
  *
  * @retval NRF_SUCCESS On success.

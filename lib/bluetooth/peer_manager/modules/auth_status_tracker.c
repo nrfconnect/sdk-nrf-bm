@@ -26,7 +26,7 @@ LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
 /** @brief Tracked peer state. */
 struct deny_listed_peer {
-	/** @brief BLE address, used to identify peer. */
+	/** @brief Bluetooth LE address, used to identify peer. */
 	ble_gap_addr_t peer_addr;
 	/**
 	 * @brief Accumulated reward ticks, used to decrease penality level after achieving certain

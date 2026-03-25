@@ -612,9 +612,9 @@ void store_car_value(uint16_t conn_handle, bool car_value)
 }
 
 /**
- * @brief Callback function for BLE events from the SoftDevice.
+ * @brief Callback function for Bluetooth LE events from the SoftDevice.
  *
- * @param[in]  ble_evt  The BLE event from the SoftDevice.
+ * @param[in]  ble_evt  The Bluetooth LE event from the SoftDevice.
  */
 void gcm_ble_evt_handler(const ble_evt_t *ble_evt)
 {

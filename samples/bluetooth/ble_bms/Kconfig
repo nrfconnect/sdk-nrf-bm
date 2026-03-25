@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-menu "BLE BMS sample"
+menu "Bluetooth LE BMS sample"
 
 config SAMPLE_BLE_DEVICE_NAME
 	string "Device name"
@@ -30,6 +30,6 @@ module=SAMPLE_BLE_BMS
 module-str=BLE Bond Management Service Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
-endmenu # "BLE BMS sample"
+endmenu # "Bluetooth LE BMS sample"
 
 source "Kconfig.zephyr"

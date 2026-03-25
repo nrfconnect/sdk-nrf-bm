@@ -617,7 +617,7 @@ uint32_t im_allow_list_set(const uint16_t *peers, uint32_t peer_cnt)
  * @brief Function for calculating the ah() hash function described in Bluetooth core specification
  *        4.2 section 3.H.2.2.2.
  *
- * @detail  BLE uses a hash function to calculate the first half of a resolvable address
+ * @detail  Bluetooth LE uses a hash function to calculate the first half of a resolvable address
  *          from the second half of the address and an irk. This function will use the ECB
  *          periferal to hash these data according to the Bluetooth core specification.
  *

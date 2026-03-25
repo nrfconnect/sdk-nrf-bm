@@ -4,16 +4,16 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-menu "BLE MCUmgr sample"
+menu "Bluetooth LE MCUmgr sample"
 
 config APP_FIRMWARE_LOADER_BLE_DEVICE_NAME
 	string "Device name"
 	default "nRF_BM_MCUmgr"
 
 module=APP
-module-str=BLE MCUmgr Sample
+module-str=Bluetooth LE MCUmgr Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
-endmenu # "BLE MCUmgr sample"
+endmenu # "Bluetooth LE MCUmgr sample"
 
 source "Kconfig.zephyr"

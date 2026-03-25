@@ -238,7 +238,7 @@ struct ble_bms;
 
 /** @brief BMS event handler type.
  *
- * The event handler returns a @ref BLE_GATT_STATUS_CODES "BLE GATT status code".
+ * The event handler returns a @ref BLE_GATT_STATUS_CODES "Bluetooth LE GATT status code".
  */
 typedef void (*ble_bms_evt_handler_t)(struct ble_bms *bms, struct ble_bms_evt *evt);
 
@@ -268,9 +268,9 @@ struct ble_bms_config {
 
 /**@brief Status information for the service. */
 struct ble_bms {
-	/** Handle of the Bond Management Service (as provided by the BLE stack). */
+	/** Handle of the Bond Management Service (as provided by the Bluetooth LE stack). */
 	uint16_t service_handle;
-	/** Handle of the current connection (as provided by the BLE stack).
+	/** Handle of the current connection (as provided by the Bluetooth LE stack).
 	 * @ref BLE_CONN_HANDLE_INVALID if not in a connection.
 	 */
 	uint16_t conn_handle;
@@ -314,12 +314,12 @@ uint32_t ble_bms_auth_response(struct ble_bms *bms, bool authorize);
 uint32_t ble_bms_init(struct ble_bms *bms, struct ble_bms_config *bms_config);
 
 /**
- * @brief   Handle Bond Management BLE stack events.
+ * @brief   Handle Bond Management Bluetooth LE stack events.
  *
- * @details This function handles all events from the BLE stack that are of interest to the
+ * @details This function handles all events from the Bluetooth LE stack that are of interest to the
  *          Bond Management Service.
  *
- * @param[in] ble_evt Event received from the BLE stack.
+ * @param[in] ble_evt Event received.
  * @param[in] context BMS structure.
  */
 void ble_bms_on_ble_evt(const ble_evt_t *ble_evt, void *context);

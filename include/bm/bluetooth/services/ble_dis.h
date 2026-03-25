@@ -10,8 +10,9 @@
  * @brief Device Information Service module.
  *
  * @details This module implements the Device Information Service.
- *          During initialization it adds the Device Information Service to the BLE stack database.
- *          It then encodes the supplied information, and adds the corresponding characteristics.
+ *          During initialization it adds the Device Information Service to the Bluetooth LE stack
+ *          database. It then encodes the supplied information, and adds the corresponding
+ *          characteristics.
  */
 
 #ifndef BLE_DIS_H__

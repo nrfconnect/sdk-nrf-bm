@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-menu "BLE HIDS Keyboard sample"
+menu "Bluetooth LE HIDS Keyboard sample"
 
 config SAMPLE_BLE_DEVICE_NAME
 	string "Device name"
@@ -18,6 +18,6 @@ module=SAMPLE_BLE_HIDS_KEYBOARD
 module-str=BLE HIDS Keyboard Sample
 source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
-endmenu # "BLE HIDS Keyboard sample"
+endmenu # "Bluetooth LE HIDS Keyboard sample"
 
 source "Kconfig.zephyr"
