@@ -124,11 +124,11 @@ The following table indicates the software maturity levels of the support for ea
      - Experimental
      - Experimental
    * - **NFC**
-     - Experimental
-     - Experimental
-     - Experimental
+     - Supported
+     - Supported
+     - Supported
      - n/a
-     - --
+     - Experimental
      - n/a
    * - **ESB**
      - --
@@ -240,47 +240,44 @@ The following table indicates the software maturity levels of the support for ea
      - nRF54LM20A
      - nRF54LS05B
    * - **NFC Type 2 Tag (read-only)**
+     - Supported
+     - Supported
+     - Supported
+     - n/a
      - Experimental
-     - Experimental
-     - Experimental
-     - --
-     - --
-     - --
+     - n/a
    * - **NFC Type 4 Tag (read/write)**
+     - Supported
+     - Supported
+     - Supported
+     - n/a
      - Experimental
-     - Experimental
-     - Experimental
-     - --
-     - --
-     - --
+     - n/a
    * - **NDEF encoding and decoding**
      - Supported
      - Supported
      - Supported
-     - --
-     - --
-     - --
+     - n/a
+     - Experimental
+     - n/a
    * - **NFC Record Type Definition: URI, text**
+     - Supported
+     - Supported
+     - Supported
+     - n/a
      - Experimental
-     - Experimental
-     - Experimental
-     - --
-     - --
-     - --
+     - n/a
    * - **NFC Connection Handover to Bluetooth carrier, Static and Negotiated Handover**
-     - In development
-     - In development
-     - In development
-     - --
-     - --
-     - --
-   * - **NFC Tag NDEF Exchange Protocol (TNEP)**
-     - In development
-     - In development
-     - In development
-     - --
-     - --
-     - --
+     - Supported
+     - Supported
+     - Supported
+     - n/a
+     - Experimental
+     - n/a
+
+.. note::
+   The Experimental status of the nRF54LM20A refers to its integration in the |BMlong|.
+   The NFC library itself is production-ready.
 
 nRF Secure Immutable Bootloader
 *******************************
