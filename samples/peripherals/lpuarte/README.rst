@@ -39,6 +39,18 @@ The sample supports the following development kits:
            - PCA10156
            - S115
            - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice
+         * - `nRF54LM20 DK`_
+           - PCA10184
+           - S115
+           - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice
+         * - nRF54LS05 DK
+           - PCA10214
+           - S115
+           - bm_nrf54ls05dk/nrf54ls05b/cpuapp/s115_softdevice
+         * - `nRF54LV10 DK`_
+           - PCA10188
+           - S115
+           - bm_nrf54lv10dk/nrf54lv10/cpuapp/s115_softdevice
          * - `nRF54L15 DK`_
            - PCA10156
            - S145
@@ -53,24 +65,12 @@ The sample supports the following development kits:
            - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice
          * - `nRF54LM20 DK`_
            - PCA10184
-           - S115
-           - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice
-         * - `nRF54LM20 DK`_
-           - PCA10184
            - S145
            - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s145_softdevice
          * - nRF54LS05 DK
            - PCA10214
-           - S115
-           - bm_nrf54ls05dk/nrf54ls05b/cpuapp/s115_softdevice
-         * - nRF54LS05 DK
-           - PCA10214
            - S145
            - bm_nrf54ls05dk/nrf54ls05b/cpuapp/s145_softdevice
-         * - `nRF54LV10 DK`_
-           - PCA10188
-           - S115
-           - bm_nrf54lv10dk/nrf54lv10/cpuapp/s115_softdevice
          * - `nRF54LV10 DK`_
            - PCA10188
            - S145
@@ -99,6 +99,14 @@ The sample supports the following development kits:
            - PCA10156
            - S115
            - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+         * - `nRF54LM20 DK`_
+           - PCA10184
+           - S115
+           - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice/mcuboot
+         * - `nRF54LV10 DK`_
+           - PCA10188
+           - S115
+           - bm_nrf54lv10dk/nrf54lv10/cpuapp/s115_softdevice/mcuboot
          * - `nRF54L15 DK`_
            - PCA10156
            - S145
@@ -111,6 +119,14 @@ The sample supports the following development kits:
            - PCA10156
            - S145
            - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot
+         * - `nRF54LM20 DK`_
+           - PCA10184
+           - S145
+           - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s145_softdevice/mcuboot
+         * - `nRF54LV10 DK`_
+           - PCA10188
+           - S145
+           - bm_nrf54lv10dk/nrf54lv10/cpuapp/s145_softdevice/mcuboot
 
 The sample also requires the following pins to be connected, as defined in the boards :file:`board-config.h` header:
 
