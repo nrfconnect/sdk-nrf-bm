@@ -236,6 +236,7 @@ Bluetooth LE Services
 Libraries for NFC
 -----------------
 
+* The maturity status of NFC libraries has been changed from Experimental to Supported for the following SoCs: nRF54L05, nRF54L10, and nRF54L15, nRF54LM20A is still in Experimental quality.
 * The NFC subsystem code has been migrated to |BMshort| and does not reuse code form |NCS| anymore.
   The NFC related Kconfig options provided by |BMshort| have the ``BM_NFC_`` prefix.
   The following list shows mapping from |NCS| Kconfig options to |BMshort| Kconfig options:
@@ -292,6 +293,7 @@ Bluetooth LE samples
 NFC samples
 -----------
 
+* Included nRF54LM20A as available SoC for the :ref:`peripheral_nfc_pairing_sample`, :ref:`record_text_t4t_sample` and :ref:`record_text_t2t_sample` samples, but the NFC libraries for this SoC are still in Experimental quality.
 * Updated to use ``CONFIG_BM_NFC_*`` Kconfig options provided by |BMshort| instead of ``CONFIG_NFC_*`` options provided by |NCS|.
   Use ``#include <bm/nfc/...>`` headers provided by |BMshort| instead of ``#include <nfc/...>`` headers from |NCS|.
 

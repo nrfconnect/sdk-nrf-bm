@@ -4,11 +4,10 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 config BM_NFC_PLATFORM
-	bool "Common NFC configuration for Bare Metal [EXPERIMENTAL]"
+	bool "Common NFC configuration for Bare Metal"
 	depends on NCS_BM
 	default y if NFC_T2T_NRFXLIB || NFC_T4T_NRFXLIB
 	select NRFX_NFCT
-	select EXPERIMENTAL
 	help
 	  Enable common configuration for the NFC
 
