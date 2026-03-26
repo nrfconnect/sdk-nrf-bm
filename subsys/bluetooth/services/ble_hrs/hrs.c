@@ -181,7 +181,7 @@ static void on_write(struct ble_hrs *hrs, const ble_gatts_evt_t *gatts_evt)
 		hrs_evt.evt_type = BLE_HRS_EVT_NOTIFICATION_DISABLED;
 	}
 
-	LOG_INF("Heart rate measurement notifications %sabled for peer %#x",
+	LOG_DBG("Heart rate measurement notifications %sabled for peer %#x",
 		(hrs_evt.evt_type == BLE_HRS_EVT_NOTIFICATION_ENABLED ? "en" : "dis"),
 		gatts_evt->conn_handle);
 
@@ -303,7 +303,7 @@ uint32_t ble_hrs_heart_rate_measurement_send(struct ble_hrs *hrs, uint16_t heart
 		return nrf_err;
 	}
 
-	LOG_INF("Heart rate: %d bpm", heart_rate);
+	LOG_DBG("Heart rate: %d bpm", heart_rate);
 
 	return NRF_SUCCESS;
 }

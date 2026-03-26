@@ -311,9 +311,11 @@ static void ble_hrs_evt_handler(struct ble_hrs *hrs, const struct ble_hrs_evt *e
 	switch (evt->evt_type) {
 	case BLE_HRS_EVT_NOTIFICATION_ENABLED:
 		hrs_notif_enabled = true;
+		LOG_INF("HRM notifications enabled for connection %#x", evt->conn_handle);
 		break;
 	case BLE_HRS_EVT_NOTIFICATION_DISABLED:
 		hrs_notif_enabled = false;
+		LOG_INF("HRM notifications disabled for connection %#x", evt->conn_handle);
 		break;
 	default:
 		break;
