@@ -224,6 +224,8 @@ Bluetooth LE Services
    * Updated:
 
       * The :c:func:`ble_hrs_heart_rate_measurement_send` function to not consume RR interval data when notifications are disabled in the CCCD and notification of the HRM data would fail.
+      * The :c:func:`ble_hrs_heart_rate_measurement_send` function to log the heart rate value on the debug log level.
+        Previously this value was logged on the info log level which caused excessive logging when periodically sending heart rate measurements.
 
 * :ref:`lib_ble_service_hrs_client` service:
 
