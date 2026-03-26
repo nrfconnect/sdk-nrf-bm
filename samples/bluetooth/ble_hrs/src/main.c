@@ -54,7 +54,6 @@ static struct bm_timer heart_rate_timer;
 static struct bm_timer rr_interval_timer;
 static struct bm_timer sensor_contact_timer;
 
-static bool hrs_notif_enabled;
 static bool bas_notif_enabled;
 
 void battery_level_meas_timeout_handler(void *context)
@@ -97,10 +96,6 @@ static void heart_rate_meas_timeout_handler(void *context)
 	err = sensorsim_measure(&heart_rate_sim_state, &heart_rate);
 	if (err) {
 		LOG_ERR("Failed to get heart rate measurement, err %d", err);
-		return;
-	}
-
-	if (!hrs_notif_enabled) {
 		return;
 	}
 
@@ -312,11 +307,9 @@ static void ble_hrs_evt_handler(struct ble_hrs *hrs, const struct ble_hrs_evt *e
 {
 	switch (evt->evt_type) {
 	case BLE_HRS_EVT_NOTIFICATION_ENABLED:
-		hrs_notif_enabled = true;
 		LOG_INF("HRM notifications enabled for connection %#x", evt->conn_handle);
 		break;
 	case BLE_HRS_EVT_NOTIFICATION_DISABLED:
-		hrs_notif_enabled = false;
 		LOG_INF("HRM notifications disabled for connection %#x", evt->conn_handle);
 		break;
 	default:
