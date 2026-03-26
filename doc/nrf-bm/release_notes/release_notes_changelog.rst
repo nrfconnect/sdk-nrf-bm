@@ -210,6 +210,12 @@ Bluetooth LE Services
 * Updated all services to return errors from the SoftDevice directly.
 * Removed the BMS authorization code Kconfig options (:kconfig:option:`CONFIG_BLE_BMS_AUTHORIZATION_CODE` and :kconfig:option:`CONFIG_BLE_BMS_USE_AUTHORIZATION_CODE`) from the service library, as they are only used by the BMS sample.
 
+* :ref:`lib_ble_service_hrs`:
+
+   * Updated:
+
+      * The :c:func:`ble_hrs_heart_rate_measurement_send` function to not consume RR interval data when notifications are disabled in the CCCD and notification of the HRM data would fail.
+
 * :ref:`lib_ble_service_hrs_client` service:
 
    * Added:

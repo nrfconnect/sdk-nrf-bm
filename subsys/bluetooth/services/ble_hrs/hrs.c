@@ -260,6 +260,10 @@ uint32_t ble_hrs_init(struct ble_hrs *hrs, const struct ble_hrs_config *cfg)
 uint32_t ble_hrs_heart_rate_measurement_send(struct ble_hrs *hrs, uint16_t heart_rate)
 {
 	uint32_t nrf_err;
+	ble_gatts_value_t cccd_val = {
+		.p_value = (uint8_t *)&(uint16_t){0},
+		.len = sizeof(uint16_t),
+	};
 	ble_gatts_hvx_params_t hvx = {0};
 	uint8_t encoded_hrm[MAX_HRM_LEN_CALC(CONFIG_NRF_SDH_BLE_GATT_MAX_MTU_SIZE)];
 	uint16_t len;
@@ -268,9 +272,23 @@ uint32_t ble_hrs_heart_rate_measurement_send(struct ble_hrs *hrs, uint16_t heart
 		return NRF_ERROR_NULL;
 	}
 
-	LOG_INF("Heart rate: %d bpm", heart_rate);
+	/* Get heart rate measurement CCCD value. */
+	nrf_err = sd_ble_gatts_value_get(hrs->conn_handle, hrs->hrm_handles.cccd_handle, &cccd_val);
+	if (nrf_err) {
+		if (nrf_err == BLE_ERROR_GATTS_SYS_ATTR_MISSING) {
+			/* CCCD value is unknown. Do not notify. */
+			return NRF_ERROR_INVALID_STATE;
+		} else {
+			return nrf_err;
+		}
+	}
 
-	/* Prepare heart rate measurement notification data */
+	/* CCCD read success. Check if peer has enabled notifications. */
+	if (!is_notification_enabled(cccd_val.p_value)) {
+		return NRF_ERROR_INVALID_STATE;
+	}
+
+	/* Prepare heart rate measurement notification data. */
 	len = hrm_encode(hrs, heart_rate, encoded_hrm);
 
 	/* Notify */
@@ -284,6 +302,8 @@ uint32_t ble_hrs_heart_rate_measurement_send(struct ble_hrs *hrs, uint16_t heart
 		LOG_ERR("Failed to notify heart rate measurement, nrf_error %#x", nrf_err);
 		return nrf_err;
 	}
+
+	LOG_INF("Heart rate: %d bpm", heart_rate);
 
 	return NRF_SUCCESS;
 }

@@ -235,6 +235,7 @@ void ble_hrs_conn_params_evt(struct ble_hrs *hrs, const struct ble_conn_params_e
  * @retval NRF_ERROR_NULL If @p hrs is @c NULL.
  * @return In addition, this function may return any error
  *         returned by the following SoftDevice functions:
+ *         - @ref sd_ble_gatts_value_get()
  *         - @ref sd_ble_gatts_hvx()
  */
 uint32_t ble_hrs_heart_rate_measurement_send(struct ble_hrs *hrs, uint16_t heart_rate);

@@ -219,6 +219,20 @@ void test_ble_hrs_body_sensor_location_set_null(void)
 	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 }
 
+static uint32_t stub_sd_ble_gatts_value_get_notif_enabled(uint16_t conn_handle, uint16_t handle,
+							  ble_gatts_value_t *p_value, int calls)
+{
+	*p_value->p_value = BLE_GATT_HVX_NOTIFICATION;
+	return NRF_SUCCESS;
+}
+
+static uint32_t stub_sd_ble_gatts_value_get_notif_disabled(uint16_t conn_handle, uint16_t handle,
+							   ble_gatts_value_t *p_value, int calls)
+{
+	*p_value->p_value = 0x00;
+	return NRF_SUCCESS;
+}
+
 void test_ble_hrs_heart_rate_measurement_send_enotfound(void)
 {
 	uint32_t nrf_err;
@@ -232,6 +246,7 @@ void test_ble_hrs_heart_rate_measurement_send_enotfound(void)
 	};
 	uint16_t heart_rate_measurement = 72;
 
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_enabled);
 	__cmock_sd_ble_gatts_hvx_IgnoreAndReturn(ERROR);
 
 	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, heart_rate_measurement);
@@ -251,6 +266,7 @@ void test_ble_hrs_heart_rate_measurement_send_invalid_state(void)
 	};
 	uint16_t heart_rate_measurement = 72;
 
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_enabled);
 	__cmock_sd_ble_gatts_hvx_ExpectAndReturn(hrs.conn_handle, NULL, ERROR);
 	__cmock_sd_ble_gatts_hvx_IgnoreArg_p_hvx_params();
 
@@ -271,6 +287,7 @@ void test_ble_hrs_heart_rate_measurement_send_invalid_param(void)
 	};
 	uint16_t heart_rate_measurement = 72;
 
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_enabled);
 	__cmock_sd_ble_gatts_hvx_ExpectAndReturn(hrs.conn_handle, NULL, ERROR);
 	__cmock_sd_ble_gatts_hvx_IgnoreArg_p_hvx_params();
 
@@ -286,6 +303,47 @@ void test_ble_hrs_heart_rate_measurement_send_null(void)
 	nrf_err = ble_hrs_heart_rate_measurement_send(NULL, heart_rate_measurement);
 	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 
+}
+
+
+void test_ble_hrs_heart_rate_measurement_send_error_invalid_state(void)
+{
+	uint32_t nrf_err;
+	struct ble_hrs hrs = {
+		.service_handle = 0,
+		.conn_handle = BLE_CONN_HANDLE_INVALID,
+		.rr_interval_count = 2,
+		.max_hrm_len = 0,
+		.is_sensor_contact_supported = true,
+		.is_sensor_contact_detected = false
+	};
+	uint16_t heart_rate_measurement = 71;
+
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_disabled);
+
+	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, heart_rate_measurement);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, nrf_err);
+}
+
+void test_ble_hrs_heart_rate_measurement_send(void)
+{
+	uint32_t nrf_err;
+	struct ble_hrs hrs = {
+		.service_handle = 0,
+		.conn_handle = BLE_CONN_HANDLE_INVALID,
+		.rr_interval_count = 2,
+		.max_hrm_len = 0,
+		.is_sensor_contact_supported = true,
+		.is_sensor_contact_detected = false
+	};
+	uint16_t heart_rate_measurement = 72;
+
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_enabled);
+	__cmock_sd_ble_gatts_hvx_ExpectAndReturn(hrs.conn_handle, NULL, NRF_SUCCESS);
+	__cmock_sd_ble_gatts_hvx_IgnoreArg_p_hvx_params();
+
+	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, heart_rate_measurement);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
 void test_ble_hrs_init_success(void)
