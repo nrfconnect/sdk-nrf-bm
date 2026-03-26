@@ -217,6 +217,8 @@ Bluetooth LE Services
       * The :c:func:`ble_bas_battery_level_update` function to be able to send multiple notifications back to back with the same battery level value.
         Furthermore, the function will now only update the battery level characteristic value if the value changes.
       * The :c:func:`ble_bas_battery_level_update` function to return :c:macro:`NRF_ERROR_INVALID_PARAM` if the battery level value is outside of the valid range of ``0`` to ``100``.
+      * The :c:func:`ble_bas_battery_level_update` function with support for notifying the current battery level instead of providing a new battery level value and then notifying.
+        This is done by setting the battery level parameter of the :c:func:`ble_bas_battery_level_update` to the value of :c:macro:`BLE_BAS_BATTERY_LEVEL_LAST`.
 
    * Removed the ``ble_bas_battery_level_notify`` function in favor of the :c:func:`ble_bas_battery_level_update` function.
 

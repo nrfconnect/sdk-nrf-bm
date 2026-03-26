@@ -419,6 +419,16 @@ void test_ble_bas_battery_level_update_success(void)
 
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 	TEST_ASSERT_EQUAL(1, hvx_stub_called);
+
+	/* Reset stub count. */
+	hvx_stub_called = 0;
+
+	/* Calling with BLE_BAS_BATTERY_LEVEL_LAST should send last set value. */
+	__cmock_sd_ble_gatts_hvx_Stub(stub_sd_ble_gatts_hvx_param_check_data_null);
+	nrf_err = ble_bas_battery_level_update(&ble_bas, conn_handle, BLE_BAS_BATTERY_LEVEL_LAST);
+
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+	TEST_ASSERT_EQUAL(1, hvx_stub_called);
 }
 
 void setUp(void)

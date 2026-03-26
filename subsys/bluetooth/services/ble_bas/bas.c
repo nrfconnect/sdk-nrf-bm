@@ -180,7 +180,12 @@ uint32_t ble_bas_battery_level_update(struct ble_bas *bas, uint16_t conn_handle,
 	}
 
 	if (battery_level > 100) {
-		return NRF_ERROR_INVALID_PARAM;
+		if (battery_level == BLE_BAS_BATTERY_LEVEL_LAST) {
+			/* Notify the current value. Do not update the battery level. */
+			battery_level = bas->battery_level;
+		} else {
+			return NRF_ERROR_INVALID_PARAM;
+		}
 	}
 
 	const uint16_t value_handle = bas->battery_level_handles.value_handle;
