@@ -348,6 +348,11 @@ void test_ble_bas_battery_level_update_error_invalid_param(void)
 
 	nrf_err = ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level);
 	TEST_ASSERT_EQUAL(ERROR, nrf_err);
+
+	battery_level = 101;
+
+	nrf_err = ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, nrf_err);
 }
 
 void test_ble_bas_battery_level_update_error_not_found(void)

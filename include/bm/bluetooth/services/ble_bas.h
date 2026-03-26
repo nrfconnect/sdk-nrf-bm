@@ -199,6 +199,7 @@ uint32_t ble_bas_init(struct ble_bas *bas, const struct ble_bas_config *bas_conf
  *
  * @retval NRF_SUCCESS On success.
  * @retval NRF_ERROR_NULL If @p bas is @c NULL.
+ * @retval NRF_ERROR_INVALID_PARAM If @p battery_level is outside of the valid range (0-100).
  * @return In addition, this function may return any error
  *         returned by the following SoftDevice functions:
  *         - @ref sd_ble_gatts_value_set()
