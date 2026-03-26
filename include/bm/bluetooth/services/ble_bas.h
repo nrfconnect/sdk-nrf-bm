@@ -43,6 +43,14 @@ extern "C" {
 	}
 
 /**
+ * @brief Notify the last battery level. Do not update the value.
+ *
+ * Use with the battery_level parameter of the @ref ble_bas_battery_level_update function to
+ * notify the last value of the battery level characteristic.
+ */
+#define BLE_BAS_BATTERY_LEVEL_LAST ((uint8_t)0xFF)
+
+/**
  * @brief Battery service event types.
  */
 enum ble_bas_evt_type {
@@ -195,11 +203,13 @@ uint32_t ble_bas_init(struct ble_bas *bas, const struct ble_bas_config *bas_conf
  *
  * @param bas Battery service.
  * @param conn_handle Connection handle.
- * @param battery_level Battery level (in percent of full capacity).
+ * @param battery_level Battery level (in percent of full capacity) or
+ *                      @ref BLE_BAS_BATTERY_LEVEL_LAST to notify the last value.
  *
  * @retval NRF_SUCCESS On success.
  * @retval NRF_ERROR_NULL If @p bas is @c NULL.
- * @retval NRF_ERROR_INVALID_PARAM If @p battery_level is outside of the valid range (0-100).
+ * @retval NRF_ERROR_INVALID_PARAM If @p battery_level is outside of the valid range (0-100)
+ *                                 and not equal to @ref BLE_BAS_BATTERY_LEVEL_LAST.
  * @return In addition, this function may return any error
  *         returned by the following SoftDevice functions:
  *         - @ref sd_ble_gatts_value_set()
