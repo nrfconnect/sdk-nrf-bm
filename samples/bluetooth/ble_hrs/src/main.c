@@ -296,9 +296,11 @@ static void ble_bas_evt_handler(struct ble_bas *bas, const struct ble_bas_evt *e
 {
 	switch (evt->evt_type) {
 	case BLE_BAS_EVT_NOTIFICATION_ENABLED:
+		LOG_INF("Battery notifications enabled for connection %#x", evt->conn_handle);
 		bas_notif_enabled = true;
 		break;
 	case BLE_BAS_EVT_NOTIFICATION_DISABLED:
+		LOG_INF("Battery notifications disabled for connection %#x", evt->conn_handle);
 		bas_notif_enabled = false;
 		break;
 	default:
