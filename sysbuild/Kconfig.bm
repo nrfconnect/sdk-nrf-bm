@@ -45,7 +45,7 @@ endchoice
 config BM_CRACEN_MICROCODE_LOAD_ONCE
 	bool "Load CRACEN microcode once only"
 	depends on BM_BOOTLOADER_MCUBOOT_SIGNATURE_TYPE_ED25519
-	depends on !SOC_NRF54LM20A && !SOC_NRF54LM20B && !SOC_NRF54LV10A
+	depends on !SOC_NRF54LM20A && !SOC_NRF54LM20B && !SOC_NRF54LV10A && !SOC_NRF54LS05B
 	default y
 	help
 	  Enable CRACEN microcode loading in MCUBoot, while disabling elsewhere.
