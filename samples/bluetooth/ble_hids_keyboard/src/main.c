@@ -150,7 +150,7 @@ void report_fifo_process(void)
 		nrf_err = ble_hids_inp_rep_send(&ble_hids, conn_handle, &report);
 	}
 
-	if (nrf_err && nrf_err != BLE_ERROR_GATTS_SYS_ATTR_MISSING) {
+	if (nrf_err) {
 		LOG_ERR("Failed to send queued input report, nrf_error %#x", nrf_err);
 	}
 }
@@ -551,7 +551,7 @@ static int on_key_press(struct ble_hids *hids, const char key, bool pressed)
 		nrf_err = ble_hids_inp_rep_send(hids, conn_handle, &inp_rep);
 	}
 
-	if (nrf_err && nrf_err != BLE_ERROR_GATTS_SYS_ATTR_MISSING) {
+	if (nrf_err) {
 		if (nrf_err == NRF_ERROR_RESOURCES) {
 			return report_fifo_put(&inp_rep);
 		}

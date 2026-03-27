@@ -1148,177 +1148,261 @@ uint32_t ble_hids_inp_rep_send(struct ble_hids *hids, uint16_t conn_handle,
 			       struct ble_hids_input_report *report)
 {
 	uint32_t nrf_err;
+	bool notify;
 
 	if (!hids || !report || !report->data) {
 		return NRF_ERROR_NULL;
 	}
 
-	if (report->report_index < hids->input_report_count) {
-		struct ble_hids_rep_char *rep_char = &hids->inp_rep_array[report->report_index];
-
-		if (conn_handle != BLE_CONN_HANDLE_INVALID) {
-			ble_gatts_hvx_params_t hvx_params;
-			uint8_t index = 0;
-			uint16_t hvx_len = report->len;
-			uint8_t *host_rep_data;
-
-			nrf_err = link_ctx_get(hids, conn_handle, (void *)&host_rep_data);
-			if (nrf_err) {
-				LOG_ERR("Failed to get link context, nrf_error %#x", nrf_err);
-				return nrf_err;
-			}
-
-			host_rep_data += sizeof(struct ble_hids_client_context) +
-					 BLE_HIDS_BOOT_KB_INPUT_REPORT_MAX_SIZE +
-					 BLE_HIDS_BOOT_KB_OUTPUT_REPORT_MAX_SIZE +
-					 BLE_HIDS_BOOT_MOUSE_INPUT_REPORT_MAX_SIZE;
-
-			/* Store the new report data in host's context */
-			while (index < report->report_index) {
-				host_rep_data += hids->inp_rep_init_array[index].len;
-				++index;
-			}
-
-			if (report->len <= hids->inp_rep_init_array[report->report_index].len) {
-				memcpy(host_rep_data, report->data, report->len);
-			} else {
-				return NRF_ERROR_DATA_SIZE;
-			}
-
-			/* Notify host */
-			memset(&hvx_params, 0, sizeof(hvx_params));
-
-			hvx_params.handle = rep_char->char_handles.value_handle;
-			hvx_params.type = BLE_GATT_HVX_NOTIFICATION;
-			hvx_params.offset = 0;
-			hvx_params.p_len = &hvx_len;
-			hvx_params.p_data = report->data;
-
-			nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx_params);
-			if ((nrf_err == NRF_SUCCESS) && (*hvx_params.p_len != report->len)) {
-				LOG_ERR("Failed to update attribute value, nrf_error %#x", nrf_err);
-				nrf_err = NRF_ERROR_DATA_SIZE;
-			}
-		} else {
-			nrf_err = NRF_ERROR_INVALID_STATE;
-		}
-	} else {
-		nrf_err = NRF_ERROR_INVALID_PARAM;
+	if (report->report_index >= hids->input_report_count) {
+		/* Report index out of range */
+		return NRF_ERROR_INVALID_PARAM;
 	}
 
-	return nrf_err;
+	/* Get CCCD notify status for this specific connection */
+	struct ble_hids_rep_char *rep_char = &hids->inp_rep_array[report->report_index];
+	ble_gatts_value_t val = {
+		.p_value = (uint8_t *)&(uint16_t){0},
+		.len = sizeof(uint16_t),
+	};
+	nrf_err = sd_ble_gatts_value_get(conn_handle, rep_char->char_handles.cccd_handle, &val);
+	if (nrf_err == NRF_SUCCESS) {
+		/* CCCD read success. Check if peer has enabled notifications. */
+		notify = is_notification_enabled(val.p_value);
+	} else {
+		LOG_ERR("Failed to get HID Service input report CCCD value for "
+			"connection %#x, nrf_error %#x", conn_handle, nrf_err);
+		return nrf_err;
+	}
+
+	if (notify) {
+		/* Pointer into per-connection client context where input report data is stored */
+		uint8_t *host_rep_data;
+
+		nrf_err = link_ctx_get(hids, conn_handle, (void *)&host_rep_data);
+		if (nrf_err) {
+			LOG_ERR("Failed to get link context, nrf_error %#x", nrf_err);
+			return nrf_err;
+		}
+
+		host_rep_data += sizeof(struct ble_hids_client_context) +
+				 BLE_HIDS_BOOT_KB_INPUT_REPORT_MAX_SIZE +
+				 BLE_HIDS_BOOT_KB_OUTPUT_REPORT_MAX_SIZE +
+				 BLE_HIDS_BOOT_MOUSE_INPUT_REPORT_MAX_SIZE;
+
+		/* Store the new report data in hosts context */
+		uint8_t index = 0;
+
+		while (index < report->report_index) {
+			host_rep_data += hids->inp_rep_init_array[index].len;
+			++index;
+		}
+
+		if (report->len <= hids->inp_rep_init_array[report->report_index].len) {
+			memcpy(host_rep_data, report->data, report->len);
+		} else {
+			return NRF_ERROR_DATA_SIZE;
+		}
+
+		/* Update HID report in the GATT database and notify the connected peer */
+		ble_gatts_hvx_params_t hvx_params = {
+			.handle = rep_char->char_handles.value_handle,
+			.type = BLE_GATT_HVX_NOTIFICATION,
+			.p_len = &(uint16_t){report->len},
+			.p_data = report->data,
+		};
+
+		nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx_params);
+		if ((nrf_err == NRF_SUCCESS) && (*hvx_params.p_len != report->len)) {
+			/**
+			 * sd_ble_gatts_hvx updates *p_len to the number of bytes actually written.
+			 * This can be less than report->len when the negotiated ATT MTU is
+			 * too small to fit the full report in a single notification.
+			 */
+			LOG_ERR("Failed to update report attribute value, nrf_error %#x", nrf_err);
+			return NRF_ERROR_DATA_SIZE;
+		} else if (nrf_err) {
+			LOG_ERR("Failed to notify report, nrf_error %#x", nrf_err);
+			return nrf_err;
+		}
+	} else {
+		LOG_ERR("HID input report notifications not enabled for connection %#x",
+			conn_handle);
+		return NRF_ERROR_INVALID_STATE;
+	}
+
+	return NRF_SUCCESS;
 }
 
 uint32_t ble_hids_boot_kb_inp_rep_send(struct ble_hids *hids, uint16_t conn_handle,
 				       struct ble_hids_boot_keyboard_input_report *report)
 {
+	uint32_t nrf_err;
+	bool notify;
+
 	if (!hids || !report || !report->data) {
 		return NRF_ERROR_NULL;
 	}
 
-	uint32_t nrf_err;
+	/* Get CCCD notify status for this specific connection */
+	ble_gatts_value_t val = {
+		.p_value = (uint8_t *)&(uint16_t){0},
+		.len = sizeof(uint16_t),
+	};
+	nrf_err = sd_ble_gatts_value_get(conn_handle, hids->boot_kb_inp_rep_handles.cccd_handle,
+					 &val);
+	if (nrf_err == NRF_SUCCESS) {
+		/* CCCD read success. Check if peer has enabled notifications. */
+		notify = is_notification_enabled(val.p_value);
+	} else {
+		LOG_ERR("Failed to get HID Service boot keyboard input report CCCD value for "
+			"connection %#x, nrf_error %#x", conn_handle, nrf_err);
+		return nrf_err;
+	}
 
-	if (conn_handle != BLE_CONN_HANDLE_INVALID) {
-		ble_gatts_hvx_params_t hvx_params;
-		uint16_t hvx_len = report->len;
+	if (notify) {
+		/* Per-connection boot keyboard input report context */
 		uint8_t *host_rep_data;
 
 		nrf_err = link_ctx_get(hids, conn_handle, (void *)&host_rep_data);
 		if (nrf_err) {
+			LOG_ERR("Failed to get link context, nrf_error %#x", nrf_err);
 			return nrf_err;
 		}
 
 		host_rep_data += sizeof(struct ble_hids_client_context);
 
-		/* Store the new value in the host's context */
+		/* Store the new report data in hosts context */
 		if (report->len <= BLE_HIDS_BOOT_KB_INPUT_REPORT_MAX_SIZE) {
 			memcpy(host_rep_data, report->data, report->len);
+		} else {
+			return NRF_ERROR_DATA_SIZE;
 		}
 
-		/* Notify host */
-		memset(&hvx_params, 0, sizeof(hvx_params));
-
-		hvx_params.handle = hids->boot_kb_inp_rep_handles.value_handle;
-		hvx_params.type = BLE_GATT_HVX_NOTIFICATION;
-		hvx_params.offset = 0;
-		hvx_params.p_len = &hvx_len;
-		hvx_params.p_data = report->data;
+		/* Update boot keyboard report in the GATT database and notify the connected peer */
+		ble_gatts_hvx_params_t hvx_params = {
+			.handle = hids->boot_kb_inp_rep_handles.value_handle,
+			.type = BLE_GATT_HVX_NOTIFICATION,
+			.p_len = &(uint16_t){report->len},
+			.p_data = report->data,
+		};
 
 		nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx_params);
 		if ((nrf_err == NRF_SUCCESS) && (*hvx_params.p_len != report->len)) {
-			nrf_err = NRF_ERROR_DATA_SIZE;
+			/**
+			 * sd_ble_gatts_hvx updates *p_len to the number of bytes actually written.
+			 * This can be less than report->len when the negotiated ATT MTU is
+			 * too small to fit the full report in a single notification.
+			 */
+			LOG_ERR("Failed to update boot keyboard attribute value, nrf_error %#x",
+				nrf_err);
+			return NRF_ERROR_DATA_SIZE;
+		} else if (nrf_err) {
+			LOG_ERR("Failed to notify boot keyboard report, nrf_error %#x", nrf_err);
+			return nrf_err;
 		}
 	} else {
-		nrf_err = NRF_ERROR_INVALID_STATE;
+		LOG_ERR("HID boot keyboard input report notifications not enabled for "
+			"connection %#x", conn_handle);
+		return NRF_ERROR_INVALID_STATE;
 	}
 
-	return nrf_err;
+	return NRF_SUCCESS;
 }
 
 uint32_t ble_hids_boot_mouse_inp_rep_send(struct ble_hids *hids, uint16_t conn_handle,
 					  struct ble_hids_boot_mouse_input_report *report)
 {
+	uint32_t nrf_err;
+	bool notify;
+
 	if (!hids || !report) {
 		return NRF_ERROR_NULL;
 	}
 
-	uint32_t nrf_err;
+	/* Total report size: 3 mandatory bytes (buttons, delta_x, delta_y) plus optional data */
+	uint16_t total_len = BOOT_MOUSE_INPUT_REPORT_MIN_SIZE + report->optional_data_len;
 
-	if (conn_handle != BLE_CONN_HANDLE_INVALID) {
-		uint16_t hvx_len = BOOT_MOUSE_INPUT_REPORT_MIN_SIZE + report->optional_data_len;
-
-		if (hvx_len <= BLE_HIDS_BOOT_MOUSE_INPUT_REPORT_MAX_SIZE) {
-			uint8_t buffer[BLE_HIDS_BOOT_MOUSE_INPUT_REPORT_MAX_SIZE];
-			ble_gatts_hvx_params_t hvx_params;
-			uint8_t *host_rep_data;
-
-			nrf_err = link_ctx_get(hids, conn_handle, (void *)&host_rep_data);
-			if (nrf_err) {
-				return nrf_err;
-			}
-
-			host_rep_data += sizeof(struct ble_hids_client_context) +
-					 BLE_HIDS_BOOT_KB_INPUT_REPORT_MAX_SIZE +
-					 BLE_HIDS_BOOT_KB_OUTPUT_REPORT_MAX_SIZE;
-
-			__ASSERT_NO_MSG(BOOT_MOUSE_INPUT_REPORT_MIN_SIZE == 3);
-
-			/* Build buffer */
-			buffer[0] = report->buttons;
-			buffer[1] = (uint8_t)report->delta_x;
-			buffer[2] = (uint8_t)report->delta_y;
-
-			if (report->optional_data_len > 0) {
-				memcpy(&buffer[3], report->optional_data,
-				       report->optional_data_len);
-			}
-
-			/* Store the new value in the host's context */
-			memcpy(host_rep_data, buffer, hvx_len);
-
-			/* Pass buffer to stack */
-			memset(&hvx_params, 0, sizeof(hvx_params));
-
-			hvx_params.handle = hids->boot_mouse_inp_rep_handles.value_handle;
-			hvx_params.type = BLE_GATT_HVX_NOTIFICATION;
-			hvx_params.offset = 0;
-			hvx_params.p_len = &hvx_len;
-			hvx_params.p_data = buffer;
-
-			nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx_params);
-			if ((nrf_err == NRF_SUCCESS) &&
-			    (*hvx_params.p_len != (BOOT_MOUSE_INPUT_REPORT_MIN_SIZE +
-						   report->optional_data_len))) {
-				nrf_err = NRF_ERROR_DATA_SIZE;
-			}
-		} else {
-			nrf_err = NRF_ERROR_DATA_SIZE;
-		}
-	} else {
-		nrf_err = NRF_ERROR_INVALID_STATE;
+	if (total_len > BLE_HIDS_BOOT_MOUSE_INPUT_REPORT_MAX_SIZE) {
+		return NRF_ERROR_DATA_SIZE;
 	}
 
-	return nrf_err;
+	/* Get CCCD notify status for this specific connection */
+	ble_gatts_value_t val = {
+		.p_value = (uint8_t *)&(uint16_t){0},
+		.len = sizeof(uint16_t),
+	};
+	nrf_err = sd_ble_gatts_value_get(conn_handle, hids->boot_mouse_inp_rep_handles.cccd_handle,
+					 &val);
+	if (nrf_err == NRF_SUCCESS) {
+		/* CCCD read success. Check if peer has enabled notifications. */
+		notify = is_notification_enabled(val.p_value);
+	} else {
+		LOG_ERR("Failed to get HID Service boot mouse input report CCCD value for "
+			"connection %#x, nrf_error %#x", conn_handle, nrf_err);
+		return nrf_err;
+	}
+
+	if (notify) {
+		/* Per-connection boot mouse input report context */
+		uint8_t *host_rep_data;
+
+		nrf_err = link_ctx_get(hids, conn_handle, (void *)&host_rep_data);
+		if (nrf_err) {
+			LOG_ERR("Failed to get link context, nrf_error %#x", nrf_err);
+			return nrf_err;
+		}
+
+		host_rep_data += sizeof(struct ble_hids_client_context) +
+				 BLE_HIDS_BOOT_KB_INPUT_REPORT_MAX_SIZE +
+				 BLE_HIDS_BOOT_KB_OUTPUT_REPORT_MAX_SIZE;
+
+		__ASSERT_NO_MSG(BOOT_MOUSE_INPUT_REPORT_MIN_SIZE == 3);
+
+		/* Build the boot mouse report buffer */
+		uint8_t buffer[BLE_HIDS_BOOT_MOUSE_INPUT_REPORT_MAX_SIZE];
+
+		buffer[0] = report->buttons;
+		buffer[1] = (uint8_t)report->delta_x;
+		buffer[2] = (uint8_t)report->delta_y;
+
+		if (report->optional_data_len > 0) {
+			/* Append optional data (scroll wheel, extra buttons etc.) */
+			memcpy(&buffer[3], report->optional_data, report->optional_data_len);
+		}
+
+		/* Store the new report data in hosts context */
+		memcpy(host_rep_data, buffer, total_len);
+
+		/* Update boot mouse report in the GATT database and notify the connected peer */
+		ble_gatts_hvx_params_t hvx_params = {
+			.handle = hids->boot_mouse_inp_rep_handles.value_handle,
+			.type = BLE_GATT_HVX_NOTIFICATION,
+			.p_len = &(uint16_t){total_len},
+			.p_data = buffer,
+		};
+
+		nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx_params);
+		if ((nrf_err == NRF_SUCCESS) && (*hvx_params.p_len != total_len)) {
+			/**
+			 * sd_ble_gatts_hvx updates *p_len to the number of bytes actually written.
+			 * This can be less than total_len when the negotiated ATT MTU is too
+			 * small to fit the full report in a single notification.
+			 */
+			LOG_ERR("Failed to update boot mouse report attribute value, nrf_error %#x",
+				nrf_err);
+			return NRF_ERROR_DATA_SIZE;
+		} else if (nrf_err) {
+			LOG_ERR("Failed to notify boot mouse report, nrf_error %#x", nrf_err);
+			return nrf_err;
+		}
+	} else {
+		LOG_ERR("HID boot mouse input report notifications not enabled for connection %#x",
+			conn_handle);
+		return NRF_ERROR_INVALID_STATE;
+	}
+
+	return NRF_SUCCESS;
 }
 
 uint32_t ble_hids_outp_rep_get(struct ble_hids *hids, uint8_t report_index, uint16_t len,

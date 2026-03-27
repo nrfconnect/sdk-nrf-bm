@@ -93,7 +93,12 @@ static void ble_adv_evt_handler(struct ble_adv *adv, const struct ble_adv_evt *a
 static void button_handler(uint8_t pin, enum bm_buttons_evt_type action)
 {
 	LOG_INF("Button event callback: %d, %d", pin, action);
-	ble_lbs_on_button_change(&ble_lbs, conn_handle, action);
+	uint32_t nrf_err = ble_lbs_on_button_change(&ble_lbs, conn_handle, action);
+
+	if (nrf_err) {
+		LOG_ERR("Failed to update button state, nrf_error %#x", nrf_err);
+		return;
+	}
 }
 
 static void lbs_led_on(void)

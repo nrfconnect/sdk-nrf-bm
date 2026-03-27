@@ -54,9 +54,6 @@ static struct bm_timer heart_rate_timer;
 static struct bm_timer rr_interval_timer;
 static struct bm_timer sensor_contact_timer;
 
-static bool hrs_notif_enabled;
-static bool bas_notif_enabled;
-
 void battery_level_meas_timeout_handler(void *context)
 {
 	int err;
@@ -71,16 +68,10 @@ void battery_level_meas_timeout_handler(void *context)
 		return;
 	}
 
-	if (!bas_notif_enabled) {
-		return;
-	}
-
 	nrf_err = ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level);
 	if (nrf_err) {
-		/* Ignore if not in a connection or notifications disabled in CCCD. */
-		if (nrf_err != NRF_ERROR_NOT_FOUND && nrf_err != NRF_ERROR_INVALID_STATE) {
-			LOG_ERR("Failed to update battery level, nrf_error %#x", nrf_err);
-		}
+		LOG_ERR("Failed to update battery level, nrf_error %#x", nrf_err);
+		return;
 	}
 }
 
@@ -99,15 +90,12 @@ static void heart_rate_meas_timeout_handler(void *context)
 		return;
 	}
 
-	if (!hrs_notif_enabled) {
-		return;
-	}
-
 	nrf_err = ble_hrs_heart_rate_measurement_send(&ble_hrs, (uint16_t)heart_rate);
 	if (nrf_err) {
-		/* Ignore if not in a connection or notifications disabled in CCCD. */
-		if (nrf_err != NRF_ERROR_NOT_FOUND && nrf_err != NRF_ERROR_INVALID_STATE) {
+		if (nrf_err != NRF_ERROR_INVALID_STATE &&
+		    nrf_err != BLE_ERROR_INVALID_CONN_HANDLE) {
 			LOG_ERR("Failed to update heart rate measurement, nrf_error %#x", nrf_err);
+			return;
 		}
 	}
 
@@ -260,6 +248,8 @@ void on_conn_params_evt(const struct ble_conn_params_evt *evt)
 {
 	uint32_t nrf_err;
 
+	ble_hrs_conn_params_evt(&ble_hrs, evt);
+
 	switch (evt->evt_type) {
 	case BLE_CONN_PARAMS_EVT_REJECTED:
 		nrf_err = sd_ble_gap_disconnect(evt->conn_handle,
@@ -270,10 +260,6 @@ void on_conn_params_evt(const struct ble_conn_params_evt *evt)
 		} else {
 			LOG_ERR("Disconnected from peer, unacceptable conn params");
 		}
-		break;
-
-	case BLE_CONN_PARAMS_EVT_ATT_MTU_UPDATED:
-		ble_hrs_conn_params_evt(&ble_hrs, evt);
 		break;
 
 	default:
@@ -296,11 +282,7 @@ static void ble_bas_evt_handler(struct ble_bas *bas, const struct ble_bas_evt *e
 {
 	switch (evt->evt_type) {
 	case BLE_BAS_EVT_NOTIFICATION_ENABLED:
-		bas_notif_enabled = true;
-		break;
 	case BLE_BAS_EVT_NOTIFICATION_DISABLED:
-		bas_notif_enabled = false;
-		break;
 	default:
 		break;
 	}
@@ -310,10 +292,10 @@ static void ble_hrs_evt_handler(struct ble_hrs *hrs, const struct ble_hrs_evt *e
 {
 	switch (evt->evt_type) {
 	case BLE_HRS_EVT_NOTIFICATION_ENABLED:
-		hrs_notif_enabled = true;
+		LOG_INF("Heart Rate notification enabled");
 		break;
 	case BLE_HRS_EVT_NOTIFICATION_DISABLED:
-		hrs_notif_enabled = false;
+		LOG_INF("Heart Rate notification disabled");
 		break;
 	default:
 		break;

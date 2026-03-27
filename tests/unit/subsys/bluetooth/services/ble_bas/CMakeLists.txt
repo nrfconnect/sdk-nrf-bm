@@ -30,3 +30,4 @@ zephyr_include_directories(
 # Generate and add test file
 test_runner_generate(src/unity_test.c)
 target_sources(app PRIVATE src/unity_test.c)
+target_compile_options(app PRIVATE -Wextra -Wunused -Wno-unused-parameter)

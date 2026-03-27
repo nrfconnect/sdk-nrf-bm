@@ -37,7 +37,7 @@ Events from the service are forwarded through the event handler specified during
 For a full list of events see the :c:enum:`ble_bas_evt_type` enum.
 
 The application can update the battery level by calling the :c:func:`ble_bas_battery_level_update` function.
-To notify the battery level, the application can call the :c:func:`ble_bas_battery_level_notify` function.
+If the peer has enabled notifications (CCCD), the function will also send a notification automatically.
 
 Dependencies
 ************
