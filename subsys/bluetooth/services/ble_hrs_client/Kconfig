@@ -5,7 +5,7 @@
 #
 
 menuconfig BLE_HRS_CLIENT
-	bool "Bluetooth LE Heart rate service client [EXPERIMENTAL]"
+	bool "Bluetooth LE Heart Rate Service client [EXPERIMENTAL]"
 	depends on SOFTDEVICE_CENTRAL
 	depends on NRF_SDH_BLE
 	depends on BLE_DB_DISCOVERY

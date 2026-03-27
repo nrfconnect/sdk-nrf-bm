@@ -7,32 +7,33 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#include <nrf_soc.h>
-#include <hal/nrf_gpio.h>
 #include <ble.h>
 #include <ble_gap.h>
 #include <bm/bm_buttons.h>
+#include <hal/nrf_gpio.h>
+#include <nrf_soc.h>
 
-#include <bm/bluetooth/ble_scan.h>
-#include <bm/bluetooth/ble_db_discovery.h>
 #include <bm/bluetooth/ble_conn_params.h>
+#include <bm/bluetooth/ble_db_discovery.h>
+#include <bm/bluetooth/ble_scan.h>
+#include <bm/bluetooth/peer_manager/nrf_ble_lesc.h>
 #include <bm/bluetooth/peer_manager/peer_manager.h>
 #include <bm/bluetooth/peer_manager/peer_manager_handler.h>
 #include <bm/bluetooth/peer_manager/peer_manager_types.h>
-#include <bm/bluetooth/peer_manager/nrf_ble_lesc.h>
 
 #include <bm/bluetooth/ble_gq.h>
+#include <bm/bluetooth/services/ble_bas_client.h>
 #include <bm/bluetooth/services/ble_hrs_client.h>
 #include <bm/bluetooth/services/uuid.h>
 #include <bm/softdevice_handler/nrf_sdh.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
 #include <bm/softdevice_handler/nrf_sdh_soc.h>
 
-#include <zephyr/kernel.h>
 #include <zephyr/bluetooth/uuid.h>
-#include <zephyr/sys/atomic.h>
+#include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
+#include <zephyr/sys/atomic.h>
 
 #include <board-config.h>
 
@@ -40,6 +41,8 @@ LOG_MODULE_REGISTER(sample, CONFIG_SAMPLE_BLE_HRS_CENTRAL_LOG_LEVEL);
 
 /* Structure used to identify the heart rate client module. */
 BLE_HRS_CLIENT_DEF(ble_hrs_client);
+/* Battery service client instance. */
+BLE_BAS_CLIENT_DEF(ble_bas_client);
 /* Gatt queue instance. */
 BLE_GQ_DEF(ble_gq);
 /* DB discovery module instance. */
@@ -51,7 +54,7 @@ BLE_SCAN_DEF(ble_scan);
 static uint16_t conn_handle;
 /* True if allow list has been temporarily disabled. */
 static bool allow_list_disabled;
-/* Central connections */
+/* Central connections. */
 static atomic_t central_conn;
 
 #if defined(CONFIG_SAMPLE_USE_TARGET_PERIPHERAL_ADDR)
@@ -84,6 +87,7 @@ static void db_disc_handler(struct ble_db_discovery *db_discovery,
 			    struct ble_db_discovery_evt *evt)
 {
 	ble_hrs_on_db_disc_evt(&ble_hrs_client, evt);
+	ble_bas_on_db_disc_evt(&ble_bas_client, evt);
 }
 
 static void pm_evt_handler(const struct pm_evt *evt)
@@ -321,6 +325,58 @@ static uint32_t hrs_c_init(void)
 	}
 
 	return nrf_err;
+}
+
+static void bas_client_evt_handler(struct ble_bas_client *bas_client,
+				   const struct ble_bas_client_evt *bas_client_evt)
+{
+	uint32_t nrf_err;
+
+	switch (bas_client_evt->evt_type) {
+	case BLE_BAS_CLIENT_EVT_DISCOVERY_COMPLETE:
+		nrf_err = ble_bas_client_handles_assign(
+			bas_client, bas_client_evt->conn_handle,
+			&bas_client_evt->discovery_complete.handles);
+		if (nrf_err) {
+			LOG_ERR("Failed to assign handles, nrf_error %#x", nrf_err);
+		}
+		/** Battery service discovered. Enable notification of Battery Level. */
+		LOG_DBG("Battery Service discovered. Reading battery level.");
+		nrf_err = ble_bas_client_bl_read(bas_client);
+		if (nrf_err) {
+			LOG_ERR("Failed to read battery level characteristic, nrf_error %#x",
+				nrf_err);
+		}
+		LOG_DBG("Enabling Battery Level Notification.");
+		nrf_err = ble_bas_client_bl_notif_enable(bas_client);
+		if (nrf_err) {
+			LOG_ERR("Failed to enable battery level characteristic notifications, "
+				"nrf_error %#x",
+				nrf_err);
+		}
+		break;
+	case BLE_BAS_CLIENT_EVT_BATT_NOTIFICATION:
+		LOG_INF("Battery Level received %d %%.", bas_client_evt->battery.level);
+		break;
+	case BLE_BAS_CLIENT_EVT_BATT_READ_RESP:
+		LOG_INF("Battery Level Read as %d %%.", bas_client_evt->battery.level);
+		break;
+	case BLE_BAS_CLIENT_EVT_ERROR:
+		LOG_ERR("Battery Service client error, nrf_error %#x",
+			bas_client_evt->error.reason);
+		break;
+	default:
+		break;
+	}
+}
+
+static uint32_t bas_c_init(void)
+{
+	struct ble_bas_client_config bas_client_config = {.evt_handler = bas_client_evt_handler,
+							  .gatt_queue = &ble_gq,
+							  .db_discovery = &ble_db_disc};
+
+	return ble_bas_client_init(&ble_bas_client, &bas_client_config);
 }
 
 static uint32_t db_discovery_init(void)
@@ -657,6 +713,12 @@ int main(void)
 	nrf_err = hrs_c_init();
 	if (nrf_err) {
 		LOG_ERR("Failed to initialize HRS Client, nrf_error %#x", nrf_err);
+		goto idle;
+	}
+
+	nrf_err = bas_c_init();
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize BAS Client, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 
