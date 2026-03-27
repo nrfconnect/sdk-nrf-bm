@@ -210,6 +210,15 @@ Bluetooth LE Services
 * Updated all services to return errors from the SoftDevice directly.
 * Removed the BMS authorization code Kconfig options (:kconfig:option:`CONFIG_BLE_BMS_AUTHORIZATION_CODE` and :kconfig:option:`CONFIG_BLE_BMS_USE_AUTHORIZATION_CODE`) from the service library, as they are only used by the BMS sample.
 
+* :ref:`lib_ble_service_bas`:
+
+   * Updated:
+
+      * The :c:func:`ble_bas_battery_level_update` function to be able to send multiple notifications back to back with the same battery level value.
+        Furthermore, the function will now only update the battery level characteristic value if the value changes.
+
+   * Removed the ``ble_bas_battery_level_notify`` function in favor of the :c:func:`ble_bas_battery_level_update` function.
+
 * :ref:`lib_ble_service_hrs`:
 
    * Updated:
