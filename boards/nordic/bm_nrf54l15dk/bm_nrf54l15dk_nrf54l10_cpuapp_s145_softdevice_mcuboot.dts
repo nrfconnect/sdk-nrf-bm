@@ -10,31 +10,18 @@
 #include "bm_nrf54l15dk_nrf54l10_cpuapp_common.dtsi"
 
 / {
-	sram@2002fc00 {
+	clipboard_partition: sram@2002fc00 {
 		compatible = "zephyr,memory-region", "mmio-sram";
 		reg = <0x2002fc00 DT_SIZE_K(1)>;
 		zephyr,memory-region = "RetainedMem";
 		status = "okay";
-
-		retainedmem {
-			compatible = "zephyr,retained-ram";
-			status = "okay";
-			#address-cells = <1>;
-			#size-cells = <1>;
-
-			settings_partition0: settings_partition@0 {
-				compatible = "zephyr,retention";
-				status = "okay";
-				reg = <0x0 DT_SIZE_K(1)>;
-			};
-		};
 	};
 
 	chosen {
 		zephyr,flash = &cpuapp_rram;
 		zephyr,code-partition = &slot0_partition;
 		zephyr,sram = &app_ram;
-		zephyr,settings-partition = &settings_partition0;
+		ncsbm,clipboard-partition = &clipboard_partition;
 	};
 };
 

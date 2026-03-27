@@ -1,0 +1,23 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menuconfig BM_FLAT_SETTINGS_BLUETOOTH_NAME
+	bool "Bluetooth name settings clipboard"
+	select BM_RMEM_CLIPBOARD
+	depends on !SETTINGS
+	help
+	  If enabled, settings handlers for support BLE advertising name
+	  setup under `fw_loader/adv_name` key are included into the build.
+	  Data are stored to retention clipboard which can be read directly by
+	  the firmware_loader.
+
+if BM_FLAT_SETTINGS_BLUETOOTH_NAME
+
+module = BM_FLAT_SETTINGS
+module-str = bm_flat_settings
+source "subsys/logging/Kconfig.template.log_config"
+
+endif
