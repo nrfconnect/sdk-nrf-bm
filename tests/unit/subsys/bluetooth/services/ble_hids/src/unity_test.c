@@ -451,6 +451,15 @@ void test_link_ctx_get_unaligned_ctx_size(void)
 	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, err);
 }
 
+/* ble_hids_on_ble_evt() tests. */
+void test_ble_hids_on_ble_evt_null(void)
+{
+	ble_evt_t evt = { .header.evt_id = BLE_GAP_EVT_CONNECTED };
+
+	/* Should return early without crashing. */
+	ble_hids_on_ble_evt(&evt, NULL);
+}
+
 /* Test ble_hids_init with NULL pointer. */
 void test_ble_hids_init_null(void)
 {
