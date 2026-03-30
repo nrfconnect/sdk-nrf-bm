@@ -34,6 +34,7 @@ BLE_BAS_DEF(ble_bas);
 static uint8_t battery_level;
 static int evt_handler_called;
 static int hvx_stub_called;
+static int value_set_stub_called;
 
 static struct {
 	uint8_t report_id;
@@ -53,6 +54,8 @@ static struct ble_bas_config bas_cfg_template = {
 	}
 };
 
+/* SoftDevice function stubs replacing real calls during testing. */
+
 static uint32_t stub_sd_ble_gatts_service_add_success(uint8_t type, const ble_uuid_t *p_uuid,
 						      uint16_t *p_handle, int cmock_num_calls)
 {
@@ -69,9 +72,10 @@ static uint32_t stub_sd_ble_gatts_service_add_success(uint8_t type, const ble_uu
 	return NRF_SUCCESS;
 }
 
-static uint32_t stub_sd_ble_gatts_characteristic_add_success(
-	uint16_t service_handle, const ble_gatts_char_md_t *p_char_md,
-	const ble_gatts_attr_t *p_attr_char_value, ble_gatts_char_handles_t *p_handles, int calls)
+static uint32_t stub_sd_ble_gatts_char_add_success(uint16_t service_handle,
+						   const ble_gatts_char_md_t *p_char_md,
+						   const ble_gatts_attr_t *p_attr_char_value,
+						   ble_gatts_char_handles_t *p_handles, int calls)
 {
 	const uint8_t expected_bat_lvl = BATTERY_REFERENCE_VALUE;
 	const ble_gap_conn_sec_mode_t perm_12 = {.lv = 1, .sm = 2};
@@ -83,7 +87,7 @@ static uint32_t stub_sd_ble_gatts_characteristic_add_success(
 	TEST_ASSERT_EQUAL(SERVICE_HANDLE, service_handle);
 
 	TEST_ASSERT_NOT_NULL(p_char_md);
-	if (ble_bas.can_notify) {
+	if (p_char_md->char_props.notify) {
 		TEST_ASSERT_NOT_NULL(p_char_md->p_cccd_md);
 		TEST_ASSERT_EQUAL(BLE_GATTS_VLOC_STACK, p_char_md->p_cccd_md->vloc);
 		TEST_ASSERT_EQUAL(perm_open.lv, p_char_md->p_cccd_md->read_perm.lv);
@@ -141,25 +145,10 @@ static uint32_t stub_sd_ble_gatts_descriptor_add_success(uint16_t char_handle,
 	return NRF_SUCCESS;
 }
 
+/* CHANGED: HVX now always uses p_data = NULL (reads from DB, doesn't write). */
 static uint32_t stub_sd_ble_gatts_hvx_param_check(uint16_t conn_handle,
-						  const ble_gatts_hvx_params_t *p_hvx_params,
-						  int num_calls)
-{
-	hvx_stub_called++;
-	TEST_ASSERT_NOT_NULL(p_hvx_params);
-	TEST_ASSERT_NOT_NULL(p_hvx_params->p_data);
-	TEST_ASSERT_NOT_NULL(p_hvx_params->p_len);
-	TEST_ASSERT_EQUAL(VALUE_HANDLE, p_hvx_params->handle);
-	TEST_ASSERT_EQUAL(BLE_GATT_HVX_NOTIFICATION, p_hvx_params->type);
-	TEST_ASSERT_EQUAL(0, p_hvx_params->offset);
-	TEST_ASSERT_EQUAL(sizeof(uint8_t), *(p_hvx_params->p_len));
-	TEST_ASSERT_EQUAL(battery_level, *(uint8_t *)(p_hvx_params->p_data));
-
-	return NRF_SUCCESS;
-}
-
-static uint32_t stub_sd_ble_gatts_hvx_param_check_data_null(
-	uint16_t conn_handle, const ble_gatts_hvx_params_t *p_hvx_params, int num_calls)
+						   const ble_gatts_hvx_params_t *p_hvx_params,
+						   int num_calls)
 {
 	hvx_stub_called++;
 	TEST_ASSERT_NOT_NULL(p_hvx_params);
@@ -167,22 +156,59 @@ static uint32_t stub_sd_ble_gatts_hvx_param_check_data_null(
 	TEST_ASSERT_NOT_NULL(p_hvx_params->p_len);
 	TEST_ASSERT_EQUAL(VALUE_HANDLE, p_hvx_params->handle);
 	TEST_ASSERT_EQUAL(BLE_GATT_HVX_NOTIFICATION, p_hvx_params->type);
+	TEST_ASSERT_EQUAL(sizeof(uint8_t), *(p_hvx_params->p_len));
 
 	return NRF_SUCCESS;
 }
 
+/* REMOVED: stub_sd_ble_gatts_hvx_param_check_data_null — no longer needed,
+ * all HVX calls now use p_data = NULL.
+ */
 
-static uint32_t stub_sd_ble_gatts_value_set_check(uint16_t conn_handle,
-						  uint16_t handle,
-						  ble_gatts_value_t *p_value,
-						  int num_calls)
+static uint32_t stub_sd_ble_gatts_value_set_check(uint16_t conn_handle, uint16_t handle,
+						   ble_gatts_value_t *p_value, int num_calls)
 {
+	value_set_stub_called++;
+	TEST_ASSERT_EQUAL(BLE_CONN_HANDLE_INVALID, conn_handle);
 	TEST_ASSERT_NOT_NULL(p_value);
 	TEST_ASSERT_EQUAL(VALUE_HANDLE, handle);
 	TEST_ASSERT_EQUAL(battery_level, *p_value->p_value);
 
 	return NRF_SUCCESS;
 }
+
+static uint32_t stub_sd_ble_gatts_value_get_notif_enabled(uint16_t conn_handle, uint16_t handle,
+							   ble_gatts_value_t *p_value, int calls)
+{
+	TEST_ASSERT_EQUAL(CCCD_HANDLE, handle);
+	*p_value->p_value = BLE_GATT_HVX_NOTIFICATION;
+
+	return NRF_SUCCESS;
+}
+
+static uint32_t stub_sd_ble_gatts_value_get_notif_disabled(uint16_t conn_handle, uint16_t handle,
+							    ble_gatts_value_t *p_value, int calls)
+{
+	TEST_ASSERT_EQUAL(CCCD_HANDLE, handle);
+	*p_value->p_value = 0x00;
+
+	return NRF_SUCCESS;
+}
+
+static uint32_t stub_sd_ble_gatts_value_get_err(uint16_t conn_handle, uint16_t handle,
+						 ble_gatts_value_t *p_value, int calls)
+{
+	return NRF_ERROR_INVALID_PARAM;
+}
+
+static uint32_t stub_sd_ble_gatts_value_get_sys_attr_missing(uint16_t conn_handle, uint16_t handle,
+							      ble_gatts_value_t *p_value,
+							      int calls)
+{
+	return BLE_ERROR_GATTS_SYS_ATTR_MISSING;
+}
+
+/* Test event handlers and init helper */
 
 static void ble_bas_evt_handler(struct ble_bas *bas, const struct ble_bas_evt *evt)
 {
@@ -206,12 +232,14 @@ void bas_init(const struct ble_bas_config *cfg)
 	uint32_t nrf_err;
 
 	__cmock_sd_ble_gatts_service_add_Stub(stub_sd_ble_gatts_service_add_success);
-	__cmock_sd_ble_gatts_characteristic_add_Stub(stub_sd_ble_gatts_characteristic_add_success);
+	__cmock_sd_ble_gatts_characteristic_add_Stub(stub_sd_ble_gatts_char_add_success);
 	__cmock_sd_ble_gatts_descriptor_add_Stub(stub_sd_ble_gatts_descriptor_add_success);
 
 	nrf_err = ble_bas_init(&ble_bas, cfg);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
+
+/* on_write() tests */
 
 void test_ble_bas_on_ble_evt(void)
 {
@@ -260,24 +288,28 @@ void test_ble_bas_on_ble_evt(void)
 	TEST_ASSERT_FALSE(evt_handler_called);
 }
 
+/* ble_bas_init() tests */
+
 void test_ble_bas_init_error_null(void)
 {
 	uint32_t nrf_err;
-	struct ble_bas_config bas_config = { .evt_handler = ble_bas_evt_handler };
+	struct ble_bas_config bas_config = {
+		.evt_handler = ble_bas_evt_handler,
+	};
 
 	nrf_err = ble_bas_init(NULL, &bas_config);
 	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
-	TEST_ASSERT_NOT_EQUAL(bas_config.evt_handler, ble_bas.evt_handler);
 
 	nrf_err = ble_bas_init(&ble_bas, NULL);
 	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
-	TEST_ASSERT_NOT_EQUAL(bas_config.evt_handler, ble_bas.evt_handler);
 }
 
 void test_ble_bas_init_softdevice_err(void)
 {
 	uint32_t nrf_err;
-	struct ble_bas_config bas_config = { .evt_handler = ble_bas_evt_handler };
+	struct ble_bas_config bas_config = {
+		.evt_handler = ble_bas_evt_handler,
+	};
 
 	bas_config.report_ref = (void *)&report_ref;
 
@@ -302,134 +334,261 @@ void test_ble_bas_init_softdevice_err(void)
 
 void test_ble_bas_init_success(void)
 {
-	uint32_t nrf_err;
 	struct ble_bas_config bas_cfg = bas_cfg_template;
 
 	bas_cfg.evt_handler = ble_bas_evt_handler;
-
-	__cmock_sd_ble_gatts_service_add_Stub(stub_sd_ble_gatts_service_add_success);
-	__cmock_sd_ble_gatts_characteristic_add_Stub(stub_sd_ble_gatts_characteristic_add_success);
-	__cmock_sd_ble_gatts_descriptor_add_Stub(stub_sd_ble_gatts_descriptor_add_success);
-	__cmock_sd_ble_gatts_hvx_Stub(stub_sd_ble_gatts_hvx_param_check);
-
-	nrf_err = ble_bas_init(&ble_bas, &bas_cfg);
-	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+	bas_init(&bas_cfg);
 }
+
+/* ble_bas_battery_level_update() tests */
 
 void test_ble_bas_battery_level_update_error_null(void)
 {
 	uint32_t nrf_err;
-	uint16_t conn_handle = BLE_CONN_HANDLE_INVALID;
 
-	nrf_err = ble_bas_battery_level_update(NULL, conn_handle, battery_level);
+	nrf_err = ble_bas_battery_level_update(NULL, 0x0001, 42);
 	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 }
 
 void test_ble_bas_battery_level_update_error_invalid_param(void)
 {
 	uint32_t nrf_err;
-	uint16_t conn_handle = BLE_CONN_HANDLE_INVALID;
 	struct ble_bas_config bas_cfg = bas_cfg_template;
 
-	battery_level = 42;
-	bas_cfg.can_notify = false;
 	bas_init(&bas_cfg);
 
-	__cmock_sd_ble_gatts_value_set_ExpectAnyArgsAndReturn(ERROR);
-
-	nrf_err = ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level);
-	TEST_ASSERT_EQUAL(ERROR, nrf_err);
-
-	bas_cfg.can_notify = true;
-	bas_init(&bas_cfg);
-
-	__cmock_sd_ble_gatts_value_set_ExpectAnyArgsAndReturn(NRF_SUCCESS);
-	__cmock_sd_ble_gatts_hvx_ExpectAnyArgsAndReturn(ERROR);
-
-	nrf_err = ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level);
-	TEST_ASSERT_EQUAL(ERROR, nrf_err);
-
-	battery_level = 101;
-
-	nrf_err = ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level);
+	/* 101 is > 100 and not BLE_BAS_BATTERY_LEVEL_LAST */
+	nrf_err = ble_bas_battery_level_update(&ble_bas, 0x0001, 101);
 	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, nrf_err);
 }
 
-void test_ble_bas_battery_level_update_error_not_found(void)
+void test_ble_bas_battery_level_update_same_level(void)
 {
 	uint32_t nrf_err;
-	uint16_t conn_handle = 0x0001;
+	struct ble_bas_config bas_cfg = bas_cfg_template;
+
+	bas_init(&bas_cfg);
+
+	/* battery_level == BATTERY_REFERENCE_VALUE == bas->battery_level → early return */
+	nrf_err = ble_bas_battery_level_update(&ble_bas, 0x0001, BATTERY_REFERENCE_VALUE);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+	TEST_ASSERT_EQUAL(0, value_set_stub_called);
+	TEST_ASSERT_EQUAL(0, hvx_stub_called);
+}
+
+void test_ble_bas_battery_level_update_value_set_error(void)
+{
+	uint32_t nrf_err;
+	struct ble_bas_config bas_cfg = bas_cfg_template;
+
+	bas_init(&bas_cfg);
+
+	/* value_set fails → return error before CCCD read or HVX */
+	__cmock_sd_ble_gatts_value_set_ExpectAnyArgsAndReturn(ERROR);
+
+	nrf_err = ble_bas_battery_level_update(&ble_bas, 0x0001, 42);
+	TEST_ASSERT_EQUAL(ERROR, nrf_err);
+}
+
+void test_ble_bas_battery_level_update_can_notify_false(void)
+{
+	uint32_t nrf_err;
+	struct ble_bas_config bas_cfg = bas_cfg_template;
+
+	bas_cfg.can_notify = false;
+	battery_level = 42;
+	bas_init(&bas_cfg);
+
+	/* value_set succeeds, can_notify = false → return without CCCD read or HVX */
+	__cmock_sd_ble_gatts_value_set_Stub(stub_sd_ble_gatts_value_set_check);
+
+	nrf_err = ble_bas_battery_level_update(&ble_bas, 0x0001, battery_level);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+	TEST_ASSERT_EQUAL(1, value_set_stub_called);
+	TEST_ASSERT_EQUAL(0, hvx_stub_called);
+}
+
+void test_ble_bas_battery_level_update_cccd_error(void)
+{
+	uint32_t nrf_err;
 	struct ble_bas_config bas_cfg = bas_cfg_template;
 
 	battery_level = 42;
-	bas_cfg.can_notify = true;
 	bas_init(&bas_cfg);
 
-	__cmock_sd_ble_gatts_value_set_ExpectAnyArgsAndReturn(NRF_SUCCESS);
-	__cmock_sd_ble_gatts_hvx_ExpectAnyArgsAndReturn(ERROR);
+	/* value_set succeeds, CCCD read returns unexpected error → forward error */
+	__cmock_sd_ble_gatts_value_set_Stub(stub_sd_ble_gatts_value_set_check);
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_err);
 
-	nrf_err = ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level);
-	TEST_ASSERT_EQUAL(ERROR, nrf_err);
+	nrf_err = ble_bas_battery_level_update(&ble_bas, 0x0001, battery_level);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, nrf_err);
 }
 
-void test_ble_bas_battery_level_update_error_invalid_state(void)
+void test_ble_bas_battery_level_update_notify_success(void)
 {
 	uint32_t nrf_err;
-	uint16_t conn_handle = BLE_CONN_HANDLE_INVALID;
 	struct ble_bas_config bas_cfg = bas_cfg_template;
 
-	battery_level = 21;
-	bas_cfg.evt_handler = ble_bas_evt_handler;
+	battery_level = 42;
 	bas_init(&bas_cfg);
 
+	/* value_set → CCCD enabled → HVX (p_data = NULL) */
 	__cmock_sd_ble_gatts_value_set_Stub(stub_sd_ble_gatts_value_set_check);
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_enabled);
+	__cmock_sd_ble_gatts_hvx_Stub(stub_sd_ble_gatts_hvx_param_check);
+
+	nrf_err = ble_bas_battery_level_update(&ble_bas, 0x0001, battery_level);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+	TEST_ASSERT_EQUAL(1, value_set_stub_called);
+	TEST_ASSERT_EQUAL(1, hvx_stub_called);
+}
+
+void test_ble_bas_battery_level_update_notify_error(void)
+{
+	uint32_t nrf_err;
+	struct ble_bas_config bas_cfg = bas_cfg_template;
+
+	battery_level = 42;
+	bas_init(&bas_cfg);
+
+	/* value_set succeeds, CCCD enabled, HVX fails */
+	__cmock_sd_ble_gatts_value_set_Stub(stub_sd_ble_gatts_value_set_check);
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_enabled);
 	__cmock_sd_ble_gatts_hvx_ExpectAnyArgsAndReturn(ERROR);
 
-	nrf_err = ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level);
+	nrf_err = ble_bas_battery_level_update(&ble_bas, 0x0001, battery_level);
 	TEST_ASSERT_EQUAL(ERROR, nrf_err);
 }
 
-void test_ble_bas_battery_level_update_success(void)
+void test_ble_bas_battery_level_update_notif_disabled_success(void)
 {
 	uint32_t nrf_err;
-	uint16_t conn_handle = 0x0001;
+	struct ble_bas_config bas_cfg = bas_cfg_template;
+
+	battery_level = 42;
+	bas_init(&bas_cfg);
+
+	/* value_set succeeds, CCCD disabled → no HVX, return success */
+	__cmock_sd_ble_gatts_value_set_Stub(stub_sd_ble_gatts_value_set_check);
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_disabled);
+
+	nrf_err = ble_bas_battery_level_update(&ble_bas, 0x0001, battery_level);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+	TEST_ASSERT_EQUAL(1, value_set_stub_called);
+	TEST_ASSERT_EQUAL(0, hvx_stub_called);
+}
+
+void test_ble_bas_battery_level_update_sys_attr_missing(void)
+{
+	uint32_t nrf_err;
+	struct ble_bas_config bas_cfg = bas_cfg_template;
+
+	battery_level = 42;
+	bas_init(&bas_cfg);
+
+	/* value_set succeeds, CCCD returns sys_attr_missing → no HVX, return success */
+	__cmock_sd_ble_gatts_value_set_Stub(stub_sd_ble_gatts_value_set_check);
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_sys_attr_missing);
+
+	nrf_err = ble_bas_battery_level_update(&ble_bas, 0x0001, battery_level);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+	TEST_ASSERT_EQUAL(1, value_set_stub_called);
+	TEST_ASSERT_EQUAL(0, hvx_stub_called);
+}
+
+void test_ble_bas_battery_level_update_invalid_conn_handle(void)
+{
+	uint32_t nrf_err;
+	struct ble_bas_config bas_cfg = bas_cfg_template;
+
+	battery_level = 42;
+	bas_init(&bas_cfg);
+
+	/* value_set succeeds, CCCD returns invalid_conn_handle → no HVX, return success */
+	__cmock_sd_ble_gatts_value_set_Stub(stub_sd_ble_gatts_value_set_check);
+	__cmock_sd_ble_gatts_value_get_ExpectAnyArgsAndReturn(BLE_ERROR_INVALID_CONN_HANDLE);
+
+	nrf_err = ble_bas_battery_level_update(&ble_bas, BLE_CONN_HANDLE_INVALID, battery_level);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+	TEST_ASSERT_EQUAL(1, value_set_stub_called);
+	TEST_ASSERT_EQUAL(0, hvx_stub_called);
+}
+
+void test_ble_bas_battery_level_update_last_notify_success(void)
+{
+	uint32_t nrf_err;
+	struct ble_bas_config bas_cfg = bas_cfg_template;
+
+	battery_level = 42;
+	bas_init(&bas_cfg);
+
+	/* First: set a known level */
+	__cmock_sd_ble_gatts_value_set_Stub(stub_sd_ble_gatts_value_set_check);
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_enabled);
+	__cmock_sd_ble_gatts_hvx_Stub(stub_sd_ble_gatts_hvx_param_check);
+
+	nrf_err = ble_bas_battery_level_update(&ble_bas, 0x0001, battery_level);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	/* Reset counters */
+	value_set_stub_called = 0;
+	hvx_stub_called = 0;
+
+	/* LAST: no value_set (value unchanged), but HVX fires */
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_enabled);
+	__cmock_sd_ble_gatts_hvx_Stub(stub_sd_ble_gatts_hvx_param_check);
+
+	nrf_err = ble_bas_battery_level_update(&ble_bas, 0x0001, BLE_BAS_BATTERY_LEVEL_LAST);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+	TEST_ASSERT_EQUAL(0, value_set_stub_called);
+	TEST_ASSERT_EQUAL(1, hvx_stub_called);
+}
+
+void test_ble_bas_battery_level_update_last_no_notify(void)
+{
+	uint32_t nrf_err;
 	struct ble_bas_config bas_cfg = bas_cfg_template;
 
 	bas_cfg.can_notify = false;
 	bas_init(&bas_cfg);
 
-	/* Battery level hasn't changed 'Nothing to do' */
-	nrf_err = ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level);
+	/* LAST with can_notify=false: no value_set, no HVX, early return */
+	nrf_err = ble_bas_battery_level_update(&ble_bas, 0x0001, BLE_BAS_BATTERY_LEVEL_LAST);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+	TEST_ASSERT_EQUAL(0, value_set_stub_called);
+	TEST_ASSERT_EQUAL(0, hvx_stub_called);
+}
 
-	/* Change battery level, and ble_bas should update but not notify */
+void test_ble_bas_battery_level_update_last_cccd_disabled(void)
+{
+	uint32_t nrf_err;
+	struct ble_bas_config bas_cfg = bas_cfg_template;
+
 	battery_level = 42;
-	__cmock_sd_ble_gatts_value_set_Stub(stub_sd_ble_gatts_value_set_check);
-
-	nrf_err = ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level);
-	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
-
-	/* Change battery level, and ble_bas should update and notify */
-	battery_level = 84;
-	bas_cfg.can_notify = true;
 	bas_init(&bas_cfg);
 
-	__cmock_sd_ble_gatts_hvx_Stub(stub_sd_ble_gatts_hvx_param_check_data_null);
-	nrf_err = ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level);
+	/* First: set a known level */
+	__cmock_sd_ble_gatts_value_set_Stub(stub_sd_ble_gatts_value_set_check);
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_enabled);
+	__cmock_sd_ble_gatts_hvx_Stub(stub_sd_ble_gatts_hvx_param_check);
 
+	nrf_err = ble_bas_battery_level_update(&ble_bas, 0x0001, battery_level);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
-	TEST_ASSERT_EQUAL(1, hvx_stub_called);
 
-	/* Reset stub count. */
+	/* Reset counters */
+	value_set_stub_called = 0;
 	hvx_stub_called = 0;
 
-	/* Calling with BLE_BAS_BATTERY_LEVEL_LAST should send last set value. */
-	__cmock_sd_ble_gatts_hvx_Stub(stub_sd_ble_gatts_hvx_param_check_data_null);
-	nrf_err = ble_bas_battery_level_update(&ble_bas, conn_handle, BLE_BAS_BATTERY_LEVEL_LAST);
+	/* LAST but CCCD disabled: no value_set, no HVX, early return */
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_disabled);
 
+	nrf_err = ble_bas_battery_level_update(&ble_bas, 0x0001, BLE_BAS_BATTERY_LEVEL_LAST);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
-	TEST_ASSERT_EQUAL(1, hvx_stub_called);
+	TEST_ASSERT_EQUAL(0, value_set_stub_called);
+	TEST_ASSERT_EQUAL(0, hvx_stub_called);
 }
+
+/* Unity test framework hooks and entry point */
 
 void setUp(void)
 {
@@ -437,6 +596,7 @@ void setUp(void)
 	evt_handler_called = false;
 	battery_level = BATTERY_REFERENCE_VALUE;
 	hvx_stub_called = 0;
+	value_set_stub_called = 0;
 }
 
 extern int unity_main(void);

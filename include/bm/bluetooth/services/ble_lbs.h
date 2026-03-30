@@ -158,7 +158,10 @@ uint32_t ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg);
 void ble_lbs_on_ble_evt(const ble_evt_t *ble_evt, void *lbs_instance);
 
 /**
- * @brief Function for sending a button state notification.
+ * @brief Update button state.
+ *
+ * @details Updates the button state in the GATT database and sends a notification
+ *          if the notification bit in the CCCD is set for @p conn_handle.
  *
  * @param[in] lbs           LED Button Service structure.
  * @param[in] conn_handle   Handle of the peripheral connection to which the button state
@@ -166,9 +169,11 @@ void ble_lbs_on_ble_evt(const ble_evt_t *ble_evt, void *lbs_instance);
  * @param[in] button_state  New button state.
  *
  * @retval NRF_SUCCESS If the notification was sent successfully.
- * @retval NRF_ERROR_NULL If @p lbs is NULL.
+ * @retval NRF_ERROR_NULL If @p lbs is @c NULL.
  * @return In addition, this function may return any error
  *         returned by the following SoftDevice functions:
+ *         - @ref sd_ble_gatts_value_get()
+ *         - @ref sd_ble_gatts_value_set()
  *         - @ref sd_ble_gatts_hvx()
  */
 uint32_t ble_lbs_on_button_change(struct ble_lbs *lbs, uint16_t conn_handle, uint8_t button_state);

@@ -95,10 +95,10 @@ static void heart_rate_meas_timeout_handler(void *context)
 
 	nrf_err = ble_hrs_heart_rate_measurement_send(&ble_hrs, (uint16_t)heart_rate);
 	if (nrf_err) {
-		/* Ignore if not in a connection or notifications disabled in CCCD. */
-		if (nrf_err != BLE_ERROR_INVALID_CONN_HANDLE &&
-		    nrf_err != NRF_ERROR_INVALID_STATE) {
-			LOG_ERR("Failed to send heart rate measurement, nrf_error %#x", nrf_err);
+		if (nrf_err != NRF_ERROR_INVALID_STATE &&
+		    nrf_err != BLE_ERROR_INVALID_CONN_HANDLE) {
+			LOG_ERR("Failed to update heart rate measurement, nrf_error %#x", nrf_err);
+			return;
 		}
 	}
 

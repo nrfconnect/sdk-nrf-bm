@@ -222,17 +222,22 @@ uint32_t ble_hrs_init(struct ble_hrs *hrs, const struct ble_hrs_config *hrs_conf
 void ble_hrs_conn_params_evt(struct ble_hrs *hrs, const struct ble_conn_params_evt *conn_param_evt);
 
 /**
- * @brief Function for sending heart rate measurement if notification has been enabled.
+ * @brief Send a heart rate measurement notification.
  *
- * @details The application calls this function after having performed a heart rate measurement.
- *          If notification has been enabled, the heart rate measurement data is encoded and sent to
- *          the client.
+ * @details Reads the CCCD to check whether the peer has enabled notifications.
+ *          If enabled, encodes the heart rate measurement and sends it as a BLE notification.
+ *          If notifications are not enabled or the CCCD state is unknown,
+ *          no data is sent and the function returns an error.
  *
- * @param hrs Heart rate service.
- * @param heart_rate heart rate Measurement.
+ * @param hrs        Heart rate service instance.
+ * @param heart_rate Heart rate measurement in beats per minute.
  *
- * @retval NRF_SUCCESS On success.
- * @retval NRF_ERROR_NULL If @p hrs is @c NULL.
+ * @retval NRF_SUCCESS             Notification sent successfully.
+ * @retval NRF_ERROR_NULL          @p hrs is @c NULL.
+ * @retval NRF_ERROR_INVALID_STATE Notifications are not possible.
+ *                                 Either the CCCD notify bit is not set by the peer,
+ *                                 or the CCCD value is unknown
+ *                                 (@ref BLE_ERROR_GATTS_SYS_ATTR_MISSING).
  * @return In addition, this function may return any error
  *         returned by the following SoftDevice functions:
  *         - @ref sd_ble_gatts_value_get()
