@@ -25,6 +25,19 @@ tests:
       - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice/mcuboot
     tags:
       - sysbuild
+  sample.boot.mcuboot_recovery_entry.nrf54ls05b:
+    sysbuild: true
+    build_only: true
+    integration_platforms:
+      - bm_nrf54ls05dk/nrf54ls05b/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54ls05dk/nrf54ls05b/cpuapp/s145_softdevice/mcuboot
+    platform_allow:
+      - bm_nrf54ls05dk/nrf54ls05b/cpuapp/s115_softdevice/mcuboot
+      - bm_nrf54ls05dk/nrf54ls05b/cpuapp/s145_softdevice/mcuboot
+    extra_args:
+      - mcuboot_CONFIG_NRF_OBERON=y
+    tags:
+      - sysbuild
   sample.boot.mcuboot_recovery_entry.size_optimized:
     sysbuild: true
     build_only: true
