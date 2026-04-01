@@ -15,7 +15,7 @@ extern "C" {
 #define BM_RMEM_TLV_TYPE_CRC_32 0x0002
 
 /**
- * @brief Run-time context for the retained clipboard instance.
+ * @brief Runtime context for the retained clipboard instance.
  */
 struct bm_retained_clipboard_ctx {
 	uint16_t offset;      /**< Offset of the current entry. */
@@ -66,7 +66,7 @@ int bm_rmem_crc32_verify(void);
  * @brief Get data from the retained clipboard.
  * The caller must set desc.type to the TLV type of the entry to retrieve.
  *
- * @param[in,out] ctx Run-time context for the retained clipboard instance.
+ * @param[in,out] ctx Runtime context for the retained clipboard instance.
  * @param[in,out] desc Data descriptor. On success, desc.data points to the data,
  *                     desc.len is set to the length of the data.
  * @retval 0 on success.
@@ -77,7 +77,7 @@ int bm_rmem_data_get(struct bm_retained_clipboard_ctx *ctx, struct bm_rmem_data_
 /**
  * @brief Initialize the retained clipboard.
  *
- * @param[in,out] ctx Run-time context for the retained clipboard instance.
+ * @param[in,out] ctx Runtime context for the retained clipboard instance.
  * @retval 0 on success.
  */
 int bm_rmem_init(struct bm_retained_clipboard_ctx *ctx);
