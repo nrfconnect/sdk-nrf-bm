@@ -11,7 +11,7 @@ config BM_RMEM_CLIPBOARD
 	bool "Inter application RAM Clipboard"
 	depends on $(dt_chosen_enabled,$(DT_CHOSEN_NCSBM_CLIPBOARD_PARTITION))
 	help
-	  If enabled, instance of simple inter application
+	  If enabled, instance of simple inter-application
 	  clipboard storage on retained RAM area is supported.
 	  The storage is using RAM memory region described in the DTS node
 	  assigned by ncsbm,clipboard-partition chosen.
