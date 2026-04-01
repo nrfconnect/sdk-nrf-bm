@@ -22,7 +22,8 @@ To enable this feature for a sysbuild project, use the :kconfig:option:`SB_CONFI
 Otherwise, enable the following Kconfig options in both the application and the firmware loader configuration:
 
 * :kconfig:option:`CONFIG_RETENTION` - Allows the retention of data across device reboots.
-* :kconfig:option:`CONFIG_BM_FLAT_SETTINGS_BLUETOOTH_NAME` - Enables settings handlers for Bluetooth name sharing using the retention clipboard (key ``fw_loader/adv_name``). Selects the inter-application retention clipboard in SRAM.
+* :kconfig:option:`CONFIG_BM_FLAT_SETTINGS_BLUETOOTH_NAME` - Enables settings handlers for Bluetooth name sharing using the retention clipboard (key ``fw_loader/adv_name``).
+  This selects the inter-application retention clipboard in SRAM.
 
 Additionally, the application must enable the MCUmgr settings group:
 
@@ -33,17 +34,17 @@ This feature is used in the :ref:`ble_mcuboot_recovery_entry_sample` sample.
 Board DTS setup for clipboard partition
 ***************************************
 
-When using :kconfig:option:`CONFIG_BM_FLAT_SETTINGS_BLUETOOTH_NAME`, the application and the firmware loader share the BLE advertising name via an inter-application retention clipboard stored in SRAM.
-This feature involves the clipboard subsystem, which is enabled by the :kconfig:option:`CONFIG_BM_FLAT_SETTINGS_BLUETOOTH_NAME` Kconfig option.
-The clipboard subsystem get assigned to a SRAM region using the devicetree chosen property ``ncsbm,clipboard-partition``.
-A board target that enables this feature must therefore define an SRAM memory region for the clipboard and expose it through that chosen property.
+When using the :kconfig:option:`CONFIG_BM_FLAT_SETTINGS_BLUETOOTH_NAME` Kconfig option, the application and the firmware loader share the Bluetooth LE advertising name through an inter-application retention clipboard stored in SRAM.
+This feature involves the clipboard subsystem that is enabled through the :kconfig:option:`CONFIG_BM_FLAT_SETTINGS_BLUETOOTH_NAME` Kconfig option.
+The clipboard subsystem is assigned to a SRAM region using the devicetree chosen property ``ncsbm,clipboard-partition``.
+A board target that enables this feature must define an SRAM memory region for the clipboard and expose it through that chosen property.
 
-Add the following to your board devicetree (for example in the MCUboot variant DTS such as :file:`bm_nrf54ls05dk_nrf54ls05b_cpuapp_s115_softdevice_mcuboot.dts`):
+Add the following to your board devicetree (for example, in the MCUboot variant DTS such as :file:`bm_nrf54ls05dk_nrf54ls05b_cpuapp_s115_softdevice_mcuboot.dts`):
 
-#. A node with ``compatible`` set to ``"zephyr,memory-region"`` and ``"mmio-sram"``.
+* A node with ``compatible`` set to ``"zephyr,memory-region"`` and ``"mmio-sram"``.
    The build system generates a linker section for any node with ``"zephyr,memory-region"``, so the region is reserved and excluded from the default SRAM allocation.
 
-#. The chosen property ``ncsbm,clipboard-partition`` set to a phandle of that node.
+* The chosen property ``ncsbm,clipboard-partition`` set to a phandle of that node.
 
 Example (adjust the ``reg`` address and size to match your SoC memory map and the space you reserve for the clipboard):
 
@@ -62,5 +63,5 @@ Example (adjust the ``reg`` address and size to match your SoC memory map and th
            };
    };
 
-Ensure the clipboard region does not overlap the application SRAM (for example by reducing the main SRAM size in the same DTS so that it ends before the clipboard region).
-For reference, see the |BMshort| board DTS files under :file:`nrf-bm/boards/nordic/`.
+Ensure that the clipboard region does not overlap the application SRAM (for example, by reducing the main SRAM size in the same DTS so that it ends before the clipboard region).
+For reference, see the |BMshort| board DTS files in the :file:`nrf-bm/boards/nordic/` folder.
