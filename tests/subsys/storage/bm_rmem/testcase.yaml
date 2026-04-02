@@ -3,8 +3,10 @@ common:
   platform_allow:
     - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice
     - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice
+    - native_sim
   integration_platforms:
     - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice
+    - native_sim
 tests:
   tests.subsys.storage.bm_rmem:
     tags:
