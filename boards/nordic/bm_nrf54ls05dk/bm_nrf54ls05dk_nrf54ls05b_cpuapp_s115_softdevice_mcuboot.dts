@@ -10,9 +10,9 @@
 #include "bm_nrf54ls05dk_nrf54ls05b_cpuapp_common.dtsi"
 
 / {
-	clipboard_partition: sram@20017c00 {
+	clipboard_partition: sram@20017f00 {
 		compatible = "zephyr,memory-region", "mmio-sram";
-		reg = <0x20017c00 DT_SIZE_K(1)>;
+		reg = <0x20017f00 0x100>;
 		zephyr,memory-region = "RetainedMem";
 		status = "okay";
 	};
@@ -87,8 +87,8 @@
 	/* Override setting in bm_nrf54ls05dk_nrf54ls05b_cpuapp_common.dtsi
 	 * to adjust sram size to not overlap with retainedmem
 	 */
-	reg = <0x20000080 (DT_SIZE_K(96) - DT_SIZE_K(1) - 0x80)>;
-	ranges = <0x0 0x20000080 (DT_SIZE_K(96) - DT_SIZE_K(1) - 0x80)>;
+	reg = <0x20000080 (DT_SIZE_K(96) - 0x100 - 0x80)>;
+	ranges = <0x0 0x20000080 (DT_SIZE_K(96) - 0x100 - 0x80)>;
 
 	softdevice_static_ram: sram@0 {
 		label = "softdevice_static_ram";
