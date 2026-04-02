@@ -1,0 +1,12 @@
+/ {
+	clipboard_partition: sram@200000 {
+		compatible = "zephyr,memory-region", "mmio-sram";
+		reg = <0x200000 64>;
+		zephyr,memory-region = "RetainedMem";
+		status = "okay";
+	};
+
+	chosen {
+		ncsbm,clipboard-partition = &clipboard_partition;
+	};
+};
