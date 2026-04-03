@@ -127,3 +127,6 @@
 Kconfig*                                  @nrfconnect/ncs-co-build-system @nrfconnect/ncs-bm
 CMakeLists*                               @nrfconnect/ncs-co-build-system
 *.cmake	                                  @nrfconnect/ncs-co-build-system
+
+samples/**/Kconfig*                       @nrfconnect/ncs-bm
+samples/**/CMakeList*                     @nrfconnect/ncs-bm
