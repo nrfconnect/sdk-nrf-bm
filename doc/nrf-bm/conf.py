@@ -66,8 +66,14 @@ SOFTDEVICE_DIR = NRF_BM_BASE / "components" / "softdevice"
 external_content_contents = [
     (NRF_BM_BASE / "doc" / "nrf-bm", "*"),
     (NRF_BM_BASE, "samples/**/*.rst"),
-    (SOFTDEVICE_DIR / "nrf54l" / "s115" / "doc", "s115*.main.rst"),
-    (SOFTDEVICE_DIR / "nrf54l" / "s145" / "doc", "s145*.main.rst"),
+    (SOFTDEVICE_DIR, "nrf54l/s115/doc/s115*.main.rst"),
+    (SOFTDEVICE_DIR, "nrf54l/s145/doc/s145*.main.rst"),
+    (SOFTDEVICE_DIR, "nrf54lm/s115/doc/s115*.main.rst"),
+    (SOFTDEVICE_DIR, "nrf54lm/s145/doc/s145*.main.rst"),
+    (SOFTDEVICE_DIR, "nrf54ls/s115/doc/s115*.main.rst"),
+    (SOFTDEVICE_DIR, "nrf54ls/s145/doc/s145*.main.rst"),
+    (SOFTDEVICE_DIR, "nrf54lv/s115/doc/s115*.main.rst"),
+    (SOFTDEVICE_DIR, "nrf54lv/s145/doc/s145*.main.rst"),
 ]
 
 external_content_keep = ["versions.txt"]
@@ -94,8 +100,14 @@ doxyrunner_projects = {
 
 doxybridge_projects = {
     "nrf-bm": _doxyrunner_outdir,
-    "s115": utils.get_builddir() / "html" / "s115",
-    "s145": utils.get_builddir() / "html" / "s145",
+    "s115_nrf54l15":  utils.get_builddir() / "html" / "s115_nrf54l15",
+    "s145_nrf54l15":  utils.get_builddir() / "html" / "s145_nrf54l15",
+    "s115_nrf54lm20": utils.get_builddir() / "html" / "s115_nrf54lm20",
+    "s145_nrf54lm20": utils.get_builddir() / "html" / "s145_nrf54lm20",
+    "s115_nrf54ls05": utils.get_builddir() / "html" / "s115_nrf54ls05",
+    "s145_nrf54ls05": utils.get_builddir() / "html" / "s145_nrf54ls05",
+    "s115_nrf54lv10": utils.get_builddir() / "html" / "s115_nrf54lv10",
+    "s145_nrf54lv10": utils.get_builddir() / "html" / "s145_nrf54lv10",
 }
 
 # Options for html_redirect ----------------------------------------------------

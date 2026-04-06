@@ -42,7 +42,7 @@ DOXYFILE_ENCODING      = UTF-8
 # title of most generated pages and in a few other places.
 # The default value is: My Project.
 
-PROJECT_NAME           = "S115 SoftDevice API documentation"
+PROJECT_NAME           = "S115 SoftDevice for nRF54L15/nRF54L10/nRF54L05 API documentation"
 
 # The PROJECT_NUMBER tag can be used to enter a project or revision number. This
 # could be handy for archiving the generated documentation or if some version
@@ -957,7 +957,7 @@ WARN_LOGFILE           =
 
 INPUT                  = @DOCSET_SOURCE_BASE@/components/softdevice/nrf54l/s115/s115_API/doc/ \
                          @DOCSET_SOURCE_BASE@/components/softdevice/nrf54l/s115/s115_API/include/ \
-                         @DOCSET_SOURCE_BASE@/doc/s115/mainpage.dox
+                         @DOCSET_SOURCE_BASE@/doc/s115_nrf54l15/mainpage.dox
 
 # This tag can be used to specify the character encoding of the source files
 # that Doxygen parses. Internally Doxygen uses the UTF-8 encoding. Doxygen uses
