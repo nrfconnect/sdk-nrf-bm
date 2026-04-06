@@ -2,7 +2,7 @@
 
 # Tags for all topics:
 mapping_global:
-  - s115-__VERSION__
+  - s145_nrf54lv10-__VERSION__
 
 # Tags for individual topics:
 mapping_topics: []

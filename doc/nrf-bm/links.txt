@@ -34,6 +34,21 @@
 
 .. _`nRF54L15 Compatibility Matrix`: https://docs.nordicsemi.com/bundle/comp_matrix_nrf54l15/page/COMP/nrf54l15/nrf54l15_ble_qdid_qual_matrix.html
 
+.. ### Source: SoftDevice doc links
+
+.. _`S115 SoftDevice for nRF54L15/nRF54L10/nRF54L05 API`: https://docs.nordicsemi.com/bundle/s115_nrf54l15_10.0.0-1.prototype_api/page/topics.html
+.. _`S115 SoftDevice for nRF54LM20 API`: https://docs.nordicsemi.com/bundle/s115_nrf54lm20_10.0.0-1.prototype_api/page/topics.html
+.. _`S115 SoftDevice for nRF54LV10 API`: https://docs.nordicsemi.com/bundle/s115_nrf54lv10_10.0.0-1.prototype_api/page/topics.html
+.. _`S115 SoftDevice for nRF54LS05 API`: https://docs.nordicsemi.com/bundle/s115_nrf54ls05_10.0.0-1.prototype_api/page/topics.html
+
+.. _`S145 SoftDevice for nRF54L15/nRF54L10/nRF54L05 API`: https://docs.nordicsemi.com/bundle/s145_nrf54l15_10.0.0-1.prototype_api/page/topics.html
+.. _`S145 SoftDevice for nRF54LM20 API`: https://docs.nordicsemi.com/bundle/s145_nrf54lm20_10.0.0-1.prototype_api/page/topics.html
+.. _`S145 SoftDevice for nRF54LV10 API`: https://docs.nordicsemi.com/bundle/s145_nrf54lv10_10.0.0-1.prototype_api/page/topics.html
+.. _`S145 SoftDevice for nRF54LS05 API`: https://docs.nordicsemi.com/bundle/s145_nrf54ls05_10.0.0-1.prototype_api/page/topics.html
+
+.. _`S115 SoftDevice Specification`: https://docs.nordicsemi.com/bundle/sds_s115/page/SDS/s1xx/s115.html
+.. _`S145 SoftDevice Specification`: https://docs.nordicsemi.com/bundle/sds_s145/page/SDS/s1xx/s145.html
+
 .. ### Installation
 
 .. _`nRF Util`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/installation/recommended_versions.html#nrf_util
@@ -63,11 +78,6 @@
 
 .. _`SoftDevice Controller Integration`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrfxlib/softdevice_controller/doc/softdevice_controller.html#:~:text=For%20the%20nRF54L%20Series%3A
 .. _`Multiprotocol Service Layer`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrfxlib/mpsl/doc/mpsl.html#:~:text=For%20the%20nRF54L%20Series%3A
-.. _`SoftDevice Specification`: https://docs.nordicsemi.com/bundle/sds_s115/page/SDS/s1xx/s115.html
-.. _`S115 SoftDevice Specification`: https://docs.nordicsemi.com/bundle/sds_s115/page/SDS/s1xx/s115.html
-.. _`S145 SoftDevice Specification`: https://docs.nordicsemi.com/bundle/sds_s145/page/SDS/s1xx/s145.html
-.. _`S115 SoftDevice API Documentation`: https://docs.nordicsemi.com/bundle/s115-latest/page/index.html
-.. _`S145 SoftDevice API Documentation`: https://docs.nordicsemi.com/bundle/s145-latest/page/index.html
 .. _`Interrupt priority levels`: https://docs.nordicsemi.com/bundle/sds_s115/page/SDS/s1xx/processor_avail_interrupt_latency/exception_mgmt_sd.html
 .. _`Application signals – software interrupts`: https://docs.nordicsemi.com/bundle/sds_s115/page/SDS/s1xx/sd_resource_reqs/app_signal_sw_interrupt.html
 .. _`Zero Latency Interrupts`: https://docs.zephyrproject.org/latest/kernel/services/interrupts.html#zero-latency-interrupts

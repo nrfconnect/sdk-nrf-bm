@@ -435,3 +435,4 @@ Documentation
 * Added the :ref:`drivers_alloc_int` page.
 * Improved sample documentation with clearer, more descriptive user guides, including updated explanations of configuration options, hardware connections, and testing procedures.
 * Added the :ref:`board_memory_layouts` section, which documents RRAM and SRAM partition layouts for supported boards.
+* Updated the :ref:`softdevice_docs` and :ref:`nrf_bm_api` pages to provide separate documentation and API references for each SoC-specific variant of the S115 and S145 SoftDevices (nRF54L15, nRF54LM20, nRF54LS05, and nRF54LV10).

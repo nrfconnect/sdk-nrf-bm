@@ -95,7 +95,7 @@ jobs:
           declare -a SPHINX_DOXYGEN=("nrf-bm")
 
           # Doxygen APIs standalone
-          declare -a DOXYGEN=("s115" "s145")
+          declare -a DOXYGEN=("s115_nrf54l15" "s145_nrf54l15" "s115_nrf54lm20" "s145_nrf54lm20" "s115_nrf54ls05" "s145_nrf54ls05" "s115_nrf54lv10" "s145_nrf54lv10")
 
           mkdir doc/_build/html-doxygen
 
