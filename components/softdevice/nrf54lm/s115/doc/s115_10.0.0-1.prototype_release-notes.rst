@@ -35,7 +35,7 @@ SoftDevice properties
 
   * nRF54LM20: 0x1e3800 (``s115_nrf54lm20_10.0.0-1.prototype_softdevice.hex``).
 
-* The Firmware ID of this SoftDevice is 0x308C.
+* The Firmware ID of this SoftDevice is 0x309B.
 
 
 See the changelog of the `SoftDevice Controller`_ and `MPSL`_ for more details about changes in the controller.

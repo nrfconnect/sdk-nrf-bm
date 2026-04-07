@@ -39,7 +39,7 @@ SoftDevice properties
 
   * nRF54L15: 0x15a800 (``s145_nrf54l15_10.0.0-1.prototype_softdevice.hex``).
 
-* The Firmware ID of this SoftDevice is 0x308C.
+* The Firmware ID of this SoftDevice is 0x309B.
 
 
 See the changelog of the `SoftDevice Controller`_ and `MPSL`_ for more details about changes in the controller.
