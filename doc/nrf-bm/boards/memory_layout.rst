@@ -67,12 +67,9 @@ SRAM partitions
    * - KMU reserved
      - —
      - 128 bytes reserved by the Key Management Unit at the start of SRAM (synthetic region, no partition label in DTS).
-   * - SoftDevice Static RAM
-     - ``softdevice_static_ram``
-     - Statically allocated RAM for the SoftDevice. Size depends on the SoftDevice variant (S115 vs S145).
-   * - SoftDevice Dynamic RAM
-     - ``softdevice_dynamic_ram``
-     - Dynamically allocated RAM for the SoftDevice (connections, buffers).
+   * - SoftDevice RAM
+     - ``softdevice_ram``
+     - Allocated RAM for the SoftDevice. Consists of SoftDevice static RAM with a size depending on the SoftDevice variant (S115 vs S145) and SoftDevice Dynamic RAM with a size depending on the number of connections and required buffer sizes.
    * - Application RAM
      - ``app_ram``
      - RAM available for the application.
