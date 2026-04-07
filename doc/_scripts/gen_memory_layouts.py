@@ -288,7 +288,7 @@ COLORS = {
     "metadata": "#0032a0",  # Nordic Blueslate
     "(unused)": "#d9e1e2",  # Nordic Light Grey
     "KMU reserved": "#768692",  # Nordic Middle Grey
-    "softdevice_ram": "#00a2c6",  # Nordic Blue
+    "softdevice_ram": "#0077c8",  # Nordic Lake
     "app_ram": "#6ad1e3",  # Nordic Sky
     "RetainedMem": "#0032a0",  # Nordic Blueslate
 }
@@ -304,7 +304,7 @@ DISPLAY_NAMES = {
     "metadata": "Metadata",
     "(unused)": "Unused",
     "KMU reserved": "KMU reserved",
-    "softdevice_ram": "SoftDevice RAM (static and dynamic)",
+    "softdevice_ram": "SoftDevice RAM",
     "app_ram": "Application RAM",
     "RetainedMem": "Retained RAM",
 }
