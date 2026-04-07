@@ -114,8 +114,8 @@ __attribute__((weak)) void C_AAR00_CCM00_Handler(void)
 __attribute__((weak)) void C_CLOCK_POWER_SD_Handler(void)
 {
 #if defined(CONFIG_NRFX_POWER) || defined(CONFIG_NRFX_CLOCK)
-	extern void CLOCK_POWER_IRQHandler(void);
-	CLOCK_POWER_IRQHandler();
+	extern void nrfx_power_clock_irq_handler(void);
+	nrfx_power_clock_irq_handler();
 #else
 	__asm__("SVC 255");
 #endif
