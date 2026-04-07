@@ -506,7 +506,7 @@ endobj
 endobj
 84 0 obj
 <<
-/Author () /CreationDate (D:20260323141935-01'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20260323141935-01'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
+/Author () /CreationDate (D:20260407104022-01'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20260407104022-01'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
   /Subject (\(unspecified\)) /Title (s115 release notes) /Trapped /False
 >>
 endobj
@@ -1456,7 +1456,7 @@ q
 1 0 0 1 23 -3 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The Firmware ID of this SoftDevice is 0x308C.) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The Firmware ID of this SoftDevice is 0x309B.) Tj T* ET
 Q
 Q
 q
@@ -7230,7 +7230,7 @@ xref
 trailer
 <<
 /ID 
-[<bc898fed069b7429f18dcc9ecd2b211e><bc898fed069b7429f18dcc9ecd2b211e>]
+[<1468d4ab2b69b426fadfa39636c2a0ee><1468d4ab2b69b426fadfa39636c2a0ee>]
 % ReportLab generated PDF document -- digest (http://www.reportlab.com)
 
 /Info 84 0 R
