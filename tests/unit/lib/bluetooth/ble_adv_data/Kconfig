@@ -1,0 +1,10 @@
+# Redefine these symbols without dependencies, so that tests
+# can enable them without having to enable the dependencies too.
+config BLE_ADV_DATA
+	default y
+
+config TEST_BLE_DEVICE_NAME
+	string "Device name"
+	default "test-device"
+
+source "Kconfig.zephyr"
