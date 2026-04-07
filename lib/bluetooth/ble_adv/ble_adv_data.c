@@ -467,13 +467,13 @@ uint32_t ble_adv_data_encode(const struct ble_adv_data *ble_adv_data, uint8_t *b
 	uint32_t nrf_err;
 	uint16_t max_size;
 
-	nrf_err = NRF_SUCCESS;
-	max_size = *len;
-	*len = 0;
-
 	if (!ble_adv_data || !buf || !len) {
 		return NRF_ERROR_NULL;
 	}
+
+	nrf_err = NRF_SUCCESS;
+	max_size = *len;
+	*len = 0;
 
 	/* Encode LE Bluetooth Device Address */
 	if (ble_adv_data->include_ble_device_addr) {
