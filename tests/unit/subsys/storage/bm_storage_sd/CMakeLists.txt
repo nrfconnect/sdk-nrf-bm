@@ -32,6 +32,7 @@ zephyr_include_directories(
   ${SOFTDEVICE_INCLUDE_DIR}
   ${ZEPHYR_NRF_BM_MODULE_DIR}/include
   ${ZEPHYR_HAL_NORDIC_MODULE_DIR}/nrfx/bsp/stable
+  ${ZEPHYR_BASE}/modules/hal_nordic/nrfx
 )
 
 # Generate and add test file
