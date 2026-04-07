@@ -125,79 +125,6 @@ static uint32_t device_addr_encode(uint8_t *buf, uint16_t *offset, uint16_t max_
 	return ad_field_encode(&ltv, buf, offset, max_size);
 }
 
-static uint32_t device_name_encode(const struct ble_adv_data *ble_adv_data, uint8_t *buf,
-				   uint16_t *offset, uint16_t max_size)
-{
-	uint32_t nrf_err;
-	uint8_t name_buf[BLE_GAP_ADV_SET_DATA_SIZE_MAX];
-	uint16_t actual_length = sizeof(name_buf);
-	uint16_t rem_adv_data_len;
-	uint8_t ad_type;
-
-	/* Validate parameters */
-	if ((ble_adv_data->name_type == BLE_ADV_DATA_SHORT_NAME) &&
-	    (ble_adv_data->short_name_len == 0)) {
-		return NRF_ERROR_INVALID_PARAM;
-	}
-
-	/* Check for buffer overflow */
-	if ((*offset + AD_DATA_OFFSET > max_size) ||
-	    ((ble_adv_data->name_type == BLE_ADV_DATA_SHORT_NAME) &&
-	     ((*offset + AD_DATA_OFFSET + ble_adv_data->short_name_len) > max_size))) {
-		return NRF_ERROR_DATA_SIZE;
-	}
-
-	/* Get GAP device name into temporary buffer */
-	nrf_err = sd_ble_gap_device_name_get(name_buf, &actual_length);
-	if (nrf_err) {
-		LOG_ERR("Failed to get device GAP name, nrf_error %#x", nrf_err);
-		return nrf_err;
-	}
-
-	rem_adv_data_len = max_size - *offset - AD_DATA_OFFSET;
-
-	/* Check if device intend to use short name and it can fit available data size.
-	 * If the name is shorter than the preferred short name length then it is no longer
-	 * a short name and is in fact the complete name of the device.
-	 */
-	if (((ble_adv_data->name_type == BLE_ADV_DATA_FULL_NAME) ||
-	     (actual_length <= ble_adv_data->short_name_len)) &&
-	     (actual_length <= rem_adv_data_len)) {
-		/* Complete device name can fit */
-		ad_type = BLE_GAP_AD_TYPE_COMPLETE_LOCAL_NAME;
-	} else {
-		/* Use short name if complete name doesn't fit or if explicitly configured */
-		ad_type = BLE_GAP_AD_TYPE_SHORT_LOCAL_NAME;
-
-		/* If application has set a preference on the short name size,
-		 * it needs to be considered, else fit what can be fit.
-		 */
-		if ((ble_adv_data->name_type == BLE_ADV_DATA_SHORT_NAME) &&
-		    (ble_adv_data->short_name_len <= rem_adv_data_len)) {
-			/* Short name fits available size */
-			actual_length = ble_adv_data->short_name_len;
-		} else {
-			/* Whatever can fit the data buffer will be packed */
-			actual_length = rem_adv_data_len;
-		}
-	}
-
-	/* There is only 1 byte intended to encode length which is
-	 * (actual_length + AD_TYPE_FIELD_SIZE)
-	 */
-	if (actual_length > (0x00FF - AD_TYPE_FIELD_SIZE)) {
-		return NRF_ERROR_DATA_SIZE;
-	}
-
-	struct ad_ltv ltv = {
-		.length = (uint8_t)(AD_TYPE_FIELD_SIZE + actual_length),
-		.type = ad_type,
-		.value = name_buf,
-	};
-
-	return ad_field_encode(&ltv, buf, offset, max_size);
-}
-
 static uint32_t appearance_encode(uint8_t *buf, uint16_t *offset, uint16_t max_size)
 {
 	uint32_t nrf_err;
@@ -448,6 +375,79 @@ static uint32_t service_data_encode(const struct ble_adv_data *ble_adv_data, uin
 	}
 
 	return NRF_SUCCESS;
+}
+
+static uint32_t device_name_encode(const struct ble_adv_data *ble_adv_data, uint8_t *buf,
+				   uint16_t *offset, uint16_t max_size)
+{
+	uint32_t nrf_err;
+	uint8_t name_buf[BLE_GAP_ADV_SET_DATA_SIZE_MAX];
+	uint16_t actual_length = sizeof(name_buf);
+	uint16_t rem_adv_data_len;
+	uint8_t ad_type;
+
+	/* Validate parameters */
+	if ((ble_adv_data->name_type == BLE_ADV_DATA_SHORT_NAME) &&
+	    (ble_adv_data->short_name_len == 0)) {
+		return NRF_ERROR_INVALID_PARAM;
+	}
+
+	/* Check for buffer overflow */
+	if ((*offset + AD_DATA_OFFSET > max_size) ||
+	    ((ble_adv_data->name_type == BLE_ADV_DATA_SHORT_NAME) &&
+	     ((*offset + AD_DATA_OFFSET + ble_adv_data->short_name_len) > max_size))) {
+		return NRF_ERROR_DATA_SIZE;
+	}
+
+	/* Get GAP device name into temporary buffer */
+	nrf_err = sd_ble_gap_device_name_get(name_buf, &actual_length);
+	if (nrf_err) {
+		LOG_ERR("Failed to get device GAP name, nrf_error %#x", nrf_err);
+		return nrf_err;
+	}
+
+	rem_adv_data_len = max_size - *offset - AD_DATA_OFFSET;
+
+	/* Check if device intend to use short name and it can fit available data size.
+	 * If the name is shorter than the preferred short name length then it is no longer
+	 * a short name and is in fact the complete name of the device.
+	 */
+	if (((ble_adv_data->name_type == BLE_ADV_DATA_FULL_NAME) ||
+	     (actual_length <= ble_adv_data->short_name_len)) &&
+	     (actual_length <= rem_adv_data_len)) {
+		/* Complete device name can fit */
+		ad_type = BLE_GAP_AD_TYPE_COMPLETE_LOCAL_NAME;
+	} else {
+		/* Use short name if complete name doesn't fit or if explicitly configured */
+		ad_type = BLE_GAP_AD_TYPE_SHORT_LOCAL_NAME;
+
+		/* If application has set a preference on the short name size,
+		 * it needs to be considered, else fit what can be fit.
+		 */
+		if ((ble_adv_data->name_type == BLE_ADV_DATA_SHORT_NAME) &&
+		    (ble_adv_data->short_name_len <= rem_adv_data_len)) {
+			/* Short name fits available size */
+			actual_length = ble_adv_data->short_name_len;
+		} else {
+			/* Whatever can fit the data buffer will be packed */
+			actual_length = rem_adv_data_len;
+		}
+	}
+
+	/* There is only 1 byte intended to encode length which is
+	 * (actual_length + AD_TYPE_FIELD_SIZE)
+	 */
+	if (actual_length > (0x00FF - AD_TYPE_FIELD_SIZE)) {
+		return NRF_ERROR_DATA_SIZE;
+	}
+
+	struct ad_ltv ltv = {
+		.length = (uint8_t)(AD_TYPE_FIELD_SIZE + actual_length),
+		.type = ad_type,
+		.value = name_buf,
+	};
+
+	return ad_field_encode(&ltv, buf, offset, max_size);
 }
 
 uint32_t ble_adv_data_encode(const struct ble_adv_data *ble_adv_data, uint8_t *buf, uint16_t *len)
