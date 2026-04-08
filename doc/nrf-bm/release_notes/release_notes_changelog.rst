@@ -247,6 +247,11 @@ Bluetooth LE Services
 
    * Fixed a potential buffer over-read when parsing malformed Heart Rate Measurement notifications.
 
+* :ref:`lib_ble_service_nus`:
+
+   * Removed the ``ble_nus_client_context`` structure and the ``link_ctx`` field from :c:struct:`ble_nus_evt` structure.
+     The service now reads the CCCD directly from the SoftDevice instead of caching notification state internally.
+
 * :ref:`lib_ble_service_nus_client` service:
 
    * Added the Nordic UART Service (NUS) client.

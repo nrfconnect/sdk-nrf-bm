@@ -79,12 +79,13 @@ static void lpuarte_rx_handler(char *data, size_t data_len)
 
 	LOG_INF("Sending data over BLE NUS, len %d", len);
 
+	/* Retry when the SoftDevice notification queue is full.
+	 * sd_ble_gatts_hvx() returns NRF_ERROR_RESOURCES when UART data arrives faster than the
+	 * radio can transmit notifications.
+	 */
 	do {
 		nrf_err = ble_nus_data_send(&ble_nus, data, &len, conn_handle);
-		if ((nrf_err) &&
-		    (nrf_err != NRF_ERROR_INVALID_STATE) &&
-		    (nrf_err != NRF_ERROR_RESOURCES) &&
-		    (nrf_err != NRF_ERROR_NOT_FOUND)) {
+		if ((nrf_err) && (nrf_err != NRF_ERROR_RESOURCES)) {
 			LOG_ERR("Failed to send NUS data, nrf_error %#x", nrf_err);
 			return;
 		}
@@ -95,7 +96,7 @@ static void uarte_rx_handler(char *data, size_t data_len)
 {
 	uint32_t nrf_err;
 	uint8_t c;
-	/* receive buffer used in UART ISR callback */
+	/* receive buffer used in UART ISR callback. */
 	static char rx_buf[BLE_NUS_MAX_DATA_LEN];
 	static uint16_t rx_buf_idx;
 	uint16_t len;
@@ -116,12 +117,13 @@ static void uarte_rx_handler(char *data, size_t data_len)
 			len = rx_buf_idx;
 			LOG_INF("Sending data over BLE NUS, len %d", len);
 
+			/* Retry when the SoftDevice notification queue is full.
+			 * sd_ble_gatts_hvx() returns NRF_ERROR_RESOURCES when UART data arrives
+			 * faster than the radio can transmit notifications.
+			 */
 			do {
 				nrf_err = ble_nus_data_send(&ble_nus, rx_buf, &len, conn_handle);
-				if ((nrf_err) &&
-				    (nrf_err != NRF_ERROR_INVALID_STATE) &&
-				    (nrf_err != NRF_ERROR_RESOURCES) &&
-				    (nrf_err != NRF_ERROR_NOT_FOUND)) {
+				if ((nrf_err) && (nrf_err != NRF_ERROR_RESOURCES)) {
 					LOG_ERR("Failed to send NUS data, nrf_error %#x", nrf_err);
 					return;
 				}

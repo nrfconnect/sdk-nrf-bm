@@ -98,16 +98,6 @@ enum ble_nus_evt_type {
 };
 
 /**
- * @brief Nordic UART Service client context structure.
- *
- * @details This structure contains state context related to hosts.
- */
-struct ble_nus_client_context {
-	/** Indicate if the peer has enabled notification of the RX characteristic. */
-	bool is_notification_enabled;
-};
-
-/**
  * @brief Nordic UART Service event structure.
  *
  * @details This structure is passed to an event coming from service.
@@ -117,8 +107,6 @@ struct ble_nus_evt {
 	enum ble_nus_evt_type evt_type;
 	/** Connection handle. */
 	uint16_t conn_handle;
-	/** Pointer to the link context. */
-	struct ble_nus_client_context *link_ctx;
 	union {
 		/** @ref BLE_NUS_EVT_RX_DATA event data. */
 		struct {
@@ -140,7 +128,7 @@ struct ble_nus;
 /** @brief Nordic UART Service event handler type. */
 typedef void (*ble_nus_evt_handler_t)(struct ble_nus *nus, const struct ble_nus_evt *evt);
 
-/*
+/**
  * @brief Nordic UART Service initialization structure.
  *
  * @details This structure contains the initialization information for the service. The application
@@ -183,8 +171,6 @@ struct ble_nus {
 	ble_gatts_char_handles_t tx_handles;
 	/** Handles related to the RX characteristic (as provided by the SoftDevice). */
 	ble_gatts_char_handles_t rx_handles;
-	/** Link context with handles of all current connections and its context. */
-	struct ble_nus_client_context contexts[CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT];
 	/** Event handler to be called for handling received data. */
 	ble_nus_evt_handler_t evt_handler;
 };
@@ -210,10 +196,8 @@ uint32_t ble_nus_init(struct ble_nus *nus, const struct ble_nus_config *nus_conf
 /**
  * @brief Function for handling the Nordic UART Service's Bluetooth LE events.
  *
- * @details The Nordic UART Service expects the application to call this function each time an
- *          event is received from the SoftDevice. This function processes the event if it
- *          is relevant and calls the Nordic UART Service event handler of the
- *          application if necessary.
+ * @note This function is registered automatically by @ref BLE_NUS_DEF
+ *       and should not be called directly by the application.
  *
  * @param[in] ble_evt Event received from the SoftDevice.
  * @param[in] context Nordic UART Service structure.
@@ -221,20 +205,22 @@ uint32_t ble_nus_init(struct ble_nus *nus, const struct ble_nus_config *nus_conf
 void ble_nus_on_ble_evt(const ble_evt_t *ble_evt, void *context);
 
 /**
- * @brief Function for sending data to the peer.
+ * @brief Send data on the NUS TX characteristic as a notification.
  *
- * @details This function sends the input string as an RX characteristic notification to the
- *          peer.
+ * @details Sends data if the notification bit in the CCCD is set for @p conn_handle.
  *
  * @param[in] nus Pointer to the Nordic UART Service structure.
- * @param[in] data String to be sent.
- * @param[in,out] length In: Length of the @p data string. Out: Number of bytes sent.
+ * @param[in] data Data to be sent.
+ * @param[in,out] length In: Length of the @p data. Out: Number of bytes sent.
  * @param[in] conn_handle Connection handle of the destination client.
  *
  * @retval NRF_SUCCESS On success.
- * @retval NRF_ERROR_NULL If @p nus, @p data or @p length are @c NULL.
+ * @retval NRF_ERROR_NULL If @p nus, @p data, or @p length are @c NULL.
+ * @retval NRF_ERROR_INVALID_STATE If the peer has not enabled TX notifications
+ *         (CCCD not set for notifications).
  * @return In addition, this function may return any error
  *         returned by the following SoftDevice functions:
+ *         - @ref sd_ble_gatts_value_get()
  *         - @ref sd_ble_gatts_hvx()
  */
 uint32_t ble_nus_data_send(struct ble_nus *nus, uint8_t *data, uint16_t *length,
