@@ -616,6 +616,20 @@ void test_ble_hrs_heart_rate_measurement_send_with_rr_intervals_encoded(void)
 	TEST_ASSERT_EQUAL(6, captured_hvx_len);
 }
 
+void test_ble_hrs_heart_rate_measurement_send_cccd_read_error(void)
+{
+	/* sd_ble_gatts_value_get fails, error should be propagated. */
+	uint32_t nrf_err;
+	struct ble_hrs hrs = {
+		.conn_handle = BLE_CONN_HANDLE_INVALID,
+	};
+
+	__cmock_sd_ble_gatts_value_get_ExpectAnyArgsAndReturn(ERROR);
+
+	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, 72);
+	TEST_ASSERT_EQUAL(ERROR, nrf_err);
+}
+
 void test_ble_hrs_heart_rate_measurement_send(void)
 {
 	uint32_t nrf_err;
