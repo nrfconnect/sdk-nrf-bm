@@ -727,6 +727,60 @@ void test_ble_hrs_init_bsl_char_add_error(void)
 	TEST_ASSERT_EQUAL(ERROR, nrf_err);
 }
 
+void test_ble_hrs_conn_params_evt_mtu_updated(void)
+{
+	/* ATT MTU update for matching connection updates max_hrm_len. */
+	struct ble_hrs hrs = {
+		.conn_handle = TEST_CONN_HANDLE,
+		.max_hrm_len = 20,
+	};
+	const struct ble_conn_params_evt evt = {
+		.conn_handle = TEST_CONN_HANDLE,
+		.evt_type = BLE_CONN_PARAMS_EVT_ATT_MTU_UPDATED,
+		.att_mtu = 100,
+	};
+
+	ble_hrs_conn_params_evt(&hrs, &evt);
+
+	/* max_hrm_len = att_mtu(100) - ATT_OPCODE_LEN(1) - ATT_HANDLE_LEN(2) = 97 */
+	TEST_ASSERT_EQUAL(97, hrs.max_hrm_len);
+}
+
+void test_ble_hrs_conn_params_evt_wrong_conn_handle(void)
+{
+	/* ATT MTU update for a different connection should be ignored. */
+	struct ble_hrs hrs = {
+		.conn_handle = TEST_CONN_HANDLE,
+		.max_hrm_len = 20,
+	};
+	const struct ble_conn_params_evt evt = {
+		.conn_handle = TEST_CONN_HANDLE + 1,
+		.evt_type = BLE_CONN_PARAMS_EVT_ATT_MTU_UPDATED,
+		.att_mtu = 100,
+	};
+
+	ble_hrs_conn_params_evt(&hrs, &evt);
+
+	TEST_ASSERT_EQUAL(20, hrs.max_hrm_len);
+}
+
+void test_ble_hrs_conn_params_evt_wrong_type(void)
+{
+	/* Non MTU event for matching connection should be ignored. */
+	struct ble_hrs hrs = {
+		.conn_handle = TEST_CONN_HANDLE,
+		.max_hrm_len = 20,
+	};
+	const struct ble_conn_params_evt evt = {
+		.conn_handle = TEST_CONN_HANDLE,
+		.evt_type = BLE_CONN_PARAMS_EVT_REJECTED,
+	};
+
+	ble_hrs_conn_params_evt(&hrs, &evt);
+
+	TEST_ASSERT_EQUAL(20, hrs.max_hrm_len);
+}
+
 extern int unity_main(void);
 
 int main(void)
