@@ -70,9 +70,10 @@ void battery_level_meas_timeout_handler(void *context)
 
 	nrf_err = ble_bas_battery_level_update(&ble_bas, conn_handle, battery_level);
 	if (nrf_err) {
-		/* Ignore if not in a connection or notifications disabled in CCCD. */
+		/* Ignore if not connected, or CCCD not written/configured by peer. */
 		if (nrf_err != BLE_ERROR_INVALID_CONN_HANDLE &&
-		    nrf_err != NRF_ERROR_INVALID_STATE) {
+		    nrf_err != NRF_ERROR_INVALID_STATE &&
+		    nrf_err != BLE_ERROR_GATTS_SYS_ATTR_MISSING) {
 			LOG_ERR("Failed to update battery level, nrf_error %#x", nrf_err);
 		}
 	}

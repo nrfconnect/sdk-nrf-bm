@@ -222,12 +222,6 @@ uint32_t ble_bas_battery_level_update(struct ble_bas *bas, uint16_t conn_handle,
 	nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx);
 	if (nrf_err) {
 		LOG_DBG("Failed to notify battery level, nrf_error %#x", nrf_err);
-
-		if (nrf_err == BLE_ERROR_GATTS_SYS_ATTR_MISSING) {
-			/* CCCD value is unknown. Treat as if notifications are not enabled. */
-			nrf_err = NRF_ERROR_INVALID_STATE;
-		}
-
 		return nrf_err;
 	}
 
