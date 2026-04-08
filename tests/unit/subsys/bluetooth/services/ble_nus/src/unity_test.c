@@ -14,13 +14,11 @@
 
 #include "cmock_ble_gatts.h"
 #include "cmock_ble.h"
-#include "cmock_nrf_sdh_ble.h"
 
 /* An arbitrary error, to test forwarding of errors from SoftDevice calls */
 #define ERROR 0xbaadf00d
 
 static struct ble_nus ble_nus;
-static struct ble_nus_client_context *last_link_ctx;
 static uint16_t test_case_conn_handle = 0x1000;
 static bool evt_handler_called;
 
@@ -88,31 +86,19 @@ static uint32_t stub_sd_ble_gatts_value_get_err(uint16_t conn_handle, uint16_t h
 
 static void ble_nus_evt_handler_on_connect(struct ble_nus *nus, const struct ble_nus_evt *evt)
 {
-	last_link_ctx = evt->link_ctx;
 	TEST_ASSERT_EQUAL(BLE_NUS_EVT_COMM_STARTED, evt->evt_type);
-	TEST_ASSERT_TRUE(evt->link_ctx->is_notification_enabled);
-	evt_handler_called = true;
-}
-
-static void ble_nus_evt_handler_on_connect_null_ctx(struct ble_nus *nus,
-						    const struct ble_nus_evt *evt)
-{
-	TEST_ASSERT_EQUAL(BLE_NUS_EVT_ERROR, evt->evt_type);
-	TEST_ASSERT_NULL(evt->link_ctx);
 	evt_handler_called = true;
 }
 
 static void ble_nus_evt_handler_on_write_notif(struct ble_nus *nus, const struct ble_nus_evt *evt)
 {
 	TEST_ASSERT_EQUAL(BLE_NUS_EVT_COMM_STARTED, evt->evt_type);
-	TEST_ASSERT_TRUE(evt->link_ctx->is_notification_enabled);
 	evt_handler_called = true;
 }
 
 static void ble_nus_evt_handler_on_write_indica(struct ble_nus *nus, const struct ble_nus_evt *evt)
 {
 	TEST_ASSERT_EQUAL(BLE_NUS_EVT_COMM_STOPPED, evt->evt_type);
-	TEST_ASSERT_FALSE(evt->link_ctx->is_notification_enabled);
 	evt_handler_called = true;
 }
 
@@ -129,7 +115,6 @@ static void ble_nus_evt_handler_on_hvx_tx_complete(struct ble_nus *nus,
 						   const struct ble_nus_evt *evt)
 {
 	TEST_ASSERT_EQUAL(BLE_NUS_EVT_TX_RDY, evt->evt_type);
-	TEST_ASSERT_EQUAL_PTR(last_link_ctx, evt->link_ctx);
 	evt_handler_called = true;
 }
 
@@ -146,21 +131,6 @@ static void nus_init(struct ble_nus_config *nus_cfg)
 	nrf_err = ble_nus_init(&ble_nus, nus_cfg);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 	TEST_ASSERT_EQUAL_PTR(nus_cfg->evt_handler, ble_nus.evt_handler);
-}
-
-static void setup_with_notif_enabled(uint16_t conn_handle)
-{
-	const ble_evt_t ble_evt = {
-		.evt.gap_evt.conn_handle = conn_handle,
-		.header.evt_id = BLE_GAP_EVT_CONNECTED
-	};
-
-	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get);
-	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(conn_handle, 0);
-	ble_nus_on_ble_evt(&ble_evt, &ble_nus);
-	__cmock_sd_ble_gatts_value_get_Stub(NULL);
-
-	TEST_ASSERT_TRUE(evt_handler_called);
 }
 
 void test_ble_nus_init_error_null(void)
@@ -230,21 +200,18 @@ void test_ble_nus_on_ble_evt_gap_evt_on_connect_readiness(void)
 	nus_init(&nus_cfg);
 
 	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get);
-	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(test_case_conn_handle, 0);
 	ble_nus_on_ble_evt(&ble_evt, &ble_nus);
 
 	TEST_ASSERT_FALSE(evt_handler_called);
 
 	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_err);
 	ble_nus.evt_handler = ble_nus_evt_handler_on_connect;
-	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(test_case_conn_handle, 0);
 
 	ble_nus_on_ble_evt(&ble_evt, &ble_nus);
 
 	TEST_ASSERT_FALSE(evt_handler_called);
 
 	ble_nus.evt_handler = ble_nus_evt_handler_on_connect;
-	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(test_case_conn_handle, 0);
 
 	ble_nus_on_ble_evt(&ble_evt, &ble_nus);
 
@@ -262,24 +229,6 @@ void test_ble_nus_on_ble_evt_gap_evt_on_connect(void)
 	nus_init(&nus_cfg);
 
 	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get);
-	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(test_case_conn_handle, 0);
-	ble_nus_on_ble_evt(&ble_evt, &ble_nus);
-
-	TEST_ASSERT_TRUE(evt_handler_called);
-}
-
-void test_ble_nus_on_ble_evt_gap_evt_on_connect_null_ctx(void)
-{
-	const ble_evt_t ble_evt = {
-		.evt.gap_evt.conn_handle = test_case_conn_handle,
-		.header.evt_id = BLE_GAP_EVT_CONNECTED
-	};
-	struct ble_nus_config nus_cfg = {.evt_handler = ble_nus_evt_handler_on_connect_null_ctx};
-
-	nus_init(&nus_cfg);
-
-	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get);
-	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(test_case_conn_handle, -1);
 	ble_nus_on_ble_evt(&ble_evt, &ble_nus);
 
 	TEST_ASSERT_TRUE(evt_handler_called);
@@ -303,7 +252,6 @@ void test_ble_nus_on_ble_evt_gap_evt_on_write(void)
 	nus_init(&nus_cfg);
 
 	*data_notif_enable = BLE_GATT_HVX_NOTIFICATION;
-	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(test_case_conn_handle, 0);
 
 	ble_nus_on_ble_evt(&ble_evt, &ble_nus);
 	TEST_ASSERT_TRUE(evt_handler_called);
@@ -311,17 +259,15 @@ void test_ble_nus_on_ble_evt_gap_evt_on_write(void)
 	evt_handler_called = false;
 	*data_notif_enable = BLE_GATT_HVX_INDICATION;
 	ble_nus.evt_handler = ble_nus_evt_handler_on_write_indica;
-	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(test_case_conn_handle, 0);
 
 	ble_nus_on_ble_evt(&ble_evt, &ble_nus);
 	TEST_ASSERT_TRUE(evt_handler_called);
 
 	evt_handler_called = false;
-	ble_nus.evt_handler = ble_nus_evt_handler_on_connect_null_ctx;
-	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(test_case_conn_handle, -1);
+	ble_nus.evt_handler = NULL;
 
 	ble_nus_on_ble_evt(&ble_evt, &ble_nus);
-	TEST_ASSERT_TRUE(evt_handler_called);
+	TEST_ASSERT_FALSE(evt_handler_called);
 
 	uint8_t *const data_ptr = ble_evt.evt.gatts_evt.params.write.data;
 
@@ -330,7 +276,6 @@ void test_ble_nus_on_ble_evt_gap_evt_on_write(void)
 	ble_nus.evt_handler = ble_nus_evt_handler_on_write_value;
 	data_ptr[0] = 0xAB;
 	data_ptr[1] = 0xCD;
-	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(test_case_conn_handle, 0);
 
 	ble_nus_on_ble_evt(&ble_evt, &ble_nus);
 	TEST_ASSERT_TRUE(evt_handler_called);
@@ -339,31 +284,22 @@ void test_ble_nus_on_ble_evt_gap_evt_on_write(void)
 void test_ble_nus_on_hvx_tx_complete(void)
 {
 	ble_evt_t ble_evt = {
-		.evt.gap_evt.conn_handle = test_case_conn_handle,
-		.header.evt_id = BLE_GAP_EVT_CONNECTED
+		.evt.gatts_evt.conn_handle = test_case_conn_handle,
+		.header.evt_id = BLE_GATTS_EVT_HVN_TX_COMPLETE
 	};
 	struct ble_nus_config nus_cfg = {.evt_handler = ble_nus_evt_handler_on_connect};
 
 	nus_init(&nus_cfg);
 
-	/* Setup context */
-	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get);
-	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(test_case_conn_handle, 0);
-	ble_nus_on_ble_evt(&ble_evt, &ble_nus);
-
-	TEST_ASSERT_TRUE(evt_handler_called);
-
-	/* Test a non relevant event */
+	/* No handler set, should not call back. */
 	evt_handler_called = false;
-	ble_evt.header.evt_id = BLE_GATTS_EVT_HVN_TX_COMPLETE;
 	ble_nus.evt_handler = NULL;
-	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(test_case_conn_handle, 0);
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get);
 
 	ble_nus_on_ble_evt(&ble_evt, &ble_nus);
 	TEST_ASSERT_FALSE(evt_handler_called);
 
-	/* Test a relevant event */
-	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(test_case_conn_handle, 0);
+	/* Handler set, notifications enabled, should call back. */
 	ble_nus.evt_handler = ble_nus_evt_handler_on_hvx_tx_complete;
 
 	ble_nus_on_ble_evt(&ble_evt, &ble_nus);
@@ -397,7 +333,6 @@ void test_ble_nus_data_send_hvx_error(void)
 	struct ble_nus_config nus_cfg = {.evt_handler = ble_nus_evt_handler_on_connect};
 
 	nus_init(&nus_cfg);
-	setup_with_notif_enabled(test_case_conn_handle);
 
 	__cmock_sd_ble_gatts_hvx_ExpectAnyArgsAndReturn(ERROR);
 
@@ -418,7 +353,6 @@ void test_ble_nus_data_send_success(void)
 	struct ble_nus_config nus_cfg = {.evt_handler = ble_nus_evt_handler_on_connect};
 
 	nus_init(&nus_cfg);
-	setup_with_notif_enabled(test_case_conn_handle);
 	expected_hvx_params.handle = ble_nus.tx_handles.value_handle;
 
 	__cmock_sd_ble_gatts_hvx_ExpectAndReturn(test_case_conn_handle, &expected_hvx_params,
