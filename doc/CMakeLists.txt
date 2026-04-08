@@ -251,15 +251,44 @@ add_docset(nrf-bm ${NRF_BM_VERSION})
 add_doxygen_docset(nrf-bm ${NRF_BM_BASE} ${NRF_BM_VERSION})
 
 #-------------------------------------------------------------------------------
-# docset: s115
+# docset: s115_nrf54l15
 
-add_doxygen_docset(s115 ${NRF_BM_BASE} "10.0.0-1.prototype" STANDALONE)
+add_doxygen_docset(s115_nrf54l15  ${NRF_BM_BASE} "10.0.0-1.prototype" STANDALONE)
 
 #-------------------------------------------------------------------------------
-# docset: s145
+# docset: s145_nrf54l15
 
-add_doxygen_docset(s145 ${NRF_BM_BASE} "10.0.0-1.prototype" STANDALONE)
+add_doxygen_docset(s145_nrf54l15  ${NRF_BM_BASE} "10.0.0-1.prototype" STANDALONE)
 
+#-------------------------------------------------------------------------------
+# docset: s115_nrf54lm20
+
+add_doxygen_docset(s115_nrf54lm20 ${NRF_BM_BASE} "10.0.0-1.prototype" STANDALONE)
+
+#-------------------------------------------------------------------------------
+# docset: s145_nrf54lm20
+
+add_doxygen_docset(s145_nrf54lm20 ${NRF_BM_BASE} "10.0.0-1.prototype" STANDALONE)
+
+#-------------------------------------------------------------------------------
+# docset: s115_nrf54ls05
+
+add_doxygen_docset(s115_nrf54ls05 ${NRF_BM_BASE} "10.0.0-1.prototype" STANDALONE)
+
+#-------------------------------------------------------------------------------
+# docset: s145_nrf54ls05
+
+add_doxygen_docset(s145_nrf54ls05 ${NRF_BM_BASE} "10.0.0-1.prototype" STANDALONE)
+
+#-------------------------------------------------------------------------------
+# docset: s115_nrf54lv10
+
+add_doxygen_docset(s115_nrf54lv10 ${NRF_BM_BASE} "10.0.0-1.prototype" STANDALONE)
+
+#-------------------------------------------------------------------------------
+# docset: s145_nrf54lv10
+
+add_doxygen_docset(s145_nrf54lv10 ${NRF_BM_BASE} "10.0.0-1.prototype" STANDALONE)
 #-------------------------------------------------------------------------------
 # docset: kconfig
 
@@ -295,7 +324,7 @@ function(add_doc_dependencies docset)
   endif()
 endfunction()
 
-add_doc_dependencies(nrf-bm kconfig-all s115 s145)
+add_doc_dependencies(nrf-bm kconfig-all s115_nrf54l15 s145_nrf54l15 s115_nrf54lm20 s145_nrf54lm20 s115_nrf54ls05 s145_nrf54ls05 s115_nrf54lv10 s145_nrf54lv10)
 
 add_custom_target(build-all ALL)
 add_dependencies(build-all
@@ -303,8 +332,14 @@ add_dependencies(build-all
     merge-search-indexes
     nrf-bm-all
     kconfig-all
-    s115
-    s145
+    s115_nrf54l15
+    s145_nrf54l15
+    s115_nrf54lm20
+    s145_nrf54lm20
+    s115_nrf54ls05
+    s145_nrf54ls05
+    s115_nrf54lv10
+    s145_nrf54lv10
 )
 
 add_custom_target(linkcheck)
