@@ -13,8 +13,18 @@
 
 #include "cmock_ble_gatts.h"
 
+/* Simulated connection handle for test events. */
+#define TEST_CONN_HANDLE 0x0001
+
+/* Simulated CCCD handle for write event tests. */
+#define TEST_CCCD_HANDLE 0x0010
+
 /* An arbitrary error, to test forwarding of errors from SoftDevice calls */
 #define ERROR 0xbaadf00d
+
+/* State captured by stub_hrs_evt_handler() for post-call verification. */
+static bool evt_handler_called;
+static struct ble_hrs_evt received_evt;
 
 /* Captured HVX payload from stub_sd_ble_gatts_hvx_capture() for post-call verification. */
 static uint8_t captured_hvx_data[20];
@@ -51,6 +61,13 @@ static uint32_t stub_sd_ble_gatts_characteristic_add(uint16_t service_handle,
 	return NRF_SUCCESS;
 }
 
+static void stub_hrs_evt_handler(struct ble_hrs *hrs, const struct ble_hrs_evt *evt)
+{
+	/* Stub event handler that captures the event for post-call verification. */
+	evt_handler_called = true;
+	received_evt = *evt;
+}
+
 static uint32_t stub_sd_ble_gatts_hvx_capture(uint16_t conn_handle,
 					      const ble_gatts_hvx_params_t *p_hvx_params,
 					      int calls)
@@ -59,6 +76,159 @@ static uint32_t stub_sd_ble_gatts_hvx_capture(uint16_t conn_handle,
 	captured_hvx_len = *p_hvx_params->p_len;
 	memcpy(captured_hvx_data, p_hvx_params->p_data, captured_hvx_len);
 	return NRF_SUCCESS;
+}
+
+void test_ble_hrs_on_ble_evt_disconnect(void)
+{
+	/* Simulate connect then disconnect, verify conn_handle resets to invalid. */
+	struct ble_hrs hrs = {0};
+	const ble_evt_t connect_evt = {
+		.header.evt_id = BLE_GAP_EVT_CONNECTED,
+		.evt.gap_evt.conn_handle = TEST_CONN_HANDLE,
+	};
+	const ble_evt_t disconnect_evt = {
+		.header.evt_id = BLE_GAP_EVT_DISCONNECTED,
+		.evt.gap_evt.conn_handle = TEST_CONN_HANDLE,
+	};
+
+	/* First connect so conn_handle is valid. */
+	ble_hrs_on_ble_evt(&connect_evt, &hrs);
+	TEST_ASSERT_EQUAL(TEST_CONN_HANDLE, hrs.conn_handle);
+
+	/* Now disconnect. */
+	ble_hrs_on_ble_evt(&disconnect_evt, &hrs);
+	TEST_ASSERT_EQUAL(BLE_CONN_HANDLE_INVALID, hrs.conn_handle);
+}
+
+void test_ble_hrs_on_ble_evt_disconnect_when_already_disconnected(void)
+{
+	/* Receiving a disconnect event when not connected should be safely ignored. */
+	struct ble_hrs hrs = {
+		.conn_handle = BLE_CONN_HANDLE_INVALID,
+	};
+	const ble_evt_t disconnect_evt = {
+		.header.evt_id = BLE_GAP_EVT_DISCONNECTED,
+		.evt.gap_evt.conn_handle = TEST_CONN_HANDLE,
+	};
+
+	ble_hrs_on_ble_evt(&disconnect_evt, &hrs);
+	TEST_ASSERT_EQUAL(BLE_CONN_HANDLE_INVALID, hrs.conn_handle);
+}
+
+void test_ble_hrs_on_ble_evt_write_notification_enabled(void)
+{
+	/* Peer writes to CCCD enabling notifications. */
+	struct ble_hrs hrs = {
+		.evt_handler = stub_hrs_evt_handler,
+		.hrm_handles.cccd_handle = TEST_CCCD_HANDLE,
+	};
+
+	/* Allocate extra space for the CCCD write data (flexible array member). */
+	uint8_t evt_buf[sizeof(ble_evt_t) + 2] = {0};
+	ble_evt_t *evt = (ble_evt_t *)evt_buf;
+
+	/* Build a CCCD write event with notifications enabled.
+	 * CCCD value is 16-bit little-endian: 0x0001 = [0x01, 0x00].
+	 */
+	evt->header.evt_id = BLE_GATTS_EVT_WRITE;
+	evt->evt.gatts_evt.conn_handle = TEST_CONN_HANDLE;
+	evt->evt.gatts_evt.params.write.handle = TEST_CCCD_HANDLE;
+	evt->evt.gatts_evt.params.write.len = 2;
+	evt->evt.gatts_evt.params.write.data[0] = BLE_GATT_HVX_NOTIFICATION;
+	evt->evt.gatts_evt.params.write.data[1] = 0x00;
+
+	evt_handler_called = false;
+	ble_hrs_on_ble_evt(evt, &hrs);
+
+	TEST_ASSERT_TRUE(evt_handler_called);
+	TEST_ASSERT_EQUAL(BLE_HRS_EVT_NOTIFICATION_ENABLED, received_evt.evt_type);
+	TEST_ASSERT_EQUAL(TEST_CONN_HANDLE, received_evt.conn_handle);
+}
+
+void test_ble_hrs_on_ble_evt_write_notification_disabled(void)
+{
+	/* Peer writes to CCCD disabling notifications. */
+	struct ble_hrs hrs = {
+		.evt_handler = stub_hrs_evt_handler,
+		.hrm_handles.cccd_handle = TEST_CCCD_HANDLE,
+	};
+
+	/* Allocate extra space for the CCCD write data (flexible array member). */
+	uint8_t evt_buf[sizeof(ble_evt_t) + 2] = {0};
+	ble_evt_t *evt = (ble_evt_t *)evt_buf;
+
+	/* Build a CCCD write event with notifications disabled.
+	 * CCCD value is 16-bit little-endian: 0x0000 = [0x00, 0x00].
+	 */
+	evt->header.evt_id = BLE_GATTS_EVT_WRITE;
+	evt->evt.gatts_evt.conn_handle = TEST_CONN_HANDLE;
+	evt->evt.gatts_evt.params.write.handle = TEST_CCCD_HANDLE;
+	evt->evt.gatts_evt.params.write.len = 2;
+	evt->evt.gatts_evt.params.write.data[0] = BLE_GATT_HVX_INVALID;
+	evt->evt.gatts_evt.params.write.data[1] = 0x00;
+
+	evt_handler_called = false;
+	ble_hrs_on_ble_evt(evt, &hrs);
+
+	TEST_ASSERT_TRUE(evt_handler_called);
+	TEST_ASSERT_EQUAL(BLE_HRS_EVT_NOTIFICATION_DISABLED, received_evt.evt_type);
+	TEST_ASSERT_EQUAL(TEST_CONN_HANDLE, received_evt.conn_handle);
+}
+
+void test_ble_hrs_on_ble_evt_write_no_handler(void)
+{
+	/* No event handler registered, should return early without crash. */
+	struct ble_hrs hrs = {
+		.evt_handler = NULL,
+	};
+	ble_evt_t evt = {0};
+
+	evt.header.evt_id = BLE_GATTS_EVT_WRITE;
+	evt.evt.gatts_evt.conn_handle = TEST_CONN_HANDLE;
+
+	ble_hrs_on_ble_evt(&evt, &hrs);
+}
+
+void test_ble_hrs_on_ble_evt_write_wrong_handle(void)
+{
+	/* Write to a handle that is not the CCCD should be ignored. */
+	struct ble_hrs hrs = {
+		.evt_handler = stub_hrs_evt_handler,
+		.hrm_handles.cccd_handle = TEST_CCCD_HANDLE,
+	};
+	ble_evt_t evt = {0};
+
+	/* Build a write event targeting a different handle than the CCCD. */
+	evt.header.evt_id = BLE_GATTS_EVT_WRITE;
+	evt.evt.gatts_evt.conn_handle = TEST_CONN_HANDLE;
+	evt.evt.gatts_evt.params.write.handle = TEST_CCCD_HANDLE + 1;
+	evt.evt.gatts_evt.params.write.len = 2;
+
+	evt_handler_called = false;
+	ble_hrs_on_ble_evt(&evt, &hrs);
+
+	TEST_ASSERT_FALSE(evt_handler_called);
+}
+
+void test_ble_hrs_on_ble_evt_write_wrong_len(void)
+{
+	/* CCCD write with wrong length should be ignored. */
+	struct ble_hrs hrs = {
+		.evt_handler = stub_hrs_evt_handler,
+		.hrm_handles.cccd_handle = TEST_CCCD_HANDLE,
+	};
+	ble_evt_t evt = {0};
+
+	/* Build a CCCD write event with invalid length (expected 2 bytes). */
+	evt.header.evt_id = BLE_GATTS_EVT_WRITE;
+	evt.evt.gatts_evt.conn_handle = TEST_CONN_HANDLE;
+	evt.evt.gatts_evt.params.write.handle = TEST_CCCD_HANDLE;
+	evt.evt.gatts_evt.params.write.len = 1;
+
+	evt_handler_called = false;
+	ble_hrs_on_ble_evt(&evt, &hrs);
+
+	TEST_ASSERT_FALSE(evt_handler_called);
 }
 
 void test_ble_hrs_rr_interval_add_success(void)
