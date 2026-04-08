@@ -167,9 +167,9 @@ The following table indicates SoftDevice compatibility per SoC:
      - Experimental
      - Experimental
    * - **SoftDevice S145**
-     - Experimental
-     - Experimental
-     - Experimental
+     - Supported
+     - Supported
+     - Supported
      - Experimental
      - Experimental
      - Experimental
@@ -306,27 +306,20 @@ The following table indicates the software maturity levels of the support for ea
      - Supported
      - Supported
      - Supported
-     - --
-     - --
-     - --
-   * - **Updatable MCUboot as part of build**
-     - --
-     - --
-     - --
-     - --
-     - --
-     - --
+     - Experimental
+     - Experimental
+     - Experimental
    * - **Hardware cryptography acceleration**
      - Supported
      - Supported
      - Supported
-     - --
-     - --
-     - --
+     - Experimental
+     - Experimental
+     - n/a
    * - **Multiple signature keys**
      - Supported
      - Supported
      - Supported
-     - --
-     - --
+     - Experimental
+     - Experimental
      - --

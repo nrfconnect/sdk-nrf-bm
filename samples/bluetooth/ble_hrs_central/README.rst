@@ -50,7 +50,7 @@ The sample supports the following development kits:
          * - `nRF54LV10 DK`_
            - PCA10188
            - S145
-           - bm_nrf54lv10dk/nrf54lv10/cpuapp/s145_softdevice
+           - bm_nrf54lv10dk/nrf54lv10a/cpuapp/s145_softdevice
 
    .. group-tab:: MCUboot board variants
 
@@ -82,7 +82,7 @@ The sample supports the following development kits:
          * - `nRF54LV10 DK`_
            - PCA10188
            - S145
-           - bm_nrf54lv10dk/nrf54lv10/cpuapp/s145_softdevice/mcuboot
+           - bm_nrf54lv10dk/nrf54lv10a/cpuapp/s145_softdevice/mcuboot
 
 Overview
 ********
