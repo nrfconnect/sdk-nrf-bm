@@ -676,6 +676,43 @@ void test_ble_hrs_init_invalid_param(void)
 	TEST_ASSERT_EQUAL(ERROR, nrf_err);
 }
 
+void test_ble_hrs_init_hrm_char_add_error(void)
+{
+	/* Service add succeeds but HRM characteristic add fails. */
+	uint32_t nrf_err;
+	struct ble_hrs hrs = {0};
+	struct ble_hrs_config cfg = {
+		.is_sensor_contact_supported = true,
+		.body_sensor_location = (uint8_t[]){ BLE_HRS_BODY_SENSOR_LOCATION_FINGER }
+	};
+
+	__cmock_sd_ble_gatts_service_add_ExpectAnyArgsAndReturn(NRF_SUCCESS);
+	/* HRM is the first characteristic_add call — make it fail. */
+	__cmock_sd_ble_gatts_characteristic_add_ExpectAnyArgsAndReturn(ERROR);
+
+	nrf_err = ble_hrs_init(&hrs, &cfg);
+	TEST_ASSERT_EQUAL(ERROR, nrf_err);
+}
+
+void test_ble_hrs_init_bsl_char_add_error(void)
+{
+	/* Service and HRM characteristic add succeed, but BSL characteristic add fails. */
+	uint32_t nrf_err;
+	struct ble_hrs hrs = {0};
+	struct ble_hrs_config cfg = {
+		.is_sensor_contact_supported = true,
+		.body_sensor_location = (uint8_t[]){ BLE_HRS_BODY_SENSOR_LOCATION_FINGER }
+	};
+
+	__cmock_sd_ble_gatts_service_add_ExpectAnyArgsAndReturn(NRF_SUCCESS);
+	/* First call (HRM) succeeds, second call (BSL) fails. */
+	__cmock_sd_ble_gatts_characteristic_add_ExpectAnyArgsAndReturn(NRF_SUCCESS);
+	__cmock_sd_ble_gatts_characteristic_add_ExpectAnyArgsAndReturn(ERROR);
+
+	nrf_err = ble_hrs_init(&hrs, &cfg);
+	TEST_ASSERT_EQUAL(ERROR, nrf_err);
+}
+
 extern int unity_main(void);
 
 int main(void)
