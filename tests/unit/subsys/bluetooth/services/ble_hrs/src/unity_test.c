@@ -16,6 +16,10 @@
 /* An arbitrary error, to test forwarding of errors from SoftDevice calls */
 #define ERROR 0xbaadf00d
 
+/* Captured HVX payload from stub_sd_ble_gatts_hvx_capture() for post-call verification. */
+static uint8_t captured_hvx_data[20];
+static uint16_t captured_hvx_len;
+
 void ble_hrs_on_ble_evt(const ble_evt_t *evt, struct ble_hrs *hrs);
 
 static uint32_t stub_sd_ble_gatts_characteristic_add(uint16_t service_handle,
@@ -44,6 +48,16 @@ static uint32_t stub_sd_ble_gatts_characteristic_add(uint16_t service_handle,
 	TEST_ASSERT_EQUAL(BLE_UUID_TYPE_BLE, p_attr_char_value->p_uuid->type);
 	TEST_ASSERT_NOT_NULL(p_attr_char_value->p_value);
 
+	return NRF_SUCCESS;
+}
+
+static uint32_t stub_sd_ble_gatts_hvx_capture(uint16_t conn_handle,
+					      const ble_gatts_hvx_params_t *p_hvx_params,
+					      int calls)
+{
+	/* Captures the encoded HVX notification data for assertion in tests. */
+	captured_hvx_len = *p_hvx_params->p_len;
+	memcpy(captured_hvx_data, p_hvx_params->p_data, captured_hvx_len);
 	return NRF_SUCCESS;
 }
 
@@ -323,6 +337,113 @@ void test_ble_hrs_heart_rate_measurement_send_error_invalid_state(void)
 
 	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, heart_rate_measurement);
 	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, nrf_err);
+}
+
+void test_ble_hrs_heart_rate_measurement_send_sensor_contact_detected(void)
+{
+	/* Test that sensor contact detected flag is encoded in the HRM.
+	 * Flags byte layout: BIT(1) = contact detected, BIT(2) = contact supported.
+	 * With both set, flags should be 0x06.
+	 */
+	uint32_t nrf_err;
+	struct ble_hrs hrs = {
+		.service_handle = 0,
+		.conn_handle = BLE_CONN_HANDLE_INVALID,
+		.rr_interval_count = 0,
+		.max_hrm_len = 20,
+		.is_sensor_contact_supported = true,
+		.is_sensor_contact_detected = true
+	};
+
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_enabled);
+	__cmock_sd_ble_gatts_hvx_Stub(stub_sd_ble_gatts_hvx_capture);
+
+	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, 72);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	/* Verify flags: BIT(2) sensor contact supported | BIT(1) sensor contact detected. */
+	TEST_ASSERT_EQUAL(0x06, captured_hvx_data[0]);
+}
+
+void test_ble_hrs_heart_rate_measurement_send_16bit_heart_rate(void)
+{
+	/* Test that heart rate > 255 triggers 16-bit encoding in hrm_encode.
+	 * 300 = 0x012C, encoded as two bytes: [0x2C, 0x01].
+	 * Flags byte: BIT(0) = 16-bit HR format.
+	 * Layout: [flags][hr_low][hr_high] -> len = 3.
+	 */
+	uint32_t nrf_err;
+	struct ble_hrs hrs = {
+		.service_handle = 0,
+		.conn_handle = BLE_CONN_HANDLE_INVALID,
+		.rr_interval_count = 0,
+		.max_hrm_len = 20,
+		.is_sensor_contact_supported = false,
+		.is_sensor_contact_detected = false
+	};
+
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_enabled);
+	__cmock_sd_ble_gatts_hvx_Stub(stub_sd_ble_gatts_hvx_capture);
+
+	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, 300);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	/* Verify flags: BIT(0) = 16-bit heart rate format. */
+	TEST_ASSERT_EQUAL(0x01, captured_hvx_data[0]);
+	/* Verify 16-bit heart rate: 300 = 0x012C -> low byte, high byte. */
+	TEST_ASSERT_EQUAL(0x2C, captured_hvx_data[1]);
+	TEST_ASSERT_EQUAL(0x01, captured_hvx_data[2]);
+	/* flags(1) + hr(2) = 3 bytes total. */
+	TEST_ASSERT_EQUAL(3, captured_hvx_len);
+}
+
+void test_ble_hrs_heart_rate_measurement_send_with_rr_intervals_encoded(void)
+{
+	/* Test that RR intervals are actually encoded into the HRM payload when max_hrm_len
+	 * is large enough.
+	 *
+	 * Layout: [flags][hr][rr0_low][rr0_high][rr1_low][rr1_high] -> len = 6.
+	 * 800 = 0x0320, 850 = 0x0352.
+	 * Flags byte: BIT(4) = RR interval included.
+	 */
+	uint32_t nrf_err;
+	struct ble_hrs hrs = {
+		.service_handle = 0,
+		.conn_handle = BLE_CONN_HANDLE_INVALID,
+		.rr_interval_count = 0,
+		.max_hrm_len = 20,
+		.is_sensor_contact_supported = false,
+		.is_sensor_contact_detected = false
+	};
+
+	/* Pre-fill two RR intervals that will fit in the encoded buffer. */
+	nrf_err = ble_hrs_rr_interval_add(&hrs, 800);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+	nrf_err = ble_hrs_rr_interval_add(&hrs, 850);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+	TEST_ASSERT_EQUAL(2, hrs.rr_interval_count);
+
+	__cmock_sd_ble_gatts_value_get_Stub(stub_sd_ble_gatts_value_get_notif_enabled);
+	__cmock_sd_ble_gatts_hvx_Stub(stub_sd_ble_gatts_hvx_capture);
+
+	nrf_err = ble_hrs_heart_rate_measurement_send(&hrs, 72);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	/* Both RR intervals should have been consumed during encoding. */
+	TEST_ASSERT_EQUAL(0, hrs.rr_interval_count);
+
+	/* Verify flags: BIT(4) = RR interval included. */
+	TEST_ASSERT_EQUAL(0x10, captured_hvx_data[0]);
+	/* Verify heart rate. */
+	TEST_ASSERT_EQUAL(72, captured_hvx_data[1]);
+	/* Verify RR interval 800 = 0x0320: low byte, high byte. */
+	TEST_ASSERT_EQUAL(0x20, captured_hvx_data[2]);
+	TEST_ASSERT_EQUAL(0x03, captured_hvx_data[3]);
+	/* Verify RR interval 850 = 0x0352: low byte, high byte. */
+	TEST_ASSERT_EQUAL(0x52, captured_hvx_data[4]);
+	TEST_ASSERT_EQUAL(0x03, captured_hvx_data[5]);
+	/* flags(1) + hr(1) + 2*rr(2) = 6 bytes total. */
+	TEST_ASSERT_EQUAL(6, captured_hvx_len);
 }
 
 void test_ble_hrs_heart_rate_measurement_send(void)
