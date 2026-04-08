@@ -275,12 +275,7 @@ uint32_t ble_hrs_heart_rate_measurement_send(struct ble_hrs *hrs, uint16_t heart
 	/* Get heart rate measurement CCCD value. */
 	nrf_err = sd_ble_gatts_value_get(hrs->conn_handle, hrs->hrm_handles.cccd_handle, &cccd_val);
 	if (nrf_err) {
-		if (nrf_err == BLE_ERROR_GATTS_SYS_ATTR_MISSING) {
-			/* CCCD value is unknown. Do not notify. */
-			return NRF_ERROR_INVALID_STATE;
-		} else {
-			return nrf_err;
-		}
+		return nrf_err;
 	}
 
 	/* CCCD read success. Check if peer has enabled notifications. */
@@ -299,7 +294,7 @@ uint32_t ble_hrs_heart_rate_measurement_send(struct ble_hrs *hrs, uint16_t heart
 
 	nrf_err = sd_ble_gatts_hvx(hrs->conn_handle, &hvx);
 	if (nrf_err) {
-		LOG_ERR("Failed to notify heart rate measurement, nrf_error %#x", nrf_err);
+		LOG_DBG("Failed to notify heart rate measurement, nrf_error %#x", nrf_err);
 		return nrf_err;
 	}
 
