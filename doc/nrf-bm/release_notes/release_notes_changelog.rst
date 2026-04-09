@@ -67,7 +67,21 @@ Build system
 DFU
 ===
 
-* Updated the image upload NVM writes to be handled in synchronization with SD.
+* Added:
+
+   * Experimental support for nRF54LV10a, nRF54LM20a, and nRF54LS05b SoCs.
+
+* Updated:
+
+   * Image upload NVM writes to be handled in synchronization with SD.
+   * The support for Setting up DFU Device Bluetooth name remotely. It consumes less RAM and RRAM compared to the previous implementation.
+     New solution is enabled by the :kconfig:option:`CONFIG_BM_FLAT_SETTINGS_BLUETOOTH_NAME` Kconfig option.
+     It empploys newly added Inter application RAM Clipboard storage.
+   * Support for nRF54L15, nRF54L10, and nRF54L05 SoCs is no longer experimental and is now fully supported and ready to be used.
+
+Removed:
+
+   * The :kconfig:option:`CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME` Kconfig option and zephyr-rtos settings subsystem handlers for Setting up DFU Device Bluetooth name remotely.
 
 Interrupts
 ==========
@@ -115,6 +129,11 @@ Storage
      * The :c:func:`bm_storage_write` and :c:func:`bm_storage_erase` functions to return ``-ENOMEM`` when out of memory, instead of ``-EIO``.
      * The :c:func:`bm_storage_read`, :c:func:`bm_storage_write`, and :c:func:`bm_storage_erase` functions to return ``-EINVAL`` on alignment errors, instead of ``-EFAULT``.
      * The :c:enum:`bm_storage_evt_dispatch_type` enum and the :c:member:`bm_storage_evt.dispatch_type` field have been replaced by a boolean :c:member:`bm_storage_evt.is_async`.
+
+* ``bm_rmem`` library:
+
+   * Added the new inter-application RAM Clipboard storage. It is a simple on SRAM storage aimed to provide inter applications data clipboards.
+     It can be enabled by the :kconfig:option:`CONFIG_BM_RMEM` Kconfig option.
 
 Filesystem
 ----------
@@ -358,7 +377,13 @@ Peripheral samples
 DFU samples
 -----------
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Updated:
+
+   * The :ref:`ble_mcuboot_recovery_entry_sample` can be build with size-optimized configuration of MCUboot and firmware loader.
+     To enable the size-optimized configuration, set :makevar:`FILE_SUFFIX` to ``size_opt`` when building the sample.
+   * The :ref:`ble_mcuboot_recovery_entry_sample` sample to support nRF54LV10a, nRF54LM20a, and nRF54LS05b SoCs.
+   * The :ref:`ble_mcuboot_recovery_entry_sample` migrates to new soultion for Setting up DFU Device Bluetooth name remotely.
+     See the :ref:`ug_dfu` page for details.
 
 Subsystem samples
 -----------------
