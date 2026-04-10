@@ -163,12 +163,31 @@ config MCUMGR_GRP_IMG_SLOT_INFO_HOOKS
 	  information to responses.
 
 config MCUMGR_GRP_IMG_IMAGE_BUFFER_CHUNK_SZ
-	int "NVM write chunk size"
-	default 2048
-	range 16 4096
+	hex "NVM write chunk size"
+	default 0x800
+	range 0x10 0x1000
 	help
 	  This sets how much data is buffered before passing to non-volatile memory.
 	  It has to be a multiple of the NVM write block size.
+
+config MCUMGR_GRP_IMG_IMAGE_BUFFER_WRITE_CHUNKS_MAX
+	int "NVM write chunk size"
+	default 4
+	range 1 16
+	help
+	  This sets the maximum number of chunks that can be written to non-volatile memory
+	  in the same operation. The total size written to NVM should be small enough to clear the
+	  memory for new image data so that the operation does not time out.
+
+config MCUMGR_GRP_IMG_IMAGE_BUFFER_SZ
+	hex "Image buffer size"
+	default 0x20000 if SOC_NRF54LM20A || SOC_NRF54L15 || SOC_NRF54L10 || SOC_NRF54LV10A
+	default 0xE000
+	range 0x10 0x20000
+	help
+	  This sets how much data can be received before written to non-volatile memory.
+	  It has to be larger or equal to CONFIG_MCUMGR_TRANSPORT_NETBUF_SIZE and
+	  a multiple of CONFIG_MCUMGR_GRP_IMG_IMAGE_BUFFER_CHUNK_SZ.
 
 module = MCUMGR_GRP_IMG
 module-str = MCUMGR_GRP_IMG

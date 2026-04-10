@@ -71,6 +71,9 @@ DFU
 * Added:
 
    * Experimental support for nRF54LV10a, nRF54LM20a, and nRF54LS05b SoCs.
+   * The :kconfig:option:`CONFIG_MCUMGR_GRP_IMG_IMAGE_BUFFER_SZ` Kconfig option to set the size of the data buffer.
+   * The :kconfig:option:`CONFIG_MCUMGR_GRP_IMG_IMAGE_BUFFER_CHUNK_SZ` Kconfig option to set the minimum amount of data buffered before passing it to non-volatile memory.
+   * The :kconfig:option:`CONFIG_MCUMGR_GRP_IMG_IMAGE_BUFFER_WRITE_CHUNKS_MAX` Kconfig option to set the maximum number of chuncks written to non-volatile memory at once.
 
 * Updated:
 
@@ -84,6 +87,8 @@ DFU
 Removed:
 
    * The :kconfig:option:`CONFIG_NCS_BM_SETTINGS_BLUETOOTH_NAME` Kconfig option and zephyr-rtos settings subsystem handlers for Setting up DFU Device Bluetooth name remotely.
+
+* Updated the image upload NVM writes to be handled in synchronization with SD.
 
 Interrupts
 ==========
