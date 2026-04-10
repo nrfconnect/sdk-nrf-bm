@@ -1,3 +1,5 @@
+[![Build samples nightly](https://github.com/nrfconnect/sdk-nrf-bm/actions/workflows/build_samples.yml/badge.svg?event=schedule)](https://github.com/nrfconnect/sdk-nrf-bm/actions/workflows/build_samples.yml)
+
 # sdk-nrf-bm
 
 Base repository for the nRF Connect SDK Bare Metal option.
