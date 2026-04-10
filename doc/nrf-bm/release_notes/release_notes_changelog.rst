@@ -68,6 +68,12 @@ Build system
 DFU
 ===
 
+* Added:
+
+   * The :kconfig:option:`CONFIG_MCUMGR_GRP_IMG_IMAGE_BUFFER_SZ` Kconfig option to set the size of the data buffer.
+   * The :kconfig:option:`CONFIG_MCUMGR_GRP_IMG_IMAGE_BUFFER_CHUNK_SZ` Kconfig option to set the minimum amount of data buffered before passing it to non-volatile memory.
+   * The :kconfig:option:`CONFIG_MCUMGR_GRP_IMG_IMAGE_BUFFER_WRITE_CHUNKS_MAX` Kconfig option to set the maximum number of chuncks written to non-volatile memory at once.
+
 * Updated the image upload NVM writes to be handled in synchronization with SD.
 
 Interrupts
