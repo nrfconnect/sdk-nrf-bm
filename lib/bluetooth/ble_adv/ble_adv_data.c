@@ -115,7 +115,7 @@ static uint32_t device_addr_encode(uint8_t *buf, uint16_t *offset, uint16_t max_
 	}
 
 	/* Encode BLE device address */
-	struct ad_ltv ltv = {
+	const struct ad_ltv ltv = {
 		.length = AD_TYPE_BLE_DEVICE_ADDR_DATA_SIZE,
 		.type = BLE_GAP_AD_TYPE_LE_BLUETOOTH_DEVICE_ADDRESS,
 		.value = addr_buf,
@@ -140,7 +140,7 @@ static uint32_t appearance_encode(uint8_t *buf, uint16_t *offset, uint16_t max_s
 	sys_put_le16(appearance, appearance_buf);
 
 	/* Encode Length, AD Type and Appearance */
-	struct ad_ltv ltv = {
+	const struct ad_ltv ltv = {
 		.length = AD_TYPE_APPEARANCE_DATA_SIZE,
 		.type = BLE_GAP_AD_TYPE_APPEARANCE,
 		.value = appearance_buf,
@@ -152,7 +152,7 @@ static uint32_t appearance_encode(uint8_t *buf, uint16_t *offset, uint16_t max_s
 static uint32_t flags_encode(int8_t flags, uint8_t *buf, uint16_t *offset, uint16_t max_size)
 {
 	/* Encode flags */
-	struct ad_ltv ltv = {
+	const struct ad_ltv ltv = {
 		.length = AD_TYPE_FLAGS_DATA_SIZE,
 		.type = BLE_GAP_AD_TYPE_FLAGS,
 		.value = (const uint8_t *)&flags,
@@ -165,7 +165,7 @@ static uint32_t tx_power_level_encode(int8_t tx_power_level, uint8_t *buf, uint1
 				      uint16_t max_size)
 {
 	/* Encode TX Power Level */
-	struct ad_ltv ltv = {
+	const struct ad_ltv ltv = {
 		.length = AD_TYPE_TX_POWER_LEVEL_DATA_SIZE,
 		.type = BLE_GAP_AD_TYPE_TX_POWER_LEVEL,
 		.value = (const uint8_t *)&tx_power_level,
@@ -216,7 +216,7 @@ static uint32_t uuid_list_sized_encode(const struct ble_adv_data_uuid_list *list
 
 	/* Encode collected UUIDs as one AD structure */
 	if (uuid_buf_len > 0) {
-		struct ad_ltv ltv = {
+		const struct ad_ltv ltv = {
 			.length = (uint8_t)uuid_buf_len,
 			.type = adv_type,
 			.value = uuid_buf,
@@ -291,7 +291,7 @@ static uint32_t conn_int_encode(const struct ble_adv_data_conn_int *conn_int, ui
 	sys_put_le16(conn_int->min_conn_interval, &conn_int_buf[0]);
 	sys_put_le16(conn_int->max_conn_interval, &conn_int_buf[2]);
 
-	struct ad_ltv ltv = {
+	const struct ad_ltv ltv = {
 		.length = AD_TYPE_CONN_INT_DATA_SIZE,
 		.type = BLE_GAP_AD_TYPE_SLAVE_CONNECTION_INTERVAL_RANGE,
 		.value = conn_int_buf,
@@ -319,7 +319,7 @@ static uint32_t manuf_specific_data_encode(const struct ble_adv_data_manufacture
 	}
 
 	/* Encode Manufacturer Specific Data */
-	struct ad_ltv ltv = {
+	const struct ad_ltv ltv = {
 		.length = (uint8_t)data_size,
 		.type = BLE_GAP_AD_TYPE_MANUFACTURER_SPECIFIC_DATA,
 		.value = manuf_buf,
@@ -361,7 +361,7 @@ static uint32_t service_data_encode(const struct ble_adv_data *ble_adv_data, uin
 		}
 
 		/* Encode Service Data */
-		struct ad_ltv ltv = {
+		const struct ad_ltv ltv = {
 			.length = (uint8_t)data_size,
 			.type = BLE_GAP_AD_TYPE_SERVICE_DATA,
 			.value = srv_buf,
@@ -440,7 +440,7 @@ static uint32_t device_name_encode(const struct ble_adv_data *ble_adv_data, uint
 		return NRF_ERROR_DATA_SIZE;
 	}
 
-	struct ad_ltv ltv = {
+	const struct ad_ltv ltv = {
 		.length = (uint8_t)actual_length,
 		.type = ad_type,
 		.value = name_buf,
