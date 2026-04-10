@@ -4,6 +4,9 @@ on:
   pull_request:
     types: [push, opened, reopened, synchronize]
 
+  schedule:
+    - cron: "0 4 * * 1-5"
+
   workflow_dispatch:
 
 jobs:
@@ -42,11 +45,28 @@ jobs:
           west init -l nrf-bm
           west update -o=--depth=1 -n
 
-      - name: Build samples
+      - name: Build samples on commit
+        if: github.event.pull_request
         working-directory: nrf-bm
         run: |
           west twister -T samples --build-only -vc --inline-logs --integration --subset 1/2
           west twister -T samples --build-only -vc --inline-logs --integration --subset 2/2
+
+      - name: Build samples nightly
+        if: github.event.schedule
+        working-directory: nrf-bm
+        # Split the run into multiple calls as we have limited space for the workflow
+        run: |
+          west twister -T samples --build-only -vc --inline-logs --subset 1/10
+          west twister -T samples --build-only -vc --inline-logs --subset 2/10
+          west twister -T samples --build-only -vc --inline-logs --subset 3/10
+          west twister -T samples --build-only -vc --inline-logs --subset 4/10
+          west twister -T samples --build-only -vc --inline-logs --subset 5/10
+          west twister -T samples --build-only -vc --inline-logs --subset 6/10
+          west twister -T samples --build-only -vc --inline-logs --subset 7/10
+          west twister -T samples --build-only -vc --inline-logs --subset 8/10
+          west twister -T samples --build-only -vc --inline-logs --subset 9/10
+          west twister -T samples --build-only -vc --inline-logs --subset 10/10
 
       - name: upload-logs
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
