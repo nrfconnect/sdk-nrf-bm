@@ -48,9 +48,9 @@
 LOG_MODULE_REGISTER(ble_adv_data, CONFIG_BLE_ADV_DATA_LOG_LEVEL);
 
 /*
- * AD field in LTV (Length-Type-Value) format.
+ * AD structure in LTV (Length-Type-Value) format.
  *
- * Used by ad_field_encode() to write a single AD structure into the advertising data buffer.
+ * Used by ad_structure_encode() to write a single AD structure into the advertising data buffer.
  */
 struct ad_ltv {
 	/** Length of AD type + value fields combined (does not include itself). */
@@ -62,19 +62,19 @@ struct ad_ltv {
 };
 
 /*
- * Common LTV encoder for a single AD field.
+ * Common LTV encoder for a single AD structure.
  *
  * Writes one AD structure (length, type, value) into the buffer at the current offset.
  * All internal encode functions use this to ensure a consistent encoding scheme.
  */
-static uint32_t ad_field_encode(const struct ad_ltv *ltv, uint8_t *buf, uint16_t *offset,
-				uint16_t max_size)
+static uint32_t ad_structure_encode(const struct ad_ltv *ltv, uint8_t *buf, uint16_t *offset,
+				    uint16_t max_size)
 {
 	uint8_t value_len = ltv->length - AD_TYPE_FIELD_SIZE;
-	uint16_t field_size = AD_LENGTH_FIELD_SIZE + ltv->length;
+	uint16_t ltv_size = AD_LENGTH_FIELD_SIZE + ltv->length;
 
 	/* Check for buffer overflow */
-	if (*offset + field_size > max_size) {
+	if (*offset + ltv_size > max_size) {
 		return NRF_ERROR_DATA_SIZE;
 	}
 
@@ -122,7 +122,7 @@ static uint32_t device_addr_encode(uint8_t *buf, uint16_t *offset, uint16_t max_
 		.value = addr_buf,
 	};
 
-	return ad_field_encode(&ltv, buf, offset, max_size);
+	return ad_structure_encode(&ltv, buf, offset, max_size);
 }
 
 static uint32_t appearance_encode(uint8_t *buf, uint16_t *offset, uint16_t max_size)
@@ -147,7 +147,7 @@ static uint32_t appearance_encode(uint8_t *buf, uint16_t *offset, uint16_t max_s
 		.value = appearance_buf,
 	};
 
-	return ad_field_encode(&ltv, buf, offset, max_size);
+	return ad_structure_encode(&ltv, buf, offset, max_size);
 }
 
 static uint32_t flags_encode(int8_t flags, uint8_t *buf, uint16_t *offset, uint16_t max_size)
@@ -159,7 +159,7 @@ static uint32_t flags_encode(int8_t flags, uint8_t *buf, uint16_t *offset, uint1
 		.value = (const uint8_t *)&flags,
 	};
 
-	return ad_field_encode(&ltv, buf, offset, max_size);
+	return ad_structure_encode(&ltv, buf, offset, max_size);
 }
 
 static uint32_t tx_power_level_encode(int8_t tx_power_level, uint8_t *buf, uint16_t *offset,
@@ -172,7 +172,7 @@ static uint32_t tx_power_level_encode(int8_t tx_power_level, uint8_t *buf, uint1
 		.value = (const uint8_t *)&tx_power_level,
 	};
 
-	return ad_field_encode(&ltv, buf, offset, max_size);
+	return ad_structure_encode(&ltv, buf, offset, max_size);
 }
 
 static uint32_t uuid_list_sized_encode(const struct ble_adv_data_uuid_list *list, uint8_t adv_type,
@@ -215,7 +215,7 @@ static uint32_t uuid_list_sized_encode(const struct ble_adv_data_uuid_list *list
 		uuid_buf_len += encoded_size;
 	}
 
-	/* Encode collected UUIDs as one AD field */
+	/* Encode collected UUIDs as one AD structure */
 	if (uuid_buf_len > 0) {
 		struct ad_ltv ltv = {
 			.length = (uint8_t)(AD_TYPE_FIELD_SIZE + uuid_buf_len),
@@ -223,7 +223,7 @@ static uint32_t uuid_list_sized_encode(const struct ble_adv_data_uuid_list *list
 			.value = uuid_buf,
 		};
 
-		return ad_field_encode(&ltv, buf, offset, max_size);
+		return ad_structure_encode(&ltv, buf, offset, max_size);
 	}
 
 	return NRF_SUCCESS;
@@ -298,7 +298,7 @@ static uint32_t conn_int_encode(const struct ble_adv_data_conn_int *conn_int, ui
 		.value = conn_int_buf,
 	};
 
-	return ad_field_encode(&ltv, buf, offset, max_size);
+	return ad_structure_encode(&ltv, buf, offset, max_size);
 }
 
 static uint32_t manuf_specific_data_encode(const struct ble_adv_data_manufacturer *manuf_data,
@@ -326,7 +326,7 @@ static uint32_t manuf_specific_data_encode(const struct ble_adv_data_manufacture
 		.value = manuf_buf,
 	};
 
-	return ad_field_encode(&ltv, buf, offset, max_size);
+	return ad_structure_encode(&ltv, buf, offset, max_size);
 }
 
 /* Implemented only for 16-bit UUIDs */
@@ -368,7 +368,7 @@ static uint32_t service_data_encode(const struct ble_adv_data *ble_adv_data, uin
 			.value = srv_buf,
 		};
 
-		nrf_err = ad_field_encode(&ltv, buf, offset, max_size);
+		nrf_err = ad_structure_encode(&ltv, buf, offset, max_size);
 		if (nrf_err) {
 			return nrf_err;
 		}
@@ -447,7 +447,7 @@ static uint32_t device_name_encode(const struct ble_adv_data *ble_adv_data, uint
 		.value = name_buf,
 	};
 
-	return ad_field_encode(&ltv, buf, offset, max_size);
+	return ad_structure_encode(&ltv, buf, offset, max_size);
 }
 
 uint32_t ble_adv_data_encode(const struct ble_adv_data *ble_adv_data, uint8_t *buf, uint16_t *len)
