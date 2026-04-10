@@ -16,6 +16,7 @@
 #include <bm/bluetooth/ble_conn_params.h>
 #include <bm/bluetooth/ble_conn_params.h>
 #include <bm/bluetooth/services/ble_mcumgr.h>
+#include <bm/mgmt/mcumgr/grp/img_mgmt/img_mgmt_write.h>
 
 #include <zephyr/kernel.h>
 #include <zephyr/mgmt/mcumgr/mgmt/callbacks.h>
@@ -322,16 +323,17 @@ int main(void)
 		while (device_disconnected == false) {
 			log_flush();
 
-			/* Wait for an event. */
-			__WFE();
-
-			/* Clear Event Register */
-			__SEV();
-			__WFE();
+			k_cpu_idle();
 		}
 	}
 
-	sys_reboot(SYS_REBOOT_WARM);
+	/* Wait for the new firmware image to be written. */
+	while (img_mgmt_write_in_progress()) {
+		log_flush();
 
+		k_cpu_idle();
+	}
+
+	sys_reboot(SYS_REBOOT_WARM);
 	return 0;
 }

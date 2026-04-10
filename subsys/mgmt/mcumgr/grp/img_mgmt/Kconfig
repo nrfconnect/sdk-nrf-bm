@@ -162,13 +162,24 @@ config MCUMGR_GRP_IMG_SLOT_INFO_HOOKS
 	  This will enable the slot info function hooks which can be used to add additional
 	  information to responses.
 
-config MCUMGR_GRP_IMG_IMAGE_BUFFER_CHUNK_SZ
-	int "NVM write chunk size"
-	default 2048
-	range 16 4096
+config BM_MCUMGR_GRP_IMG_NVM_WRITE_BLOCKS_MAX
+	int "Max NVM blocks per write operation"
+	default 512
+	range 1 2048
 	help
-	  This sets how much data is buffered before passing to non-volatile memory.
-	  It has to be a multiple of the NVM write block size.
+	  Maximum number of NVM blocks (wear units) written to non-volatile memory
+	  in a single operation. Keep this small enough so that each operation can
+	  complete quickly to free buffer for more incoming data.
+
+config BM_MCUMGR_GRP_IMG_BUFFER_SZ
+	int "Image buffer size"
+	default 131072 if SOC_NRF54LM20A || SOC_NRF54L15 || SOC_NRF54L10 || SOC_NRF54LV10A
+	default 57344
+	range MCUMGR_TRANSPORT_NETBUF_SIZE 131072
+	help
+	  This sets the volume of data that can be received but is not yet written to non-volatile
+	  memory. It has to be larger than or equal to CONFIG_MCUMGR_TRANSPORT_NETBUF_SIZE and
+	  a multiple of the non-volatile memory wear unit.
 
 module = MCUMGR_GRP_IMG
 module-str = MCUMGR_GRP_IMG

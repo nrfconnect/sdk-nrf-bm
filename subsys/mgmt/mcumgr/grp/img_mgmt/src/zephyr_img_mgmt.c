@@ -15,7 +15,7 @@
 #include <assert.h>
 
 #include <zephyr/mgmt/mcumgr/mgmt/mgmt.h>
-#include <img_mgmt.h>
+#include <bm/mgmt/mcumgr/grp/img_mgmt/img_mgmt.h>
 
 #include <mgmt/mcumgr/grp/img_mgmt/img_mgmt_priv.h>
 

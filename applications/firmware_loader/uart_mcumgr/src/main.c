@@ -13,8 +13,10 @@
 #include <zephyr/mgmt/mcumgr/mgmt/callbacks.h>
 #include <zephyr/sys/reboot.h>
 #include <zephyr/logging/log.h>
+#include <bm/bm_scheduler.h>
 #include <nrfx_uarte.h>
 #include <smp_uart.h>
+#include <bm/mgmt/mcumgr/grp/img_mgmt/img_mgmt_write.h>
 #include <board-config.h>
 
 LOG_MODULE_REGISTER(app_uart_mcumgr, CONFIG_APP_UART_MCUMGR_SAMPLE_LOG_LEVEL);
@@ -54,6 +56,13 @@ int main(void)
 		k_cpu_idle();
 
 		smp_uart_process_rx_queue();
+		bm_scheduler_process();
+	}
+
+	/* Wait for the new firmware image to be written. */
+	while (img_mgmt_write_in_progress()) {
+		bm_scheduler_process();
+		k_sleep(K_MSEC(1));
 	}
 
 	sys_reboot(SYS_REBOOT_WARM);
