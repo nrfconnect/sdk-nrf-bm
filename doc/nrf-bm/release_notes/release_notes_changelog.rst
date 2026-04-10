@@ -71,6 +71,8 @@ DFU
 * Added:
 
    * Experimental support for nRF54LV10a, nRF54LM20a, and nRF54LS05b SoCs.
+   * The :kconfig:option:`CONFIG_BM_MCUMGR_GRP_IMG_BUFFER_SZ` Kconfig option to set the size of the data buffer.
+   * The :kconfig:option:`CONFIG_BM_MCUMGR_GRP_IMG_NVM_WRITE_BLOCKS_MAX` Kconfig option to set the maximum number of non-volatile memory wear units written to NVM at once.
 
 * Updated:
 
