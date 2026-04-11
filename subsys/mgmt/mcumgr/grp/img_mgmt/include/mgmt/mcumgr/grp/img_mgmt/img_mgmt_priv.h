@@ -54,6 +54,17 @@ int img_mgmt_write_image_data(unsigned int offset, const void *data, unsigned in
 			      bool last);
 
 /**
+ * @brief Check if there is an image write operation in progress.
+ *
+ * @note This should be called after @c img_mgmt_write_image_data to make sure the write operation
+ *       has completed.
+ *
+ * @retval true if there is no ongoing image write operation.
+ * @retval false if the image write operation is in progress.
+ */
+bool img_mgmt_write_in_progress(void);
+
+/**
  * @brief Get the slot number of an alternate (inactive) image pair.
  *
  * @param slot	A slot number.
