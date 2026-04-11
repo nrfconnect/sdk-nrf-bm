@@ -70,14 +70,19 @@ jobs:
           # Create documentation upload files
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             ARCHIVE="legacy-ncs-pr-${{ github.event.number }}.zip"
-            echo "publish2 dev PR-${{ github.event.number }} ${ARCHIVE}" > "${MONITOR}"
-            echo "${{ github.event.number }}" > pr.txt
           else
             ARCHIVE="legacy-ncs-${VERSION}.zip"
-            echo "publish2 main ${VERSION} ${ARCHIVE}" > "${MONITOR}"
           fi
 
           zip -rq "${ARCHIVE}" .
+
+          # Create monitor/pr files after zip to avoid including them in the archive
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "publish2 dev PR-${{ github.event.number }} ${ARCHIVE}" > "${MONITOR}"
+            echo "${{ github.event.number }}" > pr.txt
+          else
+            echo "publish2 main ${VERSION} ${ARCHIVE}" > "${MONITOR}"
+          fi
 
       - name: Prepare Zoomin upload
         if: ${{ github.event_name == 'push' }}

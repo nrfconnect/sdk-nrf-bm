@@ -271,6 +271,7 @@ add_docset(kconfig "")
 add_custom_target(
   copy-extra-content
   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/_static/html/index.html ${HTML_DIR}
+  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/versions.json ${HTML_DIR}
 )
 
 add_custom_target(
