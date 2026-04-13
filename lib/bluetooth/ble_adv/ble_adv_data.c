@@ -457,7 +457,6 @@ uint32_t ble_adv_data_encode(const struct ble_adv_data *ble_adv_data, uint8_t *b
 		return NRF_ERROR_NULL;
 	}
 
-	nrf_err = NRF_SUCCESS;
 	max_size = *len;
 	*len = 0;
 
@@ -493,8 +492,8 @@ uint32_t ble_adv_data_encode(const struct ble_adv_data *ble_adv_data, uint8_t *b
 	if (ble_adv_data->uuid_lists.more_available.len > 0) {
 		nrf_err = uuid_list_encode(&ble_adv_data->uuid_lists.more_available,
 					   BLE_GAP_AD_TYPE_16BIT_SERVICE_UUID_MORE_AVAILABLE,
-					   BLE_GAP_AD_TYPE_128BIT_SERVICE_UUID_MORE_AVAILABLE, buf,
-					   len, max_size);
+					   BLE_GAP_AD_TYPE_128BIT_SERVICE_UUID_MORE_AVAILABLE,
+					   buf, len, max_size);
 		if (nrf_err) {
 			return nrf_err;
 		}
@@ -549,7 +548,7 @@ uint32_t ble_adv_data_encode(const struct ble_adv_data *ble_adv_data, uint8_t *b
 		}
 	}
 
-	return nrf_err;
+	return NRF_SUCCESS;
 }
 
 uint16_t ble_adv_data_search(const uint8_t *data, uint16_t data_len, uint16_t *offset,
