@@ -120,6 +120,18 @@ The following events may be reported to the user callback:
 
 Each event includes the result code, information about the address range of the associated operation, and whether the operation is synchronous or asynchronous.
 
+Event deferral
+--------------
+
+Backends that do not have an internal operation queue (for example, the RRAM backend) deliver events synchronously from the same call context as the caller.
+If the application queues another storage operation from within its event handler, unbounded recursion can occur.
+
+Backends with an internal operation queue (for example, the SoftDevice backend) are not affected, because re-entrant calls are enqueued and processed iteratively.
+
+To prevent recursion in backends without a queue, enable the :kconfig:option:`CONFIG_BM_SCHEDULER` Kconfig option.
+When the scheduler is available, synchronous events are automatically deferred and delivered from the main thread context on the next call to :c:func:`bm_scheduler_process`.
+Deferred events have their :c:member:`bm_storage_evt.is_async` field set to ``true``.
+
 Sample
 ******
 
@@ -141,6 +153,11 @@ Dependencies
   * :kconfig:option:`CONFIG_SOFTDEVICE`
   * :kconfig:option:`CONFIG_NRF_SDH`
   * :kconfig:option:`CONFIG_RING_BUFFER`
+
+Optional dependencies:
+
+* :kconfig:option:`CONFIG_BM_SCHEDULER` – Enables deferral of synchronous events to the main thread context.
+  See :ref:`Event deferral <lib_storage>`.
 
 API documentation
 *****************

@@ -117,6 +117,7 @@ Storage
      * The :c:func:`bm_storage_nvm_info_get` function to retrieve NVM information, such as the size of the program unit and other.
      * The :c:member:`bm_storage_config.is_wear_aligned` configuration flag to enforce wear unit alignment on operations.
      * The :c:member:`bm_storage_config.is_write_padded` configuration flag to automatically pad write operations to the alignment unit.
+     * The :c:func:`bm_storage_evt_dispatch` function for event delivery.
 
    Updated:
      * The :c:func:`bm_storage_is_busy` function to return ``false`` instead of ``true`` when called with a ``NULL`` pointer or an uninitialized instance.
@@ -127,10 +128,15 @@ Storage
      * The SoftDevice backend to support chunking of write operations.
      * The ``no_explicit_erase`` field in :c:struct:`bm_storage_info` has been renamed to ``is_erase_before_write`` to explicitly convey that the memory must be erased before it can be written to.
      * The SoftDevice backend's :c:member:`bm_storage_info.program_unit` from 16 to 4 bytes, reflecting the true minimum programmable unit.
-     * The ``start_addr`` and ``end_addr`` fields in :c:struct:`bm_storage_config` and :c:struct:`bm_storage` have been replaced by ``addr`` and ``size``. The API now uses relative addressing (0-based offsets within the partition).
+     * The ``start_addr`` and ``end_addr`` fields in :c:struct:`bm_storage_config` and :c:struct:`bm_storage` have been replaced by ``addr`` and ``size``.
+       The API now uses relative addressing (0-based offsets within the partition).
      * The :c:func:`bm_storage_write` and :c:func:`bm_storage_erase` functions to return ``-ENOMEM`` when out of memory, instead of ``-EIO``.
      * The :c:func:`bm_storage_read`, :c:func:`bm_storage_write`, and :c:func:`bm_storage_erase` functions to return ``-EINVAL`` on alignment errors, instead of ``-EFAULT``.
      * The :c:enum:`bm_storage_evt_dispatch_type` enum and the :c:member:`bm_storage_evt.dispatch_type` field have been replaced by a boolean :c:member:`bm_storage_evt.is_async`.
+     * All backends to use the new :c:func:`bm_storage_evt_dispatch` function for event delivery.
+       For backends without an internal operation queue (such as RRAM), enabling :c:func:`bm_scheduler` defers synchronous events to the main thread context.
+     * The SoftDevice backend to process operations iteratively instead of recursively when the SoftDevice is disabled.
+       Re-entrant calls from event handlers are safely enqueued and processed by the loop.
 
 * ``bm_rmem`` library:
 

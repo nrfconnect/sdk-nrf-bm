@@ -2,3 +2,8 @@ tests:
   subsys.bm_storage:
     platform_allow: native_sim
     tags: unittest
+  subsys.bm_storage.scheduler:
+    platform_allow: native_sim
+    tags: unittest
+    extra_configs:
+      - CONFIG_BM_SCHEDULER=y
