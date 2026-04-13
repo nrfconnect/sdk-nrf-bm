@@ -283,11 +283,23 @@ static void queue_process(void)
 			continue;
 
 		case NRF_ERROR_BUSY:
-			/* The SoftDevice is executing a non-volatile memory operation that was not
-			 * requested by the storage logic.
-			 * Stop processing the queue until a system event is received.
+			/* The SoftDevice is executing a non-volatile memory operation
+			 * that was not requested by this library.
 			 */
-			bm_storage_sd.queue_state = QUEUE_WAITING;
+			if (bm_storage_sd.softdevice_is_enabled) {
+				/* Stop processing the queue until the next SoC event is received.
+				 */
+				bm_storage_sd.queue_state = QUEUE_WAITING;
+				return;
+			}
+
+			/* Stop processing the queue until the user enqueues another
+			 * operation. Otherwise, there is a chance we might drain the
+			 * queue and fail all the operations.
+			 */
+			bm_storage_sd.queue_state = QUEUE_IDLE;
+			bm_storage_sd.operation_state = OP_NONE;
+			event_send(&bm_storage_sd.current_operation, -EBUSY);
 			return;
 
 		default:

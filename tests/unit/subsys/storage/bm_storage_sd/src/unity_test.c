@@ -495,8 +495,8 @@ void test_bm_storage_sd_write_retry_queued(void)
 	TEST_ASSERT_EQUAL(sizeof(buf), storage_event.len);
 }
 
-/* Test that when one operation in the queue fails to be scheduled,
- * we continue to process other operations.
+/* Test that when one operation in the queue fails to be scheduled with an error
+ * other than NRF_ERROR_BUSY, we continue to process other operations.
  */
 void test_bm_storage_sd_write_queued_eio(void)
 {
@@ -570,6 +570,65 @@ void test_bm_storage_sd_write_queued_eio(void)
 	TEST_ASSERT_EQUAL(0, storage_event.addr);
 	TEST_ASSERT_EQUAL_PTR(buf, storage_event.src);
 	TEST_ASSERT_EQUAL(sizeof(buf), storage_event.len);
+}
+
+/* Test that when the SoftDevice is disabled and an operation fails with
+ * a non-BUSY error (default case), the failed operation is not retried and
+ * the queue processes the next operation immediately.
+ */
+void test_bm_storage_sd_write_queued_disabled_eio(void)
+{
+	int err;
+	bool is_busy;
+	uint8_t buf[BLOCK_SIZE];
+	struct bm_storage storage = {0};
+	struct bm_storage_config config = {
+		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
+	};
+
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){false});
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* First write fails with a non-BUSY error */
+	__cmock_sd_flash_write_ExpectAndReturn(
+		(uint32_t *)PARTITION_START, (uint32_t *)buf, WORD_SIZE(sizeof(buf)),
+		NRF_ERROR_INTERNAL);
+
+	err = bm_storage_write(&storage, 0, buf, sizeof(buf), (void *)0xBBBB0001);
+	TEST_ASSERT_EQUAL(0, err);
+
+	TEST_ASSERT_EQUAL(1, storage_event_count);
+	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
+	TEST_ASSERT_EQUAL(-EIO, storage_event.result);
+	TEST_ASSERT_EQUAL_PTR(0xBBBB0001, storage_event.ctx);
+
+	is_busy = bm_storage_is_busy(&storage);
+	TEST_ASSERT_FALSE(is_busy);
+
+	/* A second write starts a fresh operation (no retry of the first).
+	 * Only one sd_flash_write mock is needed: for the new operation.
+	 */
+	__cmock_sd_flash_write_ExpectAndReturn(
+		(uint32_t *)PARTITION_START, (uint32_t *)buf, WORD_SIZE(sizeof(buf)), 0);
+
+	err = bm_storage_write(&storage, 0, buf, sizeof(buf), (void *)0xBBBB0002);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* The second operation succeeded — ctx confirms it's the new operation, not a retry */
+	TEST_ASSERT_EQUAL(2, storage_event_count);
+	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
+	TEST_ASSERT_EQUAL(0, storage_event.result);
+	TEST_ASSERT_EQUAL_PTR(0xBBBB0002, storage_event.ctx);
+
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(0, err);
 }
 
 void test_bm_storage_sd_write_enomem(void)
@@ -818,6 +877,70 @@ void test_bm_storage_sd_write_softdevice_busy_retry(void)
 	TEST_ASSERT_EQUAL(0, storage_event.addr);
 	TEST_ASSERT_EQUAL_PTR(buf, storage_event.src);
 	TEST_ASSERT_EQUAL(sizeof(buf), storage_event.len);
+}
+
+/* Test that when the SoftDevice is disabled and an operation fails with NRF_ERROR_BUSY,
+ * the operation is discarded and the queue stops. The next write or erase call
+ * starts a fresh operation.
+ */
+void test_bm_storage_sd_write_softdevice_disabled_busy_stop(void)
+{
+	int err;
+	bool is_busy;
+	uint8_t buf[BLOCK_SIZE];
+	struct bm_storage storage = {0};
+	struct bm_storage_config config = {
+		.evt_handler = bm_storage_evt_handler,
+		.api = &bm_storage_sd_api,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
+	};
+
+	__cmock_sd_softdevice_is_enabled_ExpectAndReturn(PTR_IGNORE, 0);
+	__cmock_sd_softdevice_is_enabled_IgnoreArg_p_softdevice_enabled();
+	__cmock_sd_softdevice_is_enabled_ReturnThruPtr_p_softdevice_enabled(&(uint8_t){false});
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* First write gets BUSY */
+	__cmock_sd_flash_write_ExpectAndReturn(
+		(uint32_t *)PARTITION_START, (uint32_t *)buf, WORD_SIZE(sizeof(buf)),
+		NRF_ERROR_BUSY);
+
+	err = bm_storage_write(&storage, 0, buf, sizeof(buf), (void *)0xAAAA0001);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* BUSY is reported and the queue stops */
+	TEST_ASSERT_EQUAL(1, storage_event_count);
+	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
+	TEST_ASSERT_EQUAL(false, storage_event.is_async);
+	TEST_ASSERT_EQUAL(-EBUSY, storage_event.result);
+	TEST_ASSERT_EQUAL_PTR(0xAAAA0001, storage_event.ctx);
+
+	is_busy = bm_storage_is_busy(&storage);
+	TEST_ASSERT_FALSE(is_busy);
+
+	/* A second write starts a fresh operation (the BUSY one was discarded).
+	 * Only one sd_flash_write mock is needed: for the new operation.
+	 */
+	__cmock_sd_flash_write_ExpectAndReturn(
+		(uint32_t *)PARTITION_START, (uint32_t *)buf, WORD_SIZE(sizeof(buf)), 0);
+
+	err = bm_storage_write(&storage, 0, buf, sizeof(buf), (void *)0xAAAA0002);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* The second operation succeeded — ctx confirms it's the new operation, not a retry */
+	TEST_ASSERT_EQUAL(2, storage_event_count);
+	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
+	TEST_ASSERT_EQUAL(0, storage_event.result);
+	TEST_ASSERT_EQUAL_PTR(0xAAAA0002, storage_event.ctx);
+
+	is_busy = bm_storage_is_busy(&storage);
+	TEST_ASSERT_FALSE(is_busy);
+
+	err = bm_storage_uninit(&storage);
+	TEST_ASSERT_EQUAL(0, err);
 }
 
 void test_bm_storage_sd_write_chunk(void)
