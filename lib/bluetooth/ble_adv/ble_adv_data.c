@@ -17,30 +17,30 @@
 /* Advertising Data and Scan Response format contains 1 octet for the AD type. */
 #define AD_TYPE_FIELD_SIZE   1UL
 /* Offset for the AD data field of the Advertising Data and Scan Response format. */
-#define AD_DATA_OFFSET	     (AD_LENGTH_FIELD_SIZE + AD_TYPE_FIELD_SIZE)
+#define AD_DATA_OFFSET       (AD_LENGTH_FIELD_SIZE + AD_TYPE_FIELD_SIZE)
 
 /* Data size (in octets) of the Address type of the LE Bluetooth Device Address */
 #define AD_TYPE_BLE_DEVICE_ADDR_TYPE_SIZE 1UL
 /* Data size (in octets) of the LE Bluetooth Device Address */
 #define AD_TYPE_BLE_DEVICE_ADDR_DATA_SIZE (BLE_GAP_ADDR_LEN + AD_TYPE_BLE_DEVICE_ADDR_TYPE_SIZE)
 /* Data size (in octets) of the Appearance */
-#define AD_TYPE_APPEARANCE_DATA_SIZE	  2UL
+#define AD_TYPE_APPEARANCE_DATA_SIZE      2UL
 /* Data size (in octets) of the Flags */
-#define AD_TYPE_FLAGS_DATA_SIZE		  1UL
+#define AD_TYPE_FLAGS_DATA_SIZE           1UL
 /* Data size (in octets) of the TX Power Level */
 #define AD_TYPE_TX_POWER_LEVEL_DATA_SIZE  1UL
 /* Data size (in octets) of the Peripheral Connection Interval Range */
-#define AD_TYPE_CONN_INT_DATA_SIZE	  4UL
+#define AD_TYPE_CONN_INT_DATA_SIZE        4UL
 /* Size (in octets) of the Company Identifier Code, part of the Manufacturer Specific Data */
-#define AD_TYPE_MANUF_SPEC_DATA_ID_SIZE	  2UL
+#define AD_TYPE_MANUF_SPEC_DATA_ID_SIZE   2UL
 /* Size (in octets) of the 16-bit UUID, which is a part of the Service Data */
 #define AD_TYPE_SERV_DATA_16BIT_UUID_SIZE 2UL
 
 #define AD_TYPE_BLE_DEVICE_ADDR_TYPE_PUBLIC 0UL
 #define AD_TYPE_BLE_DEVICE_ADDR_TYPE_RANDOM 1UL
 
-#define UUID16_SIZE  2	/* Size of 16 bit UUID, in bytes */
-#define UUID32_SIZE  4	/* Size of 32 bit UUID, in bytes */
+#define UUID16_SIZE  2  /* Size of 16 bit UUID, in bytes */
+#define UUID32_SIZE  4  /* Size of 32 bit UUID, in bytes */
 #define UUID128_SIZE 16 /* Size of 128 bit UUID, in bytes */
 
 #define N_AD_TYPES 2 /* The number of Advertising data types to search for at a time. */
