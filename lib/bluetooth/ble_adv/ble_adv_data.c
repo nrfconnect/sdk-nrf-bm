@@ -105,7 +105,7 @@ static uint32_t device_addr_encode(uint8_t *buf, uint16_t *offset, uint16_t max_
 		return nrf_err;
 	}
 
-	/* Build value: address bytes + address type byte */
+	/* Compose value: address bytes + address type byte */
 	memcpy(addr_buf, device_addr.addr, BLE_GAP_ADDR_LEN);
 
 	if (device_addr.addr_type == BLE_GAP_ADDR_TYPE_PUBLIC) {
@@ -311,7 +311,7 @@ static uint32_t manuf_specific_data_encode(const struct ble_adv_data_manufacture
 		return NRF_ERROR_INVALID_PARAM;
 	}
 
-	/* Build value: Company Identifier + additional data */
+	/* Compose value: Company Identifier + additional data */
 	sys_put_le16(manuf_data->company_identifier, manuf_buf);
 	if (manuf_data->len > 0) {
 		memcpy(&manuf_buf[AD_TYPE_MANUF_SPEC_DATA_ID_SIZE], manuf_data->data,
@@ -353,7 +353,7 @@ static uint32_t service_data_encode(const struct ble_adv_data *ble_adv_data, uin
 			return NRF_ERROR_INVALID_PARAM;
 		}
 
-		/* Build value: service 16-bit UUID + additional data */
+		/* Compose value: service 16-bit UUID + additional data */
 		sys_put_le16(service_data->service_uuid, srv_buf);
 		if (service_data->len > 0) {
 			memcpy(&srv_buf[AD_TYPE_SERV_DATA_16BIT_UUID_SIZE], service_data->data,
