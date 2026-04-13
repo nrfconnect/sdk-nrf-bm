@@ -3,8 +3,4 @@
 config BLE_ADV_DATA
 	default y
 
-config TEST_BLE_DEVICE_NAME
-	string "Device name"
-	default "test-device"
-
 source "Kconfig.zephyr"
