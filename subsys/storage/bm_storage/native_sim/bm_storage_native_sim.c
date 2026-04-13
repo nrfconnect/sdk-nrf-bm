@@ -23,11 +23,7 @@ static const struct bm_storage_info bm_storage_info = {
 
 static void event_send(const struct bm_storage *storage, struct bm_storage_evt *evt)
 {
-	if (!storage->evt_handler) {
-		return;
-	}
-
-	storage->evt_handler(evt);
+	bm_storage_evt_dispatch(storage, evt);
 }
 
 static void write_padded(const struct bm_storage *storage, uint32_t dest, const void *src,

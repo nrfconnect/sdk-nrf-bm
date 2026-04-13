@@ -5,8 +5,13 @@
  */
 #include <unity.h>
 #include <errno.h>
+#include <string.h>
 
 #include <bm/storage/bm_storage.h>
+
+#if defined(CONFIG_BM_SCHEDULER)
+#include <bm/bm_scheduler.h>
+#endif
 
 /* Arbitrary block size. */
 #define BLOCK_SIZE 16
@@ -92,6 +97,9 @@ static struct bm_storage_api bm_storage_test_api_rram_like = {
 	.is_busy = bm_storage_test_api_is_busy,
 };
 
+static struct bm_storage_evt dispatch_evt;
+static bool dispatch_evt_received;
+
 static void bm_storage_evt_handler(struct bm_storage_evt *evt)
 {
 	switch (evt->id) {
@@ -102,6 +110,12 @@ static void bm_storage_evt_handler(struct bm_storage_evt *evt)
 	default:
 		break;
 	}
+}
+
+static void dispatch_evt_handler(struct bm_storage_evt *evt)
+{
+	dispatch_evt_received = true;
+	dispatch_evt = *evt;
 }
 
 void test_bm_storage_init_efault(void)
@@ -679,9 +693,108 @@ void test_bm_storage_init_wear_aligned_einval(void)
 	TEST_ASSERT_EQUAL(-EINVAL, err);
 }
 
+void test_bm_storage_evt_dispatch_null_handler(void)
+{
+	int err;
+	struct bm_storage storage = {0};
+	struct bm_storage_config config = {
+		.api = &bm_storage_test_api,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
+	};
+	struct bm_storage_evt evt = {
+		.id = BM_STORAGE_EVT_WRITE_RESULT,
+		.is_async = false,
+	};
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	/* Must not crash when the event handler is NULL. */
+	bm_storage_evt_dispatch(&storage, &evt);
+}
+
+void test_bm_storage_evt_dispatch_async(void)
+{
+	int err;
+	struct bm_storage storage = {0};
+	struct bm_storage_config config = {
+		.api = &bm_storage_test_api,
+		.evt_handler = dispatch_evt_handler,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
+	};
+	struct bm_storage_evt evt = {
+		.id = BM_STORAGE_EVT_WRITE_RESULT,
+		.is_async = true,
+		.result = 0,
+		.addr = 0x100,
+		.len = 32,
+	};
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	bm_storage_evt_dispatch(&storage, &evt);
+
+	/* Async events are always dispatched directly, regardless of scheduler. */
+	TEST_ASSERT_TRUE(dispatch_evt_received);
+	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, dispatch_evt.id);
+	TEST_ASSERT_EQUAL(true, dispatch_evt.is_async);
+	TEST_ASSERT_EQUAL(0, dispatch_evt.result);
+	TEST_ASSERT_EQUAL(0x100, dispatch_evt.addr);
+	TEST_ASSERT_EQUAL(32, dispatch_evt.len);
+}
+
+void test_bm_storage_evt_dispatch_sync(void)
+{
+	int err;
+	struct bm_storage storage = {0};
+	struct bm_storage_config config = {
+		.api = &bm_storage_test_api,
+		.evt_handler = dispatch_evt_handler,
+		.addr = PARTITION_START,
+		.size = PARTITION_SIZE,
+	};
+	struct bm_storage_evt evt = {
+		.id = BM_STORAGE_EVT_ERASE_RESULT,
+		.is_async = false,
+		.result = 0,
+		.addr = 0x200,
+		.len = 64,
+	};
+
+	err = bm_storage_init(&storage, &config);
+	TEST_ASSERT_EQUAL(0, err);
+
+	bm_storage_evt_dispatch(&storage, &evt);
+
+#if defined(CONFIG_BM_SCHEDULER)
+	/* With scheduler: sync events are deferred, not delivered yet. */
+	TEST_ASSERT_FALSE(dispatch_evt_received);
+
+	bm_scheduler_process();
+
+	TEST_ASSERT_TRUE(dispatch_evt_received);
+	/* The event is marked async since it was deferred. */
+	TEST_ASSERT_EQUAL(true, dispatch_evt.is_async);
+#else
+	/* Without scheduler: sync events are dispatched directly. */
+	TEST_ASSERT_TRUE(dispatch_evt_received);
+	TEST_ASSERT_EQUAL(false, dispatch_evt.is_async);
+#endif
+
+	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_ERASE_RESULT, dispatch_evt.id);
+	TEST_ASSERT_EQUAL(0, dispatch_evt.result);
+	TEST_ASSERT_EQUAL(0x200, dispatch_evt.addr);
+	TEST_ASSERT_EQUAL(64, dispatch_evt.len);
+}
+
 void setUp(void)
 {
 	backend_uninit_retval = 0;
+	dispatch_evt_received = false;
+	memset(&dispatch_evt, 0, sizeof(dispatch_evt));
 }
 
 void tearDown(void)

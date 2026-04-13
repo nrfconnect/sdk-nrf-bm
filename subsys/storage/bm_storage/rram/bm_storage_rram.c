@@ -39,11 +39,7 @@ static uint8_t pad_buffer[RRAMC_WRITE_BLOCK_SIZE];
 
 static void event_send(const struct bm_storage *storage, struct bm_storage_evt *evt)
 {
-	if (!storage->evt_handler) {
-		return;
-	}
-
-	storage->evt_handler(evt);
+	bm_storage_evt_dispatch(storage, evt);
 }
 
 static int bm_storage_rramc_init(struct bm_storage *storage, const struct bm_storage_config *config)
