@@ -44,6 +44,9 @@ static enum mgmt_cb_return os_mgmt_reboot_hook(uint32_t event, enum mgmt_cb_retu
 	return MGMT_CB_OK;
 }
 
+/* Forward declaration of extern function. */
+bool img_mgmt_write_in_progress(void);
+
 int main(void)
 {
 	LOG_INF("UART MCUmgr sample started");
@@ -54,6 +57,11 @@ int main(void)
 		k_cpu_idle();
 
 		smp_uart_process_rx_queue();
+	}
+
+	/* Wait for the new firmware image to be written. */
+	while (img_mgmt_write_in_progress()) {
+		k_sleep(K_MSEC(10));
 	}
 
 	sys_reboot(SYS_REBOOT_WARM);

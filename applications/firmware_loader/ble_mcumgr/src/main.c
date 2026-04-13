@@ -169,6 +169,9 @@ static uint32_t ble_change_address(void)
 	return sd_ble_gap_addr_set(&device_address);
 }
 
+/* Forward declaration of extern function. */
+bool img_mgmt_write_in_progress(void);
+
 int main(void)
 {
 	int err;
@@ -329,6 +332,11 @@ int main(void)
 			__SEV();
 			__WFE();
 		}
+	}
+
+	/* Wait for the new firmware image to be written. */
+	while (img_mgmt_write_in_progress()) {
+		k_sleep(K_MSEC(10));
 	}
 
 	sys_reboot(SYS_REBOOT_WARM);

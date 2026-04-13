@@ -167,3 +167,8 @@ int img_mgmt_write_image_data(unsigned int offset, const void *data, unsigned in
 out:
 	return rc;
 }
+
+bool img_mgmt_write_in_progress(void)
+{
+	return bm_storage_is_busy(&s0_storage);
+}
