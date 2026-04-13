@@ -338,7 +338,7 @@ static void smd_params_reply_perform(uint16_t conn_handle,
  *
  * @param[in]  event  The @ref PM_EVT_CONN_SEC_PARAMS_REQ event.
  */
-static __INLINE void params_req_process(const struct pm_evt *event)
+static inline void params_req_process(const struct pm_evt *event)
 {
 	smd_params_reply_perform(event->conn_handle,
 				 event->conn_sec_params_req.peer_params);
