@@ -332,6 +332,9 @@ static uint32_t manuf_specific_data_encode(const struct ble_adv_data_manufacture
 static uint32_t service_data_encode(const struct ble_adv_data *ble_adv_data, uint8_t *buf,
 				    uint16_t *offset, uint16_t max_size)
 {
+	uint32_t nrf_err;
+	uint8_t srv_buf[BLE_GAP_ADV_SET_DATA_SIZE_MAX];
+	uint16_t data_size;
 	struct ble_adv_data_service *service_data;
 
 	/* Check parameter consistency */
@@ -340,10 +343,6 @@ static uint32_t service_data_encode(const struct ble_adv_data *ble_adv_data, uin
 	}
 
 	for (uint8_t i = 0; i < ble_adv_data->srv_list.len; i++) {
-		uint32_t nrf_err;
-		uint8_t srv_buf[BLE_GAP_ADV_SET_DATA_SIZE_MAX];
-		uint16_t data_size;
-
 		service_data = &ble_adv_data->srv_list.service[i];
 		/* For now implemented only for 16-bit UUID */
 		data_size = AD_TYPE_SERV_DATA_16BIT_UUID_SIZE + service_data->len;
