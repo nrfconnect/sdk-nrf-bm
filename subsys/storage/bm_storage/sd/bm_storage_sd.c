@@ -268,27 +268,41 @@ static void queue_process(void)
 			if (bm_storage_sd.softdevice_is_enabled) {
 				/* Wait for the real SoC event from the SoftDevice. */
 				return;
-			} else {
-				/* The SoftDevice won't send an SoC event, process the result
-				 * of the operation immediately, and clear the current
-				 * operation if it has finished, so we'll load a new one
-				 * in the next loop iteration.
-				 */
-				if (on_operation_success(&bm_storage_sd.current_operation)) {
-					bm_storage_sd.operation_state = OP_NONE;
-					event_send(&bm_storage_sd.current_operation, 0);
-				}
-				/* Continue processing the operation queue */
-				continue;
 			}
 
-		case NRF_ERROR_BUSY:
-			/* The SoftDevice is executing a non-volatile memory operation that was not
-			 * requested by the storage logic.
-			 * Stop processing the queue until a system event is received.
+			/* The SoftDevice won't send an SoC event, process the result
+			 * of the operation immediately, and clear the current
+			 * operation if it has finished, so we'll load a new one
+			 * in the next loop iteration.
 			 */
-			bm_storage_sd.queue_state = QUEUE_WAITING;
+			if (on_operation_success(&bm_storage_sd.current_operation)) {
+				bm_storage_sd.operation_state = OP_NONE;
+				event_send(&bm_storage_sd.current_operation, 0);
+			}
+			/* Continue processing the operation queue */
+			continue;
+
+
+		case NRF_ERROR_BUSY:
+			/* The SoftDevice is executing a non-volatile memory operation
+			 * that was not requested by this library.
+			 */
+			if (bm_storage_sd.softdevice_is_enabled) {
+				/* Stop processing the queue until the next SoC event is received.
+				 */
+				bm_storage_sd.queue_state = QUEUE_WAITING;
+				return;
+			}
+
+			/* Stop processing the queue until the user enqueues another
+			 * operation. Otherwise, there is a chance we might drain the
+			 * queue and fail all the operations.
+			 */
+			bm_storage_sd.queue_state = QUEUE_IDLE;
+			bm_storage_sd.operation_state = OP_NONE;
+			event_send(&bm_storage_sd.current_operation, -EBUSY);
 			return;
+
 
 		default:
 			/* The SoftDevice API returned an error synchronously.
