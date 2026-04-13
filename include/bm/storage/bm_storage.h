@@ -334,6 +334,20 @@ bool bm_storage_is_busy(const struct bm_storage *storage);
  */
 const struct bm_storage_info *bm_storage_nvm_info_get(const struct bm_storage *storage);
 
+/**
+ * @brief Dispatch a storage event to the application's event handler.
+ *
+ * When the event scheduler (@c CONFIG_BM_SCHEDULER) is enabled and the event is
+ * synchronous, the event is deferred for delivery in the main thread context.
+ * Otherwise, the event handler is invoked directly.
+ *
+ * This function is intended for use by backend implementations.
+ *
+ * @param[in] storage The storage instance.
+ * @param[in] evt The event to dispatch.
+ */
+void bm_storage_evt_dispatch(const struct bm_storage *storage, struct bm_storage_evt *evt);
+
 #ifdef __cplusplus
 }
 #endif

@@ -102,6 +102,8 @@ static
 #endif
 void bm_storage_sd_on_soc_evt(uint32_t evt, void *ctx);
 
+static bool on_operation_success(struct bm_storage_sd_op *op);
+
 RING_BUF_DECLARE(sd_fifo, CONFIG_BM_STORAGE_BACKEND_SD_QUEUE_SIZE *
 		 sizeof(struct bm_storage_sd_op));
 
@@ -138,7 +140,7 @@ static void event_send(const struct bm_storage_sd_op *op, uint32_t result)
 		break;
 	}
 
-	op->storage->evt_handler(&evt);
+	bm_storage_evt_dispatch(op->storage, &evt);
 }
 
 __aligned(sizeof(uint32_t)) /* SoftDevice requirement */
@@ -240,50 +242,62 @@ static void queue_process(void)
 {
 	uint32_t ret;
 
-	if (bm_storage_sd.operation_state == OP_NONE) {
-		if (!queue_load_next()) {
-			bm_storage_sd.queue_state = QUEUE_IDLE;
+	for (;;) {
+		if (bm_storage_sd.operation_state == OP_NONE) {
+			if (!queue_load_next()) {
+				bm_storage_sd.queue_state = QUEUE_IDLE;
+				return;
+			}
+		}
+
+		ret = 0;
+		bm_storage_sd.queue_state = QUEUE_RUNNING;
+		bm_storage_sd.operation_state = OP_EXECUTING;
+
+		switch (bm_storage_sd.current_operation.id) {
+		case WRITE:
+			ret = write_execute(&bm_storage_sd.current_operation);
+			break;
+		case ERASE:
+			ret = erase_execute(&bm_storage_sd.current_operation);
+			break;
+		}
+
+		switch (ret) {
+		case NRF_SUCCESS:
+			if (bm_storage_sd.softdevice_is_enabled) {
+				/* Wait for the real SoC event from the SoftDevice. */
+				return;
+			} else {
+				/* The SoftDevice won't send an SoC event, process the result
+				 * of the operation immediately, and clear the current
+				 * operation if it has finished, so we'll load a new one
+				 * in the next loop iteration.
+				 */
+				if (on_operation_success(&bm_storage_sd.current_operation)) {
+					bm_storage_sd.operation_state = OP_NONE;
+					event_send(&bm_storage_sd.current_operation, 0);
+				}
+				/* Continue processing the operation queue */
+				continue;
+			}
+
+		case NRF_ERROR_BUSY:
+			/* The SoftDevice is executing a non-volatile memory operation that was not
+			 * requested by the storage logic.
+			 * Stop processing the queue until a system event is received.
+			 */
+			bm_storage_sd.queue_state = QUEUE_WAITING;
 			return;
+
+		default:
+			/* The SoftDevice API returned an error synchronously.
+			 * This is not recoverable, process the next operation immediately.
+			 */
+			bm_storage_sd.operation_state = OP_NONE;
+			event_send(&bm_storage_sd.current_operation, -EIO);
+			continue;
 		}
-	}
-
-	ret = 0;
-	bm_storage_sd.queue_state = QUEUE_RUNNING;
-	bm_storage_sd.operation_state = OP_EXECUTING;
-
-	switch (bm_storage_sd.current_operation.id) {
-	case WRITE:
-		ret = write_execute(&bm_storage_sd.current_operation);
-		break;
-	case ERASE:
-		ret = erase_execute(&bm_storage_sd.current_operation);
-		break;
-	}
-
-	switch (ret) {
-	case NRF_SUCCESS:
-		/* The operation was accepted by the SoftDevice.
-		 * If the SoftDevice is enabled, wait for a SoC event, otherwise simulate it.
-		 */
-		if (!bm_storage_sd.softdevice_is_enabled) {
-			bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
-		}
-		break;
-	case NRF_ERROR_BUSY:
-		/* The SoftDevice is executing a non-volatile memory operation that was not
-		 * requested by the storage logic.
-		 * Stop processing the queue until a system event is received.
-		 */
-		bm_storage_sd.queue_state = QUEUE_WAITING;
-		break;
-	default:
-		/* An error has occurred and we cannot proceed further with this operation.
-		 * Process the next operation in the queue.
-		 */
-		event_send(&bm_storage_sd.current_operation, -EIO);
-		bm_storage_sd.operation_state = OP_NONE;
-		queue_process();
-		break;
 	}
 }
 

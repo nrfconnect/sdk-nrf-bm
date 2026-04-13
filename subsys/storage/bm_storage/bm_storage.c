@@ -10,6 +10,10 @@
 #include <sys/types.h>
 #include <bm/storage/bm_storage.h>
 
+#if defined(CONFIG_BM_SCHEDULER)
+#include <bm/bm_scheduler.h>
+#endif
+
 static bool is_within_bounds(uint32_t offset, uint32_t len, uint32_t size)
 {
 	return (offset + len <= size) && (offset + len > offset);
@@ -190,4 +194,46 @@ const struct bm_storage_info *bm_storage_nvm_info_get(const struct bm_storage *s
 	}
 
 	return storage->nvm_info;
+}
+
+#if defined(CONFIG_BM_SCHEDULER)
+struct bm_storage_deferred_evt {
+	bm_storage_evt_handler_t handler;
+	struct bm_storage_evt evt;
+};
+
+static void deferred_evt_handler(void *data, size_t len)
+{
+	struct bm_storage_deferred_evt *deferred = data;
+
+	deferred->handler(&deferred->evt);
+}
+#endif
+
+void bm_storage_evt_dispatch(const struct bm_storage *storage, struct bm_storage_evt *evt)
+{
+	if (!storage->evt_handler) {
+		return;
+	}
+
+#if defined(CONFIG_BM_SCHEDULER)
+	if (!evt->is_async) {
+		int err;
+		struct bm_storage_deferred_evt deferred = {
+			.handler = storage->evt_handler,
+			.evt = *evt,
+		};
+
+		deferred.evt.is_async = true;
+
+		err = bm_scheduler_defer(deferred_evt_handler, &deferred, sizeof(deferred));
+		__ASSERT_NO_MSG(!err);
+
+		if (!err) {
+			return;
+		}
+	}
+#endif
+
+	storage->evt_handler(evt);
 }
