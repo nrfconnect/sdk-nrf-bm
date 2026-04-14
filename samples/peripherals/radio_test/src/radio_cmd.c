@@ -249,7 +249,6 @@ static void tx_modulated_carrier_end(void)
 static void rx_end(void)
 {
 	uint32_t recv_pkt, req_pkt;
-	float error_rate;
 
 	struct radio_rx_stats rx_stats;
 
@@ -265,16 +264,10 @@ static void rx_end(void)
 		return;
 	}
 
-	error_rate = ((float)(req_pkt - recv_pkt) / req_pkt) * 100.0f;
 
 	printk("\n");
 	printk("Received number of packets: %d\n", recv_pkt);
-	printk("Required number of packages: %d\n", req_pkt);
-	printk("Error rate: %.2f%%\n", (double)error_rate);
-
-	if (error_rate >= 10) {
-		printk("\033[91mWarning: High error rate! \033[0m\n");
-	}
+	printk("Required number of packets: %d\n", req_pkt);
 }
 
 static int cmd_tx_modulated_carrier_start(const struct shell *shell,
