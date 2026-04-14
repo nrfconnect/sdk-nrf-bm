@@ -823,10 +823,6 @@ uint32_t pm_peer_data_store(uint16_t peer_id, enum pm_peer_data_id data_id, cons
 		return NRF_ERROR_NULL;
 	}
 
-	if (!IS_ALIGNED(length, 4)) {
-		return NRF_ERROR_INVALID_PARAM;
-	}
-
 	if (data_id == PM_PEER_DATA_ID_BONDING) {
 		uint16_t dupl_peer_id;
 

@@ -163,6 +163,7 @@ Libraries
    * Updated the ``params`` union field of the :c:struct:`pm_evt` structure to an anonymous union.
    * Removed the ``CONFIG_MBEDTLS_PSA_STATIC_KEY_SLOT_BUFFER_SIZE`` Kconfig option.
      The PSA Crypto core can deduce the key slot buffer size based on the keys enabled in the build, so there is no need to define the size manually.
+   * Fixed the :c:func:`pm_peer_data_store`, :c:func:`pm_peer_data_remote_db_store` and :c:func:`pm_peer_data_app_data_store` functions to allow data lengths that are not word aligned.
 
 * :ref:`lib_bm_buttons` library:
 
