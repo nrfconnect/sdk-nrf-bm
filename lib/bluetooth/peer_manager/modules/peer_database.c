@@ -260,7 +260,7 @@ static void peer_data_point_to_buffer(struct pm_peer_data *peer_data,
 	peer_data->data_id = data_id;
 
 	peer_data->all_data = (struct pm_peer_data_bonding *)buffer_memory;
-	peer_data->length_words = BYTES_TO_WORDS(n_bytes);
+	peer_data->length = n_bytes;
 }
 
 static void peer_data_const_point_to_buffer(struct pm_peer_data_const *peer_data,
@@ -271,20 +271,20 @@ static void peer_data_const_point_to_buffer(struct pm_peer_data_const *peer_data
 				  n_bufs);
 }
 
-static void write_buf_length_words_set(struct pm_peer_data_const *peer_data)
+static void write_buf_length_set(struct pm_peer_data_const *peer_data)
 {
 	switch (peer_data->data_id) {
 	case PM_PEER_DATA_ID_BONDING:
-		peer_data->length_words = PM_BONDING_DATA_N_WORDS();
+		peer_data->length = sizeof(struct pm_peer_data_bonding);
 		break;
 	case PM_PEER_DATA_ID_SERVICE_CHANGED_PENDING:
-		peer_data->length_words = PM_SC_STATE_N_WORDS();
+		peer_data->length = sizeof(uint32_t);
 		break;
 	case PM_PEER_DATA_ID_PEER_RANK:
-		peer_data->length_words = PM_USAGE_INDEX_N_WORDS();
+		peer_data->length = sizeof(uint32_t);
 		break;
 	case PM_PEER_DATA_ID_GATT_LOCAL:
-		peer_data->length_words = PM_LOCAL_DB_N_WORDS(peer_data->local_gatt_db->len);
+		peer_data->length = peer_data->local_gatt_db->len + PM_LOCAL_DB_LEN_OVERHEAD_BYTES;
 		break;
 	default:
 		/* No action needed. */
@@ -323,7 +323,7 @@ uint32_t write_buf_store(struct pdb_buffer_record *write_buffer_record)
 
 	peer_data_const_point_to_buffer(&peer_data, write_buffer_record->data_id, buffer_memory,
 					write_buffer_record->n_bufs);
-	write_buf_length_words_set(&peer_data);
+	write_buf_length_set(&peer_data);
 
 	nrf_err = pds_peer_data_store(write_buffer_record->peer_id, &peer_data,
 				      &write_buffer_record->store_token);
@@ -594,7 +594,7 @@ uint32_t pdb_write_buf_get(uint16_t peer_id, enum pm_peer_data_id data_id, uint3
 
 	peer_data_point_to_buffer(peer_data, data_id, buffer_memory, n_bufs);
 	if (new_record && (data_id == PM_PEER_DATA_ID_GATT_LOCAL)) {
-		peer_data->local_gatt_db->len = PM_LOCAL_DB_LEN(peer_data->length_words);
+		peer_data->local_gatt_db->len = peer_data->length - PM_LOCAL_DB_LEN_OVERHEAD_BYTES;
 	}
 
 	return NRF_SUCCESS;

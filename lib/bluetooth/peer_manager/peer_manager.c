@@ -842,7 +842,7 @@ uint32_t pm_peer_data_store(uint16_t peer_id, enum pm_peer_data_id data_id, cons
 	struct pm_peer_data_const peer_data;
 
 	memset(&peer_data, 0, sizeof(peer_data));
-	peer_data.length_words = BYTES_TO_WORDS(length);
+	peer_data.length = length;
 	peer_data.data_id = data_id;
 	peer_data.all_data = data;
 
@@ -925,7 +925,7 @@ uint32_t pm_peer_new(uint16_t *new_peer_id, struct pm_peer_data_bonding *bonding
 
 	peer_data.data_id = PM_PEER_DATA_ID_BONDING;
 	peer_data.bonding_data = bonding_data;
-	peer_data.length_words = BYTES_TO_WORDS(sizeof(struct pm_peer_data_bonding));
+	peer_data.length = sizeof(struct pm_peer_data_bonding);
 
 	nrf_err = pds_peer_data_store(*new_peer_id, &peer_data, token);
 
@@ -1095,7 +1095,7 @@ uint32_t pm_peer_rank_highest(uint16_t peer_id)
 
 	uint32_t nrf_err;
 	struct pm_peer_data_const peer_data = {
-		.length_words = BYTES_TO_WORDS(sizeof(current_highest_peer_rank)),
+		.length = sizeof(current_highest_peer_rank),
 		.data_id = PM_PEER_DATA_ID_PEER_RANK,
 		.peer_rank = &current_highest_peer_rank};
 

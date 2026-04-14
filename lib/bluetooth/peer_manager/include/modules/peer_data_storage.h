@@ -58,7 +58,7 @@ uint32_t pds_init(void);
  *
  * @param[in]  peer_id   The peer the data belongs to.
  * @param[in]  data_id   The data to retrieve.
- * @param[out] data      The peer data. May not be @c NULL. data.length_words and data.data_id
+ * @param[out] data      The peer data. May not be @c NULL. data.length and data.data_id
  *                       are ignored. data.all_data is ignored if @p buf_len is @c NULL.
  * @param[in]  buf_len   Length of the provided buffer, in bytes. Pass @c NULL to only copy
  *                       a pointer to the data in flash.
