@@ -48,14 +48,6 @@ uint32_t stub_sd_ble_uuid_vs_add_success(ble_uuid128_t const *vs_uuid, uint8_t *
 	return NRF_SUCCESS;
 }
 
-void ble_evt_send(const ble_evt_t *evt)
-{
-	TYPE_SECTION_FOREACH(struct nrf_sdh_ble_evt_observer, nrf_sdh_ble_evt_observers, obs)
-	{
-		obs->handler(evt, obs->context);
-	}
-}
-
 static void ble_nus_client_evt_handler(struct ble_nus_client *ble_nus_client,
 				       const struct ble_nus_client_evt *ble_nus_evt)
 {
@@ -568,8 +560,6 @@ void test_ble_nus_client_on_ble_evt(void)
 
 	__cmock_ble_db_discovery_service_register_ExpectAnyArgsAndReturn(NRF_SUCCESS);
 	__cmock_ble_gq_conn_handle_register_ExpectAnyArgsAndReturn(NRF_SUCCESS);
-	__cmock_ble_db_discovery_on_ble_evt_ExpectAnyArgs();
-	__cmock_ble_gq_on_ble_evt_ExpectAnyArgs();
 	__cmock_sd_ble_uuid_vs_add_Stub(stub_sd_ble_uuid_vs_add_success);
 
 	nrf_err = ble_nus_client_init(&ble_nus_client, &nus_cfg);
@@ -580,9 +570,7 @@ void test_ble_nus_client_on_ble_evt(void)
 	ble_nus_client_handles_assign(&ble_nus_client, db_evt.conn_handle,
 				      &nus_client_evt.discovery_complete.handles);
 
-	__cmock_ble_db_discovery_on_ble_evt_ExpectAnyArgs();
-	__cmock_ble_gq_on_ble_evt_ExpectAnyArgs();
-	ble_evt_send(&ble_evt);
+	ble_nus_client_on_ble_evt(&ble_evt, &ble_nus_client);
 	TEST_ASSERT_EQUAL(BLE_NUS_CLIENT_EVT_TX_DATA, nus_client_evt.evt_type);
 	TEST_ASSERT_EQUAL(ble_evt.evt.gattc_evt.params.hvx.data[0],
 			  nus_client_evt.tx_data.data[0]);
@@ -591,7 +579,7 @@ void test_ble_nus_client_on_ble_evt(void)
 	ble_evt.header.evt_id = BLE_GAP_EVT_DISCONNECTED;
 	ble_evt.evt.gap_evt.conn_handle = test_case_conn_handle;
 	ble_evt.evt.gap_evt.params.disconnected.reason = BLE_HCI_LOCAL_HOST_TERMINATED_CONNECTION;
-	ble_evt_send(&ble_evt);
+	ble_nus_client_on_ble_evt(&ble_evt, &ble_nus_client);
 	TEST_ASSERT_EQUAL(BLE_NUS_CLIENT_EVT_DISCONNECTED, nus_client_evt.evt_type);
 	TEST_ASSERT_EQUAL(ble_evt.evt.gap_evt.params.disconnected.reason,
 			  nus_client_evt.disconnected.reason);

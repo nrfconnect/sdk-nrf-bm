@@ -29,14 +29,6 @@ BLE_DB_DISCOVERY_DEF(db_disc);
 
 static struct ble_bas_client_evt bas_client_evt;
 
-void ble_evt_send(const ble_evt_t *evt)
-{
-	TYPE_SECTION_FOREACH(struct nrf_sdh_ble_evt_observer, nrf_sdh_ble_evt_observers, obs)
-	{
-		obs->handler(evt, obs->context);
-	}
-}
-
 static void ble_bas_client_evt_handler(struct ble_bas_client *bas_client,
 				       const struct ble_bas_client_evt *evt)
 {

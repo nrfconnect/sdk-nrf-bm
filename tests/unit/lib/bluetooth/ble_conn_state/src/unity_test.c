@@ -11,6 +11,8 @@
 #include <bm/bluetooth/ble_conn_state.h>
 #include <zephyr/sys/util.h>
 
+#include <sdh_evt_dispatch.h>
+
 static uint16_t conn_handle1;
 static uint16_t conn_handle2 = 1;
 static uint16_t conn_handle3 = 2;
@@ -59,8 +61,6 @@ uint16_t nrf_sdh_ble_conn_handle_get(int idx)
 {
 	return conn_handles_registered[idx];
 }
-
-extern void ble_evt_handler(const ble_evt_t *ble_evt, void *ctx);
 
 static uint32_t arbitrary_context;
 /* Conn handle that will cause flag operations to overflow into next flag if not checked. */
@@ -158,14 +158,14 @@ void test_ble_conn_state_init(void)
 	conn_handle_register(conn_handle7);
 	conn_handle_register(conn_handle8);
 
-	ble_evt_handler(connected_evt(conn_handle1, dummy_role), NULL);
-	ble_evt_handler(connected_evt(conn_handle2, dummy_role), NULL);
-	ble_evt_handler(connected_evt(conn_handle3, dummy_role), NULL);
-	ble_evt_handler(connected_evt(conn_handle4, dummy_role), NULL);
-	ble_evt_handler(connected_evt(conn_handle5, dummy_role), NULL);
-	ble_evt_handler(connected_evt(conn_handle6, dummy_role), NULL);
-	ble_evt_handler(connected_evt(conn_handle7, dummy_role), NULL);
-	ble_evt_handler(connected_evt(conn_handle8, dummy_role), NULL);
+	sdh_evt_dispatch_ble(connected_evt(conn_handle1, dummy_role));
+	sdh_evt_dispatch_ble(connected_evt(conn_handle2, dummy_role));
+	sdh_evt_dispatch_ble(connected_evt(conn_handle3, dummy_role));
+	sdh_evt_dispatch_ble(connected_evt(conn_handle4, dummy_role));
+	sdh_evt_dispatch_ble(connected_evt(conn_handle5, dummy_role));
+	sdh_evt_dispatch_ble(connected_evt(conn_handle6, dummy_role));
+	sdh_evt_dispatch_ble(connected_evt(conn_handle7, dummy_role));
+	sdh_evt_dispatch_ble(connected_evt(conn_handle8, dummy_role));
 
 	valid_conn_handles = ble_conn_state_conn_count();
 	TEST_ASSERT(valid_conn_handles > 0);
@@ -210,14 +210,14 @@ void test_ble_conn_state_valid(void)
 	conn_handle_register(conn_handle8);
 
 	/* Activate some conn. handles and check that those are reported as valid. */
-	ble_evt_handler(connected_evt(conn_handle1, dummy_role), NULL);
-	ble_evt_handler(connected_evt(conn_handle2, dummy_role), NULL);
-	ble_evt_handler(connected_evt(conn_handle3, dummy_role), NULL);
-	ble_evt_handler(connected_evt(conn_handle4, dummy_role), NULL);
-	ble_evt_handler(connected_evt(conn_handle5, dummy_role), NULL);
-	ble_evt_handler(connected_evt(conn_handle6, dummy_role), NULL);
-	ble_evt_handler(connected_evt(conn_handle7, dummy_role), NULL);
-	ble_evt_handler(connected_evt(conn_handle8, dummy_role), NULL);
+	sdh_evt_dispatch_ble(connected_evt(conn_handle1, dummy_role));
+	sdh_evt_dispatch_ble(connected_evt(conn_handle2, dummy_role));
+	sdh_evt_dispatch_ble(connected_evt(conn_handle3, dummy_role));
+	sdh_evt_dispatch_ble(connected_evt(conn_handle4, dummy_role));
+	sdh_evt_dispatch_ble(connected_evt(conn_handle5, dummy_role));
+	sdh_evt_dispatch_ble(connected_evt(conn_handle6, dummy_role));
+	sdh_evt_dispatch_ble(connected_evt(conn_handle7, dummy_role));
+	sdh_evt_dispatch_ble(connected_evt(conn_handle8, dummy_role));
 
 	for (uint16_t conn_handle = 0; conn_handle < (65535); conn_handle++) {
 		valid = ble_conn_state_valid(conn_handle);
@@ -234,9 +234,9 @@ void test_ble_conn_state_valid(void)
 	/* Deactivate some conn handles and check that they are still valid
 	 * Handles which are disconnected should still be valid until a connect event occurs
 	 */
-	ble_evt_handler(disconnected_evt(conn_handle2), NULL);
-	ble_evt_handler(disconnected_evt(conn_handle3), NULL);
-	ble_evt_handler(disconnected_evt(conn_handle7), NULL);
+	sdh_evt_dispatch_ble(disconnected_evt(conn_handle2));
+	sdh_evt_dispatch_ble(disconnected_evt(conn_handle3));
+	sdh_evt_dispatch_ble(disconnected_evt(conn_handle7));
 
 	for (uint16_t conn_handle = 0; conn_handle < (65535); conn_handle++) {
 		valid = ble_conn_state_valid(conn_handle);
@@ -257,7 +257,7 @@ void test_ble_conn_state_valid(void)
 	 * invalid
 	 */
 	conn_handle_register(conn_handle3);
-	ble_evt_handler(connected_evt(conn_handle3, dummy_role), NULL);
+	sdh_evt_dispatch_ble(connected_evt(conn_handle3, dummy_role));
 
 	for (uint16_t conn_handle = 0; conn_handle < (65535); conn_handle++) {
 		sprintf(msg, "conn_handle = %d", conn_handle);
@@ -293,7 +293,7 @@ void test_ble_conn_state_role(void)
 #if defined(BLE_GAP_ROLE_CENTRAL)
 	/* Activating a connection with CENTRAL role. */
 	conn_handle_register(conn_handle1);
-	ble_evt_handler(connected_evt(conn_handle1, BLE_GAP_ROLE_CENTRAL), NULL);
+	sdh_evt_dispatch_ble(connected_evt(conn_handle1, BLE_GAP_ROLE_CENTRAL));
 
 	/* Test that the role is properly returned. */
 	role = ble_conn_state_role(conn_handle1);
@@ -306,26 +306,26 @@ void test_ble_conn_state_role(void)
 	/* Disconnect a handle and test that it still has a valid role,
 	 * until a new connection occurs.
 	 */
-	ble_evt_handler(disconnected_evt(conn_handle1), NULL);
+	sdh_evt_dispatch_ble(disconnected_evt(conn_handle1));
 	role = ble_conn_state_role(conn_handle1);
 	TEST_ASSERT_EQUAL_UINT(BLE_GAP_ROLE_CENTRAL, role);
 
 	/* Test that a disconnected handle is invalidated after a connection has occurred. */
 	conn_handle_register(conn_handle2);
-	ble_evt_handler(connected_evt(conn_handle2, BLE_GAP_ROLE_CENTRAL), NULL);
+	sdh_evt_dispatch_ble(connected_evt(conn_handle2, BLE_GAP_ROLE_CENTRAL));
 	role = ble_conn_state_role(conn_handle1);
 	TEST_ASSERT_EQUAL_UINT(BLE_GAP_ROLE_INVALID, role);
 #endif
 	/* (Re)activate both connections */
-	ble_evt_handler(disconnected_evt(conn_handle1), NULL);
-	ble_evt_handler(disconnected_evt(conn_handle2), NULL);
+	sdh_evt_dispatch_ble(disconnected_evt(conn_handle1));
+	sdh_evt_dispatch_ble(disconnected_evt(conn_handle2));
 #if defined(BLE_GAP_ROLE_CENTRAL)
 	conn_handle_register(conn_handle1);
-	ble_evt_handler(connected_evt(conn_handle1, BLE_GAP_ROLE_CENTRAL), NULL);
+	sdh_evt_dispatch_ble(connected_evt(conn_handle1, BLE_GAP_ROLE_CENTRAL));
 #endif
 
 	conn_handle_register(conn_handle2);
-	ble_evt_handler(connected_evt(conn_handle2, BLE_GAP_ROLE_PERIPH), NULL);
+	sdh_evt_dispatch_ble(connected_evt(conn_handle2, BLE_GAP_ROLE_PERIPH));
 
 #if defined(BLE_GAP_ROLE_CENTRAL)
 	role = ble_conn_state_role(conn_handle1);
@@ -370,7 +370,7 @@ void test_ble_conn_state_encrypted(void)
 	TEST_ASSERT_FALSE(lesc);
 
 	/* Testing that an active, unencrypted handle returns unencrypted. */
-	ble_evt_handler(connected_evt(conn_handle1, BLE_GAP_ROLE_PERIPH), NULL);
+	sdh_evt_dispatch_ble(connected_evt(conn_handle1, BLE_GAP_ROLE_PERIPH));
 	encrypted      = ble_conn_state_encrypted(conn_handle1);
 	mitm_protected = ble_conn_state_mitm_protected(conn_handle1);
 	lesc           = ble_conn_state_lesc(conn_handle1);
@@ -379,7 +379,7 @@ void test_ble_conn_state_encrypted(void)
 	TEST_ASSERT_FALSE(lesc);
 
 	/* Testing that a security level of 2 or greater returns encrypted */
-	ble_evt_handler(conn_sec_update_evt(conn_handle1, 2), NULL);
+	sdh_evt_dispatch_ble(conn_sec_update_evt(conn_handle1, 2));
 	encrypted      = ble_conn_state_encrypted(conn_handle1);
 	mitm_protected = ble_conn_state_mitm_protected(conn_handle1);
 	lesc           = ble_conn_state_lesc(conn_handle1);
@@ -388,18 +388,18 @@ void test_ble_conn_state_encrypted(void)
 	TEST_ASSERT_FALSE(lesc);
 
 	/* Testing that a successful auth_status with LESC returns LESC. */
-	ble_evt_handler(auth_status_evt(conn_handle1, false, BLE_GAP_SEC_STATUS_SUCCESS), NULL);
+	sdh_evt_dispatch_ble(auth_status_evt(conn_handle1, false, BLE_GAP_SEC_STATUS_SUCCESS));
 	lesc           = ble_conn_state_lesc(conn_handle1);
 	TEST_ASSERT_FALSE(lesc);
-	ble_evt_handler(auth_status_evt(conn_handle1, true, BLE_GAP_SEC_STATUS_UNSPECIFIED), NULL);
+	sdh_evt_dispatch_ble(auth_status_evt(conn_handle1, true, BLE_GAP_SEC_STATUS_UNSPECIFIED));
 	lesc           = ble_conn_state_lesc(conn_handle1);
 	TEST_ASSERT_FALSE(lesc);
-	ble_evt_handler(auth_status_evt(conn_handle1, true, BLE_GAP_SEC_STATUS_SUCCESS), NULL);
+	sdh_evt_dispatch_ble(auth_status_evt(conn_handle1, true, BLE_GAP_SEC_STATUS_SUCCESS));
 	lesc           = ble_conn_state_lesc(conn_handle1);
 	TEST_ASSERT(lesc);
 
 	/* level 3 returns MITM protected. */
-	ble_evt_handler(conn_sec_update_evt(conn_handle1, 3), NULL);
+	sdh_evt_dispatch_ble(conn_sec_update_evt(conn_handle1, 3));
 	encrypted      = ble_conn_state_encrypted(conn_handle1);
 	mitm_protected = ble_conn_state_mitm_protected(conn_handle1);
 	lesc           = ble_conn_state_lesc(conn_handle1);
@@ -408,7 +408,7 @@ void test_ble_conn_state_encrypted(void)
 	TEST_ASSERT_FALSE(lesc);
 
 	/* level 4 returns LESC. */
-	ble_evt_handler(conn_sec_update_evt(conn_handle1, 4), NULL);
+	sdh_evt_dispatch_ble(conn_sec_update_evt(conn_handle1, 4));
 	encrypted      = ble_conn_state_encrypted(conn_handle1);
 	mitm_protected = ble_conn_state_mitm_protected(conn_handle1);
 	lesc           = ble_conn_state_lesc(conn_handle1);
@@ -417,7 +417,7 @@ void test_ble_conn_state_encrypted(void)
 	TEST_ASSERT(lesc);
 
 	/* Testing that a security level of less than 2 returns unencrypted. */
-	ble_evt_handler(conn_sec_update_evt(conn_handle1, 0), NULL);
+	sdh_evt_dispatch_ble(conn_sec_update_evt(conn_handle1, 0));
 	encrypted      = ble_conn_state_encrypted(conn_handle1);
 	mitm_protected = ble_conn_state_mitm_protected(conn_handle1);
 	lesc           = ble_conn_state_lesc(conn_handle1);
@@ -425,7 +425,7 @@ void test_ble_conn_state_encrypted(void)
 	TEST_ASSERT_FALSE(mitm_protected);
 	TEST_ASSERT_FALSE(lesc);
 
-	ble_evt_handler(conn_sec_update_evt(conn_handle1, 1), NULL);
+	sdh_evt_dispatch_ble(conn_sec_update_evt(conn_handle1, 1));
 	encrypted      = ble_conn_state_encrypted(conn_handle1);
 	mitm_protected = ble_conn_state_mitm_protected(conn_handle1);
 	lesc           = ble_conn_state_lesc(conn_handle1);
@@ -434,8 +434,8 @@ void test_ble_conn_state_encrypted(void)
 	TEST_ASSERT_FALSE(lesc);
 
 	/* Adding a second connection. */
-	ble_evt_handler(connected_evt(conn_handle2, BLE_GAP_ROLE_PERIPH), NULL);
-	ble_evt_handler(conn_sec_update_evt(conn_handle2, 4), NULL);
+	sdh_evt_dispatch_ble(connected_evt(conn_handle2, BLE_GAP_ROLE_PERIPH));
+	sdh_evt_dispatch_ble(conn_sec_update_evt(conn_handle2, 4));
 	encrypted      = ble_conn_state_encrypted(conn_handle2);
 	mitm_protected = ble_conn_state_mitm_protected(conn_handle2);
 	lesc           = ble_conn_state_lesc(conn_handle2);
@@ -486,9 +486,9 @@ void test_ble_conn_state_status(void)
 			       BLE_CONN_STATUS_INVALID);
 
 	/* Activating some conn handles. */
-	ble_evt_handler(connected_evt(conn_handle1, dummy_role), NULL);
-	ble_evt_handler(connected_evt(conn_handle2, dummy_role), NULL);
-	ble_evt_handler(connected_evt(conn_handle3, dummy_role), NULL);
+	sdh_evt_dispatch_ble(connected_evt(conn_handle1, dummy_role));
+	sdh_evt_dispatch_ble(connected_evt(conn_handle2, dummy_role));
+	sdh_evt_dispatch_ble(connected_evt(conn_handle3, dummy_role));
 
 	/* Let's test they are connected */
 	TEST_ASSERT_EQUAL_UINT(ble_conn_state_status(conn_handle1), BLE_CONN_STATUS_CONNECTED);
@@ -496,14 +496,14 @@ void test_ble_conn_state_status(void)
 	TEST_ASSERT_EQUAL_UINT(ble_conn_state_status(conn_handle3), BLE_CONN_STATUS_CONNECTED);
 
 	/* Disconnect one handle */
-	ble_evt_handler(disconnected_evt(conn_handle2), NULL);
+	sdh_evt_dispatch_ble(disconnected_evt(conn_handle2));
 	/* Its status should be DISCONNECTED now */
 	TEST_ASSERT_EQUAL_UINT(ble_conn_state_status(conn_handle1), BLE_CONN_STATUS_CONNECTED);
 	TEST_ASSERT_EQUAL_UINT(ble_conn_state_status(conn_handle2), BLE_CONN_STATUS_DISCONNECTED);
 	TEST_ASSERT_EQUAL_UINT(ble_conn_state_status(conn_handle3), BLE_CONN_STATUS_CONNECTED);
 
 	/* Disconnect another handle */
-	ble_evt_handler(disconnected_evt(conn_handle3), NULL);
+	sdh_evt_dispatch_ble(disconnected_evt(conn_handle3));
 	/* There should be two connections whose status is DISCONNECTED */
 	TEST_ASSERT_EQUAL_UINT(ble_conn_state_status(conn_handle1), BLE_CONN_STATUS_CONNECTED);
 	TEST_ASSERT_EQUAL_UINT(ble_conn_state_status(conn_handle2), BLE_CONN_STATUS_DISCONNECTED);
@@ -517,7 +517,7 @@ void test_ble_conn_state_status(void)
 	TEST_ASSERT(valid);
 
 	/* Reactivate a connection handle */
-	ble_evt_handler(connected_evt(conn_handle3, dummy_role), NULL);
+	sdh_evt_dispatch_ble(connected_evt(conn_handle3, dummy_role));
 
 	/* After a connection event is received, disconnected connections are purged */
 	TEST_ASSERT_EQUAL_UINT(ble_conn_state_status(conn_handle1), BLE_CONN_STATUS_CONNECTED);
@@ -528,7 +528,7 @@ void test_ble_conn_state_status(void)
 	TEST_ASSERT_FALSE(valid);
 
 	/* Let's disconnect another handle */
-	ble_evt_handler(disconnected_evt(conn_handle1), NULL);
+	sdh_evt_dispatch_ble(disconnected_evt(conn_handle1));
 
 	TEST_ASSERT_EQUAL_UINT(ble_conn_state_status(conn_handle1), BLE_CONN_STATUS_DISCONNECTED);
 	TEST_ASSERT_EQUAL_UINT(ble_conn_state_status(conn_handle2), BLE_CONN_STATUS_INVALID);
@@ -539,18 +539,18 @@ void test_ble_conn_state_status(void)
 	valid = ble_conn_state_status(conn_handle2);
 	TEST_ASSERT_FALSE(valid);
 
-	ble_evt_handler(disconnected_evt(conn_handle3), NULL);
+	sdh_evt_dispatch_ble(disconnected_evt(conn_handle3));
 #endif
 
 	dummy_role = BLE_GAP_ROLE_PERIPH;
 
-	ble_evt_handler(connected_evt(conn_handle1, dummy_role), NULL);
+	sdh_evt_dispatch_ble(connected_evt(conn_handle1, dummy_role));
 	TEST_ASSERT_EQUAL_UINT(ble_conn_state_status(conn_handle1), BLE_CONN_STATUS_CONNECTED);
 
-	ble_evt_handler(disconnected_evt(conn_handle1), NULL);
+	sdh_evt_dispatch_ble(disconnected_evt(conn_handle1));
 	TEST_ASSERT_EQUAL_UINT(ble_conn_state_status(conn_handle1), BLE_CONN_STATUS_DISCONNECTED);
 
-	ble_evt_handler(connected_evt(conn_handle3, dummy_role), NULL);
+	sdh_evt_dispatch_ble(connected_evt(conn_handle3, dummy_role));
 	TEST_ASSERT_EQUAL_UINT(ble_conn_state_status(conn_handle1), BLE_CONN_STATUS_INVALID);
 
 	/* Testing overflow of conn_handle. */
@@ -576,7 +576,7 @@ void test_ble_conn_state_connections_and_list(void)
 	/* Activating all connections. Testing that n is updated. */
 	for (int i = 0; i < 8; i++) {
 		conn_handle_register(conn_handles[i]);
-		ble_evt_handler(connected_evt(conn_handles[i], BLE_GAP_ROLE_PERIPH), NULL);
+		sdh_evt_dispatch_ble(connected_evt(conn_handles[i], BLE_GAP_ROLE_PERIPH));
 	}
 
 	connections = ble_conn_state_conn_count();
@@ -588,7 +588,7 @@ void test_ble_conn_state_connections_and_list(void)
 
 	/* Deactivating all but one connection. Testing that n is updated */
 	for (int i = 1; i < 8; i++) {
-		ble_evt_handler(disconnected_evt(conn_handles[i]), NULL);
+		sdh_evt_dispatch_ble(disconnected_evt(conn_handles[i]));
 	}
 
 	connections = ble_conn_state_conn_count();
@@ -603,7 +603,7 @@ void test_ble_conn_state_connections_and_list(void)
 				       conn_handle_list.len);
 
 	/* Activate one connection. Testing that n is updated (should now be one). */
-	ble_evt_handler(connected_evt(conn_handles[0], BLE_GAP_ROLE_PERIPH), NULL);
+	sdh_evt_dispatch_ble(connected_evt(conn_handles[0], BLE_GAP_ROLE_PERIPH));
 
 	connections = ble_conn_state_conn_count();
 	TEST_ASSERT_EQUAL_UINT(1, connections);
@@ -613,7 +613,7 @@ void test_ble_conn_state_connections_and_list(void)
 
 	/* Activating all connections. Testing that n is updated (should now be 8). */
 	for (int i = 0; i < 8; i++) {
-		ble_evt_handler(connected_evt(conn_handles[i], BLE_GAP_ROLE_PERIPH), NULL);
+		sdh_evt_dispatch_ble(connected_evt(conn_handles[i], BLE_GAP_ROLE_PERIPH));
 	}
 
 	connections = ble_conn_state_conn_count();
@@ -646,7 +646,7 @@ void test_ble_conn_state_centrals_and_list(void)
 
 	/* Activating all connections. Testing that n is updated. */
 	for (int i = 0; i < 8; i++) {
-		ble_evt_handler(connected_evt(conn_handles[i], BLE_GAP_ROLE_CENTRAL), NULL);
+		sdh_evt_dispatch_ble(connected_evt(conn_handles[i], BLE_GAP_ROLE_CENTRAL));
 	}
 
 	n_centrals = ble_conn_state_central_conn_count();
@@ -659,7 +659,7 @@ void test_ble_conn_state_centrals_and_list(void)
 
 	/* Deactivating all but one connection. Testing that n is unchanged */
 	for (int i = 1; i < 8; i++) {
-		ble_evt_handler(disconnected_evt(conn_handles[i]), NULL);
+		sdh_evt_dispatch_ble(disconnected_evt(conn_handles[i]));
 		/* Should still be valid */
 		valid = ble_conn_state_valid(conn_handles[i]);
 		TEST_ASSERT(valid);
@@ -677,7 +677,7 @@ void test_ble_conn_state_centrals_and_list(void)
 				       conn_handle_list.len);
 
 	/* Activate one connection. Testing that n is updated. */
-	ble_evt_handler(connected_evt(conn_handles[0], BLE_GAP_ROLE_CENTRAL), NULL);
+	sdh_evt_dispatch_ble(connected_evt(conn_handles[0], BLE_GAP_ROLE_CENTRAL));
 
 	n_centrals = ble_conn_state_central_conn_count();
 	TEST_ASSERT_EQUAL_UINT(1, n_centrals);
@@ -687,7 +687,7 @@ void test_ble_conn_state_centrals_and_list(void)
 
 	/* Activating all connections. Testing that n is updated. */
 	for (int i = 0; i < 8; i++) {
-		ble_evt_handler(connected_evt(conn_handles[i], BLE_GAP_ROLE_CENTRAL), NULL);
+		sdh_evt_dispatch_ble(connected_evt(conn_handles[i], BLE_GAP_ROLE_CENTRAL));
 	}
 
 	n_centrals = ble_conn_state_central_conn_count();
@@ -711,11 +711,11 @@ void test_ble_conn_status_n_peripherals_and_handle(void)
 	 * correctly updated
 	 */
 	conn_handle_register(BLE_CONN_STATE_MAX_CONNECTIONS-1);
-	ble_evt_handler(connected_evt(BLE_CONN_STATE_MAX_CONNECTIONS-1, BLE_GAP_ROLE_PERIPH), NULL);
+	sdh_evt_dispatch_ble(connected_evt(BLE_CONN_STATE_MAX_CONNECTIONS-1, BLE_GAP_ROLE_PERIPH));
 	TEST_ASSERT_EQUAL(1, ble_conn_state_peripheral_conn_count());
 
 	/* Disconnect the peripheral and check that the number is updated */
-	ble_evt_handler(disconnected_evt(BLE_CONN_STATE_MAX_CONNECTIONS-1), NULL);
+	sdh_evt_dispatch_ble(disconnected_evt(BLE_CONN_STATE_MAX_CONNECTIONS-1));
 	TEST_ASSERT_EQUAL(0, ble_conn_state_peripheral_conn_count());
 
 	/* The handle should not be in the list,
@@ -726,16 +726,16 @@ void test_ble_conn_status_n_peripherals_and_handle(void)
 	TEST_ASSERT(valid);
 
 	/* app_error_handler_bare_Expect(NRF_ERROR_NO_MEM); */
-	ble_evt_handler(connected_evt(BLE_CONN_STATE_MAX_CONNECTIONS, BLE_GAP_ROLE_PERIPH), NULL);
+	sdh_evt_dispatch_ble(connected_evt(BLE_CONN_STATE_MAX_CONNECTIONS, BLE_GAP_ROLE_PERIPH));
 
 	/* app_error_handler_bare_Expect(NRF_ERROR_NO_MEM); */
 	conn_handle_register(1000);
-	ble_evt_handler(connected_evt(1000, BLE_GAP_ROLE_PERIPH), NULL);
+	sdh_evt_dispatch_ble(connected_evt(1000, BLE_GAP_ROLE_PERIPH));
 
 	/* Connect some handles */
 	for (int i = 0; i < BLE_CONN_STATE_MAX_CONNECTIONS-1; i++) {
 		conn_handle_register(i);
-		ble_evt_handler(connected_evt(i, BLE_GAP_ROLE_PERIPH), NULL);
+		sdh_evt_dispatch_ble(connected_evt(i, BLE_GAP_ROLE_PERIPH));
 	}
 	/* Should report all peripherals */
 	TEST_ASSERT_EQUAL(BLE_CONN_STATE_MAX_CONNECTIONS-1, ble_conn_state_peripheral_conn_count());
@@ -787,7 +787,7 @@ void test_ble_conn_state_user_flag_set_get(void)
 
 	for (int i = 0; i < BLE_CONN_STATE_MAX_CONNECTIONS; i++) {
 		conn_handle_register(conn_handles[i]);
-		ble_evt_handler(connected_evt(conn_handles[i], BLE_GAP_ROLE_PERIPH), NULL);
+		sdh_evt_dispatch_ble(connected_evt(conn_handles[i], BLE_GAP_ROLE_PERIPH));
 	}
 
 	for (int i = 0; i < CONFIG_BLE_CONN_STATE_USER_FLAG_COUNT; i++) {
@@ -873,10 +873,10 @@ void test_ble_conn_state_user_flag_set_get(void)
 	}
 
 	/* Invalidate the connection handles by disconnecting them and reconnecting. */
-	ble_evt_handler(disconnected_evt(conn_handles[arbitrary_index1]), NULL);
-	ble_evt_handler(disconnected_evt(conn_handles[arbitrary_index2]), NULL);
-	ble_evt_handler(connected_evt(conn_handles[arbitrary_index1], BLE_GAP_ROLE_PERIPH), NULL);
-	ble_evt_handler(connected_evt(conn_handles[arbitrary_index2], BLE_GAP_ROLE_PERIPH), NULL);
+	sdh_evt_dispatch_ble(disconnected_evt(conn_handles[arbitrary_index1]));
+	sdh_evt_dispatch_ble(disconnected_evt(conn_handles[arbitrary_index2]));
+	sdh_evt_dispatch_ble(connected_evt(conn_handles[arbitrary_index1], BLE_GAP_ROLE_PERIPH));
+	sdh_evt_dispatch_ble(connected_evt(conn_handles[arbitrary_index2], BLE_GAP_ROLE_PERIPH));
 
 	for (int i = 0; i < CONFIG_BLE_CONN_STATE_USER_FLAG_COUNT; i++) {
 		/* Test that the flags are now 0 because of being invalidated. */
@@ -896,10 +896,10 @@ void test_ble_conn_state_conn_idx(void)
 	uint16_t conn_handle_err = BLE_CONN_STATE_MAX_CONNECTIONS+1;
 	uint16_t conn_handle_last = BLE_CONN_STATE_MAX_CONNECTIONS-1;
 
-	ble_evt_handler(connected_evt(0, BLE_GAP_ROLE_CENTRAL), NULL);
-	ble_evt_handler(connected_evt(1, BLE_GAP_ROLE_PERIPH), NULL);
-	ble_evt_handler(connected_evt(5, BLE_GAP_ROLE_CENTRAL), NULL);
-	ble_evt_handler(connected_evt(conn_handle_last, BLE_GAP_ROLE_CENTRAL), NULL);
+	sdh_evt_dispatch_ble(connected_evt(0, BLE_GAP_ROLE_CENTRAL));
+	sdh_evt_dispatch_ble(connected_evt(1, BLE_GAP_ROLE_PERIPH));
+	sdh_evt_dispatch_ble(connected_evt(5, BLE_GAP_ROLE_CENTRAL));
+	sdh_evt_dispatch_ble(connected_evt(conn_handle_last, BLE_GAP_ROLE_CENTRAL));
 
 	TEST_ASSERT_EQUAL(0, ble_conn_state_conn_idx(0));
 	TEST_ASSERT_EQUAL(1, ble_conn_state_conn_idx(1));
@@ -951,7 +951,7 @@ void test_ble_conn_state_for_each_set_user_flag(void)
 
 	for (int i = 0; i < 10; i++) {
 		conn_handle_register(conn_handles[i]);
-		ble_evt_handler(connected_evt(conn_handles[i], BLE_GAP_ROLE_PERIPH), NULL);
+		sdh_evt_dispatch_ble(connected_evt(conn_handles[i], BLE_GAP_ROLE_PERIPH));
 	}
 
 	/* No set flags. */
@@ -1011,8 +1011,8 @@ void test_ble_conn_state_for_each_set_user_flag(void)
 
 	/* No set flags. */
 	for (int i = 0; i < 10; i++) {
-		ble_evt_handler(disconnected_evt(conn_handles[i]), NULL);
-		ble_evt_handler(connected_evt(conn_handles[i], BLE_GAP_ROLE_PERIPH), NULL);
+		sdh_evt_dispatch_ble(disconnected_evt(conn_handles[i]));
+		sdh_evt_dispatch_ble(connected_evt(conn_handles[i], BLE_GAP_ROLE_PERIPH));
 	}
 	ble_conn_state_user_flag_set(conn_handles[3], flag_id2, 0);
 	calls_ret = ble_conn_state_for_each_set_user_flag(flag_id1, user_flag_function, NULL);
@@ -1028,9 +1028,9 @@ void test_ble_conn_state_for_each_connected(void)
 	calls_ret = ble_conn_state_for_each_connected(user_flag_function, NULL);
 	TEST_ASSERT_EQUAL(0, calls_ret);
 
-	ble_evt_handler(connected_evt(1, BLE_GAP_ROLE_CENTRAL), NULL);
-	ble_evt_handler(connected_evt(2, BLE_GAP_ROLE_CENTRAL), NULL);
-	ble_evt_handler(connected_evt(8, BLE_GAP_ROLE_PERIPH), NULL);
+	sdh_evt_dispatch_ble(connected_evt(1, BLE_GAP_ROLE_CENTRAL));
+	sdh_evt_dispatch_ble(connected_evt(2, BLE_GAP_ROLE_CENTRAL));
+	sdh_evt_dispatch_ble(connected_evt(8, BLE_GAP_ROLE_PERIPH));
 
 	expect_user_function_connected(1, NULL, 0);
 	expect_user_function_connected(2, NULL, 1);
@@ -1041,9 +1041,9 @@ void test_ble_conn_state_for_each_connected(void)
 	TEST_ASSERT_EQUAL(3, calls);
 	calls = 0;
 
-	ble_evt_handler(disconnected_evt(1), NULL);
-	ble_evt_handler(connected_evt(5, BLE_GAP_ROLE_PERIPH), NULL);
-	ble_evt_handler(disconnected_evt(8), NULL);
+	sdh_evt_dispatch_ble(disconnected_evt(1));
+	sdh_evt_dispatch_ble(connected_evt(5, BLE_GAP_ROLE_PERIPH));
+	sdh_evt_dispatch_ble(disconnected_evt(8));
 
 	expect_user_function_connected(2, NULL, 0);
 	expect_user_function_connected(5, NULL, 1);

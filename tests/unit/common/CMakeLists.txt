@@ -4,6 +4,4 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-include(${CMAKE_CURRENT_LIST_DIR}/cmake/softdevice_unity_setup.cmake)
-
-add_subdirectory(common)
+add_subdirectory_ifdef(CONFIG_TEST_SDH_EVT_DISPATCH sdh_evt_dispatch)

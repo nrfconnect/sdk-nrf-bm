@@ -10,13 +10,13 @@
 #include <string.h>
 #include <stddef.h>
 #include <bm/bluetooth/ble_conn_params.h>
-#include <bm/softdevice_handler/nrf_sdh.h>
-#include <zephyr/sys/iterable_sections.h>
 
 #include "cmock_ble_gap.h"
 #include "cmock_ble_gattc.h"
 #include "cmock_ble_gatts.h"
 #include "cmock_nrf_sdh_ble.h"
+
+#include <sdh_evt_dispatch.h>
 
 #define BLE_GAP_DATA_LENGTH_DEFAULT 27
 
@@ -25,22 +25,6 @@
 #define ATT_MTU_INVALID (BLE_GATT_ATT_MTU_DEFAULT - 1)
 
 struct ble_conn_params_evt app_evt;
-
-/* Invoke the BLE event handlers in ble_conn_params, passing BLE event 'evt'. */
-void ble_evt_send(const ble_evt_t *evt)
-{
-	TYPE_SECTION_FOREACH(struct nrf_sdh_ble_evt_observer, nrf_sdh_ble_evt_observers, obs) {
-		obs->handler(evt, obs->context);
-	}
-}
-
-/* Invoke the state event handlers in ble_conn_params, passing state event. */
-void state_evt_send(enum nrf_sdh_state_evt state)
-{
-	TYPE_SECTION_FOREACH(struct nrf_sdh_state_evt_observer, nrf_sdh_state_evt_observers, obs) {
-		obs->handler(state, obs->context);
-	}
-}
 
 /* Event handler for conn params */
 void conn_params_evt_handler(const struct ble_conn_params_evt *evt)
@@ -73,7 +57,7 @@ void test_ble_evt_no_handler(void)
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
 
-	ble_evt_send(&ble_evt);
+	sdh_evt_dispatch_ble(&ble_evt);
 }
 
 void test_ble_conn_params_evt_handler_set(void)
@@ -206,7 +190,7 @@ void test_ble_conn_params_att_mtu_set_retry_after_busy(void)
 	__cmock_sd_ble_gattc_exchange_mtu_request_ExpectAndReturn(CONN_HANDLE, ATT_MTU_VALID,
 								  NRF_SUCCESS);
 
-	ble_evt_send(&ble_evt);
+	sdh_evt_dispatch_ble(&ble_evt);
 
 	/* Event is processed, not called again */
 
@@ -216,7 +200,7 @@ void test_ble_conn_params_att_mtu_set_retry_after_busy(void)
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
 
-	ble_evt_send(&ble_evt);
+	sdh_evt_dispatch_ble(&ble_evt);
 }
 
 void test_ble_conn_params_att_mtu_get_error_null(void)
@@ -351,7 +335,7 @@ void test_ble_conn_params_data_length_set_busy(void)
 	__cmock_sd_ble_gap_data_length_update_ExpectWithArrayAndReturn(
 		CONN_HANDLE, &dlp_expected, 1, &dll_expected, 1, NRF_SUCCESS);
 
-	ble_evt_send(&ble_evt);
+	sdh_evt_dispatch_ble(&ble_evt);
 
 	/* Event is processed, not called again */
 
@@ -361,7 +345,7 @@ void test_ble_conn_params_data_length_set_busy(void)
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
 
-	ble_evt_send(&ble_evt);
+	sdh_evt_dispatch_ble(&ble_evt);
 }
 
 void test_ble_conn_params_data_length_set_resources(void)
@@ -646,7 +630,7 @@ void test_ble_conn_params_phy_radio_mode_set_busy(void)
 	__cmock_sd_ble_gap_phy_update_ExpectWithArrayAndReturn(
 		CONN_HANDLE, &phy_1mbps, 1, NRF_SUCCESS);
 
-	ble_evt_send(&ble_evt);
+	sdh_evt_dispatch_ble(&ble_evt);
 
 	/* Event is processed, not called again */
 
@@ -656,7 +640,7 @@ void test_ble_conn_params_phy_radio_mode_set_busy(void)
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
 
-	ble_evt_send(&ble_evt);
+	sdh_evt_dispatch_ble(&ble_evt);
 }
 
 void test_ble_conn_params_phy_radio_mode_get_error_null(void)
@@ -739,7 +723,7 @@ void test_ble_evt_connected(void)
 	__cmock_sd_ble_gap_conn_param_update_ExpectWithArrayAndReturn(
 		CONN_HANDLE, &conn_params_expected, 1, NRF_ERROR_BUSY);
 
-	ble_evt_send(&ble_evt);
+	sdh_evt_dispatch_ble(&ble_evt);
 }
 
 void test_ble_evt_connected_conn_params(void)
@@ -786,7 +770,7 @@ void test_ble_evt_connected_conn_params(void)
 	__cmock_sd_ble_gap_phy_update_ExpectWithArrayAndReturn(
 		CONN_HANDLE, &phy_supported, 1, NRF_SUCCESS);
 
-	ble_evt_send(&ble_evt);
+	sdh_evt_dispatch_ble(&ble_evt);
 }
 
 void test_ble_evt_disconnected(void)
@@ -802,7 +786,7 @@ void test_ble_evt_disconnected(void)
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
 
-	ble_evt_send(&ble_evt);
+	sdh_evt_dispatch_ble(&ble_evt);
 }
 
 void test_ble_evt_exchange_mtu_rsp(void)
@@ -822,7 +806,7 @@ void test_ble_evt_exchange_mtu_rsp(void)
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
 
-	ble_evt_send(&ble_evt);
+	sdh_evt_dispatch_ble(&ble_evt);
 
 	TEST_ASSERT_EQUAL(BLE_CONN_PARAMS_EVT_ATT_MTU_UPDATED, app_evt.evt_type);
 	TEST_ASSERT_EQUAL(CONN_HANDLE, app_evt.conn_handle);
@@ -850,7 +834,7 @@ void test_ble_evt_exchange_mtu_request(void)
 	__cmock_sd_ble_gatts_exchange_mtu_reply_ExpectAndReturn(
 		CONN_HANDLE, ATT_MTU_VALID, NRF_SUCCESS);
 
-	ble_evt_send(&ble_evt);
+	sdh_evt_dispatch_ble(&ble_evt);
 
 	TEST_ASSERT_EQUAL(BLE_CONN_PARAMS_EVT_ATT_MTU_UPDATED, app_evt.evt_type);
 	TEST_ASSERT_EQUAL(CONN_HANDLE, app_evt.conn_handle);
@@ -878,7 +862,7 @@ void test_ble_evt_exchange_mtu_request_error(void)
 	__cmock_sd_ble_gatts_exchange_mtu_reply_ExpectAndReturn(
 		CONN_HANDLE, ATT_MTU_VALID, NRF_ERROR_BUSY);
 
-	ble_evt_send(&ble_evt);
+	sdh_evt_dispatch_ble(&ble_evt);
 }
 
 void test_ble_evt_conn_param_update_accepted(void)
@@ -902,7 +886,7 @@ void test_ble_evt_conn_param_update_accepted(void)
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
 
-	ble_evt_send(&ble_evt);
+	sdh_evt_dispatch_ble(&ble_evt);
 
 	TEST_ASSERT_EQUAL(BLE_CONN_PARAMS_EVT_UPDATED, app_evt.evt_type);
 	TEST_ASSERT_EQUAL(CONN_HANDLE, app_evt.conn_handle);
@@ -946,7 +930,7 @@ void test_ble_evt_conn_param_update_negotiate(void)
 	__cmock_sd_ble_gap_conn_param_update_ExpectWithArrayAndReturn(
 		CONN_HANDLE, &conn_params_expected, 1, NRF_SUCCESS);
 
-	ble_evt_send(&ble_evt);
+	sdh_evt_dispatch_ble(&ble_evt);
 }
 
 void test_ble_evt_conn_param_update_busy(void)
@@ -979,7 +963,7 @@ void test_ble_evt_conn_param_update_busy(void)
 	__cmock_sd_ble_gap_conn_param_update_ExpectWithArrayAndReturn(
 		CONN_HANDLE, &conn_params_expected, 1, NRF_ERROR_BUSY);
 
-	ble_evt_send(&ble_evt);
+	sdh_evt_dispatch_ble(&ble_evt);
 
 	/* Calls from BLE observers. */
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
@@ -990,7 +974,7 @@ void test_ble_evt_conn_param_update_busy(void)
 	__cmock_sd_ble_gap_disconnect_ExpectAndReturn(
 		CONN_HANDLE, BLE_HCI_CONN_INTERVAL_UNACCEPTABLE, NRF_SUCCESS);
 
-	ble_evt_send(&ble_evt);
+	sdh_evt_dispatch_ble(&ble_evt);
 
 	TEST_ASSERT_EQUAL(BLE_CONN_PARAMS_EVT_REJECTED, app_evt.evt_type);
 	TEST_ASSERT_EQUAL(CONN_HANDLE, app_evt.conn_handle);
@@ -1018,7 +1002,7 @@ void test_ble_evt_data_length_update(void)
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
 
-	ble_evt_send(&ble_evt);
+	sdh_evt_dispatch_ble(&ble_evt);
 
 	TEST_ASSERT_EQUAL(BLE_CONN_PARAMS_EVT_DATA_LENGTH_UPDATED, app_evt.evt_type);
 	TEST_ASSERT_EQUAL(CONN_HANDLE, app_evt.conn_handle);
@@ -1059,7 +1043,7 @@ void test_ble_evt_data_length_update_request(void)
 	__cmock_sd_ble_gap_data_length_update_ExpectWithArrayAndReturn(
 		CONN_HANDLE, &dlp_expected, 1, &dll_expected, 1, NRF_SUCCESS);
 
-	ble_evt_send(&ble_evt);
+	sdh_evt_dispatch_ble(&ble_evt);
 }
 
 void test_ble_evt_phy_update(void)
@@ -1083,7 +1067,7 @@ void test_ble_evt_phy_update(void)
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
 
-	ble_evt_send(&ble_evt);
+	sdh_evt_dispatch_ble(&ble_evt);
 
 	TEST_ASSERT_EQUAL(BLE_CONN_PARAMS_EVT_RADIO_PHY_MODE_UPDATED, app_evt.evt_type);
 	TEST_ASSERT_EQUAL(CONN_HANDLE, app_evt.conn_handle);
@@ -1119,7 +1103,7 @@ void test_ble_evt_phy_update_request(void)
 	__cmock_sd_ble_gap_phy_update_ExpectWithArrayAndReturn(
 		CONN_HANDLE, &phy_2mbps, 1, NRF_SUCCESS);
 
-	ble_evt_send(&ble_evt);
+	sdh_evt_dispatch_ble(&ble_evt);
 }
 
 void test_sdh_state_evt(void)
@@ -1131,15 +1115,15 @@ void test_sdh_state_evt(void)
 		.conn_sup_timeout = CONFIG_BLE_CONN_PARAMS_SUP_TIMEOUT,
 	};
 
-	state_evt_send(NRF_SDH_STATE_EVT_DISABLED);
+	sdh_evt_dispatch_state(NRF_SDH_STATE_EVT_DISABLED);
 
 	__cmock_sd_ble_gap_ppcp_set_ExpectWithArrayAndReturn(&ppcp, 1, NRF_ERROR_BUSY);
 
-	state_evt_send(NRF_SDH_STATE_EVT_BLE_ENABLED);
+	sdh_evt_dispatch_state(NRF_SDH_STATE_EVT_BLE_ENABLED);
 
 	__cmock_sd_ble_gap_ppcp_set_ExpectWithArrayAndReturn(&ppcp, 1, NRF_SUCCESS);
 
-	state_evt_send(NRF_SDH_STATE_EVT_BLE_ENABLED);
+	sdh_evt_dispatch_state(NRF_SDH_STATE_EVT_BLE_ENABLED);
 }
 
 void setUp(void)
