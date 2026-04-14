@@ -24,9 +24,6 @@
 #include <hal/nrf_egu.h>
 #include <helpers/nrfx_gppi.h>
 
-#if CONFIG_FEM
-#include "fem_al/fem_al.h"
-#endif /* CONFIG_FEM */
 
 #if NRF54H_ERRATA_216_PRESENT
 #include <zephyr/drivers/mbox.h>
@@ -82,8 +79,6 @@
 
 #define TIMER_CC0_SWEEP_DWELL NRF_TIMER_CC_CHANNEL0
 #define TIMER_CC1_MOD_TX_DUTY NRF_TIMER_CC_CHANNEL1
-#define TIMER_CC2_FEM_0 NRF_TIMER_CC_CHANNEL2
-#define TIMER_CC3_FEM_1 NRF_TIMER_CC_CHANNEL3
 #if NRF54H_ERRATA_216_PRESENT
 #define TIMER_CC7_ERRATA216 NRF_TIMER_CC_CHANNEL7
 #endif /* NRF54H_ERRATA_216_PRESENT */
@@ -213,9 +208,6 @@ static void errata_216_release(void)
 }
 #endif /* NRF54H_ERRATA_216_PRESENT */
 
-#if CONFIG_FEM
-static struct radio_test_fem fem;
-#endif /* CONFIG_FEM */
 
 static uint16_t channel_to_frequency(nrf_radio_mode_t mode, uint8_t channel)
 {
@@ -400,17 +392,6 @@ static void radio_power_set(nrf_radio_mode_t mode, uint8_t channel, int8_t power
 	int8_t output_power = power;
 	int8_t radio_power = power;
 
-#if CONFIG_FEM
-	uint16_t frequency;
-
-	if (IS_ENABLED(CONFIG_RADIO_TEST_POWER_CONTROL_AUTOMATIC)) {
-		frequency = channel_to_frequency(mode, channel);
-		output_power = fem_tx_output_power_prepare(power, &radio_power, mode, frequency);
-	}
-#else
-	ARG_UNUSED(mode);
-	ARG_UNUSED(channel);
-#endif /* CONFIG_FEM */
 
 #ifdef NRF53_SERIES
 	bool high_voltage_enable = false;
@@ -488,66 +469,10 @@ static void radio_ppi_tx_reconfigure(void)
 	nrfx_gppi_conn_enable(ppi_radio_start);
 }
 
-#if CONFIG_FEM
-static int fem_configure(bool rx, nrf_radio_mode_t mode,
-			 struct radio_test_fem *fem)
-{
-	int err;
-
-	/* FEM is kept powered during sweeping */
-	if (!sweep_processing) {
-		err = fem_power_up();
-		if (err) {
-			return err;
-		}
-	}
-
-	if (fem->ramp_up_time == 0) {
-		fem->ramp_up_time =
-			fem_default_ramp_up_time_get(false, mode);
-	}
-
-	if (!sweep_processing) {
-		nrf_timer_shorts_enable(timer.p_reg,
-			(NRF_TIMER_SHORT_COMPARE2_STOP_MASK | NRF_TIMER_SHORT_COMPARE2_CLEAR_MASK));
-	}
-
-	radio_ppi_config(rx);
-
-	if (rx) {
-		err = fem_rx_configure(fem->ramp_up_time);
-		if (err) {
-			printk("Failed to configure LNA.\n");
-		}
-
-		return err;
-	}
-
-	if ((!IS_ENABLED(CONFIG_RADIO_TEST_POWER_CONTROL_AUTOMATIC)) &&
-	    (fem->tx_power_control != FEM_USE_DEFAULT_TX_POWER_CONTROL) &&
-	    !sweep_processing) {
-		err = fem_tx_power_control_set(fem->tx_power_control);
-		if (err) {
-			printk("%u: out of range FEM Tx power control value or setting Tx power control is not supported\n",
-				fem->tx_power_control);
-			return err;
-		}
-	}
-
-	err = fem_tx_configure(fem->ramp_up_time);
-	if (err) {
-		printk("Failed to configure PA.\n");
-	}
-
-	fem_errata_25X(mode);
-
-	return err;
-}
-#endif /* CONFIG_FEM */
 
 static void radio_start(bool rx, bool force_egu)
 {
-	if (IS_ENABLED(CONFIG_FEM) || force_egu) {
+	if (force_egu) {
 		nrf_egu_task_trigger(RADIO_TEST_EGU, RADIO_TEST_EGU_TASK);
 	} else {
 		nrf_radio_task_trigger(NRF_RADIO, rx ? NRF_RADIO_TASK_RXEN : NRF_RADIO_TASK_TXEN);
@@ -796,15 +721,6 @@ static void radio_disable(void)
 	}
 	nrf_radio_event_clear(NRF_RADIO, NRF_RADIO_EVENT_DISABLED);
 
-#if CONFIG_FEM
-	fem_txrx_configuration_clear();
-	fem_txrx_stop();
-
-	/* Do not power-down front-end module (FEM) during sweeping. */
-	if (!sweep_processing) {
-		(void)fem_power_down();
-	}
-#endif /* CONFIG_FEM */
 	if (!sweep_processing) {
 		test_is_running = false;
 	}
@@ -860,13 +776,6 @@ static void radio_unmodulated_tx_carrier(uint8_t mode, int8_t txpower, uint8_t c
 
 	radio_channel_set(mode, channel);
 
-#if CONFIG_FEM
-	(void)fem_configure(false, mode, &fem);
-#else
-	if (sweep_processing) {
-		radio_ppi_config(false);
-	}
-#endif /* CONFIG_FEM */
 
 	radio_start(false, sweep_processing);
 }
@@ -923,9 +832,6 @@ static void radio_modulated_tx_carrier(uint8_t mode, int8_t txpower, uint8_t cha
 	tx_packet_cnt = 0;
 
 
-#if CONFIG_FEM
-	(void)fem_configure(false, mode, &fem);
-#endif /* CONFIG_FEM */
 
 	radio_start(false, false);
 }
@@ -949,13 +855,6 @@ static void radio_rx(uint8_t mode, uint8_t channel, enum transmit_pattern patter
 
 	nrf_radio_int_enable(NRF_RADIO, NRF_RADIO_INT_CRCOK_MASK);
 
-#if CONFIG_FEM
-	(void)fem_configure(true, mode, &fem);
-#else
-	if (sweep_processing) {
-		radio_ppi_config(true);
-	}
-#endif /* CONFIG_FEM */
 
 	radio_start(true, sweep_processing);
 
@@ -968,14 +867,6 @@ static void radio_sweep_start(uint8_t channel, uint32_t delay_ms)
 {
 	current_channel = channel;
 
-#if CONFIG_FEM
-	(void)fem_power_up();
-
-	if ((!IS_ENABLED(CONFIG_RADIO_TEST_POWER_CONTROL_AUTOMATIC)) &&
-	    fem.tx_power_control != FEM_USE_DEFAULT_TX_POWER_CONTROL) {
-		(void)fem_tx_power_control_set(fem.tx_power_control);
-	}
-#endif /* CONFIG_FEM */
 
 	nrfx_timer_disable(&timer);
 	nrf_timer_shorts_disable(timer.p_reg, ~0);
@@ -1029,11 +920,6 @@ static void radio_modulated_tx_carrier_duty_cycle(uint8_t mode, int8_t txpower,
 	/* We let the TIMER start the radio transmission again. */
 	nrfx_timer_disable(&timer);
 
-#if CONFIG_FEM
-	(void)fem_configure(false, mode, &fem);
-#else
-	radio_ppi_config(false);
-#endif /* CONFIG_FEM */
 
 	nrf_timer_shorts_disable(timer.p_reg, ~0);
 	nrf_timer_int_disable(timer.p_reg, ~0);
@@ -1054,9 +940,6 @@ static void radio_modulated_tx_carrier_duty_cycle(uint8_t mode, int8_t txpower,
 
 void radio_test_start(const struct radio_test_config *config)
 {
-#if CONFIG_FEM
-	fem = config->fem;
-#endif /* CONFIG_FEM */
 
 	/* Execute nRF54H20 errata 216 workaround */
 #if NRF54H_ERRATA_216_PRESENT
@@ -1331,14 +1214,6 @@ int radio_test_init(struct radio_test_config *config)
 
 	rx_timeout_cb = &config->params.rx.cb;
 
-#if CONFIG_FEM
-	int err = fem_init(timer.p_reg,
-			   (BIT(TIMER_CC2_FEM_0) | BIT(TIMER_CC3_FEM_1)));
-
-	if (err) {
-		return err;
-	}
-#endif /* CONFIG_FEM */
 
 	return 0;
 }
