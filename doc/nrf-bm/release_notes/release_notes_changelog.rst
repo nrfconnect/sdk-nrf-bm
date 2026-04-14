@@ -145,6 +145,9 @@ Bluetooth LE samples
 
       * The disconnect button handler to only disconnect on button press, and not on button release.
       * The allow list disabling button to only trigger on button press, and not on button release.
+* Added:
+
+   * The :ref:`ble_device_name_sample` sample.
 
 NFC samples
 -----------
