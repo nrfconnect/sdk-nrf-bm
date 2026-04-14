@@ -12,6 +12,7 @@ project(unit_test_ble_conn_state)
 
 include(${ZEPHYR_NRF_BM_MODULE_DIR}/cmake/unity/unity_softdevice_setup.cmake)
 unity_softdevice_header_setup()
+unity_softdevice_event_setup()
 
 zephyr_compile_definitions(
   NRF54L15_XXAA

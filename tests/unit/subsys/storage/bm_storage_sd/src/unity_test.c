@@ -10,8 +10,10 @@
 #include <zephyr/sys/util.h>
 
 #include <bm/storage/bm_storage.h>
+#include <bm/softdevice_handler/nrf_sdh.h>
 
-#include "bm/softdevice_handler/nrf_sdh.h"
+#include <sdh_evt_dispatch.h>
+
 #include "cmock_nrf_sdh.h"
 #include "cmock_nrf_sdm.h"
 #include "cmock_nrf_soc.h"
@@ -28,10 +30,7 @@
 #define WORD_SIZE(a) ((a) / sizeof(uint32_t))
 #define PTR_IGNORE NULL
 
-/* The backend's SoC event handler */
-extern void bm_storage_sd_on_soc_evt(uint32_t evt, void *ctx);
-/* The backend's SoftDevice state event handler */
-extern int bm_storage_sd_on_state_evt(enum nrf_sdh_state_evt evt, void *ctx);
+
 
 static struct bm_storage_evt storage_event;
 
@@ -192,7 +191,7 @@ void test_bm_storage_sd_uninit_outstanding(void)
 	err = bm_storage_uninit(&storage);
 	TEST_ASSERT_EQUAL(0, err);
 
-	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+	sdh_evt_dispatch_soc(NRF_EVT_FLASH_OPERATION_SUCCESS);
 
 	/* An event is generated regardless */
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
@@ -304,7 +303,7 @@ void test_bm_storage_sd_write(void)
 	is_busy = bm_storage_is_busy(&storage);
 	TEST_ASSERT_TRUE(is_busy);
 
-	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+	sdh_evt_dispatch_soc(NRF_EVT_FLASH_OPERATION_SUCCESS);
 
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
 	TEST_ASSERT_EQUAL(true, storage_event.is_async);
@@ -345,14 +344,14 @@ void test_bm_storage_sd_write_retry_etimedout(void)
 						       WORD_SIZE(sizeof(buf)), 0);
 
 		/* Operation times out and is retried */
-		bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_ERROR, NULL);
+		sdh_evt_dispatch_soc(NRF_EVT_FLASH_OPERATION_ERROR);
 
 		/* No event is sent while we are retrying */
 		TEST_ASSERT_EQUAL(0, storage_event_received);
 	}
 
 	/* The last retry will send an error, and the operation is not retried */
-	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_ERROR, NULL);
+	sdh_evt_dispatch_soc(NRF_EVT_FLASH_OPERATION_ERROR);
 
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
 	TEST_ASSERT_EQUAL(true, storage_event.is_async);
@@ -389,7 +388,7 @@ void test_bm_storage_sd_write_queued(void)
 	err = bm_storage_write(&storage, 0, buf, sizeof(buf), NULL);
 	TEST_ASSERT_EQUAL(0, err);
 
-	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+	sdh_evt_dispatch_soc(NRF_EVT_FLASH_OPERATION_SUCCESS);
 
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
 	TEST_ASSERT_EQUAL(true, storage_event.is_async);
@@ -401,7 +400,7 @@ void test_bm_storage_sd_write_queued(void)
 	/* Before the second operation is started, the SoftDevice changes state.
 	 * The backend is ready to change state since no operation is ongoing.
 	 */
-	is_busy = bm_storage_sd_on_state_evt(NRF_SDH_STATE_EVT_DISABLE_PREPARE, NULL);
+	is_busy = sdh_evt_dispatch_state(NRF_SDH_STATE_EVT_DISABLE_PREPARE);
 	TEST_ASSERT_FALSE(is_busy);
 
 	/* Second call won't trigger a call to the SoftDevice */
@@ -414,7 +413,7 @@ void test_bm_storage_sd_write_queued(void)
 	/* This will trigger the next sd_flash_write() call.
 	 * Because the SoftDevice is disabled, the event is sent out immediately.
 	 */
-	is_busy = bm_storage_sd_on_state_evt(NRF_SDH_STATE_EVT_DISABLED, NULL);
+	is_busy = sdh_evt_dispatch_state(NRF_SDH_STATE_EVT_DISABLED);
 	TEST_ASSERT_FALSE(is_busy);
 
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
@@ -462,7 +461,7 @@ void test_bm_storage_sd_write_retry_queued(void)
 						       WORD_SIZE(sizeof(buf)), 0);
 
 		/* Operation times out and is retried */
-		bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_ERROR, NULL);
+		sdh_evt_dispatch_soc(NRF_EVT_FLASH_OPERATION_ERROR);
 
 		/* No event is sent while we are retrying */
 		TEST_ASSERT_EQUAL(0, storage_event_received);
@@ -474,7 +473,7 @@ void test_bm_storage_sd_write_retry_queued(void)
 	/* The last retry will send an error, and the operation is not retried,
 	 * but the next one is started.
 	 */
-	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_ERROR, NULL);
+	sdh_evt_dispatch_soc(NRF_EVT_FLASH_OPERATION_ERROR);
 
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
 	TEST_ASSERT_EQUAL(true, storage_event.is_async);
@@ -484,7 +483,7 @@ void test_bm_storage_sd_write_retry_queued(void)
 	TEST_ASSERT_EQUAL_PTR(buf, storage_event.src);
 	TEST_ASSERT_EQUAL(sizeof(buf), storage_event.len);
 
-	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+	sdh_evt_dispatch_soc(NRF_EVT_FLASH_OPERATION_SUCCESS);
 
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
 	TEST_ASSERT_EQUAL(true, storage_event.is_async);
@@ -540,7 +539,7 @@ void test_bm_storage_sd_write_queued_eio(void)
 		(uint32_t *)PARTITION_START, (uint32_t *)buf, WORD_SIZE(sizeof(buf)), 0);
 
 	/* First operation has completed, second is rejected and third is scheduled*/
-	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+	sdh_evt_dispatch_soc(NRF_EVT_FLASH_OPERATION_SUCCESS);
 
 	/* First is okay */
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_events[0].id);
@@ -561,7 +560,7 @@ void test_bm_storage_sd_write_queued_eio(void)
 	TEST_ASSERT_EQUAL(sizeof(buf), storage_events[1].len);
 
 	/* Last operation succeeds */
-	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+	sdh_evt_dispatch_soc(NRF_EVT_FLASH_OPERATION_SUCCESS);
 
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
 	TEST_ASSERT_EQUAL(true, storage_event.is_async);
@@ -668,7 +667,7 @@ void test_bm_storage_sd_write_enomem(void)
 
 	for (size_t i = 0; i < CONFIG_BM_STORAGE_BACKEND_SD_QUEUE_SIZE + 1; i++) {
 		/* Each system events triggers the next operation in the queue */
-		bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+		sdh_evt_dispatch_soc(NRF_EVT_FLASH_OPERATION_SUCCESS);
 	}
 }
 
@@ -712,7 +711,7 @@ void test_bm_storage_sd_write_two_instances(void)
 	/* Upon receiving the SoC event for the fist operation, one event is sent to
 	 * the instance that scheduled the operation. The second instance is unaffected.
 	 */
-	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+	sdh_evt_dispatch_soc(NRF_EVT_FLASH_OPERATION_SUCCESS);
 
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
 	TEST_ASSERT_EQUAL(0, storage_event.result);
@@ -735,7 +734,7 @@ void test_bm_storage_sd_write_two_instances(void)
 	err = bm_storage_uninit(&storage);
 	TEST_ASSERT_EQUAL(0, err);
 
-	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+	sdh_evt_dispatch_soc(NRF_EVT_FLASH_OPERATION_SUCCESS);
 
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
 	TEST_ASSERT_EQUAL(0, storage_event.result);
@@ -770,7 +769,7 @@ void test_bm_storage_sd_write_disable_prepare(void)
 	/* Before an operation is started, the SoftDevice changes state.
 	 * The backend is ready to change state since no operation is ongoing.
 	 */
-	is_busy = bm_storage_sd_on_state_evt(NRF_SDH_STATE_EVT_DISABLE_PREPARE, NULL);
+	is_busy = sdh_evt_dispatch_state(NRF_SDH_STATE_EVT_DISABLE_PREPARE);
 	TEST_ASSERT_FALSE(is_busy);
 
 	/* This call won't trigger a call to the SoftDevice yet */
@@ -783,7 +782,7 @@ void test_bm_storage_sd_write_disable_prepare(void)
 	/* This will trigger the next sd_flash_write() call.
 	 * Because the SoftDevice is disabled, the event is sent out immediately.
 	 */
-	is_busy = bm_storage_sd_on_state_evt(NRF_SDH_STATE_EVT_DISABLED, NULL);
+	is_busy = sdh_evt_dispatch_state(NRF_SDH_STATE_EVT_DISABLED);
 	TEST_ASSERT_FALSE(is_busy);
 
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
@@ -866,10 +865,10 @@ void test_bm_storage_sd_write_softdevice_busy_retry(void)
 	__cmock_sd_flash_write_ExpectAndReturn(
 		(uint32_t *)PARTITION_START, (uint32_t *)buf, WORD_SIZE(sizeof(buf)), 0);
 
-	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+	sdh_evt_dispatch_soc(NRF_EVT_FLASH_OPERATION_SUCCESS);
 
 	/* The operation completes */
-	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+	sdh_evt_dispatch_soc(NRF_EVT_FLASH_OPERATION_SUCCESS);
 
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
 	TEST_ASSERT_EQUAL(true, storage_event.is_async);
@@ -975,11 +974,11 @@ void test_bm_storage_sd_write_chunk(void)
 		(uint32_t *)(buf + BLOCK_SIZE),
 		WORD_SIZE(sizeof(buf) - BLOCK_SIZE), 0);
 
-	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+	sdh_evt_dispatch_soc(NRF_EVT_FLASH_OPERATION_SUCCESS);
 
 	TEST_ASSERT_FALSE(storage_event_received);
 
-	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+	sdh_evt_dispatch_soc(NRF_EVT_FLASH_OPERATION_SUCCESS);
 
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_WRITE_RESULT, storage_event.id);
 	TEST_ASSERT_EQUAL(0, storage_event.result);
@@ -1042,12 +1041,12 @@ void test_bm_storage_sd_write_padded(void)
 	TEST_ASSERT_EQUAL(0, err);
 
 	/* One event for all the data up to the last word */
-	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+	sdh_evt_dispatch_soc(NRF_EVT_FLASH_OPERATION_SUCCESS);
 
 	TEST_ASSERT_FALSE(storage_event_received);
 
 	/* Last word being written separately, due to internal buffering */
-	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+	sdh_evt_dispatch_soc(NRF_EVT_FLASH_OPERATION_SUCCESS);
 
 	TEST_ASSERT_TRUE(storage_event_received);
 
@@ -1186,7 +1185,7 @@ void test_bm_storage_sd_erase(void)
 	is_busy = bm_storage_is_busy(&storage);
 	TEST_ASSERT_TRUE(is_busy);
 
-	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+	sdh_evt_dispatch_soc(NRF_EVT_FLASH_OPERATION_SUCCESS);
 
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_ERASE_RESULT, storage_event.id);
 	TEST_ASSERT_EQUAL(0, storage_event.result);
@@ -1232,11 +1231,11 @@ void test_bm_storage_sd_erase_chunk(void)
 		WORD_SIZE(storage.nvm_info->wear_unit), 0);
 	__cmock_sd_flash_write_IgnoreArg_p_src();
 
-	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+	sdh_evt_dispatch_soc(NRF_EVT_FLASH_OPERATION_SUCCESS);
 
 	TEST_ASSERT_FALSE(storage_event_received);
 
-	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+	sdh_evt_dispatch_soc(NRF_EVT_FLASH_OPERATION_SUCCESS);
 
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_ERASE_RESULT, storage_event.id);
 	TEST_ASSERT_EQUAL(0, storage_event.result);
@@ -1280,7 +1279,7 @@ void test_bm_storage_sd_erase_odd(void)
 	is_busy = bm_storage_is_busy(&storage);
 	TEST_ASSERT_TRUE(is_busy);
 
-	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+	sdh_evt_dispatch_soc(NRF_EVT_FLASH_OPERATION_SUCCESS);
 
 	TEST_ASSERT_EQUAL(BM_STORAGE_EVT_ERASE_RESULT, storage_event.id);
 	TEST_ASSERT_EQUAL(0, storage_event.result);
@@ -1332,7 +1331,7 @@ void test_bm_storage_sd_erase_enomem(void)
 
 	for (size_t i = 0; i < CONFIG_BM_STORAGE_BACKEND_SD_QUEUE_SIZE + 1; i++) {
 		/* Each system events triggers the next operation in the queue */
-		bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
+		sdh_evt_dispatch_soc(NRF_EVT_FLASH_OPERATION_SUCCESS);
 	}
 }
 
@@ -1384,11 +1383,11 @@ void test_bm_storage_sd_soc_event_handler(void)
 	TEST_ASSERT_EQUAL(0, err);
 
 	/* Nothing happens */
-	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_SUCCESS, NULL);
-	bm_storage_sd_on_soc_evt(NRF_EVT_FLASH_OPERATION_ERROR, NULL);
+	sdh_evt_dispatch_soc(NRF_EVT_FLASH_OPERATION_SUCCESS);
+	sdh_evt_dispatch_soc(NRF_EVT_FLASH_OPERATION_ERROR);
 	/* Non-FLASH event, nothing happens */
-	bm_storage_sd_on_soc_evt(NRF_EVT_HFCLKSTARTED, NULL);
-	bm_storage_sd_on_soc_evt(NRF_EVT_RADIO_SESSION_IDLE, NULL);
+	sdh_evt_dispatch_soc(NRF_EVT_HFCLKSTARTED);
+	sdh_evt_dispatch_soc(NRF_EVT_RADIO_SESSION_IDLE);
 }
 
 void setUp(void)

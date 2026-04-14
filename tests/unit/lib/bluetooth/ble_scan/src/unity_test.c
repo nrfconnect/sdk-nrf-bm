@@ -9,8 +9,6 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <bm/bluetooth/ble_scan.h>
-#include <bm/softdevice_handler/nrf_sdh.h>
-#include <zephyr/sys/iterable_sections.h>
 
 #include "cmock_ble_gap.h"
 #include "cmock_ble_gatts.h"
@@ -27,14 +25,6 @@ BLE_SCAN_DEF(ble_scan);
 
 static struct ble_scan_evt scan_event;
 static struct ble_scan_evt scan_event_prev;
-
-/* Invoke the BLE event handlers in ble_conn_params, passing BLE event 'evt'. */
-void ble_evt_send(const ble_evt_t *evt)
-{
-	TYPE_SECTION_FOREACH(struct nrf_sdh_ble_evt_observer, nrf_sdh_ble_evt_observers, obs) {
-		obs->handler(evt, obs->context);
-	}
-}
 
 void scan_event_handler_func(const struct ble_scan_evt *scan_evt)
 {
@@ -660,7 +650,7 @@ void test_ble_scan_on_ble_evt_adv_report_empty(void)
 	__cmock_sd_ble_gap_scan_start_ExpectAndReturn(
 		NULL, &ble_scan.scan_buffer, NRF_SUCCESS);
 
-	ble_evt_send(&ble_evt);
+	ble_scan_on_ble_evt(&ble_evt, &ble_scan);
 
 	test_ble_scan_init();
 }
@@ -687,7 +677,7 @@ void test_ble_scan_on_ble_evt_adv_report_device_name_bad_data(void)
 	__cmock_sd_ble_gap_scan_start_ExpectAndReturn(
 		NULL, &ble_scan.scan_buffer, NRF_SUCCESS);
 
-	ble_evt_send(&ble_evt);
+	ble_scan_on_ble_evt(&ble_evt, &ble_scan);
 	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_NOT_FOUND, scan_event.evt_type);
 
 }
@@ -711,7 +701,7 @@ void test_ble_scan_on_ble_evt_adv_report_device_address_not_found(void)
 	__cmock_sd_ble_gap_scan_start_ExpectAndReturn(
 		NULL, &ble_scan.scan_buffer, NRF_SUCCESS);
 
-	ble_evt_send(&ble_evt);
+	ble_scan_on_ble_evt(&ble_evt, &ble_scan);
 	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_NOT_FOUND, scan_event.evt_type);
 }
 
@@ -734,7 +724,7 @@ void test_ble_scan_on_ble_evt_adv_report_device_address(void)
 	__cmock_sd_ble_gap_scan_start_ExpectAndReturn(
 		NULL, &ble_scan.scan_buffer, NRF_SUCCESS);
 
-	ble_evt_send(&ble_evt);
+	ble_scan_on_ble_evt(&ble_evt, &ble_scan);
 	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_FILTER_MATCH, scan_event.evt_type);
 	TEST_ASSERT_EQUAL(1, scan_event.filter_match.filter_match.address_filter_match);
 	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.name_filter_match);
@@ -769,7 +759,7 @@ void test_ble_scan_on_ble_evt_adv_report_device_name_not_found(void)
 	__cmock_sd_ble_gap_scan_start_ExpectAndReturn(
 		NULL, &ble_scan.scan_buffer, NRF_SUCCESS);
 
-	ble_evt_send(&ble_evt);
+	ble_scan_on_ble_evt(&ble_evt, &ble_scan);
 	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_NOT_FOUND, scan_event.evt_type);
 }
 
@@ -797,7 +787,7 @@ void test_ble_scan_on_ble_evt_adv_report_device_name(void)
 	__cmock_sd_ble_gap_scan_start_ExpectAndReturn(
 		NULL, &ble_scan.scan_buffer, NRF_SUCCESS);
 
-	ble_evt_send(&ble_evt);
+	ble_scan_on_ble_evt(&ble_evt, &ble_scan);
 	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_FILTER_MATCH, scan_event.evt_type);
 	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.address_filter_match);
 	TEST_ASSERT_EQUAL(1, scan_event.filter_match.filter_match.name_filter_match);
@@ -837,7 +827,7 @@ void test_ble_scan_on_ble_evt_adv_report_device_short_name_not_found(void)
 	__cmock_sd_ble_gap_scan_start_ExpectAndReturn(
 		NULL, &ble_scan.scan_buffer, NRF_SUCCESS);
 
-	ble_evt_send(&ble_evt);
+	ble_scan_on_ble_evt(&ble_evt, &ble_scan);
 	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_NOT_FOUND, scan_event.evt_type);
 }
 
@@ -870,7 +860,7 @@ void test_ble_scan_on_ble_evt_adv_report_device_short_name(void)
 	__cmock_sd_ble_gap_scan_start_ExpectAndReturn(
 		NULL, &ble_scan.scan_buffer, NRF_SUCCESS);
 
-	ble_evt_send(&ble_evt);
+	ble_scan_on_ble_evt(&ble_evt, &ble_scan);
 	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_FILTER_MATCH, scan_event.evt_type);
 	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.address_filter_match);
 	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.name_filter_match);
@@ -909,7 +899,7 @@ void test_ble_scan_on_ble_evt_adv_report_device_appearance_not_found(void)
 	__cmock_sd_ble_gap_scan_start_ExpectAndReturn(NULL, &ble_scan.scan_buffer,
 						      NRF_SUCCESS);
 
-	ble_evt_send(&ble_evt);
+	ble_scan_on_ble_evt(&ble_evt, &ble_scan);
 	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_NOT_FOUND, scan_event.evt_type);
 }
 
@@ -941,7 +931,7 @@ void test_ble_scan_on_ble_evt_adv_report_device_appearance(void)
 	__cmock_sd_ble_gap_scan_start_ExpectAndReturn(NULL, &ble_scan.scan_buffer,
 						      NRF_SUCCESS);
 
-	ble_evt_send(&ble_evt);
+	ble_scan_on_ble_evt(&ble_evt, &ble_scan);
 	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_FILTER_MATCH, scan_event.evt_type);
 	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.address_filter_match);
 	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.name_filter_match);
@@ -1009,7 +999,7 @@ void test_ble_scan_on_ble_evt_adv_report_device_name_and_appearance(void)
 	__cmock_sd_ble_gap_scan_start_ExpectAndReturn(
 		NULL, &ble_scan.scan_buffer, NRF_SUCCESS);
 
-	ble_evt_send(&ble_evt_name);
+	ble_scan_on_ble_evt(&ble_evt_name, &ble_scan);
 
 	__cmock_ble_adv_data_appearance_find_ExpectWithArrayAndReturn(
 		ble_evt_appearance.evt.gap_evt.params.adv_report.data.p_data, 1,
@@ -1019,7 +1009,7 @@ void test_ble_scan_on_ble_evt_adv_report_device_name_and_appearance(void)
 	__cmock_sd_ble_gap_scan_start_ExpectAndReturn(
 		NULL, &ble_scan.scan_buffer, NRF_SUCCESS);
 
-	ble_evt_send(&ble_evt_appearance);
+	ble_scan_on_ble_evt(&ble_evt_appearance, &ble_scan);
 
 	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_FILTER_MATCH, scan_event.evt_type);
 	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.address_filter_match);
@@ -1061,7 +1051,7 @@ void test_ble_scan_on_ble_evt_adv_report_device_uuid_not_found(void)
 	__cmock_sd_ble_gap_scan_start_ExpectAndReturn(NULL, &ble_scan.scan_buffer,
 						      NRF_SUCCESS);
 
-	ble_evt_send(&ble_evt);
+	ble_scan_on_ble_evt(&ble_evt, &ble_scan);
 	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_NOT_FOUND, scan_event.evt_type);
 }
 
@@ -1097,7 +1087,7 @@ void test_ble_scan_on_ble_evt_adv_report_device_uuid(void)
 	__cmock_sd_ble_gap_scan_start_ExpectAndReturn(NULL, &ble_scan.scan_buffer,
 						      NRF_SUCCESS);
 
-	ble_evt_send(&ble_evt);
+	ble_scan_on_ble_evt(&ble_evt, &ble_scan);
 	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_FILTER_MATCH, scan_event.evt_type);
 	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.address_filter_match);
 	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.name_filter_match);
@@ -1186,7 +1176,7 @@ void test_ble_scan_on_ble_evt_adv_report_device_uuid_connect(void)
 	__cmock_sd_ble_gap_scan_start_ExpectAndReturn(NULL, &ble_scan.scan_buffer,
 						      NRF_SUCCESS);
 
-	ble_evt_send(&ble_evt);
+	ble_scan_on_ble_evt(&ble_evt, &ble_scan);
 	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_FILTER_MATCH, scan_event.evt_type);
 
 	__cmock_ble_adv_data_uuid_find_ExpectWithArrayAndReturn(
@@ -1206,7 +1196,7 @@ void test_ble_scan_on_ble_evt_adv_report_device_uuid_connect(void)
 	__cmock_sd_ble_gap_scan_start_ExpectAndReturn(NULL, &ble_scan.scan_buffer,
 						      NRF_SUCCESS);
 
-	ble_evt_send(&ble_evt);
+	ble_scan_on_ble_evt(&ble_evt, &ble_scan);
 	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_CONNECTING_ERROR, scan_event_prev.evt_type);
 	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_FILTER_MATCH, scan_event.evt_type);
 }
@@ -1225,7 +1215,7 @@ void test_ble_scan_on_ble_evt_timeout(void)
 
 	test_ble_scan_init();
 
-	ble_evt_send(&ble_evt);
+	ble_scan_on_ble_evt(&ble_evt, &ble_scan);
 	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_SCAN_TIMEOUT, scan_event.evt_type);
 	TEST_ASSERT_EQUAL(BLE_GAP_TIMEOUT_SRC_SCAN, scan_event.timeout.src);
 }
@@ -1244,7 +1234,7 @@ void test_ble_scan_on_ble_evt_connected(void)
 
 	test_ble_scan_init();
 
-	ble_evt_send(&ble_evt);
+	ble_scan_on_ble_evt(&ble_evt, &ble_scan);
 	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_CONNECTED, scan_event.evt_type);
 	TEST_ASSERT_EQUAL(1, scan_event.connected.connected->role);
 	TEST_ASSERT_EQUAL(CONN_HANDLE, scan_event.connected.conn_handle);
