@@ -1,6 +1,6 @@
 .. _radio_test:
 
-Radio test (short-range)
+Radio test
 ########################
 
 .. contents::
@@ -19,13 +19,120 @@ Requirements
 
 The sample supports the following development kits:
 
-.. table-from-sample-yaml::
+.. tabs::
 
-You can use any one of the development kits listed above.
+   .. group-tab:: Simple board variants
 
-.. note::
-   On nRF5340 DK and nRF7002 DK, the sample is designed to run on the network core and requires the :ref:`nrf5340_remote_shell` running on the application core.
-   This sample uses the :ref:`shell_ipc_readme` library to forward shell data through the physical UART interface of the application core.
+      The following board variants do **not** have DFU capabilities:
+
+      .. list-table::
+         :header-rows: 1
+
+         * - Hardware platform
+           - PCA
+           - SoftDevice
+           - Board target
+         * - `nRF54L15 DK`_
+           - PCA10156
+           - S115
+           - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice
+         * - `nRF54L15 DK`_ (emulating nRF54L10)
+           - PCA10156
+           - S115
+           - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice
+         * - `nRF54L15 DK`_ (emulating nRF54L05)
+           - PCA10156
+           - S115
+           - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice
+         * - `nRF54LM20 DK`_
+           - PCA10184
+           - S115
+           - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice
+         * - nRF54LS05 DK
+           - PCA10214
+           - S115
+           - bm_nrf54ls05dk/nrf54ls05b/cpuapp/s115_softdevice
+         * - `nRF54LV10 DK`_
+           - PCA10188
+           - S115
+           - bm_nrf54lv10dk/nrf54lv10/cpuapp/s115_softdevice
+         * - `nRF54L15 DK`_
+           - PCA10156
+           - S145
+           - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice
+         * - `nRF54L15 DK`_ (emulating nRF54L10)
+           - PCA10156
+           - S145
+           - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice
+         * - `nRF54L15 DK`_ (emulating nRF54L05)
+           - PCA10156
+           - S145
+           - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice
+         * - `nRF54LM20 DK`_
+           - PCA10184
+           - S145
+           - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s145_softdevice
+         * - nRF54LS05 DK
+           - PCA10214
+           - S145
+           - bm_nrf54ls05dk/nrf54ls05b/cpuapp/s145_softdevice
+         * - `nRF54LV10 DK`_
+           - PCA10188
+           - S145
+           - bm_nrf54lv10dk/nrf54lv10/cpuapp/s145_softdevice
+
+   .. group-tab:: MCUboot board variants
+
+      The following board variants have DFU capabilities:
+
+      .. list-table::
+         :header-rows: 1
+
+         * - Hardware platform
+           - PCA
+           - SoftDevice
+           - Board target
+         * - `nRF54L15 DK`_
+           - PCA10156
+           - S115
+           - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+         * - `nRF54L15 DK`_ (emulating nRF54L10)
+           - PCA10156
+           - S115
+           - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
+         * - `nRF54L15 DK`_ (emulating nRF54L05)
+           - PCA10156
+           - S115
+           - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+         * - `nRF54LM20 DK`_
+           - PCA10184
+           - S115
+           - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice/mcuboot
+         * - `nRF54LV10 DK`_
+           - PCA10188
+           - S115
+           - bm_nrf54lv10dk/nrf54lv10/cpuapp/s115_softdevice/mcuboot
+         * - `nRF54L15 DK`_
+           - PCA10156
+           - S145
+           - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice/mcuboot
+         * - `nRF54L15 DK`_ (emulating nRF54L10)
+           - PCA10156
+           - S145
+           - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice/mcuboot
+         * - `nRF54L15 DK`_ (emulating nRF54L05)
+           - PCA10156
+           - S145
+           - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot
+         * - `nRF54LM20 DK`_
+           - PCA10184
+           - S145
+           - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s145_softdevice/mcuboot
+         * - `nRF54LV10 DK`_
+           - PCA10188
+           - S145
+           - bm_nrf54lv10dk/nrf54lv10/cpuapp/s145_softdevice/mcuboot
+
 
 The sample also requires one of the following testing devices:
 
@@ -37,23 +144,6 @@ The sample also requires one of the following testing devices:
 .. note::
    You can perform the radio test also using a spectrum analyzer.
    This method of testing is not covered by this documentation.
-
-Front-end module
-================
-
-.. include:: /includes/sample_dtm_radio_test_fem.txt
-
-You can configure the front-end module (FEM) transmitted power control, antenna output, and activation delay using the main shell commands of the :ref:`radio_test_ui`.
-
-.. note::
-   Each front-end module (FEM) has different capabilities and operating modes, so some commands may not be supported by a specific FEM and those supported may work differently on different FEMs.
-
-Skyworks front-end module
-=========================
-
-.. include:: /includes/sample_dtm_radio_test_skyworks.txt
-
-You can configure the Skyworks front-end module (FEM) antenna output and activation delay using the main shell commands of the :ref:`radio_test_ui`.
 
 Overview
 ********
@@ -92,13 +182,9 @@ User interface
    * - end_channel
      - <channel>
      - End channel for the sweep (in MHz, as difference from 2400 MHz).
-   * - fem
-     - <sub_cmd>
-     - Set front-end module (FEM) parameters.
    * - output_power
      - <sub_cmd>
      - Output power set.
-       If a front-end module is attached and the :ref:`CONFIG_RADIO_TEST_POWER_CONTROL_AUTOMATIC <CONFIG_RADIO_TEST_POWER_CONTROL_AUTOMATIC>` Kconfig option is enabled, it has the same effect as the ``total_output_power`` command.
    * - parameters_print
      -
      - Print current delay, channel, and other parameters.
@@ -135,98 +221,19 @@ User interface
    * - transmit_pattern
      - <sub_cmd>
      - Set transmission pattern.
-   * - total_output_power
-     - <tx output power>
-     - Set total output power in dBm.
-       This value includes SoC output power and front-end module gain.
 
-TX output power
-===============
-
-This sample has a few commands that you can use to test the device output power.
-The behavior of the commands vary depending on the hardware configuration and Kconfig options as follows:
-
-* Radio Test without front-end module support:
-
-  * The ``output_power`` command sets the SoC output command with a subcommand set.
-    The output power is set directly in the radio peripheral.
-
-* Radio Test with front-end module support in default configuration (the :ref:`CONFIG_RADIO_TEST_POWER_CONTROL_AUTOMATIC <CONFIG_RADIO_TEST_POWER_CONTROL_AUTOMATIC>` Kconfig option is enabled):
-
-  * The ``output_power`` command sets the total output power, including front-end module gain.
-  * The ``total_output_power`` command sets the total output power, including front-end module gain with a value in dBm unit provided by user.
-  * For these commands, the radio peripheral and FEM transmit power control is calculated and set automatically to meet your requirements.
-  * If an exact output power value cannot be set, a lower value is used.
-
-* Radio Test with front-end module support and manual TX output power control (the :ref:`CONFIG_RADIO_TEST_POWER_CONTROL_AUTOMATIC <CONFIG_RADIO_TEST_POWER_CONTROL_AUTOMATIC>` Kconfig option is disabled):
-
-  * The ``output_power`` command sets the SoC output command with a subcommands set.
-  * The ``fem`` command with the ``tx_power_control`` subcommand sets the front-end module transmit power control to a value for given specific front-end module.
-  * You can use this configuration to perform tests on your hardware design.
-
-Configuration
-*************
-
-|config|
-
-Configuration options
-=====================
-
-Check and configure the following Kconfig options:
-
-.. _CONFIG_RADIO_TEST_USB:
-
-CONFIG_RADIO_TEST_USB
-   Selects USB instead of UART as the Radio Test shell transport.
-   For nRF5340 the USB from application core is used as the communication interface.
-
-.. _CONFIG_RADIO_TEST_POWER_CONTROL_AUTOMATIC:
-
-CONFIG_RADIO_TEST_POWER_CONTROL_AUTOMATIC
-   Sets the SoC output power and front-end module gain to achieve the requested TX output power.
-   If the exact value cannot be achieved, power is set to closest value that does not exceed the limits.
-   If this option is disabled, set the SoC output power and FEM gain with separate commands.
 
 Building and running
 ********************
 
-.. |sample path| replace:: :file:`samples/peripheral/radio_test`
+This sample can be found under :file:`samples/peripherals/radio_test/` in the |BMshort| folder structure.
 
-.. include:: /includes/build_and_run.txt
-
-.. note::
-   On the nRF5340 or nRF7002 development kit, the Radio Test sample requires the :ref:`nrf5340_remote_shell` sample on the application core.
-   The Remote IPC shell sample is built and programmed automatically by default.
-
-Remote USB CDC ACM Shell variant
-================================
-
-This sample can run the remote IPC Service Shell through the USB on the nRF5340 DK application core.
-For example, when building on the command line, use the following command:
-
-.. code-block:: console
-
-   west build samples/peripheral/radio_test -b nrf5340dk/nrf5340/cpunet -- -DFILE_SUFFIX=usb
-
-You can also build this sample with the remote IPC Service Shell and support for the front-end module.
-You can use the following command:
-
-.. code-block:: console
-
-   west build samples/peripheral/radio_test -b nrf5340dk/nrf5340/cpunet -- -DSHIELD=nrf21540ek -DFILE_SUFFIX=usb
-
-.. note::
-   You can also build the sample with the remote IPC Service Shell for the |nRF7002DKnoref| using the ``nrf7002dk/nrf5340/cpunet`` board target in the commands.
-
-.. _radio_test_testing:
+For details on how to create, configure, and program a sample, see :ref:`getting_started_with_the_samples`.
 
 Testing
 =======
 
 After programming the sample to your development kit, complete the following steps to test it in one of the following two ways:
-
-.. note::
-   For the |nRF5340DKnoref| or |nRF7002DKnoref|, see :ref:`logging_cpunet` for information about the COM terminals on which the logging output is available.
 
 .. _radio_test_testing_board:
 
@@ -274,17 +281,12 @@ Dependencies
 This sample uses the following |NCS| libraries:
 
   * :ref:`shell_ipc_readme`
-  * :ref:`fem_al_lib`
 
 This sample has the following nrfx dependencies:
 
   * :file:`nrfx/drivers/include/nrfx_timer.h`
   * :file:`nrfx/hal/nrf_power.h`
   * :file:`nrfx/hal/nrf_radio.h`
-
-The sample also has the following nrfxlib dependency:
-
-  * :ref:`nrfxlib:mpsl_fem`
 
 In addition, it uses the following Zephyr libraries:
 
