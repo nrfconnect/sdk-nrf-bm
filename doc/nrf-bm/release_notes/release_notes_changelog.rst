@@ -168,6 +168,7 @@ Libraries
 
       * The ``const`` keyword to the configuration structure parameter of the :c:func:`ble_adv_init` function to reflect that the function only reads from the configuration and does not modify it.
       * The advertising name to the configuration structure of the :c:func:`ble_adv_init` function.
+      * The :c:func:`ble_adv_stop` function to stop advertising.
 
    * Updated:
 

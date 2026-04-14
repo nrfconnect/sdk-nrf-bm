@@ -285,6 +285,18 @@ uint32_t ble_adv_conn_cfg_tag_set(struct ble_adv *ble_adv, uint8_t ble_cfg_tag);
 uint32_t ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode);
 
 /**
+ * @brief Stop advertising.
+ *
+ * @param[in] ble_adv Bluetooth LE advertising instance.
+ *
+ * @retval NRF_SUCCESS On success.
+ * @retval NRF_ERROR_INVALID_STATE Library is not initialized or not advertising.
+ * @retval NRF_ERROR_NULL @p ble_adv is @c NULL.
+ * @return Any error from @c sd_ble_gap_adv_stop on failure.
+ */
+uint32_t ble_adv_stop(struct ble_adv *ble_adv);
+
+/**
  * @brief Set the peer address for directed advertising.
  *
  * The peer address can be set by the application upon receiving a
