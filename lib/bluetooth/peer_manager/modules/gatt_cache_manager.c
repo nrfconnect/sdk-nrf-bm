@@ -597,7 +597,7 @@ void store_car_value(uint16_t conn_handle, bool car_value)
 
 	struct pm_peer_data_const peer_data = {
 		.data_id = PM_PEER_DATA_ID_CENTRAL_ADDR_RES,
-		.length_words = 1,
+		.length = sizeof(uint32_t),
 	};
 
 	pm_conn_state_user_flag_set(conn_handle, flag_car_update_pending, false);

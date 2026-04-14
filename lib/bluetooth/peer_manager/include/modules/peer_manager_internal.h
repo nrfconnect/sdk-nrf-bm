@@ -35,8 +35,8 @@ extern "C" {
  * @note This type is deprecated.
  */
 struct pm_peer_data {
-	/** @brief The length of the data in words. */
-	uint16_t length_words;
+	/** @brief Length of data in bytes. */
+	uint16_t length;
 	/**
 	 * @brief ID that specifies the type of data (defines which member of the union is
 	 *        used).
@@ -81,8 +81,8 @@ struct pm_peer_data {
  * @note This type is deprecated.
  */
 struct pm_peer_data_const {
-	/** @brief The length of the data in words. */
-	uint16_t length_words;
+	/** @brief Length of data in bytes. */
+	uint16_t length;
 	/**
 	 * @brief ID that specifies the type of data (defines which member of the union is
 	 *        used).

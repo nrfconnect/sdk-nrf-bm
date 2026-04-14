@@ -80,7 +80,7 @@ static void service_changed_pending_set(void)
 
 	struct pm_peer_data_const peer_data = {
 		.data_id = PM_PEER_DATA_ID_SERVICE_CHANGED_PENDING,
-		.length_words = PM_SC_STATE_N_WORDS(),
+		.length = sizeof(uint32_t),
 		.service_changed_pending = (bool *)&service_changed_pending,
 	};
 
@@ -379,7 +379,7 @@ void gscm_db_change_notification_done(uint16_t peer_id)
 
 	struct pm_peer_data_const peer_data = {
 		.data_id = PM_PEER_DATA_ID_SERVICE_CHANGED_PENDING,
-		.length_words = PM_SC_STATE_N_WORDS(),
+		.length = sizeof(uint32_t),
 		.service_changed_pending = (bool *)&service_changed_pending,
 	};
 

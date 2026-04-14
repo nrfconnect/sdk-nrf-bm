@@ -417,8 +417,7 @@ uint32_t pds_peer_data_store(uint16_t peer_id, const struct pm_peer_data_const *
 
 	uint32_t entry_id = peer_id_peer_data_id_to_entry_id(peer_id, peer_data->data_id);
 
-	ret = bm_zms_write(&fs, entry_id, peer_data->all_data,
-			   peer_data->length_words * BYTES_PER_WORD);
+	ret = bm_zms_write(&fs, entry_id, peer_data->all_data, peer_data->length);
 	if (ret < 0) {
 		LOG_ERR("Could not write data to NVM. bm_zms_write() returned %d. "
 			"peer_id: %d",
