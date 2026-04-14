@@ -369,7 +369,6 @@ uint32_t pds_peer_data_read(uint16_t peer_id, enum pm_peer_data_id data_id,
 			    struct pm_peer_data *const data, const uint32_t *const buf_len)
 {
 	ssize_t ret;
-	uint8_t temp_buf[PM_PEER_DATA_MAX_SIZE] = { 0 };
 
 	__ASSERT_NO_MSG(module_initialized);
 	__ASSERT_NO_MSG(data != NULL);
@@ -381,7 +380,7 @@ uint32_t pds_peer_data_read(uint16_t peer_id, enum pm_peer_data_id data_id,
 
 	uint32_t entry_id = peer_id_peer_data_id_to_entry_id(peer_id, data_id);
 
-	ret = bm_zms_read(&fs, entry_id, temp_buf, sizeof(temp_buf));
+	ret = bm_zms_read(&fs, entry_id, data->all_data, *buf_len);
 	if (ret == -ENOENT) {
 		LOG_DBG("Could not read entry %d. bm_zms_read() returned %d. "
 			"peer_id: %d, data_id: %d", entry_id,
@@ -393,8 +392,6 @@ uint32_t pds_peer_data_read(uint16_t peer_id, enum pm_peer_data_id data_id,
 			ret, peer_id);
 		return NRF_ERROR_INTERNAL;
 	}
-
-	memcpy(data->all_data, temp_buf, MIN(*buf_len, ret));
 
 	if (*buf_len < ret) {
 		return NRF_ERROR_DATA_SIZE;
