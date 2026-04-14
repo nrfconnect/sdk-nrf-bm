@@ -23,3 +23,18 @@ function(unity_softdevice_header_setup)
   zephyr_include_directories(${SOFTDEVICE_INCLUDE_DIR})
   zephyr_compile_definitions(SVCALL_AS_NORMAL_FUNCTION)
 endfunction()
+
+# Add the sdh_evt_dispatch test helper to the current unit test.
+#
+# The helper exposes sdh_evt_dispatch_{ble,soc,state}() which let tests
+# fire SoftDevice events at all observers registered via
+# NRF_SDH_BLE_OBSERVER, NRF_SDH_SOC_OBSERVER, and NRF_SDH_STATE_EVT_OBSERVER.
+#
+
+function(unity_softdevice_event_setup)
+  set(dir ${ZEPHYR_NRF_BM_MODULE_DIR}/tests/unit/util/sdh_evt_dispatch)
+
+  target_sources(app PRIVATE ${dir}/sdh_evt_dispatch.c)
+  target_include_directories(app PRIVATE ${dir}/include)
+  zephyr_linker_sources(SECTIONS ${dir}/sdh_evt_dispatch.ld)
+endfunction()

@@ -12,6 +12,7 @@ project(bm_storage_sd)
 
 include(${ZEPHYR_NRF_BM_MODULE_DIR}/cmake/unity/unity_softdevice_setup.cmake)
 unity_softdevice_header_setup()
+unity_softdevice_event_setup()
 
 cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/nrf_sdm.h)
 cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/nrf_soc.h)

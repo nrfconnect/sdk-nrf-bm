@@ -23,8 +23,6 @@ zephyr_compile_definitions(
   SUPPRESS_INLINE_IMPLEMENTATION
 )
 
-zephyr_linker_sources(SECTIONS evt_obs.ld)
-
 # Generate and add test file
 test_runner_generate(src/unity_test.c)
 target_sources(app PRIVATE src/unity_test.c)

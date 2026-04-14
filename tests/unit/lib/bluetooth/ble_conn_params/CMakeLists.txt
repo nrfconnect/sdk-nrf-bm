@@ -12,6 +12,7 @@ project(unit_test_ble_conn_params)
 
 include(${ZEPHYR_NRF_BM_MODULE_DIR}/cmake/unity/unity_softdevice_setup.cmake)
 unity_softdevice_header_setup()
+unity_softdevice_event_setup()
 
 cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble_gatts.h)
 cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble_gattc.h)
@@ -22,8 +23,6 @@ zephyr_compile_definitions(
   NRF54L15_XXAA
   SUPPRESS_INLINE_IMPLEMENTATION
 )
-
-zephyr_linker_sources(SECTIONS evt_obs.ld)
 
 # Generate and add test file
 test_runner_generate(src/unity_test.c)

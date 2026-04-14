@@ -97,10 +97,7 @@ static const struct bm_storage_info bm_storage_info = {
 	.is_erase_before_write = false,
 };
 
-#ifndef CONFIG_UNITY
-static
-#endif
-void bm_storage_sd_on_soc_evt(uint32_t evt, void *ctx);
+static void bm_storage_sd_on_soc_evt(uint32_t evt, void *ctx);
 
 static bool on_operation_success(struct bm_storage_sd_op *op);
 
@@ -462,10 +459,7 @@ static bool bm_storage_sd_is_busy(const struct bm_storage *storage)
 	return (bm_storage_sd.queue_state != QUEUE_IDLE);
 }
 
-#ifndef CONFIG_UNITY
-static
-#endif
-int bm_storage_sd_on_state_evt(enum nrf_sdh_state_evt evt, void *ctx)
+static int bm_storage_sd_on_state_evt(enum nrf_sdh_state_evt evt, void *ctx)
 {
 	/* Are we ready to change state? */
 	bool is_busy = false;
@@ -498,10 +492,7 @@ int bm_storage_sd_on_state_evt(enum nrf_sdh_state_evt evt, void *ctx)
 }
 NRF_SDH_STATE_EVT_OBSERVER(sdh_state_evt, bm_storage_sd_on_state_evt, NULL, HIGH);
 
-#ifndef CONFIG_UNITY
-static
-#endif
-void bm_storage_sd_on_soc_evt(uint32_t evt, void *ctx)
+static void bm_storage_sd_on_soc_evt(uint32_t evt, void *ctx)
 {
 	bool operation_finished;
 
