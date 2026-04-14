@@ -101,7 +101,11 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Samples
 =======
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+Peripheral samples
+------------------
+
+* Added the :ref:`radio_test` sample.
+
 
 Bluetooth LE samples
 --------------------
