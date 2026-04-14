@@ -1107,6 +1107,77 @@ void test_ble_adv_start_mode_out_of_range_success(void)
 	TEST_ASSERT_TRUE(evts_raised_cnt_expectations_met());
 }
 
+void test_ble_adv_stop_error_null(void)
+{
+	uint32_t nrf_err;
+
+	init_success();
+
+	nrf_err = ble_adv_stop(NULL);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
+}
+
+void test_ble_adv_stop_error_invalid_state(void)
+{
+	uint32_t nrf_err;
+
+	nrf_err = ble_adv_stop(&ble_adv);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, nrf_err);
+
+	init_success();
+
+	__cmock_sd_ble_gap_adv_set_configure_Stub(stub_sd_ble_gap_adv_set_configure_fast_success);
+
+	if (IS_ENABLED(CONFIG_BLE_ADV_FAST_ADVERTISING) ||
+	    IS_ENABLED(CONFIG_BLE_ADV_SLOW_ADVERTISING)) {
+		__cmock_sd_ble_gap_adv_start_ExpectAndReturn(TEST_ADV_SET_HANDLE,
+							     TEST_CONN_CFG_TAG, NRF_SUCCESS);
+	}
+
+	nrf_err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	if (IS_ENABLED(CONFIG_BLE_ADV_FAST_ADVERTISING) ||
+	    IS_ENABLED(CONFIG_BLE_ADV_SLOW_ADVERTISING)) {
+		__cmock_sd_ble_gap_adv_stop_ExpectAnyArgsAndReturn(NRF_ERROR_INVALID_STATE);
+	}
+
+	nrf_err = ble_adv_stop(&ble_adv);
+	if (IS_ENABLED(CONFIG_BLE_ADV_FAST_ADVERTISING) ||
+	    IS_ENABLED(CONFIG_BLE_ADV_SLOW_ADVERTISING)) {
+		TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_STATE, nrf_err);
+	}
+}
+
+void test_ble_adv_stop(void)
+{
+	uint32_t nrf_err;
+
+	init_success();
+
+	nrf_err = ble_adv_stop(&ble_adv);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	if (IS_ENABLED(CONFIG_BLE_ADV_FAST_ADVERTISING) ||
+	    IS_ENABLED(CONFIG_BLE_ADV_SLOW_ADVERTISING)) {
+		__cmock_sd_ble_gap_adv_start_ExpectAndReturn(TEST_ADV_SET_HANDLE,
+							     TEST_CONN_CFG_TAG, NRF_SUCCESS);
+	}
+
+	__cmock_sd_ble_gap_adv_set_configure_Stub(stub_sd_ble_gap_adv_set_configure_fast_success);
+
+	nrf_err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	if (IS_ENABLED(CONFIG_BLE_ADV_FAST_ADVERTISING) ||
+	    IS_ENABLED(CONFIG_BLE_ADV_SLOW_ADVERTISING)) {
+		__cmock_sd_ble_gap_adv_stop_ExpectAnyArgsAndReturn(NRF_SUCCESS);
+	}
+
+	nrf_err = ble_adv_stop(&ble_adv);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+}
+
 void test_ble_adv_peer_addr_reply_error_null(void)
 {
 	uint32_t nrf_err;

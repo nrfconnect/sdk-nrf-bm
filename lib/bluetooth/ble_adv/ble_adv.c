@@ -371,7 +371,6 @@ uint32_t ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 	ble_adv->adv_params.filter_policy = BLE_GAP_ADV_FP_ANY;
 
 	/* Select the next advertising mode based on what's enabled */
-
 	switch (mode) {
 	case BLE_ADV_MODE_DIRECTED_HIGH_DUTY:
 		if (IS_ENABLED(CONFIG_BLE_ADV_DIRECTED_ADVERTISING_HIGH_DUTY)) {
@@ -444,6 +443,36 @@ uint32_t ble_adv_start(struct ble_adv *ble_adv, enum ble_adv_mode mode)
 		}
 	}
 	ble_adv->mode_current = mode;
+	ble_adv->evt_handler(ble_adv, &adv_evt);
+
+	return NRF_SUCCESS;
+}
+
+uint32_t ble_adv_stop(struct ble_adv *ble_adv)
+{
+	uint32_t nrf_err;
+	struct ble_adv_evt adv_evt = {
+		.evt_type = BLE_ADV_EVT_IDLE,
+	};
+
+	if (!ble_adv) {
+		return NRF_ERROR_NULL;
+	}
+	if (!ble_adv->is_initialized) {
+		return NRF_ERROR_INVALID_STATE;
+	}
+	if (ble_adv->mode_current == BLE_ADV_MODE_IDLE) {
+		/* Advertising is already stopped. */
+		return NRF_SUCCESS;
+	}
+
+	nrf_err = sd_ble_gap_adv_stop(ble_adv->adv_handle);
+	if (nrf_err) {
+		LOG_ERR("Failed to stop advertising, nrf_error %#x", nrf_err);
+		return nrf_err;
+	}
+
+	ble_adv->mode_current = BLE_ADV_MODE_IDLE;
 	ble_adv->evt_handler(ble_adv, &adv_evt);
 
 	return NRF_SUCCESS;
