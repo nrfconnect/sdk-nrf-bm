@@ -99,6 +99,7 @@
 .. _`Configuring Kconfig`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/app_dev/config_and_build/kconfig/index.html
 .. _`Power Profiler app`: https://docs.nordicsemi.com/bundle/swtools_docs/page/app/pc-nrfconnect-ppk/index.html
 .. _`Power Profiler Kit II (PPK2)`: https://docs.nordicsemi.com/bundle/ug_ppk2/page/UG/ppk/PPK_user_guide_Intro.html
+.. _`RSSI Viewer app`: https://docs.nordicsemi.com/bundle/swtools_docs/page/app/pc-nrfconnect-rssi/index.html
 .. _`nRF Connect for Mobile`: https://www.nordicsemi.com/Software-and-Tools/Development-Tools/nRF-Connect-for-mobile
 
 .. ### DFU
