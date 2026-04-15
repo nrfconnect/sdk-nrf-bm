@@ -10,7 +10,6 @@
 #include <zephyr/types.h>
 #include <hal/nrf_radio.h>
 
-
 /** Maximum radio RX or TX payload. */
 #define RADIO_MAX_PAYLOAD_LEN	256
 /** IEEE 802.15.4 maximum payload length. */
@@ -200,5 +199,13 @@ void radio_rx_stats_get(struct radio_rx_stats *rx_stats);
  * @param[in] dcdc_state  DC/DC converter state.
  */
 void toggle_dcdc_state(uint8_t dcdc_state);
+
+/**
+ * @brief Process pending radio test operations.
+ *
+ * Must be called periodically from the main loop to handle
+ * RX timeout processing in bare-metal (non-threaded) mode.
+ */
+void radio_test_process(void);
 
 #endif /* RADIO_TEST_H_ */

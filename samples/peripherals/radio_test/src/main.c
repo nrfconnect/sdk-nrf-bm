@@ -7,7 +7,8 @@
 #include <zephyr/sys/printk.h>
 #include <zephyr/drivers/clock_control.h>
 #include <zephyr/drivers/clock_control/nrf_clock_control.h>
-#include <zephyr/pm/device_runtime.h>
+#include <zephyr/shell/shell.h>
+#include <bm/shell/backend_bm_uarte.h>
 #if defined(NRF54L15_XXAA)
 #include <hal/nrf_clock.h>
 #endif /* defined(NRF54L15_XXAA) */
@@ -23,9 +24,9 @@
 #include <hal/nrf_clock.h>
 #endif /* defined(NRF54LM20A_XXAA) */
 
-/* Empty trim value */
-#define TRIM_VALUE_EMPTY 0xFFFFFFFF
+#include "radio_test.h"
 
+#if defined(CONFIG_CLOCK_CONTROL_NRF)
 static void clock_init(void)
 {
 	int err;
@@ -73,12 +74,28 @@ static void clock_init(void)
 
 	printk("Clock has started\n");
 }
+#endif /* defined(CONFIG_CLOCK_CONTROL_NRF) */
 
 int main(void)
 {
+	const struct shell *sh = shell_backend_bm_uarte_get_ptr();
+	const struct shell_backend_config_flags cfg_flags =
+		SHELL_DEFAULT_BACKEND_CONFIG_FLAGS;
+
+	shell_init(sh, NULL, cfg_flags, false, 0);
+	shell_start(sh);
+
 	printk("Starting Radio Test sample\n");
 
+#if defined(CONFIG_CLOCK_CONTROL_NRF)
 	clock_init();
+#endif
+
+	while (true) {
+		shell_process(sh);
+		radio_test_process();
+		k_busy_wait(10000);
+	}
 
 	return 0;
 }

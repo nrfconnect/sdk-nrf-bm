@@ -9,7 +9,9 @@
 #include <string.h>
 #include <inttypes.h>
 
+#if !defined(CONFIG_SOC_SERIES_NRF54L)
 #include <hal/nrf_power.h>
+#endif /* !defined(CONFIG_SOC_SERIES_NRF54L) */
 
 #include <nrfx_timer.h>
 #include <zephyr/kernel.h>
@@ -17,6 +19,7 @@
 
 #include <hal/nrf_egu.h>
 #include <helpers/nrfx_gppi.h>
+#include <bm/bm_irq.h>
 
 /* IEEE 802.15.4 default frequency. */
 #define IEEE_DEFAULT_FREQ         (5)
@@ -81,9 +84,12 @@ static nrfx_gppi_handle_t ppi_radio_start;
 /* PPI endpoint status.*/
 static atomic_t endpoint_state;
 
-/*  Work element used to handle the end of packet reception. */
-static void rx_timeout_work_handler(struct k_work *work);
-K_WORK_DELAYABLE_DEFINE(rx_timeout_work, rx_timeout_work_handler);
+/* RX timeout state for bare-metal polling */
+#define RX_TIMEOUT_INACTIVE 0
+#define RX_TIMEOUT_IMMEDIATE 1
+#define RX_TIMEOUT_DELAYED 2
+static volatile int rx_timeout_state;
+static volatile int64_t rx_timeout_deadline;
 
 /* Pointer to rx timeout callback function. */
 static void (**rx_timeout_cb)(void);
@@ -91,26 +97,18 @@ static void (**rx_timeout_cb)(void);
 static volatile bool cancel_request;
 static volatile bool test_is_running;
 
+/* Stored config pointer for ISR context access */
+static const struct radio_test_config *radio_test_cfg_ptr;
 
-/**
- * @brief Send errata HMPAN-216 on request signal to SysCtrl
- *
- * Also ensure RADIO is not started within 40 us after the signal is triggered,
- * so execution is blocked until then by a semaphore.
- *
- * @return 0 if successful, otherwise a negative error code
- */
-
-/**
- * @brief Send errata HMPAN-216 off request signal to SysCtrl
- *
- * @return 0 if successful, otherwise a negative error code
- */
-
-/**
- * @brief Return to code execution after the required delay for errata HMPAN-216 has elapsed.
- */
-
+static void rx_timeout_schedule(int32_t delay_ms)
+{
+	if (delay_ms == 0) {
+		rx_timeout_state = RX_TIMEOUT_IMMEDIATE;
+	} else {
+		rx_timeout_deadline = k_uptime_get() + delay_ms;
+		rx_timeout_state = RX_TIMEOUT_DELAYED;
+	}
+}
 
 static uint16_t channel_to_frequency(nrf_radio_mode_t mode, uint8_t channel)
 {
@@ -295,7 +293,8 @@ static void radio_power_set(nrf_radio_mode_t mode, uint8_t channel, int8_t power
 	int8_t output_power = power;
 	int8_t radio_power = power;
 
-
+	ARG_UNUSED(mode);
+	ARG_UNUSED(channel);
 
 	nrf_radio_txpower_set(NRF_RADIO, dbm_to_nrf_radio_txpower(radio_power));
 
@@ -360,7 +359,6 @@ static void radio_ppi_tx_reconfigure(void)
 	nrfx_gppi_conn_enable(ppi_radio_start);
 }
 
-
 static void radio_start(bool rx, bool force_egu)
 {
 	if (force_egu) {
@@ -383,7 +381,12 @@ static void radio_config(nrf_radio_mode_t mode, enum transmit_pattern pattern)
 	nrf_radio_packet_conf_t packet_conf;
 
 	/* Set fast ramp-up time. */
+#if defined(CONFIG_SOC_SERIES_NRF54H) || defined(CONFIG_SOC_SERIES_NRF54L) || \
+	defined(CONFIG_SOC_SERIES_NRF71)
 	nrf_radio_fast_ramp_up_enable_set(NRF_RADIO, true);
+#else
+	nrf_radio_modecnf0_set(NRF_RADIO, true, RADIO_MODECNF0_DTX_Center);
+#endif /* defined(CONFIG_SOC_SERIES_NRF54H) || defined(CONFIG_SOC_SERIES_NRF54L) */
 
 	/* Disable CRC. */
 	nrf_radio_crc_configure(NRF_RADIO, RADIO_CRCCNF_LEN_Disabled,
@@ -622,6 +625,7 @@ static void mltpan_6(nrf_radio_mode_t mode)
 	ARG_UNUSED(mode);
 #endif /* defined(NRF54L_SERIES) && CONFIG_HAS_HW_NRF_RADIO_IEEE802154 */
 }
+
 static void radio_mode_set(NRF_RADIO_Type *reg, nrf_radio_mode_t mode)
 {
 	nrf_radio_mode_set(reg, mode);
@@ -638,6 +642,9 @@ static void radio_unmodulated_tx_carrier(uint8_t mode, int8_t txpower, uint8_t c
 
 	radio_channel_set(mode, channel);
 
+	if (sweep_processing) {
+		radio_ppi_config(false);
+	}
 
 	radio_start(false, sweep_processing);
 }
@@ -693,8 +700,6 @@ static void radio_modulated_tx_carrier(uint8_t mode, int8_t txpower, uint8_t cha
 
 	tx_packet_cnt = 0;
 
-
-
 	radio_start(false, false);
 }
 
@@ -717,18 +722,20 @@ static void radio_rx(uint8_t mode, uint8_t channel, enum transmit_pattern patter
 
 	nrf_radio_int_enable(NRF_RADIO, NRF_RADIO_INT_CRCOK_MASK);
 
+	if (sweep_processing) {
+		radio_ppi_config(true);
+	}
 
 	radio_start(true, sweep_processing);
 
 	if (rx_packet_num > 0) {
-		k_work_reschedule(&rx_timeout_work, K_SECONDS(CONFIG_RADIO_TEST_RX_TIMEOUT));
+		rx_timeout_schedule(CONFIG_RADIO_TEST_RX_TIMEOUT * 1000);
 	}
 }
 
 static void radio_sweep_start(uint8_t channel, uint32_t delay_ms)
 {
 	current_channel = channel;
-
 
 	nrfx_timer_disable(&timer);
 	nrf_timer_shorts_disable(timer.p_reg, ~0);
@@ -782,6 +789,7 @@ static void radio_modulated_tx_carrier_duty_cycle(uint8_t mode, int8_t txpower,
 	/* We let the TIMER start the radio transmission again. */
 	nrfx_timer_disable(&timer);
 
+	radio_ppi_config(false);
 
 	nrf_timer_shorts_disable(timer.p_reg, ~0);
 	nrf_timer_int_disable(timer.p_reg, ~0);
@@ -854,6 +862,7 @@ static void cancel(void)
 	endpoints_clear();
 	radio_disable();
 
+	rx_timeout_state = RX_TIMEOUT_INACTIVE;
 }
 
 void radio_test_cancel(enum radio_test_mode type)
@@ -913,7 +922,7 @@ void toggle_dcdc_state(uint8_t dcdc_state)
 }
 #endif /* NRF_POWER_HAS_DCDCEN_VDDH || NRF_POWER_HAS_DCDCEN */
 
-static void rx_timeout_work_handler(struct k_work *work)
+static void rx_timeout_handle(void)
 {
 	radio_disable();
 	if (rx_timeout_cb != NULL && *rx_timeout_cb != NULL) {
@@ -985,6 +994,7 @@ void on_radio_end(const struct radio_test_config *config)
 	if (tx_packet_cnt == config->params.modulated_tx.packets_num &&
 	    config->type == MODULATED_TX) {
 		radio_disable();
+
 		config->params.modulated_tx.cb();
 	} else if (cancel_request) {
 		cancel();
@@ -1004,9 +1014,9 @@ void radio_handler(const void *context)
 		rx_packet_cnt++;
 		if (config->params.rx.packets_num) {
 			if (rx_packet_cnt == config->params.rx.packets_num) {
-				k_work_reschedule(&rx_timeout_work, K_NO_WAIT);
+				rx_timeout_schedule(0);
 			} else {
-				k_work_reschedule(&rx_timeout_work, K_MSEC(RX_PACKET_TIMEOUT_MS));
+				rx_timeout_schedule(RX_PACKET_TIMEOUT_MS);
 			}
 		}
 	}
@@ -1026,16 +1036,30 @@ void radio_handler(const void *context)
 	}
 }
 
+ISR_DIRECT_DECLARE(radio_test_timer_isr)
+{
+	nrfx_timer_irq_handler(&timer);
+	return 1;
+}
+
+ISR_DIRECT_DECLARE(radio_test_radio_isr)
+{
+	radio_handler(radio_test_cfg_ptr);
+	return 1;
+}
+
 int radio_test_init(struct radio_test_config *config)
 {
 	int nrfx_err;
 	uint32_t rad_domain = nrfx_gppi_domain_id_get((uint32_t)NRF_RADIO);
 
-	timer_init(config);
-	IRQ_CONNECT(RADIO_TEST_TIMER_IRQn, IRQ_PRIO_LOWEST,
-		nrfx_timer_irq_handler, &timer, 0);
+	radio_test_cfg_ptr = config;
 
-	irq_connect_dynamic(RADIO_TEST_RADIO_IRQn, IRQ_PRIO_LOWEST, radio_handler, config, 0);
+	timer_init(config);
+	BM_IRQ_DIRECT_CONNECT(RADIO_TEST_TIMER_IRQn, 7, radio_test_timer_isr, 0);
+	irq_enable(RADIO_TEST_TIMER_IRQn);
+
+	BM_IRQ_DIRECT_CONNECT(RADIO_TEST_RADIO_IRQn, 7, radio_test_radio_isr, 0);
 	irq_enable(RADIO_TEST_RADIO_IRQn);
 
 	nrfx_err = nrfx_gppi_domain_conn_alloc(rad_domain, rad_domain, &ppi_radio_start);
@@ -1046,6 +1070,15 @@ int radio_test_init(struct radio_test_config *config)
 
 	rx_timeout_cb = &config->params.rx.cb;
 
-
 	return 0;
+}
+
+void radio_test_process(void)
+{
+	if (rx_timeout_state == RX_TIMEOUT_IMMEDIATE ||
+	    (rx_timeout_state == RX_TIMEOUT_DELAYED &&
+	     k_uptime_get() >= rx_timeout_deadline)) {
+		rx_timeout_state = RX_TIMEOUT_INACTIVE;
+		rx_timeout_handle();
+	}
 }

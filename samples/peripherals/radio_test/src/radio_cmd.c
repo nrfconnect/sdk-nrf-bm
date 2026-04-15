@@ -54,7 +54,6 @@ static struct radio_param_config {
 	 * Set to zero for continuous RX.
 	 */
 	uint32_t rx_packets_num;
-
 } config = {
 	.tx_pattern = TRANSMIT_PATTERN_RANDOM,
 	.mode = NRF_RADIO_MODE_BLE_1MBIT,
@@ -247,7 +246,6 @@ static void rx_end(void)
 		printk("Error receiving packets\n");
 		return;
 	}
-
 
 	printk("\n");
 	printk("Received number of packets: %d\n", recv_pkt);
@@ -1122,7 +1120,6 @@ static int cmd_print_payload(const struct shell *shell, size_t argc,
 	return 0;
 }
 
-
 SHELL_STATIC_SUBCMD_SET_CREATE(sub_output_power,
 #if defined(RADIO_TXPOWER_TXPOWER_Pos10dBm)
 	SHELL_CMD(pos10dBm, NULL, "TX power: +10 dBm", cmd_pos10dbm),
@@ -1225,7 +1222,6 @@ SHELL_STATIC_SUBCMD_SET_CREATE(sub_transmit_pattern,
 	SHELL_SUBCMD_SET_END
 );
 
-
 SHELL_CMD_REGISTER(start_channel, NULL,
 		   "Start channel for the sweep or the channel for"
 		   " the constant carrier (in MHz as difference from 2400 MHz) <channel>",
@@ -1249,6 +1245,7 @@ SHELL_CMD_REGISTER(output_power,
 		   &sub_output_power,
 		   "Output power set <sub_cmd>",
 		   cmd_output_power_set);
+
 SHELL_CMD_REGISTER(transmit_pattern,
 		   &sub_transmit_pattern,
 		   "Set the transmission pattern",
@@ -1269,8 +1266,6 @@ SHELL_CMD_REGISTER(toggle_dcdc_state, NULL, TOGGLE_DCDC_HELP, cmd_toggle_dc);
 
 static int radio_cmd_init(void)
 {
-
-
 	return radio_test_init(&test_config);
 }
 
