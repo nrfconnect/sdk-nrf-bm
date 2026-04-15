@@ -19,7 +19,6 @@ manifest:
         name-allowlist:
           - cmsis
           - cmsis_6
-          - dragoon
           - hal_nordic
           - lz4
           - mbedtls

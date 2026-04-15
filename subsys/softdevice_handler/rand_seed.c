@@ -7,17 +7,16 @@
 #include <nrf_soc.h>
 #include <bm/softdevice_handler/nrf_sdh_soc.h>
 #include <zephyr/logging/log.h>
-#include <psa/crypto.h>
 #if CONFIG_HAS_HW_NRF_CRACEN
+#include <psa/crypto.h>
 #include <cracen_psa.h>
-#else
+#elif CONFIG_NRFX_CRACEN
 #include <nrfx_cracen.h>
 #endif
 
 LOG_MODULE_DECLARE(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
 
-/* Extern in nrf_sdh.c */
-void sdh_soc_rand_seed(uint32_t evt, void *ctx)
+static void sdh_soc_rand_seed(uint32_t evt, void *ctx)
 {
 	uint32_t nrf_err;
 	uint8_t seed[SD_RAND_SEED_SIZE];
@@ -37,7 +36,7 @@ void sdh_soc_rand_seed(uint32_t evt, void *ctx)
 		LOG_ERR("Failed to generate true random number, psa_status %d", status);
 		return;
 	}
-#else
+#elif CONFIG_NRFX_CRACEN && !CONFIG_SOFTDEVICE_BSIM
 	/* Selected when we don't have CRACEN Crypto HW available, like for nRF54LS05B
 	 * In this case the cracen_psa api isn't available and we should use nrfx api
 	 */
@@ -47,6 +46,8 @@ void sdh_soc_rand_seed(uint32_t evt, void *ctx)
 		LOG_ERR("Failed to generate true random number, err %d", err);
 		return;
 	}
+#elif CONFIG_SOFTDEVICE_BSIM
+	/* Seed with heap garbage */
 #endif
 
 	nrf_err = sd_rand_seed_set(seed);
