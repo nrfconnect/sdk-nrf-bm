@@ -302,19 +302,27 @@ Bluetooth LE Services
 Libraries for NFC
 -----------------
 
-* The maturity status of NFC libraries has been changed from Experimental to Supported for the following SoCs: nRF54L05, nRF54L10, and nRF54L15, nRF54LM20A is still in Experimental quality.
-* The NFC subsystem code has been migrated to |BMshort| and does not reuse code form |NCS| anymore.
-  The NFC related Kconfig options provided by |BMshort| have the ``BM_NFC_`` prefix.
-  The following list shows mapping from |NCS| Kconfig options to |BMshort| Kconfig options:
+* Added:
 
-  * ``CONFIG_NFCT_IRQ_PRIORITY`` --> :kconfig:option:`CONFIG_BM_NFCT_IRQ_PRIORITY`
-  * ``CONFIG_NFC_PLATFORM_LOG_LEVEL*`` --> :kconfig:option:`CONFIG_BM_NFC_PLATFORM_LOG_LEVEL*`
-  * ``CONFIG_NFC_NDEF*`` --> :kconfig:option:`CONFIG_BM_NFC_NDEF*`
-  * ``CONFIG_NFC_T4T_NDEF_FILE`` --> :kconfig:option:`CONFIG_BM_NFC_T4T_NDEF_FILE`
+  * The NFC libraries for NFC Connection Handover and Bluetooth LE Out-of-Band (OOB) pairing.
+  * The workaround to ensure the ``FRAMEDELAYMAX`` register is set to the default value when a field is lost.
+    This avoids violating protocol timing, which can lead readers to reject the NFC tag's response.
 
-  Use ``#include <bm/nfc/..>`` to include NFC related header files provided by |BMshort| instead of ``#include <nfc/...>``.
+* Updated:
 
-* Added NFC libraries for NFC Connection Handover and Bluetooth LE Out-of-Band (OOB) pairing.
+  * The maturity status of NFC libraries from Experimental to Supported for the SoCs nRF54L05, nRF54L10, and nRF54L15 SoCs.
+    The nRF54LM20A SoC is still in Experimental quality.
+  * The NFC subsystem code by migrating it to |BMshort|.
+    It does not reuse code form |NCS| anymore.
+    The NFC related Kconfig options provided by |BMshort| have the ``BM_NFC_`` prefix.
+    The following list shows mapping from |NCS| Kconfig options to |BMshort| Kconfig options:
+
+    * ``CONFIG_NFCT_IRQ_PRIORITY`` --> :kconfig:option:`CONFIG_BM_NFCT_IRQ_PRIORITY`
+    * ``CONFIG_NFC_PLATFORM_LOG_LEVEL*`` --> :kconfig:option:`CONFIG_BM_NFC_PLATFORM_LOG_LEVEL*`
+    * ``CONFIG_NFC_NDEF*`` --> :kconfig:option:`CONFIG_BM_NFC_NDEF*`
+    * ``CONFIG_NFC_T4T_NDEF_FILE`` --> :kconfig:option:`CONFIG_BM_NFC_T4T_NDEF_FILE`
+
+    Use ``#include <bm/nfc/..>`` to include NFC related header files provided by |BMshort| instead of ``#include <nfc/...>``.
 
 Utils
 -----
