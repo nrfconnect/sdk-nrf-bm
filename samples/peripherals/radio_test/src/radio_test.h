@@ -10,19 +10,6 @@
 #include <zephyr/types.h>
 #include <hal/nrf_radio.h>
 
-#ifdef NRF53_SERIES
-#ifndef RADIO_TXPOWER_TXPOWER_Pos3dBm
-	#define RADIO_TXPOWER_TXPOWER_Pos3dBm (0x03UL)
-#endif /* RADIO_TXPOWER_TXPOWER_Pos3dBm */
-
-#ifndef RADIO_TXPOWER_TXPOWER_Pos2dBm
-	#define RADIO_TXPOWER_TXPOWER_Pos2dBm (0x02UL)
-#endif /* RADIO_TXPOWER_TXPOWER_Pos2dBm */
-
-#ifndef RADIO_TXPOWER_TXPOWER_Pos1dBm
-	#define RADIO_TXPOWER_TXPOWER_Pos1dBm (0x01UL)
-#endif /* RADIO_TXPOWER_TXPOWER_Pos1dBm */
-#endif /* NRF53_SERIES */
 
 /** Maximum radio RX or TX payload. */
 #define RADIO_MAX_PAYLOAD_LEN	256

@@ -10,9 +10,7 @@
 #include <zephyr/init.h>
 #include <zephyr/shell/shell.h>
 #include <zephyr/types.h>
-#if !defined(CONFIG_SOC_SERIES_NRF54H)
 #include <hal/nrf_power.h>
-#endif /* !defined(CONFIG_SOC_SERIES_NRF54H) */
 
 #include "radio_test.h"
 
