@@ -1,0 +1,16 @@
+.. _sd_wrapper_s115_nrf54lm20:
+
+S115 SoftDevice for nRF54LM20
+#############################
+
+See the following documentation for the details regarding new releases of this SoftDevice variant.
+
+For additional documentation, see `S115 SoftDevice Specification`_.
+
+.. toctree::
+   :maxdepth: 2
+   :glob:
+   :caption: Subpages:
+
+   /nrf54lm/s115/doc/*release-notes.main
+   /nrf54lm/s115/doc/*migration-document.main

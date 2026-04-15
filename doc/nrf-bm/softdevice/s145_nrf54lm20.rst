@@ -1,0 +1,14 @@
+.. _sd_wrapper_s145_nrf54lm20:
+
+S145 SoftDevice for nRF54LM20
+#############################
+
+See the following documentation for the details regarding new releases of this S145 SoftDevice variant.
+
+.. toctree::
+   :maxdepth: 2
+   :glob:
+   :caption: Subpages:
+
+   /nrf54lm/s145/doc/*release-notes.main
+   /nrf54lm/s145/doc/*migration-document.main
