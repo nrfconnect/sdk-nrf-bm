@@ -25,7 +25,6 @@ zephyr_compile_definitions(
 
 zephyr_include_directories(
   ${SOFTDEVICE_INCLUDE_DIR}
-  ${ZEPHYR_NRF_BM_MODULE_DIR}/include
   ${ZEPHYR_HAL_NORDIC_MODULE_DIR}/nrfx/mdk
 )
 

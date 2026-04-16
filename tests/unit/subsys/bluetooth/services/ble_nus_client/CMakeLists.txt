@@ -28,7 +28,6 @@ zephyr_compile_definitions(
 zephyr_linker_sources(SECTIONS evt_obs.ld)
 
 zephyr_include_directories(
-  ${ZEPHYR_NRF_BM_MODULE_DIR}/include
   ${SOFTDEVICE_INCLUDE_DIR}
 )
 
