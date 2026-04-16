@@ -1,0 +1,23 @@
+#
+# Copyright (c) 2025 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "Bluetooth LE GAP Device Name sample"
+
+config SAMPLE_BLE_DEVICE_NAME
+	string "Device name"
+	default "nRF_BM_GAP_DN"
+
+config SAMPLE_BM_ZMS_SECTOR_SIZE
+	int "Sector size"
+	default 512
+
+endmenu
+
+module=SAMPLE_BLE_DEVICE_NAME
+module-str=BLE Device Name Sample
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+source "Kconfig.zephyr"

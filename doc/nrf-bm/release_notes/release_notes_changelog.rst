@@ -361,6 +361,7 @@ Bluetooth LE samples
 
    * The :ref:`ble_nus_central_sample` sample.
    * The :ref:`peripheral_nfc_pairing_sample` sample.
+   * The :ref:`ble_device_name_sample` sample.
 
 * :ref:`ble_bms_sample` sample:
 
