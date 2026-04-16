@@ -30,88 +30,92 @@ The sample supports the following development kits:
 
       The following board variants do **not** have DFU capabilities:
 
+      **S115**
+
       .. list-table::
          :header-rows: 1
 
          * - Hardware platform
            - PCA
-           - SoftDevice
            - Board target
          * - `nRF54L15 DK`_
            - PCA10156
-           - S115
            - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice
          * - `nRF54L15 DK`_ (emulating nRF54L10)
            - PCA10156
-           - S115
            - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice
          * - `nRF54L15 DK`_ (emulating nRF54L05)
            - PCA10156
-           - S115
            - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice
          * - `nRF54LM20 DK`_
            - PCA10184
-           - S115
            - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice
+
+      **S145**
+
+      .. list-table::
+         :header-rows: 1
+
+         * - Hardware platform
+           - PCA
+           - Board target
          * - `nRF54L15 DK`_
            - PCA10156
-           - S145
            - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice
          * - `nRF54L15 DK`_ (emulating nRF54L10)
            - PCA10156
-           - S145
            - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice
          * - `nRF54L15 DK`_ (emulating nRF54L05)
            - PCA10156
-           - S145
            - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice
          * - `nRF54LM20 DK`_
            - PCA10184
-           - S145
            - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s145_softdevice
 
    .. group-tab:: MCUboot board variants
 
       The following board variants have DFU capabilities.
 
+      **S115**
+
       .. list-table::
          :header-rows: 1
 
          * - Hardware platform
            - PCA
-           - SoftDevice
            - Board target
          * - `nRF54L15 DK`_
            - PCA10156
-           - S115
            - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
          * - `nRF54L15 DK`_ (emulating nRF54L10)
            - PCA10156
-           - S115
            - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
          * - `nRF54L15 DK`_ (emulating nRF54L05)
            - PCA10156
-           - S115
            - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
          * - `nRF54LM20 DK`_
            - PCA10184
-           - S115
            - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice/mcuboot
+
+      **S145**
+
+      .. list-table::
+         :header-rows: 1
+
+         * - Hardware platform
+           - PCA
+           - Board target
          * - `nRF54L15 DK`_
            - PCA10156
-           - S145
            - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice/mcuboot
          * - `nRF54L15 DK`_ (emulating nRF54L10)
            - PCA10156
-           - S145
            - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice/mcuboot
          * - `nRF54L15 DK`_ (emulating nRF54L05)
            - PCA10156
-           - S145
            - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot
          * - `nRF54LM20 DK`_
            - PCA10184
-           - S145
            - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s145_softdevice/mcuboot
 
 The sample additionally requires an NFC polling device (for example, a smartphone or a tablet with NFC support).
