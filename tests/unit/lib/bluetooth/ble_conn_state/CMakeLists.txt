@@ -22,7 +22,6 @@ zephyr_compile_definitions(
 
 zephyr_include_directories(
   ${SOFTDEVICE_INCLUDE_DIR}
-  ${ZEPHYR_NRF_BM_MODULE_DIR}/include
 )
 
 # Generate and add test file

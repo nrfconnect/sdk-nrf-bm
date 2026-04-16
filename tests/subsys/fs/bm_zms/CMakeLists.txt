@@ -11,7 +11,6 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(bm_zms)
 
 target_include_directories(app PRIVATE
-  ${ZEPHYR_NRF_BM_MODULE_DIR}/include
   ${ZEPHYR_NRF_BM_MODULE_DIR}/subsys/fs/bm_zms
 )
 
