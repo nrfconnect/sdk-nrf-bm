@@ -27,7 +27,6 @@ zephyr_linker_sources(SECTIONS evt_obs.ld)
 
 zephyr_include_directories(
   ${SOFTDEVICE_INCLUDE_DIR}
-  ${ZEPHYR_NRF_BM_MODULE_DIR}/include
 )
 
 # Generate and add test file
