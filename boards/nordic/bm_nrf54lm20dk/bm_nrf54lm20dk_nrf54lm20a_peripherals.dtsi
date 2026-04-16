@@ -75,6 +75,7 @@
 /delete-node/ &uart23;
 /delete-node/ &uart24;
 /delete-node/ &uart30;
+/delete-node/ &usbhs_wrapper;
 /delete-node/ &wdt30;
 /delete-node/ &wdt31;
 /delete-node/ &rng;
