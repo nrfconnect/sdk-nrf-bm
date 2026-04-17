@@ -1,0 +1,161 @@
+.. _shell_bm_uarte_sample:
+
+UARTE shell sample
+##################
+
+.. contents::
+   :local:
+   :depth: 2
+
+The Shell sample demonstrates how to initialize and use the shell subsystem with an NRFX UARTE based backend with |BMlong|.
+
+Requirements
+************
+
+The sample supports the following development kits:
+
+.. tabs::
+
+   .. group-tab:: Simple board variants
+
+      The following board variants do **not** have DFU capabilities:
+
+      .. list-table::
+         :header-rows: 1
+
+         * - Hardware platform
+           - PCA
+           - SoftDevice
+           - Board target
+         * - `nRF54L15 DK`_
+           - PCA10156
+           - S115
+           - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice
+         * - `nRF54L15 DK`_ (emulating nRF54L10)
+           - PCA10156
+           - S115
+           - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice
+         * - `nRF54L15 DK`_ (emulating nRF54L05)
+           - PCA10156
+           - S115
+           - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice
+         * - `nRF54LM20 DK`_
+           - PCA10184
+           - S115
+           - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice
+         * - nRF54LS05 DK
+           - PCA10214
+           - S115
+           - bm_nrf54ls05dk/nrf54ls05b/cpuapp/s115_softdevice
+         * - `nRF54LV10 DK`_
+           - PCA10188
+           - S115
+           - bm_nrf54lv10dk/nrf54lv10a/cpuapp/s115_softdevice
+         * - `nRF54L15 DK`_
+           - PCA10156
+           - S145
+           - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice
+         * - `nRF54L15 DK`_ (emulating nRF54L10)
+           - PCA10156
+           - S145
+           - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice
+         * - `nRF54L15 DK`_ (emulating nRF54L05)
+           - PCA10156
+           - S145
+           - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice
+         * - `nRF54LM20 DK`_
+           - PCA10184
+           - S145
+           - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s145_softdevice
+         * - nRF54LS05 DK
+           - PCA10214
+           - S145
+           - bm_nrf54ls05dk/nrf54ls05b/cpuapp/s145_softdevice
+         * - `nRF54LV10 DK`_
+           - PCA10188
+           - S145
+           - bm_nrf54lv10dk/nrf54lv10a/cpuapp/s145_softdevice
+
+   .. group-tab:: MCUboot board variants
+
+      The following board variants have DFU capabilities:
+
+      .. list-table::
+         :header-rows: 1
+
+         * - Hardware platform
+           - PCA
+           - SoftDevice
+           - Board target
+         * - `nRF54L15 DK`_
+           - PCA10156
+           - S115
+           - bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot
+         * - `nRF54L15 DK`_ (emulating nRF54L10)
+           - PCA10156
+           - S115
+           - bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot
+         * - `nRF54L15 DK`_ (emulating nRF54L05)
+           - PCA10156
+           - S115
+           - bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot
+         * - `nRF54LM20 DK`_
+           - PCA10184
+           - S115
+           - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice/mcuboot
+         * - nRF54LS05 DK
+           - PCA10214
+           - S115
+           - bm_nrf54ls05dk/nrf54ls05b/cpuapp/s115_softdevice/mcuboot
+         * - `nRF54LV10 DK`_
+           - PCA10188
+           - S115
+           - bm_nrf54lv10dk/nrf54lv10a/cpuapp/s115_softdevice/mcuboot
+         * - `nRF54L15 DK`_
+           - PCA10156
+           - S145
+           - bm_nrf54l15dk/nrf54l15/cpuapp/s145_softdevice/mcuboot
+         * - `nRF54L15 DK`_ (emulating nRF54L10)
+           - PCA10156
+           - S145
+           - bm_nrf54l15dk/nrf54l10/cpuapp/s145_softdevice/mcuboot
+         * - `nRF54L15 DK`_ (emulating nRF54L05)
+           - PCA10156
+           - S145
+           - bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot
+         * - `nRF54LM20 DK`_
+           - PCA10184
+           - S145
+           - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s145_softdevice/mcuboot
+         * - nRF54LS05 DK
+           - PCA10214
+           - S145
+           - bm_nrf54ls05dk/nrf54ls05b/cpuapp/s145_softdevice/mcuboot
+         * - `nRF54LV10 DK`_
+           - PCA10188
+           - S145
+           - bm_nrf54lv10dk/nrf54lv10a/cpuapp/s145_softdevice/mcuboot
+
+Overview
+********
+
+The sample initializes and starts an interactive shell, which can be terminated by using the "terminate" shell command.
+
+Building and running
+********************
+
+This sample can be found under :file:`samples/subsys/shell/bm_uarte` in the |BMshort| folder structure.
+For details on how to create, configure, and program a sample, see :ref:`getting_started_with_the_samples`.
+
+Testing
+=======
+
+You can test this sample by performing the following steps:
+
+1. Compile and program the application.
+#. Observe that the ``bm-uarte:~$`` prompt is printed.
+#. Write :command:`help` and press enter.
+#. Observe supported commands are printed.
+#. Write :command:`terminate` and press enter.
+#. Observe that the ``goodbye`` message is printed.
+#. Observe that the ``bm-uarte:~$`` prompt is printed again but the shell no longer responds to input.
