@@ -29,7 +29,6 @@ extern "C" {
  */
 #define BLE_HRS_DEF(_name)                                                                         \
 	static struct ble_hrs _name;                                                               \
-	extern void ble_hrs_on_ble_evt(const ble_evt_t *ble_evt, void *ctx);                       \
 	NRF_SDH_BLE_OBSERVER(_name##_obs, ble_hrs_on_ble_evt, &_name, HIGH)
 
 /** @brief Default security configuration. */
@@ -309,6 +308,21 @@ uint32_t ble_hrs_sensor_contact_detected_update(struct ble_hrs *hrs,
  *         - @ref sd_ble_gatts_value_set()
  */
 uint32_t ble_hrs_body_sensor_location_set(struct ble_hrs *hrs, uint8_t body_sensor_location);
+
+/**
+ * @brief Bluetooth LE event handler for the Heart Rate Service.
+ *
+ * @details Handles all Bluetooth LE stack events that are of interest to the
+ *          Heart Rate Service.
+ *
+ * @note This handler is registered automatically by @ref BLE_HRS_DEF and is
+ *       called by the SoftDevice handler. The application does not need to call
+ *       it directly.
+ *
+ * @param[in] ble_evt Bluetooth LE stack event.
+ * @param[in] hrs     Pointer to the @ref ble_hrs instance.
+ */
+void ble_hrs_on_ble_evt(const ble_evt_t *ble_evt, void *hrs);
 
 #ifdef __cplusplus
 }

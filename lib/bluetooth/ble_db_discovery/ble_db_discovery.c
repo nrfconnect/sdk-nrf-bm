@@ -654,29 +654,32 @@ static void on_disconnected(struct ble_db_discovery *db_discovery, const ble_gap
 	}
 }
 
-void ble_db_discovery_on_ble_evt(const ble_evt_t *ble_evt, void *context)
+void ble_db_discovery_on_ble_evt(const ble_evt_t *ble_evt, void *db_discovery)
 {
-	struct ble_db_discovery *const db_discovery = (struct ble_db_discovery *)context;
+	__ASSERT(ble_evt, "ble_evt is NULL");
+	__ASSERT(db_discovery, "db_discovery is NULL");
 
-	if (!ble_evt || !db_discovery || !db_discovery->gatt_queue) {
+	struct ble_db_discovery *const ble_db_discovery = db_discovery;
+
+	if (!ble_db_discovery->gatt_queue) {
 		return;
 	}
 
 	switch (ble_evt->header.evt_id) {
 	case BLE_GATTC_EVT_PRIM_SRVC_DISC_RSP:
-		on_primary_srv_discovery_rsp(db_discovery, &(ble_evt->evt.gattc_evt));
+		on_primary_srv_discovery_rsp(ble_db_discovery, &(ble_evt->evt.gattc_evt));
 		break;
 
 	case BLE_GATTC_EVT_CHAR_DISC_RSP:
-		on_characteristic_discovery_rsp(db_discovery, &(ble_evt->evt.gattc_evt));
+		on_characteristic_discovery_rsp(ble_db_discovery, &(ble_evt->evt.gattc_evt));
 		break;
 
 	case BLE_GATTC_EVT_DESC_DISC_RSP:
-		on_descriptor_discovery_rsp(db_discovery, &(ble_evt->evt.gattc_evt));
+		on_descriptor_discovery_rsp(ble_db_discovery, &(ble_evt->evt.gattc_evt));
 		break;
 
 	case BLE_GAP_EVT_DISCONNECTED:
-		on_disconnected(db_discovery, &(ble_evt->evt.gap_evt));
+		on_disconnected(ble_db_discovery, &(ble_evt->evt.gap_evt));
 		break;
 
 	default:

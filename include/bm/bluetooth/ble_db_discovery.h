@@ -241,12 +241,19 @@ uint32_t ble_db_discovery_service_register(struct ble_db_discovery *db_discovery
 					   const ble_uuid_t *uuid);
 
 /**
- * @brief Application's Bluetooth LE Stack event handler.
+ * @brief Bluetooth LE event handler for the Database Discovery library.
  *
- * @param[in] ble_evt Event received.
- * @param[in,out] context DB discovery instance.
+ * @details Handles all Bluetooth LE stack events that are of interest to the
+ *          Database Discovery library.
+ *
+ * @note This handler is registered automatically by @ref BLE_DB_DISCOVERY_DEF and
+ *       is called by the SoftDevice handler. The application does not need to
+ *       call it directly.
+ *
+ * @param[in] ble_evt      Bluetooth LE stack event.
+ * @param[in] db_discovery Pointer to the @ref ble_db_discovery instance.
  */
-void ble_db_discovery_on_ble_evt(const ble_evt_t *ble_evt, void *context);
+void ble_db_discovery_on_ble_evt(const ble_evt_t *ble_evt, void *db_discovery);
 
 #endif /* BLE_DB_DISCOVERY_H__ */
 

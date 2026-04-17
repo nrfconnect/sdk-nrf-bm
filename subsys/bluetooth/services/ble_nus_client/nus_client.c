@@ -7,6 +7,7 @@
 #include <bm/bluetooth/services/ble_nus_client.h>
 #include <bm/bluetooth/services/uuid.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/sys/__assert.h>
 
 LOG_MODULE_REGISTER(ble_nus_client, CONFIG_BLE_NUS_CLIENT_LOG_LEVEL);
 
@@ -111,37 +112,36 @@ uint32_t ble_nus_client_init(struct ble_nus_client *nus_client,
 	return ble_db_discovery_service_register(nus_client_config->db_discovery, &uart_uuid);
 }
 
-void ble_nus_client_on_ble_evt(const ble_evt_t *ble_evt, void *context)
+void ble_nus_client_on_ble_evt(const ble_evt_t *ble_evt, void *nus_client)
 {
-	struct ble_nus_client *nus_client = (struct ble_nus_client *)context;
+	__ASSERT(ble_evt, "ble_evt is NULL");
+	__ASSERT(nus_client, "nus_client is NULL");
 
-	if (!nus_client || !ble_evt) {
-		return;
-	}
+	struct ble_nus_client *ble_nus_client = nus_client;
 
-	if (nus_client->conn_handle == BLE_CONN_HANDLE_INVALID) {
+	if (ble_nus_client->conn_handle == BLE_CONN_HANDLE_INVALID) {
 		return;
 	}
 
 	switch (ble_evt->header.evt_id) {
 	case BLE_GATTC_EVT_HVX:
-		on_hvx(nus_client, ble_evt);
+		on_hvx(ble_nus_client, ble_evt);
 		break;
 
 	case BLE_GAP_EVT_DISCONNECTED:
-		if (nus_client->conn_handle != ble_evt->evt.gap_evt.conn_handle) {
+		if (ble_nus_client->conn_handle != ble_evt->evt.gap_evt.conn_handle) {
 			return;
 		}
-		if (ble_evt->evt.gap_evt.conn_handle == nus_client->conn_handle &&
-		    nus_client->evt_handler != NULL) {
+		if (ble_evt->evt.gap_evt.conn_handle == ble_nus_client->conn_handle &&
+		    ble_nus_client->evt_handler != NULL) {
 			struct ble_nus_client_evt nus_c_evt = {
 				.evt_type = BLE_NUS_CLIENT_EVT_DISCONNECTED,
 				.disconnected.reason =
 					ble_evt->evt.gap_evt.params.disconnected.reason,
 			};
 
-			nus_client->conn_handle = BLE_CONN_HANDLE_INVALID;
-			nus_client->evt_handler(nus_client, &nus_c_evt);
+			ble_nus_client->conn_handle = BLE_CONN_HANDLE_INVALID;
+			ble_nus_client->evt_handler(ble_nus_client, &nus_c_evt);
 		}
 		break;
 

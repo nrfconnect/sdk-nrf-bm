@@ -16,6 +16,7 @@ rsource "lib/Kconfig"
 rsource "modules/Kconfig"
 rsource "samples/Kconfig"
 rsource "subsys/Kconfig"
+rsource "tests/Kconfig"
 # zephyr-keep-sorted-stop
 
 endif # NCS_BM

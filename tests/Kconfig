@@ -1,0 +1,9 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+config TEST_SDH_EVT_DISPATCH
+	bool "SoftDevice event dispatch test utility"
+	depends on UNITY

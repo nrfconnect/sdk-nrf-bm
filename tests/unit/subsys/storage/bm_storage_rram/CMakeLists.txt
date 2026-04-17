@@ -22,7 +22,6 @@ cmock_handle(${ZEPHYR_HAL_NORDIC_MODULE_DIR}/nrfx/drivers/include/nrfx_rramc.h
 )
 
 zephyr_include_directories(
-  ${ZEPHYR_NRF_BM_MODULE_DIR}/include
   ${ZEPHYR_HAL_NORDIC_MODULE_DIR}/nrfx
   ${ZEPHYR_HAL_NORDIC_MODULE_DIR}/nrfx/drivers/include
   ${ZEPHYR_HAL_NORDIC_MODULE_DIR}/nrfx/bsp/stable/templates

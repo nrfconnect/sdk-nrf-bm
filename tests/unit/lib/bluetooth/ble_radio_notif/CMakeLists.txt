@@ -10,24 +10,21 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 
 project(unit_test_ble_radio_notif)
 
-set(SOFTDEVICE_VARIANT "s115")
-set(SOFTDEVICE_INCLUDE_DIR "${ZEPHYR_NRF_BM_MODULE_DIR}/components/softdevice/nrf54l/\
-${SOFTDEVICE_VARIANT}/${SOFTDEVICE_VARIANT}_API/include")
+softdevice_unity_setup()
 
 cmock_handle(mocks/cmsis.h)
 cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/nrf_soc.h)
 
+# NRF54L15_XXAA and SUPPRESS_INLINE_IMPLEMENTATION are required by nrf_soc.h.
+# SWI02_IRQn is provided by the mocked cmsis.h.
 zephyr_compile_definitions(
   NRF54L15_XXAA
-  SVCALL_AS_NORMAL_FUNCTION
   SUPPRESS_INLINE_IMPLEMENTATION
   SWI02_IRQn=30
 )
 
 zephyr_include_directories(
   mocks
-  ${SOFTDEVICE_INCLUDE_DIR}
-  ${ZEPHYR_NRF_BM_MODULE_DIR}/include
 )
 
 # Generate and add test file

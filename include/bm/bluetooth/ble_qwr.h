@@ -180,15 +180,19 @@ uint32_t ble_qwr_init(struct ble_qwr *qwr, const struct ble_qwr_config *qwr_conf
 uint32_t ble_qwr_conn_handle_assign(struct ble_qwr *qwr, uint16_t conn_handle);
 
 /**
- * @brief Function for handling Bluetooth LE stack events.
+ * @brief Bluetooth LE event handler for the Queued Writes module.
  *
- * @details Handles all events from the Bluetooth LE stack that are of interest to the
+ * @details Handles all Bluetooth LE stack events that are of interest to the
  *          Queued Writes module.
  *
- * @param[in] ble_evt Event received.
- * @param[in] context Queued Writes structure.
+ * @note This handler is registered automatically by @ref BLE_QWR_DEF and is
+ *       called by the SoftDevice handler. The application does not need to call
+ *       it directly.
+ *
+ * @param[in] ble_evt Bluetooth LE stack event.
+ * @param[in] qwr     Pointer to the @ref ble_qwr instance.
  */
-void ble_qwr_on_ble_evt(const ble_evt_t *ble_evt, void *context);
+void ble_qwr_on_ble_evt(const ble_evt_t *ble_evt, void *qwr);
 
 #if (CONFIG_BLE_QWR_MAX_ATTR > 0)
 /**

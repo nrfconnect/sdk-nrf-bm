@@ -238,12 +238,19 @@ struct ble_adv_config {
 };
 
 /**
- * @brief Library's Bluetooth LE event handler.
+ * @brief Bluetooth LE event handler for the advertising library.
+ *
+ * @details Handles all Bluetooth LE stack events that are of interest to the
+ *          advertising library.
+ *
+ * @note This handler is registered automatically by @ref BLE_ADV_DEF and is
+ *       called by the SoftDevice handler. The application does not need to call
+ *       it directly.
  *
  * @param[in] ble_evt Bluetooth LE stack event.
- * @param[in] ble_adv Advertising Module instance.
+ * @param[in] adv     Pointer to the @ref ble_adv instance.
  */
-void ble_adv_on_ble_evt(const ble_evt_t *ble_evt, void *ble_adv);
+void ble_adv_on_ble_evt(const ble_evt_t *ble_evt, void *adv);
 
 /**
  * @brief Initialize the Bluetooth LE advertising library.

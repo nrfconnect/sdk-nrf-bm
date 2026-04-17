@@ -35,9 +35,6 @@ extern "C" {
 /** Byte 12 and 13 of the NUS TX Characteristic UUID. */
 #define BLE_UUID_NUS_TX_CHARACTERISTIC 0x0003
 
-/* Forward declaration */
-void ble_nus_on_ble_evt(const ble_evt_t *ble_evt, void *context);
-
 /**
  * @brief Macro for defining a ble_nus instance.
  *
@@ -194,15 +191,19 @@ struct ble_nus {
 uint32_t ble_nus_init(struct ble_nus *nus, const struct ble_nus_config *nus_config);
 
 /**
- * @brief Function for handling the Nordic UART Service's Bluetooth LE events.
+ * @brief Bluetooth LE event handler for the Nordic UART Service.
  *
- * @note This function is registered automatically by @ref BLE_NUS_DEF
- *       and should not be called directly by the application.
+ * @details Handles all Bluetooth LE stack events that are of interest to the
+ *          Nordic UART Service.
  *
- * @param[in] ble_evt Event received from the SoftDevice.
- * @param[in] context Nordic UART Service structure.
+ * @note This handler is registered automatically by @ref BLE_NUS_DEF and is
+ *       called by the SoftDevice handler. The application does not need to call
+ *       it directly.
+ *
+ * @param[in] ble_evt Bluetooth LE stack event.
+ * @param[in] nus     Pointer to the @ref ble_nus instance.
  */
-void ble_nus_on_ble_evt(const ble_evt_t *ble_evt, void *context);
+void ble_nus_on_ble_evt(const ble_evt_t *ble_evt, void *nus);
 
 /**
  * @brief Send data on the NUS TX characteristic as a notification.

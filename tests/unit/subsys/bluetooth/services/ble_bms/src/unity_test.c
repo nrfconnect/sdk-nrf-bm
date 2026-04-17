@@ -500,10 +500,6 @@ void test_ble_bms_on_ble_evt_rw_authorize_req_uninitialized(void)
 	memcpy(evt.evt.gatts_evt.params.authorize_request.request.write.data,
 	       data, sizeof(data));
 
-	/* These should return immediately. */
-	ble_bms_on_ble_evt(&evt, NULL);
-	ble_bms_on_ble_evt(NULL, &ble_bms);
-
 	/* Unhandled as ctrlpt handle is not registered. */
 	ble_bms_on_ble_evt(&evt, &ble_bms);
 }
@@ -563,10 +559,6 @@ void test_ble_bms_on_ble_evt_rw_authorize_req(void)
 	};
 
 	test_ble_bms_init();
-
-	/* These should return immediately. */
-	ble_bms_on_ble_evt(&evt, NULL);
-	ble_bms_on_ble_evt(NULL, &ble_bms);
 
 	/* Empty data is rejected */
 	__cmock_sd_ble_gatts_rw_authorize_reply_Stub(stub_sd_ble_gatts_rw_authorize_reply_rejected);

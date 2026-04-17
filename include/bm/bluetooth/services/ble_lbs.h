@@ -37,7 +37,6 @@ struct ble_lbs;
  */
 #define BLE_LBS_DEF(_name)                                                                         \
 	static struct ble_lbs _name;                                                               \
-	extern void ble_lbs_on_ble_evt(const ble_evt_t *ble_evt, void *lbs_instance);              \
 	NRF_SDH_BLE_OBSERVER(_name##_obs, ble_lbs_on_ble_evt, &_name, HIGH)
 
 /** @brief Default security configuration. */
@@ -147,15 +146,19 @@ struct ble_lbs {
 uint32_t ble_lbs_init(struct ble_lbs *lbs, const struct ble_lbs_config *cfg);
 
 /**
- * @brief Function for handling the application's Bluetooth LE stack events.
+ * @brief Bluetooth LE event handler for the LED Button Service.
  *
- * @details This function handles all events from the Bluetooth LE stack that are of interest to the
+ * @details Handles all Bluetooth LE stack events that are of interest to the
  *          LED Button Service.
  *
- * @param[in] ble_evt      Event received.
- * @param[in] lbs_instance LED Button Service structure.
+ * @note This handler is registered automatically by @ref BLE_LBS_DEF and is
+ *       called by the SoftDevice handler. The application does not need to call
+ *       it directly.
+ *
+ * @param[in] ble_evt Bluetooth LE stack event.
+ * @param[in] lbs     Pointer to the @ref ble_lbs instance.
  */
-void ble_lbs_on_ble_evt(const ble_evt_t *ble_evt, void *lbs_instance);
+void ble_lbs_on_ble_evt(const ble_evt_t *ble_evt, void *lbs);
 
 /**
  * @brief Function for sending a button state notification.

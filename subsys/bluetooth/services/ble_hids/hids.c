@@ -597,25 +597,24 @@ static void on_rw_authorize_request(struct ble_hids *hids, const ble_evt_t *ble_
 	}
 }
 
-void ble_hids_on_ble_evt(const ble_evt_t *ble_evt, void *context)
+void ble_hids_on_ble_evt(const ble_evt_t *ble_evt, void *hids)
 {
-	struct ble_hids *hids = (struct ble_hids *)context;
+	__ASSERT(ble_evt, "ble_evt is NULL");
+	__ASSERT(hids, "hids is NULL");
 
-	if (!hids) {
-		return;
-	}
+	struct ble_hids *ble_hids = hids;
 
 	switch (ble_evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:
-		on_connect(hids, ble_evt);
+		on_connect(ble_hids, ble_evt);
 		break;
 
 	case BLE_GATTS_EVT_WRITE:
-		on_write(hids, ble_evt);
+		on_write(ble_hids, ble_evt);
 		break;
 
 	case BLE_GATTS_EVT_RW_AUTHORIZE_REQUEST:
-		on_rw_authorize_request(hids, ble_evt);
+		on_rw_authorize_request(ble_hids, ble_evt);
 		break;
 
 	default:

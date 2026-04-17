@@ -169,17 +169,19 @@ uint32_t ble_hrs_client_init(struct ble_hrs_client *hrs_client,
 			     const struct ble_hrs_client_config *hrs_client_config);
 
 /**
- * @brief Handle Bluetooth LE events from the SoftDevice.
+ * @brief Bluetooth LE event handler for the Heart Rate Service Client.
  *
- * @details This function handles the Bluetooth LE events received from the SoftDevice.
- *          If an event is relevant to the Heart Rate Client module, the function uses
- *          the event's data to update interval variables and, if necessary, send events to the
- *          application.
+ * @details Handles all Bluetooth LE stack events that are of interest to the
+ *          Heart Rate Service Client.
  *
- * @param[in, out] ble_evt Bluetooth LE event.
- * @param[in] ctx Heart Rate Client structure.
+ * @note This handler is registered automatically by @ref BLE_HRS_CLIENT_DEF and is
+ *       called by the SoftDevice handler. The application does not need to call
+ *       it directly.
+ *
+ * @param[in] ble_evt    Bluetooth LE stack event.
+ * @param[in] hrs_client Pointer to the @ref ble_hrs_client instance.
  */
-void ble_hrs_client_on_ble_evt(const ble_evt_t *ble_evt, void *ctx);
+void ble_hrs_client_on_ble_evt(const ble_evt_t *ble_evt, void *hrs_client);
 
 /**
  * @brief Request the peer to start sending notification of Heart Rate Measurement.

@@ -103,6 +103,7 @@
 # Tests
 /tests/subsys/fs/bm_zms/                    @nrfconnect/ncs-bm @rghaddab
 /tests/subsys/kmu/                          @nrfconnect/ncs-eris @nrfconnect/ncs-eris-test
+/tests/unit/common/                         @nrfconnect/ncs-bm
 /tests/unit/lib/                            @nrfconnect/ncs-bm
 /tests/unit/lib/bluetooth/ble_adv/          @nrfconnect/ncs-bm-test
 /tests/unit/lib/bluetooth/ble_conn_params/  @nrfconnect/ncs-bm
