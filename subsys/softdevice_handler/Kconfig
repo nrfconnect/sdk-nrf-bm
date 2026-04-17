@@ -237,8 +237,7 @@ endif # NRF_SDH_BLE
 
 config NRF_SDH_SOC_RAND_SEED
 	bool "Automatically seed SoftDevice random"
-	depends on NRF_SECURITY
-	depends on MBEDTLS_PSA_CRYPTO_C
+	depends on (NRF_SECURITY && MBEDTLS_PSA_CRYPTO_C) || SOC_SERIES_BSIM_NRF54LX
 	default y
 	help
 	  Automatically seed SoftDevice using CRACEN to generate the random seed.

@@ -14,9 +14,9 @@
 
 LOG_MODULE_DECLARE(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
 
-#if CONFIG_SOC_SERIES_NRF54L
 #include "irq_connect.h"
 
+/* Handlers provided by the SoftDevice */
 extern void CLOCK_POWER_SD_IRQHandler(void);
 extern void RADIO_0_IRQHandler(void);
 extern void TIMER10_IRQHandler(void);
@@ -120,7 +120,5 @@ __attribute__((weak)) void C_CLOCK_POWER_SD_Handler(void)
 	__asm__("SVC 255");
 #endif
 }
-
-#endif /* CONFIG_SOC_SERIES_NRF54L */
 
 SYS_INIT(irq_init, APPLICATION, 0);

@@ -7,7 +7,7 @@ menu "SoftDevice"
 
 config SOFTDEVICE
 	bool "SoftDevice is present"
-	depends on ZERO_LATENCY_IRQS
+	depends on ZERO_LATENCY_IRQS || SOC_SERIES_BSIM_NRF54LX
 	imply NRF_SDH
 
 config SOFTDEVICE_PERIPHERAL
@@ -32,19 +32,25 @@ choice SOFTDEVICE_VARIANT
 
 config SOFTDEVICE_S115
 	bool "s115 SoftDevice"
-	depends on SOC_SERIES_NRF54L
+	depends on SOC_SERIES_NRF54L || SOC_SERIES_BSIM_NRF54LX
 	select SOFTDEVICE_PERIPHERAL
 	select SOFTDEVICE_DATA_LENGTH_UPDATE
 
 config SOFTDEVICE_S145
 	bool "s145 SoftDevice"
-	depends on SOC_SERIES_NRF54L
+	depends on SOC_SERIES_NRF54L || SOC_SERIES_BSIM_NRF54LX
 	select SOFTDEVICE_PERIPHERAL
 	select SOFTDEVICE_CENTRAL
 	select SOFTDEVICE_EXTENDED_ADVERTISING
 	select SOFTDEVICE_DATA_LENGTH_UPDATE
 
 endchoice # SOFTDEVICE_VARIANT
+
+config SOFTDEVICE_BSIM
+	bool "Use linkable SoftDevice for Babblesim"
+	depends on SOC_SERIES_BSIM_NRF54LX
+	help
+	  Link with the SoftDevice library instead of using the separate SoftDevice hex image.
 
 config SOFTDEVICE_VARIANT_STR
 	string
@@ -56,7 +62,7 @@ config SOFTDEVICE_VARIANT_STR
 
 config SOFTDEVICE_SOC_VARIANT_STR
 	string
-	default "nrf54l" if SOC_NRF54L15 || SOC_NRF54L10 || SOC_NRF54L05
+	default "nrf54l" if SOC_NRF54L15 || SOC_NRF54L10 || SOC_NRF54L05 || SOC_SERIES_BSIM_NRF54LX
 	default "nrf54lm" if SOC_NRF54LM20A
 	default "nrf54ls" if SOC_NRF54LS05B
 	default "nrf54lv" if SOC_NRF54LV10A
