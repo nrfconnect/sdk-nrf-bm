@@ -10,9 +10,7 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 
 project(unit_test_ble_scan)
 
-set(SOFTDEVICE_VARIANT "s145")
-set(SOFTDEVICE_INCLUDE_DIR "${ZEPHYR_NRF_BM_MODULE_DIR}/components/softdevice/nrf54l/\
-${SOFTDEVICE_VARIANT}/${SOFTDEVICE_VARIANT}_API/include")
+softdevice_unity_setup(VARIANT s145)
 
 cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble_gap.h)
 cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble_gatts.h)
@@ -22,12 +20,7 @@ cmock_handle(${ZEPHYR_NRF_BM_MODULE_DIR}/include/bm/bluetooth/ble_adv_data.h)
 
 zephyr_compile_definitions(
   NRF54L15_XXAA
-  SVCALL_AS_NORMAL_FUNCTION
   SUPPRESS_INLINE_IMPLEMENTATION
-)
-
-zephyr_include_directories(
-  ${SOFTDEVICE_INCLUDE_DIR}
 )
 
 zephyr_linker_sources(SECTIONS evt_obs.ld)
