@@ -56,6 +56,7 @@ enum ble_hrs_client_evt_type {
 	 *  received from the peer.
 	 */
 	BLE_HRS_CLIENT_EVT_HRM_NOTIFICATION,
+	BLE_HRS_CLIENT_EVT_BSL_UPDATE,
 	/** Error. */
 	BLE_HRS_CLIENT_EVT_ERROR,
 };
@@ -80,6 +81,8 @@ struct ble_hrs_handles {
 	uint16_t hrm_cccd_handle;
 	/** Handle of the Heart Rate Measurement characteristic, as provided by the SoftDevice. */
 	uint16_t hrm_handle;
+	uint16_t bsl_handle;
+	uint16_t bsl_cccd_handle;
 };
 
 /**
@@ -95,9 +98,12 @@ struct ble_hrs_client_evt {
 		struct {
 			/** Handles related to the Heart Rate, found on the peer device. */
 			struct ble_hrs_handles handles;
+			uint8_t body_sensor_location;
 		} discovery_complete;
 		/** @ref BLE_HRS_CLIENT_EVT_HRM_NOTIFICATION event data. */
 		struct ble_hrs_measurement hrm_notification;
+
+		uint8_t body_sensor_location;
 		/** @ref BLE_HRS_CLIENT_EVT_ERROR event data. */
 		struct {
 			/** Error reason */
