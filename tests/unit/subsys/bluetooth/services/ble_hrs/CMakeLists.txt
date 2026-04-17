@@ -11,7 +11,7 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(unit_test_ble_hrs)
 
 include(${ZEPHYR_NRF_BM_MODULE_DIR}/cmake/unity/unity_softdevice_setup.cmake)
-unity_softdevice_header_setup()
+unity_softdevice_header_setup(VARIANT "s145")
 
 cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble_gatts.h)
 
