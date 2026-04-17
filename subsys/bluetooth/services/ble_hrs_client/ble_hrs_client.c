@@ -119,6 +119,7 @@ static void on_disconnected(struct ble_hrs_client *hrs_client, const ble_evt_t *
 		hrs_client->conn_handle = BLE_CONN_HANDLE_INVALID;
 		hrs_client->handles.hrm_cccd_handle = BLE_GATT_HANDLE_INVALID;
 		hrs_client->handles.hrm_handle = BLE_GATT_HANDLE_INVALID;
+		hrs_client->handles.bsl_handle = BLE_GATT_HANDLE_INVALID;
 	}
 }
 
@@ -128,12 +129,13 @@ void ble_hrs_on_db_disc_evt(struct ble_hrs_client *hrs_client,
 	__ASSERT(hrs_client, "HRS client instance is NULL");
 	__ASSERT(db_discovery_evt, "Discovery event is NULL");
 
+	uint32_t nrf_err;
 	const struct ble_gatt_db_char *db_char;
 	struct ble_hrs_client_evt hrs_client_evt = {
 		.evt_type = BLE_HRS_CLIENT_EVT_DISCOVERY_COMPLETE,
 		.conn_handle = db_discovery_evt->conn_handle,
 	};
-	struct ble_hrs_handles *handles = &hrs_client->handles;
+	struct ble_hrs_handles *const evt_handles = &hrs_client_evt.discovery_complete.handles;
 
 	/* Check if the Heart Rate Service was discovered. */
 	if (db_discovery_evt->evt_type != BLE_DB_DISCOVERY_COMPLETE ||
@@ -142,27 +144,40 @@ void ble_hrs_on_db_disc_evt(struct ble_hrs_client *hrs_client,
 		return;
 	}
 
-	/* Find the CCCD Handle of the Heart Rate Measurement characteristic. */
+	/* Iterate discovered characteristics. */
 	for (uint32_t i = 0; i < db_discovery_evt->discovered_db->char_count; i++) {
 		db_char = &db_discovery_evt->discovered_db->characteristics[i];
 
 		if (db_char->characteristic.uuid.uuid == BLE_UUID_HEART_RATE_MEASUREMENT_CHAR) {
-			/* Found Heart Rate characteristic. Store CCCD handle and break. */
-			hrs_client_evt.discovery_complete.handles.hrm_cccd_handle =
-				db_char->cccd_handle;
-			hrs_client_evt.discovery_complete.handles.hrm_handle =
-				db_char->characteristic.handle_value;
-			break;
+			/* Found Heart Rate characteristic. Store value and CCCD handle for later
+			 * notification setup.
+			 */
+			evt_handles->hrm_cccd_handle = db_char->cccd_handle;
+			evt_handles->hrm_handle = db_char->characteristic.handle_value;
+
+		} else if (db_char->characteristic.uuid.uuid ==
+			   BLE_UUID_BODY_SENSOR_LOCATION_CHAR) {
+			/* Found body sensor location characteristic. Store value handle and issue
+			 * a read request. The value will arrive asynchronously in a
+			 * BLE_GATTC_EVT_READ_RSP event.
+			 */
+			evt_handles->bsl_handle = db_char->characteristic.handle_value;
+
+			nrf_err = sd_ble_gattc_read(db_discovery_evt->conn_handle,
+						    db_char->characteristic.handle_value, 0);
+			if (nrf_err) {
+				LOG_ERR("Failed to read bsl char value, nrf_err %#x", nrf_err);
+			}
 		}
 	}
 
 	LOG_DBG("HRS discovered");
 
-	/* If the instance has been assigned prior to db_discovery, assign the db_handles. */
+	/* If the instance has been assigned prior to db_discovery, do not assign the handles. */
 	if (hrs_client->conn_handle != BLE_CONN_HANDLE_INVALID) {
-		if ((handles->hrm_cccd_handle == BLE_GATT_HANDLE_INVALID) &&
-		    (handles->hrm_handle == BLE_GATT_HANDLE_INVALID)) {
-			hrs_client->handles = hrs_client_evt.discovery_complete.handles;
+		if ((hrs_client->handles.hrm_cccd_handle == BLE_GATT_HANDLE_INVALID) &&
+		    (hrs_client->handles.hrm_handle == BLE_GATT_HANDLE_INVALID)) {
+			hrs_client->handles = *evt_handles;
 		}
 	}
 
@@ -194,6 +209,31 @@ uint32_t ble_hrs_client_init(struct ble_hrs_client *hrs_client,
 	return ble_db_discovery_service_register(hrs_client_config->db_discovery, &hrs_uuid);
 }
 
+static void on_read_rsp(struct ble_hrs_client *hrs_client, const ble_evt_t *ble_evt)
+{
+	const ble_gattc_evt_read_rsp_t *read_rsp = &ble_evt->evt.gattc_evt.params.read_rsp;
+	struct ble_hrs_client_evt evt = {
+		.evt_type = BLE_HRS_CLIENT_EVT_BSL_UPDATE,
+		.conn_handle = ble_evt->evt.gattc_evt.conn_handle,
+		.bsl_update.body_sensor_location = ble_evt->evt.gattc_evt.params.read_rsp.data[0],
+	};
+
+	if (hrs_client->conn_handle != ble_evt->evt.gattc_evt.conn_handle) {
+		return;
+	}
+
+	/* Check if this is a body sensor location response. */
+	if (read_rsp->handle != hrs_client->handles.bsl_handle) {
+		return;
+	}
+
+	if (read_rsp->len < 1) {
+		return;
+	}
+
+	hrs_client->evt_handler(hrs_client, &evt);
+}
+
 void ble_hrs_client_on_ble_evt(const ble_evt_t *ble_evt, void *ble_hrs_client)
 {
 	__ASSERT(ble_evt, "ble_evt is NULL");
@@ -207,6 +247,9 @@ void ble_hrs_client_on_ble_evt(const ble_evt_t *ble_evt, void *ble_hrs_client)
 		break;
 	case BLE_GAP_EVT_DISCONNECTED:
 		on_disconnected(hrs_client, ble_evt);
+		break;
+	case BLE_GATTC_EVT_READ_RSP:
+		on_read_rsp(hrs_client, ble_evt);
 		break;
 	default:
 		break;

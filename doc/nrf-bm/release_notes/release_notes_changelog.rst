@@ -84,9 +84,13 @@ Libraries
 Bluetooth LE Services
 ---------------------
 
-* :ref:`lib_ble_scan`
+* :ref:`lib_ble_scan`:
 
    * Changed :c:member:`ble_scan_filter_data.addr_filter.addr` and :c:member:`ble_scan_filter_data.name_filter.name` to ``const`` in the :c:struct:`ble_scan_filter_data` structure.
+
+* :ref:`lib_ble_service_hrs_client`:
+
+   * Added the :c:enumerator:`BLE_HRS_CLIENT_EVT_BSL_UPDATE` event to the :c:enum:`ble_hrs_client_evt_type` enum.
 
 Libraries for NFC
 -----------------
