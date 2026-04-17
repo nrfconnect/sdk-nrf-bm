@@ -76,13 +76,16 @@ static uint32_t stub_sd_ble_gatts_hvx_capture(uint16_t conn_handle,
 	return NRF_SUCCESS;
 }
 
-void test_ble_hrs_on_ble_evt_disconnect(void)
+void test_ble_hrs_on_ble_evt_connect_disconnect_role_periph(void)
 {
-	/* Simulate connect then disconnect, verify conn_handle resets to invalid. */
-	struct ble_hrs hrs = {0};
+	/* Simulate connect then disconnect with peripheral role.
+	 * Verify that the conn_handle resets to invalid.
+	 */
+	struct ble_hrs hrs = {.conn_handle = BLE_CONN_HANDLE_INVALID};
 	const ble_evt_t connect_evt = {
 		.header.evt_id = BLE_GAP_EVT_CONNECTED,
 		.evt.gap_evt.conn_handle = TEST_CONN_HANDLE,
+		.evt.gap_evt.params.connected.role = BLE_GAP_ROLE_PERIPH,
 	};
 	const ble_evt_t disconnect_evt = {
 		.header.evt_id = BLE_GAP_EVT_DISCONNECTED,
@@ -95,6 +98,57 @@ void test_ble_hrs_on_ble_evt_disconnect(void)
 
 	/* Now disconnect. */
 	ble_hrs_on_ble_evt(&disconnect_evt, &hrs);
+	TEST_ASSERT_EQUAL(BLE_CONN_HANDLE_INVALID, hrs.conn_handle);
+}
+
+void test_ble_hrs_on_ble_evt_connect_disconnect_role_periph_and_central(void)
+{
+	/* Simulate connect then disconnect with peripheral and central role.
+	 * Verify that the conn_handle does not change with connected events with central role.
+	 */
+
+	struct ble_hrs hrs = {.conn_handle = BLE_CONN_HANDLE_INVALID};
+	const ble_evt_t connect_periph_evt = {
+		.header.evt_id = BLE_GAP_EVT_CONNECTED,
+		.evt.gap_evt.conn_handle = TEST_CONN_HANDLE,
+		.evt.gap_evt.params.connected.role = BLE_GAP_ROLE_PERIPH,
+	};
+	const ble_evt_t connect_central_evt = {
+		.header.evt_id = BLE_GAP_EVT_CONNECTED,
+		.evt.gap_evt.conn_handle = TEST_CONN_HANDLE + 1,
+		.evt.gap_evt.params.connected.role = BLE_GAP_ROLE_CENTRAL,
+	};
+	const ble_evt_t disconnect_periph_evt = {
+		.header.evt_id = BLE_GAP_EVT_DISCONNECTED,
+		.evt.gap_evt.conn_handle = TEST_CONN_HANDLE,
+	};
+	const ble_evt_t disconnect_central_evt = {
+		.header.evt_id = BLE_GAP_EVT_DISCONNECTED,
+		.evt.gap_evt.conn_handle = TEST_CONN_HANDLE + 1,
+	};
+
+	/* Connect with central role and expect conn_handle to stay invalid. */
+	ble_hrs_on_ble_evt(&connect_central_evt, &hrs);
+	TEST_ASSERT_EQUAL(BLE_CONN_HANDLE_INVALID, hrs.conn_handle);
+
+	/* Disconnect with central role and expect conn_handle to stay invalid. */
+	ble_hrs_on_ble_evt(&disconnect_central_evt, &hrs);
+	TEST_ASSERT_EQUAL(BLE_CONN_HANDLE_INVALID, hrs.conn_handle);
+
+	/* Connect with peripheral role so conn_handle is valid. */
+	ble_hrs_on_ble_evt(&connect_periph_evt, &hrs);
+	TEST_ASSERT_EQUAL(TEST_CONN_HANDLE, hrs.conn_handle);
+
+	/* Connect with central role and expect conn_handle to not change. */
+	ble_hrs_on_ble_evt(&connect_central_evt, &hrs);
+	TEST_ASSERT_EQUAL(TEST_CONN_HANDLE, hrs.conn_handle);
+
+	/* Disconnect with central role and expect conn_handle to not change. */
+	ble_hrs_on_ble_evt(&disconnect_central_evt, &hrs);
+	TEST_ASSERT_EQUAL(TEST_CONN_HANDLE, hrs.conn_handle);
+
+	/* Disconnect with peripheral role and expect conn_handle to change to invalid. */
+	ble_hrs_on_ble_evt(&disconnect_periph_evt, &hrs);
 	TEST_ASSERT_EQUAL(BLE_CONN_HANDLE_INVALID, hrs.conn_handle);
 }
 
