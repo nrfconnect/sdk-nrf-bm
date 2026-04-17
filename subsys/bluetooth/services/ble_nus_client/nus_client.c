@@ -7,6 +7,7 @@
 #include <bm/bluetooth/services/ble_nus_client.h>
 #include <bm/bluetooth/services/uuid.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/sys/__assert.h>
 
 LOG_MODULE_REGISTER(ble_nus_client, CONFIG_BLE_NUS_CLIENT_LOG_LEVEL);
 
@@ -111,13 +112,12 @@ uint32_t ble_nus_client_init(struct ble_nus_client *nus_client,
 	return ble_db_discovery_service_register(nus_client_config->db_discovery, &uart_uuid);
 }
 
-void ble_nus_client_on_ble_evt(const ble_evt_t *ble_evt, void *context)
+void ble_nus_client_on_ble_evt(const ble_evt_t *ble_evt, void *ble_nus_client)
 {
-	struct ble_nus_client *nus_client = (struct ble_nus_client *)context;
+	__ASSERT(ble_evt, "ble_evt is NULL");
+	__ASSERT(ble_nus_client, "ble_nus_client is NULL");
 
-	if (!nus_client || !ble_evt) {
-		return;
-	}
+	struct ble_nus_client *nus_client = ble_nus_client;
 
 	if (nus_client->conn_handle == BLE_CONN_HANDLE_INVALID) {
 		return;

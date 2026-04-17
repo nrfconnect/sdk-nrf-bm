@@ -18,6 +18,7 @@
 #include "cgms_socp.h"
 #include "cgms_sst.h"
 
+#include <zephyr/sys/__assert.h>
 #include <zephyr/sys/byteorder.h>
 #include <zephyr/logging/log.h>
 
@@ -302,9 +303,12 @@ static void on_rw_authorize_request(struct ble_cgms *cgms, const ble_gatts_evt_t
 	}
 }
 
-void ble_cgms_on_ble_evt(const ble_evt_t *ble_evt, void *context)
+void ble_cgms_on_ble_evt(const ble_evt_t *ble_evt, void *ble_cgms)
 {
-	struct ble_cgms *cgms = (struct ble_cgms *)context;
+	__ASSERT(ble_evt, "ble_evt is NULL");
+	__ASSERT(ble_cgms, "ble_cgms is NULL");
+
+	struct ble_cgms *cgms = ble_cgms;
 
 	switch (ble_evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:

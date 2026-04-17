@@ -318,9 +318,7 @@ void test_ble_qwr_on_ble_evt_do_nothing(void)
 	const ble_evt_t ble_evt = {0};
 	struct ble_qwr qwr = {0};
 
-	/* We expect these to return immediately */
-	ble_qwr_on_ble_evt(&ble_evt, NULL);
-	ble_qwr_on_ble_evt(NULL, &qwr);
+	/* Uninitialized qwr: handler should return immediately. */
 	ble_qwr_on_ble_evt(&ble_evt, &qwr);
 }
 

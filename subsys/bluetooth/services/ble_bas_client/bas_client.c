@@ -11,6 +11,7 @@
 #include <bm/bluetooth/services/uuid.h>
 
 #include <zephyr/logging/log.h>
+#include <zephyr/sys/__assert.h>
 
 LOG_MODULE_REGISTER(bas_client, CONFIG_BLE_BAS_CLIENT_LOG_LEVEL);
 
@@ -172,13 +173,12 @@ static void on_disconnected(struct ble_bas_client *bas_client, const ble_evt_t *
 	}
 }
 
-void ble_bas_client_on_ble_evt(const ble_evt_t *ble_evt, void *context)
+void ble_bas_client_on_ble_evt(const ble_evt_t *ble_evt, void *ble_bas_client)
 {
-	if ((ble_evt == NULL) || (context == NULL)) {
-		return;
-	}
+	__ASSERT(ble_evt, "ble_evt is NULL");
+	__ASSERT(ble_bas_client, "ble_bas_client is NULL");
 
-	struct ble_bas_client *bas_client = (struct ble_bas_client *)context;
+	struct ble_bas_client *bas_client = ble_bas_client;
 
 	switch (ble_evt->header.evt_id) {
 	case BLE_GATTC_EVT_HVX:

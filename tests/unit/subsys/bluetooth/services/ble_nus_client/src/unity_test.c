@@ -511,11 +511,6 @@ void test_ble_nus_client_handles_assign_error_null(void)
 	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
 }
 
-void test_ble_nus_client_on_ble_evt_null(void)
-{
-	ble_nus_client_on_ble_evt(NULL, NULL);
-}
-
 void test_ble_nus_client_on_ble_evt(void)
 {
 	uint32_t nrf_err;

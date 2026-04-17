@@ -194,10 +194,12 @@ uint32_t ble_hrs_client_init(struct ble_hrs_client *hrs_client,
 	return ble_db_discovery_service_register(hrs_client_config->db_discovery, &hrs_uuid);
 }
 
-void ble_hrs_client_on_ble_evt(const ble_evt_t *ble_evt, void *hrs_client)
+void ble_hrs_client_on_ble_evt(const ble_evt_t *ble_evt, void *ble_hrs_client)
 {
-	__ASSERT(ble_evt, "BLE event is NULL");
-	__ASSERT(hrs_client, "HRS central instance is NULL");
+	__ASSERT(ble_evt, "ble_evt is NULL");
+	__ASSERT(ble_hrs_client, "ble_hrs_client is NULL");
+
+	struct ble_hrs_client *hrs_client = ble_hrs_client;
 
 	switch (ble_evt->header.evt_id) {
 	case BLE_GATTC_EVT_HVX:

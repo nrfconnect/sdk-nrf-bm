@@ -407,15 +407,14 @@ uint32_t ble_gq_conn_handle_register(const struct ble_gq *gq, uint16_t conn_hand
 	return NRF_SUCCESS;
 }
 
-void ble_gq_on_ble_evt(const ble_evt_t *ble_evt, void *gatt_queue)
+void ble_gq_on_ble_evt(const ble_evt_t *ble_evt, void *ble_gq)
 {
-	const struct ble_gq *const gq = (struct ble_gq *)gatt_queue;
+	__ASSERT(ble_evt, "ble_evt is NULL");
+	__ASSERT(ble_gq, "ble_gq is NULL");
+
+	const struct ble_gq *const gq = ble_gq;
 	uint16_t conn_handle;
 	uint16_t conn_id;
-
-	if (ble_evt == NULL || gq == NULL) {
-		return;
-	}
 
 	/* Obtain connection handle and filter out events that do not trigger queue processing. */
 	if (ble_evt->header.evt_id == BLE_GAP_EVT_DISCONNECTED) {

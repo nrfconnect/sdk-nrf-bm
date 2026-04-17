@@ -10,6 +10,7 @@
 #include <string.h>
 #include <ble.h>
 #include <bm/bluetooth/ble_qwr.h>
+#include <zephyr/sys/__assert.h>
 #include <zephyr/sys/byteorder.h>
 
 /* Non-zero value used to make sure the given structure has been initialized by the module. */
@@ -401,15 +402,12 @@ static void on_rw_authorize_request(struct ble_qwr *qwr, const ble_gatts_evt_t *
 #endif
 }
 
-void ble_qwr_on_ble_evt(const ble_evt_t *ble_evt, void *context)
+void ble_qwr_on_ble_evt(const ble_evt_t *ble_evt, void *ble_qwr)
 {
-	struct ble_qwr *qwr;
+	__ASSERT(ble_evt, "ble_evt is NULL");
+	__ASSERT(ble_qwr, "ble_qwr is NULL");
 
-	if (!context || !ble_evt) {
-		return;
-	}
-
-	qwr = (struct ble_qwr *)context;
+	struct ble_qwr *qwr = ble_qwr;
 
 	if (qwr->initialized != BLE_QWR_INITIALIZED) {
 		return;

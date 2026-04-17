@@ -654,11 +654,14 @@ static void on_disconnected(struct ble_db_discovery *db_discovery, const ble_gap
 	}
 }
 
-void ble_db_discovery_on_ble_evt(const ble_evt_t *ble_evt, void *context)
+void ble_db_discovery_on_ble_evt(const ble_evt_t *ble_evt, void *ble_db_discovery)
 {
-	struct ble_db_discovery *const db_discovery = (struct ble_db_discovery *)context;
+	__ASSERT(ble_evt, "ble_evt is NULL");
+	__ASSERT(ble_db_discovery, "ble_db_discovery is NULL");
 
-	if (!ble_evt || !db_discovery || !db_discovery->gatt_queue) {
+	struct ble_db_discovery *const db_discovery = ble_db_discovery;
+
+	if (!db_discovery->gatt_queue) {
 		return;
 	}
 

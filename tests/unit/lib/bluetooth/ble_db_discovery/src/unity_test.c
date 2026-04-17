@@ -276,21 +276,6 @@ void test_ble_db_discovery_start_success(void)
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
-void test_ble_db_discovery_on_ble_evt_check_arg_null(void)
-{
-	uint32_t nrf_err;
-	ble_evt_t evt = {0};
-
-	ble_db_discovery_on_ble_evt(&evt, NULL);
-
-	ble_db_discovery_on_ble_evt(&evt, &db_discovery);
-
-	nrf_err = ble_db_discovery_init(&db_discovery, &db_disc_config);
-	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
-
-	ble_db_discovery_on_ble_evt(NULL, &db_discovery);
-}
-
 static uint32_t stub_ble_gq_item_scenario_discover_two_services(
 	const struct ble_gq *gatt_queue, struct ble_gq_req *req, uint16_t conn_handle,
 	int cmock_num_calls)
