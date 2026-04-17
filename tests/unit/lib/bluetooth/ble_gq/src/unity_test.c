@@ -596,11 +596,6 @@ void test_ble_gq_item_add_req_gatts_hvx_error_invalid_param(void)
 	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, glob_error);
 }
 
-void test_ble_gq_on_ble_evt_null(void)
-{
-	ble_gq_on_ble_evt(NULL, NULL);
-}
-
 void test_ble_gq_on_ble_evt_disconnected_event_item_purge(void)
 {
 	uint32_t nrf_err;

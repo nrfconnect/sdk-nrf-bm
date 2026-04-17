@@ -314,15 +314,19 @@ uint32_t ble_bms_auth_response(struct ble_bms *bms, bool authorize);
 uint32_t ble_bms_init(struct ble_bms *bms, struct ble_bms_config *bms_config);
 
 /**
- * @brief   Handle Bond Management Bluetooth LE stack events.
+ * @brief Bluetooth LE event handler for the Bond Management Service.
  *
- * @details This function handles all events from the Bluetooth LE stack that are of interest to the
+ * @details Handles all Bluetooth LE stack events that are of interest to the
  *          Bond Management Service.
  *
- * @param[in] ble_evt Event received.
- * @param[in] context BMS structure.
+ * @note This handler is registered automatically by @ref BLE_BMS_DEF and is
+ *       called by the SoftDevice handler. The application does not need to call
+ *       it directly.
+ *
+ * @param[in] ble_evt Bluetooth LE stack event.
+ * @param[in] bms     Pointer to the @ref ble_bms instance.
  */
-void ble_bms_on_ble_evt(const ble_evt_t *ble_evt, void *context);
+void ble_bms_on_ble_evt(const ble_evt_t *ble_evt, void *bms);
 
 /**
  * @brief Handle events from the @ref nrf_ble_qwr.

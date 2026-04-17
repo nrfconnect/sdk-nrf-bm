@@ -10,6 +10,7 @@
 #include <string.h>
 #include <ble.h>
 #include <bm/bluetooth/ble_qwr.h>
+#include <zephyr/sys/__assert.h>
 #include <zephyr/sys/byteorder.h>
 
 /* Non-zero value used to make sure the given structure has been initialized by the module. */
@@ -401,39 +402,36 @@ static void on_rw_authorize_request(struct ble_qwr *qwr, const ble_gatts_evt_t *
 #endif
 }
 
-void ble_qwr_on_ble_evt(const ble_evt_t *ble_evt, void *context)
+void ble_qwr_on_ble_evt(const ble_evt_t *ble_evt, void *qwr)
 {
-	struct ble_qwr *qwr;
+	__ASSERT(ble_evt, "ble_evt is NULL");
+	__ASSERT(qwr, "qwr is NULL");
 
-	if (!context || !ble_evt) {
+	struct ble_qwr *ble_qwr = qwr;
+
+	if (ble_qwr->initialized != BLE_QWR_INITIALIZED) {
 		return;
 	}
 
-	qwr = (struct ble_qwr *)context;
-
-	if (qwr->initialized != BLE_QWR_INITIALIZED) {
-		return;
-	}
-
-	if (ble_evt->evt.common_evt.conn_handle == qwr->conn_handle) {
-		user_mem_reply(qwr);
+	if (ble_evt->evt.common_evt.conn_handle == ble_qwr->conn_handle) {
+		user_mem_reply(ble_qwr);
 	}
 
 	switch (ble_evt->header.evt_id) {
 	case BLE_EVT_USER_MEM_REQUEST:
-		on_user_mem_request(qwr, &ble_evt->evt.common_evt);
+		on_user_mem_request(ble_qwr, &ble_evt->evt.common_evt);
 		break;
 	case BLE_EVT_USER_MEM_RELEASE:
-		on_user_mem_release(qwr, &ble_evt->evt.common_evt);
+		on_user_mem_release(ble_qwr, &ble_evt->evt.common_evt);
 		break;
 	case BLE_GATTS_EVT_RW_AUTHORIZE_REQUEST:
-		on_rw_authorize_request(qwr, &ble_evt->evt.gatts_evt);
+		on_rw_authorize_request(ble_qwr, &ble_evt->evt.gatts_evt);
 		break;
 	case BLE_GAP_EVT_DISCONNECTED:
-		if (ble_evt->evt.gap_evt.conn_handle == qwr->conn_handle) {
-			qwr->conn_handle = BLE_CONN_HANDLE_INVALID;
+		if (ble_evt->evt.gap_evt.conn_handle == ble_qwr->conn_handle) {
+			ble_qwr->conn_handle = BLE_CONN_HANDLE_INVALID;
 #if (CONFIG_BLE_QWR_MAX_ATTR > 0)
-			qwr->nb_written_handles = 0;
+			ble_qwr->nb_written_handles = 0;
 #endif
 		}
 		break;

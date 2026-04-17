@@ -590,14 +590,19 @@ struct ble_cgms {
 uint32_t ble_cgms_init(struct ble_cgms *cgms, const struct ble_cgms_config *cgms_init);
 
 /**
- * @brief Function for handling the application's Bluetooth LE stack events.
+ * @brief Bluetooth LE event handler for the Continuous Glucose Monitoring Service.
  *
- * @details Handles all events from the Bluetooth LE stack that are of interest to the CGM Service.
+ * @details Handles all Bluetooth LE stack events that are of interest to the
+ *          Continuous Glucose Monitoring Service.
  *
- * @param[in] ble_evt Event received.
- * @param[in] context Instance of the CGM Service.
+ * @note This handler is registered automatically by @ref BLE_CGMS_DEF and is
+ *       called by the SoftDevice handler. The application does not need to call
+ *       it directly.
+ *
+ * @param[in] ble_evt Bluetooth LE stack event.
+ * @param[in] cgms    Pointer to the @ref ble_cgms instance.
  */
-void ble_cgms_on_ble_evt(const ble_evt_t *ble_evt, void *context);
+void ble_cgms_on_ble_evt(const ble_evt_t *ble_evt, void *cgms);
 
 /**
  * @brief Report a new glucose measurement to the CGM Service module.

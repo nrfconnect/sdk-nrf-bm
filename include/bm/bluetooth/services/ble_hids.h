@@ -700,17 +700,19 @@ struct ble_hids {
 };
 
 /**
- * @brief Function for handling the Application's Bluetooth LE Stack events.
+ * @brief Bluetooth LE event handler for the HID Service.
  *
- * @details Handles all events from the Bluetooth LE stack of interest to the HID Service.
+ * @details Handles all Bluetooth LE stack events that are of interest to the
+ *          HID Service.
  *
- * @note This function is registered with a NRF_SDH_BLE_OBSERVER and is called automatically
- *       by the SoftDevice Handler.
+ * @note This handler is registered automatically by @ref BLE_HIDS_DEF and is
+ *       called by the SoftDevice handler. The application does not need to call
+ *       it directly.
  *
- * @param[in] ble_evt Event received.
- * @param[in] context HID Service structure.
+ * @param[in] ble_evt Bluetooth LE stack event.
+ * @param[in] hids    Pointer to the @ref ble_hids instance.
  */
-void ble_hids_on_ble_evt(const ble_evt_t *ble_evt, void *context);
+void ble_hids_on_ble_evt(const ble_evt_t *ble_evt, void *hids);
 
 /**
  * @brief Function for initializing the HID Service.

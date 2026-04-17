@@ -188,22 +188,24 @@ static void on_write(struct ble_hrs *hrs, const ble_gatts_evt_t *gatts_evt)
 	hrs->evt_handler(hrs, &hrs_evt);
 }
 
-void ble_hrs_on_ble_evt(const ble_evt_t *ble_evt, void *hrs_instance)
+void ble_hrs_on_ble_evt(const ble_evt_t *ble_evt, void *hrs)
 {
-	__ASSERT(ble_evt, "BLE event is NULL");
-	__ASSERT(hrs_instance, "BLE instance is NULL");
+	__ASSERT(ble_evt, "ble_evt is NULL");
+	__ASSERT(hrs, "hrs is NULL");
+
+	struct ble_hrs *ble_hrs = hrs;
 
 	switch (ble_evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:
-		on_connect(hrs_instance, &ble_evt->evt.gap_evt);
+		on_connect(ble_hrs, &ble_evt->evt.gap_evt);
 		break;
 
 	case BLE_GAP_EVT_DISCONNECTED:
-		on_disconnect(hrs_instance, &ble_evt->evt.gap_evt);
+		on_disconnect(ble_hrs, &ble_evt->evt.gap_evt);
 		break;
 
 	case BLE_GATTS_EVT_WRITE:
-		on_write(hrs_instance, &ble_evt->evt.gatts_evt);
+		on_write(ble_hrs, &ble_evt->evt.gatts_evt);
 		break;
 
 	default:

@@ -157,19 +157,19 @@ uint32_t ble_bas_client_init(struct ble_bas_client *bas_client,
 			     const struct ble_bas_client_config *bas_client_config);
 
 /**
- * @brief Handle Bluetooth LE events from the SoftDevice.
+ * @brief Bluetooth LE event handler for the Battery Service Client.
  *
- * @details This function handles the Bluetooth LE events received from the SoftDevice. If a
- *          Bluetooth LE event is relevant to the Battery Service Client module, the function uses
- *          the event's data to update interval variables and, if necessary, send events to the
- *          application.
+ * @details Handles all Bluetooth LE stack events that are of interest to the
+ *          Battery Service Client.
  *
- * @note This function must be called by the application.
+ * @note This handler is registered automatically by @ref BLE_BAS_CLIENT_DEF and
+ *       is called by the SoftDevice handler. The application does not need to
+ *       call it directly.
  *
- * @param[in] ble_evt Bluetooth LE event.
- * @param[in] context Battery Service client structure.
+ * @param[in] ble_evt    Bluetooth LE stack event.
+ * @param[in] bas_client Pointer to the @ref ble_bas_client instance.
  */
-void ble_bas_client_on_ble_evt(const ble_evt_t *ble_evt, void *context);
+void ble_bas_client_on_ble_evt(const ble_evt_t *ble_evt, void *bas_client);
 
 /**
  * @brief Enable notifications on the Battery Level characteristic.

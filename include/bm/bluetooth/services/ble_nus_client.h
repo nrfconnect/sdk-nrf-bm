@@ -198,16 +198,19 @@ void ble_nus_client_on_db_disc_evt(struct ble_nus_client *nus_client,
 				   const struct ble_db_discovery_evt *evt);
 
 /**
- * @brief Handle Bluetooth LE events from the SoftDevice.
+ * @brief Bluetooth LE event handler for the Nordic UART Service Client.
  *
- * @details This function handles the Bluetooth LE events received from the SoftDevice. If an
- *          event is relevant to the NUS library, the function uses the event's data to update
- *          internal variables and, if necessary, send events to the application.
+ * @details Handles all Bluetooth LE stack events that are of interest to the
+ *          Nordic UART Service Client.
  *
- * @param[in] ble_evt Bluetooth LE event.
- * @param[in] context NUS client structure.
+ * @note This handler is registered automatically by @ref BLE_NUS_CLIENT_DEF and
+ *       is called by the SoftDevice handler. The application does not need to
+ *       call it directly.
+ *
+ * @param[in] ble_evt    Bluetooth LE stack event.
+ * @param[in] nus_client Pointer to the @ref ble_nus_client instance.
  */
-void ble_nus_client_on_ble_evt(const ble_evt_t *ble_evt, void *context);
+void ble_nus_client_on_ble_evt(const ble_evt_t *ble_evt, void *nus_client);
 
 /**
  * @brief Request the peer to start sending notification of TX characteristic.

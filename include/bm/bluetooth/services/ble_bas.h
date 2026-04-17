@@ -29,7 +29,6 @@ extern "C" {
  */
 #define BLE_BAS_DEF(_name)                                                                         \
 	static struct ble_bas _name;                                                               \
-	extern void ble_bas_on_ble_evt(const ble_evt_t *ble_evt, void *ctx);                       \
 	NRF_SDH_BLE_OBSERVER(_name##_obs, ble_bas_on_ble_evt, &_name, HIGH)
 
 /** @brief Default security configuration. */
@@ -217,6 +216,21 @@ uint32_t ble_bas_init(struct ble_bas *bas, const struct ble_bas_config *bas_conf
  */
 uint32_t ble_bas_battery_level_update(struct ble_bas *bas, uint16_t conn_handle,
 				      uint8_t battery_level);
+
+/**
+ * @brief Bluetooth LE event handler for the Battery Service.
+ *
+ * @details Handles all Bluetooth LE stack events that are of interest to the
+ *          Battery Service.
+ *
+ * @note This handler is registered automatically by @ref BLE_BAS_DEF and is
+ *       called by the SoftDevice handler. The application does not need to call
+ *       it directly.
+ *
+ * @param[in] ble_evt Bluetooth LE stack event.
+ * @param[in] bas     Pointer to the @ref ble_bas instance.
+ */
+void ble_bas_on_ble_evt(const ble_evt_t *ble_evt, void *bas);
 
 #ifdef __cplusplus
 }

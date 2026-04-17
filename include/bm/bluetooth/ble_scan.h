@@ -42,7 +42,6 @@ extern "C" {
  */
 #define BLE_SCAN_DEF(_name)                                                                        \
 	static struct ble_scan _name;                                                              \
-	extern void ble_scan_on_ble_evt(const ble_evt_t *ble_evt, void *ctx);                      \
 	NRF_SDH_BLE_OBSERVER(_name##_obs, ble_scan_on_ble_evt, &_name, HIGH)
 
 /**
@@ -565,10 +564,17 @@ uint32_t ble_scan_all_filter_remove(struct ble_scan *scan);
 uint32_t ble_scan_params_set(struct ble_scan *scan, const ble_gap_scan_params_t *scan_params);
 
 /**
- * @brief Handler for Bluetooth LE stack events.
+ * @brief Bluetooth LE event handler for the Scanning library.
  *
- * @param[in] ble_evt Bluetooth LE event.
- * @param[in,out] scan Scan library instance.
+ * @details Handles all Bluetooth LE stack events that are of interest to the
+ *          Scanning library.
+ *
+ * @note This handler is registered automatically by @ref BLE_SCAN_DEF and is
+ *       called by the SoftDevice handler. The application does not need to call
+ *       it directly.
+ *
+ * @param[in] ble_evt Bluetooth LE stack event.
+ * @param[in] scan    Pointer to the @ref ble_scan instance.
  */
 void ble_scan_on_ble_evt(const ble_evt_t *ble_evt, void *scan);
 

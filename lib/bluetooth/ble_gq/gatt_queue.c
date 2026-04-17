@@ -407,15 +407,14 @@ uint32_t ble_gq_conn_handle_register(const struct ble_gq *gq, uint16_t conn_hand
 	return NRF_SUCCESS;
 }
 
-void ble_gq_on_ble_evt(const ble_evt_t *ble_evt, void *gatt_queue)
+void ble_gq_on_ble_evt(const ble_evt_t *ble_evt, void *gq)
 {
-	const struct ble_gq *const gq = (struct ble_gq *)gatt_queue;
+	__ASSERT(ble_evt, "ble_evt is NULL");
+	__ASSERT(gq, "gq is NULL");
+
+	const struct ble_gq *const ble_gq = gq;
 	uint16_t conn_handle;
 	uint16_t conn_id;
-
-	if (ble_evt == NULL || gq == NULL) {
-		return;
-	}
 
 	/* Obtain connection handle and filter out events that do not trigger queue processing. */
 	if (ble_evt->header.evt_id == BLE_GAP_EVT_DISCONNECTED) {
@@ -430,20 +429,20 @@ void ble_gq_on_ble_evt(const ble_evt_t *ble_evt, void *gatt_queue)
 	}
 
 	/* Check if connection handle is registered. */
-	conn_id = conn_handle_id_find(gq, conn_handle);
-	if (conn_id >= gq->max_conns) {
+	conn_id = conn_handle_id_find(ble_gq, conn_handle);
+	if (conn_id >= ble_gq->max_conns) {
 		return;
 	}
 
 	/* Perform operation on the queue. */
 	if (ble_evt->header.evt_id == BLE_GAP_EVT_DISCONNECTED) {
 		/* Remove connection from GATT queue registry on a disconnect event. */
-		gq->conn_handles[conn_id] = BLE_CONN_HANDLE_INVALID;
+		ble_gq->conn_handles[conn_id] = BLE_CONN_HANDLE_INVALID;
 
 		/* Signal a purge of the request queue on a disconnect event. */
-		req_queue_purge_schedule(gq, conn_id);
+		req_queue_purge_schedule(ble_gq, conn_id);
 	} else {
 		/* Check if SoftDevice is still busy. */
-		queue_process(gq, conn_handle, conn_id);
+		queue_process(ble_gq, conn_handle, conn_id);
 	}
 }

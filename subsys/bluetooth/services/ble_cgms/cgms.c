@@ -18,6 +18,7 @@
 #include "cgms_socp.h"
 #include "cgms_sst.h"
 
+#include <zephyr/sys/__assert.h>
 #include <zephyr/sys/byteorder.h>
 #include <zephyr/logging/log.h>
 
@@ -302,29 +303,32 @@ static void on_rw_authorize_request(struct ble_cgms *cgms, const ble_gatts_evt_t
 	}
 }
 
-void ble_cgms_on_ble_evt(const ble_evt_t *ble_evt, void *context)
+void ble_cgms_on_ble_evt(const ble_evt_t *ble_evt, void *cgms)
 {
-	struct ble_cgms *cgms = (struct ble_cgms *)context;
+	__ASSERT(ble_evt, "ble_evt is NULL");
+	__ASSERT(cgms, "cgms is NULL");
+
+	struct ble_cgms *ble_cgms = cgms;
 
 	switch (ble_evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:
-		cgms->conn_handle = ble_evt->evt.gap_evt.conn_handle;
+		ble_cgms->conn_handle = ble_evt->evt.gap_evt.conn_handle;
 		break;
 
 	case BLE_GAP_EVT_DISCONNECTED:
-		cgms->conn_handle = BLE_CONN_HANDLE_INVALID;
+		ble_cgms->conn_handle = BLE_CONN_HANDLE_INVALID;
 		break;
 
 	case BLE_GATTS_EVT_WRITE:
-		on_write(cgms, ble_evt);
+		on_write(ble_cgms, ble_evt);
 		break;
 
 	case BLE_GATTS_EVT_HVN_TX_COMPLETE:
-		on_tx_complete(cgms, ble_evt);
+		on_tx_complete(ble_cgms, ble_evt);
 		break;
 
 	case BLE_GATTS_EVT_RW_AUTHORIZE_REQUEST:
-		on_rw_authorize_request(cgms, &ble_evt->evt.gatts_evt);
+		on_rw_authorize_request(ble_cgms, &ble_evt->evt.gatts_evt);
 		break;
 
 	default:

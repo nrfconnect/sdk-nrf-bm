@@ -416,20 +416,17 @@ uint16_t ble_bms_on_qwr_evt(struct ble_bms *bms, struct ble_qwr *qwr,
 	return BLE_GATT_STATUS_SUCCESS;
 }
 
-void ble_bms_on_ble_evt(const ble_evt_t *ble_evt, void *context)
+void ble_bms_on_ble_evt(const ble_evt_t *ble_evt, void *bms)
 {
-	struct ble_bms *bms;
+	__ASSERT(ble_evt, "ble_evt is NULL");
+	__ASSERT(bms, "bms is NULL");
 
-	if (!context || !ble_evt) {
-		return;
-	}
-
-	bms = (struct ble_bms *)context;
+	struct ble_bms *ble_bms = bms;
 
 	switch (ble_evt->header.evt_id) {
 	case BLE_GATTS_EVT_RW_AUTHORIZE_REQUEST:
-		bms->conn_handle = ble_evt->evt.gatts_evt.conn_handle;
-		on_rw_auth_req(bms, &ble_evt->evt.gatts_evt);
+		ble_bms->conn_handle = ble_evt->evt.gatts_evt.conn_handle;
+		on_rw_auth_req(ble_bms, &ble_evt->evt.gatts_evt);
 		break;
 	default:
 		break;

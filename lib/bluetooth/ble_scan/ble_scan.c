@@ -836,25 +836,28 @@ static void ble_scan_on_connected_evt(const struct ble_scan *scan,
 	}
 }
 
-void ble_scan_on_ble_evt(const ble_evt_t *ble_evt, void *context)
+void ble_scan_on_ble_evt(const ble_evt_t *ble_evt, void *scan)
 {
-	struct ble_scan *scan = (struct ble_scan *)context;
+	__ASSERT(ble_evt, "ble_evt is NULL");
+	__ASSERT(scan, "scan is NULL");
+
+	struct ble_scan *ble_scan = scan;
 	const ble_gap_evt_adv_report_t *adv_report = &ble_evt->evt.gap_evt.params.adv_report;
 	const ble_gap_evt_t *gap_evt = &ble_evt->evt.gap_evt;
 
 	switch (ble_evt->header.evt_id) {
 	case BLE_GAP_EVT_ADV_REPORT:
-		ble_scan_on_adv_report(scan, adv_report);
+		ble_scan_on_adv_report(ble_scan, adv_report);
 
-		scan->scan_buffer.p_data = scan->scan_buffer_data[0];
+		ble_scan->scan_buffer.p_data = ble_scan->scan_buffer_data[0];
 		break;
 
 	case BLE_GAP_EVT_TIMEOUT:
-		ble_scan_on_timeout(scan, gap_evt);
+		ble_scan_on_timeout(ble_scan, gap_evt);
 		break;
 
 	case BLE_GAP_EVT_CONNECTED:
-		ble_scan_on_connected_evt(scan, gap_evt);
+		ble_scan_on_connected_evt(ble_scan, gap_evt);
 		break;
 
 	default:

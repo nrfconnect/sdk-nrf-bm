@@ -30,8 +30,6 @@ static struct ble_hrs_evt received_evt;
 static uint8_t captured_hvx_data[20];
 static uint16_t captured_hvx_len;
 
-void ble_hrs_on_ble_evt(const ble_evt_t *evt, struct ble_hrs *hrs);
-
 static uint32_t stub_sd_ble_gatts_characteristic_add(uint16_t service_handle,
 						     const ble_gatts_char_md_t *p_char_md,
 						     const ble_gatts_attr_t *p_attr_char_value,

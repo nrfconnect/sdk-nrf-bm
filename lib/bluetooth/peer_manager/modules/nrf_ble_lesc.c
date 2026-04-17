@@ -342,6 +342,8 @@ static uint32_t lesc_oob_data_set(uint16_t conn_handle)
 
 void nrf_ble_lesc_on_ble_evt(const ble_evt_t *ble_evt)
 {
+	__ASSERT(ble_evt, "ble_evt is NULL");
+
 	uint32_t nrf_err = NRF_SUCCESS;
 	const uint16_t conn_handle = ble_evt->evt.gap_evt.conn_handle;
 	const int idx = nrf_sdh_ble_idx_get(conn_handle);

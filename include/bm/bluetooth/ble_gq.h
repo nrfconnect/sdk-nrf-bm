@@ -300,16 +300,19 @@ uint32_t ble_gq_item_add(const struct ble_gq *gatt_queue, struct ble_gq_req *req
 uint32_t ble_gq_conn_handle_register(const struct ble_gq *gatt_queue, uint16_t conn_handle);
 
 /**
- * @brief Handle Bluetooth LE events from the SoftDevice.
+ * @brief Bluetooth LE event handler for the GATT Queue library.
  *
- * @details This function handles the Bluetooth LE events received from the SoftDevice. If an
- *          event is relevant to the BGQ module, it is used to update internal variables,
- *          process queued GATT requests and, if necessary, send errors to the application.
+ * @details Handles all Bluetooth LE stack events that are of interest to the
+ *          GATT Queue library.
  *
- * @param[in] ble_evt     Pointer to the event.
- * @param[in] gatt_queue  Pointer to the @ref ble_gq instance.
+ * @note This handler is registered automatically by @ref BLE_GQ_DEF and is
+ *       called by the SoftDevice handler. The application does not need to call
+ *       it directly.
+ *
+ * @param[in] ble_evt Bluetooth LE stack event.
+ * @param[in] gq      Pointer to the @ref ble_gq instance.
  */
-void ble_gq_on_ble_evt(const ble_evt_t *ble_evt, void *gatt_queue);
+void ble_gq_on_ble_evt(const ble_evt_t *ble_evt, void *gq);
 
 #ifdef __cplusplus
 }

@@ -37,12 +37,14 @@ static void on_write(struct ble_lbs *lbs, const ble_evt_t *ble_evt)
 
 void ble_lbs_on_ble_evt(const ble_evt_t *ble_evt, void *lbs)
 {
-	__ASSERT(ble_evt, "BLE event is NULL");
-	__ASSERT(lbs, "LBS instance is NULL");
+	__ASSERT(ble_evt, "ble_evt is NULL");
+	__ASSERT(lbs, "lbs is NULL");
+
+	struct ble_lbs *ble_lbs = lbs;
 
 	switch (ble_evt->header.evt_id) {
 	case BLE_GATTS_EVT_WRITE:
-		on_write(lbs, ble_evt);
+		on_write(ble_lbs, ble_evt);
 		break;
 	default:
 		break;
