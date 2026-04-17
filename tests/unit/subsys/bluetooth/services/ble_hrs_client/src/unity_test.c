@@ -520,6 +520,7 @@ void test_ble_hrs_on_db_disc_evt_hrm_char_at_index_one(void)
 
 	__cmock_ble_db_discovery_service_register_ExpectAndReturn(&db_discovery, NULL, NRF_SUCCESS);
 	__cmock_ble_db_discovery_service_register_IgnoreArg_uuid();
+	__cmock_sd_ble_gattc_read_ExpectAnyArgsAndReturn(NRF_SUCCESS);
 
 	nrf_err = ble_hrs_client_init(&hrs_client, &config);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
