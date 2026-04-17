@@ -10,9 +10,8 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 
 project(bm_storage_sd)
 
-set(SOFTDEVICE_VARIANT "s115")
-set(SOFTDEVICE_INCLUDE_DIR "${ZEPHYR_NRF_BM_MODULE_DIR}/components/softdevice/nrf54l/\
-${SOFTDEVICE_VARIANT}/${SOFTDEVICE_VARIANT}_API/include")
+include(${ZEPHYR_NRF_BM_MODULE_DIR}/cmake/unity/unity_softdevice_setup.cmake)
+unity_softdevice_header_setup()
 
 cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/nrf_sdm.h)
 cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/nrf_soc.h)
@@ -24,12 +23,10 @@ cmock_handle(${ZEPHYR_NRF_BM_MODULE_DIR}/include/bm/softdevice_handler/nrf_sdh.h
 zephyr_compile_definitions(
   NRF54L15_XXAA
   NRF_APPLICATION
-  SVCALL_AS_NORMAL_FUNCTION
   SUPPRESS_INLINE_IMPLEMENTATION
 )
 
 zephyr_include_directories(
-  ${SOFTDEVICE_INCLUDE_DIR}
   ${ZEPHYR_HAL_NORDIC_MODULE_DIR}/nrfx/bsp/stable
   ${ZEPHYR_BASE}/modules/hal_nordic/nrfx
 )
