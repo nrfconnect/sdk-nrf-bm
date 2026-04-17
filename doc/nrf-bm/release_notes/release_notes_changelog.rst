@@ -139,6 +139,10 @@ Bluetooth LE Services
      The SMP response is split into many notifications, which could fill the SoftDevice notification (HVN) TX queue and cause :c:func:`sd_ble_gatts_hvx` to return :c:macro:`NRF_ERROR_RESOURCES`, dropping the remaining data.
      Notifications that fail with :c:macro:`NRF_ERROR_RESOURCES` are now retransmitted on the :c:macro:`BLE_GATTS_EVT_HVN_TX_COMPLETE` event once the SoftDevice frees queue space.
 
+* :ref:`lib_ble_service_hrs`:
+
+   * Fixed an issue where the :c:func:`on_connect` and :c:func:`on_disconnect` functions would wrongly override the connection handle upon connecting to a different device.
+
 Libraries for NFC
 -----------------
 
