@@ -108,10 +108,12 @@ static void on_write(struct ble_bas *bas, const ble_gatts_evt_t *gatts_evt)
 	bas->evt_handler(bas, &bas_evt);
 }
 
-void ble_bas_on_ble_evt(const ble_evt_t *ble_evt, void *bas)
+void ble_bas_on_ble_evt(const ble_evt_t *ble_evt, void *ble_bas)
 {
-	__ASSERT(ble_evt, "BLE event is NULL");
-	__ASSERT(bas, "BAS instance is NULL");
+	__ASSERT(ble_evt, "ble_evt is NULL");
+	__ASSERT(ble_bas, "ble_bas is NULL");
+
+	struct ble_bas *bas = ble_bas;
 
 	switch (ble_evt->header.evt_id) {
 	case BLE_GATTS_EVT_WRITE:

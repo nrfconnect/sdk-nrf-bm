@@ -597,13 +597,12 @@ static void on_rw_authorize_request(struct ble_hids *hids, const ble_evt_t *ble_
 	}
 }
 
-void ble_hids_on_ble_evt(const ble_evt_t *ble_evt, void *context)
+void ble_hids_on_ble_evt(const ble_evt_t *ble_evt, void *ble_hids)
 {
-	struct ble_hids *hids = (struct ble_hids *)context;
+	__ASSERT(ble_evt, "ble_evt is NULL");
+	__ASSERT(ble_hids, "ble_hids is NULL");
 
-	if (!hids) {
-		return;
-	}
+	struct ble_hids *hids = ble_hids;
 
 	switch (ble_evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:

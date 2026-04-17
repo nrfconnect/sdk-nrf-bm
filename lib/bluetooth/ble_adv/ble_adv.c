@@ -8,6 +8,7 @@
 #include <bm/bluetooth/ble_adv_data.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/sys/__assert.h>
 #include <zephyr/toolchain.h>
 
 LOG_MODULE_REGISTER(ble_adv, CONFIG_BLE_ADV_LOG_LEVEL);
@@ -478,21 +479,24 @@ uint32_t ble_adv_stop(struct ble_adv *ble_adv)
 	return NRF_SUCCESS;
 }
 
-void ble_adv_on_ble_evt(const ble_evt_t *ble_evt, void *instance)
+void ble_adv_on_ble_evt(const ble_evt_t *ble_evt, void *ble_adv)
 {
-	struct ble_adv *ble_adv = (struct ble_adv *)instance;
+	__ASSERT(ble_evt, "ble_evt is NULL");
+	__ASSERT(ble_adv, "ble_adv is NULL");
+
+	struct ble_adv *adv = ble_adv;
 
 	switch (ble_evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:
-		on_connected(ble_adv, ble_evt);
+		on_connected(adv, ble_evt);
 		break;
 	case BLE_GAP_EVT_DISCONNECTED:
 		/* Upon disconnection, activate allow list and start directed advertising */
-		on_disconnected(ble_adv, ble_evt);
+		on_disconnected(adv, ble_evt);
 		break;
 	case BLE_GAP_EVT_ADV_SET_TERMINATED:
 		/* Upon advertising time-out, move onto next advertising mode */
-		on_terminated(ble_adv, ble_evt);
+		on_terminated(adv, ble_evt);
 		break;
 	default:
 		/* Do nothing */
