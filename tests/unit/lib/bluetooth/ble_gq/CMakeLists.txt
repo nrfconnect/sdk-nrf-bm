@@ -16,11 +16,6 @@ unity_softdevice_header_setup()
 cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble_gattc.h)
 cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble_gatts.h)
 
-zephyr_compile_definitions(
-  NRF54L15_XXAA
-  SUPPRESS_INLINE_IMPLEMENTATION
-)
-
 # Generate and add test file
 test_runner_generate(src/unity_test.c)
 target_sources(app PRIVATE src/unity_test.c)

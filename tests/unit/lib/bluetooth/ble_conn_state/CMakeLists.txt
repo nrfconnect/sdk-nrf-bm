@@ -14,11 +14,6 @@ include(${ZEPHYR_NRF_BM_MODULE_DIR}/cmake/unity/unity_softdevice_setup.cmake)
 unity_softdevice_header_setup()
 unity_softdevice_event_setup()
 
-zephyr_compile_definitions(
-  NRF54L15_XXAA
-  SUPPRESS_INLINE_IMPLEMENTATION
-)
-
 # Generate and add test file
 test_runner_generate(src/unity_test.c)
 target_sources(app PRIVATE src/unity_test.c)
