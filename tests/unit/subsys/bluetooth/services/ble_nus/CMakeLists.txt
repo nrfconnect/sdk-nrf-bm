@@ -16,11 +16,6 @@ cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble.h)
 cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble_gatts.h)
 cmock_handle(${ZEPHYR_NRF_BM_MODULE_DIR}/include/bm/softdevice_handler/nrf_sdh_ble.h)
 
-zephyr_compile_definitions(
-  NRF54L15_XXAA
-  SUPPRESS_INLINE_IMPLEMENTATION
-)
-
 # Generate and add test file
 test_runner_generate(src/unity_test.c)
 target_sources(app PRIVATE src/unity_test.c)

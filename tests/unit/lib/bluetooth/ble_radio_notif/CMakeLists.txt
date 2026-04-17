@@ -15,6 +15,8 @@ softdevice_unity_setup()
 cmock_handle(mocks/cmsis.h)
 cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/nrf_soc.h)
 
+# NRF54L15_XXAA and SUPPRESS_INLINE_IMPLEMENTATION are required by nrf_soc.h.
+# SWI02_IRQn is provided by the mocked cmsis.h.
 zephyr_compile_definitions(
   NRF54L15_XXAA
   SUPPRESS_INLINE_IMPLEMENTATION

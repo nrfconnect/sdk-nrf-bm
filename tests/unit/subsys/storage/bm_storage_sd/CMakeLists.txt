@@ -19,6 +19,7 @@ cmock_handle(${ZEPHYR_NRF_BM_MODULE_DIR}/include/bm/softdevice_handler/nrf_sdh.h
   FUNC_EXCLUDE "_handler" # Do not generate a mock for the prototype of the observer's handlers
 )
 
+# Required by nrf_soc.h.
 zephyr_compile_definitions(
   NRF54L15_XXAA
   NRF_APPLICATION

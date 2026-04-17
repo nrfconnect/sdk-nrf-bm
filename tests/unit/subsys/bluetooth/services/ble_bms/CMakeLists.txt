@@ -15,11 +15,6 @@ softdevice_unity_setup()
 cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble_gatts.h)
 cmock_handle(${ZEPHYR_NRF_BM_MODULE_DIR}/include/bm/bluetooth/ble_qwr.h)
 
-zephyr_compile_definitions(
-  NRF54L15_XXAA
-  SUPPRESS_INLINE_IMPLEMENTATION
-)
-
 zephyr_include_directories(
   ${ZEPHYR_HAL_NORDIC_MODULE_DIR}/nrfx/mdk
 )

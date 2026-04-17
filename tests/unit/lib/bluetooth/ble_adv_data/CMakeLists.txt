@@ -15,11 +15,6 @@ softdevice_unity_setup()
 cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble.h)
 cmock_handle(${SOFTDEVICE_INCLUDE_DIR}/ble_gap.h)
 
-zephyr_compile_definitions(
-  NRF54L15_XXAA
-  SUPPRESS_INLINE_IMPLEMENTATION
-)
-
 # Generate and add test file
 test_runner_generate(src/unity_test.c)
 target_sources(app PRIVATE src/unity_test.c)
