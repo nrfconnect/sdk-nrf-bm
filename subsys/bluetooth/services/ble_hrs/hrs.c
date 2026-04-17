@@ -192,23 +192,25 @@ void ble_hrs_on_ble_evt(const ble_evt_t *ble_evt, void *hrs_instance)
 {
 	__ASSERT(ble_evt, "BLE event is NULL");
 	__ASSERT(hrs_instance, "BLE instance is NULL");
+	const ble_gap_evt_t *gap_evt = &ble_evt->evt.gap_evt;
 
+	if (gap_evt->params.connected.role != BLE_GAP_ROLE_PERIPH){
+		return;
+	}
 	switch (ble_evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:
 		on_connect(hrs_instance, &ble_evt->evt.gap_evt);
 		break;
-
 	case BLE_GAP_EVT_DISCONNECTED:
 		on_disconnect(hrs_instance, &ble_evt->evt.gap_evt);
 		break;
-
 	case BLE_GATTS_EVT_WRITE:
 		on_write(hrs_instance, &ble_evt->evt.gatts_evt);
 		break;
-
 	default:
 		break;
 	}
+
 }
 
 uint32_t ble_hrs_init(struct ble_hrs *hrs, const struct ble_hrs_config *cfg)
