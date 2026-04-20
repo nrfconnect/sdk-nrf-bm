@@ -15,6 +15,3 @@ target_include_directories(app PRIVATE ${ZEPHYR_NRF_BM_MODULE_DIR}/include)
 # Generate and add test file
 test_runner_generate(src/unity_test.c)
 target_sources(app PRIVATE src/unity_test.c)
-
-# Unit under test
-target_sources(app PRIVATE ${ZEPHYR_NRF_BM_MODULE_DIR}/subsys/storage/bm_storage/bm_storage.c)
