@@ -132,44 +132,24 @@ The Peripheral Power Profiling sample allows configuring some of its settings us
 You can set different options to monitor the power consumption of your development kit.
 You can modify the following options (available in the Kconfig file at :file:`samples/bluetooth/ble_pwr_profiling`):
 
-.. _CONFIG_SAMPLE_BLE_PWR_PROFILING_CHAR_VALUE_LEN:
+* :kconfig:option:`CONFIG_SAMPLE_BLE_PWR_PROFILING_CHAR_VALUE_LEN` - Sets the length of the data sent through notification mechanism.
 
-CONFIG_SAMPLE_BLE_PWR_PROFILING_CHAR_VALUE_LEN - Notification data length
-   Sets the length of the data sent through notification mechanism.
+* :kconfig:option:`CONFIG_SAMPLE_BLE_PWR_PROFILING_NOTIF_CONNECTION_TIMEOUT` - Sets the notification timeout in milliseconds.
+  When the timeout is reached, the device will stop sending notifications.
+  After that, the sample disconnects and enters the system off mode.
 
-.. _CONFIG_SAMPLE_BLE_PWR_PROFILING_NOTIF_CONNECTION_TIMEOUT:
+* :kconfig:option:`CONFIG_SAMPLE_BLE_PWR_PROFILING_CONN_ADVERTISING_TIMEOUT` - Sets the connectable advertising duration in N*10 milliseconds unit.
+  If the connection is not established during advertising, the device enters the system off state.
 
-CONFIG_SAMPLE_BLE_PWR_PROFILING_NOTIF_CONNECTION_TIMEOUT - Notification timeout
-   Sets the notification timeout in milliseconds.
-   When this timeout fires the device will stop sending notifications.
-   After that, the sample disconnects and enters the system off mode.
+* :kconfig:option:`CONFIG_SAMPLE_BLE_PWR_PROFILING_CONN_ADVERTISING_INTERVAL` - Sets the connectable advertising interval in 0.625 milliseconds unit.
 
-.. _CONFIG_SAMPLE_BLE_PWR_PROFILING_CONN_ADVERTISING_TIMEOUT:
+* :kconfig:option:`CONFIG_SAMPLE_BLE_PWR_PROFILING_NONCONN_ADVERTISING_TIMEOUT` - Sets the non-connectable advertising duration in N*10 milliseconds unit.
+  When the advertising ends, the device enters the system off state if there is no outgoing connection.
 
-CONFIG_SAMPLE_BLE_PWR_PROFILING_CONN_ADVERTISING_TIMEOUT - Connectable advertising timeout
-   Sets the connectable advertising duration in N*10 milliseconds unit.
-   If the connection is not established during advertising, the device enters the system off state.
+* :kconfig:option:`CONFIG_SAMPLE_BLE_PWR_PROFILING_NONCONN_ADVERTISING_INTERVAL` - Sets the non-connectable advertising interval in 0.625 milliseconds unit.
 
-.. _CONFIG_SAMPLE_BLE_PWR_PROFILING_CONN_ADVERTISING_INTERVAL:
-
-CONFIG_SAMPLE_BLE_PWR_PROFILING_CONN_ADVERTISING_INTERVAL - Connectable advertising interval
-   Sets the connectable advertising interval in 0.625 milliseconds unit.
-
-.. _CONFIG_SAMPLE_BLE_PWR_PROFILING_NONCONN_ADVERTISING_TIMEOUT:
-
-CONFIG_SAMPLE_BLE_PWR_PROFILING_NONCONN_ADVERTISING_TIMEOUT - Non-connectable advertising timeout
-   Sets the non-connectable advertising duration in N*10 milliseconds unit.
-   When the advertising ends, the device enters the system off state if there is no outgoing connection.
-
-.. _CONFIG_SAMPLE_BLE_PWR_PROFILING_NONCONN_ADVERTISING_INTERVAL:
-
-CONFIG_SAMPLE_BLE_PWR_PROFILING_NONCONN_ADVERTISING_INTERVAL - Non-connectable advertising interval
-   Sets the non-connectable advertising interval in 0.625 milliseconds unit.
-
-.. _CONFIG_SAMPLE_BLE_PWR_PROFILING_LED:
-
-CONFIG_SAMPLE_BLE_PWR_PROFILING_LED - Enable LEDs
-   Enabled by default. The LEDs can be disabled to reduce power consumption.
+* :kconfig:option:`CONFIG_SAMPLE_BLE_PWR_PROFILING_LED` - Enable LEDs.
+  Disabled by default to reduce power consumption.
 
 Building and running
 ********************
