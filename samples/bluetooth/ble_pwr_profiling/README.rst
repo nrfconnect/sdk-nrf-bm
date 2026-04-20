@@ -181,6 +181,7 @@ For details on how to create, configure, and program a sample, see :ref:`getting
 .. note::
    The sample has logging disabled as default.
    To enable terminal messages (at the cost of a small increase in power consumption), enable the following Kconfig options:
+
    * :kconfig:option:`CONFIG_LOG`
    * :kconfig:option:`CONFIG_CONSOLE`
    * :kconfig:option:`CONFIG_LOG_BACKEND_BM_UARTE`
