@@ -80,3 +80,5 @@ Make sure that these are installed before starting the testing procedure.
    The terminal output in |VSC| indicates ``Received LED ON!``.
 #. Change the :guilabel:`Blinky LED state` value back to :guilabel:`00`.
    The terminal output in |VSC| indicates ``Received LED OFF!``.
+#. In the :guilabel:`Blinky Button State` characteristic, subscribe to button notifications by pressing the :guilabel:`Toggle notifications` button.
+#. Observe that you receive a button state notification when pressing **Button 2** on the kit.
