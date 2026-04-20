@@ -84,7 +84,7 @@ Testing
    You can configure this name using the :kconfig:option:`CONFIG_SAMPLE_BLE_DEVICE_NAME` Kconfig option.
    For information on how to do this, see `Configuring Kconfig`_.
 #. Connect to your device using the `nRF Toolbox`_ mobile application with the :guilabel:`Continuous Glucose` service.
-    If the device is not advertising, reset the board with the :guilabel:`Reset Board` option in |VSC| or by pressing the reset button on the development kit.
+   If the device is not advertising, reset the board with the :guilabel:`Reset Board` option in |VSC| or by pressing the reset button on the development kit.
 #. Your mobile phone should now attempt to pair with your device to encrypt the link.
    When prompted, check that the passkeys are the same before confirming by pressing **Button 0** on the kit and confirming on the mobile phone.
 

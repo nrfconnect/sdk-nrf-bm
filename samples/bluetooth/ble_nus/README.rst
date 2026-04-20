@@ -91,7 +91,7 @@ The sample can be tested in two ways, depending on the selected UART configurati
          You can configure this name using the :kconfig:option:`CONFIG_SAMPLE_BLE_DEVICE_NAME` Kconfig option.
          For information on how to do this, see `Configuring Kconfig`_.
       #. Connect to your device using the `nRF Toolbox`_ mobile application with the :guilabel:`Universal Asynchronous Receiver/Transmitter (UART)` service.
-          If the device is not advertising, reset the board with the :guilabel:`Reset Board` option in |VSC| or by pressing the reset button on the development kit.
+         If the device is not advertising, reset the board with the :guilabel:`Reset Board` option in |VSC| or by pressing the reset button on the development kit.
       #. Write a text in the second COM listener running on the computer and press Enter.
       #. Write a text in the terminal on the mobile phone and press :guilabel:`Send`.
          Observe that the text is displayed in the second COM listener running on the computer.

@@ -90,7 +90,7 @@ You can test this sample using a computer or a smartphone.
    You can configure the advertising name using the :kconfig:option:`CONFIG_SAMPLE_BLE_DEVICE_NAME` Kconfig option.
    For information on how to do this, see `Configuring Kconfig`_.
 #. On your computer or mobile phone, open the Bluetooth settings and scan for advertising devices.
-    If the device is not advertising, reset the board with the :guilabel:`Reset Board` option in |VSC| or by pressing the reset button on the development kit.
+   If the device is not advertising, reset the board with the :guilabel:`Reset Board` option in |VSC| or by pressing the reset button on the development kit.
 #. :guilabel:`Connect` to your device.
 
    The terminal output in |VSC| indicates ``Peer connected``.

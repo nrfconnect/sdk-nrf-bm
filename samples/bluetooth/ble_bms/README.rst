@@ -79,7 +79,7 @@ Testing
 #. Open `nRF Connect for Desktop`_.
 #. Open the `Bluetooth Low Energy app`_ and select the connected device that is used for communication.
 #. Connect to the device from the app.
-    If the device is not advertising, reset the board with the :guilabel:`Reset Board` option in |VSC| or by pressing the reset button on the development kit.
+   If the device is not advertising, reset the board with the :guilabel:`Reset Board` option in |VSC| or by pressing the reset button on the development kit.
 #. Bind with the device:
 
    a. Click the :guilabel:`Settings` button for the device in the app.
