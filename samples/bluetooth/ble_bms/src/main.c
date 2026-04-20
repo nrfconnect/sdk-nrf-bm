@@ -697,6 +697,9 @@ int main(void)
 		goto idle;
 	}
 
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+	LOG_INF("BLE BMS sample initialized");
+
 	nrf_err = advertising_start(erase_bonds);
 	if (nrf_err) {
 		LOG_ERR("Failed to start advertising, nrf_error %#x", nrf_err);
@@ -704,9 +707,6 @@ int main(void)
 	}
 
 	LOG_INF("Advertising as %s", CONFIG_SAMPLE_BLE_DEVICE_NAME);
-
-	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
-	LOG_INF("BLE BMS sample initialized");
 
 idle:
 	while (true) {

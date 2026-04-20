@@ -703,7 +703,11 @@ int main(void)
 		goto idle;
 	}
 
-	LOG_INF("Services initialized");
+#if defined(CONFIG_SAMPLE_BLE_PWR_PROFILING_LED)
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+#endif
+
+	LOG_INF("BLE PWR Profiling sample initialized");
 
 	err = bm_buttons_enable();
 	if (err) {
@@ -723,12 +727,6 @@ int main(void)
 		LOG_INF("No advertising selected, schedule power off in 5 seconds");
 		err = bm_timer_start(&poweroff_timer, BM_TIMER_MS_TO_TICKS(5000), NULL);
 	}
-
-#if defined(CONFIG_SAMPLE_BLE_PWR_PROFILING_LED)
-	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
-#endif
-
-	LOG_INF("BLE PWR Profiling sample initialized");
 
 idle:
 	while (true) {

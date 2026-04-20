@@ -728,10 +728,10 @@ int main(void)
 		goto idle;
 	}
 
-	scan_start(erase_bonds);
-
 	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
 	LOG_INF("BLE HRS Central sample initialized");
+
+	scan_start(erase_bonds);
 
 idle:
 	while (true) {

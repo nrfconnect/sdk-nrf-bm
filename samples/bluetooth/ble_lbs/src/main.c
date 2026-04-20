@@ -230,6 +230,9 @@ int main(void)
 		goto idle;
 	}
 
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+	LOG_INF("BLE LBS sample initialized");
+
 	nrf_err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
 	if (nrf_err) {
 		LOG_ERR("Failed to start advertising, nrf_error %#x", nrf_err);
@@ -237,9 +240,6 @@ int main(void)
 	}
 
 	LOG_INF("Advertising as %s", CONFIG_SAMPLE_BLE_DEVICE_NAME);
-
-	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
-	LOG_INF("BLE LBS sample initialized");
 
 idle:
 	while (true) {

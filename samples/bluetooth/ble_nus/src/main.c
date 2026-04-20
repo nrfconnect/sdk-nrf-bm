@@ -545,6 +545,12 @@ int main(void)
 	}
 #endif
 
+#if !defined(CONFIG_SAMPLE_NUS_LPUARTE)
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+#endif
+
+	LOG_INF("BLE NUS sample initialized");
+
 	nrf_err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
 	if (nrf_err) {
 		LOG_ERR("Failed to start advertising, nrf_error %#x", nrf_err);
@@ -552,12 +558,6 @@ int main(void)
 	}
 
 	LOG_INF("Advertising as %s", CONFIG_SAMPLE_BLE_DEVICE_NAME);
-
-#if !defined(CONFIG_SAMPLE_NUS_LPUARTE)
-	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
-#endif
-
-	LOG_INF("BLE NUS sample initialized");
 
 idle:
 	while (true) {

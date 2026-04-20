@@ -543,12 +543,12 @@ int main(void)
 		goto idle;
 	}
 
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
+	LOG_INF("BLE HRS sample initialized");
+
 	simulated_meas_start();
 
 	advertising_start(erase_bonds);
-
-	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
-	LOG_INF("BLE HRS sample initialized");
 
 idle:
 	while (true) {
