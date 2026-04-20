@@ -89,6 +89,5 @@ Testing
    When prompted, check that the passkeys are the same before confirming by pressing **Button 0** on the kit and confirming on the mobile phone.
 
 #. Observe that the text ``Connected`` and ``CGMS Start Session`` is printed in the COM listener.
-#. Observe that you receive the simulated battery status of the kit in the mobile application.
 #. Observe that you receive the CGMS records in the mobile application.
    The default time between each record is one minute.
