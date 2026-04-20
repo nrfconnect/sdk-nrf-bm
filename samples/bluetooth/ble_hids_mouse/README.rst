@@ -93,10 +93,10 @@ You can test this sample using a computer or a smartphone.
     If the device is not advertising, reset the board with the :guilabel:`Reset Board` option in |VSC| or by pressing the reset button on the development kit.
 #. :guilabel:`Connect` to your device.
 
+   The terminal output in |VSC| indicates ``Peer connected``.
+
    After having connected, your computer or mobile phone may attempt to pair or bond with your device in order to encrypt the link.
 
    You may be prompted to compare or enter a passkey as part of the authentication step.
    If prompted, provide the passkey from the terminal output, or confirm that the passkey is correct by pressing **Button 0** on the kit.
-
-   The terminal output in |VSC| indicates ``Peer connected``.
 #. Observe that the device is detected as a mouse, and you can move the mouse by pressing the buttons on the DK.

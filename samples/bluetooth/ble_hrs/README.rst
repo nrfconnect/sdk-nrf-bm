@@ -91,10 +91,11 @@ Make sure that these are installed before starting the testing procedure.
     If the device is not advertising, reset the board with the :guilabel:`Reset Board` option in |VSC| or by pressing the reset button on the development kit.
 #. :guilabel:`Connect` to your device.
 
+   The terminal output in |VSC| indicates ``Peer connected``.
+
    After having connected, your computer or mobile phone may attempt to pair or bond with your device in order to encrypt the link.
 
    You may be prompted to enter a passkey as part of the authentication step.
    If prompted, provide the passkey from the terminal output.
-   The terminal output in |VSC| indicates ``Peer connected``.
 #. Observe that the services are shown in the connected device and that you can start receiving values for the Heart Rate and the Battery Service by clicking the Play button.
    Heart Rate notifications are received every second, and Battery Level notifications are received every two seconds.
