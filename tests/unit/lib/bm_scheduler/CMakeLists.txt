@@ -1,0 +1,17 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+cmake_minimum_required(VERSION 3.20.0)
+
+find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
+
+project(bm_scheduler)
+
+# Generate and add test file
+test_runner_generate(src/unity_test.c)
+target_sources(app PRIVATE src/unity_test.c)
+
+# The unit under test (bm_scheduler.c) is compiled when CONFIG_BM_SCHEDULER=y
