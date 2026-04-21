@@ -404,6 +404,10 @@ Peripheral samples
 
   * Updated to align with changes to the :ref:`driver_lpuarte` driver.
 
+* :ref:`uarte_sample` sample:
+
+   * Updated the sample to use the logging module instead of console.
+
 DFU samples
 -----------
 
