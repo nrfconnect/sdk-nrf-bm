@@ -39,7 +39,9 @@ int bm_scheduler_defer(bm_scheduler_fn_t handler, void *data, size_t len)
 	evt->handler = handler;
 	evt->len = len;
 
-	memcpy(evt->data, data, len);
+	if (data) {
+		memcpy(evt->data, data, len);
+	}
 
 	key = irq_lock();
 	sys_slist_append(&event_list, &evt->node);
