@@ -103,6 +103,7 @@
 /sysbuild/                                @nrfconnect/ncs-co-build-system
 
 # Tests
+/tests/lib/                                 @nrfconnect/ncs-bm
 /tests/subsys/fs/bm_zms/                    @nrfconnect/ncs-bm @rghaddab
 /tests/subsys/kmu/                          @nrfconnect/ncs-eris @nrfconnect/ncs-eris-test
 /tests/unit/lib/                            @nrfconnect/ncs-bm
