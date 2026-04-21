@@ -467,7 +467,9 @@ uint32_t pds_peer_id_free(uint16_t peer_id)
 		return NRF_ERROR_INVALID_PARAM;
 	}
 
-	(void)peer_id_delete(peer_id);
+	if (!peer_id_delete(peer_id)) {
+		return NRF_ERROR_INVALID_PARAM;
+	}
 
 	/* Only start processing on the first delete request.
 	 * `peer_data_delete_process` will iteratively take care of processing all the peers marked
