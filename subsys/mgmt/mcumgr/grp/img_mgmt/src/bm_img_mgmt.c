@@ -103,6 +103,13 @@ static int claim_and_write(void)
 			rb_size = ROUND_DOWN(rb_size, storage_wear_unit);
 		}
 
+		if (rb_size == 0) {
+			/* No data, return. */
+			atomic_set(&ongoing, 0);
+			ring_buf_get_finish(&ring_buf, 0);
+			return IMG_MGMT_ERR_OK;
+		}
+
 		err = bm_storage_write(&s0_storage, write_offset, rb_data, rb_size, NULL);
 		if (err) {
 			LOG_ERR("Write request failed at offset %#x (err %d)", write_offset, err);
