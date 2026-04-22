@@ -177,6 +177,7 @@ Peripheral samples
 
       * The :ref:`radio_test` sample.
       * The :ref:`spi_mngr_sample` sample, demonstrating read, page program, and sector erase on the on-board external NOR flash using the :ref:`lib_bm_spi_mngr` library.
+      * The :ref:`bm_spi_sample` sample.
 
 Bluetooth LE samples
 --------------------
