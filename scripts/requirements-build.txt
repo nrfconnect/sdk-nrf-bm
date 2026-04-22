@@ -1,8 +1,9 @@
+cbor2>=5.4.2.post1
 setuptools
 west
-
 # used by twister for ansi color
 colorama
+cryptography>=44.0.1
 # python lex/yex used by twister
 ply>=3.10
 # used for code coverage
