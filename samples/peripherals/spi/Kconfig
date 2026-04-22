@@ -1,0 +1,40 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "SPI sample"
+
+config SAMPLE_SPI_MSG
+	string "Message to send over SPI"
+	default "Hello World!"
+	help
+	  The message that the SPI controller sends to the SPI target when the button is pressed.
+
+config SAMPLE_SPI_RX_BUF_SIZE
+	int "Size of the SPI target receive buffer in bytes"
+	default 32
+	help
+	  Maximum number of bytes the SPI target can receive in a single transfer.
+
+config SAMPLE_SPI_CSN_TO_CLK_DELAY
+	int "Delay between chip select (CSN) and the first SCK edge, in SPIM core clock periods"
+	range 0 255
+	default 80
+	help
+	  An SPI target with a long wake-up time may sample data incorrectly if the SPI controller
+	  starts clocking before the target is ready. Increasing this value gives the SPI target
+	  more time to get ready before data is transferred.
+	  A delay between CSN and first SCK edge is needed when using the SPIS peripheral on
+	  devices such as the nRF54L, where the high-frequency clock is powered down during sleep
+	  and needs time to start. No delay is needed if the SPIS core clock runs continuously.
+	  Refer to IFTIMING.CSNDUR in the device specification.
+
+module=SAMPLE_SPI
+module-str=SPI Sample
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endmenu # "SPI sample"
+
+source "Kconfig.zephyr"
