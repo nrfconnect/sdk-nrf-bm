@@ -1,0 +1,21 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "SPI sample"
+
+config SAMPLE_SPI_MSG
+	string "Message to send over SPI"
+	default "Hello World!"
+	help
+	  The message that the SPI master sends to the SPI slave when the button is pressed.
+
+module=SAMPLE_SPI
+module-str=SPI Sample
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endmenu # "SPI sample"
+
+source "Kconfig.zephyr"
