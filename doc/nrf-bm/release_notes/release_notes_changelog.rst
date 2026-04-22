@@ -49,7 +49,7 @@ Boards
 
    * PCA10188 (`nRF54LV10 DK`_)
    * PCA10184 (`nRF54LM20 DK`_)
-   * PCA10214 (nRF54LS05 DK)
+   * PCA10214 (`nRF54LS05 DK`_)
 
 * Updated:
 
@@ -355,7 +355,7 @@ Samples
 
 * Aligned LED and button behavior across samples.
 
-* All samples that are compatible with the new board targets PCA10188 (`nRF54LV10 DK`_), PCA10184 (`nRF54LM20 DK`_), and PCA10214 (nRF54LS05 DK) have been updated to reflect support for these boards.
+* All samples that are compatible with the new board targets PCA10188 (`nRF54LV10 DK`_), PCA10184 (`nRF54LM20 DK`_), and PCA10214 (`nRF54LS05 DK`_) have been updated to reflect support for these boards.
 
 Bluetooth LE samples
 --------------------

@@ -86,7 +86,7 @@ The sample supports the following development kits:
          * - `nRF54LM20 DK`_
            - PCA10184
            - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice/mcuboot
-         * - nRF54LS05 DK
+         * - `nRF54LS05 DK`_
            - PCA10214
            - bm_nrf54ls05dk/nrf54ls05b/cpuapp/s115_softdevice/mcuboot
 

@@ -15,7 +15,7 @@ The following are the major changes introduced by the v2.0.0-preview1 tag:
 
    * PCA10188 (`nRF54LV10 DK`_)
    * PCA10184 (`nRF54LM20 DK`_)
-   * PCA10214 (nRF54LS05 DK)
+   * PCA10214 (`nRF54LS05 DK`_)
 
   Support for the new boards is added in the :ref:`ble_hrs_sample` and :ref:`ble_nus_sample` samples.
 
@@ -54,7 +54,7 @@ Boards
 
    * PCA10188 (`nRF54LV10 DK`_)
    * PCA10184 (`nRF54LM20 DK`_)
-   * PCA10214 (nRF54LS05 DK)
+   * PCA10214 (`nRF54LS05 DK`_)
 
 * Adjusted SRAM sizes for the ``bm_nrf54l15dk`` board target to not overlap with VPR context.
 * Adjusted the board memory layout for all boards to align with the new SoftDevice.
@@ -170,7 +170,7 @@ Bluetooth LE samples
 
      * PCA10188 (`nRF54LV10 DK`_)
      * PCA10184 (`nRF54LM20 DK`_)
-     * PCA10214 (nRF54LS05 DK)
+     * PCA10214 (`nRF54LS05 DK`_)
 
 * :ref:`ble_hids_keyboard_sample`:
 
@@ -186,7 +186,7 @@ Bluetooth LE samples
 
      * PCA10188 (`nRF54LV10 DK`_)
      * PCA10184 (`nRF54LM20 DK`_)
-     * PCA10214 (nRF54LS05 DK)
+     * PCA10214 (`nRF54LS05 DK`_)
 
    * Updated to align with changes to the :ref:`driver_lpuarte` driver.
 
