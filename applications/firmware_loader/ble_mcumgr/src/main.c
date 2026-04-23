@@ -226,8 +226,7 @@ int main(void)
 
 	err = bm_rmem_init(&clipboard_ctx);
 	if (err) {
-		LOG_INF("Failed to initialize retained clipboard reader, err %d", err);
-		/* Error is expected if retained RAM is empty or data are corrupted. */
+		LOG_ERR("Failed to initialize retained clipboard reader, err %d", err);
 	}
 #endif
 
