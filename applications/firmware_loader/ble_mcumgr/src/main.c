@@ -277,11 +277,6 @@ int main(void)
 		memcpy(log_name_buffer, custom_advertising_name, custom_advertising_name_size);
 		log_name_buffer[custom_advertising_name_size] = '\0';
 #endif
-		err = bm_rmem_clear(&clipboard_ctx);
-		if (err) {
-			LOG_ERR("Failed to clear retained clipboard, err %d", err);
-			return 0;
-		}
 	}
 #endif /* CONFIG_BM_FLAT_SETTINGS_BLUETOOTH_NAME */
 

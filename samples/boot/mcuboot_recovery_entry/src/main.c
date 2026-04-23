@@ -7,6 +7,7 @@
 #include <ble_gap.h>
 #include <bm/softdevice_handler/nrf_sdh.h>
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
+#include <bm/storage/bm_rmem.h>
 #include <bm/bluetooth/ble_adv.h>
 #include <bm/bluetooth/services/ble_mcumgr.h>
 
@@ -151,6 +152,22 @@ static enum mgmt_cb_return os_mgmt_reboot_hook(uint32_t event, enum mgmt_cb_retu
 	return MGMT_CB_OK;
 }
 
+static void retained_adv_name_clear(void)
+{
+	int err;
+	struct bm_retained_clipboard_ctx clipboard_ctx;
+
+	err = bm_rmem_init(&clipboard_ctx);
+	if (err) {
+		LOG_ERR("Failed to initialize retained clipboard, err %d", err);
+	}
+
+	err = bm_rmem_clear(&clipboard_ctx);
+	if (err) {
+		LOG_ERR("Failed to clear retained clipboard, err %d", err);
+	}
+}
+
 int main(void)
 {
 	int err;
@@ -226,6 +243,8 @@ int main(void)
 	}
 
 	LOG_INF("Advertising as %s", CONFIG_SAMPLE_BLE_DEVICE_NAME);
+
+	retained_adv_name_clear();
 
 	while (notification_sent == false && device_disconnected == false) {
 		log_flush();
