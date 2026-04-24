@@ -19,13 +19,13 @@ SDK installation
 S115 SoftDevice
 ===============
 
-* Updated the SoftDevice to v10.0.0-1.prototype.
+* Updated the SoftDevice to v10.0.0.
   See the SoftDevice release notes for details.
 
 S145 SoftDevice
 ===============
 
-* Updated the SoftDevice to v10.0.0-1.prototype.
+* Updated the SoftDevice to v10.0.0.
   See the SoftDevice release notes for details.
 
 SoftDevice Handler
