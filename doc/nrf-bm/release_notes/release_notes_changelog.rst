@@ -45,11 +45,14 @@ SoftDevice Handler
 Boards
 ======
 
-* Added experimental support for the following boards:
+* Added support for the following boards:
+  See :ref:`bm_software_maturity` for details on the software maturity of the support for these boards):
 
-   * PCA10188 (`nRF54LV10 DK`_)
    * PCA10184 (`nRF54LM20 DK`_)
+   * PCA10188 (`nRF54LV10 DK`_)
    * PCA10214 (`nRF54LS05 DK`_)
+
+
 
 * Updated:
 
@@ -70,7 +73,7 @@ DFU
 
 * Added:
 
-   * Experimental support for nRF54LV10a, nRF54LM20a, and nRF54LS05b SoCs.
+   * Added Support for nRF54LV10a, nRF54LM20a, and nRF54LS05b SoCs.
    * The :kconfig:option:`CONFIG_BM_MCUMGR_GRP_IMG_BUFFER_SZ` Kconfig option to set the size of the data buffer.
    * The :kconfig:option:`CONFIG_BM_MCUMGR_GRP_IMG_NVM_WRITE_BLOCKS_MAX` Kconfig option to set the maximum number of non-volatile memory wear units written to NVM at once.
 

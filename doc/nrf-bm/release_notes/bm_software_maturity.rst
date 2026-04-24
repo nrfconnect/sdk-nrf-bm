@@ -89,12 +89,12 @@ A device is considered supported if at least one sample or component has been de
      - Supported from v1.0.0
    * - nRF54L05
      - Supported from v1.0.0
-   * - nRF54LV10
-     - Experimental
    * - nRF54LM20A
-     - Experimental
+     - Supported from v2.0.0
    * - nRF54LS05B
-     - Experimental
+     - Supported from v2.0.0
+   * - nRF54LV10A
+     - Supported from v2.0.0
 
 .. note::
    Any device not listed is considered out of scope.
@@ -113,22 +113,22 @@ The following table indicates the software maturity levels of the support for ea
      - nRF54L15
      - nRF54L10
      - nRF54L05
-     - nRF54LV10
      - nRF54LM20A
      - nRF54LS05B
+     - nRF54LV10A
    * - **Bluetooth®**
      - Supported
      - Supported
      - Supported
-     - Experimental
+     - Supported
      - Experimental
      - Experimental
    * - **NFC**
      - Supported
      - Supported
      - Supported
-     - n/a
      - Experimental
+     - n/a
      - n/a
    * - **ESB**
      - --
@@ -156,27 +156,23 @@ The following table indicates SoftDevice compatibility per SoC:
      - nRF54L15
      - nRF54L10
      - nRF54L05
-     - nRF54LV10
      - nRF54LM20A
      - nRF54LS05B
+     - nRF54LV10A
    * - **SoftDevice S115**
      - Supported
      - Supported
      - Supported
-     - Experimental
+     - Supported
      - Experimental
      - Experimental
    * - **SoftDevice S145**
      - Supported
      - Supported
      - Supported
+     - Supported
      - Experimental
      - Experimental
-     - Experimental
-
-.. note::
-   The Experimental status of the S145 SoftDevice refers to its integration in the |BMlong|.
-   The SoftDevice itself is production-ready.
 
 The following table indicates Bluetooth features supported per SoftDevice:
 
@@ -236,43 +232,43 @@ The following table indicates the software maturity levels of the support for ea
      - nRF54L15
      - nRF54L10
      - nRF54L05
-     - nRF54LV10
      - nRF54LM20A
      - nRF54LS05B
+     - nRF54LV10A
    * - **NFC Type 2 Tag (read-only)**
      - Supported
      - Supported
      - Supported
-     - n/a
      - Experimental
+     - n/a
      - n/a
    * - **NFC Type 4 Tag (read/write)**
      - Supported
      - Supported
      - Supported
-     - n/a
      - Experimental
+     - n/a
      - n/a
    * - **NDEF encoding and decoding**
      - Supported
      - Supported
      - Supported
-     - n/a
      - Experimental
+     - n/a
      - n/a
    * - **NFC Record Type Definition: URI, text**
      - Supported
      - Supported
      - Supported
-     - n/a
      - Experimental
+     - n/a
      - n/a
    * - **NFC Connection Handover to Bluetooth carrier, Static and Negotiated Handover**
      - Supported
      - Supported
      - Supported
-     - n/a
      - Experimental
+     - n/a
      - n/a
 
 .. note::
@@ -299,27 +295,27 @@ The following table indicates the software maturity levels of the support for ea
      - nRF54L15
      - nRF54L10
      - nRF54L05
-     - nRF54LV10
      - nRF54LM20A
      - nRF54LS05B
+     - nRF54LV10A
    * - **Immutable MCUboot as part of build**
      - Supported
      - Supported
      - Supported
+     - Supported
      - Experimental
-     - Experimental
-     - Experimental
+     - Supported
    * - **Hardware cryptography acceleration**
      - Supported
      - Supported
      - Supported
-     - Experimental
-     - Experimental
+     - Supported
      - n/a
+     - Supported
    * - **Multiple signature keys**
      - Supported
      - Supported
      - Supported
-     - Experimental
-     - Experimental
+     - Supported
      - --
+     - Supported
