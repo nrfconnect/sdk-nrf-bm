@@ -1140,6 +1140,12 @@ static int zms_compute_prev_addr(struct bm_zms_fs *fs, uint64_t *addr)
 	struct zms_ate empty_ate;
 	struct zms_ate close_ate;
 
+	if (SECTOR_OFFSET(*addr) >= (fs->sector_size - 2 * fs->ate_size)) {
+		LOG_ERR("Something went wrong in computing previous ate address, addr is 0x%llx",
+			*addr);
+		return -EIO;
+	}
+
 	*addr += fs->ate_size;
 	if ((SECTOR_OFFSET(*addr)) != (fs->sector_size - 2 * fs->ate_size)) {
 		return 0;
@@ -1230,6 +1236,7 @@ static int zms_sector_close(struct bm_zms_fs *fs)
 		cur_op.ate_entry.metadata = 0xffffffff;
 		cur_op.ate_entry.cycle_cnt = fs->sector_cycle;
 		zms_ate_crc8_update(&cur_op.ate_entry);
+		fs->ate_ra = fs->ate_wra;
 		fs->ate_wra = zms_close_ate_addr(fs, fs->ate_wra);
 		cur_op.addr = fs->ate_wra;
 		cur_op.len = sizeof(struct zms_ate);
@@ -2214,6 +2221,7 @@ ssize_t bm_zms_read_hist(struct bm_zms_fs *fs, uint32_t id, void *data, size_t l
 	uint64_t wlk_addr;
 	uint64_t rd_addr = 0;
 	uint64_t wlk_prev_addr = 0;
+	uint64_t end_search_addr = 0;
 	uint32_t cnt_his;
 	struct zms_ate wlk_ate;
 #ifdef CONFIG_BM_ZMS_DATA_CRC
@@ -2242,13 +2250,21 @@ ssize_t bm_zms_read_hist(struct bm_zms_fs *fs, uint32_t id, void *data, size_t l
 	wlk_addr = fs->ate_wra;
 #endif
 
+	end_search_addr = fs->ate_wra;
+	if (SECTOR_OFFSET(wlk_addr) >= (fs->sector_size - 2 * fs->ate_size)) {
+		/* we are maybe in the middle of a GC */
+		wlk_addr = fs->ate_ra;
+		end_search_addr = wlk_addr;
+	}
+
 	while (cnt_his <= cnt) {
 		wlk_prev_addr = wlk_addr;
 		/* Search for a previous valid ATE with the same ID */
-		prev_found = zms_find_ate_with_id(fs, id, wlk_addr, fs->ate_wra, &wlk_ate,
+		prev_found = zms_find_ate_with_id(fs, id, wlk_addr, end_search_addr, &wlk_ate,
 						  &wlk_prev_addr);
 		if (prev_found < 0) {
-			return prev_found;
+			rc = prev_found;
+			goto err;
 		}
 		if (prev_found) {
 			cnt_his++;
@@ -2260,7 +2276,7 @@ ssize_t bm_zms_read_hist(struct bm_zms_fs *fs, uint32_t id, void *data, size_t l
 			 */
 			rc = zms_compute_prev_addr(fs, &wlk_prev_addr);
 			if (rc) {
-				return rc;
+				goto err;
 			}
 			/* wlk_addr will be the start research address in the next loop */
 			wlk_addr = wlk_prev_addr;
@@ -2270,7 +2286,8 @@ ssize_t bm_zms_read_hist(struct bm_zms_fs *fs, uint32_t id, void *data, size_t l
 	}
 
 	if (((!prev_found) || (wlk_ate.id != id)) || (wlk_ate.len == 0U) || (cnt_his < cnt)) {
-		return -ENOENT;
+		rc = -ENOENT;
+		goto err;
 	}
 
 	if (wlk_ate.len <= ZMS_DATA_IN_ATE_SIZE) {
@@ -2296,7 +2313,8 @@ ssize_t bm_zms_read_hist(struct bm_zms_fs *fs, uint32_t id, void *data, size_t l
 				LOG_ERR("Invalid data CRC, ATE_CRC: 0x%08X, "
 					"computed_data_crc: 0x%08X",
 					wlk_ate.data_crc, computed_data_crc);
-				return -EIO;
+				rc = -EIO;
+				goto err;
 			}
 		}
 #endif

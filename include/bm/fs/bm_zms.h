@@ -90,6 +90,8 @@ struct bm_zms_fs {
 	 * - low 4 bytes are the offset in the sector.
 	 */
 	uint64_t ate_wra;
+	/** Allocation Table Entry (ATE) read address. */
+	uint64_t ate_ra;
 	/** Data write address */
 	uint64_t data_wra;
 	/** Storage system is split into sectors. The sector size must be a multiple of
