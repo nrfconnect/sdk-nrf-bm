@@ -58,12 +58,13 @@ Every |BMlong| release consists of:
          The selected region applies to all future SDK and toolchain downloads.
          You can later change it in the |VSC| settings.
 
-      #. In the next page you will be prompted to **Select SDK type**, click :guilabel:`nRF Connect SDK Bare Metal`.
+      #. When prompted to **Select SDK type**, click :guilabel:`nRF Connect SDK Bare Metal`.
 
-      #. In the next page you will be prompted to **Select an SDK version (or enter the branch, tag or commit SHA) to install...**, click :guilabel:`v2.0.0-preview1` marked on the right by the label :guilabel:`Pre-packaged SDKs & Toolchains`.
+      #. When prompted to **Select an SDK version (or enter the branch, tag or commit SHA) to install...**, click :guilabel:`v2.0.0` marked on the right by the label :guilabel:`Pre-packaged SDKs & Toolchains`.
 
-      #. In the next page you will be prompted to select a destination for the SDK. The default suggestion is recommended. Then press **Enter**.
-         This will proceed by installing |BMshort| and the respective Toolchain it requires.
+      #. When prompted to select a destination for the SDK, the default suggestion is recommended.
+         Then, press **Enter**.
+         The installer will proceed to install |BMshort| and the respective toolchain that it requires.
 
    .. group-tab:: GitHub
 
@@ -100,16 +101,18 @@ Every |BMlong| release consists of:
 
             Complete the following steps to get the |BMshort| code using the |nRFVSC|.
 
-            1. In the extension's :guilabel:`Welcome View`, click :guilabel:`Manage SDKs`. A popup window will appear.
+            1. In the extension's :guilabel:`Welcome View`, click :guilabel:`Manage SDKs`.
+               A popup window will appear.
 
             #. Click :guilabel:`Install SDK`.
 
-            #. In the next page you will be prompted to **Select SDK type**, click :guilabel:`nRF Connect SDK Bare Metal`.
+            #. When prompted to **Select SDK type**, click :guilabel:`nRF Connect SDK Bare Metal`.
 
-            #. In the next page you will be prompted to **Select an SDK version (or enter the branch, tag or commit SHA) to install...**, click :guilabel:`v2.0.0-preview1` marked on the right by the label :guilabel:`GitHub`.
+            #. When prompted to **Select an SDK version (or enter the branch, tag or commit SHA) to install...**, click :guilabel:`v2.0.0` marked on the right by the label :guilabel:`GitHub`.
 
-            #. In the next page you will be prompted to select a destination for the SDK. The default suggestion is recommended. Then press **Enter**.
-               This will proceed by installing |BMshort|.
+            #. When prompted to select a destination for the SDK, the default suggestion is recommended.
+               Then, press **Enter**.
+               |BMshort| will now be installed.
 
 Your directory structure should now look similar to this:
 

@@ -7,8 +7,8 @@
 
 .. ### Versions
 
-.. |ncs_release| replace:: v3.3.0-preview2
-.. |release| replace:: v2.0.0-preview1
+.. |ncs_release| replace:: v3.3.0
+.. |release| replace:: v2.0.0
 
 .. ### Other shortcuts
 

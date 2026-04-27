@@ -73,28 +73,29 @@ See the following table for more details:
 
 For the certification status of different features in a specific SoC, see its Compatibility Matrix in the `Nordic Semiconductor TechDocs`_.
 
-nRF Devices in scope of |BMshort|
-*********************************
+Target devices for |BMshort|
+****************************
 
-A device is considered supported if at least one sample or component has been demonstrated on it in the SDK, with the software maturity level set to supported.
+The following nRF devices are in scope of |BMshort|.
+The level of maturity varies per protocol and feature — refer to other tables in this page for more details.
 
-.. list-table:: Device support
+.. list-table:: Available devices
    :header-rows: 0
    :align: center
    :widths: auto
 
    * - nRF54L15
-     - Supported from v1.0.0
+     - `nRF54L15 DK`_
    * - nRF54L10
-     - Supported from v1.0.0
+     - `nRF54L15 DK`_
    * - nRF54L05
-     - Supported from v1.0.0
-   * - nRF54LV10
-     - Experimental
+     - `nRF54L15 DK`_
    * - nRF54LM20A
-     - Experimental
+     - `nRF54LM20 DK`_
    * - nRF54LS05B
-     - Experimental
+     - `nRF54LS05 DK`_
+   * - nRF54LV10A
+     - `nRF54LV10 DK`_
 
 .. note::
    Any device not listed is considered out of scope.
@@ -113,22 +114,22 @@ The following table indicates the software maturity levels of the support for ea
      - nRF54L15
      - nRF54L10
      - nRF54L05
-     - nRF54LV10
      - nRF54LM20A
      - nRF54LS05B
+     - nRF54LV10A
    * - **Bluetooth®**
      - Supported
      - Supported
      - Supported
-     - Experimental
+     - Supported
      - Experimental
      - Experimental
    * - **NFC**
      - Supported
      - Supported
      - Supported
-     - n/a
      - Experimental
+     - n/a
      - n/a
    * - **ESB**
      - --
@@ -156,27 +157,23 @@ The following table indicates SoftDevice compatibility per SoC:
      - nRF54L15
      - nRF54L10
      - nRF54L05
-     - nRF54LV10
      - nRF54LM20A
      - nRF54LS05B
+     - nRF54LV10A
    * - **SoftDevice S115**
      - Supported
      - Supported
      - Supported
-     - Experimental
+     - Supported
      - Experimental
      - Experimental
    * - **SoftDevice S145**
      - Supported
      - Supported
      - Supported
+     - Supported
      - Experimental
      - Experimental
-     - Experimental
-
-.. note::
-   The Experimental status of the S145 SoftDevice refers to its integration in the |BMlong|.
-   The SoftDevice itself is production-ready.
 
 The following table indicates Bluetooth features supported per SoftDevice:
 
@@ -220,7 +217,7 @@ The following table indicates Bluetooth features supported per SoftDevice:
 For more details on supported Bluetooth features, see the SoftDevice Specification documents:
 
 * `S115 SoftDevice Specification`_
-* S145 (Specification not available yet)
+* `S145 SoftDevice Specification`_
 
 NFC features support
 ********************
@@ -236,43 +233,43 @@ The following table indicates the software maturity levels of the support for ea
      - nRF54L15
      - nRF54L10
      - nRF54L05
-     - nRF54LV10
      - nRF54LM20A
      - nRF54LS05B
+     - nRF54LV10A
    * - **NFC Type 2 Tag (read-only)**
      - Supported
      - Supported
      - Supported
-     - n/a
      - Experimental
+     - n/a
      - n/a
    * - **NFC Type 4 Tag (read/write)**
      - Supported
      - Supported
      - Supported
-     - n/a
      - Experimental
+     - n/a
      - n/a
    * - **NDEF encoding and decoding**
      - Supported
      - Supported
      - Supported
-     - n/a
      - Experimental
+     - n/a
      - n/a
    * - **NFC Record Type Definition: URI, text**
      - Supported
      - Supported
      - Supported
-     - n/a
      - Experimental
+     - n/a
      - n/a
    * - **NFC Connection Handover to Bluetooth carrier, Static and Negotiated Handover**
      - Supported
      - Supported
      - Supported
-     - n/a
      - Experimental
+     - n/a
      - n/a
 
 .. note::
@@ -299,27 +296,27 @@ The following table indicates the software maturity levels of the support for ea
      - nRF54L15
      - nRF54L10
      - nRF54L05
-     - nRF54LV10
      - nRF54LM20A
      - nRF54LS05B
+     - nRF54LV10A
    * - **Immutable MCUboot as part of build**
      - Supported
      - Supported
      - Supported
-     - Experimental
+     - Supported
      - Experimental
      - Experimental
    * - **Hardware cryptography acceleration**
      - Supported
      - Supported
      - Supported
-     - Experimental
-     - Experimental
+     - Supported
      - n/a
+     - Experimental
    * - **Multiple signature keys**
      - Supported
      - Supported
      - Supported
-     - Experimental
-     - Experimental
+     - Supported
      - --
+     - Experimental

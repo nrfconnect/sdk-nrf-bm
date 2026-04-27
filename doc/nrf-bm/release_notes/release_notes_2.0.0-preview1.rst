@@ -1,3 +1,5 @@
+:orphan:
+
 .. _nrf_bm_release_notes_200-preview1:
 
 Changelog for |BMlong| v2.0.0-preview1
