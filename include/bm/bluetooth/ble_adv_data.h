@@ -308,6 +308,23 @@ bool ble_adv_data_uuid_find(const uint8_t *buf, uint16_t len, const ble_uuid_t *
  */
 bool ble_adv_data_appearance_find(const uint8_t *buf, uint16_t len, const uint16_t *appearance);
 
+/**
+ * @brief Search encoded Advertising data for manufacturer-specific data.
+ *
+ * @param[in] buf Encoded advertising data.
+ * @param[in] len Buffer length.
+ * @param[in] target_data Target manufacturer data to match (prefix). Starts with the
+ *                        2-byte little-endian company identifier followed by optional
+ *                        vendor payload.
+ * @param[in] target_data_len Length of the target manufacturer data.
+ *
+ * @retval true  If manufacturer-specific data in which the first @p target_data_len bytes matches
+ *               @p target_data was found among @p buf.
+ * @retval false If no match was found among @p buf, or if @p buf or @p target_data was @c NULL.
+ */
+bool ble_adv_data_manufacturer_data_find(const uint8_t *buf, uint16_t len,
+					 const uint8_t *target_data, uint8_t target_data_len);
+
 #ifdef __cplusplus
 }
 #endif
