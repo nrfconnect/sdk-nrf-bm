@@ -9,18 +9,37 @@ common:
     - native_sim
 tests:
   subsys.bm_zms:
-    tags: bm_zms
-  subsys.bm_zms.cache:
+    filter: CONFIG_BOARD_NATIVE_SIM
     extra_args:
+      - CONFIG_BM_STORAGE_BACKEND_NATIVE_SIM=y
+  subsys.bm_zms.cache:
+    filter: CONFIG_BOARD_NATIVE_SIM
+    extra_args:
+      - CONFIG_BM_STORAGE_BACKEND_NATIVE_SIM=y
       - CONFIG_BM_ZMS_LOOKUP_CACHE=y
       - CONFIG_BM_ZMS_LOOKUP_CACHE_SIZE=64
   subsys.bm_zms.data_crc:
+    filter: CONFIG_BOARD_NATIVE_SIM
     extra_args:
+      - CONFIG_BM_STORAGE_BACKEND_NATIVE_SIM=y
       - CONFIG_BM_ZMS_DATA_CRC=y
   subsys.bm_zms.async:
+    filter: CONFIG_BOARD_NATIVE_SIM
     extra_args:
+      - CONFIG_BM_STORAGE_BACKEND_NATIVE_SIM=y
       - CONFIG_BM_STORAGE_BACKEND_NATIVE_SIM_ASYNC=y
   subsys.bm_zms.softdevice:
-    filter: BOARD_NATIVE_SIM
+    filter: not CONFIG_BOARD_NATIVE_SIM
     extra_args:
       - CONFIG_SOFTDEVICE=y
+  subsys.bm_zms.softdevice.cache:
+    filter: not CONFIG_BOARD_NATIVE_SIM
+    extra_args:
+      - CONFIG_SOFTDEVICE=y
+      - CONFIG_BM_ZMS_LOOKUP_CACHE=y
+      - CONFIG_BM_ZMS_LOOKUP_CACHE_SIZE=64
+  subsys.bm_zms.softdevice.data_crc:
+    filter: not CONFIG_BOARD_NATIVE_SIM
+    extra_args:
+      - CONFIG_SOFTDEVICE=y
+      - CONFIG_BM_ZMS_DATA_CRC=y
