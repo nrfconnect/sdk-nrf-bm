@@ -37,11 +37,11 @@ LOG_MODULE_REGISTER(ble_hrs, CONFIG_BLE_HRS_LOG_LEVEL);
 /* RR-Interval bit. */
 #define HRM_FLAG_MASK_RR_INTERVAL_INCLUDED	BIT(4)
 
-static uint8_t hrm_encode(struct ble_hrs *hrs, uint16_t heart_rate, uint8_t *encoded_buffer)
+static uint16_t hrm_encode(struct ble_hrs *hrs, uint16_t heart_rate, uint8_t *encoded_buffer)
 {
 	uint8_t flags = 0;
 	/* Make space for flags. */
-	uint8_t len = 1;
+	uint16_t len = 1;
 	int i;
 
 	/* Set sensor contact related flags. */
