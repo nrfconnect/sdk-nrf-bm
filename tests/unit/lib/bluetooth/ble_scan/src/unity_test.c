@@ -9,6 +9,9 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <bm/bluetooth/ble_scan.h>
+#include <bm/softdevice_handler/nrf_sdh.h>
+#include <zephyr/sys/iterable_sections.h>
+#include <zephyr/sys/byteorder.h>
 
 #include "cmock_ble_gap.h"
 #include "cmock_ble_gatts.h"
@@ -20,6 +23,9 @@
 #define DEVICE_NAME "my_device"
 
 #define UUID 0x2312
+
+/* Nordic Semiconductor company identifier (Bluetooth SIG assigned). */
+#define BLE_COMPANY_ID_NORDIC 0x0059
 
 BLE_SCAN_DEF(ble_scan);
 
@@ -136,7 +142,7 @@ void test_ble_scan_filters_enable_error_invalid_param(void)
 
 	test_ble_scan_init();
 
-	nrf_err = ble_scan_filters_enable(&ble_scan, 0x20, true);
+	nrf_err = ble_scan_filters_enable(&ble_scan, 0x40, true);
 	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, nrf_err);
 }
 
@@ -160,7 +166,8 @@ void test_ble_scan_filters_enable_all(void)
 						      BLE_SCAN_SHORT_NAME_FILTER |
 						      BLE_SCAN_ADDR_FILTER |
 						      BLE_SCAN_UUID_FILTER |
-						      BLE_SCAN_APPEARANCE_FILTER), true);
+						      BLE_SCAN_APPEARANCE_FILTER |
+						      BLE_SCAN_MANUFACTURER_DATA_FILTER), true);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
@@ -216,10 +223,11 @@ void test_ble_scan_filter_get(void)
 	TEST_ASSERT_FALSE(ble_scan_filter_data.name_filter.name_filter_enabled);
 
 	ble_scan_filters_enable(&ble_scan, (BLE_SCAN_NAME_FILTER |
-						   BLE_SCAN_SHORT_NAME_FILTER |
-						   BLE_SCAN_ADDR_FILTER |
-						   BLE_SCAN_UUID_FILTER |
-						   BLE_SCAN_APPEARANCE_FILTER), true);
+					    BLE_SCAN_SHORT_NAME_FILTER |
+					    BLE_SCAN_ADDR_FILTER |
+					    BLE_SCAN_UUID_FILTER |
+					    BLE_SCAN_APPEARANCE_FILTER |
+					    BLE_SCAN_MANUFACTURER_DATA_FILTER), true);
 
 	nrf_err = ble_scan_filter_get(&ble_scan, &ble_scan_filter_data);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
@@ -571,6 +579,137 @@ void test_ble_scan_filter_add_short_name_error_no_mem(void)
 	TEST_ASSERT_EQUAL(NRF_ERROR_NO_MEM, nrf_err);
 }
 
+/* Manufacturer data filter Unit Tests */
+void test_ble_scan_filter_add_manufacturer_data(void)
+{
+	/* Happy path: add a valid manufacturer data filter containing a 2-byte little-endian
+	 * company identifier. Expected to succeed and accept the filter.
+	 */
+	uint32_t nrf_err;
+	uint8_t manuf_data[2];
+	struct ble_scan_filter_data filter_data = {
+		.manufacturer_data_filter = {
+			.data = manuf_data,
+			.data_len = sizeof(manuf_data),
+		},
+	};
+
+	/* Encode the company identifier in little-endian as required by the BLE spec. */
+	sys_put_le16(BLE_COMPANY_ID_NORDIC, manuf_data);
+
+	test_ble_scan_init();
+	ble_scan_filters_enable(&ble_scan, BLE_SCAN_MANUFACTURER_DATA_FILTER, true);
+
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_MANUFACTURER_DATA_FILTER, &filter_data);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+}
+
+void test_ble_scan_filter_add_manufacturer_data_error_data_size(void)
+{
+	/* Boundary validation: a zero length filter and a filter larger than
+	 * CONFIG_BLE_SCAN_MANUFACTURER_DATA_MAX_LEN must both be rejected with
+	 * NRF_ERROR_DATA_SIZE.
+	 */
+	uint32_t nrf_err;
+	uint8_t manuf_data[2];
+	uint8_t manuf_data_too_long[CONFIG_BLE_SCAN_MANUFACTURER_DATA_MAX_LEN + 1] = {0};
+	struct ble_scan_filter_data filter_data_zero_len = {
+		.manufacturer_data_filter = {
+			.data = manuf_data,
+			.data_len = 0,
+		},
+	};
+	struct ble_scan_filter_data filter_data_too_long = {
+		.manufacturer_data_filter = {
+			.data = manuf_data_too_long,
+			.data_len = sizeof(manuf_data_too_long),
+		},
+	};
+
+	/* Encode the company identifier in little-endian as required by the BLE spec. */
+	sys_put_le16(BLE_COMPANY_ID_NORDIC, manuf_data);
+
+	test_ble_scan_init();
+	ble_scan_filters_enable(&ble_scan, BLE_SCAN_MANUFACTURER_DATA_FILTER, true);
+
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_MANUFACTURER_DATA_FILTER,
+				      &filter_data_zero_len);
+	TEST_ASSERT_EQUAL(NRF_ERROR_DATA_SIZE, nrf_err);
+
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_MANUFACTURER_DATA_FILTER,
+				      &filter_data_too_long);
+	TEST_ASSERT_EQUAL(NRF_ERROR_DATA_SIZE, nrf_err);
+}
+
+void test_ble_scan_filter_add_manufacturer_data_error_null(void)
+{
+	/* Verify that a valid-length filter with a NULL data pointer is rejected with
+	 * NRF_ERROR_NULL, ensuring the inner pointer is validated before dereference.
+	 */
+	uint32_t nrf_err;
+	struct ble_scan_filter_data filter_data = {
+		.manufacturer_data_filter = {
+			.data = NULL,
+			.data_len = 2,
+		},
+	};
+
+	test_ble_scan_init();
+	ble_scan_filters_enable(&ble_scan, BLE_SCAN_MANUFACTURER_DATA_FILTER, true);
+
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_MANUFACTURER_DATA_FILTER, &filter_data);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NULL, nrf_err);
+}
+
+void test_ble_scan_filter_add_manufacturer_data_error_no_mem(void)
+{
+	/* Capacity check: duplicates must not consume a slot, two unique filters must fit,
+	 * and a third unique filter must be rejected with NRF_ERROR_NO_MEM.
+	 * Assumes CONFIG_BLE_SCAN_MANUFACTURER_DATA_COUNT is 2.
+	 */
+	uint32_t nrf_err;
+	uint8_t manuf_data[2];
+	uint8_t manuf_data_second[] = {0x4C, 0x00};
+	uint8_t manuf_data_third[]  = {0x06, 0x00};
+	struct ble_scan_filter_data filter_data = {
+		.manufacturer_data_filter = {
+			.data = manuf_data, .data_len = sizeof(manuf_data),
+		},
+	};
+	struct ble_scan_filter_data filter_data_second = {
+		.manufacturer_data_filter = {
+			.data = manuf_data_second, .data_len = sizeof(manuf_data_second),
+		},
+	};
+	struct ble_scan_filter_data filter_data_third = {
+		.manufacturer_data_filter = {
+			.data = manuf_data_third, .data_len = sizeof(manuf_data_third),
+		},
+	};
+
+	sys_put_le16(BLE_COMPANY_ID_NORDIC, manuf_data);
+
+	test_ble_scan_init();
+	ble_scan_filters_enable(&ble_scan, BLE_SCAN_MANUFACTURER_DATA_FILTER, true);
+
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_MANUFACTURER_DATA_FILTER, &filter_data);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	/* Duplicate filter is accepted without increasing the counter. */
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_MANUFACTURER_DATA_FILTER, &filter_data);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	/* Second unique filter fits. */
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_MANUFACTURER_DATA_FILTER,
+				      &filter_data_second);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	/* Third unique filter exceeds capacity. */
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_MANUFACTURER_DATA_FILTER,
+				      &filter_data_third);
+	TEST_ASSERT_EQUAL(NRF_ERROR_NO_MEM, nrf_err);
+}
+
 void test_ble_scan_is_allow_list_used(void)
 {
 	bool nrf_err;
@@ -731,6 +870,7 @@ void test_ble_scan_on_ble_evt_adv_report_device_address(void)
 	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.short_name_filter_match);
 	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.appearance_filter_match);
 	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.uuid_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.manufacturer_data_filter_match);
 	TEST_ASSERT_EQUAL_PTR(&ble_evt.evt.gap_evt.params.adv_report,
 			      scan_event.filter_match.adv_report);
 }
@@ -794,6 +934,7 @@ void test_ble_scan_on_ble_evt_adv_report_device_name(void)
 	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.short_name_filter_match);
 	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.appearance_filter_match);
 	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.uuid_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.manufacturer_data_filter_match);
 	TEST_ASSERT_EQUAL_PTR(&ble_evt.evt.gap_evt.params.adv_report,
 			      scan_event.filter_match.adv_report);
 }
@@ -867,6 +1008,7 @@ void test_ble_scan_on_ble_evt_adv_report_device_short_name(void)
 	TEST_ASSERT_EQUAL(1, scan_event.filter_match.filter_match.short_name_filter_match);
 	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.appearance_filter_match);
 	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.uuid_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.manufacturer_data_filter_match);
 	TEST_ASSERT_EQUAL_PTR(&ble_evt.evt.gap_evt.params.adv_report,
 			      scan_event.filter_match.adv_report);
 }
@@ -938,6 +1080,7 @@ void test_ble_scan_on_ble_evt_adv_report_device_appearance(void)
 	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.short_name_filter_match);
 	TEST_ASSERT_EQUAL(1, scan_event.filter_match.filter_match.appearance_filter_match);
 	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.uuid_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.manufacturer_data_filter_match);
 	TEST_ASSERT_EQUAL_PTR(&ble_evt.evt.gap_evt.params.adv_report,
 			      scan_event.filter_match.adv_report);
 }
@@ -1017,6 +1160,7 @@ void test_ble_scan_on_ble_evt_adv_report_device_name_and_appearance(void)
 	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.short_name_filter_match);
 	TEST_ASSERT_EQUAL(1, scan_event.filter_match.filter_match.appearance_filter_match);
 	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.uuid_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.manufacturer_data_filter_match);
 }
 
 void test_ble_scan_on_ble_evt_adv_report_device_uuid_not_found(void)
@@ -1094,6 +1238,7 @@ void test_ble_scan_on_ble_evt_adv_report_device_uuid(void)
 	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.short_name_filter_match);
 	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.appearance_filter_match);
 	TEST_ASSERT_EQUAL(1, scan_event.filter_match.filter_match.uuid_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.manufacturer_data_filter_match);
 	TEST_ASSERT_EQUAL_PTR(&ble_evt.evt.gap_evt.params.adv_report,
 			      scan_event.filter_match.adv_report);
 }
@@ -1199,6 +1344,156 @@ void test_ble_scan_on_ble_evt_adv_report_device_uuid_connect(void)
 	ble_scan_on_ble_evt(&ble_evt, &ble_scan);
 	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_CONNECTING_ERROR, scan_event_prev.evt_type);
 	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_FILTER_MATCH, scan_event.evt_type);
+}
+
+void test_ble_scan_on_ble_evt_adv_report_device_manufacturer_data_not_found(void)
+{
+	/* Advertising packet does not contain manufacturer-specific data matching the configured
+	 * filter. The mocked find helper returns false, so the scan event handler must receive
+	 * BLE_SCAN_EVT_NOT_FOUND.
+	 */
+	uint8_t manuf_data_exp[2];
+	uint8_t dummy_data[] = "hello";
+	ble_evt_t ble_evt = {
+		.header.evt_id = BLE_GAP_EVT_ADV_REPORT,
+		.evt.gap_evt = {
+			.conn_handle = CONN_HANDLE,
+			.params.adv_report = {
+				.data = {
+					.p_data = dummy_data,
+					.len = sizeof(dummy_data),
+				},
+			},
+		},
+	};
+
+	/* Encode the company identifier in little-endian as required by the BLE spec. */
+	sys_put_le16(BLE_COMPANY_ID_NORDIC, manuf_data_exp);
+
+	test_ble_scan_filter_add_manufacturer_data();
+
+	__cmock_ble_adv_data_manufacturer_data_find_ExpectWithArrayAndReturn(
+		ble_evt.evt.gap_evt.params.adv_report.data.p_data, 1,
+		ble_evt.evt.gap_evt.params.adv_report.data.len,
+		manuf_data_exp, sizeof(manuf_data_exp), sizeof(manuf_data_exp),
+		false); /* Mock "no manufacturer data match" -> expect BLE_SCAN_EVT_NOT_FOUND */
+	__cmock_sd_ble_gap_scan_start_ExpectAndReturn(NULL, &ble_scan.scan_buffer, NRF_SUCCESS);
+
+	ble_scan_on_ble_evt(&ble_evt, &ble_scan);
+	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_NOT_FOUND, scan_event.evt_type);
+}
+
+void test_ble_scan_on_ble_evt_adv_report_device_manufacturer_data(void)
+{
+	/* Advertising packet contains manufacturer-specific data matching the configured filter.
+	 * The mocked find helper returns true, so the scan event handler must receive
+	 * BLE_SCAN_EVT_FILTER_MATCH with only manufacturer_data_filter_match set.
+	 */
+	uint8_t manuf_data_exp[2];
+	uint8_t dummy_data[] = "hello";
+	ble_evt_t ble_evt = {
+		.header.evt_id = BLE_GAP_EVT_ADV_REPORT,
+		.evt.gap_evt = {
+			.conn_handle = CONN_HANDLE,
+			.params.adv_report = {
+				.data = {
+					.p_data = dummy_data,
+					.len = sizeof(dummy_data),
+				},
+			},
+		},
+	};
+
+	/* Encode the company identifier in little-endian as required by the BLE spec. */
+	sys_put_le16(BLE_COMPANY_ID_NORDIC, manuf_data_exp);
+
+	test_ble_scan_filter_add_manufacturer_data();
+
+	__cmock_ble_adv_data_manufacturer_data_find_ExpectWithArrayAndReturn(
+		ble_evt.evt.gap_evt.params.adv_report.data.p_data, 1,
+		ble_evt.evt.gap_evt.params.adv_report.data.len,
+		manuf_data_exp, sizeof(manuf_data_exp), sizeof(manuf_data_exp),
+		true); /* Mock "manufacturer data match" -> expect BLE_SCAN_EVT_FILTER_MATCH */
+	__cmock_sd_ble_gap_scan_start_ExpectAndReturn(NULL, &ble_scan.scan_buffer, NRF_SUCCESS);
+
+	ble_scan_on_ble_evt(&ble_evt, &ble_scan);
+	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_FILTER_MATCH, scan_event.evt_type);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.address_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.name_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.short_name_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.appearance_filter_match);
+	TEST_ASSERT_EQUAL(0, scan_event.filter_match.filter_match.uuid_filter_match);
+	TEST_ASSERT_EQUAL(1, scan_event.filter_match.filter_match.manufacturer_data_filter_match);
+	TEST_ASSERT_EQUAL_PTR(&ble_evt.evt.gap_evt.params.adv_report,
+			      scan_event.filter_match.adv_report);
+}
+
+void test_ble_scan_on_ble_evt_adv_report_device_multiple_manufacturer_data(void)
+{
+	/* Multiple manufacturer data filters registered. The library iterates the list and stops
+	 * on the first match. Verify that an ADV packet matching the *second* registered filter
+	 * still produces BLE_SCAN_EVT_FILTER_MATCH with manufacturer_data_filter_match set.
+	 */
+	uint32_t nrf_err;
+	uint8_t manuf_data_first[2];
+	uint8_t manuf_data_second[] = {0x4C, 0x00}; /* Different company ID */
+	uint8_t dummy_data[] = "hello";
+	ble_evt_t ble_evt = {
+		.header.evt_id = BLE_GAP_EVT_ADV_REPORT,
+		.evt.gap_evt = {
+			.conn_handle = CONN_HANDLE,
+			.params.adv_report = {
+				.data = {
+					.p_data = dummy_data,
+					.len = sizeof(dummy_data),
+				},
+			},
+		},
+	};
+	struct ble_scan_filter_data filter_data_first = {
+		.manufacturer_data_filter = {
+			.data = manuf_data_first,
+			.data_len = sizeof(manuf_data_first),
+		},
+	};
+	struct ble_scan_filter_data filter_data_second = {
+		.manufacturer_data_filter = {
+			.data = manuf_data_second,
+			.data_len = sizeof(manuf_data_second),
+		},
+	};
+
+	sys_put_le16(BLE_COMPANY_ID_NORDIC, manuf_data_first);
+
+	test_ble_scan_init();
+
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_MANUFACTURER_DATA_FILTER,
+				      &filter_data_first);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_MANUFACTURER_DATA_FILTER,
+				      &filter_data_second);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	ble_scan_filters_enable(&ble_scan, BLE_SCAN_MANUFACTURER_DATA_FILTER, false);
+
+	/* First registered filter is checked and does not match. */
+	__cmock_ble_adv_data_manufacturer_data_find_ExpectWithArrayAndReturn(
+		ble_evt.evt.gap_evt.params.adv_report.data.p_data, 1,
+		ble_evt.evt.gap_evt.params.adv_report.data.len,
+		manuf_data_first, sizeof(manuf_data_first), sizeof(manuf_data_first), false);
+
+	/* Second registered filter is checked and matches. */
+	__cmock_ble_adv_data_manufacturer_data_find_ExpectWithArrayAndReturn(
+		ble_evt.evt.gap_evt.params.adv_report.data.p_data, 1,
+		ble_evt.evt.gap_evt.params.adv_report.data.len,
+		manuf_data_second, sizeof(manuf_data_second), sizeof(manuf_data_second), true);
+
+	__cmock_sd_ble_gap_scan_start_ExpectAndReturn(NULL, &ble_scan.scan_buffer, NRF_SUCCESS);
+
+	ble_scan_on_ble_evt(&ble_evt, &ble_scan);
+	TEST_ASSERT_EQUAL(BLE_SCAN_EVT_FILTER_MATCH, scan_event.evt_type);
+	TEST_ASSERT_EQUAL(1, scan_event.filter_match.filter_match.manufacturer_data_filter_match);
 }
 
 void test_ble_scan_on_ble_evt_timeout(void)

@@ -85,6 +85,13 @@ Libraries
 
    * Added the :c:func:`ble_adv_data_manufacturer_data_find` function to locate manufacturer-specific data in an advertising payload and prefix-match it against a target value.
 
+* :ref:`lib_ble_scan` library:
+
+   * Added:
+
+      * Support for filtering by manufacturer-specific data using the :c:macro:`BLE_SCAN_MANUFACTURER_DATA_FILTER` filter type.
+      * The :kconfig:option:`CONFIG_BLE_SCAN_MANUFACTURER_DATA_COUNT` and :kconfig:option:`CONFIG_BLE_SCAN_MANUFACTURER_DATA_MAX_LEN` Kconfig options to configure the manufacturer data filter capacity and maximum payload length.
+
 Bluetooth LE Services
 ---------------------
 

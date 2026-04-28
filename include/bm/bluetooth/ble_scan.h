@@ -106,6 +106,8 @@ enum ble_scan_evt_type {
 #define BLE_SCAN_APPEARANCE_FILTER (0x08)
 /** Filters the device short name. */
 #define BLE_SCAN_SHORT_NAME_FILTER (0x10)
+/** Filters the manufacturer data. */
+#define BLE_SCAN_MANUFACTURER_DATA_FILTER (0x20)
 /** @} */
 
 /**
@@ -136,6 +138,13 @@ struct ble_scan_filter_data {
 			/** Minimum length of the short name to be matched. */
 			uint8_t short_name_min_len;
 		} short_name_filter;
+		/** Manufacturer filter data */
+		struct {
+			/** Pointer to the manufacturer data. */
+			const uint8_t *data;
+			/** Manufacturer data length. */
+			uint8_t data_len;
+		} manufacturer_data_filter;
 	};
 };
 
@@ -153,6 +162,8 @@ struct ble_scan_filter_match {
 	uint8_t appearance_filter_match: 1;
 	/** Set to 1 if short name filter is matched. */
 	uint8_t short_name_filter_match: 1;
+	/** Set to 1 if manufacturer data filter is matched. */
+	uint8_t manufacturer_data_filter_match: 1;
 };
 
 /**
@@ -291,6 +302,22 @@ struct ble_scan_appearance_filter {
 	bool appearance_filter_enabled;
 };
 
+/** Scan manufacturer data filter. */
+struct ble_scan_manufacturer_data_filter {
+	struct {
+		/** Manufacturer data that the main application will scan for, and that will be
+		 *  advertised by the peripherals.
+		 */
+		uint8_t data[CONFIG_BLE_SCAN_MANUFACTURER_DATA_MAX_LEN];
+		/** Length of the manufacturer data. */
+		uint8_t data_len;
+	} manufacturer_data[CONFIG_BLE_SCAN_MANUFACTURER_DATA_COUNT];
+	/** Number of manufacturer data in list. */
+	uint8_t manufacturer_data_cnt;
+	/** Flag to inform about enabling or disabling this filter. */
+	bool manufacturer_data_filter_enabled;
+};
+
 /**
  * @brief Filter data.
  *
@@ -320,6 +347,10 @@ struct ble_scan_filters {
 #if CONFIG_BLE_SCAN_APPEARANCE_COUNT > 0
 	/** Appearance filter data. */
 	struct ble_scan_appearance_filter appearance_filter;
+#endif
+#if CONFIG_BLE_SCAN_MANUFACTURER_DATA_COUNT > 0
+	/** Manufacturer filter data. */
+	struct ble_scan_manufacturer_data_filter manufacturer_data_filter;
 #endif
 	/** Filter mode. If true, all set filters must be matched to generate an event. */
 	bool all_filters_mode;
@@ -517,8 +548,9 @@ uint32_t ble_scan_filter_get(const struct ble_scan *scan, struct ble_scan_filter
  *          This function adds a new filter by type @ref ble_scan_filter_type.
  *          The filter will be added if the number of filters of a given type does not exceed @ref
  *          CONFIG_BLE_SCAN_UUID_COUNT, @ref CONFIG_BLE_SCAN_NAME_COUNT, @ref
- *          CONFIG_BLE_SCAN_ADDRESS_COUNT, or @ref CONFIG_BLE_SCAN_APPEARANCE_COUNT, depending on
- *          the filter type, and if the same filter has not already been set.
+ *          CONFIG_BLE_SCAN_ADDRESS_COUNT, @ref CONFIG_BLE_SCAN_APPEARANCE_COUNT,
+ *          or @ref BLE_SCAN_MANUFACTURER_DATA_COUNT, depending on the filter type,
+ *          and if the same filter has not already been set.
  *
  * @param[in,out] scan Scan library instance.
  * @param[in] type Filter type.

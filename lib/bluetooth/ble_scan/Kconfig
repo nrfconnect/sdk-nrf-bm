@@ -30,6 +30,12 @@ config BLE_SCAN_SHORT_NAME_MAX_LEN
 	help
 	  Maximum size of the short name to search for in the advertisement report.
 
+config BLE_SCAN_MANUFACTURER_DATA_MAX_LEN
+	int "Scan manufacturer data maximum length"
+	default 32
+	help
+	  Maximum size for the manufacturer data to search in the advertisement report.
+
 config BLE_SCAN_FILTER
 	bool "Scan filter"
 	default y
@@ -67,6 +73,12 @@ config BLE_SCAN_UUID_COUNT
 	default 0
 	help
 	  Maximum number of filters for UUIDs.
+
+config BLE_SCAN_MANUFACTURER_DATA_COUNT
+	int "Scan manufacturer data count"
+	default 0
+	help
+	  Maximum number of manufacturer data filters.
 
 endif # BLE_SCAN_FILTER
 

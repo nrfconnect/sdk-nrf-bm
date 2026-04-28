@@ -362,6 +362,67 @@ static int appearance_filter_add(struct ble_scan *scan, const struct ble_scan_fi
 }
 #endif /* CONFIG_BLE_SCAN_APPEARANCE_COUNT */
 
+#if (CONFIG_BLE_SCAN_MANUFACTURER_DATA_COUNT > 0)
+static bool adv_manufacturer_data_compare(const struct ble_scan *scan,
+					  uint8_t *data, uint16_t len)
+{
+	const struct ble_scan_manufacturer_data_filter *md_filter =
+		&scan->scan_filters.manufacturer_data_filter;
+
+	/* Match the adv packet against each configured manufacturer data filter. */
+	for (uint8_t i = 0; i < md_filter->manufacturer_data_cnt; i++) {
+		if (ble_adv_data_manufacturer_data_find(data, len,
+							md_filter->manufacturer_data[i].data,
+							md_filter->manufacturer_data[i].data_len)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+static int manufacturer_data_filter_add(struct ble_scan *scan,
+					const struct ble_scan_filter_data *data)
+{
+	struct ble_scan_manufacturer_data_filter *md_filter =
+		&scan->scan_filters.manufacturer_data_filter;
+	uint8_t *counter = &md_filter->manufacturer_data_cnt;
+	uint8_t md_len = data->manufacturer_data_filter.data_len;
+	const uint8_t *md_data = data->manufacturer_data_filter.data;
+
+	/* Validate length. */
+	if ((md_len == 0) || (md_len > CONFIG_BLE_SCAN_MANUFACTURER_DATA_MAX_LEN)) {
+		return NRF_ERROR_DATA_SIZE;
+	}
+
+	/* Validate md_data. */
+	if (md_data == NULL) {
+		return NRF_ERROR_NULL;
+	}
+
+	/* Check for duplicated filter. */
+	for (uint8_t i = 0; i < *counter; i++) {
+		if ((md_filter->manufacturer_data[i].data_len == md_len) &&
+		    (memcmp(md_filter->manufacturer_data[i].data, md_data, md_len) == 0)) {
+			return NRF_SUCCESS;
+		}
+	}
+
+	/* Check for free slot. */
+	if (*counter >= CONFIG_BLE_SCAN_MANUFACTURER_DATA_COUNT) {
+		return NRF_ERROR_NO_MEM;
+	}
+
+	/* Add manufacturer data to filter. */
+	memcpy(md_filter->manufacturer_data[*counter].data, md_data, md_len);
+	md_filter->manufacturer_data[*counter].data_len = md_len;
+	(*counter)++;
+
+	LOG_HEXDUMP_DBG(md_data, md_len, "Added manufacturer data filter:");
+
+	return NRF_SUCCESS;
+}
+#endif /* CONFIG_BLE_SCAN_MANUFACTURER_DATA_COUNT */
+
 uint32_t ble_scan_filter_add(struct ble_scan *scan, uint8_t type,
 			     const struct ble_scan_filter_data *data)
 {
@@ -397,6 +458,12 @@ uint32_t ble_scan_filter_add(struct ble_scan *scan, uint8_t type,
 #if (CONFIG_BLE_SCAN_APPEARANCE_COUNT > 0)
 	case BLE_SCAN_APPEARANCE_FILTER: {
 		return appearance_filter_add(scan, data);
+	}
+#endif
+
+#if (CONFIG_BLE_SCAN_MANUFACTURER_DATA_COUNT > 0)
+	case BLE_SCAN_MANUFACTURER_DATA_FILTER: {
+		return manufacturer_data_filter_add(scan, data);
 	}
 #endif
 
@@ -444,6 +511,14 @@ uint32_t ble_scan_all_filter_remove(struct ble_scan *scan)
 	appearance_filter->appearance_cnt = 0;
 #endif
 
+#if (CONFIG_BLE_SCAN_MANUFACTURER_DATA_COUNT > 0)
+	struct ble_scan_manufacturer_data_filter *md_filter =
+		&scan->scan_filters.manufacturer_data_filter;
+
+	memset(md_filter->manufacturer_data, 0, sizeof(md_filter->manufacturer_data));
+	md_filter->manufacturer_data_cnt = 0;
+#endif
+
 	return NRF_SUCCESS;
 }
 
@@ -461,7 +536,8 @@ uint32_t ble_scan_filters_enable(struct ble_scan *scan, uint8_t mode, bool match
 	    (!(mode & BLE_SCAN_NAME_FILTER)) &&
 	    (!(mode & BLE_SCAN_UUID_FILTER)) &&
 	    (!(mode & BLE_SCAN_SHORT_NAME_FILTER)) &&
-	    (!(mode & BLE_SCAN_APPEARANCE_FILTER))) {
+	    (!(mode & BLE_SCAN_APPEARANCE_FILTER)) &&
+	    (!(mode & BLE_SCAN_MANUFACTURER_DATA_FILTER))) {
 		return NRF_ERROR_INVALID_PARAM;
 	}
 
@@ -502,6 +578,12 @@ uint32_t ble_scan_filters_enable(struct ble_scan *scan, uint8_t mode, bool match
 	}
 #endif
 
+#if (CONFIG_BLE_SCAN_MANUFACTURER_DATA_COUNT > 0)
+	if (mode & BLE_SCAN_MANUFACTURER_DATA_FILTER) {
+		filters->manufacturer_data_filter.manufacturer_data_filter_enabled = true;
+	}
+#endif
+
 	/* Select the filter mode. */
 	filters->all_filters_mode = match_all;
 
@@ -537,6 +619,10 @@ uint32_t ble_scan_filters_disable(struct ble_scan *scan)
 
 #if (CONFIG_BLE_SCAN_APPEARANCE_COUNT > 0)
 	filters->appearance_filter.appearance_filter_enabled = false;
+#endif
+
+#if (CONFIG_BLE_SCAN_MANUFACTURER_DATA_COUNT > 0)
+	filters->manufacturer_data_filter.manufacturer_data_filter_enabled = false;
 #endif
 
 	return NRF_SUCCESS;
@@ -770,6 +856,21 @@ static void ble_scan_on_adv_report(struct ble_scan *scan,
 		}
 	}
 #endif /* CONFIG_BLE_SCAN_APPEARANCE_COUNT */
+
+#if (CONFIG_BLE_SCAN_MANUFACTURER_DATA_COUNT > 0)
+	/* Check the manufacturer data filter. */
+	if (scan->scan_filters.manufacturer_data_filter.manufacturer_data_filter_enabled) {
+		filter_cnt++;
+		if (adv_manufacturer_data_compare(scan, adv_report->data.p_data,
+						  adv_report->data.len) ||
+		    (active_match_all &&
+		     adv_manufacturer_data_compare(scan, adv_data, adv_data_len))) {
+			filter_match_cnt++;
+
+			scan_evt.filter_match.filter_match.manufacturer_data_filter_match = true;
+		}
+	}
+#endif /* CONFIG_BLE_SCAN_MANUFACTURER_DATA_COUNT */
 
 	/* In the multifilter mode, the number of the active filters must equal the number of the
 	 * filters matched to generate the notification.
