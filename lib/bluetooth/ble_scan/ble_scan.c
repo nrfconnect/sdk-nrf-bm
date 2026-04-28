@@ -683,8 +683,12 @@ static void ble_scan_on_adv_report(struct ble_scan *scan,
 		LOG_INF("Incomplete, expecting more data!");
 	}
 
-	/* If active scanning where we need to match all we need the scan response for the same
-	 * address before processing the filters.
+	/* Active scanning with match_all mode: filter data may be split between the ADV packet and
+	 * the SCAN_RSP packet, so we need both before evaluating filters.
+	 *
+	 * Cache this ADV and swap scan buffers so the next report the SoftDevice delivers
+	 * (the SCAN_RSP) is written into a different buffer, leaving adv_data valid until we can
+	 * evaluate the filters.
 	 */
 	if (active_match_all && !adv_report->type.scan_response) {
 		/* Store what we have as advertising data and continue for the scan response. */
