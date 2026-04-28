@@ -742,3 +742,32 @@ bool ble_adv_data_appearance_find(const uint8_t *data, uint16_t data_len,
 
 	return false;
 }
+
+bool ble_adv_data_manufacturer_data_find(const uint8_t *data, uint16_t data_len,
+					 const uint8_t *target_data, uint8_t target_data_len)
+{
+	uint16_t data_offset;
+	uint16_t parsed_len;
+
+	if (!data || !target_data || target_data_len == 0) {
+		return false;
+	}
+
+	data_offset = 0;
+	parsed_len = ble_adv_data_search(data, data_len, &data_offset,
+					 BLE_GAP_AD_TYPE_MANUFACTURER_SPECIFIC_DATA);
+
+	if (data_offset == 0 || parsed_len == 0) {
+		return false;
+	}
+
+	if (target_data_len > parsed_len) {
+		return false;
+	}
+
+	if (memcmp(&data[data_offset], target_data, target_data_len) == 0) {
+		return true;
+	}
+
+	return false;
+}

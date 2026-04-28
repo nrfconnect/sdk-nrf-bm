@@ -196,14 +196,44 @@ static void encode_128bit_uuid_test_data(void)
 	 */
 	uint32_t nrf_err;
 	ble_uuid_t uuids[] = {
-		{.uuid = TEST_UUID_128_VAL, .type = TEST_UUID_128_TYPE},
+		{
+			.uuid = TEST_UUID_128_VAL,
+			.type = TEST_UUID_128_TYPE
+		},
 	};
 	struct ble_adv_data adv_data = {
 		.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE,
-		.uuid_lists.complete = {.uuid = uuids, .len = 1},
+		.uuid_lists.complete = {
+			.uuid = uuids,
+			.len = 1
+		},
 	};
 
 	__cmock_sd_ble_uuid_encode_Stub(stub_uuid_encode);
+
+	nrf_err = ble_adv_data_encode(&adv_data, buf, &len);
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+}
+
+static void encode_manufacturer_test_data(const uint8_t *payload, uint8_t payload_len)
+{
+	/*
+	 * Separate from common_test_data_encode() because that does not encode a
+	 * manufacturer-specific data AD field, which is required to test
+	 * ble_adv_data_manufacturer_data_find(). This encodes the Nordic company
+	 * identifier followed by an optional caller-provided payload as a
+	 * MANUFACTURER_SPECIFIC_DATA AD field.
+	 */
+	uint32_t nrf_err;
+	struct ble_adv_data_manufacturer manuf = {
+		.company_identifier = BLE_COMPANY_ID_NORDIC,
+		.data = (uint8_t *)payload,
+		.len = payload_len,
+	};
+	struct ble_adv_data adv_data = {
+		.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE,
+		.manufacturer_data = &manuf,
+	};
 
 	nrf_err = ble_adv_data_encode(&adv_data, buf, &len);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
@@ -1941,6 +1971,152 @@ void test_ble_adv_data_appearance_find_zero_length_data(void)
 	uint16_t target = BLE_APPEARANCE_GENERIC_HID;
 
 	found = ble_adv_data_appearance_find(buf, 0, &target);
+	TEST_ASSERT_FALSE(found);
+}
+
+/* ble_adv_data_manufacturer_data_find() Unit Tests */
+void test_ble_adv_data_manufacturer_data_find_company_id_only(void)
+{
+	/* Encoded manufacturer data contains only the company ID,
+	 * search with the same 2-byte company ID matches.
+	 */
+	bool found;
+	const uint8_t target[] = {0x59, 0x00}; /* Nordic company ID, little-endian */
+
+	encode_manufacturer_test_data(NULL, 0);
+
+	found = ble_adv_data_manufacturer_data_find(buf, len, target, sizeof(target));
+	TEST_ASSERT_TRUE(found);
+}
+
+void test_ble_adv_data_manufacturer_data_find_full_match(void)
+{
+	/* Exact match of company ID + full payload. */
+	bool found;
+	const uint8_t payload[] = {0xDE, 0xAD, 0xBE, 0xEF};
+	const uint8_t target[] = {0x59, 0x00, 0xDE, 0xAD, 0xBE, 0xEF};
+
+	encode_manufacturer_test_data(payload, sizeof(payload));
+
+	found = ble_adv_data_manufacturer_data_find(buf, len, target, sizeof(target));
+	TEST_ASSERT_TRUE(found);
+}
+
+void test_ble_adv_data_manufacturer_data_find_prefix_match(void)
+{
+	/* Target is a prefix of the encoded manufacturer data, prefix match succeeds. */
+	bool found;
+	const uint8_t payload[] = {0xDE, 0xAD, 0xBE, 0xEF};
+	const uint8_t target[] = {0x59, 0x00, 0xDE, 0xAD};
+
+	encode_manufacturer_test_data(payload, sizeof(payload));
+
+	found = ble_adv_data_manufacturer_data_find(buf, len, target, sizeof(target));
+	TEST_ASSERT_TRUE(found);
+}
+
+void test_ble_adv_data_manufacturer_data_find_wrong_company_id(void)
+{
+	/* Different company ID, no match. */
+	bool found;
+	const uint8_t payload[] = {0xDE, 0xAD};
+	const uint8_t target[] = {0x4C, 0x00, 0xDE, 0xAD}; /* Random company ID */
+
+	encode_manufacturer_test_data(payload, sizeof(payload));
+
+	found = ble_adv_data_manufacturer_data_find(buf, len, target, sizeof(target));
+	TEST_ASSERT_FALSE(found);
+}
+
+void test_ble_adv_data_manufacturer_data_find_wrong_payload(void)
+{
+	/* Company ID matches but payload differs. */
+	bool found;
+	const uint8_t payload[] = {0xDE, 0xAD, 0xBE, 0xEF};
+	const uint8_t target[] = {0x59, 0x00, 0x12, 0x34};
+
+	encode_manufacturer_test_data(payload, sizeof(payload));
+
+	found = ble_adv_data_manufacturer_data_find(buf, len, target, sizeof(target));
+	TEST_ASSERT_FALSE(found);
+}
+
+void test_ble_adv_data_manufacturer_data_find_target_longer_than_encoded(void)
+{
+	/* Target length exceeds encoded manufacturer data length. */
+	bool found;
+	const uint8_t payload[] = {0xDE, 0xAD};
+	const uint8_t target[] = {0x59, 0x00, 0xDE, 0xAD, 0xBE, 0xEF};
+
+	encode_manufacturer_test_data(payload, sizeof(payload));
+
+	found = ble_adv_data_manufacturer_data_find(buf, len, target, sizeof(target));
+	TEST_ASSERT_FALSE(found);
+}
+
+void test_ble_adv_data_manufacturer_data_find_no_manuf_data_in_data(void)
+{
+	/* Encoded data has no manufacturer-specific data AD field. */
+	bool found;
+	const uint8_t target[] = {0x59, 0x00};
+
+	common_test_data_encode();
+
+	found = ble_adv_data_manufacturer_data_find(buf, len, target, sizeof(target));
+	TEST_ASSERT_FALSE(found);
+}
+
+void test_ble_adv_data_manufacturer_data_find_null_data(void)
+{
+	const uint8_t target[] = {0x59, 0x00};
+
+	bool found = ble_adv_data_manufacturer_data_find(NULL, 10, target, sizeof(target));
+
+	TEST_ASSERT_FALSE(found);
+}
+
+void test_ble_adv_data_manufacturer_data_find_null_target(void)
+{
+	bool found;
+
+	encode_manufacturer_test_data(NULL, 0);
+
+	found = ble_adv_data_manufacturer_data_find(buf, len, NULL, 2);
+	TEST_ASSERT_FALSE(found);
+}
+
+void test_ble_adv_data_manufacturer_data_find_zero_target_len(void)
+{
+	bool found;
+	const uint8_t target[] = {0x59, 0x00};
+
+	encode_manufacturer_test_data(NULL, 0);
+
+	found = ble_adv_data_manufacturer_data_find(buf, len, target, 0);
+	TEST_ASSERT_FALSE(found);
+}
+
+void test_ble_adv_data_manufacturer_data_find_zero_length_data(void)
+{
+	const uint8_t target[] = {0x59, 0x00};
+
+	bool found = ble_adv_data_manufacturer_data_find(buf, 0, target, sizeof(target));
+
+	TEST_ASSERT_FALSE(found);
+}
+
+void test_ble_adv_data_manufacturer_data_find_only_other_ad_types(void)
+{
+	/* Encoded data contains appearance, flags, tx_power, UUID, conn_int and name
+	 * but no manufacturer-specific data AD field. Searching for manufacturer data
+	 * should not match any of the other AD fields.
+	 */
+	bool found;
+	const uint8_t target[] = {0x59, 0x00};
+
+	common_test_data_encode();
+
+	found = ble_adv_data_manufacturer_data_find(buf, len, target, sizeof(target));
 	TEST_ASSERT_FALSE(found);
 }
 
