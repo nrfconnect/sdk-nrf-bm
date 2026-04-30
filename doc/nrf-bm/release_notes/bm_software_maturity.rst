@@ -128,7 +128,7 @@ The following table indicates the software maturity levels of the support for ea
      - Supported
      - Supported
      - Supported
-     - Experimental
+     - Supported
      - n/a
      - n/a
    * - **ESB**
@@ -240,35 +240,35 @@ The following table indicates the software maturity levels of the support for ea
      - Supported
      - Supported
      - Supported
-     - Experimental
+     - Supported
      - n/a
      - n/a
    * - **NFC Type 4 Tag (read/write)**
      - Supported
      - Supported
      - Supported
-     - Experimental
+     - Supported
      - n/a
      - n/a
    * - **NDEF encoding and decoding**
      - Supported
      - Supported
      - Supported
-     - Experimental
+     - Supported
      - n/a
      - n/a
    * - **NFC Record Type Definition: URI, text**
      - Supported
      - Supported
      - Supported
-     - Experimental
+     - Supported
      - n/a
      - n/a
    * - **NFC Connection Handover to Bluetooth carrier, Static and Negotiated Handover**
      - Supported
      - Supported
      - Supported
-     - Experimental
+     - Supported
      - n/a
      - n/a
 

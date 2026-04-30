@@ -1,5 +1,3 @@
-:orphan:
-
 .. _nrf_bm_release_notes_2099:
 
 Changelog for |BMlong| v2.0.99
