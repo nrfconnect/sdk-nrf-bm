@@ -463,7 +463,7 @@ Bluetooth LE samples
 NFC samples
 -----------
 
-* Included nRF54LM20A as an available SoC for the :ref:`peripheral_nfc_pairing_sample`, :ref:`record_text_t4t_sample` and :ref:`record_text_t2t_sample` samples, but the NFC libraries for this SoC are still in Experimental quality.
+* Included nRF54LM20A as an available SoC for the :ref:`peripheral_nfc_pairing_sample`, :ref:`record_text_t4t_sample`, and :ref:`record_text_t2t_sample` samples.
 * Updated to use ``CONFIG_BM_NFC_*`` Kconfig options provided by |BMshort| instead of ``CONFIG_NFC_*`` options provided by |NCS|.
   Use ``#include <bm/nfc/...>`` headers provided by |BMshort| instead of ``#include <nfc/...>`` headers from |NCS|.
 
