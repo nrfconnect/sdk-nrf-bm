@@ -14,6 +14,7 @@
 #include <zephyr/sys/byteorder.h>
 #include <zephyr/sys/util.h>
 #include <zephyr/sys/printk.h>
+#include <zephyr/toolchain.h>
 
 #include <bm/bluetooth/peer_manager/nrf_ble_lesc.h>
 
@@ -36,9 +37,9 @@ struct lesc_peer_pub_key {
 #define NRF_BLE_LESC_LINK_COUNT CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT
 
 /** LESC ECC Public Key. */
-__ALIGN(4) static ble_gap_lesc_p256_pk_t lesc_public_key;
+__aligned(4) static ble_gap_lesc_p256_pk_t lesc_public_key;
 /** LESC ECC DH Key. */
-__ALIGN(4) static ble_gap_lesc_dhkey_t lesc_dh_key;
+__aligned(4) static ble_gap_lesc_dhkey_t lesc_dh_key;
 
 /** Flag indicating that the module encountered an internal error. */
 static bool ble_lesc_internal_error;
