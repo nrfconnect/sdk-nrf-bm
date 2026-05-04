@@ -15,6 +15,7 @@
 #define BUFFER_H__
 
 #include <stdint.h>
+#include <zephyr/toolchain.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,7 +34,7 @@ extern "C" {
  */
 #define PM_BUFFER_INIT(buffer, n_blocks, block_size, nrf_err)                                      \
 	do {                                                                                       \
-		__ALIGN(4) static uint8_t buffer_memory[(n_blocks) * (block_size)];                \
+		__aligned(4) static uint8_t buffer_memory[(n_blocks) * (block_size)];              \
 		static atomic_t mutex_memory[(n_blocks - 1) / (sizeof(atomic_t) * 8) + 1];         \
 		nrf_err = pm_buffer_init((buffer), buffer_memory, (n_blocks) * (block_size),       \
 					 mutex_memory, (n_blocks), (block_size));                  \
