@@ -16,16 +16,13 @@
 #include <zephyr/sys/ring_buffer.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/irq.h>
+#include <zephyr/toolchain.h>
 
 #include <bm/storage/bm_storage.h>
 #include <bm/fs/bm_zms.h>
 #include "bm_zms_priv.h"
 
 LOG_MODULE_REGISTER(bm_zms, CONFIG_BM_ZMS_LOG_LEVEL);
-
-#if defined(CONFIG_ZTEST) && defined(CONFIG_BOARD_NATIVE_SIM)
-#define __ALIGN(x) __aligned(x)
-#endif
 
 static zms_op_t cur_op; /* Current bm_zms operation. */
 static zms_op_t *p_cur_op;
