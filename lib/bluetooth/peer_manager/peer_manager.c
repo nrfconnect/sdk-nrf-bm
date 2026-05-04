@@ -853,7 +853,7 @@ uint32_t pm_peer_data_bonding_store(uint16_t peer_id, const struct pm_peer_data_
 				    uint32_t *token)
 {
 	return pm_peer_data_store(peer_id, PM_PEER_DATA_ID_BONDING, data,
-				  ROUND_UP(sizeof(struct pm_peer_data_bonding), 4), token);
+				  sizeof(struct pm_peer_data_bonding), token);
 }
 
 uint32_t pm_peer_data_remote_db_store(uint16_t peer_id, const struct ble_gatt_db_srv *data,
