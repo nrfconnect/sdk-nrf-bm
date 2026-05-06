@@ -106,7 +106,9 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Bluetooth LE samples
 --------------------
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* :ref:`ble_nus_central_sample` sample:
+
+   * Fixed the disconnect button handler to only disconnect on button press, and not on button release.
 
 NFC samples
 -----------

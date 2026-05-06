@@ -360,6 +360,10 @@ static void on_ble_nus_client_evt(struct ble_nus_client *ble_nus_c,
 
 static void button_disconnect_handler(uint8_t pin, uint8_t action)
 {
+	if (conn_handle == BLE_CONN_HANDLE_INVALID || action != BM_BUTTONS_PRESS) {
+		return;
+	}
+
 	uint32_t nrf_err =
 		sd_ble_gap_disconnect(conn_handle, BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
 
