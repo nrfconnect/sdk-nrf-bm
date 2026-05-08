@@ -51,8 +51,7 @@ static void radio_phy_mode_update(uint16_t conn_handle, int idx)
 		LOG_WRN("Failed PHY update procedure. Continue using current PHY mode");
 		LOG_DBG("GAP event length (%d) may be too small",
 			CONFIG_NRF_SDH_BLE_GAP_EVENT_LENGTH);
-		links[idx].preferred.tx_phys = CONFIG_BLE_CONN_PARAMS_PHY;
-		links[idx].preferred.rx_phys = CONFIG_BLE_CONN_PARAMS_PHY;
+		links[idx].preferred = links[idx].phy_mode;
 		radio_phy_mode_update(conn_handle, idx);
 	} else {
 		LOG_ERR("Failed PHY update procedure, nrf_error %#x", nrf_err);
