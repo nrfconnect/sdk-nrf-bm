@@ -76,7 +76,9 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Bluetooth LE Services
 ---------------------
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* :ref:`lib_ble_scan`
+
+   * Changed :c:member:`ble_scan_filter_data.addr_filter.addr` and :c:member:`ble_scan_filter_data.name_filter.name` to ``const`` in the :c:struct:`ble_scan_filter_data` structure.
 
 Libraries for NFC
 -----------------
