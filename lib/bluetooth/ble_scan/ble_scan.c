@@ -70,7 +70,7 @@ static bool adv_addr_compare(const ble_gap_evt_adv_report_t *adv_report,
 
 static int addr_filter_add(struct ble_scan *scan, const struct ble_scan_filter_data *data)
 {
-	uint8_t *addr = data->addr_filter.addr;
+	const uint8_t *addr = data->addr_filter.addr;
 	ble_gap_addr_t *addr_filter = scan->scan_filters.addr_filter.target_addr;
 	uint8_t *counter = &scan->scan_filters.addr_filter.addr_cnt;
 
@@ -177,7 +177,7 @@ static bool adv_name_compare(const struct ble_scan *scan, uint8_t *data, uint16_
 
 static int name_filter_add(struct ble_scan *scan, const struct ble_scan_filter_data *data)
 {
-	char *name = data->name_filter.name;
+	const char *name = data->name_filter.name;
 	uint8_t *counter = &scan->scan_filters.name_filter.name_cnt;
 	uint8_t name_len = strlen(name);
 

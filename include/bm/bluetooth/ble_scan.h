@@ -116,11 +116,11 @@ struct ble_scan_filter_data {
 	union {
 		/** Name filter data */
 		struct {
-			char *name;
+			const char *name;
 		} name_filter;
 		/** Address filter data */
 		struct {
-			uint8_t *addr;
+			const uint8_t *addr;
 		} addr_filter;
 		/** UUID filter data */
 		struct {
