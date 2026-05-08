@@ -15,11 +15,14 @@ extern void ble_conn_params_event_send(const struct ble_conn_params_evt *evt);
 
 static struct {
 	ble_gap_phys_t phy_mode;
+	ble_gap_phys_t preferred;
 	uint8_t phy_mode_update_pending : 1;
 } links[CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT] = {
 	[0 ... CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT - 1] = {
-		.phy_mode.tx_phys = CONFIG_BLE_CONN_PARAMS_PHY,
-		.phy_mode.rx_phys = CONFIG_BLE_CONN_PARAMS_PHY,
+		.phy_mode.tx_phys = BLE_GAP_PHY_1MBPS,
+		.phy_mode.rx_phys = BLE_GAP_PHY_1MBPS,
+		.preferred.tx_phys = CONFIG_BLE_CONN_PARAMS_PHY,
+		.preferred.rx_phys = CONFIG_BLE_CONN_PARAMS_PHY,
 	},
 };
 
@@ -29,20 +32,11 @@ BUILD_ASSERT(CONFIG_BLE_CONN_PARAMS_PHY == BLE_GAP_PHY_AUTO ||
 static void radio_phy_mode_update(uint16_t conn_handle, int idx)
 {
 	uint32_t nrf_err;
-	ble_gap_phys_t phys = links[idx].phy_mode;
+	ble_gap_phys_t phys = links[idx].preferred;
 	struct ble_conn_params_evt app_evt = {
 		.evt_type = BLE_CONN_PARAMS_EVT_ERROR,
 		.conn_handle = conn_handle,
 	};
-
-
-	if (phys.tx_phys != BLE_GAP_PHY_NOT_SET) {
-		phys.tx_phys &= BLE_GAP_PHYS_SUPPORTED;
-	}
-
-	if (phys.rx_phys != BLE_GAP_PHY_NOT_SET) {
-		phys.rx_phys &= BLE_GAP_PHYS_SUPPORTED;
-	}
 
 	nrf_err = sd_ble_gap_phy_update(conn_handle, &phys);
 	if (nrf_err == NRF_SUCCESS) {
@@ -57,8 +51,8 @@ static void radio_phy_mode_update(uint16_t conn_handle, int idx)
 		LOG_WRN("Failed PHY update procedure. Continue using current PHY mode");
 		LOG_DBG("GAP event length (%d) may be too small",
 			CONFIG_NRF_SDH_BLE_GAP_EVENT_LENGTH);
-		links[idx].phy_mode.tx_phys = CONFIG_BLE_CONN_PARAMS_PHY;
-		links[idx].phy_mode.rx_phys = CONFIG_BLE_CONN_PARAMS_PHY;
+		links[idx].preferred.tx_phys = CONFIG_BLE_CONN_PARAMS_PHY;
+		links[idx].preferred.rx_phys = CONFIG_BLE_CONN_PARAMS_PHY;
 		radio_phy_mode_update(conn_handle, idx);
 	} else {
 		LOG_ERR("Failed PHY update procedure, nrf_error %#x", nrf_err);
@@ -109,9 +103,6 @@ static void on_radio_phy_mode_update_request_evt(uint16_t conn_handle, int idx,
 	LOG_INF("Peer %#x requested PHY update to tx %u, rx %u", conn_handle,
 		evt->peer_preferred_phys.tx_phys, evt->peer_preferred_phys.rx_phys);
 
-	links[idx].phy_mode.tx_phys = evt->peer_preferred_phys.tx_phys;
-	links[idx].phy_mode.rx_phys = evt->peer_preferred_phys.rx_phys;
-
 	radio_phy_mode_update(conn_handle, idx);
 }
 
@@ -127,6 +118,10 @@ static void on_disconnected(uint16_t conn_handle, int idx)
 {
 	ARG_UNUSED(conn_handle);
 
+	links[idx].phy_mode.tx_phys = BLE_GAP_PHY_1MBPS;
+	links[idx].phy_mode.rx_phys = BLE_GAP_PHY_1MBPS;
+	links[idx].preferred.tx_phys = CONFIG_BLE_CONN_PARAMS_PHY;
+	links[idx].preferred.rx_phys = CONFIG_BLE_CONN_PARAMS_PHY;
 	links[idx].phy_mode_update_pending = false;
 }
 
@@ -179,7 +174,7 @@ uint32_t ble_conn_params_phy_radio_mode_set(uint16_t conn_handle, ble_gap_phys_t
 		return NRF_ERROR_INVALID_PARAM;
 	}
 
-	links[idx].phy_mode = phy_pref;
+	links[idx].preferred = phy_pref;
 	radio_phy_mode_update(conn_handle, idx);
 
 	return NRF_SUCCESS;
