@@ -32,31 +32,35 @@ BUILD_ASSERT(CONFIG_BLE_CONN_PARAMS_PHY == BLE_GAP_PHY_AUTO ||
 static void radio_phy_mode_update(uint16_t conn_handle, int idx)
 {
 	uint32_t nrf_err;
-	ble_gap_phys_t phys = links[idx].preferred;
 	struct ble_conn_params_evt app_evt = {
 		.evt_type = BLE_CONN_PARAMS_EVT_ERROR,
 		.conn_handle = conn_handle,
 	};
 
-	nrf_err = sd_ble_gap_phy_update(conn_handle, &phys);
-	if (nrf_err == NRF_SUCCESS) {
-		return;
-	} else if (nrf_err == NRF_ERROR_BUSY) {
-		/* Retry */
-		links[idx].phy_mode_update_pending = true;
-		LOG_DBG("Failed PHY update procedure, another procedure is ongoing, "
-			"Will retry");
-	} else if (nrf_err == NRF_ERROR_RESOURCES) {
+	nrf_err = sd_ble_gap_phy_update(conn_handle, &links[idx].preferred);
+
+	if (nrf_err == NRF_ERROR_RESOURCES) {
 		/* PHY update failed. Use current PHY. */
 		LOG_WRN("Failed PHY update procedure. Continue using current PHY mode");
 		LOG_DBG("GAP event length (%d) may be too small",
 			CONFIG_NRF_SDH_BLE_GAP_EVENT_LENGTH);
+
 		links[idx].preferred = links[idx].phy_mode;
-		radio_phy_mode_update(conn_handle, idx);
-	} else {
-		LOG_ERR("Failed PHY update procedure, nrf_error %#x", nrf_err);
-		app_evt.error.reason = nrf_err;
-		ble_conn_params_event_send(&app_evt);
+
+		nrf_err = sd_ble_gap_phy_update(conn_handle, &links[idx].preferred);
+	}
+
+	if (nrf_err) {
+		if (nrf_err == NRF_ERROR_BUSY) {
+			/* Retry */
+			links[idx].phy_mode_update_pending = true;
+			LOG_DBG("Failed PHY update procedure, another procedure is ongoing, "
+				"Will retry");
+		} else {
+			LOG_ERR("Failed PHY update procedure, nrf_error %#x", nrf_err);
+			app_evt.error.reason = nrf_err;
+			ble_conn_params_event_send(&app_evt);
+		}
 	}
 }
 
