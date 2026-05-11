@@ -115,19 +115,20 @@ Radio PHY mode
 
 The radio PHY mode defaults to 1 MB per second at the start of a connection.
 This can be changed by initiating a GAP radio PHY mode update procedure.
-If a specific radio PHY mode is required in connections, one of the following choice options must be enabled:
+Choose either automatic PHY selection, or enable one or more PHY modes to set a preference for new connections:
 
 * :kconfig:option:`CONFIG_BLE_CONN_PARAMS_PHY_AUTO` - The SoftDevice will automatically select the PHY mode.
-* :kconfig:option:`CONFIG_BLE_CONN_PARAMS_PHY_1MBPS` - Default speed of 1 MB per second.
-* :kconfig:option:`CONFIG_BLE_CONN_PARAMS_PHY_2MBPS` - Higher throughput of 2 MB per second.
-* :kconfig:option:`CONFIG_BLE_CONN_PARAMS_PHY_CODED` - Bluetooth LE Coded PHY mode (increased range and reliability of the transmission at the cost of reduced data throughput).
+* :kconfig:option:`CONFIG_BLE_CONN_PARAMS_PHY_1MBPS` - Prefer the 1 Mbps PHY (1M PHY).
+* :kconfig:option:`CONFIG_BLE_CONN_PARAMS_PHY_2MBPS` - Prefer the 2 Mbps PHY (2M PHY) for higher throughput.
+* :kconfig:option:`CONFIG_BLE_CONN_PARAMS_PHY_CODED` - Prefer Bluetooth LE Coded PHY mode (increased range and reliability at the cost of reduced throughput).
 
 .. note::
-   The S115 SoftDevice does not support the :kconfig:option:`CONFIG_BLE_CONN_PARAMS_PHY_CODED` Kconfig option.
+   Bluetooth LE Coded PHY can be enabled in configuration, but support depends on the selected SoftDevice and target hardware.
 
 The :kconfig:option:`CONFIG_BLE_CONN_PARAMS_INITIATE_PHY_UPDATE` Kconfig option can be set to automatically initiate a radio PHY update on connection.
 
 A radio PHY mode update procedure can be started using the :c:func:`ble_conn_params_phy_radio_mode_set` function.
+This will also update the preferred PHY modes for the specified connection handle.
 The current radio PHY mode can be retrieved using the :c:func:`ble_conn_params_phy_radio_mode_get` function.
 
 When a radio PHY mode update procedure completes, the Bluetooth LE connection parameter library event :c:enum:`BLE_CONN_PARAMS_EVT_RADIO_PHY_MODE_UPDATED` is raised.

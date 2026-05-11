@@ -73,6 +73,7 @@ Libraries
 
 * :ref:`lib_ble_conn_params`:
 
+   * Added support for selecting more than one PHY mode (1M, 2M, and Coded) when setting the PHY mode preference with Kconfig.
    * Updated the :c:func:`ble_conn_params_phy_radio_mode_set` function to return :c:macro:`NRF_ERROR_INVALID_PARAM` if the ``phy_pref`` parameter contains PHY modes not supported by the SoftDevice.
 
    * Fixed:
