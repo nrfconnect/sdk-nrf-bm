@@ -13,6 +13,35 @@ LOG_MODULE_DECLARE(ble_conn_params, CONFIG_BLE_CONN_PARAMS_LOG_LEVEL);
 
 extern void ble_conn_params_event_send(const struct ble_conn_params_evt *evt);
 
+#ifdef CONFIG_BLE_CONN_PARAMS_PHY_1MBPS
+#define PHY_PREFERRED_1MBPS BLE_GAP_PHY_1MBPS
+#else
+#define PHY_PREFERRED_1MBPS 0
+#endif /* CONFIG_BLE_CONN_PARAMS_PHY_1MBPS */
+
+#ifdef CONFIG_BLE_CONN_PARAMS_PHY_2MBPS
+#define PHY_PREFERRED_2MBPS BLE_GAP_PHY_2MBPS
+#else
+#define PHY_PREFERRED_2MBPS 0
+#endif /* CONFIG_BLE_CONN_PARAMS_PHY_2MBPS */
+
+#ifdef CONFIG_BLE_CONN_PARAMS_PHY_CODED
+#define PHY_PREFERRED_CODED BLE_GAP_PHY_CODED
+#else
+#define PHY_PREFERRED_CODED 0
+#endif /* CONFIG_BLE_CONN_PARAMS_PHY_CODED */
+
+#if defined(CONFIG_BLE_CONN_PARAMS_PHY_1MBPS) || defined(CONFIG_BLE_CONN_PARAMS_PHY_2MBPS) || \
+	defined(CONFIG_BLE_CONN_PARAMS_PHY_CODED)
+#define PHY_PREFERRED_MASK (PHY_PREFERRED_1MBPS | PHY_PREFERRED_2MBPS | PHY_PREFERRED_CODED)
+BUILD_ASSERT(!(PHY_PREFERRED_MASK & ~BLE_GAP_PHYS_SUPPORTED), "Unsupported PHY mode(s) in mask");
+BUILD_ASSERT(!!(PHY_PREFERRED_MASK & BLE_GAP_PHYS_SUPPORTED), "No valid PHY mode(s) in mask");
+#elif defined(CONFIG_BLE_CONN_PARAMS_PHY_AUTO)
+#define PHY_PREFERRED_MASK BLE_GAP_PHY_AUTO
+#else
+#error "No valid PHY mode(s) in mask"
+#endif
+
 static struct {
 	ble_gap_phys_t phy_mode;
 	ble_gap_phys_t preferred;
@@ -21,13 +50,10 @@ static struct {
 	[0 ... CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT - 1] = {
 		.phy_mode.tx_phys = BLE_GAP_PHY_1MBPS,
 		.phy_mode.rx_phys = BLE_GAP_PHY_1MBPS,
-		.preferred.tx_phys = CONFIG_BLE_CONN_PARAMS_PHY,
-		.preferred.rx_phys = CONFIG_BLE_CONN_PARAMS_PHY,
+		.preferred.tx_phys = PHY_PREFERRED_MASK,
+		.preferred.rx_phys = PHY_PREFERRED_MASK,
 	},
 };
-
-BUILD_ASSERT(CONFIG_BLE_CONN_PARAMS_PHY == BLE_GAP_PHY_AUTO ||
-	     !!(CONFIG_BLE_CONN_PARAMS_PHY & BLE_GAP_PHYS_SUPPORTED), "Invalid PHY config");
 
 static void radio_phy_mode_update(uint16_t conn_handle, int idx)
 {
@@ -123,8 +149,8 @@ static void on_disconnected(uint16_t conn_handle, int idx)
 
 	links[idx].phy_mode.tx_phys = BLE_GAP_PHY_1MBPS;
 	links[idx].phy_mode.rx_phys = BLE_GAP_PHY_1MBPS;
-	links[idx].preferred.tx_phys = CONFIG_BLE_CONN_PARAMS_PHY;
-	links[idx].preferred.rx_phys = CONFIG_BLE_CONN_PARAMS_PHY;
+	links[idx].preferred.tx_phys = PHY_PREFERRED_MASK;
+	links[idx].preferred.rx_phys = PHY_PREFERRED_MASK;
 	links[idx].phy_mode_update_pending = false;
 }
 
