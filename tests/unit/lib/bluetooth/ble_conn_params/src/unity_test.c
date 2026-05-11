@@ -549,10 +549,19 @@ void test_ble_conn_params_phy_radio_mode_set_error_invalid_param(void)
 {
 	uint32_t nrf_err;
 	ble_gap_phys_t phy_pref;
+	ble_gap_phys_t phy_invalid = {
+		.rx_phys = BLE_GAP_PHYS_SUPPORTED + 1,
+		.tx_phys = BLE_GAP_PHYS_SUPPORTED + 1,
+	};
 
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, -1);
 
 	nrf_err = ble_conn_params_phy_radio_mode_set(CONN_HANDLE, phy_pref);
+	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, nrf_err);
+
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
+
+	nrf_err = ble_conn_params_phy_radio_mode_set(CONN_HANDLE, phy_invalid);
 	TEST_ASSERT_EQUAL(NRF_ERROR_INVALID_PARAM, nrf_err);
 }
 
@@ -563,9 +572,9 @@ void test_ble_conn_params_phy_radio_mode_set(void)
 		.rx_phys = BLE_GAP_PHY_1MBPS,
 		.tx_phys = BLE_GAP_PHY_1MBPS,
 	};
-	ble_gap_phys_t phy_all = {
-		.rx_phys = BLE_GAP_PHY_1MBPS | BLE_GAP_PHY_2MBPS | BLE_GAP_PHY_CODED,
-		.tx_phys = BLE_GAP_PHY_1MBPS | BLE_GAP_PHY_2MBPS | BLE_GAP_PHY_CODED,
+	ble_gap_phys_t phy_1mbps_2mbps = {
+		.rx_phys = BLE_GAP_PHY_1MBPS | BLE_GAP_PHY_2MBPS,
+		.tx_phys = BLE_GAP_PHY_1MBPS | BLE_GAP_PHY_2MBPS,
 	};
 
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
@@ -578,9 +587,9 @@ void test_ble_conn_params_phy_radio_mode_set(void)
 	/* Check that we filter out PHYs we do not support. */
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
 	__cmock_sd_ble_gap_phy_update_ExpectWithArrayAndReturn(
-		CONN_HANDLE, &phy_all, 1, NRF_SUCCESS);
+		CONN_HANDLE, &phy_1mbps_2mbps, 1, NRF_SUCCESS);
 
-	nrf_err = ble_conn_params_phy_radio_mode_set(CONN_HANDLE, phy_all);
+	nrf_err = ble_conn_params_phy_radio_mode_set(CONN_HANDLE, phy_1mbps_2mbps);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
@@ -591,20 +600,20 @@ void test_ble_conn_params_phy_radio_mode_set_error_resources(void)
 		.rx_phys = CONFIG_BLE_CONN_PARAMS_PHY,
 		.tx_phys = CONFIG_BLE_CONN_PARAMS_PHY,
 	};
-	ble_gap_phys_t phy_all = {
-		.rx_phys = BLE_GAP_PHY_1MBPS | BLE_GAP_PHY_2MBPS | BLE_GAP_PHY_CODED,
-		.tx_phys = BLE_GAP_PHY_1MBPS | BLE_GAP_PHY_2MBPS | BLE_GAP_PHY_CODED,
+	ble_gap_phys_t phy_1mbps_2mbps = {
+		.rx_phys = BLE_GAP_PHY_1MBPS | BLE_GAP_PHY_2MBPS,
+		.tx_phys = BLE_GAP_PHY_1MBPS | BLE_GAP_PHY_2MBPS,
 	};
 
 	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
 	__cmock_sd_ble_gap_phy_update_ExpectWithArrayAndReturn(
-		CONN_HANDLE, &phy_all, 1, NRF_ERROR_RESOURCES);
+		CONN_HANDLE, &phy_1mbps_2mbps, 1, NRF_ERROR_RESOURCES);
 
-	/* Operation is retried wirth default parameters. */
+	/* Operation is retried with default parameters. */
 	__cmock_sd_ble_gap_phy_update_ExpectWithArrayAndReturn(
 		CONN_HANDLE, &phy_config, 1, NRF_SUCCESS);
 
-	nrf_err = ble_conn_params_phy_radio_mode_set(CONN_HANDLE, phy_all);
+	nrf_err = ble_conn_params_phy_radio_mode_set(CONN_HANDLE, phy_1mbps_2mbps);
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 

@@ -218,7 +218,7 @@ uint32_t ble_conn_params_data_length_get(uint16_t conn_handle,
  * @param phy_pref Desired GAP radio PHY mode.
  *
  * @retval NRF_SUCCESS On success.
- * @retval NRF_ERROR_INVALID_PARAM Invalid data length or connection handle.
+ * @retval NRF_ERROR_INVALID_PARAM Invalid connection handle or unsupported PHY mode in @p phy_pref.
  */
 uint32_t ble_conn_params_phy_radio_mode_set(uint16_t conn_handle, ble_gap_phys_t phy_pref);
 
