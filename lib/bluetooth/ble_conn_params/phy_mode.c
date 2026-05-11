@@ -174,6 +174,11 @@ uint32_t ble_conn_params_phy_radio_mode_set(uint16_t conn_handle, ble_gap_phys_t
 		return NRF_ERROR_INVALID_PARAM;
 	}
 
+	if ((phy_pref.tx_phys & ~BLE_GAP_PHYS_SUPPORTED) ||
+	    (phy_pref.rx_phys & ~BLE_GAP_PHYS_SUPPORTED)) {
+		return NRF_ERROR_INVALID_PARAM;
+	}
+
 	links[idx].preferred = phy_pref;
 	radio_phy_mode_update(conn_handle, idx);
 
