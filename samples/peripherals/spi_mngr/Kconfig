@@ -1,0 +1,42 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "SPI Manager sample"
+
+config SAMPLE_SPI_MNGR_MSG
+	string "Message to write to external NOR flash"
+	default "Hello World!"
+	help
+	  Payload written to the external NOR flash on program.
+	  Longer than 251 bytes is truncated.
+
+config SAMPLE_SPI_MNGR_READ_LEN
+	int "Number of bytes to read from external NOR flash"
+	range 1 251
+	default 32
+	help
+	  Number of bytes read from the external NOR flash on read.
+	  Capped at 251, bm_spi_mngr uint8_t transfer length minus the MX25R6435F 4-byte command
+	  header.
+
+config SAMPLE_SPI_MNGR_FLASH_ADDR
+	hex "External NOR flash address used for read, program, and erase"
+	range 0x0 0x7FF000
+	default 0x00100000
+	help
+	  Address targeted by every read, program, and erase operation.
+	  Must be a multiple of 0x1000 (4 KiB sector size), otherwise Page Program may wrap
+	  and corrupt the write instead of spilling into the next page.
+	  The upper bound leaves room for one full sector before the end of the 8 MB
+	  MX25R6435F array.
+
+module=SAMPLE_SPI_MNGR
+module-str=SPI manager sample
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endmenu # "SPI Manager sample"
+
+source "Kconfig.zephyr"
