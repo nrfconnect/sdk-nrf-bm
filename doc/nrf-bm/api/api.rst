@@ -145,6 +145,13 @@ Bare Metal Zephyr Memory Storage (ZMS)
 
 .. doxygengroup:: bm_zms
 
+.. _api_bm_spi_mngr:
+
+SPI transaction manager
+=======================
+
+.. doxygengroup:: bm_spi_mngr
+
 .. _api_ble_gatt_queue:
 
 GATT Queue

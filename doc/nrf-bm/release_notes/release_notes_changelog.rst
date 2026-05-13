@@ -120,6 +120,10 @@ Libraries
       * An issue where calling the :c:func:`pm_init` function two or more times would cause some of the internal asynchronous operation flags to have incorrect states.
       * The :c:func:`pm_address_resolve` function to return ``false`` instead of ``NRF_ERROR_INVALID_STATE`` when Peer Manager is not initialized.
 
+* Added the :ref:`lib_bm_spi_mngr` library for queued SPI master transactions on a single SPIM instance.
+  Enable it with the :kconfig:option:`CONFIG_BM_SPI_MNGR` Kconfig option.
+  See :ref:`lib_bm_spi_mngr` for an overview and :ref:`SPI transaction manager API reference <api_bm_spi_mngr>` for the full API.
+
 Bluetooth LE Services
 ---------------------
 
