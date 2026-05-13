@@ -99,6 +99,10 @@ Libraries
       * Support for filtering by manufacturer-specific data using the :c:macro:`BLE_SCAN_MANUFACTURER_DATA_FILTER` filter type.
       * The :kconfig:option:`CONFIG_BLE_SCAN_MANUFACTURER_DATA_COUNT` and :kconfig:option:`CONFIG_BLE_SCAN_MANUFACTURER_DATA_MAX_LEN` Kconfig options to configure the manufacturer data filter capacity and maximum payload length.
 
+* Added the :ref:`lib_bm_spi_mngr` library for queued SPI master transactions on a single SPIM instance.
+  Enable it with the :kconfig:option:`CONFIG_BM_SPI_MNGR` Kconfig option.
+  See :ref:`lib_bm_spi_mngr` for an overview and :ref:`SPI transaction manager API reference <api_bm_spi_mngr>` for the full API.
+
 Bluetooth LE Services
 ---------------------
 
