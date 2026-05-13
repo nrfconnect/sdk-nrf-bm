@@ -34,6 +34,9 @@ SoftDevice Handler
 Boards
 ======
 
+* Added ``BOARD_EXTERNAL_MEMORY_*`` macros to the :file:`board-config.h` file of the ``bm_nrf54l15dk`` and ``bm_nrf54lm20dk`` board targets  (SPIM instance, SCK/MOSI/MISO/CS and WP#/RST# strap pins) for on-board SPI external flash.
+  Other BM development kits do not have external flash memory on the board, so their :file:`board-config.h` files omit these macros.
+
 * Updated:
 
    * All boards to use ``zephyr,mapped-partition`` instead of ``zephyr,fixed-partitions`` and ``zephyr,fixed-subpartitions``.
@@ -169,8 +172,10 @@ Samples
 Peripheral samples
 ------------------
 
-* Added the :ref:`radio_test` sample.
+   * Added:
 
+      * The :ref:`radio_test` sample.
+      * The :ref:`spi_mngr_sample` sample, demonstrating read, page program, and sector erase on the on-board external NOR flash using the :ref:`lib_bm_spi_mngr` library.
 
 Bluetooth LE samples
 --------------------
@@ -239,11 +244,6 @@ Bluetooth LE samples
 
 NFC samples
 -----------
-
-No changes since the latest nRF Connect SDK Bare Metal release.
-
-Peripheral samples
-------------------
 
 No changes since the latest nRF Connect SDK Bare Metal release.
 
