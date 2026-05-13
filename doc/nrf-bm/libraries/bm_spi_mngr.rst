@@ -98,6 +98,11 @@ Busy state
 
 Use the :c:func:`bm_spi_mngr_is_idle` function to check whether all scheduled work has finished.
 
+Sample
+******
+
+The usage of this library is demonstrated in the :ref:`spi_mngr_sample` sample.
+
 Dependencies
 ************
 

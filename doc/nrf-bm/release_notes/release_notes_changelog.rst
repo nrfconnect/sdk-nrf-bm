@@ -33,7 +33,7 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Boards
 ======
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Added ``BOARD_EXTERNAL_MEMORY_*`` macros to **bm_nrf54l15dk** and **bm_nrf54lm20dk** ``board-config.h`` (SPIM instance, SCK/MOSI/MISO/CS and WP#/RST# strap pins) for on-board SPI external flash. Other BM development kits do not include external flash memory on the board, so their ``board-config.h`` files omit these macros.
 
 Build system
 ============
@@ -181,7 +181,7 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Peripheral samples
 ------------------
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Added the :ref:`spi_mngr_sample` sample, demonstrating non-blocking read, page program, and sector erase on the on-board external NOR flash using the :ref:`lib_bm_spi_mngr` library.
 
 DFU samples
 -----------
