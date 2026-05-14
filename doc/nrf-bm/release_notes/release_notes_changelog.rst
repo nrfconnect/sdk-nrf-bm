@@ -149,6 +149,8 @@ Libraries
 Bluetooth LE Services
 ---------------------
 
+* Added the :ref:`lib_ble_service_mds` service for exporting Memfault diagnostic chunks over Bluetooth LE.
+
 * :ref:`lib_ble_scan`:
 
    * Changed :c:member:`ble_scan_filter_data.addr_filter.addr` and :c:member:`ble_scan_filter_data.name_filter.name` to ``const`` in the :c:struct:`ble_scan_filter_data` structure.
@@ -272,3 +274,8 @@ Documentation
 =============
 
 * Updated the memory layout diagram generation script to parse RRAM and SRAM sizes directly from devicetree instead of hardcoded per-SoC values.
+
+* Added:
+
+  * The :ref:`lib_ble_service_mds` library page.
+  * The :ref:`api_ble_mds` API reference.
