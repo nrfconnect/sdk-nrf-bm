@@ -338,6 +338,13 @@ LED Button Service
 
 .. doxygengroup:: ble_lbs
 
+.. _api_ble_mds:
+
+Memfault Diagnostic Service
+===========================
+
+.. doxygengroup:: ble_mds
+
 .. _api_mcu_manager_service:
 
 MCU manager Service (MCUmgr)
