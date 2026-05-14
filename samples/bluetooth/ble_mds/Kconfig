@@ -1,0 +1,31 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "Bluetooth LE MDS sample"
+
+config SAMPLE_BLE_DEVICE_NAME
+	string "Device name"
+	default "Nordic_Memfault"
+
+config SAMPLE_BLE_MDS_BATTERY_LEVEL_MEAS_INTERVAL
+	int "Battery level measurement interval (ms)"
+	default 1000
+	help
+	  Battery level measurement interval in milliseconds.
+
+config SAMPLE_BLE_MDS_RUN_LED_BLINK_INTERVAL
+	int "Run LED blink interval (ms)"
+	default 1000
+	help
+	  Run status LED blink interval in milliseconds.
+
+module=SAMPLE_BLE_MDS
+module-str=BLE Memfault Diagnostic Service Sample
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endmenu # "Bluetooth LE MDS sample"
+
+source "Kconfig.zephyr"
