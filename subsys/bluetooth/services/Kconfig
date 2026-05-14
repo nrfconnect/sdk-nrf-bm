@@ -15,6 +15,7 @@ rsource "ble_hrs/Kconfig"
 rsource "ble_hrs_client/Kconfig"
 rsource "ble_lbs/Kconfig"
 rsource "ble_mcumgr/Kconfig"
+rsource "ble_mds/Kconfig"
 rsource "ble_nus/Kconfig"
 rsource "ble_nus_client/Kconfig"
 # zephyr-keep-sorted-stop

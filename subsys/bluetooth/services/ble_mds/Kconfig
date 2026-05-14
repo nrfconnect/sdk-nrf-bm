@@ -1,0 +1,48 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menuconfig BLE_MDS
+	bool "Memfault Diagnostic Service"
+	depends on SOFTDEVICE_PERIPHERAL
+	depends on NRF_SDH_BLE
+	depends on BLE_CONN_PARAMS
+	depends on MEMFAULT
+	help
+	  Expose the Memfault Diagnostic Service over Bluetooth LE so
+	  gateway applications can read the upload URI/authorization and
+	  stream Memfault chunks from the device.
+
+if BLE_MDS
+
+config BLE_MDS_DATA_URI_MAX_LEN
+	int "Maximum MDS data URI length"
+	default 192
+	range 64 512
+
+config BLE_MDS_EMPTY_POLL_INTERVAL_MS
+	int "MDS empty data poll interval in milliseconds"
+	default 1000
+	range 100 60000
+
+config BLE_MDS_TRIGGER_LOG_COLLECTION
+	bool "Trigger Memfault log collection while MDS data export is active"
+	default y
+	help
+	  Periodically snapshot the Memfault RAM log buffer into the packetizer
+	  while a gateway is subscribed and has enabled data export. This mirrors
+	  the upload behavior used by the Memfault Zephyr periodic uploader.
+
+config BLE_MDS_LOG_COLLECTION_INTERVAL_MS
+	int "MDS log collection interval in milliseconds"
+	default 1000
+	range 100 60000
+	depends on BLE_MDS_TRIGGER_LOG_COLLECTION
+
+module=BLE_MDS
+module-str=BLE Memfault Diagnostic Service
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endif
