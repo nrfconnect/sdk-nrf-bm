@@ -100,6 +100,7 @@ Use :c:macro:`BLE_MDS_CONFIG_SEC_MODE_DEFAULT` or populate :c:struct:`ble_mds_co
    The :c:macro:`BLE_MDS_CONFIG_SEC_MODE_DEFAULT` macro sets every characteristic to :c:macro:`BLE_GAP_CONN_SEC_MODE_OPEN`.
    Any connected central can then read the Memfault project key and the diagnostic data.
    In applications that support pairing, populate the :c:struct:`ble_mds_config` structure with a mode that requires encryption, such as :c:macro:`BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM`, instead of using the default macro.
+   The :ref:`ble_mds_sample` sample uses the open configuration because it does not support pairing.
 
 After initialization, include the MDS UUID type returned by :c:func:`ble_mds_service_uuid_type` in the advertising UUID list if the service should be discoverable before connection.
 
@@ -118,6 +119,11 @@ When streaming is enabled and Memfault data is available, the service:
 The service only exports data that is already stored in the Memfault event storage.
 The application is responsible for collecting that data, such as metrics, trace events, and coredumps.
 For the rules on which Memfault APIs to call from the main loop and which to call from an ISR, see :ref:`memfault_bm`.
+
+Sample
+******
+
+Usage of this library is demonstrated in the :ref:`ble_mds_sample` sample.
 
 Dependencies
 ************

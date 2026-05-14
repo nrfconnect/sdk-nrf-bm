@@ -1,0 +1,48 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "Bluetooth LE MDS sample"
+
+config SAMPLE_BLE_DEVICE_NAME
+	string "Device name"
+	default "nRF BM Memfault"
+
+config SAMPLE_BLE_MDS_BATTERY_LEVEL_MEAS_INTERVAL
+	int "Battery level measurement interval (ms)"
+	default 1000
+	help
+	  Battery level measurement interval in milliseconds.
+
+module=SAMPLE_BLE_MDS
+module-str=BLE Memfault Diagnostic Service Sample
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endmenu # "Bluetooth LE MDS sample"
+
+config MEMFAULT_NCS_FW_VERSION
+	default "$(APPVERSION)"
+
+config BLE_DIS_FW_REVISION
+	default MEMFAULT_NCS_FW_VERSION
+
+config MEMFAULT_NCS_FW_TYPE
+	default "app"
+
+config BLE_DIS_SW_REVISION
+	default MEMFAULT_NCS_FW_TYPE
+
+config MEMFAULT_NCS_HW_VERSION
+	default "hw 54.15.0"
+
+config BLE_DIS_HW_REVISION
+	default MEMFAULT_NCS_HW_VERSION
+
+# Handle increased buffersize when MEMFAULT Logging is enabled
+
+config MEMFAULT_LOGGING_RAM_SIZE
+	default 1024 if MEMFAULT_LOGGING_ENABLE
+
+source "Kconfig.zephyr"

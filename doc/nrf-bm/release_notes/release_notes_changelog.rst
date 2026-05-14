@@ -55,7 +55,10 @@ Boards
 Build system
 ============
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Updated:
+
+  * The :file:`west.yml` file to add ``memfault-firmware-sdk`` to the |NCS| manifest allowlist.
+  * The :file:`zephyr/module.yml` file to declare a build dependency on ``memfault-firmware-sdk``.
 
 Interrupts
 ==========
@@ -201,6 +204,8 @@ Peripheral samples
 Bluetooth LE samples
 --------------------
 
+* Added the :ref:`ble_mds_sample` sample.
+
 * Updated:
 
    * All samples that use the :ref:`lib_peer_manager` library to use a minimum encryption key size of 16 bytes in their default security parameters.
@@ -277,5 +282,7 @@ Documentation
 
 * Added:
 
+  * The :ref:`memfault_bm` page, which documents the Memfault integration on bare metal, including platform locking, the rules for calling Memfault APIs from ISR and main loop context, and the Memfault cloud prerequisites.
   * The :ref:`lib_ble_service_mds` library page.
+  * The :ref:`ble_mds_sample` page, which includes the steps for getting started with Memfault.
   * The :ref:`api_ble_mds` API reference.
