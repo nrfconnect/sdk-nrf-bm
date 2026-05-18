@@ -5,5 +5,5 @@ Sphinx>=8.1,<8.2
 sphinx-copybutton
 sphinx-tabs
 sphinx-togglebutton
-sphinx-ncs-theme<1.1
+git+https://github.com/nrfconnect/doc-sphinx-ncs-theme@refs/pull/27/merge#egg=sphinx-ncs-theme
 west
