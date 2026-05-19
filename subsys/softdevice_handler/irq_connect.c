@@ -34,7 +34,7 @@ uint32_t softdevice_vector_forward_address;
 
 static void sd_enable_irq_forwarding(void)
 {
-	softdevice_vector_forward_address = FIXED_PARTITION_OFFSET(softdevice_partition);
+	softdevice_vector_forward_address = PARTITION_OFFSET(softdevice_partition);
 #ifdef CONFIG_BOOTLOADER_MCUBOOT
 	softdevice_vector_forward_address += CONFIG_ROM_START_OFFSET;
 #endif

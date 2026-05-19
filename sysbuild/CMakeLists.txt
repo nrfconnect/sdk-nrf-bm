@@ -66,9 +66,9 @@ function(bm_install_setup)
 
       if(SB_CONFIG_SOC_SERIES_NRF54L)
         if(SB_CONFIG_BM_BOOTLOADER_MCUBOOT_SIGNATURE_TYPE_NONE)
-          set_config_bool(mcuboot CONFIG_NRF_SECURITY y)
+          set_config_bool(mcuboot CONFIG_PSA_CRYPTO y)
         elseif(SB_CONFIG_BM_BOOTLOADER_MCUBOOT_SIGNATURE_TYPE_ED25519)
-          set_config_bool(mcuboot CONFIG_NRF_SECURITY y)
+          set_config_bool(mcuboot CONFIG_PSA_CRYPTO y)
 
           # We are sure that ED25519 signature on MCUboot does not need these
           set_config_bool(mcuboot CONFIG_PSA_USE_CRACEN_AEAD_DRIVER n)

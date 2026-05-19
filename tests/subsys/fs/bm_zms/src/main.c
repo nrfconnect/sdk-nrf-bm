@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <zephyr/kernel.h>
+#include <zephyr/storage/flash_map.h>
 #include <zephyr/sys/crc.h>
 #include <zephyr/sys/atomic.h>
 #include <zephyr/sys/crc.h>
@@ -34,8 +35,7 @@ K_SEM_DEFINE(mount_sem, 0, 1);
 K_SEM_DEFINE(clear_sem, 0, 1);
 K_SEM_DEFINE(write_sem, 0, 1);
 #else
-#define STORAGE_NODE DT_NODELABEL(storage_partition)
-#define TEST_PARTITION_START DT_REG_ADDR(STORAGE_NODE)
+#define TEST_PARTITION_START PARTITION_ADDRESS(storage_partition)
 #endif
 
 #if defined(CONFIG_SOFTDEVICE)
