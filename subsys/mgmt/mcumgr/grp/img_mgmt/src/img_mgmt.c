@@ -27,9 +27,11 @@
 #include <mgmt/mcumgr/util/zcbor_bulk.h>
 #include <mgmt/mcumgr/grp/img_mgmt/img_mgmt_priv.h>
 
-#define FIXED_PARTITION_IS_RUNNING_APP_PARTITION(label)                                            \
-	(FIXED_PARTITION_OFFSET(label) <= CONFIG_FLASH_LOAD_OFFSET &&                              \
-	 FIXED_PARTITION_OFFSET(label) + FIXED_PARTITION_SIZE(label) > CONFIG_FLASH_LOAD_OFFSET)
+#define LOAD_OFFSET (PARTITION_ADDRESS(slot0_partition))
+
+#define PARTITION_IS_RUNNING_APP_PARTITION(label)                                                  \
+	(PARTITION_OFFSET(label) <= LOAD_OFFSET &&                                                 \
+	 PARTITION_OFFSET(label) + PARTITION_SIZE(label) > LOAD_OFFSET)
 
 LOG_MODULE_REGISTER(mcumgr_img_grp, CONFIG_MCUMGR_GRP_IMG_LOG_LEVEL);
 
@@ -79,7 +81,7 @@ int img_mgmt_active_slot(int image)
 {
 	int slot = 0;
 	/* This covers single image, including DirectXiP */
-	if (FIXED_PARTITION_IS_RUNNING_APP_PARTITION(slot1_partition)) {
+	if (PARTITION_IS_RUNNING_APP_PARTITION(slot1_partition)) {
 		slot = 1;
 	}
 	LOG_DBG("(%d) => %d", image, slot);

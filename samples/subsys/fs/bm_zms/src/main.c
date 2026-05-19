@@ -7,12 +7,12 @@
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
+#include <zephyr/storage/flash_map.h>
 #include <hal/nrf_gpio.h>
 #include <board-config.h>
 
-#define STORAGE_NODE DT_NODELABEL(storage0_partition)
-#define BM_ZMS_PARTITION_OFFSET DT_REG_ADDR(STORAGE_NODE)
-#define BM_ZMS_PARTITION_SIZE DT_REG_SIZE(STORAGE_NODE)
+#define BM_ZMS_PARTITION_OFFSET PARTITION_ADDRESS(storage0_partition)
+#define BM_ZMS_PARTITION_SIZE PARTITION_SIZE(storage0_partition)
 
 #define IP_ADDRESS_ID 1
 #define KEY_VALUE_ID  0xbeefdead

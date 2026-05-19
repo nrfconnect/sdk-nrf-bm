@@ -21,9 +21,9 @@
 	status = "okay";
 
 	partitions {
-		compatible = "fixed-partitions";
 		#address-cells = <1>;
 		#size-cells = <1>;
+		ranges;
 
 		slot0_partition: partition@0 {
 			label = "slot0";
@@ -31,7 +31,7 @@
 		};
 
 		storage_partition: partition@161800 {
-			compatible = "fixed-subpartitions";
+			compatible = "zephyr,mapped-partition";
 			label = "storage";
 			reg = <0x00161800 DT_SIZE_K(8)>;
 			ranges = <0x0 0x161800 DT_SIZE_K(8)>;
@@ -39,17 +39,20 @@
 			#size-cells = <1>;
 
 			peer_manager_partition: partition@0 {
+				compatible = "zephyr,mapped-partition";
 				label = "peer_manager";
 				reg = <0x00000000 DT_SIZE_K(4)>;
 			};
 
 			storage0_partition: partition@1000 {
+				compatible = "zephyr,mapped-partition";
 				label = "storage0";
 				reg = <0x00001000 DT_SIZE_K(4)>;
 			};
 		};
 
 		softdevice_partition: partition@163800 {
+			compatible = "zephyr,mapped-partition";
 			label = "softdevice";
 			reg = <0x00163800 DT_SIZE_K(101)>;
 		};

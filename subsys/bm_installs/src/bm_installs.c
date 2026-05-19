@@ -69,7 +69,7 @@ static bool bm_installs_validate(struct bm_installs *data)
 
 void bm_installs_init(void)
 {
-	uint32_t read_position = FIXED_PARTITION_OFFSET(metadata_partition);
+	uint32_t read_position = PARTITION_OFFSET(metadata_partition);
 
 	bm_installs_index = 0;
 	bm_installs_valid = false;
@@ -103,7 +103,7 @@ void bm_installs_init(void)
 		const struct flash_area *fap;
 		int rc;
 
-		rc = flash_area_open(FIXED_PARTITION_ID(slot0_partition), &fap);
+		rc = flash_area_open(PARTITION_ID(slot0_partition), &fap);
 
 		if (rc) {
 			return;
@@ -111,8 +111,8 @@ void bm_installs_init(void)
 
 		metadata_slot.fa_id = fap->fa_id;
 		metadata_slot.fa_dev = fap->fa_dev;
-		metadata_slot.fa_off = FIXED_PARTITION_OFFSET(metadata_partition);
-		metadata_slot.fa_size = FIXED_PARTITION_SIZE(metadata_partition);
+		metadata_slot.fa_off = PARTITION_OFFSET(metadata_partition);
+		metadata_slot.fa_size = PARTITION_SIZE(metadata_partition);
 #if CONFIG_FLASH_MAP_LABELS
 		metadata_slot.fa_label = fap->fa_label;
 #endif
@@ -172,7 +172,7 @@ int bm_installs_write(struct bm_installs *data)
 
 		while (index < CONFIG_BM_INSTALL_ENTRIES) {
 			uint32_t current_index_offset = index * sizeof(struct bm_installs);
-			uint32_t current_flash_offset = FIXED_PARTITION_OFFSET(metadata_partition) +
+			uint32_t current_flash_offset = PARTITION_OFFSET(metadata_partition) +
 							current_index_offset;
 
 			if (memcmp((void *)current_flash_offset, unerased_data,
@@ -196,7 +196,7 @@ int bm_installs_write(struct bm_installs *data)
 		if (index == CONFIG_BM_INSTALL_ENTRIES) {
 			/* No free spaces, erase whole sector and start again */
 			index = 0;
-			rc = flash_area_erase(&metadata_slot, 0, FIXED_PARTITION_SIZE(
+			rc = flash_area_erase(&metadata_slot, 0, PARTITION_SIZE(
 									metadata_partition));
 
 			if (rc) {
@@ -226,7 +226,7 @@ int bm_installs_invalidate(void)
 	}
 
 #if defined(CONFIG_FLASH_HAS_EXPLICIT_ERASE)
-	if ((index_offset + sizeof(bm_installs_data)) >= FIXED_PARTITION_SIZE(
+	if ((index_offset + sizeof(bm_installs_data)) >= PARTITION_SIZE(
 								metadata_partition)) {
 		/* Since this is at end of sector, it would be better to just erase the whole
 		 * sector
@@ -235,7 +235,7 @@ int bm_installs_invalidate(void)
 								metadata_slot.fa_dev);
 
 		if (flash_params_get_erase_cap(fparams) & FLASH_ERASE_C_EXPLICIT) {
-			rc = flash_area_erase(&metadata_slot, 0, FIXED_PARTITION_SIZE(
+			rc = flash_area_erase(&metadata_slot, 0, PARTITION_SIZE(
 									metadata_partition));
 			performed_erase = true;
 		}
