@@ -34,6 +34,12 @@ config MCUMGR_TRANSPORT_NETBUF_SIZE
 	  In case when MCUMGR_TRANSPORT_SHELL is enabled this value should be set to
 	  at least MCUMGR_GRP_SHELL_BACKEND_DUMMY_BUF_SIZE + 32.
 
+config MCUMGR_TRANSPORT_SERIAL_HAS_SMP_OVER_CONSOLE
+	bool
+	help
+	  Hidden Kconfig selected by transports that implement the SMP over console transport and
+	  need this functionality to be available in the serial_util.c file.
+
 module = MCUMGR_TRANSPORT
 module-str = mcumgr_transport
 source "subsys/logging/Kconfig.template.log_config"

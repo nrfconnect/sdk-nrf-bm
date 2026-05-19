@@ -10,6 +10,7 @@
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
+#include <zephyr/storage/flash_map.h>
 #include <zephyr/sys/util.h>
 
 #include <bm/softdevice_handler/nrf_sdh.h>
@@ -21,9 +22,8 @@
 
 LOG_MODULE_REGISTER(sample, CONFIG_SAMPLE_BM_STORAGE_LOG_LEVEL);
 
-#define STORAGE0_PARTITION DT_NODELABEL(storage0_partition)
-#define STORAGE0_START DT_REG_ADDR(STORAGE0_PARTITION)
-#define STORAGE0_SIZE DT_REG_SIZE(STORAGE0_PARTITION)
+#define STORAGE0_START PARTITION_ADDRESS(storage0_partition)
+#define STORAGE0_SIZE PARTITION_SIZE(storage0_partition)
 
 /* Write buffer size must be a multiple of the program unit.
  * To support both RRAM (16 bytes) and SoftDevice (4 bytes) backends,

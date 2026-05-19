@@ -171,17 +171,18 @@ This board target will always enable DFU support when it is used to build the ap
               status = "okay";
 
               partitions {
-                      compatible = "fixed-partitions";
                       #address-cells = <1>;
                       #size-cells = <1>;
+                      ranges;
 
                       boot_partition: partition@0 {
+                              compatible = "zephyr,mapped-partition";
                               label = "boot";
                               reg = <0x00000000 DT_SIZE_K(32)>;
                       };
 
                       storage_partition: partition@8000 {
-                              compatible = "fixed-subpartitions";
+                              compatible = "zephyr,mapped-partition";
                               label = "storage";
                               reg = <0x00008000 DT_SIZE_K(8)>;
                               ranges = <0x0 0x8000 DT_SIZE_K(8)>;
@@ -189,32 +190,38 @@ This board target will always enable DFU support when it is used to build the ap
                               #size-cells = <1>;
 
                               storage0_partition: partition@0 {
+                                      compatible = "zephyr,mapped-partition";
                                       label = "storage0";
                                       reg = <0x00000000 DT_SIZE_K(4)>;
                               };
 
                               storage1_partition: partition@1000 {
+                                      compatible = "zephyr,mapped-partition";
                                       label = "storage1";
                                       reg = <0x00001000 DT_SIZE_K(4)>;
                               };
                       };
 
                       slot0_partition: partition@a000 {
+                              compatible = "zephyr,mapped-partition";
                               label = "slot0";
                               reg = <0x0000a000 DT_SIZE_K(1290)>;
                       };
 
                       slot1_partition: partition@14c800 {
+                              compatible = "zephyr,mapped-partition";
                               label = "slot1";
                               reg = <0x0014c800 DT_SIZE_K(64)>;
                       };
 
                       softdevice_partition: partition@15c800 {
+                              compatible = "zephyr,mapped-partition";
                               label = "softdevice";
                               reg = <0x0015c800 (DT_SIZE_K(129) + 0x200)>;
                       };
 
                       metadata_partition: partition@17ce00 {
+                              compatible = "zephyr,mapped-partition";
                               label = "metadata";
                               reg = <0x0017ce00 0x200>;
                       };
