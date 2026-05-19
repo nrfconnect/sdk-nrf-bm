@@ -52,13 +52,14 @@ static bool allow_list_disabled;
 static atomic_t central_conn;
 
 #if defined(CONFIG_SAMPLE_USE_TARGET_PERIPHERAL_ADDR)
-uint8_t target_periph_addr[BLE_GAP_ADDR_LEN] = {
-	(CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR >> 40) & 0xff,
-	(CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR >> 32) & 0xff,
-	(CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR >> 24) & 0xff,
-	(CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR >> 16) & 0xff,
-	(CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR >> 8) & 0xff,
+/* Target peripheral address (little-endian). */
+static const uint8_t target_periph_addr[BLE_GAP_ADDR_LEN] = {
 	(CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR) & 0xff,
+	(CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR >> 8) & 0xff,
+	(CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR >> 16) & 0xff,
+	(CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR >> 24) & 0xff,
+	(CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR >> 32) & 0xff,
+	(CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR >> 40) & 0xff,
 };
 #endif /* CONFIG_SAMPLE_USE_TARGET_PERIPHERAL_ADDR */
 
@@ -531,12 +532,11 @@ static void scan_evt_handler(const struct ble_scan_evt *scan_evt)
 		break;
 
 	case BLE_SCAN_EVT_CONNECTED: {
-		const ble_gap_evt_connected_t *p_connected = scan_evt->connected.connected;
+		const ble_gap_addr_t *const peer_addr = &scan_evt->connected.connected->peer_addr;
 
-		LOG_INF("Connecting to target %02x%02x%02x%02x%02x%02x",
-			p_connected->peer_addr.addr[0], p_connected->peer_addr.addr[1],
-			p_connected->peer_addr.addr[2], p_connected->peer_addr.addr[3],
-			p_connected->peer_addr.addr[4], p_connected->peer_addr.addr[5]);
+		LOG_INF("Connecting to target %02X:%02X:%02X:%02X:%02X:%02X",
+			peer_addr->addr[5], peer_addr->addr[4], peer_addr->addr[3],
+			peer_addr->addr[2], peer_addr->addr[1], peer_addr->addr[0]);
 	} break;
 
 	default:
