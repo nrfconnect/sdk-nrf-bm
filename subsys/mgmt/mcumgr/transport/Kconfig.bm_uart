@@ -12,6 +12,7 @@ menuconfig MCUMGR_TRANSPORT_BM_UART
 	bool "Bare Metal UART MCUmgr SMP transport"
 	depends on BASE64
 	depends on CRC
+	select MCUMGR_TRANSPORT_SERIAL_HAS_SMP_OVER_CONSOLE
 	help
 	  Enables handling of SMP commands received over UART.
 

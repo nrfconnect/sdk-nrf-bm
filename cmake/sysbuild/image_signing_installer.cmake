@@ -1,6 +1,8 @@
 # Copyright (c) 2025 Nordic Semiconductor ASA
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 
+include(${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/bootloader_dts_utils.cmake)
+
 function(bm_install_tasks output_hex output_bin)
   set(dependencies ${PROJECT_BINARY_DIR}/.config)
 
@@ -51,6 +53,9 @@ function(bm_install_tasks output_hex output_bin)
   dt_chosen(flash_node TARGET ${DEFAULT_IMAGE} PROPERTY "zephyr,flash")
   dt_prop(write_block_size TARGET ${DEFAULT_IMAGE} PATH "${flash_node}" PROPERTY "write-block-size")
 
+  dt_chosen(code_node_path TARGET ${DEFAULT_IMAGE} PROPERTY "zephyr,code-partition")
+  dt_reg_size(code_node_size PATH "${code_node_path}" TARGET ${DEFAULT_IMAGE})
+
   if(NOT write_block_size)
     set(write_block_size 4)
     message(WARNING "slot0_partition write block size devicetree parameter is missing, assuming write block size is 4")
@@ -58,11 +63,10 @@ function(bm_install_tasks output_hex output_bin)
 
   sysbuild_get(CONFIG_MCUBOOT_IMGTOOL_SIGN_VERSION IMAGE ${DEFAULT_IMAGE} VAR CONFIG_MCUBOOT_IMGTOOL_SIGN_VERSION KCONFIG)
   sysbuild_get(CONFIG_ROM_START_OFFSET IMAGE ${DEFAULT_IMAGE} VAR CONFIG_ROM_START_OFFSET KCONFIG)
-  sysbuild_get(CONFIG_FLASH_LOAD_SIZE IMAGE ${DEFAULT_IMAGE} VAR CONFIG_FLASH_LOAD_SIZE KCONFIG)
 #  sysbuild_get(CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION IMAGE ${DEFAULT_IMAGE} VAR CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION KCONFIG)
 
   # Custom TLV 0x0a is set to 0x01 to indicate that this is an installer image
-  set(imgtool_sign ${PYTHON_EXECUTABLE} ${IMGTOOL} sign --version ${CONFIG_MCUBOOT_IMGTOOL_SIGN_VERSION} --align ${write_block_size} --slot-size ${CONFIG_FLASH_LOAD_SIZE} --header-size ${CONFIG_ROM_START_OFFSET} --overwrite-only --custom-tlv 0xa0 0x01)
+  set(imgtool_sign ${PYTHON_EXECUTABLE} ${IMGTOOL} sign --version ${CONFIG_MCUBOOT_IMGTOOL_SIGN_VERSION} --align ${write_block_size} --slot-size ${code_node_size} --header-size ${CONFIG_ROM_START_OFFSET} --overwrite-only --custom-tlv 0xa0 0x01)
 
 #  if(CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
 #    set(imgtool_args --security-counter ${CONFIG_MCUBOOT_HW_DOWNGRADE_PREVENTION_COUNTER_VALUE})
