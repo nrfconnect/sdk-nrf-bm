@@ -453,7 +453,7 @@ LE Secure Connections is an optional functionality of the Peer Manager and is di
 However, if you want to use it, keep in mind that it depends on nRF Security to generate the Diffie-Helman key pair.
 The following Kconfig options must be enabled to support LE Secure Connections:
 
-* :kconfig:option:`CONFIG_NRF_SECURITY`
+* :kconfig:option:`CONFIG_PSA_CRYPTO`
 * :kconfig:option:`CONFIG_PSA_WANT_ALG_ECDH`
 * :kconfig:option:`CONFIG_PSA_WANT_GENERATE_RANDOM`
 * :kconfig:option:`CONFIG_PSA_WANT_KEY_TYPE_ECC_KEY_PAIR_GENERATE`

@@ -9,6 +9,7 @@
 #include <string.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/storage/flash_map.h>
 #include <zephyr/sys/util.h>
 #include <zephyr/sys/atomic.h>
 #include <zephyr/sys/__assert.h>
@@ -19,9 +20,8 @@
 #include <modules/peer_id.h>
 #include <modules/peer_data_storage.h>
 
-#define PEER_MANAGER_NODE DT_NODELABEL(peer_manager_partition)
-#define PEER_MANAGER_PARTITION_OFFSET DT_REG_ADDR(PEER_MANAGER_NODE)
-#define PEER_MANAGER_PARTITION_SIZE DT_REG_SIZE(PEER_MANAGER_NODE)
+#define PEER_MANAGER_PARTITION_OFFSET PARTITION_ADDRESS(peer_manager_partition)
+#define PEER_MANAGER_PARTITION_SIZE PARTITION_SIZE(peer_manager_partition)
 
 LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 

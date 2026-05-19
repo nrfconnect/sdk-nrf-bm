@@ -237,7 +237,7 @@ endif # NRF_SDH_BLE
 
 config NRF_SDH_SOC_RAND_SEED
 	bool "Automatically seed SoftDevice random"
-	depends on NRF_SECURITY
+	depends on PSA_CRYPTO
 	depends on MBEDTLS_PSA_CRYPTO_C
 	default y
 	help

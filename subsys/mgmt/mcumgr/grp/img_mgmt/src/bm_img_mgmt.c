@@ -26,11 +26,11 @@
 
 LOG_MODULE_DECLARE(mcumgr_img_grp_data, CONFIG_MCUMGR_GRP_IMG_LOG_LEVEL);
 
-#define S0_START FIXED_PARTITION_ADDRESS(slot0_partition)
-#define S0_SIZE FIXED_PARTITION_SIZE(slot0_partition)
+#define S0_START PARTITION_ADDRESS(slot0_partition)
+#define S0_SIZE PARTITION_SIZE(slot0_partition)
 
-#define S1_START FIXED_PARTITION_ADDRESS(slot1_partition)
-#define S1_SIZE FIXED_PARTITION_SIZE(slot1_partition)
+#define S1_START PARTITION_ADDRESS(slot1_partition)
+#define S1_SIZE PARTITION_SIZE(slot1_partition)
 #define RRAMC_WRITE_BLOCK_SIZE 16
 
 static struct bm_storage s0_storage;
