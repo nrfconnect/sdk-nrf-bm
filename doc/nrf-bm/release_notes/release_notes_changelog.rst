@@ -163,6 +163,7 @@ Bluetooth LE samples
 
       * The disconnect button handler to only disconnect on button press, and not on button release.
       * The allow list disabling button to only trigger on button press, and not on button release.
+      * An issue with the endianness of the target peripheral address when displaying the address on a :c:enumerator:`BLE_SCAN_EVT_CONNECTED` event and when supplying the scan filter address with the :kconfig:option:`CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR` Kconfig option.
 
 NFC samples
 -----------
