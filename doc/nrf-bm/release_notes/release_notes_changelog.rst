@@ -165,6 +165,10 @@ Bluetooth LE samples
       * The allow list disabling button to only trigger on button press, and not on button release.
       * An issue with the endianness of the target peripheral address when displaying the address on a :c:enumerator:`BLE_SCAN_EVT_CONNECTED` event and when supplying the scan filter address with the :kconfig:option:`CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR` Kconfig option.
 
+* :ref:`ble_nus_central_sample` sample:
+
+   * Updated to use Button 1 to disconnect from the target peripheral to align with other central samples.
+
 NFC samples
 -----------
 

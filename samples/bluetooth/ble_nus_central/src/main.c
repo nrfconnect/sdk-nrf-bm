@@ -450,7 +450,7 @@ static int buttons_leds_init(void)
 
 	static struct bm_buttons_config btn_configs[] = {
 		{
-			.pin_number = BOARD_PIN_BTN_3,
+			.pin_number = BOARD_PIN_BTN_1,
 			.active_state = BM_BUTTONS_ACTIVE_LOW,
 			.pull_config = BM_BUTTONS_PIN_PULLUP,
 			.handler = button_handler_disconnect,

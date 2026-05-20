@@ -42,7 +42,7 @@ In addition, the sample enables peer TX notifications to receive data from the p
 User interface
 **************
 
-Button 3:
+Button 1:
    Press to disconnect from the connected peer device.
 
 LED 0:
