@@ -76,6 +76,18 @@ static uint16_t ble_nus_max_data_len = BLE_NUS_CLIENT_MAX_DATA_LEN_CALC(BLE_GATT
 static uint8_t uarte_rx_buf[CONFIG_SAMPLE_NUS_CENTRAL_UART_RX_BUF_SIZE][2];
 static int buf_idx;
 
+#if defined(CONFIG_SAMPLE_USE_TARGET_PERIPHERAL_ADDR)
+/* Target peripheral address (little-endian). */
+static const uint8_t target_periph_addr[BLE_GAP_ADDR_LEN] = {
+	(CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR) & 0xff,
+	(CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR >> 8) & 0xff,
+	(CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR >> 16) & 0xff,
+	(CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR >> 24) & 0xff,
+	(CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR >> 32) & 0xff,
+	(CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR >> 40) & 0xff,
+};
+#endif /* CONFIG_SAMPLE_USE_TARGET_PERIPHERAL_ADDR */
+
 /* Forward declaration. */
 static void scan_start(void);
 
@@ -267,12 +279,12 @@ static void scan_evt_handler(const struct ble_scan_evt *scan_evt)
 		break;
 
 	case BLE_SCAN_EVT_CONNECTED:
-		const ble_gap_evt_connected_t *connected = scan_evt->connected.connected;
+		const ble_gap_addr_t *const peer_addr = &scan_evt->connected.connected->peer_addr;
+
 		/* Scan is automatically stopped by the connection. */
-		LOG_INF("Connecting to target %02x%02x%02x%02x%02x%02x",
-			connected->peer_addr.addr[0], connected->peer_addr.addr[1],
-			connected->peer_addr.addr[2], connected->peer_addr.addr[3],
-			connected->peer_addr.addr[4], connected->peer_addr.addr[5]);
+		LOG_INF("Connecting to target %02X:%02X:%02X:%02X:%02X:%02X",
+			peer_addr->addr[5], peer_addr->addr[4], peer_addr->addr[3],
+			peer_addr->addr[2], peer_addr->addr[1], peer_addr->addr[0]);
 		break;
 
 	case BLE_SCAN_EVT_SCAN_TIMEOUT:
@@ -514,6 +526,17 @@ static uint32_t scan_init(void)
 		return nrf_err;
 	}
 #endif /* CONFIG_SAMPLE_USE_TARGET_PERIPHERAL_NAME */
+
+#if defined(CONFIG_SAMPLE_USE_TARGET_PERIPHERAL_ADDR)
+	filter_data.addr_filter.addr = target_periph_addr;
+	filter_mode_mask |= BLE_SCAN_ADDR_FILTER;
+
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_ADDR_FILTER, &filter_data);
+	if (nrf_err) {
+		LOG_ERR("ble_scan_filter_add address failed, nrf_error %#x", nrf_err);
+		return nrf_err;
+	}
+#endif /* CONFIG_SAMPLE_USE_TARGET_PERIPHERAL_ADDR */
 
 	nrf_err = ble_scan_filters_enable(&ble_scan, filter_mode_mask, false);
 	if (nrf_err) {
