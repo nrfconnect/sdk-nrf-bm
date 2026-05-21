@@ -170,13 +170,13 @@ config NRF_SDH_BLE_CONN_TAG
 	  Connection tag to use for Bluetooth LE configuration.
 
 config NRF_SDH_BLE_PERIPHERAL_LINK_COUNT
-	int "Maximum number of peripheral links"
+	int "Maximum number of concurrent peripheral connections"
 	depends on SOFTDEVICE_PERIPHERAL
 	range 0 NRF_SDH_BLE_TOTAL_LINK_COUNT
 	default 1
 
 config NRF_SDH_BLE_CENTRAL_LINK_COUNT
-	int "Maximum number of central links"
+	int "Maximum number of concurrent central connections"
 	depends on SOFTDEVICE_CENTRAL
 	range 0 NRF_SDH_BLE_TOTAL_LINK_COUNT
 	default 0
