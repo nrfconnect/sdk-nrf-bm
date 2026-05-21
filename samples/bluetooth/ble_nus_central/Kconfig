@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-menu "BLE NUS Central sample"
+menu "Bluetooth LE NUS central sample"
 
 config SAMPLE_BLE_DEVICE_NAME
 	string "Device name"
@@ -27,12 +27,12 @@ config SAMPLE_NUS_CENTRAL_UART_RX_BUF_SIZE
 	help
 	  UART RX is double buffered, so the actual buffer will be twice as large.
 
+config SAMPLE_NUS_CENTRAL_LPUARTE
+	bool "NUS Client Low Power UARTE"
+
 config SAMPLE_USE_TARGET_PERIPHERAL_NAME
 	bool "Use target peripheral name"
 	default y
-
-config SAMPLE_NUS_CENTRAL_LPUARTE
-	bool "NUS Client Low Power UARTE"
 
 if SAMPLE_USE_TARGET_PERIPHERAL_NAME
 
