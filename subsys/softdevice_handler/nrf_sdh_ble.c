@@ -17,17 +17,6 @@
 
 LOG_MODULE_DECLARE(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
 
-#define PERIPHERAL_LINKS                                                                           \
-	COND_CODE_1(CONFIG_NRF_SDH_BLE_PERIPHERAL_LINK_COUNT,                                      \
-		    (CONFIG_NRF_SDH_BLE_PERIPHERAL_LINK_COUNT), (0))
-
-#define CENTRAL_LINKS                                                                              \
-	COND_CODE_1(CONFIG_NRF_SDH_BLE_CENTRAL_LINK_COUNT,                                         \
-		    (CONFIG_NRF_SDH_BLE_CENTRAL_LINK_COUNT), (0))
-
-BUILD_ASSERT(PERIPHERAL_LINKS + CENTRAL_LINKS <= CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT,
-	     "Invalid link configuration");
-
 extern bool sdh_state_evt_observer_notify(enum nrf_sdh_state_evt state);
 
 static uint32_t sd_ram_size;
