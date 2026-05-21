@@ -39,27 +39,27 @@ When connected, the sample forwards any data received on the RX pin of the UART 
 
 In addition, the sample enables peer TX notifications to receive data from the peer.
 
-.. _ble_nus_central_sample_testing:
-
 User interface
 **************
 
+Button 3:
+   Press to disconnect from the connected peer device.
+
 LED 0:
-  Lit when the device is initialized.
+   Lit when the device is initialized.
 
 LED 1:
-  Lit when a device is connected.
-
-Button 3:
-  Disconnects from the peer when pressed.
+   Lit when a device is connected.
 
 .. note::
 
-  LEDs are only used in the normal UARTE configuration.
-  In LPUARTE mode, LEDs are disabled to avoid interfering with the RX pin and to allow proper low-power operation.
+   LEDs are only used in the normal UARTE configuration.
+   In LPUARTE mode, LEDs are disabled to avoid interfering with the RX pin and to allow proper low-power operation.
 
-  In LPUARTE mode, **LED 1** may appear lit even when no device is connected for some development kits, because it shares a pin with the RX signal; RX activity can toggle the LED, which is expected behavior.
+   In LPUARTE mode, **LED 1** may appear lit even when no device is connected for some development kits, because it shares a pin with the RX signal.
+   RX activity can toggle the LED, which is expected behavior.
 
+.. _ble_nus_central_sample_testing:
 
 Building and running
 ********************
@@ -94,12 +94,12 @@ You can test the sample in two ways, depending on the selected UART configuratio
       #. Connect to the kit with a terminal emulator (for example, the `Serial Terminal app`_) for both UARTs on both development kits.
       #. Reset the kits.
       #. Observe that the device running the :ref:`ble_nus_central_sample` sample is configured to connect to ``nRF_BM_NUS``.
-         You can configure this name using the :kconfig:option:`SAMPLE_TARGET_PERIPHERAL_NAME` Kconfig option.
+         You can configure this name using the :kconfig:option:`CONFIG_SAMPLE_TARGET_PERIPHERAL_NAME` Kconfig option.
          For information on how to do this, see `Configuring Kconfig`_.
       #. Observe that the device running the :ref:`ble_nus_sample` sample is advertising under the default name ``nRF_BM_NUS``.
          You can configure this name using the :kconfig:option:`CONFIG_SAMPLE_BLE_DEVICE_NAME` Kconfig option.
          For information on how to do this, see `Configuring Kconfig`_.
-      #. Observe that the text ``BLE NUS central example started.`` is printed on the COM listener connected to the device running the :ref:`ble_nus_central_sample` sample.
+      #. Observe that the text ``BLE NUS central sample initialized`` is printed on the COM listener connected to the device running the :ref:`ble_nus_central_sample` sample.
       #. Observe that the text ``BLE NUS sample initialized`` is printed on the COM listener connected to the device running the :ref:`ble_nus_sample` sample.
       #. Write a text in the COM listener running on the computer and press Enter.
       #. Observe that the text is displayed in the second COM listener running on the computer.
