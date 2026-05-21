@@ -73,8 +73,15 @@ Libraries
 
 * :ref:`lib_ble_conn_params`:
 
-   * Added support for selecting more than one PHY mode (1M, 2M, and Coded) when setting the PHY mode preference with Kconfig.
+   * Added:
+
+      * Support for selecting more than one PHY mode (1M, 2M, and Coded) when setting the PHY mode preference with Kconfig.
+      * Support for the :c:macro:`BLE_GAP_EVT_CONN_PARAM_UPDATE_REQUEST` SoftDevice event.
+
    * Updated the :c:func:`ble_conn_params_phy_radio_mode_set` function to return :c:macro:`NRF_ERROR_INVALID_PARAM` if the ``phy_pref`` parameter contains PHY modes not supported by the SoftDevice.
+   * Updated the :c:func:`ble_conn_params_override` function to allow runtime overrides of the acceptable connection parameter window used when validating peripheral requests to change the connection parameters.
+     Previously, this window was set statically by Kconfig options and was not possible to override at runtime.
+
 
    * Fixed:
 

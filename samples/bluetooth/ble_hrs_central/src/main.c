@@ -158,16 +158,6 @@ static void on_ble_evt(const ble_evt_t *ble_evt, void *ctx)
 		}
 		break;
 
-	case BLE_GAP_EVT_CONN_PARAM_UPDATE_REQUEST:
-		LOG_INF("ble gap event connection parameter update request");
-		nrf_err = sd_ble_gap_conn_param_update(
-			gap_evt->conn_handle,
-			&gap_evt->params.conn_param_update_request.conn_params);
-		if (nrf_err) {
-			LOG_ERR("Failed to update connection params, nrf_error %#x", nrf_err);
-		}
-		break;
-
 	case BLE_GATTC_EVT_TIMEOUT:
 		LOG_INF("GATT Client Timeout");
 		nrf_err = sd_ble_gap_disconnect(ble_evt->evt.gattc_evt.conn_handle,

@@ -980,6 +980,68 @@ void test_ble_evt_conn_param_update_busy(void)
 	TEST_ASSERT_EQUAL(CONN_HANDLE, app_evt.conn_handle);
 }
 
+void test_ble_evt_conn_param_update_request_accepted(void)
+{
+	ble_evt_t ble_evt = {
+		.header.evt_id = BLE_GAP_EVT_CONN_PARAM_UPDATE_REQUEST,
+		.evt.gap_evt = {
+			.conn_handle = CONN_HANDLE,
+			/* Requested conn params are ignored by the central */
+			.params.conn_param_update_request.conn_params = {
+				.conn_sup_timeout = CONFIG_BLE_CONN_PARAMS_SUP_TIMEOUT,
+				.min_conn_interval = CONFIG_BLE_CONN_PARAMS_MIN_CONN_INTERVAL,
+				.max_conn_interval = CONFIG_BLE_CONN_PARAMS_MAX_CONN_INTERVAL,
+				.slave_latency = CONFIG_BLE_CONN_PARAMS_PERIPHERAL_LATENCY,
+			},
+		},
+	};
+	const ble_gap_conn_params_t conn_params_expected = {
+		.conn_sup_timeout = CONFIG_BLE_CONN_PARAMS_SUP_TIMEOUT,
+		.min_conn_interval = CONFIG_BLE_CONN_PARAMS_MIN_CONN_INTERVAL,
+		.max_conn_interval = CONFIG_BLE_CONN_PARAMS_MAX_CONN_INTERVAL,
+		.slave_latency = CONFIG_BLE_CONN_PARAMS_PERIPHERAL_LATENCY,
+	};
+
+	/* Calls from BLE observers. */
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
+
+	__cmock_sd_ble_gap_conn_param_update_ExpectWithArrayAndReturn(
+		CONN_HANDLE, &conn_params_expected, 1, NRF_SUCCESS);
+
+	sdh_evt_dispatch_ble(&ble_evt);
+}
+
+void test_ble_evt_conn_param_update_request_rejected(void)
+{
+	ble_evt_t ble_evt = {
+		.header.evt_id = BLE_GAP_EVT_CONN_PARAM_UPDATE_REQUEST,
+		.evt.gap_evt = {
+			.conn_handle = CONN_HANDLE,
+			/* Requested conn params are ignored by the central */
+			.params.conn_param_update_request.conn_params = {
+				.conn_sup_timeout = 0x12,
+				.min_conn_interval = 0x13,
+				.max_conn_interval = 0x14,
+				.slave_latency = 0x15,
+			},
+		},
+	};
+
+	/* Calls from BLE observers. */
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
+
+	__cmock_sd_ble_gap_conn_param_update_ExpectWithArrayAndReturn(
+		CONN_HANDLE, NULL, 1, NRF_SUCCESS);
+
+	sdh_evt_dispatch_ble(&ble_evt);
+}
+
 void test_ble_evt_data_length_update(void)
 {
 
