@@ -17,4 +17,7 @@ config NRF_SDH_BLE_GAP_EVENT_LENGTH
 config NRF_SDH_BLE_GATT_MAX_MTU_SIZE
 	default 24
 
+config SOFTDEVICE_CENTRAL
+	default y
+
 source "Kconfig.zephyr"

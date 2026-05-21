@@ -215,15 +215,6 @@ static void on_ble_evt(ble_evt_t const *ble_evt, void *context)
 			LOG_ERR("gap_sec_params_reply failed, nrf_error %#x", nrf_err);
 		}
 		break;
-	case BLE_GAP_EVT_CONN_PARAM_UPDATE_REQUEST:
-		/** Accepting parameters requested by peer. */
-		nrf_err = sd_ble_gap_conn_param_update(
-			gap_evt->conn_handle,
-			&gap_evt->params.conn_param_update_request.conn_params);
-		if (nrf_err) {
-			LOG_ERR("gap_conn_param_update failed, nrf_error %#x", nrf_err);
-		}
-		break;
 	case BLE_GAP_EVT_PHY_UPDATE_REQUEST:
 		LOG_DBG("PHY update request");
 		nrf_err = sd_ble_gap_phy_update(ble_evt->evt.gap_evt.conn_handle, &phys);
