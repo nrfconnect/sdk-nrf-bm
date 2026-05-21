@@ -5,31 +5,25 @@
  */
 
 #include <stdint.h>
-#include <stdio.h>
 #include <string.h>
 #include <ble.h>
-#include <ble_gap.h>
 #include <bm/bm_buttons.h>
 #include <hal/nrf_gpio.h>
-#include <nrf_soc.h>
 
-#include <bm/bluetooth/ble_conn_params.h>
 #include <bm/bluetooth/ble_db_discovery.h>
+#include <bm/bluetooth/ble_gq.h>
 #include <bm/bluetooth/ble_scan.h>
 #include <bm/bluetooth/peer_manager/nrf_ble_lesc.h>
 #include <bm/bluetooth/peer_manager/peer_manager.h>
 #include <bm/bluetooth/peer_manager/peer_manager_handler.h>
 #include <bm/bluetooth/peer_manager/peer_manager_types.h>
+#include <bm/softdevice_handler/nrf_sdh.h>
+#include <bm/softdevice_handler/nrf_sdh_ble.h>
 
-#include <bm/bluetooth/ble_gq.h>
 #include <bm/bluetooth/services/ble_bas_client.h>
 #include <bm/bluetooth/services/ble_hrs_client.h>
 #include <bm/bluetooth/services/uuid.h>
-#include <bm/softdevice_handler/nrf_sdh.h>
-#include <bm/softdevice_handler/nrf_sdh_ble.h>
-#include <bm/softdevice_handler/nrf_sdh_soc.h>
 
-#include <zephyr/bluetooth/uuid.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
@@ -39,15 +33,15 @@
 
 LOG_MODULE_REGISTER(sample, CONFIG_SAMPLE_BLE_HRS_CENTRAL_LOG_LEVEL);
 
-/* Structure used to identify the heart rate client module. */
+/* Heart rate service client instance. */
 BLE_HRS_CLIENT_DEF(ble_hrs_client);
 /* Battery service client instance. */
 BLE_BAS_CLIENT_DEF(ble_bas_client);
-/* Gatt queue instance. */
+/* GATT queue instance. */
 BLE_GQ_DEF(ble_gq);
-/* DB discovery module instance. */
+/* Database discovery instance. */
 BLE_DB_DISCOVERY_DEF(ble_db_disc);
-/* Scanning module instance. */
+/* Scanning instance. */
 BLE_SCAN_DEF(ble_scan);
 
 /* Current connection handle. */
@@ -81,10 +75,10 @@ static uint32_t active_conn_count(atomic_t *conn)
 	return set_flag_count;
 }
 
-static uint32_t scan_start(bool erase_bonds);
+static void scan_start(bool erase_bonds);
 
-static void db_disc_handler(struct ble_db_discovery *db_discovery,
-			    struct ble_db_discovery_evt *evt)
+static void db_disc_evt_handler(struct ble_db_discovery *db_discovery,
+				struct ble_db_discovery_evt *evt)
 {
 	ble_hrs_on_db_disc_evt(&ble_hrs_client, evt);
 	ble_bas_on_db_disc_evt(&ble_bas_client, evt);
@@ -220,7 +214,8 @@ static uint32_t peer_manager_init(void)
 
 	return NRF_SUCCESS;
 }
-static uint32_t delete_bonds(void)
+
+static void delete_bonds(void)
 {
 	uint32_t nrf_err;
 
@@ -229,10 +224,7 @@ static uint32_t delete_bonds(void)
 	nrf_err = pm_peers_delete();
 	if (nrf_err) {
 		LOG_ERR("Failed to delete bonds, nrf_error %#x", nrf_err);
-		return nrf_err;
 	}
-
-	return NRF_SUCCESS;
 }
 
 static void allow_list_disable(void)
@@ -240,7 +232,6 @@ static void allow_list_disable(void)
 	if (!allow_list_disabled) {
 		LOG_INF("allow list temporarily disabled");
 		allow_list_disabled = true;
-		ble_scan_stop(&ble_scan);
 		scan_start(false);
 	}
 }
@@ -267,7 +258,45 @@ static void button_handler_disconnect(uint8_t pin, uint8_t action)
 	}
 }
 
-static void hrs_c_evt_handler(struct ble_hrs_client *hrs, const struct ble_hrs_client_evt *evt)
+static int buttons_leds_init(void)
+{
+	int err;
+	static struct bm_buttons_config btn_cfg[] = {
+		{
+			.pin_number = BOARD_PIN_BTN_0,
+			.active_state = BM_BUTTONS_ACTIVE_LOW,
+			.pull_config = BM_BUTTONS_PIN_PULLUP,
+			.handler = button_handler_allow_list_off,
+		},
+		{
+			.pin_number = BOARD_PIN_BTN_1,
+			.active_state = BM_BUTTONS_ACTIVE_LOW,
+			.pull_config = BM_BUTTONS_PIN_PULLUP,
+			.handler = button_handler_disconnect,
+		},
+	};
+
+	err = bm_buttons_init(btn_cfg, ARRAY_SIZE(btn_cfg), BM_BUTTONS_DETECTION_DELAY_MIN_US);
+	if (err) {
+		LOG_ERR("Failed to initialize buttons, err %d", err);
+		return err;
+	}
+
+	err = bm_buttons_enable();
+	if (err) {
+		LOG_ERR("Failed to enable buttons, err %d", err);
+		return err;
+	}
+
+	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
+	nrf_gpio_cfg_output(BOARD_PIN_LED_1);
+	nrf_gpio_pin_write(BOARD_PIN_LED_0, !BOARD_LED_ACTIVE_STATE);
+	nrf_gpio_pin_write(BOARD_PIN_LED_1, !BOARD_LED_ACTIVE_STATE);
+
+	return 0;
+}
+
+static void hrs_client_evt_handler(struct ble_hrs_client *hrs, const struct ble_hrs_client_evt *evt)
 {
 
 	uint32_t nrf_err;
@@ -309,21 +338,15 @@ static void hrs_c_evt_handler(struct ble_hrs_client *hrs, const struct ble_hrs_c
 	}
 }
 
-static uint32_t hrs_c_init(void)
+static uint32_t hrs_client_init(void)
 {
-	uint32_t nrf_err;
 	struct ble_hrs_client_config hrs_client_cfg = {
-		.evt_handler = hrs_c_evt_handler,
+		.evt_handler = hrs_client_evt_handler,
 		.gatt_queue = &ble_gq,
-		.db_discovery = &ble_db_disc
+		.db_discovery = &ble_db_disc,
 	};
 
-	nrf_err = ble_hrs_client_init(&ble_hrs_client, &hrs_client_cfg);
-	if (nrf_err) {
-		LOG_ERR("Failed to init HRS client, nrf_error %#x", nrf_err);
-	}
-
-	return nrf_err;
+	return ble_hrs_client_init(&ble_hrs_client, &hrs_client_cfg);
 }
 
 static void bas_client_evt_handler(struct ble_bas_client *bas_client,
@@ -339,7 +362,7 @@ static void bas_client_evt_handler(struct ble_bas_client *bas_client,
 		if (nrf_err) {
 			LOG_ERR("Failed to assign handles, nrf_error %#x", nrf_err);
 		}
-		/** Battery service discovered. Enable notification of Battery Level. */
+		/* Battery service discovered. Enable notification of Battery Level. */
 		LOG_DBG("Battery Service discovered. Reading battery level.");
 		nrf_err = ble_bas_client_bl_read(bas_client);
 		if (nrf_err) {
@@ -369,29 +392,25 @@ static void bas_client_evt_handler(struct ble_bas_client *bas_client,
 	}
 }
 
-static uint32_t bas_c_init(void)
+static uint32_t bas_client_init(void)
 {
-	struct ble_bas_client_config bas_client_config = {.evt_handler = bas_client_evt_handler,
-							  .gatt_queue = &ble_gq,
-							  .db_discovery = &ble_db_disc};
+	struct ble_bas_client_config bas_client_cfg = {
+		.evt_handler = bas_client_evt_handler,
+		.gatt_queue = &ble_gq,
+		.db_discovery = &ble_db_disc,
+	};
 
-	return ble_bas_client_init(&ble_bas_client, &bas_client_config);
+	return ble_bas_client_init(&ble_bas_client, &bas_client_cfg);
 }
 
 static uint32_t db_discovery_init(void)
 {
-	uint32_t nrf_err;
-	struct ble_db_discovery_config db_init = {0};
+	struct ble_db_discovery_config db_cfg = {
+		.evt_handler = db_disc_evt_handler,
+		.gatt_queue = &ble_gq,
+	};
 
-	db_init.evt_handler = db_disc_handler;
-	db_init.gatt_queue = &ble_gq;
-
-	nrf_err = ble_db_discovery_init(&ble_db_disc, &db_init);
-	if (nrf_err) {
-		LOG_ERR("db discovery init failed, nrf_error %#x", nrf_err);
-	}
-
-	return nrf_err;
+	return ble_db_discovery_init(&ble_db_disc, &db_cfg);
 }
 
 static void peer_list_get(uint16_t *peers, uint32_t *size)
@@ -415,11 +434,11 @@ static void peer_list_get(uint16_t *peers, uint32_t *size)
 static uint32_t allow_list_load(void)
 {
 	uint32_t nrf_err;
-	uint16_t peers[8];
+	uint16_t peers[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
 	uint32_t peer_cnt;
 
 	memset(peers, PM_PEER_ID_INVALID, sizeof(peers));
-	peer_cnt = (sizeof(peers) / sizeof(*peers));
+	peer_cnt = BLE_GAP_WHITELIST_ADDR_MAX_COUNT;
 
 	peer_list_get(peers, &peer_cnt);
 
@@ -440,11 +459,10 @@ static uint32_t on_allow_list_req(void)
 {
 	uint32_t nrf_err;
 
-	ble_gap_addr_t allow_list_addrs[8] = {0};
-	ble_gap_irk_t allow_list_irks[8] = {0};
-
-	uint32_t addr_cnt = (sizeof(allow_list_addrs) / sizeof(ble_gap_addr_t));
-	uint32_t irk_cnt = (sizeof(allow_list_irks) / sizeof(ble_gap_irk_t));
+	ble_gap_addr_t allow_list_addrs[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
+	ble_gap_irk_t allow_list_irks[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
+	uint32_t addr_cnt = BLE_GAP_WHITELIST_ADDR_MAX_COUNT;
+	uint32_t irk_cnt = BLE_GAP_WHITELIST_ADDR_MAX_COUNT;
 
 	nrf_err = allow_list_load();
 	if (nrf_err) {
@@ -457,7 +475,7 @@ static uint32_t on_allow_list_req(void)
 	}
 
 	if (((addr_cnt == 0) && (irk_cnt == 0)) || (allow_list_disabled)) {
-		/* Don't use allow list.*/
+		/* Don't use allow list. */
 		nrf_err = ble_scan_params_set(&ble_scan, NULL);
 		if (nrf_err) {
 			return nrf_err;
@@ -467,7 +485,7 @@ static uint32_t on_allow_list_req(void)
 	return NRF_SUCCESS;
 }
 
-static uint32_t scan_start(bool erase_bonds)
+static void scan_start(bool erase_bonds)
 {
 	uint32_t nrf_err;
 
@@ -477,37 +495,13 @@ static uint32_t scan_start(bool erase_bonds)
 	} else {
 		nrf_err = ble_scan_start(&ble_scan);
 		if (nrf_err) {
-			LOG_ERR("ble_scan_start failed, nrf_error %#x", nrf_err);
-			return nrf_err;
+			LOG_ERR("Failed to start scanning, nrf_error %#x", nrf_err);
 		}
-	}
-
-	return NRF_SUCCESS;
-}
-
-static void conn_params_evt_handler(const struct ble_conn_params_evt *evt)
-{
-	switch (evt->evt_type) {
-	case BLE_CONN_PARAMS_EVT_ATT_MTU_UPDATED:
-		LOG_INF("GATT ATT MTU on connection %#x changed to %d", evt->conn_handle,
-			evt->att_mtu);
-		break;
-
-	case BLE_CONN_PARAMS_EVT_DATA_LENGTH_UPDATED:
-		LOG_INF("Data length for connection %#x updated to %d", evt->conn_handle,
-			evt->data_length.rx);
-		break;
-
-	default:
-		LOG_WRN("unhandled conn params event %d", evt->evt_type);
-		break;
 	}
 }
 
 static void scan_evt_handler(const struct ble_scan_evt *scan_evt)
 {
-	uint32_t nrf_err;
-
 	switch (scan_evt->evt_type) {
 	case BLE_SCAN_EVT_NOT_FOUND:
 		/* ignore */
@@ -520,8 +514,7 @@ static void scan_evt_handler(const struct ble_scan_evt *scan_evt)
 		break;
 
 	case BLE_SCAN_EVT_CONNECTING_ERROR:
-		nrf_err = scan_evt->connecting_err.reason;
-		LOG_INF("Scan connecting error");
+		LOG_ERR("Failed to connect, nrf_error %#x", scan_evt->connecting_err.reason);
 		break;
 
 	case BLE_SCAN_EVT_SCAN_TIMEOUT:
@@ -552,17 +545,6 @@ static void scan_evt_handler(const struct ble_scan_evt *scan_evt)
 	}
 }
 
-static uint32_t gatt_init(void)
-{
-	uint32_t nrf_err = ble_conn_params_evt_handler_set(conn_params_evt_handler);
-
-	if (nrf_err) {
-		LOG_ERR("ble_conn_params_evt_handler_set failed, nrf_error %#x", nrf_err);
-	}
-
-	return nrf_err;
-}
-
 static uint32_t scan_init(void)
 {
 	uint32_t nrf_err;
@@ -571,7 +553,6 @@ static uint32_t scan_init(void)
 			.active = 0x01,
 			.interval = BLE_GAP_SCAN_INTERVAL_US_MIN * 6,
 			.window = BLE_GAP_SCAN_WINDOW_US_MIN * 6,
-
 			.filter_policy = BLE_GAP_SCAN_FP_ACCEPT_ALL,
 			.timeout = BLE_GAP_SCAN_TIMEOUT_UNLIMITED,
 			.scan_phys = BLE_GAP_PHY_AUTO,
@@ -581,46 +562,52 @@ static uint32_t scan_init(void)
 		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
 		.evt_handler = scan_evt_handler,
 	};
-
-	nrf_err = ble_scan_init(&ble_scan, &scan_cfg);
-	if (nrf_err) {
-		LOG_ERR("nrf_ble_scan_init failed, nrf_error %#x", nrf_err);
-	}
-
 	struct ble_scan_filter_data filter_data = {
 		.uuid_filter.uuid = {
 			.uuid = BLE_UUID_HEART_RATE_SERVICE,
 			.type = BLE_UUID_TYPE_BLE,
 		},
 	};
+	uint8_t filter_mode_mask = BLE_SCAN_UUID_FILTER;
+
+	nrf_err = ble_scan_init(&ble_scan, &scan_cfg);
+	if (nrf_err) {
+		LOG_ERR("ble_scan_init failed, nrf_error %#x", nrf_err);
+		return nrf_err;
+	}
 
 	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_UUID_FILTER, &filter_data);
 	if (nrf_err) {
-		LOG_ERR("nrf_ble_scan_filter_add uuid failed, nrf_error %#x", nrf_err);
+		LOG_ERR("ble_scan_filter_add uuid failed, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
 #if defined(CONFIG_SAMPLE_USE_TARGET_PERIPHERAL_NAME)
-		filter_data.name_filter.name = CONFIG_SAMPLE_TARGET_PERIPHERAL_NAME;
+	filter_data.name_filter.name = CONFIG_SAMPLE_TARGET_PERIPHERAL_NAME;
+	filter_mode_mask |= BLE_SCAN_NAME_FILTER;
 
-		nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_NAME_FILTER, &filter_data);
-		if (nrf_err) {
-			LOG_ERR("nrf_ble_scan_filter_add name failed, nrf_error %#x", nrf_err);
-		}
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_NAME_FILTER, &filter_data);
+	if (nrf_err) {
+		LOG_ERR("ble_scan_filter_add name failed, nrf_error %#x", nrf_err);
+		return nrf_err;
+	}
 #endif /* CONFIG_SAMPLE_USE_TARGET_PERIPHERAL_NAME */
 
 #if defined(CONFIG_SAMPLE_USE_TARGET_PERIPHERAL_ADDR)
-		filter_data.addr_filter.addr = target_periph_addr;
-		nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_ADDR_FILTER, &filter_data);
-		if (nrf_err) {
-			LOG_ERR("nrf_ble_scan_filter_add address failed, nrf_error %#x", nrf_err);
-		}
+	filter_data.addr_filter.addr = target_periph_addr;
+	filter_mode_mask |= BLE_SCAN_ADDR_FILTER;
+
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_ADDR_FILTER, &filter_data);
+	if (nrf_err) {
+		LOG_ERR("ble_scan_filter_add address failed, nrf_error %#x", nrf_err);
+		return nrf_err;
+	}
 #endif /* CONFIG_SAMPLE_USE_TARGET_PERIPHERAL_ADDR */
 
-	nrf_err = ble_scan_filters_enable(&ble_scan, BLE_SCAN_UUID_FILTER |
-						     BLE_SCAN_NAME_FILTER |
-						     BLE_SCAN_ADDR_FILTER, false);
+	nrf_err = ble_scan_filters_enable(&ble_scan, filter_mode_mask, false);
 	if (nrf_err) {
 		LOG_ERR("Failed to enable scan filters, nrf_error %#x", nrf_err);
+		return nrf_err;
 	}
 
 	return NRF_SUCCESS;
@@ -631,37 +618,11 @@ int main(void)
 	int err;
 	uint32_t nrf_err;
 	ble_gap_conn_sec_mode_t device_name_write_sec;
-	static struct bm_buttons_config configs[] = {
-		{
-			.pin_number = BOARD_PIN_BTN_0,
-			.active_state = BM_BUTTONS_ACTIVE_LOW,
-			.pull_config = BM_BUTTONS_PIN_PULLUP,
-			.handler = button_handler_allow_list_off,
-		},
-		{
-			.pin_number = BOARD_PIN_BTN_1,
-			.active_state = BM_BUTTONS_ACTIVE_LOW,
-			.pull_config = BM_BUTTONS_PIN_PULLUP,
-			.handler = button_handler_disconnect,
-		},
-	};
 
 	LOG_INF("BLE HRS Central sample started.");
 
-	nrf_gpio_cfg_output(BOARD_PIN_LED_0);
-	nrf_gpio_cfg_output(BOARD_PIN_LED_1);
-	nrf_gpio_pin_write(BOARD_PIN_LED_0, !BOARD_LED_ACTIVE_STATE);
-	nrf_gpio_pin_write(BOARD_PIN_LED_1, !BOARD_LED_ACTIVE_STATE);
-
-	err = bm_buttons_init(configs, ARRAY_SIZE(configs), BM_BUTTONS_DETECTION_DELAY_MIN_US);
+	err = buttons_leds_init();
 	if (err) {
-		LOG_ERR("Failed to initialize buttons, err %d", err);
-		goto idle;
-	}
-
-	err = bm_buttons_enable();
-	if (err) {
-		LOG_ERR("Failed to enable buttons, err %d", err);
 		goto idle;
 	}
 
@@ -691,12 +652,6 @@ int main(void)
 		goto idle;
 	}
 
-	nrf_err = gatt_init();
-	if (nrf_err) {
-		LOG_ERR("Failed to initialize gatt, nrf_error %#x", nrf_err);
-		goto idle;
-	}
-
 	nrf_err = peer_manager_init();
 	if (nrf_err) {
 		LOG_ERR("Failed to initialize peer manager, nrf_error %#x", nrf_err);
@@ -709,15 +664,15 @@ int main(void)
 		goto idle;
 	}
 
-	nrf_err = hrs_c_init();
+	nrf_err = hrs_client_init();
 	if (nrf_err) {
-		LOG_ERR("Failed to initialize HRS Client, nrf_error %#x", nrf_err);
+		LOG_ERR("Failed to initialize HRS client, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 
-	nrf_err = bas_c_init();
+	nrf_err = bas_client_init();
 	if (nrf_err) {
-		LOG_ERR("Failed to initialize BAS Client, nrf_error %#x", nrf_err);
+		LOG_ERR("Failed to initialize BAS client, nrf_error %#x", nrf_err);
 		goto idle;
 	}
 
