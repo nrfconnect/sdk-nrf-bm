@@ -8,13 +8,9 @@
 #include <bm/shell/backend_bm_uarte.h>
 #include <nrfx.h>
 #include <hal/nrf_clock.h>
-/* TODO: DRGN-27733 Remove the alternative condition for nRF54LS05B
- * when the errata has been applied to this chip and the errata
- * check can be used instead.
- */
-#if NRF54L_ERRATA_20_PRESENT || defined(NRF54LS05B_ENGA_XXAA)
+#if NRF_ERRATA_STATIC_CHECK(54L, 20)
 #include <hal/nrf_power.h>
-#endif /* NRF54L_ERRATA_20_PRESENT */
+#endif /* NRF_ERRATA_STATIC_CHECK(54L, 20) */
 
 #include "radio_test.h"
 
@@ -29,16 +25,11 @@ static void clock_init(void)
 	}
 	nrf_clock_event_clear(NRF_CLOCK, NRF_CLOCK_EVENT_HFCLKSTARTED);
 
-#if NRF54L_ERRATA_20_PRESENT
-	if (nrf54l_errata_20()) {
+#if NRF_ERRATA_STATIC_CHECK(54L, 20)
+	if (NRF_ERRATA_DYNAMIC_CHECK(54L, 20)) {
 		nrf_power_task_trigger(NRF_POWER, NRF_POWER_TASK_CONSTLAT);
 	}
-	/* TODO: DRGN-27733 Remove the elif block for nRF54LS05B when the errata has
-	 * been applied to this chip and the errata check can be used instead.
-	 */
-#elif defined(NRF54LS05B_ENGA_XXAA)
-	nrf_power_task_trigger(NRF_POWER, NRF_POWER_TASK_CONSTLAT);
-#endif /* NRF54L_ERRATA_20_PRESENT */
+#endif /* NRF_ERRATA_STATIC_CHECK(54L, 20) */
 
 #if defined(NRF54LM20A_XXAA)
 	/* MLTPAN-39 */
