@@ -17,7 +17,7 @@ zephyr_library_sources_ifdef(CONFIG_MCUMGR_TRANSPORT_REASSEMBLY
 zephyr_library_sources_ifdef(CONFIG_MCUMGR_TRANSPORT_BM_UART
   src/smp_uart.c
   src/bm_uart_mcumgr.c
-  ${ZEPHYR_BASE}/subsys/mgmt/mcumgr/transport/src/serial_util.c
+  src/serial_util.c
 )
 
 zephyr_include_directories(${ZEPHYR_BASE}/subsys/mgmt/mcumgr/transport/include include)
