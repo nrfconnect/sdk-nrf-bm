@@ -521,7 +521,7 @@ uint32_t pm_privacy_get(ble_gap_privacy_params_t *privacy_params)
 bool pm_address_resolve(const ble_gap_addr_t *addr, const ble_gap_irk_t *irk)
 {
 	if (!module_initialized) {
-		return NRF_ERROR_INVALID_STATE;
+		return false;
 	}
 
 	if ((addr == NULL) || (irk == NULL)) {
