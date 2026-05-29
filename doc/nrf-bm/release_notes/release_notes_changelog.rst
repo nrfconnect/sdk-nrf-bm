@@ -111,6 +111,7 @@ Libraries
    * Fixed:
 
       * An issue where calling the :c:func:`pm_init` function two or more times would cause some of the internal asynchronous operation flags to have incorrect states.
+      * The :c:func:`pm_address_resolve` function to return ``false`` instead of ``NRF_ERROR_INVALID_STATE`` when Peer Manager is not initialized.
 
 Bluetooth LE Services
 ---------------------
