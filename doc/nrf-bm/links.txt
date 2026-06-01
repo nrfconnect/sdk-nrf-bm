@@ -15,13 +15,13 @@
 
 .. _`Nordic Semiconductor TechDocs`: https://docs.nordicsemi.com
 
-.. _`nRF Connect SDK NFC libraries`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/libraries/nfc/index.html
-.. _`Type 2 Tag nrfxlib documentation`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrfxlib/nfc/doc/type_2_tag.html
-.. _`Type 4 Tag nrfxlib documentation`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrfxlib/nfc/doc/type_4_tag.html
-.. _`NDEF library`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/libraries/nfc/ndef/index.html
-.. _`nRF Connect SDK Near Field Communication`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/protocols/nfc/index.html#ug-nfc
-.. _`nRF Connect SDK NFC Data Exchange Format`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/protocols/nfc/index.html#ug-nfc-ndef
-.. _`nRF Connect SDK NDEF message and record format`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/protocols/nfc/index.html#ug_nfc_ndef_format
+.. _`nRF Connect SDK NFC libraries`: https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrf/libraries/nfc/index.html
+.. _`Type 2 Tag nrfxlib documentation`: https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrfxlib/nfc/doc/type_2_tag.html
+.. _`Type 4 Tag nrfxlib documentation`: https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrfxlib/nfc/doc/type_4_tag.html
+.. _`NDEF library`: https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrf/libraries/nfc/ndef/index.html
+.. _`nRF Connect SDK Near Field Communication`: https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrf/protocols/nfc/index.html#ug-nfc
+.. _`nRF Connect SDK NFC Data Exchange Format`: https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrf/protocols/nfc/index.html#ug-nfc-ndef
+.. _`nRF Connect SDK NDEF message and record format`: https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrf/protocols/nfc/index.html#ug_nfc_ndef_format
 
 .. _`nRF54L15 DK`: https://docs.nordicsemi.com/bundle/ug_nrf54l15_dk/page/UG/nRF54L15_DK/intro/intro.html
 .. _`nRF54L15 DK v1.0.0`: https://docs.nordicsemi.com/bundle/comp_matrix_nrf54l15/page/COMP/nrf54l15/nrf54l15_ic_rev_comp_with_dev_hw.html
@@ -33,31 +33,31 @@
 
 .. _`nRF54LS05 DK`: https://www.nordicsemi.com/Products/Development-hardware/nRF54LS05-DK
 
-.. _`v3.2.0 software maturity levels`: https://docs.nordicsemi.com/bundle/ncs-3.2.0/page/nrf/releases_and_maturity/software_maturity.html
+.. _`v3.2.0 software maturity levels`: https://nrfconnectdocs.nordicsemi.com/ncs/3.2.0/nrf/releases_and_maturity/software_maturity.html
 
 .. _`nRF54L15 Compatibility Matrix`: https://docs.nordicsemi.com/bundle/comp_matrix_nrf54l15/page/COMP/nrf54l15/nrf54l15_ble_qdid_qual_matrix.html
 
 .. ### Source: SoftDevice doc links
 
-.. _`S115 SoftDevice for nRF54L15/nRF54L10/nRF54L05 API`: https://docs.nordicsemi.com/bundle/s115_nrf54l15_10.0.0_api/page/topics.html
-.. _`S115 SoftDevice for nRF54LM20 API`: https://docs.nordicsemi.com/bundle/s115_nrf54lm20_10.0.0_api/page/topics.html
-.. _`S115 SoftDevice for nRF54LV10 API`: https://docs.nordicsemi.com/bundle/s115_nrf54lv10_10.0.0_api/page/topics.html
-.. _`S115 SoftDevice for nRF54LS05 API`: https://docs.nordicsemi.com/bundle/s115_nrf54ls05_10.0.0_api/page/topics.html
+.. _`S115 SoftDevice for nRF54L15/nRF54L10/nRF54L05 API`: ../../s115_nrf54l15/html/topics.html
+.. _`S115 SoftDevice for nRF54LM20 API`: ../../s115_nrf54lm20/html/topics.html
+.. _`S115 SoftDevice for nRF54LV10 API`: ../../s115_nrf54lv10/html/topics.html
+.. _`S115 SoftDevice for nRF54LS05 API`: ../../s115_nrf54ls05/html/topics.html
 
-.. _`S145 SoftDevice for nRF54L15/nRF54L10/nRF54L05 API`: https://docs.nordicsemi.com/bundle/s145_nrf54l15_10.0.0_api/page/topics.html
-.. _`S145 SoftDevice for nRF54LM20 API`: https://docs.nordicsemi.com/bundle/s145_nrf54lm20_10.0.0_api/page/topics.html
-.. _`S145 SoftDevice for nRF54LV10 API`: https://docs.nordicsemi.com/bundle/s145_nrf54lv10_10.0.0_api/page/topics.html
-.. _`S145 SoftDevice for nRF54LS05 API`: https://docs.nordicsemi.com/bundle/s145_nrf54ls05_10.0.0_api/page/topics.html
+.. _`S145 SoftDevice for nRF54L15/nRF54L10/nRF54L05 API`: ../../s145_nrf54l15/html/topics.html
+.. _`S145 SoftDevice for nRF54LM20 API`: ../../s145_nrf54lm20/html/topics.html
+.. _`S145 SoftDevice for nRF54LV10 API`: ../../s145_nrf54lv10/html/topics.html
+.. _`S145 SoftDevice for nRF54LS05 API`: ../../s145_nrf54ls05/html/topics.html
 
 .. _`S115 SoftDevice Specification`: https://docs.nordicsemi.com/bundle/sds_s115/page/SDS/s1xx/s115.html
 .. _`S145 SoftDevice Specification`: https://docs.nordicsemi.com/bundle/sds_s145/page/SDS/s1xx/s145.html
 
 .. ### Installation
 
-.. _`nRF Util`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/installation/recommended_versions.html#nrf_util
+.. _`nRF Util`: https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrf/installation/recommended_versions.html#nrf_util
 .. _`latest Microsoft Visual C++ Redistributable version`: https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-microsoft-visual-c-redistributable-version
-.. _`nRF Command Line Tools`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/installation/recommended_versions.html#nrf_command_line_tools
-.. _`operating system versions that support this tool`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/installation/recommended_versions.html#additional-nordic-sw-tools
+.. _`nRF Command Line Tools`: https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrf/installation/recommended_versions.html#nrf_command_line_tools
+.. _`operating system versions that support this tool`: https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrf/installation/recommended_versions.html#additional-nordic-sw-tools
 .. _`nRF Util Downloads`: https://www.nordicsemi.com/Products/Development-tools/nRF-Util/Download#infotabs
 .. _`nRF Command Line Tools Downloads`: https://www.nordicsemi.com/Products/Development-tools/nRF-Command-Line-Tools/Download?lang=en#infotabs
 .. _`J-Link Software and Documentation Pack`: https://www.segger.com/downloads/jlink
@@ -68,7 +68,7 @@
 
 .. ### VSC
 
-.. _`nRF Connect for Visual Studio Code`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/installation/recommended_versions.html#requirements-nrfvsc
+.. _`nRF Connect for Visual Studio Code`: https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrf/installation/recommended_versions.html#requirements-nrfvsc
 .. _`Visual Studio Code download page`: https://code.visualstudio.com/download
 .. _`freestanding application`: https://docs.nordicsemi.com/bundle/nrf-connect-vscode/page/guides/applications.html
 .. _`UI overview`: https://docs.nordicsemi.com/bundle/nrf-connect-vscode/page/reference/ui_overview.html
@@ -79,8 +79,8 @@
 
 .. ### Drivers
 
-.. _`SoftDevice Controller Integration`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrfxlib/softdevice_controller/doc/softdevice_controller.html#:~:text=For%20the%20nRF54L%20Series%3A
-.. _`Multiprotocol Service Layer`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrfxlib/mpsl/doc/mpsl.html#:~:text=For%20the%20nRF54L%20Series%3A
+.. _`SoftDevice Controller Integration`: https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrfxlib/softdevice_controller/doc/softdevice_controller.html#:~:text=For%20the%20nRF54L%20Series%3A
+.. _`Multiprotocol Service Layer`: https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrfxlib/mpsl/doc/mpsl.html#:~:text=For%20the%20nRF54L%20Series%3A
 .. _`Interrupt priority levels`: https://docs.nordicsemi.com/bundle/sds_s115/page/SDS/s1xx/processor_avail_interrupt_latency/exception_mgmt_sd.html
 .. _`Application signals – software interrupts`: https://docs.nordicsemi.com/bundle/sds_s115/page/SDS/s1xx/sd_resource_reqs/app_signal_sw_interrupt.html
 .. _`Zero Latency Interrupts`: https://docs.zephyrproject.org/latest/kernel/services/interrupts.html#zero-latency-interrupts
@@ -96,7 +96,7 @@
 .. _`nRF Toolbox`: https://www.nordicsemi.com/Software-and-Tools/Development-Tools/nRF-Toolbox
 .. _`Bluetooth Low Energy app`: https://docs.nordicsemi.com/bundle/swtools_docs/page/app/pc-nrfconnect-ble/index.html
 .. _`Serial Terminal app`: https://docs.nordicsemi.com/bundle/swtools_docs/page/app/pc-nrfconnect-serial-terminal/index.html
-.. _`Configuring Kconfig`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/app_dev/config_and_build/kconfig/index.html
+.. _`Configuring Kconfig`: https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrf/app_dev/config_and_build/kconfig/index.html
 .. _`Power Profiler app`: https://docs.nordicsemi.com/bundle/swtools_docs/page/app/pc-nrfconnect-ppk/index.html
 .. _`Power Profiler Kit II (PPK2)`: https://docs.nordicsemi.com/bundle/ug_ppk2/page/UG/ppk/PPK_user_guide_Intro.html
 .. _`RSSI Viewer app`: https://docs.nordicsemi.com/bundle/swtools_docs/page/app/pc-nrfconnect-rssi/index.html
@@ -104,14 +104,14 @@
 
 .. ### DFU
 
-.. _`MCUboot`: https://docs.nordicsemi.com/bundle/ncs-latest/page/mcuboot/wrapper.html
+.. _`MCUboot`: https://nrfconnectdocs.nordicsemi.com/ncs/latest/mcuboot/wrapper.html
 .. _`MCUmgr`: https://docs.zephyrproject.org/latest/services/device_mgmt/mcumgr.html
 .. _`DTS`: https://docs.zephyrproject.org/latest/build/dts/index.html
 .. _`System reset`: https://docs.zephyrproject.org/latest/services/device_mgmt/smp_groups/smp_group_0.html#system-reset
 .. _`Image tool`: https://docs.mcuboot.com/imgtool.html
 .. _`Vector table requirement`: https://developer.arm.com/documentation/100235/0002/sqf1486724325622
-.. _`Working with the KMU and CRACEN`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/app_dev/device_guides/kmu_guides/index.html
-.. _`Provisioning the KMU`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/app_dev/device_guides/kmu_guides/kmu_provisioning_overview.html
+.. _`Working with the KMU and CRACEN`: https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrf/app_dev/device_guides/kmu_guides/index.html
+.. _`Provisioning the KMU`: https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrf/app_dev/device_guides/kmu_guides/kmu_provisioning_overview.html
 
 .. ### Release notes
 
@@ -132,8 +132,7 @@
 
 .. _`nrfx 3.0 migration guide`: https://github.com/NordicSemiconductor/nrfx/wiki/nrfx-2.11.0-to-3.0.0
 .. _`nrfx 4.0 migration guide`: https://github.com/NordicSemiconductor/nrfx/wiki/nrfx-3.14.0-to-4.0.0
-.. _`Migration notes - nRF5 SDK to nRF Connect SDK Bare Metal option`: https://docs.nordicsemi.com/bundle/nrf-bm-latest/page/migration/nrf5_bm_migration.html
-.. _`S115 9.0.0-3.prototype API reference`: https://docs.nordicsemi.com/bundle/s115_9.0.0-3.prototype_api/page/topics.html
+.. _`Migration notes - nRF5 SDK to nRF Connect SDK Bare Metal option`: https://nrfconnectdocs.nordicsemi.com/ncs-bm/latest/nrf-bm/migration/nrf5_bm_migration.html
 .. _`nRF5 SDK DFU memory layout`: https://docs.nordicsemi.com/bundle/sdk_nrf5_v17.1.0/page/lib_bootloader.html
 .. _`MCUmgr SMP protocol`: https://docs.zephyrproject.org/latest/services/device_mgmt/smp_protocol.html
 

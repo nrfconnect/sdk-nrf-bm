@@ -20,4 +20,4 @@ To initialize the workspace using the command line, do the following:
    west update
    ```
 
-For further details on getting started, check the installation guide in the [documentation](https://docs.nordicsemi.com/bundle/nrf-bm-latest/page/index.html).
+For further details on getting started, check the installation guide in the [documentation](https://nrfconnectdocs.nordicsemi.com/ncs-bm/latest/nrf-bm/index.html).
