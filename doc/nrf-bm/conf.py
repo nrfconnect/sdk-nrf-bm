@@ -50,7 +50,15 @@ html_last_updated_fmt = "%b %d, %Y"
 html_show_sourcelink = True
 html_show_sphinx = False
 
-html_theme_options = {"docset": "nrf-bm", "docsets": utils.ALL_DOCSETS}
+html_theme_options = {
+    "docset": "nrf-bm",
+    "docsets": utils.ALL_DOCSETS,
+    "addons_url": "",
+    "bare_metal_url": "",
+    "ncs_url": "https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrf/",
+    "ncs_label": "nRF Connect SDK Docs",
+    "logo_url": "https://docs.nordicsemi.com",
+}
 
 # Options for intersphinx ------------------------------------------------------
 

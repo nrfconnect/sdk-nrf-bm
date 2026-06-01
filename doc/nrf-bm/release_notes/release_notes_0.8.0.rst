@@ -65,10 +65,6 @@ S115 SoftDevice
   * :file:`s115_9.0.0-3.prototype_nrf54l10_softdevice.hex`
   * :file:`s115_9.0.0-3.prototype_nrf54l05_softdevice.hex`
 
-  For more details about this release of the SoftDevice, see :ref:`s115_docs`.
-
-  For API documentation, see `S115 9.0.0-3.prototype API reference`_.
-
 SoftDevice Handler
 ==================
 
