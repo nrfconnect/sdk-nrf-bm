@@ -716,26 +716,14 @@ static void conn_sec_update_process(const ble_gap_evt_t *gap_evt)
 	}
 }
 
-/**
- * @brief Function for initializing a Bluetooth LE Connection State user flag.
- *
- * @param[out] flag_id  The flag to initialize.
- */
-static void flag_id_init(int *flag_id)
-{
-	if (*flag_id == PM_CONN_STATE_USER_FLAG_INVALID) {
-		*flag_id = pm_conn_state_user_flag_acquire();
-	}
-}
-
 uint32_t smd_init(void)
 {
 	__ASSERT_NO_MSG(!module_initialized);
 
-	flag_id_init(&flag_sec_proc);
-	flag_id_init(&flag_sec_proc_pairing);
-	flag_id_init(&flag_sec_proc_bonding);
-	flag_id_init(&flag_allow_repairing);
+	flag_sec_proc = pm_conn_state_user_flag_acquire();
+	flag_sec_proc_pairing = pm_conn_state_user_flag_acquire();
+	flag_sec_proc_bonding = pm_conn_state_user_flag_acquire();
+	flag_allow_repairing = pm_conn_state_user_flag_acquire();
 
 	if ((flag_sec_proc == PM_CONN_STATE_USER_FLAG_INVALID) ||
 	    (flag_sec_proc_pairing == PM_CONN_STATE_USER_FLAG_INVALID) ||
