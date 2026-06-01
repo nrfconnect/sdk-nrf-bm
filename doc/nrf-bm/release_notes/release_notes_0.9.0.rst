@@ -54,10 +54,6 @@ The SoftDevice comes in three variants to support different SoCs of the nRF54L S
 * :file:`s115_9.0.0-3.prototype_nrf54l10_softdevice.hex`
 * :file:`s115_9.0.0-3.prototype_nrf54l05_softdevice.hex`
 
-For more details about the SoftDevice, see :ref:`s115_docs`.
-
-For API documentation, see `S115 9.0.0-3.prototype API reference`_.
-
 Changelog
 *********
 
@@ -76,7 +72,7 @@ SoftDevice Handler
 Boards
 ======
 
-* Boards must now select a SoftDevice sysbuild Kconfig in the `Kconfig.sysbuild` file e.g. :kconfig:option:`SB_CONFIG_SOFTDEVICE_S115`.
+* Boards must now select a SoftDevice sysbuild Kconfig in the :file:`Kconfig.sysbuild` file, for example :kconfig:option:`SB_CONFIG_SOFTDEVICE_S115`.
   The supported Nordic boards have been updated to reflect this change and no action is necessary.
 
 Logging
