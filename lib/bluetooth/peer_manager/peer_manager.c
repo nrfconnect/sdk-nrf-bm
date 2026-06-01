@@ -374,6 +374,12 @@ uint32_t pm_init(void)
 
 	flag_conn_excluded = pm_conn_state_user_flag_acquire();
 
+	if (flag_conn_excluded == PM_CONN_STATE_USER_FLAG_INVALID) {
+		LOG_ERR("Could not acquire conn_state user flags. Increase "
+			"PM_CONN_STATE_USER_FLAG_COUNT in the pm_conn_state module.");
+		return NRF_ERROR_INTERNAL;
+	}
+
 	return NRF_SUCCESS;
 }
 

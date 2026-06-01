@@ -108,6 +108,10 @@ Libraries
       * The :c:func:`pm_register` function to return ``NRF_ERROR_NULL`` when the event handler parameter is ``NULL``.
         The check was documented but was missing.
 
+   * Fixed:
+
+      * An issue where calling the :c:func:`pm_init` function two or more times would cause some of the internal asynchronous operation flags to have incorrect states.
+
 Bluetooth LE Services
 ---------------------
 

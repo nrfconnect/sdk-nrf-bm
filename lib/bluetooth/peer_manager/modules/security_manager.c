@@ -489,18 +489,6 @@ void sm_pdb_evt_handler(struct pm_evt *event)
 	}
 }
 
-/**
- * @brief Function for initializing a Bluetooth LE Connection State user flag.
- *
- * @param[out] flag_id  The flag to initialize.
- */
-static void flag_id_init(int *flag_id)
-{
-	if (*flag_id == PM_CONN_STATE_USER_FLAG_INVALID) {
-		*flag_id = pm_conn_state_user_flag_acquire();
-	}
-}
-
 uint32_t sm_init(void)
 {
 	__ASSERT_NO_MSG(!module_initialized);
@@ -513,12 +501,18 @@ uint32_t sm_init(void)
 	}
 #endif
 
-	flag_id_init(&flag_link_secure_pending_busy);
-	flag_id_init(&flag_link_secure_force_repairing);
-	flag_id_init(&flag_link_secure_null_params);
-	flag_id_init(&flag_params_reply_pending_busy);
+	flag_link_secure_pending_busy = pm_conn_state_user_flag_acquire();
+	flag_link_secure_force_repairing = pm_conn_state_user_flag_acquire();
+	flag_link_secure_null_params = pm_conn_state_user_flag_acquire();
+	flag_params_reply_pending_busy = pm_conn_state_user_flag_acquire();
 
-	if (flag_params_reply_pending_busy == PM_CONN_STATE_USER_FLAG_INVALID) {
+	/* If successfully acquiring the last set of flags,
+	 * all sets of flags have been successfully acquired.
+	 */
+	if ((flag_link_secure_pending_busy == PM_CONN_STATE_USER_FLAG_INVALID) ||
+	    (flag_link_secure_force_repairing == PM_CONN_STATE_USER_FLAG_INVALID) ||
+	    (flag_link_secure_null_params == PM_CONN_STATE_USER_FLAG_INVALID) ||
+	    (flag_params_reply_pending_busy == PM_CONN_STATE_USER_FLAG_INVALID)) {
 		LOG_ERR("Could not acquire conn_state user flags. Increase "
 			"PM_CONN_STATE_USER_FLAG_COUNT in the pm_conn_state module.");
 		return NRF_ERROR_INTERNAL;

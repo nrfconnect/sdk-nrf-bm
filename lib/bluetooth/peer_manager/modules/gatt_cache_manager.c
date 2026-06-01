@@ -48,37 +48,37 @@ static atomic_t db_update_in_progress_mutex;
  * @brief Flag ID for flag collection to keep track of which connections need a local DB update
  *        procedure.
  */
-static int flag_local_db_update_pending;
+static int flag_local_db_update_pending = PM_CONN_STATE_USER_FLAG_INVALID;
 /**
  * @brief Flag ID for flag collection to keep track of which connections need a local DB apply
  *        procedure.
  */
-static int flag_local_db_apply_pending;
+static int flag_local_db_apply_pending = PM_CONN_STATE_USER_FLAG_INVALID;
 /**
  * @brief Flag ID for flag collection to keep track of which connections need to be sent a service
  *        changed indication.
  */
-static int flag_service_changed_pending;
+static int flag_service_changed_pending = PM_CONN_STATE_USER_FLAG_INVALID;
 /**
  * @brief Flag ID for flag collection to keep track of which connections have been sent a service
  *        changed indication and are waiting for a handle value confirmation.
  */
-static int flag_service_changed_sent;
+static int flag_service_changed_sent = PM_CONN_STATE_USER_FLAG_INVALID;
 /**
  * @brief Flag ID for flag collection to keep track of which connections need to have their Central
  *        Address Resolution value stored.
  */
-static int flag_car_update_pending;
+static int flag_car_update_pending = PM_CONN_STATE_USER_FLAG_INVALID;
 /**
  * @brief Flag ID for flag collection to keep track of which connections are pending Central
  *        Address Resolution handle reply.
  */
-static int flag_car_handle_queried;
+static int flag_car_handle_queried = PM_CONN_STATE_USER_FLAG_INVALID;
 /**
  * @brief Flag ID for flag collection to keep track of which connections are pending Central
  *        Address Resolution value reply.
  */
-static int flag_car_value_queried;
+static int flag_car_value_queried = PM_CONN_STATE_USER_FLAG_INVALID;
 
 /**
  * @brief Function for resetting the module variable(s) of the GSCM module.
