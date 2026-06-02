@@ -255,29 +255,24 @@ uint32_t gscm_local_db_cache_apply(uint16_t conn_handle)
 {
 	__ASSERT_NO_MSG(module_initialized);
 
-	uint16_t peer_id = im_peer_id_get_by_conn_handle(conn_handle);
 	uint32_t nrf_err;
-	struct pm_peer_data peer_data;
+	uint32_t sys_attr_flags = (SYS_ATTR_BOTH);
 	const uint8_t *sys_attr_data = NULL;
 	uint16_t sys_attr_len = 0;
-	uint32_t sys_attr_flags = (SYS_ATTR_BOTH);
+	uint16_t peer_id = im_peer_id_get_by_conn_handle(conn_handle);
+	uint8_t local_gatt_db_buf[PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE] = {0};
+	uint32_t local_gatt_db_size = PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE;
+	struct pm_peer_data peer_data;
 	bool all_attributes_applied = true;
 
 	if (peer_id != PM_PEER_ID_INVALID) {
-		uint8_t local_gatt_db_buf[PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE] = { 0 };
-		uint32_t local_gatt_db_size = PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE;
-		struct pm_peer_data_local_gatt_db *curr_local_gatt_db =
-			(struct pm_peer_data_local_gatt_db *)local_gatt_db_buf;
 		peer_data.all_data = &local_gatt_db_buf;
 		nrf_err = pds_peer_data_read(peer_id, PM_PEER_DATA_ID_GATT_LOCAL, &peer_data,
 					     &local_gatt_db_size);
 		if (nrf_err == NRF_SUCCESS) {
-			const struct pm_peer_data_local_gatt_db *local_gatt_db;
-
-			local_gatt_db = curr_local_gatt_db;
-			sys_attr_data = local_gatt_db->data;
-			sys_attr_len = local_gatt_db->len;
-			sys_attr_flags = local_gatt_db->flags;
+			sys_attr_flags = peer_data.local_gatt_db->flags;
+			sys_attr_len = peer_data.local_gatt_db->len;
+			sys_attr_data = peer_data.local_gatt_db->data;
 		}
 	}
 
