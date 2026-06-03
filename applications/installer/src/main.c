@@ -30,6 +30,8 @@ LOG_MODULE_REGISTER(installer, CONFIG_INSTALLER_LOG_LEVEL);
 #define EXPECTED_HEADER { 0x92, 0x11, 0xf2, 0xe9 }
 #define PROCESS_SECTOR_SIZE 4096
 
+#define WRITE_BLOCK_SIZE DT_PROP(DT_CHOSEN(zephyr_flash), write_block_size)
+
 extern uintptr_t _flash_used;
 static const uint8_t expected_header[] = EXPECTED_HEADER;
 
@@ -198,6 +200,11 @@ int main(void)
 				}
 #endif
 
+				int pad = (WRITE_BLOCK_SIZE - (process_size % WRITE_BLOCK_SIZE)) %
+					   WRITE_BLOCK_SIZE;
+
+				process_size += pad;
+
 				rc = flash_area_write(&fa, pos, (void *)read_pos, process_size);
 
 				if (rc) {
@@ -218,7 +225,7 @@ int main(void)
 					   "V_DELAY_IMAGE_CHUNK_COPY");
 		}
 
-		++i;
+		i++;
 
 		if (i < CONFIG_BM_INSTALL_IMAGES) {
 			VERIFICATION_DELAY(CONFIG_APP_BM_INSTALLER_NEXT_IMAGE_COPY_DELAY_MS,
