@@ -105,6 +105,8 @@ Libraries
 
       * The :c:func:`pm_init` function to clear the list of event handlers registered with the :c:func:`pm_register` function.
       * The :c:func:`pm_init` function to clear the default security parameters set with the :c:func:`pm_sec_params_set` function.
+      * The :c:func:`pm_register` function to return ``NRF_ERROR_NULL`` when the event handler parameter is ``NULL``.
+        The check was documented but was missing.
 
 Bluetooth LE Services
 ---------------------

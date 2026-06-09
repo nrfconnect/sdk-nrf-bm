@@ -383,6 +383,10 @@ uint32_t pm_register(pm_evt_handler_t event_handler)
 		return NRF_ERROR_INVALID_STATE;
 	}
 
+	if (!event_handler) {
+		return NRF_ERROR_NULL;
+	}
+
 	if (n_registrants >= CONFIG_PM_MAX_REGISTRANTS) {
 		return NRF_ERROR_NO_MEM;
 	}
