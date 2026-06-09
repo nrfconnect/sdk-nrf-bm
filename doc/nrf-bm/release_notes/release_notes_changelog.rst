@@ -104,6 +104,7 @@ Libraries
    * Updated:
 
       * The :c:func:`pm_init` function to clear the list of event handlers registered with the :c:func:`pm_register` function.
+      * The :c:func:`pm_init` function to clear the default security parameters set with the :c:func:`pm_sec_params_set` function.
 
 Bluetooth LE Services
 ---------------------

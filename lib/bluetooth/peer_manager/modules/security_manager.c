@@ -524,6 +524,9 @@ uint32_t sm_init(void)
 		return NRF_ERROR_INTERNAL;
 	}
 
+	default_sec_params = NULL;
+	default_sec_params_set = false;
+
 	module_initialized = true;
 
 	return NRF_SUCCESS;
