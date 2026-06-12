@@ -7,6 +7,7 @@ on:
       - main
       - 'v*-branch'
 
+# errors are suppressed because not all PRs create docs...
 jobs:
   remove:
     runs-on: ubuntu-24.04
@@ -14,5 +15,6 @@ jobs:
       - name: Try removal of PR-docs
         env:
           AZCOPY_CONCURRENCY_VALUE: 3000
+          SAS_TOKEN: ${{ secrets.NCS_DOC_SAS_PRS }}
         run: |
-          azcopy rm "${{ vars.NCS_DOC_STORAGE_URL }}PR-${{ github.event.number }}?${{ secrets.NCS_DOC_SAS }}" --recursive=true || true
+          azcopy rm "${{ vars.NCS_DOC_PR_STORAGE_URL }}ncs-bm/PR-${{ github.event.number }}?$SAS_TOKEN" --recursive=true || true
