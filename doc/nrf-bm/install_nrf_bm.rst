@@ -28,7 +28,7 @@ Complete the following steps to install the prerequisites:
 4. Complete the steps of the Quick Start wizard.
    Make sure to select :guilabel:`VS Code IDE` as the development environment and to install the `Serial Terminal app`_.
 5. Install the latest version of |VSC|.
-6. In |VSC|, install the latest version of the `nRF Connect for VS Code Extension Pack`_.
+6. In |VSC|, install the latest version of the `nRF Connect for Visual Studio Code`_ extension.
    The |nRFVSC| comes with its own bundled version of some of the nRF Util commands.
 
 .. _cloning_the_repositories_nrf_bm:
