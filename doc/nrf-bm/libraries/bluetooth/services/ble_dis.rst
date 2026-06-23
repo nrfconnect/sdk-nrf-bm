@@ -15,12 +15,18 @@ Overview
 During initialization, the module adds the Device Information Service to the Bluetooth LE stack database.
 It then encodes the supplied information, and adds the corresponding characteristics.
 
+The characteristic values follow an all-or-nothing model:
+
+* If the application supplies a :c:struct:`ble_dis_values` instance at initialization, the values fully define every characteristic.
+  The Kconfig options are ignored and any member left ``NULL`` (or empty for strings) omits that characteristic.
+* If no run-time values are supplied, all characteristics are built from the :kconfig:option:`CONFIG_BLE_DIS_*` Kconfig build-time defaults.
+
 Configuration
 *************
 
 Set the :kconfig:option:`CONFIG_BLE_DIS` Kconfig option to enable the service.
 
-The DIS service can be configured by using the following Kconfig options:
+You can configure the service using the following Kconfig options that provide the build-time default values:
 
 * :kconfig:option:`CONFIG_BLE_DIS_MANUFACTURER_NAME` - Sets the manufacturer name.
 * :kconfig:option:`CONFIG_BLE_DIS_MODEL_NUMBER` - Sets the model number.
@@ -42,13 +48,16 @@ The DIS service can be configured by using the following Kconfig options:
 Initialization
 ==============
 
-The service is initialized by calling the :c:func:`ble_dis_init` function.
-Configuration is otherwise done through the Kconfig options.
+To initialize the service, call the :c:func:`ble_dis_init` function.
+See the :c:struct:`ble_dis_config` struct for configuration details.
+
+Set the ``values`` field of :c:struct:`ble_dis_config` to a :c:struct:`ble_dis_values` instance to supply run-time values, or to ``NULL`` to use the Kconfig build-time defaults.
 
 Usage
 *****
 
-When enabled, the module will add the Device Information Service with information as specified by the Kconfig options.
+When enabled, the module adds the Device Information Service with the characteristic values supplied at run time.
+If no run-time values are supplied, the values specified by the Kconfig options are used.
 
 Dependencies
 ************
