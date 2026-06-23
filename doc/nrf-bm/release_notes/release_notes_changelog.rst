@@ -99,6 +99,20 @@ Libraries
       * Support for filtering by manufacturer-specific data using the :c:macro:`BLE_SCAN_MANUFACTURER_DATA_FILTER` filter type.
       * The :kconfig:option:`CONFIG_BLE_SCAN_MANUFACTURER_DATA_COUNT` and :kconfig:option:`CONFIG_BLE_SCAN_MANUFACTURER_DATA_MAX_LEN` Kconfig options to configure the manufacturer data filter capacity and maximum payload length.
 
+* :ref:`lib_peer_manager` library:
+
+   * Updated:
+
+      * The :c:func:`pm_init` function to clear the list of event handlers registered with the :c:func:`pm_register` function.
+      * The :c:func:`pm_init` function to clear the default security parameters set with the :c:func:`pm_sec_params_set` function.
+      * The :c:func:`pm_register` function to return ``NRF_ERROR_NULL`` when the event handler parameter is ``NULL``.
+        The check was documented but was missing.
+
+   * Fixed:
+
+      * An issue where calling the :c:func:`pm_init` function two or more times would cause some of the internal asynchronous operation flags to have incorrect states.
+      * The :c:func:`pm_address_resolve` function to return ``false`` instead of ``NRF_ERROR_INVALID_STATE`` when Peer Manager is not initialized.
+
 Bluetooth LE Services
 ---------------------
 

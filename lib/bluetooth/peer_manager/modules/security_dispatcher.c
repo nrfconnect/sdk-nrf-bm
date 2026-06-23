@@ -48,22 +48,22 @@ static int flag_allow_repairing = PM_CONN_STATE_USER_FLAG_INVALID;
 
 static ble_gap_lesc_p256_pk_t peer_pk;
 
-static __INLINE bool sec_procedure(uint16_t conn_handle)
+static inline bool sec_procedure(uint16_t conn_handle)
 {
 	return pm_conn_state_user_flag_get(conn_handle, flag_sec_proc);
 }
 
-static __INLINE bool pairing(uint16_t conn_handle)
+static inline bool pairing(uint16_t conn_handle)
 {
 	return pm_conn_state_user_flag_get(conn_handle, flag_sec_proc_pairing);
 }
 
-static __INLINE bool bonding(uint16_t conn_handle)
+static inline bool bonding(uint16_t conn_handle)
 {
 	return pm_conn_state_user_flag_get(conn_handle, flag_sec_proc_bonding);
 }
 
-static __INLINE bool allow_repairing(uint16_t conn_handle)
+static inline bool allow_repairing(uint16_t conn_handle)
 {
 	return pm_conn_state_user_flag_get(conn_handle, flag_allow_repairing);
 }
@@ -196,7 +196,7 @@ static void pairing_failure(uint16_t conn_handle, uint16_t error, uint8_t error_
  * @param[in]  error        The error the procedure failed with. See @ref PM_SEC_ERRORS.
  * @param[in]  error_src    The party that raised the error. See @ref BLE_GAP_SEC_STATUS_SOURCES.
  */
-static __INLINE void encryption_failure(uint16_t conn_handle, uint16_t error, uint8_t error_src)
+static inline void encryption_failure(uint16_t conn_handle, uint16_t error, uint8_t error_src)
 {
 	conn_sec_failure(conn_handle, PM_CONN_SEC_PROCEDURE_ENCRYPTION, error, error_src);
 }
@@ -716,26 +716,14 @@ static void conn_sec_update_process(const ble_gap_evt_t *gap_evt)
 	}
 }
 
-/**
- * @brief Function for initializing a Bluetooth LE Connection State user flag.
- *
- * @param[out] flag_id  The flag to initialize.
- */
-static void flag_id_init(int *flag_id)
-{
-	if (*flag_id == PM_CONN_STATE_USER_FLAG_INVALID) {
-		*flag_id = pm_conn_state_user_flag_acquire();
-	}
-}
-
 uint32_t smd_init(void)
 {
 	__ASSERT_NO_MSG(!module_initialized);
 
-	flag_id_init(&flag_sec_proc);
-	flag_id_init(&flag_sec_proc_pairing);
-	flag_id_init(&flag_sec_proc_bonding);
-	flag_id_init(&flag_allow_repairing);
+	flag_sec_proc = pm_conn_state_user_flag_acquire();
+	flag_sec_proc_pairing = pm_conn_state_user_flag_acquire();
+	flag_sec_proc_bonding = pm_conn_state_user_flag_acquire();
+	flag_allow_repairing = pm_conn_state_user_flag_acquire();
 
 	if ((flag_sec_proc == PM_CONN_STATE_USER_FLAG_INVALID) ||
 	    (flag_sec_proc_pairing == PM_CONN_STATE_USER_FLAG_INVALID) ||

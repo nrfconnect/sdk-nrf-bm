@@ -9,7 +9,9 @@
 #include <string.h>
 #include <limits.h>
 #include <zephyr/sys/atomic.h>
-#include <nrf_bitmask.h>
+#if !defined(CONFIG_UNITY)
+#include <nrfx.h>
+#endif
 #include <bm/bluetooth/peer_manager/peer_manager_types.h>
 #include <modules/peer_id.h>
 
@@ -40,7 +42,11 @@ static uint32_t find_and_set_flag(atomic_t *pi_flags, uint32_t flag_count)
 
 		while (inverted) {
 			/* Find lowest zero bit */
+#if defined(CONFIG_UNITY)
+			uint32_t first_zero = __builtin_ctz(inverted);
+#else
 			uint32_t first_zero = NRF_CTZ(inverted);
+#endif
 			uint32_t first_zero_global = first_zero + (i * 32);
 
 			if (first_zero_global >= flag_count) {

@@ -29,22 +29,27 @@ LOG_MODULE_REGISTER(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
 /** Whether or not @ref pm_init has been called successfully. */
 static bool module_initialized;
-/** Whether or not @ref rank_init has been called successfully. */
-static bool peer_rank_initialized;
 /** True from when @ref pm_peers_delete is called until all peers have been deleted. */
 static bool deleting_all;
-/** The store token of an ongoing peer rank update via a call to @ref pm_peer_rank_highest. If @ref
- * PM_STORE_TOKEN_INVALID, there is no ongoing update.
- */
-static uint32_t peer_rank_token;
-/** The current highest peer rank. Used by @ref pm_peer_rank_highest. */
-static uint32_t current_highest_peer_rank;
-/** The peer with the highest peer rank. Used by @ref pm_peer_rank_highest. */
-static uint16_t highest_ranked_peer;
 /** The subscribers to Peer Manager events, as registered through @ref pm_register. */
 static pm_evt_handler_t evt_handlers[CONFIG_PM_MAX_REGISTRANTS];
 /** The number of event handlers registered through @ref pm_register. */
 static uint8_t n_registrants;
+
+#if defined(CONFIG_PM_PEER_RANKS)
+static struct {
+	/** Whether or not @ref rank_init has been called successfully. */
+	bool initialized;
+	/** The peer with the highest peer rank. Used by @ref pm_peer_rank_highest. */
+	uint16_t highest_peer;
+	/** The current highest peer rank. Used by @ref pm_peer_rank_highest. */
+	uint32_t highest_rank;
+	/** The store token of an ongoing peer rank update via a call to @ref pm_peer_rank_highest.
+	 *  If @ref PM_STORE_TOKEN_INVALID, there is no ongoing update.
+	 */
+	uint32_t token;
+} peer_ranks;
+#endif
 
 /** User flag indicating whether a connection is excluded from being handled by the Peer Manager. */
 static int flag_conn_excluded = PM_CONN_STATE_USER_FLAG_INVALID;
@@ -66,14 +71,14 @@ static void evt_send(const struct pm_evt *pm_evt)
 static void rank_vars_update(void)
 {
 	uint32_t nrf_err =
-		pm_peer_ranks_get(&highest_ranked_peer, &current_highest_peer_rank, NULL, NULL);
+		pm_peer_ranks_get(&peer_ranks.highest_peer, &peer_ranks.highest_rank, NULL, NULL);
 
 	if (nrf_err == NRF_ERROR_NOT_FOUND) {
-		highest_ranked_peer = PM_PEER_ID_INVALID;
-		current_highest_peer_rank = 0;
+		peer_ranks.highest_peer = PM_PEER_ID_INVALID;
+		peer_ranks.highest_rank = 0;
 	}
 
-	peer_rank_initialized = ((nrf_err == NRF_SUCCESS) || (nrf_err == NRF_ERROR_NOT_FOUND));
+	peer_ranks.initialized = ((nrf_err == NRF_SUCCESS) || (nrf_err == NRF_ERROR_NOT_FOUND));
 }
 #endif
 
@@ -93,15 +98,14 @@ void pm_pdb_evt_handler(struct pm_evt *pdb_evt)
 #if defined(CONFIG_PM_PEER_RANKS)
 	case PM_EVT_PEER_DATA_UPDATE_SUCCEEDED:
 		if (pdb_evt->peer_data_update_succeeded.action == PM_PEER_DATA_OP_UPDATE) {
-			if ((peer_rank_token != PM_STORE_TOKEN_INVALID) &&
-			    (peer_rank_token == pdb_evt->peer_data_update_succeeded.token)) {
-				peer_rank_token = PM_STORE_TOKEN_INVALID;
-				highest_ranked_peer = pdb_evt->peer_id;
+			if ((peer_ranks.token != PM_STORE_TOKEN_INVALID) &&
+			    (peer_ranks.token == pdb_evt->peer_data_update_succeeded.token)) {
+				peer_ranks.token = PM_STORE_TOKEN_INVALID;
+				peer_ranks.highest_peer = pdb_evt->peer_id;
 
-				pdb_evt->peer_data_update_succeeded.token =
-					PM_STORE_TOKEN_INVALID;
-			} else if (peer_rank_initialized &&
-				   (pdb_evt->peer_id == highest_ranked_peer) &&
+				pdb_evt->peer_data_update_succeeded.token = PM_STORE_TOKEN_INVALID;
+			} else if (peer_ranks.initialized &&
+				   (pdb_evt->peer_id == peer_ranks.highest_peer) &&
 				   (pdb_evt->peer_data_update_succeeded.data_id ==
 				    PM_PEER_DATA_ID_PEER_RANK)) {
 				/* Update peer rank variable if highest ranked peer has changed its
@@ -109,10 +113,9 @@ void pm_pdb_evt_handler(struct pm_evt *pdb_evt)
 				 */
 				rank_vars_update();
 			}
-		} else if (pdb_evt->peer_data_update_succeeded.action ==
-			   PM_PEER_DATA_OP_DELETE) {
-			if (peer_rank_initialized && (pdb_evt->peer_id == highest_ranked_peer) &&
-			    (pdb_evt->peer_data_update_succeeded.data_id ==
+		} else if (pdb_evt->peer_data_update_succeeded.action == PM_PEER_DATA_OP_DELETE) {
+			if (peer_ranks.initialized && (pdb_evt->peer_id == peer_ranks.highest_peer)
+			    && (pdb_evt->peer_data_update_succeeded.data_id ==
 			     PM_PEER_DATA_ID_PEER_RANK)) {
 				/* Update peer rank variable if highest ranked peer has deleted its
 				 * rank.
@@ -124,10 +127,10 @@ void pm_pdb_evt_handler(struct pm_evt *pdb_evt)
 
 	case PM_EVT_PEER_DATA_UPDATE_FAILED:
 		if (pdb_evt->peer_data_update_succeeded.action == PM_PEER_DATA_OP_UPDATE) {
-			if ((peer_rank_token != PM_STORE_TOKEN_INVALID) &&
-			    (peer_rank_token == pdb_evt->peer_data_update_failed.token)) {
-				peer_rank_token = PM_STORE_TOKEN_INVALID;
-				current_highest_peer_rank -= 1;
+			if ((peer_ranks.token != PM_STORE_TOKEN_INVALID) &&
+			    (peer_ranks.token == pdb_evt->peer_data_update_failed.token)) {
+				peer_ranks.token = PM_STORE_TOKEN_INVALID;
+				peer_ranks.highest_rank -= 1;
 
 				pdb_evt->peer_data_update_succeeded.token =
 					PM_STORE_TOKEN_INVALID;
@@ -163,7 +166,7 @@ void pm_pdb_evt_handler(struct pm_evt *pdb_evt)
 		}
 
 #if defined(CONFIG_PM_PEER_RANKS)
-		if (peer_rank_initialized && (pdb_evt->peer_id == highest_ranked_peer)) {
+		if (peer_ranks.initialized && (pdb_evt->peer_id == peer_ranks.highest_peer)) {
 			/* Update peer rank variable if highest ranked peer has been deleted. */
 			rank_vars_update();
 		}
@@ -312,13 +315,6 @@ static void ble_evt_handler(const ble_evt_t *ble_evt, void *context)
 
 NRF_SDH_BLE_OBSERVER(ble_evt_observer, ble_evt_handler, NULL, HIGH);
 
-/** @brief Function for resetting the internal state of this module. */
-static void internal_state_reset(void)
-{
-	highest_ranked_peer = PM_PEER_ID_INVALID;
-	peer_rank_token = PM_STORE_TOKEN_INVALID;
-}
-
 uint32_t pm_init(void)
 {
 	uint32_t nrf_err;
@@ -367,18 +363,22 @@ uint32_t pm_init(void)
 		return NRF_ERROR_INTERNAL;
 	}
 
-	internal_state_reset();
+#if defined(CONFIG_PM_PEER_RANKS)
+	peer_ranks.initialized = false;
+	peer_ranks.highest_peer = PM_PEER_ID_INVALID;
+	peer_ranks.token = PM_STORE_TOKEN_INVALID;
+#endif /* CONFIG_PM_PEER_RANKS */
 
-	peer_rank_initialized = false;
+	n_registrants = 0;
 	module_initialized = true;
 
 	flag_conn_excluded = pm_conn_state_user_flag_acquire();
 
-	/* If CONFIG_PM_PEER_RANKS is 0, these variables are unused. */
-	UNUSED_VARIABLE(peer_rank_initialized);
-	UNUSED_VARIABLE(peer_rank_token);
-	UNUSED_VARIABLE(current_highest_peer_rank);
-	UNUSED_VARIABLE(highest_ranked_peer);
+	if (flag_conn_excluded == PM_CONN_STATE_USER_FLAG_INVALID) {
+		LOG_ERR("Could not acquire conn_state user flags. Increase "
+			"PM_CONN_STATE_USER_FLAG_COUNT in the pm_conn_state module.");
+		return NRF_ERROR_INTERNAL;
+	}
 
 	return NRF_SUCCESS;
 }
@@ -387,6 +387,10 @@ uint32_t pm_register(pm_evt_handler_t event_handler)
 {
 	if (!module_initialized) {
 		return NRF_ERROR_INVALID_STATE;
+	}
+
+	if (!event_handler) {
+		return NRF_ERROR_NULL;
 	}
 
 	if (n_registrants >= CONFIG_PM_MAX_REGISTRANTS) {
@@ -517,7 +521,7 @@ uint32_t pm_privacy_get(ble_gap_privacy_params_t *privacy_params)
 bool pm_address_resolve(const ble_gap_addr_t *addr, const ble_gap_irk_t *irk)
 {
 	if (!module_initialized) {
-		return NRF_ERROR_INVALID_STATE;
+		return false;
 	}
 
 	if ((addr == NULL) || (irk == NULL)) {
@@ -853,7 +857,7 @@ uint32_t pm_peer_data_bonding_store(uint16_t peer_id, const struct pm_peer_data_
 				    uint32_t *token)
 {
 	return pm_peer_data_store(peer_id, PM_PEER_DATA_ID_BONDING, data,
-				  ROUND_UP(sizeof(struct pm_peer_data_bonding), 4), token);
+				  sizeof(struct pm_peer_data_bonding), token);
 }
 
 uint32_t pm_peer_data_remote_db_store(uint16_t peer_id, const struct ble_gatt_db_srv *data,
@@ -1010,9 +1014,9 @@ uint32_t pm_peer_ranks_get(uint16_t *highest_ranked_peer, uint32_t *highest_rank
 	}
 
 	uint16_t peer_id = pds_next_peer_id_get(PM_PEER_ID_INVALID);
-	uint32_t peer_rank = 0;
-	uint32_t length = sizeof(peer_rank);
-	struct pm_peer_data peer_data = {.peer_rank = &peer_rank};
+	uint32_t rank_val = 0;
+	uint32_t length = sizeof(rank_val);
+	struct pm_peer_data peer_data = {.peer_rank = &rank_val};
 	uint32_t nrf_err =
 		pds_peer_data_read(peer_id, PM_PEER_DATA_ID_PEER_RANK, &peer_data, &length);
 	struct {
@@ -1034,12 +1038,12 @@ uint32_t pm_peer_ranks_get(uint16_t *highest_ranked_peer, uint32_t *highest_rank
 
 	while ((nrf_err == NRF_SUCCESS) || (nrf_err == NRF_ERROR_NOT_FOUND)) {
 		if (nrf_err == NRF_SUCCESS) {
-			if (peer_rank >= rank.highest) {
-				rank.highest = peer_rank;
+			if (rank_val >= rank.highest) {
+				rank.highest = rank_val;
 				rank.highest_peer = peer_id;
 			}
-			if (peer_rank < rank.lowest) {
-				rank.lowest = peer_rank;
+			if (rank_val < rank.lowest) {
+				rank.lowest = rank_val;
 				rank.lowest_peer = peer_id;
 			}
 		}
@@ -1095,18 +1099,18 @@ uint32_t pm_peer_rank_highest(uint16_t peer_id)
 
 	uint32_t nrf_err;
 	struct pm_peer_data_const peer_data = {
-		.length = sizeof(current_highest_peer_rank),
+		.length = sizeof(peer_ranks.highest_rank),
 		.data_id = PM_PEER_DATA_ID_PEER_RANK,
-		.peer_rank = &current_highest_peer_rank};
+		.peer_rank = &peer_ranks.highest_rank};
 
-	if (!peer_rank_initialized) {
+	if (!peer_ranks.initialized) {
 		rank_init();
 	}
 
-	if (!peer_rank_initialized || (peer_rank_token != PM_STORE_TOKEN_INVALID)) {
+	if (!peer_ranks.initialized || (peer_ranks.token != PM_STORE_TOKEN_INVALID)) {
 		nrf_err = NRF_ERROR_BUSY;
 	} else {
-		if ((peer_id == highest_ranked_peer) && (current_highest_peer_rank > 0)) {
+		if ((peer_id == peer_ranks.highest_peer) && (peer_ranks.highest_rank > 0)) {
 			struct pm_evt pm_evt;
 
 			/* The reported peer is already regarded as highest (provided it has an
@@ -1126,15 +1130,15 @@ uint32_t pm_peer_rank_highest(uint16_t peer_id)
 
 			evt_send(&pm_evt);
 		} else {
-			if (current_highest_peer_rank == UINT32_MAX) {
+			if (peer_ranks.highest_rank == UINT32_MAX) {
 				nrf_err = NRF_ERROR_DATA_SIZE;
 			} else {
-				current_highest_peer_rank += 1;
+				peer_ranks.highest_rank += 1;
 				nrf_err = pds_peer_data_store(peer_id, &peer_data,
-							      &peer_rank_token);
+							      &peer_ranks.token);
 				if (nrf_err) {
-					peer_rank_token = PM_STORE_TOKEN_INVALID;
-					current_highest_peer_rank -= 1;
+					peer_ranks.token = PM_STORE_TOKEN_INVALID;
+					peer_ranks.highest_rank -= 1;
 					/* Assume INVALID_PARAM
 					 * refers to peer_id, not
 					 * data_id.

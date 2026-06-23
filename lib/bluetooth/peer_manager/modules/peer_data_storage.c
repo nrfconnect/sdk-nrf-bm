@@ -179,7 +179,7 @@ static void peer_ids_load(void)
 
 	peer_data.all_data = peer_data_buffer;
 
-	/* Search through existing bonds to look for a duplicate. */
+	/* Allocate peer IDs for already stored bonds. */
 	pds_peer_data_iterate_prepare(&peer_id_iter);
 
 	while (pds_peer_data_iterate(PM_PEER_DATA_ID_BONDING, &peer_id, &peer_data,
@@ -282,7 +282,9 @@ static void bm_zms_evt_handler(const struct bm_zms_evt *evt)
 static void wait_for_init(void)
 {
 	while (!fs.init_flags.initialized) {
+#if !defined(CONFIG_UNITY)
 		k_cpu_idle();
+#endif
 	}
 }
 

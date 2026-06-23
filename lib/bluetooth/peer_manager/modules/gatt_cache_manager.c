@@ -48,37 +48,37 @@ static atomic_t db_update_in_progress_mutex;
  * @brief Flag ID for flag collection to keep track of which connections need a local DB update
  *        procedure.
  */
-static int flag_local_db_update_pending;
+static int flag_local_db_update_pending = PM_CONN_STATE_USER_FLAG_INVALID;
 /**
  * @brief Flag ID for flag collection to keep track of which connections need a local DB apply
  *        procedure.
  */
-static int flag_local_db_apply_pending;
+static int flag_local_db_apply_pending = PM_CONN_STATE_USER_FLAG_INVALID;
 /**
  * @brief Flag ID for flag collection to keep track of which connections need to be sent a service
  *        changed indication.
  */
-static int flag_service_changed_pending;
+static int flag_service_changed_pending = PM_CONN_STATE_USER_FLAG_INVALID;
 /**
  * @brief Flag ID for flag collection to keep track of which connections have been sent a service
  *        changed indication and are waiting for a handle value confirmation.
  */
-static int flag_service_changed_sent;
+static int flag_service_changed_sent = PM_CONN_STATE_USER_FLAG_INVALID;
 /**
  * @brief Flag ID for flag collection to keep track of which connections need to have their Central
  *        Address Resolution value stored.
  */
-static int flag_car_update_pending;
+static int flag_car_update_pending = PM_CONN_STATE_USER_FLAG_INVALID;
 /**
  * @brief Flag ID for flag collection to keep track of which connections are pending Central
  *        Address Resolution handle reply.
  */
-static int flag_car_handle_queried;
+static int flag_car_handle_queried = PM_CONN_STATE_USER_FLAG_INVALID;
 /**
  * @brief Flag ID for flag collection to keep track of which connections are pending Central
  *        Address Resolution value reply.
  */
-static int flag_car_value_queried;
+static int flag_car_value_queried = PM_CONN_STATE_USER_FLAG_INVALID;
 
 /**
  * @brief Function for resetting the module variable(s) of the GSCM module.
@@ -200,7 +200,7 @@ static void local_db_apply_in_evt(uint16_t conn_handle)
  * @param[in]  conn_handle  The connection to perform the procedure on.
  * @param[in]  update       Whether to perform the procedure.
  */
-static __INLINE void local_db_update(uint16_t conn_handle, bool update)
+static inline void local_db_update(uint16_t conn_handle, bool update)
 {
 	pm_conn_state_user_flag_set(conn_handle, flag_local_db_update_pending, update);
 }
@@ -379,7 +379,7 @@ static void apply_pending_handle(uint16_t conn_handle, void *context)
 	local_db_apply_in_evt(conn_handle);
 }
 
-static __INLINE void apply_pending_flags_check(void)
+static inline void apply_pending_flags_check(void)
 {
 	(void)pm_conn_state_for_each_set_user_flag(flag_local_db_apply_pending,
 						    apply_pending_handle, NULL);
@@ -410,7 +410,7 @@ static void sc_send_pending_handle(uint16_t conn_handle, void *context)
 	}
 }
 
-static __INLINE void service_changed_pending_flags_check(void)
+static inline void service_changed_pending_flags_check(void)
 {
 	(void)(pm_conn_state_for_each_set_user_flag(flag_service_changed_pending,
 						     sc_send_pending_handle, NULL));
@@ -459,7 +459,7 @@ static void car_update_needed(uint16_t conn_handle)
 	}
 }
 
-static __INLINE void update_pending_flags_check(void)
+static inline void update_pending_flags_check(void)
 {
 	uint32_t count = pm_conn_state_for_each_set_user_flag(flag_local_db_update_pending,
 							       db_update_pending_handle, NULL);
