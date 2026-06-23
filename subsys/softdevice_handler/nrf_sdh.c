@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <nrf_sdm.h>
 #include <nrf_soc.h>
+#include <nrfx.h>
 #include <bm/softdevice_handler/nrf_sdh.h>
 #include <bm/softdevice_handler/nrf_sdh_info.h>
 #include <bm/bm_irq.h>
@@ -131,7 +132,8 @@ static int nrf_sdh_enable(void)
 		.hfint_ctiv = CONFIG_NRF_SDH_CLOCK_HFINT_CALIBRATION_INTERVAL,
 	};
 
-	if (IS_ENABLED(CONFIG_NRF_SDH_LOG_SD_INFO)) {
+#if defined(CONFIG_NRF_SDH_LOG_SD_INFO) && !defined(CONFIG_SOFTDEVICE_BSIM)
+	{
 		const uint32_t base = FIXED_PARTITION_OFFSET(softdevice_partition);
 		const struct nrf_sdh_info_version sd_ver = nrf_sdh_info_version_get(base);
 		const struct nrf_sdh_info_unique_str sd_unique = nrf_sdh_info_unique_str_get(base);
@@ -149,6 +151,7 @@ static int nrf_sdh_enable(void)
 				sd_ver.bugfix);
 		}
 	}
+#endif
 
 	err = sd_softdevice_enable(&clock_lf_cfg, softdevice_fault_handler);
 	if (err) {
@@ -392,8 +395,7 @@ ISR_DIRECT_DECLARE(sd_direct_isr)
 
 static int sd_irq_init(void)
 {
-	BM_IRQ_DIRECT_CONNECT(SD_EVT_IRQn, SD_EVT_IRQ_PRI,
-			      sd_direct_isr, 0);
+	BM_IRQ_DIRECT_CONNECT(SD_EVT_IRQn, SD_EVT_IRQ_PRI, sd_direct_isr, 0);
 	irq_enable(SD_EVT_IRQn);
 
 	return 0;

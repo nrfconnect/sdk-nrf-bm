@@ -12,8 +12,15 @@
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
 #include <zephyr/logging/log.h>
 
+#if defined(CONFIG_SOFTDEVICE_BSIM)
+extern uint32_t g_app_ram_base;
+extern uint32_t bsim_softdevice_ram_end;
+#define APP_RAM_START (bsim_softdevice_ram_end)
+#define SD_RAM_START  (g_app_ram_base)
+#else
 #define APP_RAM_START DT_REG_ADDR(DT_CHOSEN(zephyr_sram))
 #define SD_RAM_START DT_REG_ADDR(DT_NODELABEL(cpuapp_sram))
+#endif
 
 LOG_MODULE_DECLARE(nrf_sdh, CONFIG_NRF_SDH_LOG_LEVEL);
 
