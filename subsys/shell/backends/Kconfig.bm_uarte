@@ -51,4 +51,9 @@ config SHELL_BACKEND_SERIAL
 config SHELL_MINIMAL
 	default y
 
+# Workaround for added build assert in zephyr that should only be checked when multithreading is
+# enabled. Kconfig is not used with multithreading disabled.
+config SHELL_STACK_SIZE
+	default 32
+
 endif

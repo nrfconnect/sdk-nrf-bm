@@ -30,6 +30,9 @@ LOG_MODULE_REGISTER(installer, CONFIG_INSTALLER_LOG_LEVEL);
 #define EXPECTED_HEADER { 0x92, 0x11, 0xf2, 0xe9 }
 #define PROCESS_SECTOR_SIZE 4096
 
+#define LOAD_OFFSET PARTITION_NODE_ADDRESS(DT_CHOSEN(zephyr_code_partition))
+#define WRITE_BLOCK_SIZE DT_PROP(DT_CHOSEN(zephyr_flash), write_block_size)
+
 extern uintptr_t _flash_used;
 static const uint8_t expected_header[] = EXPECTED_HEADER;
 
@@ -63,7 +66,7 @@ int main(void)
 	struct bm_installs replacement_metadata;
 	struct flash_area fa_installer = {
 		.fa_id = 1,
-		.fa_off = CONFIG_FLASH_LOAD_OFFSET,
+		.fa_off = LOAD_OFFSET,
 		.fa_size = PROCESS_SECTOR_SIZE,
 		.fa_dev = DEVICE_DT_GET(DT_CHOSEN(zephyr_flash_controller)),
 	};
@@ -74,7 +77,7 @@ int main(void)
 	static uint8_t write_buffer[CONFIG_ROM_START_OFFSET] = { 0x00 };
 #endif
 
-	update_data = (struct bm_installs_update *)((int)&_flash_used + CONFIG_FLASH_LOAD_OFFSET);
+	update_data = (struct bm_installs_update *)((int)&_flash_used + LOAD_OFFSET);
 
 	if (update_data == NULL) {
 		LOG_ERR("Installer data is NULL");
@@ -198,6 +201,11 @@ int main(void)
 				}
 #endif
 
+				int pad = (WRITE_BLOCK_SIZE - (process_size % WRITE_BLOCK_SIZE)) %
+					   WRITE_BLOCK_SIZE;
+
+				process_size += pad;
+
 				rc = flash_area_write(&fa, pos, (void *)read_pos, process_size);
 
 				if (rc) {
@@ -218,7 +226,7 @@ int main(void)
 					   "V_DELAY_IMAGE_CHUNK_COPY");
 		}
 
-		++i;
+		i++;
 
 		if (i < CONFIG_BM_INSTALL_IMAGES) {
 			VERIFICATION_DELAY(CONFIG_APP_BM_INSTALLER_NEXT_IMAGE_COPY_DELAY_MS,

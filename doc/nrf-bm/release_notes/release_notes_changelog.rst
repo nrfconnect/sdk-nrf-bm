@@ -33,7 +33,11 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Boards
 ======
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Updated all boards to use ``zephyr,mapped-partition`` instead of ``zephyr,fixed-partitions`` and ``zephyr,fixed-subpartitions``.
+  When referencing partition nodes the code now uses ``PARTITION_*`` macros instead of ``DT_*`` and ``FIXED_PARTITION_*`` macros.
+  The use of the :kconfig:option:`CONFIG_FLASH_LOAD_OFFSET` Kconfig option is also replaced by ``PARTITION_*`` macros.
+
+* Reduced the number of required board qualifiers with one as of changes upstream.
 
 Build system
 ============
@@ -118,6 +122,8 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 
 Samples
 =======
+
+* The :kconfig:option:`CONFIG_PSA_CRYPTO` Kconfig option is now used to enable cryptography instead of the :kconfig:option:`CONFIG_NRF_SECURITY` Kconfig option.
 
 Peripheral samples
 ------------------
