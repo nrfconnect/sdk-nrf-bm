@@ -102,9 +102,13 @@ Libraries
 Bluetooth LE Services
 ---------------------
 
-* :ref:`lib_ble_scan`
+* :ref:`lib_ble_scan`:
 
    * Changed :c:member:`ble_scan_filter_data.addr_filter.addr` and :c:member:`ble_scan_filter_data.name_filter.name` to ``const`` in the :c:struct:`ble_scan_filter_data` structure.
+
+* :ref:`lib_ble_service_hrs_client`:
+
+   * Added the :c:enumerator:`BLE_HRS_CLIENT_EVT_BSL_UPDATE` event to the :c:enum:`ble_hrs_client_evt_type` enum.
 
 Libraries for NFC
 -----------------
@@ -127,6 +131,8 @@ Peripheral samples
 
 Bluetooth LE samples
 --------------------
+
+* Added the :ref:`ble_hrs_peripheral_central_sample` sample.
 
 * Updated the following samples and applications that do not support pairing to call the :c:func:`sd_ble_gatts_sys_attr_set` function only in response to the :c:macro:`BLE_GATTS_EVT_SYS_ATTR_MISSING` event and not as a response to a :c:macro:`BLE_GAP_EVT_CONNECTED` event:
 

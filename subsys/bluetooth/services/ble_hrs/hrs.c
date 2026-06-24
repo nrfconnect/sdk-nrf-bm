@@ -149,13 +149,20 @@ static uint32_t body_sensor_location_char_add(struct ble_hrs *hrs, const struct 
 
 static void on_connect(struct ble_hrs *hrs, const ble_gap_evt_t *gap_evt)
 {
+	if (gap_evt->params.connected.role != BLE_GAP_ROLE_PERIPH) {
+		return;
+	}
+
 	hrs->max_hrm_len = MAX_HRM_LEN_CALC(BLE_GATT_ATT_MTU_DEFAULT);
 	hrs->conn_handle = gap_evt->conn_handle;
 }
 
 static void on_disconnect(struct ble_hrs *hrs, const ble_gap_evt_t *gap_evt)
 {
-	ARG_UNUSED(gap_evt);
+	if (gap_evt->conn_handle != hrs->conn_handle) {
+		return;
+	}
+
 	hrs->conn_handle = BLE_CONN_HANDLE_INVALID;
 }
 
