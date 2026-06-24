@@ -1,0 +1,49 @@
+.. list-table:: SPIM and SPIS pin connections (board-config.h).
+   :widths: auto
+   :header-rows: 1
+
+   * - Development Kit
+     - nRF54L15 DK
+     - nRF54LM20 DK
+     - nRF54LS05 DK
+     - nRF54LV10 DK
+   * - SPIM SCK
+     - P1.11
+     - P1.11
+     - P1.02
+     - P1.00
+   * - SPIM MOSI
+     - P1.12
+     - P1.12
+     - P1.03
+     - P1.01
+   * - SPIM MISO
+     - P1.13
+     - P1.13
+     - P1.05
+     - P1.02
+   * - SPIM CSN
+     - P1.14
+     - P1.14
+     - P1.06
+     - P1.03
+   * - SPIS SCK
+     - P0.00
+     - P0.00
+     - P1.11
+     - P0.00
+   * - SPIS MOSI
+     - P0.01
+     - P0.01
+     - P1.12
+     - P0.01
+   * - SPIS MISO
+     - P0.02
+     - P0.02
+     - P1.21
+     - P0.02
+   * - SPIS CSN
+     - P0.03
+     - P0.03
+     - P1.22
+     - P0.03
