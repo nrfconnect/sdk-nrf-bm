@@ -34,15 +34,15 @@ The service can be configured using the following Kconfig options, which provide
 * :kconfig:option:`CONFIG_BLE_DIS_HW_REVISION` - Sets the hardware revision.
 * :kconfig:option:`CONFIG_BLE_DIS_FW_REVISION` - Sets the firmware revision.
 * :kconfig:option:`CONFIG_BLE_DIS_SW_REVISION` - Sets the software revision.
-* :kconfig:option:`CONFIG_BLE_DIS_SYSTEM_ID` - Includes the system ID characteristic in the Device Information Service.
-* :kconfig:option:`CONFIG_BLE_DIS_SYSTEM_ID_OUI` - Sets the organization unique ID.
-* :kconfig:option:`CONFIG_BLE_DIS_SYSTEM_ID_MID` - Sets the manufacturer unique ID.
-* :kconfig:option:`CONFIG_BLE_DIS_PNP_ID` - Includes plug and play ID characteristic.
+* :kconfig:option:`CONFIG_BLE_DIS_SYSTEM_ID` - Includes the System ID characteristic in the Device Information Service.
+* :kconfig:option:`CONFIG_BLE_DIS_SYSTEM_ID_OUI` - Sets the Organizationally Unique ID.
+* :kconfig:option:`CONFIG_BLE_DIS_SYSTEM_ID_MID` - Sets the Manufacturer ID.
+* :kconfig:option:`CONFIG_BLE_DIS_PNP_ID` - Includes the Plug and Play ID characteristic.
 * :kconfig:option:`CONFIG_BLE_DIS_PNP_VID_SRC` - Sets the vendor ID source.
 * :kconfig:option:`CONFIG_BLE_DIS_PNP_VID` - Sets the vendor ID.
 * :kconfig:option:`CONFIG_BLE_DIS_PNP_PID` - Sets the product ID.
 * :kconfig:option:`CONFIG_BLE_DIS_PNP_VER` - Sets the product version.
-* :kconfig:option:`CONFIG_BLE_DIS_REGULATORY_CERT` - Includes IEEE regulatory certifications.
+* :kconfig:option:`CONFIG_BLE_DIS_REGULATORY_CERT` - Includes the IEEE 11073-20601 Regulatory Certification characteristic.
 * :kconfig:option:`CONFIG_BLE_DIS_REGULATORY_CERT_LIST` - Sets the regulatory certification list.
 
 Initialization
