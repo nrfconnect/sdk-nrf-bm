@@ -15,12 +15,18 @@ Overview
 During initialization, the module adds the Device Information Service to the Bluetooth LE stack database.
 It then encodes the supplied information, and adds the corresponding characteristics.
 
+The characteristic values follow an all-or-nothing model:
+
+* If the application supplies a :c:struct:`ble_dis_values` instance at initialization, those values fully define every characteristic.
+  The Kconfig options are ignored, and any member left ``NULL`` (or empty for strings) omits that characteristic.
+* If no run-time values are supplied, all characteristics are built from the :kconfig:option:`CONFIG_BLE_DIS_*` Kconfig build-time defaults.
+
 Configuration
 *************
 
 Set the :kconfig:option:`CONFIG_BLE_DIS` Kconfig option to enable the service.
 
-The DIS service can be configured by using the following Kconfig options:
+The service can be configured using the following Kconfig options, which provide the build-time default values:
 
 * :kconfig:option:`CONFIG_BLE_DIS_MANUFACTURER_NAME` - Sets the manufacturer name.
 * :kconfig:option:`CONFIG_BLE_DIS_MODEL_NUMBER` - Sets the model number.
@@ -28,27 +34,30 @@ The DIS service can be configured by using the following Kconfig options:
 * :kconfig:option:`CONFIG_BLE_DIS_HW_REVISION` - Sets the hardware revision.
 * :kconfig:option:`CONFIG_BLE_DIS_FW_REVISION` - Sets the firmware revision.
 * :kconfig:option:`CONFIG_BLE_DIS_SW_REVISION` - Sets the software revision.
-* :kconfig:option:`CONFIG_BLE_DIS_SYSTEM_ID` - Includes the system ID characteristic in the Device Information Service.
-* :kconfig:option:`CONFIG_BLE_DIS_SYSTEM_ID_OUI` - Sets the organization unique ID.
-* :kconfig:option:`CONFIG_BLE_DIS_SYSTEM_ID_MID` - Sets the manufacturer unique ID.
-* :kconfig:option:`CONFIG_BLE_DIS_PNP_ID` - Includes plug and play ID characteristic.
+* :kconfig:option:`CONFIG_BLE_DIS_SYSTEM_ID` - Includes the System ID characteristic in the Device Information Service.
+* :kconfig:option:`CONFIG_BLE_DIS_SYSTEM_ID_OUI` - Sets the Organizationally Unique ID.
+* :kconfig:option:`CONFIG_BLE_DIS_SYSTEM_ID_MID` - Sets the Manufacturer ID.
+* :kconfig:option:`CONFIG_BLE_DIS_PNP_ID` - Includes the Plug and Play ID characteristic.
 * :kconfig:option:`CONFIG_BLE_DIS_PNP_VID_SRC` - Sets the vendor ID source.
 * :kconfig:option:`CONFIG_BLE_DIS_PNP_VID` - Sets the vendor ID.
 * :kconfig:option:`CONFIG_BLE_DIS_PNP_PID` - Sets the product ID.
 * :kconfig:option:`CONFIG_BLE_DIS_PNP_VER` - Sets the product version.
-* :kconfig:option:`CONFIG_BLE_DIS_REGULATORY_CERT` - Includes IEEE regulatory certifications.
+* :kconfig:option:`CONFIG_BLE_DIS_REGULATORY_CERT` - Includes the IEEE 11073-20601 Regulatory Certification characteristic.
 * :kconfig:option:`CONFIG_BLE_DIS_REGULATORY_CERT_LIST` - Sets the regulatory certification list.
 
 Initialization
 ==============
 
 The service is initialized by calling the :c:func:`ble_dis_init` function.
-Configuration is otherwise done through the Kconfig options.
+See the :c:struct:`ble_dis_config` struct for configuration details.
+
+Set the ``values`` field of :c:struct:`ble_dis_config` to a :c:struct:`ble_dis_values` instance to supply run-time values, or to ``NULL`` to use the Kconfig build-time defaults.
 
 Usage
 *****
 
-When enabled, the module will add the Device Information Service with information as specified by the Kconfig options.
+When enabled, the module adds the Device Information Service with the characteristic values supplied at run time.
+If no run-time values are supplied, the values specified by the Kconfig options are used.
 
 Dependencies
 ************
