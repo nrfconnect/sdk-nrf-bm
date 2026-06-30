@@ -1,0 +1,22 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "SPI Manager sample"
+
+config SAMPLE_SPI_MNGR_MSG
+	string "Message to write to external NOR flash"
+	default "Hello World!"
+	help
+	  Payload bytes written to the external NOR flash when a program operation is triggered.
+	  Truncated to 64 bytes if longer.
+
+module=SAMPLE_SPI_MNGR
+module-str=SPI manager sample
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endmenu # "SPI Manager sample"
+
+source "Kconfig.zephyr"

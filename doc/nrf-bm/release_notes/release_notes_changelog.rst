@@ -33,7 +33,7 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Boards
 ======
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Added ``BOARD_EXTERNAL_MEMORY_*`` macros to **bm_nrf54l15dk** and **bm_nrf54lm20dk** ``board-config.h`` (SPIM instance, SCK/MOSI/MISO/CS and WP#/RST# strap pins) for on-board SPI external flash. Other BM development kits do not include external flash memory on the board, so their ``board-config.h`` files omit these macros.
 
 Build system
 ============
@@ -98,6 +98,10 @@ Libraries
 
       * Support for filtering by manufacturer-specific data using the :c:macro:`BLE_SCAN_MANUFACTURER_DATA_FILTER` filter type.
       * The :kconfig:option:`CONFIG_BLE_SCAN_MANUFACTURER_DATA_COUNT` and :kconfig:option:`CONFIG_BLE_SCAN_MANUFACTURER_DATA_MAX_LEN` Kconfig options to configure the manufacturer data filter capacity and maximum payload length.
+
+* Added the :ref:`lib_bm_spi_mngr` library for queued SPI master transactions on a single SPIM instance.
+  Enable it with the :kconfig:option:`CONFIG_BM_SPI_MNGR` Kconfig option.
+  See :ref:`lib_bm_spi_mngr` for an overview and :ref:`SPI transaction manager API reference <api_bm_spi_mngr>` for the full API.
 
 Bluetooth LE Services
 ---------------------
@@ -177,7 +181,7 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Peripheral samples
 ------------------
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Added the :ref:`spi_mngr_sample` sample, demonstrating non-blocking read, page program, and sector erase on the on-board external NOR flash using the :ref:`lib_bm_spi_mngr` library.
 
 DFU samples
 -----------

@@ -1,0 +1,20 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menuconfig BM_SPI_MNGR
+	bool "SPI transaction manager"
+	depends on NRFX_SPIM
+	select RING_BUFFER
+	help
+	  Queue SPI master transactions (multi-transfer sequences) on one SPIM instance.
+
+if BM_SPI_MNGR
+
+module=BM_SPI_MNGR
+module-str=SPI transaction manager
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endif
