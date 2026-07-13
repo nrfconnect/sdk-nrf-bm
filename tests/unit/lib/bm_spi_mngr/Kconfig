@@ -1,0 +1,7 @@
+# Redefine this symbol without dependency on NRFX_SPIM to avoid pulling in the real nrfx driver.
+# The real nrfx SPIM driver is mocked with cmock in the test.
+config BM_SPI_MNGR
+	select RING_BUFFER
+	default y
+
+source "Kconfig.zephyr"
