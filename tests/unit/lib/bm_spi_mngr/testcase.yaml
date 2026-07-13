@@ -1,0 +1,4 @@
+tests:
+  lib.bm_spi_mngr:
+    platform_allow: native_sim
+    tags: unittest
