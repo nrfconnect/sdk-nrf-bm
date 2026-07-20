@@ -58,6 +58,11 @@ struct ble_mcumgr {
 static uint16_t conn_handle = BLE_CONN_HANDLE_INVALID;
 static struct ble_mcumgr ble_mcumgr;
 static struct smp_transport smp_ncs_bm_bt_transport;
+/* SMP response buffer currently being sent to the peer as MTU-sized notifications.
+ * Held so a transfer paused by a full TX queue can be resumed later.
+ * NULL = nothing pending
+ */
+static struct net_buf *pending_tx;
 
 static uint32_t mcumgr_characteristic_add(struct ble_mcumgr *service,
 					  const struct ble_mcumgr_config *cfg)
@@ -182,53 +187,94 @@ static uint32_t ble_mcumgr_data_send(uint8_t *data, uint16_t *len)
 	}
 
 	nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx_params);
-	if (nrf_err) {
+	if (nrf_err == NRF_ERROR_RESOURCES) {
+		/* SoftDevice notification queue is full.
+		 * Retry upon receiving a BLE_GATTS_EVT_HVN_TX_COMPLETE event.
+		 */
+		LOG_DBG("Notification queue full, will retry");
+	} else if (nrf_err) {
 		LOG_ERR("Failed to send MCUmgr data, nrf_error %#x", nrf_err);
-		return nrf_err;
 	}
 
-	return NRF_SUCCESS;
+	return nrf_err;
 }
 
-/* Return errno! */
-static int smp_ncs_bm_bt_tx_pkt(struct net_buf *nb)
+/* Manage the pending SMP transfer:
+ * Chuncks the SMP response into MTU-sized notifications and queues them for transfer.
+ * Pauses if the SoftDevice notification queue becomes full.
+ * Call the function again to resume sending or to release the buffer if the link has dropped.
+ */
+static void mcumgr_tx_service(void)
 {
 	uint32_t nrf_err;
-	uint16_t notification_size;
-	uint8_t *send_pos = nb->data;
+	uint16_t hvn_size_max;
 	uint16_t send_size = 0;
 
-	if (conn_handle == BLE_CONN_HANDLE_INVALID) {
-		return -ENOENT;
+	/* Nothing pending. */
+	if (pending_tx == NULL) {
+		return;
 	}
 
-	nrf_err = ble_conn_params_att_mtu_get(conn_handle, &notification_size);
+	/* Link is down, release any pending buffer. */
+	if (conn_handle == BLE_CONN_HANDLE_INVALID) {
+		goto finish;
+	}
+
+	/* Need the current MTU to size each notification. */
+	nrf_err = ble_conn_params_att_mtu_get(conn_handle, &hvn_size_max);
 	if (nrf_err) {
 		goto finish;
 	}
 
-	notification_size = BLE_GATT_MAX_DATA_LEN_CALC(notification_size);
+	hvn_size_max = BLE_GATT_MAX_DATA_LEN_CALC(hvn_size_max);
 
-	while ((nb->data + nb->len) > send_pos) {
-		send_size = (nb->data + nb->len) - send_pos;
+	/* Send the buffer one notification sized chunk at a time until empty. */
+	while (pending_tx->len > 0) {
+		send_size = (pending_tx->len > hvn_size_max) ? hvn_size_max : pending_tx->len;
 
-		if (send_size > notification_size) {
-			send_size = notification_size;
-		}
+		nrf_err = ble_mcumgr_data_send(pending_tx->data, &send_size);
 
-		nrf_err = ble_mcumgr_data_send(send_pos, &send_size);
-
-		if (nrf_err) {
+		if (nrf_err == NRF_ERROR_RESOURCES) {
+			/* SoftDevice notification queue is full.
+			 * Retry upon receiving a BLE_GATTS_EVT_HVN_TX_COMPLETE event.
+			 */
+			return;
+		} else if (nrf_err) {
+			/* Unrecoverable, give up on this response. */
 			break;
 		}
 
-		send_pos += send_size;
+		/* Remove the sent bytes from the front of the buffer.
+		 * This both advances to the next chunk and shrinks len toward 0 to end the loop.
+		 */
+		net_buf_pull(pending_tx, send_size);
 	}
 
 finish:
-	smp_packet_free(nb);
+	smp_packet_free(pending_tx);
+	pending_tx = NULL;
+}
 
-	return 0;
+/* mcumgr transport "output" callback:
+ * Receives a freshly built SMP response.
+ * Sets the pending_tx pointer to the SMP response and calls mcumgr_tx_service to handle it.
+ */
+static int smp_ncs_bm_bt_tx_pkt(struct net_buf *nb)
+{
+	int err = 0;
+
+	if (conn_handle == BLE_CONN_HANDLE_INVALID) {
+		err = -ENOENT;
+	}
+
+	/* One response in flight at a time, we must not overwrite a buffer still being sent. */
+	__ASSERT(pending_tx == NULL, "pending_tx busy: overwriting in-flight transfer");
+
+	pending_tx = nb;
+
+	mcumgr_tx_service();
+
+	return err;
 }
 
 /**
@@ -259,6 +305,9 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 	{
 		if (conn_handle == evt->evt.gap_evt.conn_handle) {
 			conn_handle = BLE_CONN_HANDLE_INVALID;
+
+			/* Link is down, release any pending buffer. */
+			mcumgr_tx_service();
 		}
 		break;
 	}
@@ -266,6 +315,13 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 	case BLE_GATTS_EVT_WRITE:
 	{
 		on_write(mcumgr_data, evt);
+		break;
+	}
+
+	case BLE_GATTS_EVT_HVN_TX_COMPLETE:
+	{
+		/* There should be room in the SoftDevice notification queue. Resume transfer. */
+		mcumgr_tx_service();
 		break;
 	}
 	};
