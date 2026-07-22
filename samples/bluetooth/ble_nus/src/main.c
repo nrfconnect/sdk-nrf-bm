@@ -17,6 +17,7 @@
 #include <bm/bluetooth/services/ble_nus.h>
 #include <nrf_soc.h>
 #include <nrfx_uarte.h>
+#include <hal/nrf_uarte.h>
 #if defined(CONFIG_SAMPLE_NUS_LPUARTE)
 #include <bm/drivers/bm_lpuarte.h>
 #endif
@@ -61,7 +62,9 @@ static nrfx_uarte_t nus_uarte_inst = NRFX_UARTE_INSTANCE(NUS_UARTE_INST);
  */
 static volatile uint16_t ble_nus_max_data_len = BLE_NUS_MAX_DATA_LEN_CALC(BLE_GATT_ATT_MTU_DEFAULT);
 
-/* Receive buffers used in UART ISR callback. */
+/* Double-buffered RX: one buffer is always queued as "next",
+ * so when the current one is filled or aborted, DMA continues into the other.
+ */
 static uint8_t uarte_rx_buf[2][CONFIG_SAMPLE_NUS_UART_RX_BUF_SIZE];
 static int buf_idx;
 
@@ -110,10 +113,15 @@ static void lpuarte_rx_handler(char *data, size_t data_len)
 #else
 static void uarte_rx_handler(char *data, size_t data_len)
 {
+	/* Line accumulated across RX_DONE chunks.
+	 * The compare-match filter aborts RX on the terminator byte,
+	 * so a line usually arrives in one chunk.
+	 * We still accumulate to confirm the full EOL sequence in software and to split a chunk
+	 * that carries more than one line.
+	 */
 	uint32_t nrf_err;
 	uint8_t c;
 	bool eol;
-	/* receive buffer used in UART ISR callback. */
 	static char rx_buf[BLE_NUS_MAX_DATA_LEN];
 	static uint16_t rx_buf_idx;
 	uint16_t len;
@@ -127,44 +135,39 @@ static void uarte_rx_handler(char *data, size_t data_len)
 
 		/* Send once the buffer ends with the configured EOL or the buffer is full. */
 		eol = rx_buf_idx >= UART_EOL_LEN &&
-			memcmp(&rx_buf[rx_buf_idx - UART_EOL_LEN], UART_EOL, UART_EOL_LEN) == 0;
+			   memcmp(&rx_buf[rx_buf_idx - UART_EOL_LEN], UART_EOL, UART_EOL_LEN) == 0;
 
-		if (eol || (rx_buf_idx >= ble_nus_max_data_len)) {
-			/* Optionally drop the line ending so the peer gets just the message. */
-			if (eol && IS_ENABLED(CONFIG_SAMPLE_UART_EOL_STRIP)) {
-				rx_buf_idx -= UART_EOL_LEN;
-			}
-
-			if (rx_buf_idx == 0) {
-				/* RX buffer is empty, nothing to send. */
-				continue;
-			}
-
-			len = rx_buf_idx;
-			LOG_INF("Sending data over BLE NUS, len %d", len);
-
-			/* Retry when the SoftDevice notification queue is full.
-			 * sd_ble_gatts_hvx() returns NRF_ERROR_RESOURCES when UART data arrives
-			 * faster than the radio can transmit notifications.
-			 */
-			do {
-				nrf_err = ble_nus_data_send(&ble_nus, rx_buf, &len, conn_handle);
-				if ((nrf_err) && (nrf_err != NRF_ERROR_RESOURCES)) {
-					LOG_ERR("Failed to send NUS data, nrf_error %#x", nrf_err);
-					return;
-				}
-			} while (nrf_err == NRF_ERROR_RESOURCES);
-
-			if (len == rx_buf_idx) {
-				rx_buf_idx = 0;
-			} else {
-				/* Not all data in RX buffer was transmitted.
-				 * Move what is left to start of buffer.
-				 */
-				memmove(&rx_buf[len], &rx_buf[0], rx_buf_idx - len);
-				rx_buf_idx -= len;
-			}
+		if (!eol && rx_buf_idx < ble_nus_max_data_len) {
+			continue;
 		}
+
+		/* Optionally drop the line ending so the peer gets just the message. */
+		if (eol && IS_ENABLED(CONFIG_SAMPLE_UART_EOL_STRIP)) {
+			rx_buf_idx -= UART_EOL_LEN;
+		}
+
+		if (rx_buf_idx == 0) {
+			/* RX buffer is empty, nothing to send. */
+			continue;
+		}
+
+		len = rx_buf_idx;
+		LOG_INF("Sending data over BLE NUS, len %d", len);
+
+		/* Retry when the SoftDevice notification queue is full.
+		 * sd_ble_gatts_hvx() returns NRF_ERROR_RESOURCES when UART data arrives
+		 * faster than the radio can transmit notifications.
+		 */
+		do {
+			nrf_err = ble_nus_data_send(&ble_nus, rx_buf, &len, conn_handle);
+			if ((nrf_err) && (nrf_err != NRF_ERROR_RESOURCES)) {
+				LOG_ERR("Failed to send NUS data, nrf_error %#x", nrf_err);
+				return;
+			}
+		} while (nrf_err == NRF_ERROR_RESOURCES);
+
+		/* The whole line fit in one notification and was sent, so start the next. */
+		rx_buf_idx = 0;
 	}
 }
 #endif
@@ -188,12 +191,9 @@ static void uarte_evt_handler(const nrfx_uarte_event_t *event, void *ctx)
 			uarte_rx_handler(event->data.rx.p_buffer, event->data.rx.length);
 #endif
 		}
-
-#if !defined(CONFIG_SAMPLE_NUS_LPUARTE)
-		(void)nrfx_uarte_rx_enable(&nus_uarte_inst, 0);
-#endif
 		break;
 	case NRFX_UARTE_EVT_RX_BUF_REQUEST:
+		/* Hand over the other buffer to keep the pipeline full. */
 #if defined(CONFIG_SAMPLE_NUS_LPUARTE)
 		(void)bm_lpuarte_rx_buffer_set(&lpu, uarte_rx_buf[buf_idx],
 					       CONFIG_SAMPLE_NUS_UART_RX_BUF_SIZE);
@@ -384,6 +384,23 @@ static void ble_nus_evt_handler(struct ble_nus *nus, const struct ble_nus_evt *e
 
 ISR_DIRECT_DECLARE(uarte_direct_isr)
 {
+#if !defined(CONFIG_SAMPLE_NUS_LPUARTE)
+	/* The compare-match filter raises MATCH0 when the terminator byte arrives.
+	 * Clear it and abort the current RX. A second buffer is already queued,
+	 * so reception continues into it without a gap.
+	 */
+	NRF_UARTE_Type * reg = nus_uarte_inst.p_reg;
+
+	if (reg->EVENTS_DMA.RX.MATCH[0]) {
+		nrf_uarte_event_t match_event =
+			(nrf_uarte_event_t)offsetof(NRF_UARTE_Type, EVENTS_DMA.RX.MATCH[0]);
+
+		nrf_uarte_event_clear(reg, match_event);
+
+		(void)nrfx_uarte_rx_abort(&nus_uarte_inst, false, false);
+	}
+#endif
+
 	nrfx_uarte_irq_handler(&nus_uarte_inst);
 	return 0;
 }
@@ -444,6 +461,16 @@ static int uarte_init(void)
 		LOG_ERR("Failed to initialize UART, err %d", err);
 		return err;
 	}
+
+	/* The compare-match filter watches each received byte and can stop RX on a match.
+	 * Set its candidate to the last EOL byte and interrupt on match to end RX on terminator.
+	 * Only one byte matches, so a multi-byte EOL is confirmed in software by uarte_rx_handler.
+	 */
+	NRF_UARTE_Type * reg = nus_uarte_inst.p_reg;
+
+	reg->DMA.RX.MATCH.CANDIDATE[0] = (uint8_t)UART_EOL[UART_EOL_LEN - 1];
+	reg->DMA.RX.MATCH.CONFIG       = UARTE_DMA_RX_MATCH_CONFIG_ENABLE0_Msk;
+	reg->INTENSET                  = UARTE_INTENSET_DMARXMATCH0_Msk;
 #endif /* CONFIG_SAMPLE_NUS_LPUARTE */
 
 	return 0;
@@ -558,7 +585,10 @@ int main(void)
 		goto idle;
 	}
 
-	err = nrfx_uarte_rx_enable(&nus_uarte_inst, 0);
+	/* Continuous mode keeps RX running across buffers. With a second buffer queued,
+	 * an abort on match ends the current one and continues into the other.
+	 */
+	err = nrfx_uarte_rx_enable(&nus_uarte_inst, NRFX_UARTE_RX_ENABLE_CONT);
 	if (err) {
 		LOG_ERR("UART RX failed, err %d", err);
 	}
