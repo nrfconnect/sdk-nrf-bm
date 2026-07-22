@@ -172,10 +172,6 @@ Bluetooth LE samples
    * Removed redundant logging of authentication status from the main source file.
      Authentication status is logged by :ref:`lib_peer_manager` library.
 
-* :ref:`ble_nus_central_sample` sample:
-
-   * Fixed the disconnect button handler to only disconnect on button press, and not on button release.
-
 * :ref:`ble_hrs_central_sample` sample:
 
    * Fixed:
@@ -184,9 +180,18 @@ Bluetooth LE samples
       * The allow list disabling button to only trigger on button press, and not on button release.
       * An issue with the endianness of the target peripheral address when displaying the address on a :c:enumerator:`BLE_SCAN_EVT_CONNECTED` event and when supplying the scan filter address with the :kconfig:option:`CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR` Kconfig option.
 
+* :ref:`ble_nus_sample` sample:
+
+   * Fixed a bug with the UARTE RX buffer address provided with index 1.
+
 * :ref:`ble_nus_central_sample` sample:
 
    * Updated to use Button 1 to disconnect from the target peripheral to align with other central samples.
+
+   * Fixed:
+
+      * The disconnect button handler to only disconnect on button press, and not on button release.
+      * A bug with the UARTE RX buffer address provided with index 1.
 
 NFC samples
 -----------
