@@ -15,11 +15,13 @@
 
 LOG_MODULE_REGISTER(sample, CONFIG_SAMPLE_UARTE_LOG_LEVEL);
 
+#define SAMPLE_UARTE_RX_BUF_SIZE 1
+
 /** Application UARTE instance */
 static nrfx_uarte_t uarte_inst = NRFX_UARTE_INSTANCE(BOARD_APP_UARTE_INST);
 
 /* Receive buffer used in UARTE ISR callback */
-static uint8_t uarte_rx_buf[4];
+static uint8_t uarte_rx_buf[2][SAMPLE_UARTE_RX_BUF_SIZE];
 static int buf_idx;
 
 /* Handle data received from UARTE. */
@@ -75,10 +77,10 @@ static void uarte_event_handler(const nrfx_uarte_event_t *event, void *ctx)
 		(void)nrfx_uarte_rx_enable(&uarte_inst, 0);
 		break;
 	case NRFX_UARTE_EVT_RX_BUF_REQUEST:
-		(void)nrfx_uarte_rx_buffer_set(&uarte_inst, &uarte_rx_buf[buf_idx], 1);
+		(void)nrfx_uarte_rx_buffer_set(&uarte_inst, uarte_rx_buf[buf_idx],
+					       SAMPLE_UARTE_RX_BUF_SIZE);
 
-		buf_idx++;
-		buf_idx = (buf_idx < sizeof(uarte_rx_buf)) ? buf_idx : 0;
+		buf_idx = buf_idx ? 0 : 1;
 		break;
 	case NRFX_UARTE_EVT_ERROR:
 		LOG_ERR("UARTE error %#x", event->data.error.error_mask);

@@ -62,7 +62,7 @@ static nrfx_uarte_t nus_uarte_inst = NRFX_UARTE_INSTANCE(NUS_UARTE_INST);
 static volatile uint16_t ble_nus_max_data_len = BLE_NUS_MAX_DATA_LEN_CALC(BLE_GATT_ATT_MTU_DEFAULT);
 
 /* Receive buffers used in UART ISR callback. */
-static uint8_t uarte_rx_buf[CONFIG_SAMPLE_NUS_UART_RX_BUF_SIZE][2];
+static uint8_t uarte_rx_buf[2][CONFIG_SAMPLE_NUS_UART_RX_BUF_SIZE];
 static int buf_idx;
 
 /**

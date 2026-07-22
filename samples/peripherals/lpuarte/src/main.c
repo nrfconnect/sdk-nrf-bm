@@ -19,13 +19,15 @@
 
 LOG_MODULE_REGISTER(sample, CONFIG_SAMPLE_LPUARTE_LOG_LEVEL);
 
+#define SAMPLE_LPUARTE_RX_BUF_SIZE 128
+
 static nrfx_uarte_t uarte_inst = NRFX_UARTE_INSTANCE(BOARD_APP_LPUARTE_INST);
 
 /** Application Low Power UARTE instance */
 struct bm_lpuarte lpu;
 
 /* Receive buffer used in UARTE ISR callback */
-static uint8_t uarte_rx_buf[256];
+static uint8_t uarte_rx_buf[2][SAMPLE_LPUARTE_RX_BUF_SIZE];
 static int buf_idx;
 
 /* Handle data received from UARTE. */
@@ -46,9 +48,9 @@ static void lpuarte_event_handler(const nrfx_uarte_event_t *event, void *ctx)
 		}
 		break;
 	case NRFX_UARTE_EVT_RX_BUF_REQUEST:
-		(void)bm_lpuarte_rx_buffer_set(lpu, &uarte_rx_buf[buf_idx * 128], 128);
-		buf_idx++;
-		buf_idx = (buf_idx < 2) ? buf_idx : 0;
+		(void)bm_lpuarte_rx_buffer_set(lpu, uarte_rx_buf[buf_idx],
+					       SAMPLE_LPUARTE_RX_BUF_SIZE);
+		buf_idx = buf_idx ? 0 : 1;
 		break;
 	case NRFX_UARTE_EVT_ERROR:
 		LOG_ERR("UARTE error event, %#x", event->data.error.error_mask);
