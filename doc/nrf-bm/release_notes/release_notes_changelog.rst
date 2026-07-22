@@ -214,6 +214,7 @@ Bluetooth LE samples
      If your device is using CR, you must set the Kconfig option accordingly.
    * Added the :kconfig:option:`CONFIG_SAMPLE_UART_EOL_STRIP` Kconfig option to strip the termination before sending over Bluetooth LE.
      This option is disabled by default.
+   * Updated UART reception to detect the line terminator in hardware using the UARTE compare-match filter, reporting each line as its own transfer instead of each received byte.
 
    * Fixed:
 
