@@ -232,6 +232,13 @@ NFC samples
 
 No changes since the latest nRF Connect SDK Bare Metal release.
 
+Peripheral samples
+------------------
+
+* :ref:`uarte_sample` sample:
+
+   * Updated UART reception to detect the line terminator in hardware using the UARTE compare-match filter, reporting each line as its own transfer instead of each received byte.
+
 DFU samples
 -----------
 
