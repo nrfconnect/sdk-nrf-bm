@@ -51,6 +51,8 @@
 
 .. _`S115 SoftDevice Specification`: https://docs.nordicsemi.com/bundle/sds_s115/page/SDS/s1xx/s115.html
 .. _`S145 SoftDevice Specification`: https://docs.nordicsemi.com/bundle/sds_s145/page/SDS/s1xx/s145.html
+.. _`S115 Bluetooth LE role configuration`: https://docs.nordicsemi.com/bundle/sds_s115/page/SDS/s1xx/ble_protocol_stack/role_configuration.html
+.. _`S145 Bluetooth LE role configuration`: https://docs.nordicsemi.com/bundle/sds_s145/page/SDS/s1xx/ble_protocol_stack/role_configuration.html
 
 .. ### Installation
 
@@ -75,6 +77,10 @@
 .. _`Actions View`: https://docs.nordicsemi.com/bundle/nrf-connect-vscode/page/reference/ui_sidebar_actions.html
 .. _`Details View`: https://docs.nordicsemi.com/bundle/nrf-connect-vscode/page/reference/ui_sidebar_details.html
 .. _`Connected Devices View`: https://docs.nordicsemi.com/bundle/nrf-connect-vscode/page/reference/ui_sidebar_connected_devices.html
+
+.. ### Security
+
+.. _`PSA Crypto API`: https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrf/security/crypto/
 
 .. ### Drivers
 
