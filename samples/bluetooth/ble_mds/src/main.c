@@ -51,69 +51,74 @@ static uint16_t conn_handle = BLE_CONN_HANDLE_INVALID;
 static uint8_t battery_level = BATTERY_LEVEL_MAX;
 
 static struct bm_timer battery_timer;
-static struct bm_timer run_led_timer;
 
-#if IS_ENABLED(CONFIG_MEMFAULT) && !IS_ENABLED(CONFIG_MULTITHREADING)
-int z_impl_k_mutex_lock(struct k_mutex *mutex, k_timeout_t timeout)
-{
-	ARG_UNUSED(mutex);
-	ARG_UNUSED(timeout);
-
-	return 0;
-}
-
-int z_impl_k_mutex_unlock(struct k_mutex *mutex)
-{
-	ARG_UNUSED(mutex);
-
-	return 0;
-}
-#endif
+static volatile bool memfault_heartbeat_pending;
 
 #if IS_ENABLED(CONFIG_MEMFAULT_METRICS_TIMER_CUSTOM)
-static void (*memfault_metrics_timer_cb)(void);
-static int64_t memfault_metrics_period_ms;
-static int64_t memfault_metrics_next_ms;
+/* CONFIG_MEMFAULT_METRICS_TIMER_CUSTOM delegates heartbeat scheduling to the platform.
+ * On boot, Memfault itself calls memfault_platform_metrics_timer_boot() below,
+ * a function we get to define, and hands us a callback and an interval.
+ * This whole block is us building that schedule ourselves: we save the callback,
+ * start our own repeating timer via bm_timer for the given interval,
+ * and then poll every loop in main() via memfault_metrics_timer_process(),
+ * to check if that timer has fired yet, and if it has, run the callback.
+ */
+static struct bm_timer memfault_metrics_timer;
+static MemfaultPlatformTimerCallback *memfault_metrics_timer_cb;
+static volatile bool memfault_metrics_timer_due;
+
+static void memfault_metrics_timer_timeout_handler(void *context)
+{
+	ARG_UNUSED(context);
+
+	memfault_metrics_timer_due = true;
+}
 
 bool memfault_platform_metrics_timer_boot(uint32_t period_sec,
 					  MemfaultPlatformTimerCallback callback)
 {
+	int err;
+	uint32_t period_ms;
+
 	if ((period_sec == 0U) || (callback == NULL)) {
 		return false;
 	}
 
 	memfault_metrics_timer_cb = callback;
-	memfault_metrics_period_ms = (int64_t)period_sec * 1000;
-	memfault_metrics_next_ms = k_uptime_get() + memfault_metrics_period_ms;
+
+	err = bm_timer_init(&memfault_metrics_timer, BM_TIMER_MODE_REPEATED,
+			    memfault_metrics_timer_timeout_handler);
+	if (err) {
+		return false;
+	}
+
+	period_ms = period_sec * 1000U;
+	err = bm_timer_start(&memfault_metrics_timer, BM_TIMER_MS_TO_TICKS(period_ms), NULL);
+	if (err) {
+		return false;
+	}
 
 	return true;
 }
 
+/* Polls the memfault_metrics_timer_due flag, set by the bm_timer expiry handler,
+ * and runs the callback once it fires.
+ */
 static void memfault_metrics_timer_process(void)
 {
-	int64_t now;
-
-	if (memfault_metrics_timer_cb == NULL) {
+	if (!memfault_metrics_timer_due || (memfault_metrics_timer_cb == NULL)) {
 		return;
 	}
+	memfault_metrics_timer_due = false;
 
-	now = k_uptime_get();
-	if (now < memfault_metrics_next_ms) {
-		return;
-	}
-
-	memfault_metrics_next_ms += memfault_metrics_period_ms;
-	if (now >= memfault_metrics_next_ms) {
-		memfault_metrics_next_ms = now + memfault_metrics_period_ms;
-	}
-
+	/*
+	 * The "memfault_metrics_timer_cb" serializes every metric set via
+	 * MEMFAULT_METRIC_SET_UNSIGNED, MEMFAULT_METRIC_ADD, etc. into a
+	 * heartbeat event, and queues it for the memfault packetizer.
+	 */
 	memfault_metrics_timer_cb();
 }
-#else
-static void memfault_metrics_timer_process(void)
-{
-}
-#endif
+#endif /* IS_ENABLED(CONFIG_MEMFAULT_METRICS_TIMER_CUSTOM) */
 
 static void leds_init(void)
 {
@@ -121,17 +126,6 @@ static void leds_init(void)
 	nrf_gpio_cfg_output(CON_STATUS_LED);
 	nrf_gpio_pin_write(RUN_STATUS_LED, !BOARD_LED_ACTIVE_STATE);
 	nrf_gpio_pin_write(CON_STATUS_LED, !BOARD_LED_ACTIVE_STATE);
-}
-
-static void run_led_timeout_handler(void *context)
-{
-	static bool led_on;
-
-	ARG_UNUSED(context);
-
-	led_on = !led_on;
-	nrf_gpio_pin_write(RUN_STATUS_LED, led_on ? BOARD_LED_ACTIVE_STATE :
-						     !BOARD_LED_ACTIVE_STATE);
 }
 
 static void battery_level_timeout_handler(void *context)
@@ -257,6 +251,9 @@ static void ble_adv_evt_handler(struct ble_adv *adv, const struct ble_adv_evt *e
 	case BLE_ADV_EVT_ERROR:
 		LOG_ERR("Advertising error, nrf_error %#x", evt->error.reason);
 		break;
+	case BLE_ADV_EVT_IDLE:
+		LOG_INF("Advertising stopped");
+		break;
 	default:
 		break;
 	}
@@ -279,25 +276,25 @@ static void button_handler(uint8_t pin, enum bm_buttons_evt_type action)
 			if (err) {
 				LOG_ERR("Failed to start button timer metric, err %d", err);
 			} else {
-				LOG_INF("button_elapsed_time_ms metric timer started");
+				LOG_INF("Button0 - button_elapsed_time_ms metric timer started");
 			}
 		} else {
 			err = MEMFAULT_METRIC_TIMER_STOP(button_elapsed_time_ms);
 			if (err) {
 				LOG_ERR("Failed to stop button timer metric, err %d", err);
 			} else {
-				LOG_INF("button_elapsed_time_ms metric timer stopped");
+				LOG_INF("Button0 - button_elapsed_time_ms metric timer stopped");
 			}
 
-			memfault_metrics_heartbeat_debug_trigger();
-			LOG_INF("Memfault heartbeat triggered");
+			memfault_heartbeat_pending = true;
+			LOG_INF("Memfault heartbeat scheduled");
 		}
 		break;
 
 	case BOARD_PIN_BTN_1:
-		MEMFAULT_TRACE_EVENT_WITH_LOG(button_state_changed, "Button state: %u",
+		MEMFAULT_TRACE_EVENT_WITH_LOG(button_state_changed, "Button1 state: %u",
 					      (uint32_t)(action == BM_BUTTONS_PRESS));
-		LOG_INF("button_state_changed event tracked, button state: %u",
+		LOG_INF("Button1 - button_state_changed event tracked, button 1 state: %u",
 			(uint32_t)(action == BM_BUTTONS_PRESS));
 		break;
 
@@ -310,9 +307,7 @@ static void button_handler(uint8_t pin, enum bm_buttons_evt_type action)
 		if (err) {
 			LOG_ERR("Failed to increase button_press_count metric, err %d", err);
 		} else {
-			LOG_INF("button_press_count metric increased");
-			memfault_metrics_heartbeat_debug_trigger();
-			LOG_INF("Memfault heartbeat triggered");
+			LOG_INF("Button2 - button_press_count metric increased");
 		}
 		break;
 
@@ -380,6 +375,30 @@ int main(void)
 		.sec_mode = BLE_MDS_CONFIG_SEC_MODE_DEFAULT,
 	};
 
+	/* Advertise MDS and Battery so scanning apps spot Memfault support, before connecting. */
+	ble_uuid_t adv_uuid_list[] = {
+		{
+			.uuid = BLE_UUID_MDS_SERVICE,
+			.type = ble_mds_service_uuid_type(&ble_mds),
+		},
+		{
+			.uuid = BLE_UUID_BATTERY_SERVICE,
+			.type = BLE_UUID_TYPE_BLE,
+		},
+	};
+	struct ble_adv_config adv_cfg = {
+		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
+		.evt_handler = ble_adv_evt_handler,
+		.adv_data = {
+			.name_type = BLE_ADV_DATA_FULL_NAME,
+			.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE,
+		},
+		.sr_data.uuid_lists.complete = {
+			.len = ARRAY_SIZE(adv_uuid_list),
+			.uuid = &adv_uuid_list[0],
+		},
+	};
+
 	LOG_INF("BLE MDS sample started");
 
 	leds_init();
@@ -388,12 +407,6 @@ int main(void)
 			    battery_level_timeout_handler);
 	if (err) {
 		LOG_ERR("Failed to initialize battery timer, err %d", err);
-		goto idle;
-	}
-
-	err = bm_timer_init(&run_led_timer, BM_TIMER_MODE_REPEATED, run_led_timeout_handler);
-	if (err) {
-		LOG_ERR("Failed to initialize run LED timer, err %d", err);
 		goto idle;
 	}
 
@@ -458,29 +471,6 @@ int main(void)
 		goto idle;
 	}
 
-	ble_uuid_t adv_uuid_list[] = {
-		{
-			.uuid = BLE_UUID_MDS_SERVICE,
-			.type = ble_mds_service_uuid_type(&ble_mds),
-		},
-		{
-			.uuid = BLE_UUID_BATTERY_SERVICE,
-			.type = BLE_UUID_TYPE_BLE,
-		},
-	};
-	struct ble_adv_config adv_cfg = {
-		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
-		.evt_handler = ble_adv_evt_handler,
-		.adv_data = {
-			.name_type = BLE_ADV_DATA_FULL_NAME,
-			.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE,
-		},
-		.sr_data.uuid_lists.complete = {
-			.len = ARRAY_SIZE(adv_uuid_list),
-			.uuid = &adv_uuid_list[0],
-		},
-	};
-
 	nrf_err = ble_adv_init(&ble_adv, &adv_cfg);
 	if (nrf_err) {
 		LOG_ERR("Failed to initialize advertising, nrf_error %#x", nrf_err);
@@ -498,13 +488,7 @@ int main(void)
 		goto idle;
 	}
 
-	err = bm_timer_start(&run_led_timer,
-			     BM_TIMER_MS_TO_TICKS(CONFIG_SAMPLE_BLE_MDS_RUN_LED_BLINK_INTERVAL),
-			     NULL);
-	if (err) {
-		LOG_ERR("Failed to start run LED timer, err %d", err);
-		goto idle;
-	}
+	nrf_gpio_pin_write(RUN_STATUS_LED, BOARD_LED_ACTIVE_STATE);
 
 	nrf_err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
 	if (nrf_err) {
@@ -516,7 +500,21 @@ int main(void)
 
 idle:
 	while (true) {
+#if IS_ENABLED(CONFIG_MEMFAULT_METRICS_TIMER_CUSTOM)
+		/* With CONFIG_MEMFAULT_METRICS_TIMER_CUSTOM, Memfault's own internal
+		 * `timer_boot` implementation is disabled so we need to drive the heartbeat.
+		 */
 		memfault_metrics_timer_process();
+#endif
+		/* Flushes the ISR-pended trace event and serializes it here in the main loop,
+		 * since bm_buttons invoke handlers in ISR context, where serialization is not safe.
+		 */
+		memfault_trace_event_try_flush_isr_event();
+		if (memfault_heartbeat_pending) {
+			memfault_heartbeat_pending = false;
+			memfault_metrics_heartbeat_debug_trigger();
+		}
+		/* Process Memfault data and send the next chunk over BLE when ready. */
 		ble_mds_process(&ble_mds);
 
 		log_flush();
