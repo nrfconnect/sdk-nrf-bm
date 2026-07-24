@@ -43,7 +43,12 @@ LOG_MODULE_REGISTER(ble_mds, CONFIG_BLE_MDS_LOG_LEVEL);
 BUILD_ASSERT(sizeof(BLE_MDS_PROJECT_KEY) > 1,
 	     "Set CONFIG_MEMFAULT_NCS_PROJECT_KEY or CONFIG_MEMFAULT_PROJECT_KEY for MDS");
 
+/** Data Export command values. */
+#define BLE_MDS_DATA_EXPORT_CMD_STOP 0x00
+#define BLE_MDS_DATA_EXPORT_CMD_START 0x01
 #define BLE_MDS_ATT_OVERHEAD (ATT_OPCODE_LEN + ATT_HANDLE_LEN)
+#define BLE_MDS_SEQ_NUM_BYTE_LEN 0x01
+#define BLE_MDS_SEQ_NUM_MASK 0x1f
 #define BLE_MDS_SEQ_NUM_COUNT 32
 #define BLE_MDS_SUPPORTED_FEATURES 0x00
 #define BLE_MDS_URI_BASE                                                                         \
@@ -56,10 +61,10 @@ static char device_id[MEMFAULT_DEVICE_INFO_MAX_STRING_SIZE + 1];
 static char data_uri[CONFIG_BLE_MDS_DATA_URI_MAX_LEN];
 static char authorization[sizeof(BLE_MDS_AUTH_PREFIX) + sizeof(BLE_MDS_PROJECT_KEY) - 1];
 
-static uint32_t readable_char_add(uint16_t service_handle, uint8_t uuid_type, uint16_t uuid,
-				  const ble_gap_conn_sec_mode_t *read_perm, const void *value,
-				  uint16_t len, uint16_t max_len,
-				  ble_gatts_char_handles_t *handles)
+static uint32_t read_char_add(uint16_t service_handle, uint8_t uuid_type, uint16_t uuid,
+			      const ble_gap_conn_sec_mode_t *read_perm,
+			      const void *value, uint16_t init_len, uint16_t max_len,
+			      ble_gatts_char_handles_t *handles)
 {
 	ble_uuid_t char_uuid = {
 		.type = uuid_type,
@@ -79,23 +84,27 @@ static uint32_t readable_char_add(uint16_t service_handle, uint8_t uuid_type, ui
 		.p_uuid = &char_uuid,
 		.p_attr_md = &attr_md,
 		.p_value = (uint8_t *)value,
-		.init_len = len,
+		.init_len = init_len,
 		.max_len = max_len,
 	};
 
 	return sd_ble_gatts_characteristic_add(service_handle, &char_md, &attr, handles);
 }
 
-static uint32_t data_export_char_add(struct ble_mds *mds, const struct ble_mds_config *cfg)
+static uint32_t write_notify_char_add(uint16_t service_handle, uint8_t uuid_type, uint16_t uuid,
+				      const ble_gap_conn_sec_mode_t *write_perm,
+				      const ble_gap_conn_sec_mode_t *cccd_write_perm,
+				      const void *value, uint16_t init_len, uint16_t max_len,
+				      ble_gatts_char_handles_t *handles)
 {
 	ble_uuid_t char_uuid = {
-		.type = mds->uuid_type,
-		.uuid = BLE_UUID_MDS_DATA_EXPORT_CHAR,
+		.type = uuid_type,
+		.uuid = uuid,
 	};
 	ble_gatts_attr_md_t cccd_md = {
 		.vloc = BLE_GATTS_VLOC_STACK,
 		.read_perm = BLE_GAP_CONN_SEC_MODE_OPEN,
-		.write_perm = cfg->sec_mode.data_export_char.cccd_write,
+		.write_perm = *cccd_write_perm,
 	};
 	ble_gatts_char_md_t char_md = {
 		.char_props = {
@@ -107,19 +116,18 @@ static uint32_t data_export_char_add(struct ble_mds *mds, const struct ble_mds_c
 	ble_gatts_attr_md_t attr_md = {
 		.vloc = BLE_GATTS_VLOC_STACK,
 		.vlen = true,
-		.write_perm = cfg->sec_mode.data_export_char.write,
+		.write_perm = *write_perm,
 		.wr_auth = true,
 	};
 	ble_gatts_attr_t attr = {
 		.p_uuid = &char_uuid,
 		.p_attr_md = &attr_md,
-		.p_value = &data_export_mode,
-		.init_len = sizeof(data_export_mode),
-		.max_len = sizeof(mds->pending_payload),
+		.p_value = (uint8_t *)value,
+		.init_len = init_len,
+		.max_len = max_len,
 	};
 
-	return sd_ble_gatts_characteristic_add(mds->service_handle, &char_md, &attr,
-					       &mds->data_export_handles);
+	return sd_ble_gatts_characteristic_add(service_handle, &char_md, &attr, handles);
 }
 
 static uint32_t values_prepare(void)
@@ -153,24 +161,6 @@ static uint32_t values_prepare(void)
 	}
 
 	return NRF_SUCCESS;
-}
-
-static bool notification_enabled(struct ble_mds *mds, uint16_t conn_handle)
-{
-	uint16_t cccd_value;
-	ble_gatts_value_t gatts_value = {
-		.p_value = (uint8_t *)&cccd_value,
-		.len = sizeof(cccd_value),
-	};
-	uint32_t nrf_err;
-
-	nrf_err = sd_ble_gatts_value_get(conn_handle, mds->data_export_handles.cccd_handle,
-					 &gatts_value);
-	if (nrf_err) {
-		return false;
-	}
-
-	return is_notification_enabled((const uint8_t *)&cccd_value);
 }
 
 static void subscription_disable(struct ble_mds *mds)
@@ -221,19 +211,18 @@ static uint16_t data_export_write_apply(struct ble_mds *mds, uint16_t conn_handl
 		return BLE_GATT_STATUS_ATTERR_INVALID_ATT_VAL_LENGTH;
 	}
 
-	if (!mds->subscriber_active || (mds->conn_handle != conn_handle) ||
-	    !notification_enabled(mds, conn_handle)) {
+	if (!mds->subscriber_active || (mds->conn_handle != conn_handle)) {
 		return BLE_GATT_STATUS_ATTERR_CPS_CCCD_CONFIG_ERROR;
 	}
 
 	mode = write->data[0];
 	switch (mode) {
-	case 0x00:
+	case BLE_MDS_DATA_EXPORT_CMD_STOP:
 		mds->streaming_enabled = false;
 		mds->tx_blocked = false;
 		LOG_INF("MDS streaming disabled");
 		return BLE_GATT_STATUS_SUCCESS;
-	case 0x01:
+	case BLE_MDS_DATA_EXPORT_CMD_START:
 		mds->streaming_enabled = true;
 		mds->tx_blocked = false;
 		mds->next_empty_poll_ms = 0;
@@ -250,44 +239,15 @@ static bool conn_handle_matches(const struct ble_mds *mds, uint16_t conn_handle)
 	return (mds->conn_handle == BLE_CONN_HANDLE_INVALID) || (mds->conn_handle == conn_handle);
 }
 
-static void rw_authorize_request_handle(struct ble_mds *mds, const ble_gatts_evt_t *gatts_evt)
-{
-	const ble_gatts_evt_rw_authorize_request_t *auth = &gatts_evt->params.authorize_request;
-	ble_gatts_rw_authorize_reply_params_t reply = {
-		.type = auth->type,
-	};
-	uint32_t nrf_err;
-	uint16_t status;
-
-	if ((auth->type != BLE_GATTS_AUTHORIZE_TYPE_WRITE) ||
-	    (auth->request.write.handle != mds->data_export_handles.value_handle)) {
-		return;
-	}
-
-	if (conn_handle_matches(mds, gatts_evt->conn_handle)) {
-		status = data_export_write_apply(mds, gatts_evt->conn_handle, &auth->request.write);
-	} else {
-		status = BLE_GATT_STATUS_ATTERR_CPS_CCCD_CONFIG_ERROR;
-	}
-
-	reply.params.write.gatt_status = status;
-	reply.params.write.update = (status == BLE_GATT_STATUS_SUCCESS);
-	reply.params.write.offset = 0;
-	reply.params.write.len = auth->request.write.len;
-	reply.params.write.p_data = auth->request.write.data;
-
-	nrf_err = sd_ble_gatts_rw_authorize_reply(gatts_evt->conn_handle, &reply);
-	if (nrf_err) {
-		LOG_ERR("MDS authorize reply failed, nrf_error %#x", nrf_err);
-	}
-}
-
 static void write_handle(struct ble_mds *mds, const ble_gatts_evt_t *gatts_evt)
 {
 	const ble_gatts_evt_write_t *write = &gatts_evt->params.write;
 
 	if ((write->handle != mds->data_export_handles.cccd_handle) &&
 	    (write->handle != mds->data_export_handles.value_handle)) {
+		/* Filter out writes to other characteristics.
+		 * we only handle writes to the Data Export characteristic.
+		 */
 		return;
 	}
 
@@ -303,33 +263,84 @@ static void write_handle(struct ble_mds *mds, const ble_gatts_evt_t *gatts_evt)
 	}
 }
 
+static void rw_authorize_request_handle(struct ble_mds *mds, const ble_gatts_evt_t *gatts_evt)
+{
+	const ble_gatts_evt_rw_authorize_request_t *auth = &gatts_evt->params.authorize_request;
+	ble_gatts_rw_authorize_reply_params_t reply = {
+		.type = auth->type,
+		.params.write.offset = 0,
+	};
+	uint32_t nrf_err;
+	uint16_t status;
+
+	if ((auth->type != BLE_GATTS_AUTHORIZE_TYPE_WRITE) ||
+	    (auth->request.write.handle != mds->data_export_handles.value_handle)) {
+		/* Filter out read/writes authorize requests for other operations/characteristics.
+		 * we only handle read/writes authorize requests to the Data Export characteristic.
+		 */
+		return;
+	}
+
+	if (conn_handle_matches(mds, gatts_evt->conn_handle)) {
+		status = data_export_write_apply(mds, gatts_evt->conn_handle, &auth->request.write);
+	} else {
+		status = BLE_GATT_STATUS_ATTERR_CPS_CCCD_CONFIG_ERROR;
+	}
+
+	reply.params.write.gatt_status = status;
+	reply.params.write.update = (status == BLE_GATT_STATUS_SUCCESS);
+	reply.params.write.len = auth->request.write.len;
+	reply.params.write.p_data = auth->request.write.data;
+
+	nrf_err = sd_ble_gatts_rw_authorize_reply(gatts_evt->conn_handle, &reply);
+	if (nrf_err) {
+		LOG_ERR("MDS authorize reply failed, nrf_error %#x", nrf_err);
+	}
+}
+
 static bool can_send(const struct ble_mds *mds)
 {
-	return mds->initialized && mds->subscriber_active && mds->streaming_enabled &&
+	return (mds->initialized && mds->subscriber_active && mds->streaming_enabled &&
 	       !mds->tx_blocked && !mds->hvx_pending &&
-	       (mds->conn_handle != BLE_CONN_HANDLE_INVALID);
+	       (mds->conn_handle != BLE_CONN_HANDLE_INVALID));
 }
 
 static bool pending_payload_prepare(struct ble_mds *mds)
 {
 	uint16_t att_mtu;
 	size_t chunk_len;
+	bool chunk_available;
 	uint32_t nrf_err;
 	uint16_t value_len_max;
 
 	if (mds->pending_len != 0) {
+		/* A chunk is already staged and waiting to be sent. */
 		return true;
 	}
 
-#if MEMFAULT_LOG_DATA_SOURCE_ENABLED && IS_ENABLED(CONFIG_BLE_MDS_TRIGGER_LOG_COLLECTION)
+#if MEMFAULT_LOG_DATA_SOURCE_ENABLED && IS_ENABLED(CONFIG_BLE_MDS_LOG_COLLECTION)
 	const int64_t now = k_uptime_get();
 
 	if (now >= mds->next_log_collection_ms) {
+		/* Snapshot Memfault's log buffer, so it's queued into the packetizer and sent out.
+		 * (populated by memfault_log_save()/memfault_log_save_preformatted() calls)
+		 *
+		 * Then schedule the next collection.
+		 */
 		memfault_log_trigger_collection();
 		mds->next_log_collection_ms = now + CONFIG_BLE_MDS_LOG_COLLECTION_INTERVAL_MS;
 	}
 #endif
 
+	/* Check if ANY registered data source has something queued and ready to send:
+	 *  - heartbeat metrics (collected via memfault_metrics_heartbeat_collect()),
+	 *  - trace events (captured immediately when logged)
+	 *  - reboot/crash reports (collected once at boot)
+	 *  - logs (queued via memfault_log_trigger_collection() above)
+	 *
+	 * One combined check across all sources,
+	 * back off if nothing is ready yet and retry on the next scheduled poll.
+	 */
 	if (!memfault_packetizer_data_available()) {
 		const int64_t now = k_uptime_get();
 
@@ -343,76 +354,34 @@ static bool pending_payload_prepare(struct ble_mds *mds)
 		att_mtu = BLE_GATT_ATT_MTU_DEFAULT;
 	}
 
+	/* Cap the chunk size to whichever is smaller:
+	 * Our buffer's capacity, or what this connection's current MTU can actually carry.
+	 */
 	value_len_max = MIN((uint16_t)sizeof(mds->pending_payload),
 			    (uint16_t)(att_mtu - BLE_MDS_ATT_OVERHEAD));
-	if (value_len_max <= 1U) {
+	if (value_len_max <= BLE_MDS_SEQ_NUM_BYTE_LEN) {
 		return false;
 	}
 
-	mds->pending_payload[0] = mds->seq_num & 0x1f;
-	chunk_len = value_len_max - 1U;
-	if (!memfault_packetizer_get_chunk(&mds->pending_payload[1], &chunk_len)) {
+	mds->pending_payload[0] = mds->seq_num & BLE_MDS_SEQ_NUM_MASK;
+	chunk_len = value_len_max - BLE_MDS_SEQ_NUM_BYTE_LEN;
+	chunk_available = memfault_packetizer_get_chunk(&mds->pending_payload[1], &chunk_len);
+	if (!chunk_available) {
+		/* memfault_packetizer_data_available() said something was ready,
+		 * but fetching the actual chunk into the payload failed anyway,
+		 * back off and retry on the next scheduled poll.
+		 */
 		mds->next_empty_poll_ms = k_uptime_get() + CONFIG_BLE_MDS_EMPTY_POLL_INTERVAL_MS;
 		return false;
 	}
 
-	mds->pending_len = (uint16_t)(chunk_len + 1U);
+	mds->pending_len = (uint16_t)(chunk_len + BLE_MDS_SEQ_NUM_BYTE_LEN);
 	return true;
 }
 
-void ble_mds_process(struct ble_mds *mds)
+void ble_mds_on_ble_evt(const ble_evt_t *ble_evt, void *ble_mds)
 {
-	ble_gatts_hvx_params_t hvx;
-	uint16_t len;
-	uint32_t nrf_err;
-
-	if ((mds == NULL) || !can_send(mds)) {
-		return;
-	}
-
-	if ((mds->pending_len == 0) && (k_uptime_get() < mds->next_empty_poll_ms)) {
-		return;
-	}
-
-	if (!pending_payload_prepare(mds)) {
-		return;
-	}
-
-	len = mds->pending_len;
-	hvx = (ble_gatts_hvx_params_t){
-		.handle = mds->data_export_handles.value_handle,
-		.type = BLE_GATT_HVX_NOTIFICATION,
-		.p_len = &len,
-		.p_data = mds->pending_payload,
-	};
-
-	nrf_err = sd_ble_gatts_hvx(mds->conn_handle, &hvx);
-	if (nrf_err == NRF_SUCCESS) {
-		mds->pending_len = 0;
-		mds->hvx_pending = true;
-		mds->seq_num = (mds->seq_num + 1U) % BLE_MDS_SEQ_NUM_COUNT;
-		return;
-	}
-
-	if ((nrf_err == NRF_ERROR_RESOURCES) || (nrf_err == NRF_ERROR_INVALID_STATE)) {
-		mds->tx_blocked = true;
-		return;
-	}
-
-	if (nrf_err == BLE_ERROR_GATTS_SYS_ATTR_MISSING) {
-		LOG_WRN("MDS notifications unavailable, nrf_error %#x", nrf_err);
-		mds->tx_blocked = true;
-		return;
-	}
-
-	LOG_ERR("MDS notification failed, nrf_error %#x", nrf_err);
-	mds->pending_len = 0;
-	mds->tx_blocked = true;
-}
-
-void ble_mds_on_ble_evt(const ble_evt_t *ble_evt, void *context)
-{
-	struct ble_mds *mds = context;
+	struct ble_mds *mds = ble_mds;
 
 	if ((ble_evt == NULL) || (mds == NULL) || !mds->initialized) {
 		return;
@@ -477,47 +446,52 @@ uint32_t ble_mds_init(struct ble_mds *mds, const struct ble_mds_config *cfg)
 		return nrf_err;
 	}
 
-	nrf_err = readable_char_add(mds->service_handle, mds->uuid_type,
-				    BLE_UUID_MDS_SUPPORTED_FEATURES_CHAR,
-				    &cfg->sec_mode.feature_char.read, &supported_features,
-				    sizeof(supported_features), sizeof(supported_features),
-				    &mds->supported_features_handles);
+	nrf_err = read_char_add(mds->service_handle, mds->uuid_type,
+				BLE_UUID_MDS_SUPPORTED_FEATURES_CHAR,
+				&cfg->sec_mode.feature_char.read, &supported_features,
+				sizeof(supported_features), sizeof(supported_features),
+				&mds->supported_features_handles);
 	if (nrf_err) {
 		LOG_ERR("Failed to add MDS supported features, nrf_error %#x", nrf_err);
 		return nrf_err;
 	}
 
-	nrf_err = readable_char_add(mds->service_handle, mds->uuid_type,
-				    BLE_UUID_MDS_DEVICE_IDENTIFIER_CHAR,
-				    &cfg->sec_mode.device_id_char.read, device_id,
-				    strlen(device_id), sizeof(device_id),
-				    &mds->device_id_handles);
+	nrf_err = read_char_add(mds->service_handle, mds->uuid_type,
+				BLE_UUID_MDS_DEVICE_IDENTIFIER_CHAR,
+				&cfg->sec_mode.device_id_char.read, device_id,
+				strlen(device_id), sizeof(device_id),
+				&mds->device_id_handles);
 	if (nrf_err) {
 		LOG_ERR("Failed to add MDS device identifier, nrf_error %#x", nrf_err);
 		return nrf_err;
 	}
 
-	nrf_err = readable_char_add(mds->service_handle, mds->uuid_type,
-				    BLE_UUID_MDS_DATA_URI_CHAR,
-				    &cfg->sec_mode.data_uri_char.read, data_uri,
-				    strlen(data_uri), sizeof(data_uri),
-				    &mds->data_uri_handles);
+	nrf_err = read_char_add(mds->service_handle, mds->uuid_type,
+				BLE_UUID_MDS_DATA_URI_CHAR,
+				&cfg->sec_mode.data_uri_char.read, data_uri,
+				strlen(data_uri), sizeof(data_uri),
+				&mds->data_uri_handles);
 	if (nrf_err) {
 		LOG_ERR("Failed to add MDS data URI, nrf_error %#x", nrf_err);
 		return nrf_err;
 	}
 
-	nrf_err = readable_char_add(mds->service_handle, mds->uuid_type,
-				    BLE_UUID_MDS_AUTHORIZATION_CHAR,
-				    &cfg->sec_mode.auth_char.read, authorization,
-				    strlen(authorization), sizeof(authorization),
-				    &mds->auth_handles);
+	nrf_err = read_char_add(mds->service_handle, mds->uuid_type,
+				BLE_UUID_MDS_AUTHORIZATION_CHAR,
+				&cfg->sec_mode.auth_char.read, authorization,
+				strlen(authorization), sizeof(authorization),
+				&mds->auth_handles);
 	if (nrf_err) {
 		LOG_ERR("Failed to add MDS authorization, nrf_error %#x", nrf_err);
 		return nrf_err;
 	}
 
-	nrf_err = data_export_char_add(mds, cfg);
+	nrf_err = write_notify_char_add(mds->service_handle, mds->uuid_type,
+					BLE_UUID_MDS_DATA_EXPORT_CHAR,
+					&cfg->sec_mode.data_export_char.write,
+					&cfg->sec_mode.data_export_char.cccd_write,
+					&data_export_mode, sizeof(data_export_mode),
+					sizeof(mds->pending_payload), &mds->data_export_handles);
 	if (nrf_err) {
 		LOG_ERR("Failed to add MDS data export, nrf_error %#x", nrf_err);
 		return nrf_err;
@@ -527,6 +501,56 @@ uint32_t ble_mds_init(struct ble_mds *mds, const struct ble_mds_config *cfg)
 	LOG_INF("MDS initialized for device %s", device_id);
 
 	return NRF_SUCCESS;
+}
+
+void ble_mds_process(struct ble_mds *mds)
+{
+	ble_gatts_hvx_params_t hvx;
+	uint16_t len;
+	uint32_t nrf_err;
+	bool payload_pending;
+
+	if ((mds == NULL) || !can_send(mds)) {
+		return;
+	}
+
+	if ((mds->pending_len == 0) && (k_uptime_get() < mds->next_empty_poll_ms)) {
+		/* Avoid checking for new data to send on every call,
+		 * wait until next_empty_poll_ms before checking again.
+		 */
+		return;
+	}
+
+	payload_pending = pending_payload_prepare(mds);
+	if (!payload_pending) {
+		return;
+	}
+
+	len = mds->pending_len;
+	hvx = (ble_gatts_hvx_params_t){
+		.handle = mds->data_export_handles.value_handle,
+		.type = BLE_GATT_HVX_NOTIFICATION,
+		.p_len = &len,
+		.p_data = mds->pending_payload,
+	};
+
+	nrf_err = sd_ble_gatts_hvx(mds->conn_handle, &hvx);
+	if ((nrf_err == NRF_ERROR_RESOURCES) || (nrf_err == NRF_ERROR_INVALID_STATE)) {
+		mds->tx_blocked = true;
+		return;
+	} else if (nrf_err == BLE_ERROR_GATTS_SYS_ATTR_MISSING) {
+		LOG_WRN("MDS notifications unavailable, nrf_error %#x", nrf_err);
+		mds->tx_blocked = true;
+		return;
+	} else if (nrf_err) {
+		LOG_ERR("MDS notification failed, nrf_error %#x", nrf_err);
+		mds->pending_len = 0;
+		mds->tx_blocked = true;
+		return;
+	}
+	mds->pending_len = 0;
+	mds->hvx_pending = true;
+	mds->seq_num = (mds->seq_num + 1U) % BLE_MDS_SEQ_NUM_COUNT;
 }
 
 uint8_t ble_mds_service_uuid_type(const struct ble_mds *mds)

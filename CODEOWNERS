@@ -90,6 +90,7 @@
 /subsys/bm_installs/                      @nrfconnect/ncs-eris
 /subsys/fs/bm_zms/                        @nrfconnect/ncs-bm @rghaddab
 /subsys/logging/                          @nrfconnect/ncs-bm
+/subsys/memfault/                         @nrfconnect/ncs-bm
 /subsys/mgmt/mcumgr/                      @nrfconnect/ncs-eris
 /subsys/nfc/                              @nrfconnect/ncs-bm
 /subsys/shell/                            @nrfconnect/ncs-bm

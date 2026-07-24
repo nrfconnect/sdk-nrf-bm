@@ -27,7 +27,7 @@ config BLE_MDS_EMPTY_POLL_INTERVAL_MS
 	default 1000
 	range 100 60000
 
-config BLE_MDS_TRIGGER_LOG_COLLECTION
+config BLE_MDS_LOG_COLLECTION
 	bool "Trigger Memfault log collection while MDS data export is active"
 	default y
 	help
@@ -39,7 +39,7 @@ config BLE_MDS_LOG_COLLECTION_INTERVAL_MS
 	int "MDS log collection interval in milliseconds"
 	default 1000
 	range 100 60000
-	depends on BLE_MDS_TRIGGER_LOG_COLLECTION
+	depends on BLE_MDS_LOG_COLLECTION
 
 module=BLE_MDS
 module-str=BLE Memfault Diagnostic Service

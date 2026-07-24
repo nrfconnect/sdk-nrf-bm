@@ -80,7 +80,7 @@ void ble_mds_on_ble_evt(const ble_evt_t *ble_evt, void *context);
 			.read = BLE_GAP_CONN_SEC_MODE_OPEN,                                        \
 		},                                                                                 \
 		.data_export_char = {                                                              \
-			.write = BLE_GAP_CONN_SEC_MODE_OPEN,                                      \
+			.write = BLE_GAP_CONN_SEC_MODE_OPEN,                                       \
 			.cccd_write = BLE_GAP_CONN_SEC_MODE_OPEN,                                  \
 		},                                                                                 \
 	}
@@ -187,9 +187,11 @@ struct ble_mds {
 uint32_t ble_mds_init(struct ble_mds *mds, const struct ble_mds_config *cfg);
 
 /**
- * @brief Pump pending Memfault chunks to an active MDS subscriber.
+ * @brief Process pending Memfault data.
  *
  * Call from the application main loop.
+ *
+ * @note This function must not be called from an ISR context.
  *
  * @param[in,out] mds Memfault Diagnostic Service instance.
  */
