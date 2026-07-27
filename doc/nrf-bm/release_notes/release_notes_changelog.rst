@@ -33,11 +33,14 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Boards
 ======
 
-* Updated all boards to use ``zephyr,mapped-partition`` instead of ``zephyr,fixed-partitions`` and ``zephyr,fixed-subpartitions``.
-  When referencing partition nodes, the code now uses ``PARTITION_*`` macros instead of ``DT_*`` and ``FIXED_PARTITION_*`` macros.
-  The use of the :kconfig:option:`CONFIG_FLASH_LOAD_OFFSET` Kconfig option is also replaced by ``PARTITION_*`` macros.
+* Updated:
 
-* Reduced the number of required board qualifiers by one, as of changes in upstream Zephyr.
+   * All boards to use ``zephyr,mapped-partition`` instead of ``zephyr,fixed-partitions`` and ``zephyr,fixed-subpartitions``.
+     When referencing partition nodes, the code now uses ``PARTITION_*`` macros instead of ``DT_*`` and ``FIXED_PARTITION_*`` macros.
+     The use of the :kconfig:option:`CONFIG_FLASH_LOAD_OFFSET` Kconfig option is also replaced by ``PARTITION_*`` macros.
+   * All boards to use specific J-Link devices from the nRF54L series.
+     This improves debugging in VS Code.
+   * The number of required board qualifiers (reduced by one), as of changes in upstream Zephyr.
 
 Build system
 ============
