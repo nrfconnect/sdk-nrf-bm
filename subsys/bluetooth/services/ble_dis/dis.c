@@ -55,11 +55,13 @@ static void pnp_id_encode(uint8_t *buf, const struct ble_dis_pnp_id *id)
 	sys_put_le16(id->product_version, &buf[5]);
 }
 
+#if CONFIG_BLE_DIS_REGULATORY_CERT
 /* Encode a run-time Regulatory Certification Data List into its on-air representation. */
 static void reg_cert_encode(uint8_t *buf, uint64_t val)
 {
 	sys_put_le64(val, buf);
 }
+#endif
 
 uint32_t ble_dis_init(const struct ble_dis_config *dis_config)
 {
@@ -68,7 +70,9 @@ uint32_t ble_dis_init(const struct ble_dis_config *dis_config)
 	ble_uuid_t ble_uuid;
 	uint8_t sys_id_buf[SYS_ID_LEN];
 	uint8_t pnp_id_buf[PNP_ID_LEN];
+#if CONFIG_BLE_DIS_REGULATORY_CERT
 	uint8_t reg_cert_buf[IEEE_CERT_LEN];
+#endif
 	const uint8_t *sys_id_val = NULL;
 	const uint8_t *pnp_id_val = NULL;
 	const uint8_t *reg_cert_val = NULL;
