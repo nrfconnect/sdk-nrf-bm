@@ -69,6 +69,51 @@ LED 0:
 LED 1:
    Lit when a device is connected.
 
+Security
+********
+
+The sample integrates :ref:`lib_peer_manager` (backed by :ref:`lib_bm_zms` for persistent storage) to support pairing and bonding.
+
+The following pairing and bonding parameters are configured:
+
+.. list-table:: Peer Manager security parameters
+   :header-rows: 1
+
+   * - Parameter
+     - Value
+     - Effect
+   * - Bonding
+     - Enabled
+     - Bonding information is stored for reconnection.
+   * - LE Secure Connections
+     - Enabled
+     - Pairing uses LESC instead of legacy pairing.
+   * - MITM protection
+     - Disabled
+     - Pairing does not protect against man-in-the-middle attacks.
+   * - Keypress notifications
+     - Disabled
+     - No keypress events are sent during passkey entry.
+   * - I/O capabilities
+     - Display only
+     - Pairing uses a passkey that is shown on the device for the peer to enter.
+
+This sample configures the following services and its characteristics with these specific operation modes and security levels:
+
++----------------------------+------------------------+-------------+-------------------+------------------------------------------------------------------------------------------------------+
+| Service                    | Characteristic         | Operation   | Security level    | Effect                                                                                               |
++============================+========================+=============+===================+======================================================================================================+
+| Heart Rate Service         | Body Sensor Location   | Read        | Open, no security | Any connected device can read where on the body the sensor is worn, for example the chest or wrist.  |
++                            +------------------------+-------------+-------------------+------------------------------------------------------------------------------------------------------+
+|                            | Heart Rate Measurement | Notify      | Open, no security | Any connected device can subscribe to periodic heart rate measurement notifications.                 |
++----------------------------+------------------------+-------------+-------------------+------------------------------------------------------------------------------------------------------+
+| Device Information Service | All characteristics    | Read        | Open, no security | Any connected device can read device information such as the manufacturer name and firmware version. |
++----------------------------+------------------------+-------------+-------------------+------------------------------------------------------------------------------------------------------+
+| Battery Service            | All characteristics    | Read/Notify | Open, no security | Any connected device can read the battery level and subscribe to battery level notifications.        |
++----------------------------+------------------------+-------------+-------------------+------------------------------------------------------------------------------------------------------+
+
+See `Testing`_ for the pairing and bonding steps.
+
 Building and running
 ********************
 

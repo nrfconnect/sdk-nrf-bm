@@ -57,7 +57,48 @@ LED 0:
 LED 1:
    Lit when a device is connected.
 
-.. _ble_bms_sample_testing:
+Security
+********
+
+The sample integrates :ref:`lib_peer_manager` (backed by :ref:`lib_bm_zms` for persistent storage) to support pairing and bonding.
+
+The following pairing and bonding parameters are configured:
+
+.. list-table:: Peer Manager security parameters
+   :header-rows: 1
+
+   * - Parameter
+     - Value
+     - Effect
+   * - Bonding
+     - Enabled
+     - Bonding information is stored for reconnection.
+   * - LE Secure Connections
+     - Enabled
+     - Pairing uses LESC instead of legacy pairing.
+   * - MITM protection
+     - Disabled
+     - Pairing does not protect against man-in-the-middle attacks.
+   * - Keypress notifications
+     - Enabled
+     - Keypress events are sent to the peer during passkey entry.
+   * - I/O capabilities
+     - Display and Yes/No entry
+     - Pairing uses numeric comparison.
+
+This sample configures the following services and its characteristics with these specific operation modes and security levels:
+
++----------------------------+---------------------+-----------+-------------------------------+---------------------------------------------------------------------------------------------------+
+| Service                    | Characteristic      | Operation | Security level                | Effect                                                                                            |
++============================+=====================+===========+===============================+===================================================================================================+
+| Bond Management Service    | Feature             | Read      | Encryption, no authentication | Connection must be encrypted (paired) to read which bond deletion operations the device supports. |
++                            +---------------------+-----------+-------------------------------+---------------------------------------------------------------------------------------------------+
+|                            | Control Point       | Write     | Encryption, no authentication | Connection must be encrypted (paired) to write bond deletion commands.                            |
++----------------------------+---------------------+-----------+-------------------------------+---------------------------------------------------------------------------------------------------+
+| Device Information Service | All characteristics | Read      | Open, no security             | Any connected device can read device information.                                                 |
++----------------------------+---------------------+-----------+-------------------------------+---------------------------------------------------------------------------------------------------+
+
+See `Testing`_ for the pairing and bonding steps.
 
 Building and running
 ********************
