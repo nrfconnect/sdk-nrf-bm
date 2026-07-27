@@ -82,6 +82,11 @@ Memory layout diagrams
 
 Select **DK** → **SoC** → **SoftDevice** to view RRAM and SRAM layout diagrams.
 
+.. note::
+   The total SRAM size shown in these diagrams may differ from the total given in the Datasheet.
+   Reserved regions, "VPR saved context" and "Protected RAM", are part of the SRAM memory map but are not shown as partitions in the diagrams.
+   For the complete layout, see the Memory map section in the device-specific Datasheet.
+
 .. tabs::
 
    .. group-tab:: nRF54L15-DK

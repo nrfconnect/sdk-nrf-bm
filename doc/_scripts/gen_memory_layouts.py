@@ -19,6 +19,8 @@ from __future__ import annotations
 import argparse
 import re
 from dataclasses import dataclass, field
+from enum import Enum
+from functools import cache
 from pathlib import Path
 
 NRF_BM_BASE = Path(__file__).resolve().parents[2]
@@ -134,6 +136,118 @@ def _parse_retained_mem(text: str) -> Partition | None:
 
 
 # ---------------------------------------------------------------------------
+# Universal per-SoC memory-field lookup (parsed straight from DTS)
+# ---------------------------------------------------------------------------
+
+
+class MemField(Enum):
+    """Fields queryable via get_soc_mem_field().
+
+    Each member corresponds to one value read from a SoC's DTS,
+    covering RRAM, SRAM, and the KMU reserved area.
+    """
+
+    RRAM_TOTAL = "rram_total"
+    RRAM_BASE_ADDR = "rram_base_addr"
+    SRAM_TOTAL = "sram_total"
+    SRAM_BASE_ADDR = "sram_base_addr"
+    KMU_SIZE = "kmu_size"
+    KMU_BASE_ADDR = "kmu_base_addr"
+
+
+_REG_RE = re.compile(r"reg\s*=\s*<\s*(0x[0-9a-fA-F]+)\s+(.*?)\s*>")
+_NODE_START_TEMPLATE = r"(?:&{label}\b|\b{label}:\s*\w+@[0-9a-fA-F]+)\s*\{{"
+
+
+def _matching_brace(text: str, open_idx: int) -> int:
+    """Find the closing brace matching an opening one.
+
+    Walks forward from open_idx counting nested braces,
+    and returns the index of the '}' that closes it.
+    """
+    depth = 1
+    i = open_idx + 1
+    while depth and i < len(text):
+        if text[i] == "{":
+            depth += 1
+        elif text[i] == "}":
+            depth -= 1
+        i += 1
+    return i - 1
+
+
+def _find_node_body(text: str, label: str) -> str | None:
+    """Return the body of the last node matching label.
+
+    Handles both override syntax, ``&label { ... };``,
+    and definition syntax, ``label: type@ADDR { ... };``.
+    Order in the file does not matter,
+    since the last occurrence wins.
+    """
+    pattern = re.compile(_NODE_START_TEMPLATE.format(label=label))
+    bodies = [text[m.end() : _matching_brace(text, m.end() - 1)] for m in pattern.finditer(text)]
+    return bodies[-1] if bodies else None
+
+
+def _node_reg(text: str, label: str) -> tuple[int, int]:
+    """Return the (base_addr, size) from label's own reg.
+
+    Ignores any reg that belongs to a nested child node,
+    such as a fixed-partitions child.
+    """
+    body = _find_node_body(text, label)
+    if body is None:
+        raise ValueError(f"Node '{label}' not found in DTS")
+    top_level = body.split("{", 1)[0]  # text before any nested child node
+    m = _REG_RE.search(top_level)
+    if not m:
+        raise ValueError(f"Node '{label}' has no top-level reg")
+    return int(m.group(1), 16), _eval_size_expr(m.group(2))
+
+
+@cache
+def _find_common_dtsi(soc: str, dts_path: Path) -> Path:
+    """Return the path to a SoC's common.dtsi file within dts_path."""
+    matches = sorted(dts_path.glob(f"*_{soc}_cpuapp_common.dtsi"))
+    if not matches:
+        raise FileNotFoundError(f"No *_{soc}_cpuapp_common.dtsi found under {dts_path}")
+    return matches[0]
+
+
+@cache
+def _parse_soc_mem_fields(soc: str, dts_path: Path) -> dict[MemField, int]:
+    """Parse every MemField value for one SoC.
+
+    Reads the SoC's common.dtsi once,
+    and returns all fields as a dict, keyed by MemField.
+    """
+    text = _find_common_dtsi(soc, dts_path).read_text()
+
+    kmu_addr, kmu_size = _node_reg(text, "nrf_kmu_reserved_push_area")
+    rram_addr, rram_size = _node_reg(text, "cpuapp_rram")
+    sram_addr, sram_size = _node_reg(text, "cpuapp_sram")
+
+    return {
+        MemField.KMU_BASE_ADDR: kmu_addr,
+        MemField.KMU_SIZE: kmu_size,
+        MemField.SRAM_BASE_ADDR: kmu_addr,
+        MemField.SRAM_TOTAL: (sram_addr + sram_size) - kmu_addr,
+        MemField.RRAM_BASE_ADDR: rram_addr,
+        MemField.RRAM_TOTAL: rram_size,
+    }
+
+
+def get_soc_mem_field(soc: str, field: MemField, dts_path: Path) -> int:
+    """Look up one memory field for soc, parsed straight from its DTS.
+
+    Example:
+        rram_total = get_soc_mem_field("nrf54l05", MemField.RRAM_TOTAL, dts_path)
+        sram_base  = get_soc_mem_field("nrf54l05", MemField.SRAM_BASE_ADDR, dts_path)
+    """
+    return _parse_soc_mem_fields(soc, dts_path.parent)[field]
+
+
+# ---------------------------------------------------------------------------
 # DTS → BoardConfig
 # ---------------------------------------------------------------------------
 
@@ -145,24 +259,6 @@ _SOC = {
     "nrf54l15",
     "nrf54l10",
     "nrf54l05",
-}
-
-_SOC_RRAM_TOTAL = {
-    "nrf54lm20a": 2000 * 1024,
-    "nrf54lv10a": 1012 * 1024,
-    "nrf54ls05b": 508 * 1024,
-    "nrf54l15": 1524 * 1024,
-    "nrf54l10": 1012 * 1024,
-    "nrf54l05": 500 * 1024,
-}
-
-_SOC_SRAM_TOTAL = {
-    "nrf54lm20a": 512 * 1024,
-    "nrf54lv10a": 192 * 1024,
-    "nrf54ls05b": 96 * 1024,
-    "nrf54l15": 256 * 1024,
-    "nrf54l10": 192 * 1024,
-    "nrf54l05": 96 * 1024,
 }
 
 _SOFTDEVICE = {
@@ -234,7 +330,8 @@ def parse_dts(dts_path: Path, common_text: str = "") -> BoardConfig:
     rram_parts.sort(key=lambda p: p.offset)
 
     # Fill gaps between partitions
-    rram_total = _SOC_RRAM_TOTAL[soc]
+    rram_total = get_soc_mem_field(soc, MemField.RRAM_TOTAL, dts_path)
+    rram_base_addr = get_soc_mem_field(soc, MemField.RRAM_BASE_ADDR, dts_path)
     filled: list[Partition] = []
     cursor = 0
     for p in rram_parts:
@@ -246,12 +343,14 @@ def parse_dts(dts_path: Path, common_text: str = "") -> BoardConfig:
         filled.append(Partition(name="(unused)", offset=cursor, size=rram_total - cursor))
     rram_parts = filled
 
-    rram = MemoryMap(label="RRAM", total=rram_total, base_addr=0x0, partitions=rram_parts)
+    rram = MemoryMap(
+        label="RRAM", total=rram_total, base_addr=rram_base_addr, partitions=rram_parts
+    )
 
     # ---- SRAM partitions ----
-    sram_total = _SOC_SRAM_TOTAL[soc]
-    sram_base = 0x20000000
-    kmu_size = 0x80
+    sram_total = get_soc_mem_field(soc, MemField.SRAM_TOTAL, dts_path)
+    sram_base = get_soc_mem_field(soc, MemField.SRAM_BASE_ADDR, dts_path)
+    kmu_size = get_soc_mem_field(soc, MemField.KMU_SIZE, dts_path)
 
     sram_body = _find_last_node_block(r"&cpuapp_sram\s*\{(.*?)^\};", full)
     sram_parts_raw = _parse_partitions(sram_body) if sram_body else []
@@ -442,25 +541,25 @@ def render_svg(cfg: BoardConfig) -> str:
 # ---------------------------------------------------------------------------
 
 
-def discover_boards(boards_dir: Path) -> dict[str, Path]:
-    """Return mapping of board_name → board_dir for all bm_* boards."""
+def discover_boards(dts_path: Path) -> dict[str, Path]:
+    """Return mapping of board_name → dts_path for all bm_* boards."""
     result = {}
-    for d in sorted(boards_dir.iterdir()):
+    for d in sorted(dts_path.iterdir()):
         if d.is_dir() and d.name.startswith("bm_"):
             result[d.name] = d
     return result
 
 
-def find_common_dtsi(board_dir: Path, soc: str) -> str:
+def find_common_dtsi(dts_path: Path, soc: str) -> str:
     """Read the common .dtsi for a given SoC variant."""
     pattern = f"*_{soc}_cpuapp_common.dtsi"
-    matches = list(board_dir.glob(pattern))
+    matches = list(dts_path.glob(pattern))
     return matches[0].read_text() if matches else ""
 
 
-def process_board(board_dir: Path, output_dir: Path) -> list[BoardConfig]:
+def process_board(dts_path: Path, output_dir: Path) -> list[BoardConfig]:
     """Process all DTS files for a board and generate SVGs."""
-    dts_files = sorted(board_dir.glob("*.dts"))
+    dts_files = sorted(dts_path.glob("*.dts"))
     configs: list[BoardConfig] = []
 
     for dts in dts_files:
@@ -468,7 +567,7 @@ def process_board(board_dir: Path, output_dir: Path) -> list[BoardConfig]:
             soc = _detect_soc(dts.stem)
         except ValueError:
             continue
-        common = find_common_dtsi(board_dir, soc)
+        common = find_common_dtsi(dts_path, soc)
         try:
             cfg = parse_dts(dts, common)
         except Exception as exc:
@@ -507,9 +606,9 @@ def main() -> None:
         print(f"No bm_* boards found in {args.board_dir}")
         return
 
-    for name, board_dir in boards.items():
+    for name, dts_path in boards.items():
         print(f"Board: {name}")
-        process_board(board_dir, args.output_dir)
+        process_board(dts_path, args.output_dir)
 
     print(f"\nDone. SVGs written to {args.output_dir}")
 

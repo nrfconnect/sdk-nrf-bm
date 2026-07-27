@@ -25,7 +25,7 @@
 <text x="86" y="55.2766798418972" text-anchor="end" font-size="10" font-weight="bold" font-family="monospace" fill="#6b7280">0x000FCC00</text>
 <text x="295" y="47.13833992094858" text-anchor="start" font-size="10" font-weight="bold" fill="#6b7280">1 KB</text>
 <text x="86" y="26.999999999999964" text-anchor="end" font-size="10" font-weight="bold" font-family="monospace" fill="#6b7280">0x000FD000</text>
-  <text x="670.0" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#333f48">SRAM (192 KB)</text>
+  <text x="670.0" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#333f48">SRAM (191.3 KB)</text>
 <rect x="570" y="421.7804639006861" width="200" height="28.21953609931395" fill="#768692" rx="3" stroke="#e5e7eb" stroke-width="1"/>
 <text x="670.0" y="439.89023195034304" text-anchor="middle" font-size="10" font-weight="600" fill="#fff">KMU reserved</text>
 <text x="566" y="447.0" text-anchor="end" font-size="10" font-weight="bold" font-family="monospace" fill="#6b7280">0x20000000</text>
