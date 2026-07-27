@@ -64,6 +64,58 @@ LED 0:
 LED 1:
    Lit when a device is connected.
 
+Security
+********
+
+The sample integrates :ref:`lib_peer_manager` (backed by :ref:`lib_bm_zms` for persistent storage) to support pairing and bonding.
+
+The following security parameters are configured:
+
+.. list-table:: Peer Manager security parameters
+   :header-rows: 1
+
+   * - Parameter
+     - Value
+     - Effect
+   * - Bonding
+     - True
+     - Supports storing of pairing information (bonding data).
+   * - MITM protection
+     - False
+     - Man-in-the-middle protection not required.
+   * - LE Secure Connections
+     - True
+     - Supports LESC pairing.
+   * - I/O capabilities
+     - Display and Yes/No entry
+     - Determines local I/O capability, actual pairing method depends on negotiation with peer.
+
+This sample configures the following services and their characteristics with these specific operation modes and required security levels:
+
++---------------------------------------+-----------------------------+----------------+-------------------------------+-------------------------------------------------------------------------------------------------------------------------------+
+| Service                               | Characteristic              | Operation      | Required security             | Effect                                                                                                                        |
++=======================================+=============================+================+===============================+===============================================================================================================================+
+| Continuous Glucose Monitoring Service | CGM Measurement             | Notify         | Encryption, no authentication | Connection must be encrypted to subscribe to and receive periodic glucose measurement notifications.                          |
++                                       +-----------------------------+----------------+-------------------------------+-------------------------------------------------------------------------------------------------------------------------------+
+|                                       | Feature                     | Read           | Encryption, no authentication | Connection must be encrypted to read which optional CGM features the sensor supports.                                         |
++                                       +-----------------------------+----------------+-------------------------------+-------------------------------------------------------------------------------------------------------------------------------+
+|                                       | Status                      | Read           | Encryption, no authentication | Connection must be encrypted to read the time offset and sensor status.                                                       |
++                                       +-----------------------------+----------------+-------------------------------+-------------------------------------------------------------------------------------------------------------------------------+
+|                                       | Session Start Time          | Read/Write     | Encryption, no authentication | Connection must be encrypted to read or set the timestamp that marks when the monitoring session started.                     |
++                                       +-----------------------------+----------------+-------------------------------+-------------------------------------------------------------------------------------------------------------------------------+
+|                                       | Session Run Time            | Read           | Encryption, no authentication | Connection must be encrypted to read the expected run time of the CGM session.                                                |
++                                       +-----------------------------+----------------+-------------------------------+-------------------------------------------------------------------------------------------------------------------------------+
+|                                       | Record Access Control Point | Write/Indicate | Encryption, no authentication | Connection must be encrypted to retrieve, filter, or delete stored glucose measurement records.                               |
++                                       +-----------------------------+----------------+-------------------------------+-------------------------------------------------------------------------------------------------------------------------------+
+|                                       | Specific Ops Control Point  | Write/Indicate | Encryption, no authentication | Connection must be encrypted to start or stop a monitoring session and configure settings such as the communication interval. |
++---------------------------------------+-----------------------------+----------------+-------------------------------+-------------------------------------------------------------------------------------------------------------------------------+
+| Device Information Service            | All characteristics         | Read           | Encryption, no authentication | Connection must be encrypted to read device information such as the manufacturer name and firmware version.                   |
++---------------------------------------+-----------------------------+----------------+-------------------------------+-------------------------------------------------------------------------------------------------------------------------------+
+| Battery Service                       | Battery Level               | Read/Notify    | Open, no security             | Any connected device can read the battery level and subscribe to battery level notifications.                                 |
++---------------------------------------+-----------------------------+----------------+-------------------------------+-------------------------------------------------------------------------------------------------------------------------------+
+
+See `Testing`_ for the pairing and bonding steps.
+
 Building and running
 ********************
 

@@ -52,6 +52,32 @@ LED 0:
 LED 1:
    Lit when a device is connected.
 
+Security
+********
+
+The sample integrates :ref:`lib_peer_manager` (backed by :ref:`lib_bm_zms` for persistent storage) to support pairing and bonding, and to maintain an allow list of previously bonded peripherals for reconnection.
+
+The following security parameters are configured:
+
+.. list-table:: Peer Manager security parameters
+   :header-rows: 1
+
+   * - Parameter
+     - Value
+     - Effect
+   * - Bonding
+     - True
+     - Supports storing of pairing information (bonding data).
+   * - MITM protection
+     - False
+     - Man-in-the-middle protection not required.
+   * - LE Secure Connections
+     - True
+     - Supports LESC pairing.
+   * - I/O capabilities
+     - None
+     - Pairing uses the Just Works method.
+
 .. _ble_hrs_central_sample_testing:
 
 Building and running

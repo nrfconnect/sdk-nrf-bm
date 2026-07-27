@@ -72,6 +72,56 @@ LED 0:
 LED 1:
    Lit when a device is connected.
 
+Security
+********
+
+The sample integrates :ref:`lib_peer_manager` (backed by :ref:`lib_bm_zms` for persistent storage) to support pairing and bonding.
+
+The following security parameters are configured:
+
+.. list-table:: Peer Manager security parameters
+   :header-rows: 1
+
+   * - Parameter
+     - Value
+     - Effect
+   * - Bonding
+     - True
+     - Supports storing of pairing information (bonding data).
+   * - MITM protection
+     - False
+     - Man-in-the-middle protection not required.
+   * - LE Secure Connections
+     - True
+     - Supports LESC pairing.
+   * - I/O capabilities
+     - Display and Yes/No entry
+     - Determines local I/O capability, actual pairing method depends on negotiation with peer.
+
+This sample configures the following services and their characteristics with these specific operation modes and required security levels:
+
++----------------------------+-----------------------------------------------------+-------------------+-------------------------------+------------------------------------------------------------------------------------------------------------------------------+
+| Service                    | Characteristic                                      | Operation         | Required security level       | Effect                                                                                                                       |
++============================+=====================================================+===================+===============================+==============================================================================================================================+
+| HID Service                | Protocol Mode                                       | Read/Write        | Encryption, no authentication | Connection must be encrypted to switch the mouse between Boot Protocol Mode and Report Protocol Mode.                        |
++                            +-----------------------------------------------------+-------------------+-------------------------------+------------------------------------------------------------------------------------------------------------------------------+
+|                            | Input Reports (Buttons, Movement, Advanced Buttons) | Read/Write/Notify | Encryption, no authentication | Connection must be encrypted to send button presses, cursor movement, and advanced button presses, to the host.              |
++                            +-----------------------------------------------------+-------------------+-------------------------------+------------------------------------------------------------------------------------------------------------------------------+
+|                            | Report Map                                          | Read              | Encryption, no authentication | Connection must be encrypted to read the report format the host needs to parse mouse reports.                                |
++                            +-----------------------------------------------------+-------------------+-------------------------------+------------------------------------------------------------------------------------------------------------------------------+
+|                            | Boot Mouse Input Report                             | Read/Write/Notify | Encryption, no authentication | Connection must be encrypted to send button and movement data with this characteristic when in the boot protocol mode.       |
++                            +-----------------------------------------------------+-------------------+-------------------------------+------------------------------------------------------------------------------------------------------------------------------+
+|                            | HID Information                                     | Read              | Encryption, no authentication | Connection must be encrypted to read the HID version and device capability flags.                                            |
++                            +-----------------------------------------------------+-------------------+-------------------------------+------------------------------------------------------------------------------------------------------------------------------+
+|                            | HID Control Point                                   | Write             | Encryption, no authentication | Connection must be encrypted to suspend or resume HID report notifications, for example when the host enters low power mode. |
++----------------------------+-----------------------------------------------------+-------------------+-------------------------------+------------------------------------------------------------------------------------------------------------------------------+
+| Device Information Service | All characteristics                                 | Read              | Open, no security             | Any connected device can read device information such as the manufacturer name and firmware version.                         |
++----------------------------+-----------------------------------------------------+-------------------+-------------------------------+------------------------------------------------------------------------------------------------------------------------------+
+| Battery Service            | Battery Level                                       | Read/Notify       | Open, no security             | Any connected device can read the battery level and subscribe to battery level notifications.                                |
++----------------------------+-----------------------------------------------------+-------------------+-------------------------------+------------------------------------------------------------------------------------------------------------------------------+
+
+See `Testing`_ for the pairing and bonding steps.
+
 Building and running
 ********************
 

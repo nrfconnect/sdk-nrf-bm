@@ -69,6 +69,48 @@ LED 0:
 LED 1:
    Lit when a device is connected.
 
+Security
+********
+
+The sample integrates :ref:`lib_peer_manager` (backed by :ref:`lib_bm_zms` for persistent storage) to support pairing and bonding.
+
+The following security parameters are configured:
+
+.. list-table:: Peer Manager security parameters
+   :header-rows: 1
+
+   * - Parameter
+     - Value
+     - Effect
+   * - Bonding
+     - True
+     - Supports storing of pairing information (bonding data).
+   * - MITM protection
+     - False
+     - Man-in-the-middle protection not required.
+   * - LE Secure Connections
+     - True
+     - Supports LESC pairing.
+   * - I/O capabilities
+     - Display only
+     - Determines local I/O capability, actual pairing method depends on negotiation with peer.
+
+This sample configures the following services and their characteristics with these specific operation modes and security levels:
+
++----------------------------+------------------------+-------------+-------------------------+------------------------------------------------------------------------------------------------------+
+| Service                    | Characteristic         | Operation   | Required security level | Effect                                                                                               |
++============================+========================+=============+=========================+======================================================================================================+
+| Heart Rate Service         | Heart Rate Measurement | Notify      | Open, no security       | Any connected device can subscribe and receive periodic heart rate measurement notifications.        |
++                            +------------------------+-------------+-------------------------+------------------------------------------------------------------------------------------------------+
+|                            | Body Sensor Location   | Read        | Open, no security       | Any connected device can read where on the body the sensor is worn.                                  |
++----------------------------+------------------------+-------------+-------------------------+------------------------------------------------------------------------------------------------------+
+| Device Information Service | All characteristics    | Read        | Open, no security       | Any connected device can read device information such as the manufacturer name and firmware version. |
++----------------------------+------------------------+-------------+-------------------------+------------------------------------------------------------------------------------------------------+
+| Battery Service            | Battery Level          | Read/Notify | Open, no security       | Any connected device can read the battery level and subscribe to battery level notifications.        |
++----------------------------+------------------------+-------------+-------------------------+------------------------------------------------------------------------------------------------------+
+
+See `Testing`_ for the pairing and bonding steps.
+
 Building and running
 ********************
 
