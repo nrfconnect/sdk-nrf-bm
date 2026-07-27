@@ -57,7 +57,45 @@ LED 0:
 LED 1:
    Lit when a device is connected.
 
-.. _ble_bms_sample_testing:
+Security
+********
+
+The sample integrates :ref:`lib_peer_manager` (backed by :ref:`lib_bm_zms` for persistent storage) to support pairing and bonding.
+
+The following security parameters are configured:
+
+.. list-table:: Peer Manager security parameters
+   :header-rows: 1
+
+   * - Parameter
+     - Value
+     - Effect
+   * - Bonding
+     - True
+     - Supports storing of pairing information (bonding data).
+   * - MITM protection
+     - False
+     - Man-in-the-middle protection not required.
+   * - LE Secure Connections
+     - True
+     - Supports LESC pairing.
+   * - I/O capabilities
+     - Display and Yes/No entry
+     - Determines local I/O capability, actual pairing method depends on negotiation with peer.
+
+This sample configures the following services and their characteristics with these specific operation modes and required security levels:
+
++----------------------------+---------------------+-----------+-------------------------------+------------------------------------------------------------------------------------------+
+| Service                    | Characteristic      | Operation | Required security level       | Effect                                                                                   |
++============================+=====================+===========+===============================+==========================================================================================+
+| Bond Management Service    | Control Point       | Write     | Encryption, no authentication | Connection must be encrypted to write bond deletion commands.                            |
++                            +---------------------+-----------+-------------------------------+------------------------------------------------------------------------------------------+
+|                            | Feature             | Read      | Encryption, no authentication | Connection must be encrypted to read which bond deletion operations the device supports. |
++----------------------------+---------------------+-----------+-------------------------------+------------------------------------------------------------------------------------------+
+| Device Information Service | All characteristics | Read      | Open, no security             | Any connected device can read device information.                                        |
++----------------------------+---------------------+-----------+-------------------------------+------------------------------------------------------------------------------------------+
+
+See `Testing`_ for the pairing and bonding steps.
 
 Building and running
 ********************

@@ -151,6 +151,42 @@ LED 1:
 LED 2:
    Lit when an NFC field is present.
 
+Security
+********
+
+The sample integrates :ref:`lib_peer_manager` (backed by :ref:`lib_bm_zms` for persistent storage) to support pairing and bonding.
+
+The following security parameters are configured:
+
+.. list-table:: Peer Manager security parameters
+   :header-rows: 1
+
+   * - Parameter
+     - Value
+     - Effect
+   * - Bonding
+     - True
+     - Supports storing of pairing information (bonding data).
+   * - MITM protection
+     - False
+     - Man-in-the-middle protection not required.
+   * - LE Secure Connections
+     - True
+     - Supports LESC pairing.
+   * - I/O capabilities
+     - None
+     - Authentication relies on the out-of-band data exchanged over NFC instead of a display or keyboard, as described in `Overview`_.
+
+This sample configures the following services and their characteristics with these specific operation modes and required security levels:
+
++----------------------------+---------------------+-----------+-------------------------+---------------------------------------------------+
+| Service                    | Characteristic      | Operation | Required security level | Effect                                            |
++============================+=====================+===========+=========================+===================================================+
+| Device Information Service | All characteristics | Read      | Open, no security       | Any connected device can read device information. |
++----------------------------+---------------------+-----------+-------------------------+---------------------------------------------------+
+
+See `Testing`_ for the pairing and bonding steps.
+
 Building and running
 ********************
 
