@@ -77,12 +77,6 @@ static int nrf_rram_read(const struct device *dev, off_t addr, void *data, size_
 	}
 	addr += RRAM_START;
 
-#if CONFIG_TRUSTED_EXECUTION_NONSECURE && USE_PARTITION_MANAGER && PM_APP_ADDRESS
-	if (addr < PM_APP_ADDRESS) {
-		return soc_secure_mem_read(data, (void *)addr, len);
-	}
-#endif
-
 	memcpy(data, (void *)addr, len);
 
 	return 0;

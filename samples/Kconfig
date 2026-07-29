@@ -13,8 +13,3 @@ config MULTITHREADING
 # Software ISR table is not needed if multithreading is not used
 config GEN_SW_ISR_TABLE
 	default n if !MULTITHREADING
-
-# Prevent moving SoftDevice RAM region
-# Need this when building without sysbuild
-config PARTITION_MANAGER_ENABLED
-	default n
