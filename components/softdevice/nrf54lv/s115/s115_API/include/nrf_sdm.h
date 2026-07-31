@@ -66,7 +66,7 @@ extern "C" {
 #define SD_MINOR_VERSION  (0)
 
 /** @brief The bugfix version for the SoftDevice binary distributed with this header file. */
-#define SD_BUGFIX_VERSION (0)
+#define SD_BUGFIX_VERSION (1)
 
 /** @brief The SoftDevice variant of this firmware. */
 #define SD_VARIANT_ID 115
