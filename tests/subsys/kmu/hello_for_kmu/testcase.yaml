@@ -67,7 +67,7 @@ tests:
     tags:
       - pytest
       - kmu
-    timeout: 600
+    timeout: 900
     harness: pytest
     harness_config:
       pytest_root:

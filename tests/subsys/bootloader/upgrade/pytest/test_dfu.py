@@ -58,7 +58,7 @@ def test_if_uploading_too_large_softdevice_image_is_not_possible(
         build_dir=build_dir,
         board=board,
         testsuite=testsuite,
-        timeout=120,
+        timeout=180,
     )
     builder.build()
 

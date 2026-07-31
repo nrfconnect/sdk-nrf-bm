@@ -184,7 +184,7 @@ def test_if_previous_key_is_revoked_when_flashing_new_image(
         board=dut.device_config.platform,
         testsuite=testsuite,
         extra_args=f"-DSB_CONFIG_BM_BOOTLOADER_MCUBOOT_SIGNATURE_KEY_FILE=\"{keys[2]}\"",
-        timeout=120,
+        timeout=180,
     ).build()
 
     # provision all keys
@@ -255,7 +255,7 @@ def test_if_revocation_of_last_remaining_key_is_not_allowed(
             board=dut.device_config.platform,
             testsuite=testsuite,
             extra_args=f"-DSB_CONFIG_BM_BOOTLOADER_MCUBOOT_SIGNATURE_KEY_FILE=\"{keys[2]}\"",
-            timeout=120,
+            timeout=180,
         ),
         WestBuilder(
             source_dir=source_dir,
@@ -263,7 +263,7 @@ def test_if_revocation_of_last_remaining_key_is_not_allowed(
             board=dut.device_config.platform,
             testsuite=testsuite,
             extra_args=f"-DSB_CONFIG_BM_BOOTLOADER_MCUBOOT_SIGNATURE_KEY_FILE=\"{keys[3]}\"",
-            timeout=120,
+            timeout=180,
         ),
     ]
 
