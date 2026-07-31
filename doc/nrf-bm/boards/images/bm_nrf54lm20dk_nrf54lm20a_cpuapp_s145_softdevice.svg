@@ -3,25 +3,29 @@
      width="920" height="476"
      font-family="Inter, -apple-system, sans-serif">
   <rect width="100%" height="100%" fill="#ffffff" rx="8"/>
-  <text x="190.0" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#333f48">RRAM (2000 KB)</text>
-<rect x="90" y="135.94594594594594" width="200" height="314.05405405405406" fill="#6ad1e3" rx="3" stroke="#e5e7eb" stroke-width="1"/>
-<text x="190.0" y="296.97297297297297" text-anchor="middle" font-size="10" font-weight="600" fill="#fff">Application (slot0)</text>
+  <text x="190.0" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#333f48">RRAM (2036 KB)</text>
+<rect x="90" y="162.07858546168956" width="200" height="287.92141453831044" fill="#6ad1e3" rx="3" stroke="#e5e7eb" stroke-width="1"/>
+<text x="190.0" y="310.03929273084475" text-anchor="middle" font-size="10" font-weight="600" fill="#fff">Application (slot0)</text>
 <text x="86" y="447.0" text-anchor="end" font-size="10" font-weight="bold" font-family="monospace" fill="#6b7280">0x00000000</text>
-<text x="295" y="295.97297297297297" text-anchor="start" font-size="10" font-weight="bold" fill="#6b7280">1890 KB</text>
-<rect x="90" y="107.34054054054053" width="200" height="28.605405405405406" fill="#de823b" rx="3" stroke="#e5e7eb" stroke-width="1"/>
-<text x="190.0" y="125.64324324324323" text-anchor="middle" font-size="10" font-weight="600" fill="#fff">Storage: Peer Manager</text>
-<text x="86" y="132.94594594594594" text-anchor="end" font-size="10" font-weight="bold" font-family="monospace" fill="#6b7280">0x001D8800</text>
-<text x="295" y="124.64324324324323" text-anchor="start" font-size="10" font-weight="bold" fill="#6b7280">4 KB</text>
-<rect x="90" y="78.73513513513512" width="200" height="28.605405405405406" fill="#f4cb43" rx="3" stroke="#e5e7eb" stroke-width="1"/>
-<text x="190.0" y="97.03783783783783" text-anchor="middle" font-size="10" font-weight="600" fill="#fff">Storage: User data</text>
-<text x="86" y="104.34054054054053" text-anchor="end" font-size="10" font-weight="bold" font-family="monospace" fill="#6b7280">0x001D9800</text>
-<text x="295" y="96.03783783783783" text-anchor="start" font-size="10" font-weight="bold" fill="#6b7280">4 KB</text>
-<rect x="90" y="29.999999999999986" width="200" height="48.73513513513514" fill="#0077c8" rx="3" stroke="#e5e7eb" stroke-width="1"/>
-<text x="190.0" y="58.367567567567555" text-anchor="middle" font-size="10" font-weight="600" fill="#fff">SoftDevice</text>
-<text x="86" y="75.73513513513512" text-anchor="end" font-size="10" font-weight="bold" font-family="monospace" fill="#6b7280">0x001DA800</text>
-<text x="295" y="57.367567567567555" text-anchor="start" font-size="10" font-weight="bold" fill="#6b7280">137 KB</text>
-<text x="86" y="26.999999999999986" text-anchor="end" font-size="10" font-weight="bold" font-family="monospace" fill="#6b7280">0x001FCC00</text>
-  <text x="670.0" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#333f48">SRAM (512 KB)</text>
+<text x="295" y="309.03929273084475" text-anchor="start" font-size="10" font-weight="bold" fill="#6b7280">1890 KB</text>
+<rect x="90" y="133.52848722986244" width="200" height="28.550098231827118" fill="#de823b" rx="3" stroke="#e5e7eb" stroke-width="1"/>
+<text x="190.0" y="151.803536345776" text-anchor="middle" font-size="10" font-weight="600" fill="#fff">Storage: Peer Manager</text>
+<text x="86" y="159.07858546168956" text-anchor="end" font-size="10" font-weight="bold" font-family="monospace" fill="#6b7280">0x001D8800</text>
+<text x="295" y="150.803536345776" text-anchor="start" font-size="10" font-weight="bold" fill="#6b7280">4 KB</text>
+<rect x="90" y="104.97838899803531" width="200" height="28.550098231827118" fill="#f4cb43" rx="3" stroke="#e5e7eb" stroke-width="1"/>
+<text x="190.0" y="123.25343811394887" text-anchor="middle" font-size="10" font-weight="600" fill="#fff">Storage: User data</text>
+<text x="86" y="130.52848722986244" text-anchor="end" font-size="10" font-weight="bold" font-family="monospace" fill="#6b7280">0x001D9800</text>
+<text x="295" y="122.25343811394887" text-anchor="start" font-size="10" font-weight="bold" fill="#6b7280">4 KB</text>
+<rect x="90" y="58.13752455795672" width="200" height="46.84086444007859" fill="#0077c8" rx="3" stroke="#e5e7eb" stroke-width="1"/>
+<text x="190.0" y="85.55795677799603" text-anchor="middle" font-size="10" font-weight="600" fill="#fff">SoftDevice</text>
+<text x="86" y="101.97838899803531" text-anchor="end" font-size="10" font-weight="bold" font-family="monospace" fill="#6b7280">0x001DA800</text>
+<text x="295" y="84.55795677799603" text-anchor="start" font-size="10" font-weight="bold" fill="#6b7280">137 KB</text>
+<rect x="90" y="29.99999999999994" width="200" height="28.137524557956784" fill="#d9e1e2" rx="3" stroke="#e5e7eb" stroke-width="1"/>
+<text x="190.0" y="48.06876227897833" text-anchor="middle" font-size="10" font-weight="600" fill="#667085">Unused</text>
+<text x="86" y="55.13752455795672" text-anchor="end" font-size="10" font-weight="bold" font-family="monospace" fill="#6b7280">0x001FCC00</text>
+<text x="295" y="47.06876227897833" text-anchor="start" font-size="10" font-weight="bold" fill="#6b7280">1 KB</text>
+<text x="86" y="26.99999999999994" text-anchor="end" font-size="10" font-weight="bold" font-family="monospace" fill="#6b7280">0x001FD000</text>
+  <text x="670.0" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#333f48">SRAM (511.3 KB)</text>
 <rect x="570" y="421.9178584525119" width="200" height="28.08214154748809" fill="#768692" rx="3" stroke="#e5e7eb" stroke-width="1"/>
 <text x="670.0" y="439.9589292262559" text-anchor="middle" font-size="10" font-weight="600" fill="#fff">KMU reserved</text>
 <text x="566" y="447.0" text-anchor="end" font-size="10" font-weight="bold" font-family="monospace" fill="#6b7280">0x20000000</text>
