@@ -73,3 +73,9 @@ S145 SoftDevice
 
 * Updated the SoftDevice to v10.0.1.
   See the :ref:`SoftDevice release notes <softdevice_docs>` for details.
+
+SoftDevice Handler
+==================
+
+* Fixed a bug where using the :kconfig:option:`CONFIG_NRF_SDH_LOG_SD_INFO` Kconfig option in MCUboot board targets would log invalid SoftDevice version data.
+  The logging now takes into account for the SoftDevice partition offset in the MCUboot board targets.
