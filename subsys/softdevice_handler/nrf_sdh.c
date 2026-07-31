@@ -132,7 +132,10 @@ static int nrf_sdh_enable(void)
 	};
 
 	if (IS_ENABLED(CONFIG_NRF_SDH_LOG_SD_INFO)) {
-		const uint32_t base = FIXED_PARTITION_OFFSET(softdevice_partition);
+		uint32_t base = FIXED_PARTITION_OFFSET(softdevice_partition);
+#ifdef CONFIG_BOOTLOADER_MCUBOOT
+		base += CONFIG_ROM_START_OFFSET;
+#endif
 		const struct nrf_sdh_info_version sd_ver = nrf_sdh_info_version_get(base);
 		const struct nrf_sdh_info_unique_str sd_unique = nrf_sdh_info_unique_str_get(base);
 
