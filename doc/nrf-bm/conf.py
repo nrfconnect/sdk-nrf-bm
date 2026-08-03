@@ -84,7 +84,11 @@ external_content_contents = [
     (SOFTDEVICE_DIR, "nrf54lv/s145/doc/s145*.main.rst"),
 ]
 
-external_content_keep = ["versions.txt"]
+external_content_keep = [
+    "versions.txt",
+    "boards/images/*.svg",
+]
+
 # -- Options for doxyrunner plugin ---------------------------------------------
 
 _doxyrunner_outdir = utils.get_builddir() / "html" / "nrf-bm" / "doxygen"
