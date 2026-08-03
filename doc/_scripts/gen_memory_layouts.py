@@ -11,7 +11,8 @@ The script scans for ``bm_*`` board directories under ``boards/nordic/``,
 parses every ``.dts`` file that defines flash/SRAM partitions, and writes
 one SVG per configuration into the output directory.
 
-Re-run this script whenever devicetree sources change.
+If ``--output-dir`` is not specified, the SVGs are written to a folder
+``memory_layouts`` in the current working directory.
 """
 
 from __future__ import annotations
@@ -23,7 +24,7 @@ from pathlib import Path
 
 NRF_BM_BASE = Path(__file__).resolve().parents[2]
 BOARDS_DIR = NRF_BM_BASE / "boards" / "nordic"
-OUTPUT_DIR = NRF_BM_BASE / "doc" / "nrf-bm" / "boards" / "images"
+OUTPUT_DIR = Path.cwd() / "memory_layouts"
 
 # ---------------------------------------------------------------------------
 # Data model
