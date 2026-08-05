@@ -4,16 +4,21 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-zephyr_library_sources_ifdef(CONFIG_PM_RA_PROTECTION auth_status_tracker.c)
-zephyr_library_sources(conn_state.c)
-zephyr_library_sources(gatt_cache_manager.c)
-zephyr_library_sources(gatts_cache_manager.c)
-zephyr_library_sources(id_manager.c)
+zephyr_library_sources(
+  conn_state.c
+  gatt_cache_manager.c
+  gatts_cache_manager.c
+  id_manager.c
+  peer_data_storage.c
+  peer_database.c
+  peer_id.c
+  peer_manager_handler.c
+  pm_buffer.c
+  security_dispatcher.c
+  security_manager.c
+)
+
+# zephyr-keep-sorted-start
 zephyr_library_sources_ifdef(CONFIG_PM_LESC nrf_ble_lesc.c)
-zephyr_library_sources(peer_data_storage.c)
-zephyr_library_sources(peer_database.c)
-zephyr_library_sources(peer_id.c)
-zephyr_library_sources(peer_manager_handler.c)
-zephyr_library_sources(pm_buffer.c)
-zephyr_library_sources(security_dispatcher.c)
-zephyr_library_sources(security_manager.c)
+zephyr_library_sources_ifdef(CONFIG_PM_RA_PROTECTION auth_status_tracker.c)
+# zephyr-keep-sorted-stop

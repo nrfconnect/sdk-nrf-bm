@@ -5,13 +5,15 @@
 #
 menu "Libraries"
 
+# zephyr-keep-sorted-start
 rsource "bluetooth/Kconfig"
-rsource "bm_scheduler/Kconfig"
 rsource "bm_buttons/Kconfig"
 rsource "bm_gpiote/Kconfig"
+rsource "bm_scheduler/Kconfig"
 rsource "bm_timer/Kconfig"
-rsource "sensorsim/Kconfig"
 rsource "boot_banner/Kconfig"
+rsource "sensorsim/Kconfig"
 rsource "zephyr_queue/Kconfig"
+# zephyr-keep-sorted-stop
 
 endmenu

@@ -8,10 +8,12 @@
 # The mgmt_mcumgr is interface library for MCUmgr services.
 zephyr_interface_library_named(mgmt_mcumgr)
 
+# zephyr-keep-sorted-start
+add_subdirectory(grp)
 add_subdirectory(mgmt)
 add_subdirectory(smp)
-add_subdirectory(util)
-add_subdirectory(grp)
 add_subdirectory(transport)
+add_subdirectory(util)
+# zephyr-keep-sorted-stop
 
 zephyr_library_link_libraries(mgmt_mcumgr)

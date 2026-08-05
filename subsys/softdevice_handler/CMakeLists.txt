@@ -7,10 +7,10 @@ zephyr_library()
 zephyr_linker_sources(SECTIONS sdh.ld)
 zephyr_linker_sources(DATA_SECTIONS sdh_ram.ld)
 zephyr_library_sources(
-  nrf_sdh.c
+  irq_connect.c
   nrf_sdh_info.c
   nrf_sdh_soc.c
-  irq_connect.c
+  nrf_sdh.c
 )
 
 zephyr_library_sources_ifdef(CONFIG_NRF_SDH_SOC_RAND_SEED rand_seed.c)

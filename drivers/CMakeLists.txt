@@ -7,7 +7,9 @@
 # FIXME: SHADOW_VARS: Remove this once we have enabled -Wshadow globally.
 add_compile_options($<TARGET_PROPERTY:compiler,warning_shadow_variables>)
 
-add_subdirectory_ifdef(CONFIG_CONSOLE console)
-add_subdirectory_ifdef(CONFIG_CLOCK_CONTROL clock_control)
-add_subdirectory_ifdef(CONFIG_FLASH flash)
+# zephyr-keep-sorted-start
 add_subdirectory_ifdef(CONFIG_BM_SW_LPUARTE bm_lpuarte)
+add_subdirectory_ifdef(CONFIG_CLOCK_CONTROL clock_control)
+add_subdirectory_ifdef(CONFIG_CONSOLE console)
+add_subdirectory_ifdef(CONFIG_FLASH flash)
+# zephyr-keep-sorted-stop
