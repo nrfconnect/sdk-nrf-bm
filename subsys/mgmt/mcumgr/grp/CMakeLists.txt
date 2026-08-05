@@ -5,6 +5,8 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-add_subdirectory_ifdef(CONFIG_MCUMGR_GRP_IMG            img_mgmt)
-add_subdirectory_ifdef(CONFIG_MCUMGR_GRP_OS             os_mgmt)
-add_subdirectory_ifdef(CONFIG_MCUMGR_GRP_SETTINGS       settings_mgmt)
+# zephyr-keep-sorted-start
+add_subdirectory_ifdef(CONFIG_MCUMGR_GRP_IMG img_mgmt)
+add_subdirectory_ifdef(CONFIG_MCUMGR_GRP_OS os_mgmt)
+add_subdirectory_ifdef(CONFIG_MCUMGR_GRP_SETTINGS settings_mgmt)
+# zephyr-keep-sorted-stop

@@ -7,6 +7,8 @@
 zephyr_library()
 zephyr_library_sources(bm_storage.c)
 
+# zephyr-keep-sorted-start
+add_subdirectory_ifdef(CONFIG_BM_STORAGE_BACKEND_NATIVE_SIM native_sim)
 add_subdirectory_ifdef(CONFIG_BM_STORAGE_BACKEND_RRAM rram)
 add_subdirectory_ifdef(CONFIG_BM_STORAGE_BACKEND_SD sd)
-add_subdirectory_ifdef(CONFIG_BM_STORAGE_BACKEND_NATIVE_SIM native_sim)
+# zephyr-keep-sorted-stop
