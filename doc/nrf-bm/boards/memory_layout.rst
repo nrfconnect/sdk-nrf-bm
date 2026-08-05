@@ -184,7 +184,7 @@ Select **DK** → **SoC** → **SoftDevice** to view RRAM and SRAM layout diagra
 
          .. group-tab:: nRF54LM20A
 
-            Total RRAM: 2048 KB | Total SRAM: 512 KB
+            Total RRAM: 2036 KB | Total SRAM: 512 KB
 
             .. tabs::
 
@@ -252,7 +252,7 @@ Select **DK** → **SoC** → **SoftDevice** to view RRAM and SRAM layout diagra
 
          .. group-tab:: nRF54LV10A
 
-            Total RRAM: 1012 KB | Total SRAM: 191 KB
+            Total RRAM: 1012 KB | Total SRAM: 192 KB
 
             .. tabs::
 
