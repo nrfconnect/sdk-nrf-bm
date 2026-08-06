@@ -82,6 +82,16 @@ Memory layout diagrams
 
 Select **DK** → **SoC** → **SoftDevice** to view RRAM and SRAM layout diagrams.
 
+.. note::
+   The total SRAM size shown in these diagrams may differ from the total given in the product specification.
+   Depending on your SoC, one or more reserved regions may exist at the high end of the SRAM address range.
+   These are part of the memory map but are not shown as partitions here:
+
+   * **Protected RAM** - Destination address used by the KMU when storing keys, so the CRACEN PSA Crypto driver can access the key material for cryptographic operations. Only present on SoCs with CRACEN. See `Working with the KMU and CRACEN`_.
+   * **VPR saved context** - Used by the VPR (RISC-V coprocessor) to save and restore its context when entering and waking from Hibernate mode. Only relevant if your application uses the VPR. See `Working with the FLPR core`_.
+
+   For the complete SRAM layout, see the :guilabel:`Product overview` → :guilabel:`Memory` → :guilabel:`Memory map` section in the `nRF54L Series product specification`_ for your specific SoC.
+
 .. tabs::
 
    .. group-tab:: nRF54L15-DK

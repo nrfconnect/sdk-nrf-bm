@@ -237,4 +237,4 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Documentation
 =============
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Updated the memory layout diagram generation script to parse RRAM and SRAM sizes directly from devicetree instead of hardcoded per-SoC values.

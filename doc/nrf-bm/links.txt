@@ -37,6 +37,8 @@
 
 .. _`nRF54L15 Compatibility Matrix`: https://docs.nordicsemi.com/bundle/comp_matrix_nrf54l15/page/COMP/nrf54l15/nrf54l15_ble_qdid_qual_matrix.html
 
+.. _`nRF54L Series product specification`: https://docs.nordicsemi.com/r/bundle/additionalresources/page/additionalresources/nrf54l-series
+
 .. ### Source: SoftDevice doc links
 
 .. _`S115 SoftDevice for nRF54L15/nRF54L10/nRF54L05 API`: ../../s115_nrf54l15/html/topics.html
@@ -110,6 +112,8 @@
 .. _`Image tool`: https://docs.mcuboot.com/imgtool.html
 .. _`Vector table requirement`: https://developer.arm.com/documentation/100235/0002/sqf1486724325622
 .. _`Working with the KMU and CRACEN`: https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrf/app_dev/device_guides/kmu_guides/index.html
+
+.. _`Working with the FLPR core`: https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrf/app_dev/device_guides/nrf54l/vpr_flpr.html
 .. _`Provisioning the KMU`: https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrf/app_dev/device_guides/kmu_guides/kmu_provisioning_overview.html
 
 .. ### Release notes
