@@ -6,8 +6,10 @@
 
 menu "NFC for Bare Metal"
 
+# zephyr-keep-sorted-start
+rsource "lib/Kconfig"
 rsource "ndef/Kconfig"
 rsource "t4t/Kconfig"
-rsource "lib/Kconfig"
+# zephyr-keep-sorted-stop
 
 endmenu

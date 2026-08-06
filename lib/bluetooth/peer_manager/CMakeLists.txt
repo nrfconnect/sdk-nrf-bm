@@ -6,8 +6,10 @@
 
 zephyr_library()
 zephyr_library_include_directories(include)
-zephyr_library_sources(peer_manager.c)
-zephyr_library_sources(nrf_strerror.c)
+zephyr_library_sources(
+  nrf_strerror.c
+  peer_manager.c
+)
 
 add_subdirectory(modules)
 

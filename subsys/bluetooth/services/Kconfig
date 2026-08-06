@@ -3,6 +3,8 @@
 #
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
+
+# zephyr-keep-sorted-start
 rsource "ble_bas/Kconfig"
 rsource "ble_bas_client/Kconfig"
 rsource "ble_bms/Kconfig"
@@ -12,6 +14,7 @@ rsource "ble_hids/Kconfig"
 rsource "ble_hrs/Kconfig"
 rsource "ble_hrs_client/Kconfig"
 rsource "ble_lbs/Kconfig"
+rsource "ble_mcumgr/Kconfig"
 rsource "ble_nus/Kconfig"
 rsource "ble_nus_client/Kconfig"
-rsource "ble_mcumgr/Kconfig"
+# zephyr-keep-sorted-stop
