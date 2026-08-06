@@ -52,6 +52,48 @@ LED 0:
 LED 1:
    Lit when a device is connected.
 
+Security
+********
+
+The sample integrates :ref:`lib_peer_manager` (backed by :ref:`lib_bm_zms` for persistent storage) to support pairing and bonding, and to maintain an allow list of previously bonded peripherals for reconnection.
+
+The following pairing and bonding parameters are configured:
+
+.. list-table:: Peer Manager security parameters
+   :header-rows: 1
+
+   * - Parameter
+     - Value
+     - Effect
+   * - Bonding
+     - Enabled
+     - Bonding information is stored for reconnection.
+   * - LE Secure Connections
+     - Enabled
+     - Pairing uses LESC instead of legacy pairing.
+   * - MITM protection
+     - Disabled
+     - Pairing does not protect against man-in-the-middle attacks.
+   * - Keypress notifications
+     - Disabled
+     - No keypress events are sent during passkey entry.
+   * - I/O capabilities
+     - None
+     - Pairing uses the Just Works method.
+
+As a GATT client, the sample does not expose any local services, so no service security levels are configured here.
+Instead, it consumes the following remote characteristics, whose security level is enforced by the connected peripheral:
+
++--------------------+------------------------+-------------+----------------------------------------+-----------------------------------------+
+| Service            | Characteristic         | Operation   | Security level                         | Effect                                  |
++====================+========================+=============+========================================+=========================================+
+| Heart Rate Service | Heart Rate Measurement | Notify      | Determined by the connected peripheral | Determined by the connected peripheral. |
++--------------------+------------------------+-------------+----------------------------------------+-----------------------------------------+
+| Battery Service    | Battery Level          | Read/Notify | Determined by the connected peripheral | Determined by the connected peripheral. |
++--------------------+------------------------+-------------+----------------------------------------+-----------------------------------------+
+
+See `Testing`_ for the pairing and bonding steps.
+
 .. _ble_hrs_central_sample_testing:
 
 Building and running

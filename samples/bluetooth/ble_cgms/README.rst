@@ -64,6 +64,61 @@ LED 0:
 LED 1:
    Lit when a device is connected.
 
+Security
+********
+
+The sample integrates :ref:`lib_peer_manager` (backed by :ref:`lib_bm_zms` for persistent storage) to support pairing and bonding.
+
+The following pairing and bonding parameters are configured:
+
+.. list-table:: Peer Manager security parameters
+   :header-rows: 1
+
+   * - Parameter
+     - Value
+     - Effect
+   * - Bonding
+     - Enabled
+     - Bonding information is stored for reconnection.
+   * - LE Secure Connections
+     - Enabled
+     - Pairing uses LESC instead of legacy pairing.
+   * - MITM protection
+     - Disabled
+     - Pairing does not protect against man-in-the-middle attacks.
+   * - Keypress notifications
+     - Disabled
+     - No keypress events are sent during passkey entry.
+   * - I/O capabilities
+     - Display and Yes/No entry
+     - Pairing uses numeric comparison.
+
+This sample configures the following services and its characteristics with these specific operation modes and security levels:
+
++---------------------------------------+-----------------------------+----------------+-------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Service                               | Characteristic              | Operation      | Security level                | Effect                                                                                                                                                 |
++=======================================+=============================+================+===============================+========================================================================================================================================================+
+| Continuous Glucose Monitoring Service | Feature                     | Read           | Encryption, no authentication | Connection must be encrypted (paired) to read which optional CGM features the sensor supports.                                                         |
++                                       +-----------------------------+----------------+-------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------+
+|                                       | Status                      | Read           | Encryption, no authentication | Connection must be encrypted (paired) to read sensor warnings, such as a low battery or a sensor malfunction.                                          |
++                                       +-----------------------------+----------------+-------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------+
+|                                       | Session Start Time          | Read/Write     | Encryption, no authentication | Connection must be encrypted (paired) to read or set the timestamp marking when the monitoring session started.                                        |
++                                       +-----------------------------+----------------+-------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------+
+|                                       | Session Run Time            | Read           | Encryption, no authentication | Connection must be encrypted (paired) to read how long the current session is set to run.                                                              |
++                                       +-----------------------------+----------------+-------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------+
+|                                       | CGM Measurement             | Notify         | Encryption, no authentication | Connection must be encrypted (paired) to receive periodic glucose measurement notifications.                                                           |
++                                       +-----------------------------+----------------+-------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------+
+|                                       | Record Access Control Point | Write/Indicate | Encryption, no authentication | Connection must be encrypted (paired) to retrieve, filter, or delete stored glucose measurement records.                                               |
++                                       +-----------------------------+----------------+-------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------+
+|                                       | Specific Ops Control Point  | Write/Indicate | Encryption, no authentication | Connection must be encrypted (paired) to start or stop a monitoring session and configure settings such as the communication interval and calibration. |
++---------------------------------------+-----------------------------+----------------+-------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Device Information Service            | All characteristics         | Read           | Encryption, no authentication | Connection must be encrypted (paired) to read device information such as the manufacturer name and firmware version.                                   |
++---------------------------------------+-----------------------------+----------------+-------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Battery Service                       | All characteristics         | Read/Notify    | Open, no security             | Any connected device can read the battery level and subscribe to battery level notifications.                                                          |
++---------------------------------------+-----------------------------+----------------+-------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+See `Testing`_ for the pairing and bonding steps.
+
 Building and running
 ********************
 
