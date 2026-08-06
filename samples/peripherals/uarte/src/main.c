@@ -10,56 +10,31 @@
 
 #include <bm/bm_irq.h>
 #include <hal/nrf_gpio.h>
+#include <hal/nrf_uarte.h>
 #include <board-config.h>
 #include <nrfx_uarte.h>
 
 LOG_MODULE_REGISTER(sample, CONFIG_SAMPLE_UARTE_LOG_LEVEL);
 
-#define SAMPLE_UARTE_RX_BUF_SIZE 1
-
 /** Application UARTE instance */
 static nrfx_uarte_t uarte_inst = NRFX_UARTE_INSTANCE(BOARD_APP_UARTE_INST);
 
-/* Receive buffer used in UARTE ISR callback */
-static uint8_t uarte_rx_buf[2][SAMPLE_UARTE_RX_BUF_SIZE];
+/* Double-buffered RX: one buffer is always queued as "next",
+ * so when the current one is filled or aborted, DMA continues into the other.
+ */
+static uint8_t uarte_rx_buf[2][CONFIG_SAMPLE_UARTE_DATA_LEN_MAX];
 static int buf_idx;
 
 /* Handle data received from UARTE. */
 static void uarte_rx_handler(char *data, size_t data_len)
 {
 	int err;
-	uint8_t c;
-	static char rx_buf[CONFIG_SAMPLE_UARTE_DATA_LEN_MAX];
-	static uint16_t rx_buf_idx;
 
-	for (int i = 0; i < data_len; i++) {
-		c = data[i];
+	LOG_HEXDUMP_INF(data, data_len, "Received data from UARTE:");
 
-		if (rx_buf_idx < sizeof(rx_buf)) {
-			rx_buf[rx_buf_idx++] = c;
-		}
-
-		if ((c == '\n' || c == '\r') || (rx_buf_idx >= sizeof(rx_buf))) {
-			if (rx_buf_idx == 0) {
-				/* RX buffer is empty, nothing to send. */
-				continue;
-			}
-
-			LOG_INF("Echo data, len %d", rx_buf_idx);
-
-			/* Add newline if not already output at the end */
-			if ((rx_buf[rx_buf_idx - 1] != '\n') && (rx_buf_idx < sizeof(rx_buf))) {
-				rx_buf[rx_buf_idx++] = '\n';
-			}
-
-			err = nrfx_uarte_tx(&uarte_inst, rx_buf, rx_buf_idx,
-					    NRFX_UARTE_TX_BLOCKING);
-			if (err) {
-				LOG_ERR("nrfx_uarte_tx failed, err %d", err);
-			}
-
-			rx_buf_idx = 0;
-		}
+	err = nrfx_uarte_tx(&uarte_inst, data, data_len, NRFX_UARTE_TX_BLOCKING);
+	if (err) {
+		LOG_ERR("nrfx_uarte_tx failed, err %d", err);
 	}
 }
 
@@ -68,18 +43,14 @@ static void uarte_event_handler(const nrfx_uarte_event_t *event, void *ctx)
 {
 	switch (event->type) {
 	case NRFX_UARTE_EVT_RX_DONE:
-		LOG_INF("Received data from UARTE: %c", event->data.rx.p_buffer[0]);
 		if (event->data.rx.length > 0) {
 			uarte_rx_handler(event->data.rx.p_buffer, event->data.rx.length);
 		}
-
-		/* Provide new UARTE RX buffer. */
-		(void)nrfx_uarte_rx_enable(&uarte_inst, 0);
 		break;
 	case NRFX_UARTE_EVT_RX_BUF_REQUEST:
+		/* Hand over the other buffer to keep the pipeline full. */
 		(void)nrfx_uarte_rx_buffer_set(&uarte_inst, uarte_rx_buf[buf_idx],
-					       SAMPLE_UARTE_RX_BUF_SIZE);
-
+					       sizeof(uarte_rx_buf[buf_idx]));
 		buf_idx = buf_idx ? 0 : 1;
 		break;
 	case NRFX_UARTE_EVT_ERROR:
@@ -92,6 +63,30 @@ static void uarte_event_handler(const nrfx_uarte_event_t *event, void *ctx)
 
 ISR_DIRECT_DECLARE(uarte_direct_isr)
 {
+	/* The compare-match filter raises MATCH0 on '\r' and MATCH1 on '\n',
+	 * either one ends a line, so both are handled the same way here.
+	 * Clear it and abort the current RX. A second buffer is already queued,
+	 * so reception continues into it without a gap.
+	 */
+	NRF_UARTE_Type *reg = uarte_inst.p_reg;
+	bool match = false;
+
+	if (reg->EVENTS_DMA.RX.MATCH[0]) {
+		nrf_uarte_event_clear(reg,
+			(nrf_uarte_event_t)offsetof(NRF_UARTE_Type, EVENTS_DMA.RX.MATCH[0]));
+		match = true;
+	}
+
+	if (reg->EVENTS_DMA.RX.MATCH[1]) {
+		nrf_uarte_event_clear(reg,
+			(nrf_uarte_event_t)offsetof(NRF_UARTE_Type, EVENTS_DMA.RX.MATCH[1]));
+		match = true;
+	}
+
+	if (match) {
+		(void)nrfx_uarte_rx_abort(&uarte_inst, false, false);
+	}
+
 	nrfx_uarte_irq_handler(&uarte_inst);
 	return 0;
 }
@@ -129,6 +124,19 @@ static int uarte_init(void)
 		return err;
 	}
 
+	/* Configure the compare-match filter so reception stops on '\r' or '\n':
+	 * CANDIDATE[0] = '\r', CANDIDATE[1] = '\n', both enabled and both raising
+	 * an interrupt (uarte_direct_isr aborts RX on either match).
+	 */
+	NRF_UARTE_Type *reg = uarte_inst.p_reg;
+
+	reg->DMA.RX.MATCH.CANDIDATE[0] = '\r';
+	reg->DMA.RX.MATCH.CANDIDATE[1] = '\n';
+	reg->DMA.RX.MATCH.CONFIG       = UARTE_DMA_RX_MATCH_CONFIG_ENABLE0_Msk |
+					 UARTE_DMA_RX_MATCH_CONFIG_ENABLE1_Msk;
+	reg->INTENSET                  = UARTE_INTENSET_DMARXMATCH0_Msk |
+					 UARTE_INTENSET_DMARXMATCH1_Msk;
+
 	return 0;
 }
 
@@ -152,8 +160,10 @@ int main(void)
 		goto idle;
 	}
 
-	/* Start reception */
-	err = nrfx_uarte_rx_enable(&uarte_inst, 0);
+	/* Continuous mode keeps RX running across buffers. With a second buffer queued,
+	 * an abort on match ends the current one and continues into the other.
+	 */
+	err = nrfx_uarte_rx_enable(&uarte_inst, NRFX_UARTE_RX_ENABLE_CONT);
 	if (err) {
 		LOG_ERR("UARTE RX failed, err %d", err);
 	}

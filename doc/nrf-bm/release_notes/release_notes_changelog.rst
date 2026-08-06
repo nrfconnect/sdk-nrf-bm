@@ -199,10 +199,22 @@ Bluetooth LE samples
 * :ref:`ble_nus_sample` sample:
 
    * Fixed a bug with the UARTE RX buffer address provided with index 1.
+   * Added the :kconfig:option:`CONFIG_SAMPLE_UART_EOL` Kconfig option to select the end-of-line termination (CR, LF, or CR+LF) used with the UART connected device.
+     The default option is LF (Line Feed).
+     If your device is using CR, you must set the Kconfig option accordingly.
+   * Added the :kconfig:option:`CONFIG_SAMPLE_UART_EOL_STRIP` Kconfig option to strip the termination before sending over Bluetooth LE.
+     This option is disabled by default.
+   * Updated UART reception to detect the line terminator in hardware using the UARTE compare-match filter, reporting each line as its own transfer instead of each received byte.
 
 * :ref:`ble_nus_central_sample` sample:
 
    * Updated to use Button 1 to disconnect from the target peripheral to align with other central samples.
+   * Added the :kconfig:option:`CONFIG_SAMPLE_UART_EOL` Kconfig option to select the end-of-line termination (CR, LF, or CR+LF) used with the UART connected device.
+     The default option is LF (Line Feed).
+     If your device is using CR, you must set the Kconfig option accordingly.
+   * Added the :kconfig:option:`CONFIG_SAMPLE_UART_EOL_STRIP` Kconfig option to strip the termination before sending over Bluetooth LE.
+     This option is disabled by default.
+   * Updated UART reception to detect the line terminator in hardware using the UARTE compare-match filter, reporting each line as its own transfer instead of each received byte.
 
    * Fixed:
 

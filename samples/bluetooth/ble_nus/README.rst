@@ -55,6 +55,20 @@ LED 1:
 
   In LPUARTE mode, the LEDs may appear on even when no device is connected for some development kits because it shares pins with the LPUARTE; RX or TX activity can toggle the LED, which is expected behavior.
 
+.. _ble_nus_configuration:
+
+Configuration
+*************
+
+The sample allows configuring how end-of-line (EOL) terminations are handled for the UART connected device (for example, a PC terminal).
+You can modify the following options (available in the Kconfig file at :file:`samples/bluetooth/ble_nus`):
+
+* :kconfig:option:`CONFIG_SAMPLE_UART_EOL_CR`, :kconfig:option:`CONFIG_SAMPLE_UART_EOL_LF`, and :kconfig:option:`CONFIG_SAMPLE_UART_EOL_CR_LF` - Select the end-of-line termination (``CR``, ``LF`` (the default), or ``CR+LF``) used with the UART connected device.
+  Input from the connected device is forwarded over Bluetooth LE one line at a time using this sequence as the delimiter, and the same termination is appended to data received over Bluetooth LE before it is written back to the connected device when missing.
+
+* :kconfig:option:`CONFIG_SAMPLE_UART_EOL_STRIP` - Strip the end-of-line termination from a line before it is sent over Bluetooth LE, so the message arrives without a trailing line break.
+  Disabled by default.
+
 Building and running
 ********************
 
@@ -85,16 +99,20 @@ The sample can be tested in two ways, depending on the selected UART configurati
          If you use a development kit, UART 0 and 1 are forwarded as COM ports (Windows) or ttyACM devices (Linux) after you connect the development kit over USB.
          One instance is used for logging (if enabled with :kconfig:option:`CONFIG_LOG`), while the other is used for the NUS service.
       #. Connect to the kit with a terminal emulator (for example, the `Serial Terminal app`_) for both UARTs.
+         In the following steps, these are referred to as the **logging terminal** and the **NUS terminal**.
       #. Reset the kit.
-      #. Observe that the text ``BLE NUS sample initialized`` is printed on the COM listener running on the computer.
-      #. Observe that the ``Advertising as nRF_BM_NUS`` message is printed.
+      #. Observe that the NUS terminal prints ``UART started.`` followed by ``Line terminator set to:`` with the terminator configured through the ``CONFIG_SAMPLE_UART_EOL_*`` Kconfig option (see `Configuration`_).
+         Set the NUS terminal to use the same line terminator.
+      #. Observe that the logging terminal prints ``BLE NUS sample initialized``.
+      #. Observe that the logging terminal prints ``Advertising as nRF_BM_NUS``.
          You can configure this name using the :kconfig:option:`CONFIG_SAMPLE_BLE_DEVICE_NAME` Kconfig option.
          For information on how to do this, see `Configuring Kconfig`_.
       #. Connect to your device using the `nRF Toolbox`_ mobile application with the :guilabel:`Universal Asynchronous Receiver/Transmitter (UART)` service.
          If the device is not advertising, reset the board with the :guilabel:`Reset Board` option in |VSC| or by pressing the reset button on the development kit.
-      #. Write a text in the second COM listener running on the computer and press Enter.
+      #. Write a text in the NUS terminal and press Enter.
+         Observe that the text is displayed in the terminal on the mobile phone.
       #. Write a text in the terminal on the mobile phone and press :guilabel:`Send`.
-         Observe that the text is displayed in the second COM listener running on the computer.
+         Observe that the text is displayed in the NUS terminal.
 
    .. group-tab:: LPUARTE configuration
 
