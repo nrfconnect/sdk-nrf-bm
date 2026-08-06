@@ -98,24 +98,24 @@ Select **DK** → **SoC** → **SoftDevice** to view RRAM and SRAM layout diagra
 
                   .. rubric:: S115
 
-                  .. image:: images/bm_nrf54l15dk_nrf54l15_cpuapp_s115_softdevice.svg
+                  .. image:: /boards/images/bm_nrf54l15dk_nrf54l15_cpuapp_s115_softdevice.svg
                      :alt: nRF54L15 S115 memory layout
 
                   .. rubric:: S115 + MCUboot
 
-                  .. image:: images/bm_nrf54l15dk_nrf54l15_cpuapp_s115_softdevice_mcuboot.svg
+                  .. image:: /boards/images/bm_nrf54l15dk_nrf54l15_cpuapp_s115_softdevice_mcuboot.svg
                      :alt: nRF54L15 S115 + MCUboot memory layout
 
                .. group-tab:: S145
 
                   .. rubric:: S145
 
-                  .. image:: images/bm_nrf54l15dk_nrf54l15_cpuapp_s145_softdevice.svg
+                  .. image:: /boards/images/bm_nrf54l15dk_nrf54l15_cpuapp_s145_softdevice.svg
                      :alt: nRF54L15 S145 memory layout
 
                   .. rubric:: S145 + MCUboot
 
-                  .. image:: images/bm_nrf54l15dk_nrf54l15_cpuapp_s145_softdevice_mcuboot.svg
+                  .. image:: /boards/images/bm_nrf54l15dk_nrf54l15_cpuapp_s145_softdevice_mcuboot.svg
                      :alt: nRF54L15 S145 + MCUboot memory layout
 
          .. group-tab:: nRF54L10
@@ -128,24 +128,24 @@ Select **DK** → **SoC** → **SoftDevice** to view RRAM and SRAM layout diagra
 
                   .. rubric:: S115
 
-                  .. image:: images/bm_nrf54l15dk_nrf54l10_cpuapp_s115_softdevice.svg
+                  .. image:: /boards/images/bm_nrf54l15dk_nrf54l10_cpuapp_s115_softdevice.svg
                      :alt: nRF54L10 S115 memory layout
 
                   .. rubric:: S115 + MCUboot
 
-                  .. image:: images/bm_nrf54l15dk_nrf54l10_cpuapp_s115_softdevice_mcuboot.svg
+                  .. image:: /boards/images/bm_nrf54l15dk_nrf54l10_cpuapp_s115_softdevice_mcuboot.svg
                      :alt: nRF54L10 S115 + MCUboot memory layout
 
                .. group-tab:: S145
 
                   .. rubric:: S145
 
-                  .. image:: images/bm_nrf54l15dk_nrf54l10_cpuapp_s145_softdevice.svg
+                  .. image:: /boards/images/bm_nrf54l15dk_nrf54l10_cpuapp_s145_softdevice.svg
                      :alt: nRF54L10 S145 memory layout
 
                   .. rubric:: S145 + MCUboot
 
-                  .. image:: images/bm_nrf54l15dk_nrf54l10_cpuapp_s145_softdevice_mcuboot.svg
+                  .. image:: /boards/images/bm_nrf54l15dk_nrf54l10_cpuapp_s145_softdevice_mcuboot.svg
                      :alt: nRF54L10 S145 + MCUboot memory layout
 
          .. group-tab:: nRF54L05
@@ -158,24 +158,24 @@ Select **DK** → **SoC** → **SoftDevice** to view RRAM and SRAM layout diagra
 
                   .. rubric:: S115
 
-                  .. image:: images/bm_nrf54l15dk_nrf54l05_cpuapp_s115_softdevice.svg
+                  .. image:: /boards/images/bm_nrf54l15dk_nrf54l05_cpuapp_s115_softdevice.svg
                      :alt: nRF54L05 S115 memory layout
 
                   .. rubric:: S115 + MCUboot
 
-                  .. image:: images/bm_nrf54l15dk_nrf54l05_cpuapp_s115_softdevice_mcuboot.svg
+                  .. image:: /boards/images/bm_nrf54l15dk_nrf54l05_cpuapp_s115_softdevice_mcuboot.svg
                      :alt: nRF54L05 S115 + MCUboot memory layout
 
                .. group-tab:: S145
 
                   .. rubric:: S145
 
-                  .. image:: images/bm_nrf54l15dk_nrf54l05_cpuapp_s145_softdevice.svg
+                  .. image:: /boards/images/bm_nrf54l15dk_nrf54l05_cpuapp_s145_softdevice.svg
                      :alt: nRF54L05 S145 memory layout
 
                   .. rubric:: S145 + MCUboot
 
-                  .. image:: images/bm_nrf54l15dk_nrf54l05_cpuapp_s145_softdevice_mcuboot.svg
+                  .. image:: /boards/images/bm_nrf54l15dk_nrf54l05_cpuapp_s145_softdevice_mcuboot.svg
                      :alt: nRF54L05 S145 + MCUboot memory layout
 
    .. group-tab:: nRF54LM20-DK
@@ -192,24 +192,24 @@ Select **DK** → **SoC** → **SoftDevice** to view RRAM and SRAM layout diagra
 
                   .. rubric:: S115
 
-                  .. image:: images/bm_nrf54lm20dk_nrf54lm20a_cpuapp_s115_softdevice.svg
+                  .. image:: /boards/images/bm_nrf54lm20dk_nrf54lm20a_cpuapp_s115_softdevice.svg
                      :alt: nRF54LM20A S115 memory layout
 
                   .. rubric:: S115 + MCUboot
 
-                  .. image:: images/bm_nrf54lm20dk_nrf54lm20a_cpuapp_s115_softdevice_mcuboot.svg
+                  .. image:: /boards/images/bm_nrf54lm20dk_nrf54lm20a_cpuapp_s115_softdevice_mcuboot.svg
                      :alt: nRF54LM20A S115 + MCUboot memory layout
 
                .. group-tab:: S145
 
                   .. rubric:: S145
 
-                  .. image:: images/bm_nrf54lm20dk_nrf54lm20a_cpuapp_s145_softdevice.svg
+                  .. image:: /boards/images/bm_nrf54lm20dk_nrf54lm20a_cpuapp_s145_softdevice.svg
                      :alt: nRF54LM20A S145 memory layout
 
                   .. rubric:: S145 + MCUboot
 
-                  .. image:: images/bm_nrf54lm20dk_nrf54lm20a_cpuapp_s145_softdevice_mcuboot.svg
+                  .. image:: /boards/images/bm_nrf54lm20dk_nrf54lm20a_cpuapp_s145_softdevice_mcuboot.svg
                      :alt: nRF54LM20A S145 + MCUboot memory layout
 
    .. group-tab:: nRF54LS05-DK
@@ -226,24 +226,24 @@ Select **DK** → **SoC** → **SoftDevice** to view RRAM and SRAM layout diagra
 
                   .. rubric:: S115
 
-                  .. image:: images/bm_nrf54ls05dk_nrf54ls05b_cpuapp_s115_softdevice.svg
+                  .. image:: /boards/images/bm_nrf54ls05dk_nrf54ls05b_cpuapp_s115_softdevice.svg
                      :alt: nRF54LS05B S115 memory layout
 
                   .. rubric:: S115 + MCUboot
 
-                  .. image:: images/bm_nrf54ls05dk_nrf54ls05b_cpuapp_s115_softdevice_mcuboot.svg
+                  .. image:: /boards/images/bm_nrf54ls05dk_nrf54ls05b_cpuapp_s115_softdevice_mcuboot.svg
                      :alt: nRF54LS05B S115 + MCUboot memory layout
 
                .. group-tab:: S145
 
                   .. rubric:: S145
 
-                  .. image:: images/bm_nrf54ls05dk_nrf54ls05b_cpuapp_s145_softdevice.svg
+                  .. image:: /boards/images/bm_nrf54ls05dk_nrf54ls05b_cpuapp_s145_softdevice.svg
                      :alt: nRF54LS05B S145 memory layout
 
                   .. rubric:: S145 + MCUboot
 
-                  .. image:: images/bm_nrf54ls05dk_nrf54ls05b_cpuapp_s145_softdevice_mcuboot.svg
+                  .. image:: /boards/images/bm_nrf54ls05dk_nrf54ls05b_cpuapp_s145_softdevice_mcuboot.svg
                      :alt: nRF54LS05B S145 + MCUboot memory layout
 
    .. group-tab:: nRF54LV10-DK
@@ -260,22 +260,22 @@ Select **DK** → **SoC** → **SoftDevice** to view RRAM and SRAM layout diagra
 
                   .. rubric:: S115
 
-                  .. image:: images/bm_nrf54lv10dk_nrf54lv10a_cpuapp_s115_softdevice.svg
+                  .. image:: /boards/images/bm_nrf54lv10dk_nrf54lv10a_cpuapp_s115_softdevice.svg
                      :alt: nRF54LV10A S115 memory layout
 
                   .. rubric:: S115 + MCUboot
 
-                  .. image:: images/bm_nrf54lv10dk_nrf54lv10a_cpuapp_s115_softdevice_mcuboot.svg
+                  .. image:: /boards/images/bm_nrf54lv10dk_nrf54lv10a_cpuapp_s115_softdevice_mcuboot.svg
                      :alt: nRF54LV10A S115 + MCUboot memory layout
 
                .. group-tab:: S145
 
                   .. rubric:: S145
 
-                  .. image:: images/bm_nrf54lv10dk_nrf54lv10a_cpuapp_s145_softdevice.svg
+                  .. image:: /boards/images/bm_nrf54lv10dk_nrf54lv10a_cpuapp_s145_softdevice.svg
                      :alt: nRF54LV10A S145 memory layout
 
                   .. rubric:: S145 + MCUboot
 
-                  .. image:: images/bm_nrf54lv10dk_nrf54lv10a_cpuapp_s145_softdevice_mcuboot.svg
+                  .. image:: /boards/images/bm_nrf54lv10dk_nrf54lv10a_cpuapp_s145_softdevice_mcuboot.svg
                      :alt: nRF54LV10A S145 + MCUboot memory layout

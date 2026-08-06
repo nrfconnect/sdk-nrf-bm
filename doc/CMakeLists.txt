@@ -303,6 +303,15 @@ add_custom_target(
   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/versions.json ${HTML_DIR}
 )
 
+set(mem_layouts_output_dir ${CMAKE_BINARY_DIR}/nrf-bm/src/boards/images)
+add_custom_target(
+  gen-memory-layouts
+  COMMAND
+    ${PYTHON_EXECUTABLE}
+    ${NRF_BM_BASE}/doc/_scripts/gen_memory_layouts.py --output-dir ${mem_layouts_output_dir}
+  COMMENT "Generating board memory layout diagrams..."
+)
+
 add_custom_target(
   merge-search-indexes
   COMMAND
@@ -325,7 +334,7 @@ function(add_doc_dependencies docset)
   endif()
 endfunction()
 
-add_doc_dependencies(nrf-bm kconfig-all s115_nrf54l15 s145_nrf54l15 s115_nrf54lm20 s145_nrf54lm20 s115_nrf54ls05 s145_nrf54ls05 s115_nrf54lv10 s145_nrf54lv10)
+add_doc_dependencies(nrf-bm gen-memory-layouts kconfig-all s115_nrf54l15 s145_nrf54l15 s115_nrf54lm20 s145_nrf54lm20 s115_nrf54ls05 s145_nrf54ls05 s115_nrf54lv10 s145_nrf54lv10)
 
 add_custom_target(build-all ALL)
 add_dependencies(build-all
