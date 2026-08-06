@@ -43,6 +43,8 @@ Boards
      This improves debugging in VS Code.
    * The number of required board qualifiers (reduced by one), as of changes in upstream Zephyr.
 
+* Added ``BOARD_EXTERNAL_MEMORY_*`` macros to **bm_nrf54l15dk** and **bm_nrf54lm20dk** ``board-config.h`` (SPIM instance, SCK/MOSI/MISO/CS and WP#/RST# strap pins) for on-board SPI external flash. Other BM development kits do not include external flash memory on the board, so their ``board-config.h`` files omit these macros.
+
 Build system
 ============
 
@@ -121,6 +123,10 @@ Libraries
       * An issue where calling the :c:func:`pm_init` function two or more times would cause some of the internal asynchronous operation flags to have incorrect states.
       * The :c:func:`pm_address_resolve` function to return ``false`` instead of ``NRF_ERROR_INVALID_STATE`` when Peer Manager is not initialized.
 
+* Added the :ref:`lib_bm_spi_mngr` library for queued SPI master transactions on a single SPIM instance.
+  Enable it with the :kconfig:option:`CONFIG_BM_SPI_MNGR` Kconfig option.
+  See :ref:`lib_bm_spi_mngr` for an overview and :ref:`SPI transaction manager API reference <api_bm_spi_mngr>` for the full API.
+
 Bluetooth LE Services
 ---------------------
 
@@ -158,7 +164,7 @@ Peripheral samples
 ------------------
 
 * Added the :ref:`radio_test` sample.
-
+* Added the :ref:`spi_mngr_sample` sample, demonstrating read, page program, and sector erase on the on-board external NOR flash using the :ref:`lib_bm_spi_mngr` library.
 
 Bluetooth LE samples
 --------------------
@@ -211,11 +217,6 @@ Bluetooth LE samples
 
 NFC samples
 -----------
-
-No changes since the latest nRF Connect SDK Bare Metal release.
-
-Peripheral samples
-------------------
 
 No changes since the latest nRF Connect SDK Bare Metal release.
 

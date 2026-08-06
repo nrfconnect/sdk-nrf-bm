@@ -1,0 +1,14 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+# Redefined here to override the "depends on NRFX_SPIM" dependency and avoid pulling in the real
+# nrfx driver, since it is mocked via cmock in this test.
+
+config BM_SPI_MNGR
+	bool "SPI transaction manager (testing)"
+	select RING_BUFFER
+
+source "Kconfig.zephyr"
