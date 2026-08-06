@@ -209,6 +209,8 @@ Bluetooth LE samples
       * The disconnect button handler to only disconnect on button press, and not on button release.
       * A bug with the UARTE RX buffer address provided with index 1.
 
+* Added the :ref:`ble_device_name_sample` sample.
+
 NFC samples
 -----------
 
