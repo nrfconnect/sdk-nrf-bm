@@ -46,7 +46,8 @@ Boards
 Build system
 ============
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Updated :file:`west.yml` to allowlist ``memfault-firmware-sdk`` from the |NCS| manifest.
+* Updated :file:`zephyr/module.yml` to declare a build dependency on ``memfault-firmware-sdk``.
 
 Interrupts
 ==========
@@ -75,6 +76,16 @@ Filesystem
 ----------
 
 No changes since the latest nRF Connect SDK Bare Metal release.
+
+Memfault
+--------
+
+* Added Memfault platform support in :file:`subsys/memfault/`:
+
+   * :kconfig:option:`CONFIG_BM_MEMFAULT_LOCK` – ``irq_lock()``-based :c:func:`memfault_lock` / :c:func:`memfault_unlock` for builds without Zephyr multithreading (default when ``NCS_BM && MEMFAULT && !MULTITHREADING``).
+   * Excludes the Memfault SDK ``memfault_platform_lock.c`` (``k_mutex``-based) from the build so Memfault links without :kconfig:option:`CONFIG_MULTITHREADING`.
+
+* Added :ref:`memfault_bm` documentation describing ISR vs main-loop usage rules for Memfault on |BMshort|.
 
 Libraries
 =========
@@ -139,6 +150,8 @@ Bluetooth LE Services
      The SMP response is split into many notifications, which could fill the SoftDevice notification (HVN) TX queue and cause :c:func:`sd_ble_gatts_hvx` to return :c:macro:`NRF_ERROR_RESOURCES`, dropping the remaining data.
      Notifications that fail with :c:macro:`NRF_ERROR_RESOURCES` are now retransmitted on the :c:macro:`BLE_GATTS_EVT_HVN_TX_COMPLETE` event once the SoftDevice frees queue space.
 
+* Added the :ref:`lib_ble_service_mds` service for exporting Memfault diagnostic chunks over Bluetooth LE.
+
 Libraries for NFC
 -----------------
 
@@ -162,6 +175,8 @@ Peripheral samples
 
 Bluetooth LE samples
 --------------------
+
+* Added the :ref:`ble_mds_sample` sample.
 
 * Updated the following samples and applications that do not support pairing to call the :c:func:`sd_ble_gatts_sys_attr_set` function only in response to the :c:macro:`BLE_GATTS_EVT_SYS_ATTR_MISSING` event and not as a response to a :c:macro:`BLE_GAP_EVT_CONNECTED` event:
 
@@ -237,4 +252,11 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Documentation
 =============
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Added:
+
+   * :ref:`memfault_bm` – Memfault integration on bare metal (platform lock, ISR vs main-loop rules, cloud prerequisites).
+   * :ref:`lib_ble_service_mds` – Memfault Diagnostic Service library guide.
+   * :ref:`ble_mds_sample` – sample user guide and Memfault getting-started steps.
+   * Memfault Diagnostic Service API reference (:ref:`api_ble_mds`).
+
+* Updated :file:`doc/nrf-bm/links.txt` with Memfault and nRF Cloud related links.

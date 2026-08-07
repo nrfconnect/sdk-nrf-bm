@@ -135,6 +135,19 @@
 .. _`nRF5 SDK DFU memory layout`: https://docs.nordicsemi.com/bundle/sdk_nrf5_v17.1.0/page/lib_bootloader.html
 .. _`MCUmgr SMP protocol`: https://docs.zephyrproject.org/latest/services/device_mgmt/smp_protocol.html
 
+.. ### Memfault and nRF Cloud
+
+.. _`Memfault SDK`: https://docs.memfault.com/docs/embedded/introduction/
+.. _`Memfault Docs`: https://docs.memfault.com/
+.. _`Memfault Dashboard`: https://app.memfault.com
+.. _`nRF Cloud Memfault registration`: https://app.nrfcloud.com/#/register
+.. _`nRF Cloud`: https://nrfcloud.com/
+.. _`nRF Cloud powered by Memfault`: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/external_comp/memfault.html
+.. _`create a Memfault project`: https://docs.memfault.com/docs/platform/projects-and-fleets#creating-a-new-project
+.. _`Memfault: Coredumps`: https://docs.memfault.com/docs/mcu/coredumps
+.. _`Memfault: Collecting Device Metrics`: https://docs.memfault.com/docs/mcu/metrics-api
+.. _`Memfault: Error Tracking with Trace Events`: https://docs.memfault.com/docs/mcu/trace-events
+
 .. ### Other links
 
 .. _`Bluetooth Core Specification`: https://www.bluetooth.org/en-us/specification/adopted-specifications
