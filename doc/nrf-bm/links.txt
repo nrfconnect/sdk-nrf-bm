@@ -62,7 +62,6 @@
 .. _`nRF Command Line Tools Downloads`: https://www.nordicsemi.com/Products/Development-tools/nRF-Command-Line-Tools/Download?lang=en#infotabs
 .. _`J-Link Software and Documentation Pack`: https://www.segger.com/downloads/jlink
 .. _`nRF Util prerequisites`: https://docs.nordicsemi.com/bundle/nrfutil/page/guides/installing.html#prerequisites
-.. _`Toolchain Manager command`: https://docs.nordicsemi.com/bundle/nrfutil/page/nrfutil-toolchain-manager/nrfutil-toolchain-manager_0.14.1.html
 .. _`nrf-udev`: https://github.com/NordicSemiconductor/nrf-udev
 
 .. ### VSC
