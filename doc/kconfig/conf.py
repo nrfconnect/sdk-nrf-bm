@@ -18,7 +18,7 @@ NRF_BASE = NRF_BM_BASE / ".." / "nrf"
 # General configuration --------------------------------------------------------
 
 project = "Kconfig reference"
-copyright = "2025, Nordic Semiconductor"
+copyright = "2025-2026, Nordic Semiconductor"
 author = "Nordic Semiconductor"
 # NOTE: use blank space as version to preserve space
 version = "&nbsp;"

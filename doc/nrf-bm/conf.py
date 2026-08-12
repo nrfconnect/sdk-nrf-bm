@@ -18,7 +18,7 @@ ZEPHYR_BASE = NRF_BM_BASE / ".." / "zephyr"
 # General configuration --------------------------------------------------------
 
 project = "nRF Connect SDK Bare Metal"
-copyright = "2025, Nordic Semiconductor"
+copyright = "2025-2026, Nordic Semiconductor"
 author = "Nordic Semiconductor"
 version = release = os.environ.get("DOCSET_VERSION")
 
