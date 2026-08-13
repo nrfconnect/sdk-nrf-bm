@@ -69,6 +69,8 @@ You can uninitialize a storage instance with the :c:func:`bm_storage_uninit` fun
 Usage
 *****
 
+The usage of this library is demonstrated in the :ref:`bm_storage_sample` sample.
+
 The following is a list of operations you can perform with this library.
 
 Read
@@ -131,11 +133,6 @@ Backends with an internal operation queue (for example, the SoftDevice backend) 
 To prevent recursion in backends without a queue, enable the :kconfig:option:`CONFIG_BM_SCHEDULER` Kconfig option.
 When the scheduler is available, synchronous events are automatically deferred and delivered from the main thread context on the next call to :c:func:`bm_scheduler_process`.
 Deferred events have their :c:member:`bm_storage_evt.is_async` field set to ``true``.
-
-Sample
-******
-
-The usage of this library is demonstrated in the :ref:`bm_storage_sample` sample.
 
 Dependencies
 ************

@@ -67,6 +67,8 @@ Do not call it while a transaction is running, as it does not cancel pending wor
 Usage
 *****
 
+The usage of this library is demonstrated in the :ref:`spi_mngr_sample` sample.
+
 Work is described in a :c:struct:`bm_spi_mngr_transaction` structure, holding an array of transfers and the number of transfers.
 Use the :c:macro:`BM_SPI_MNGR_TRANSFER` macro to set up each transfer.
 
@@ -90,11 +92,6 @@ Busy state
 ==========
 
 Use the :c:func:`bm_spi_mngr_is_idle` function to check whether all scheduled work has completed.
-
-Sample
-******
-
-The usage of this library is demonstrated in the :ref:`spi_mngr_sample` sample.
 
 Dependencies
 ************
