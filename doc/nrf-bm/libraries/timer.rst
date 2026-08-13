@@ -36,6 +36,8 @@ The timer can be initialized in the following modes:
 Usage
 *****
 
+The usage of this library is demonstrated in the :ref:`timer_sample` sample.
+
 After initialization, start the timer by calling the :c:func:`bm_timer_start` function, providing the timeout and user-provided context passed to the callback.
 The timeout is provided in ticks.
 
@@ -45,11 +47,6 @@ The library provides macros to convert standard time units to ticks:
 * :c:macro:`BM_TIMER_MS_TO_TICKS` - Converts milliseconds to ticks.
 
 To stop a timer, call the :c:func:`bm_timer_stop` function.
-
-Sample
-******
-
-Usage of this library is demonstrated in the :ref:`timer_sample` sample.
 
 Dependencies
 ************

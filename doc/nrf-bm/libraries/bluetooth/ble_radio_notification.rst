@@ -35,15 +35,12 @@ Initialize the library by calling the :c:func:`ble_radio_notification_init` func
 Usage
 *****
 
+The usage of this library is demonstrated in the :ref:`ble_radio_ntf_sample` sample.
+
 When initializing the library with the :c:func:`ble_radio_notification_init` function, make sure to specify the event handler to receive the Radio Notification signal.
 You can specify the interval in microseconds between the Radio Notification signal and the start of the radio event.
 The signal raised at the start of the radio event has ``active_state`` set to ``true``.
 A new Radio Notification signal will be raised when the radio event completes with ``active_state`` set to ``false``.
-
-Sample
-******
-
-The usage of this library is demonstrated in the :ref:`ble_radio_ntf_sample` sample.
 
 Dependencies
 ************
