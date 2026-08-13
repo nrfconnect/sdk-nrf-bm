@@ -17,6 +17,7 @@ rsource "nfc/Kconfig"
 rsource "shell/Kconfig"
 rsource "softdevice/Kconfig"
 rsource "softdevice_handler/Kconfig"
+rsource "softperipheral/Kconfig"
 rsource "storage/Kconfig"
 # zephyr-keep-sorted-stop
 

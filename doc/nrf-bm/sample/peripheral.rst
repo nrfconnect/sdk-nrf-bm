@@ -11,3 +11,4 @@ This section lists the available samples for various peripherals.
    :glob:
 
    ../samples/peripherals/*/README
+   ../samples/softperipherals/*/README

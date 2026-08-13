@@ -107,6 +107,12 @@ Memfault
   * :kconfig:option:`CONFIG_BM_MEMFAULT_LOCK` - ``irq_lock()``-based ``memfault_lock()`` / ``memfault_unlock()`` for builds without Zephyr multithreading (default when ``NCS_BM && MEMFAULT && !MULTITHREADING``).
     Enabling this option also excludes the ``k_mutex``-based ``memfault_platform_lock.c`` file of the Memfault SDK from the build, so that Memfault links without :kconfig:option:`CONFIG_MULTITHREADING`.
 
+Softperipheral
+--------------
+
+* Added subsystem to include softperipherals.
+* Added support for sQSPI.
+
 Libraries
 =========
 
@@ -235,6 +241,12 @@ Peripheral samples
       * The :ref:`radio_test` sample.
       * The :ref:`spi_mngr_sample` sample, demonstrating read, page program, and sector erase on the on-board external NOR flash using the :ref:`lib_bm_spi_mngr` library.
       * The :ref:`bm_spi_sample` sample.
+
+Softperipheral samples
+----------------------
+   * Added:
+
+      * The :ref:`sQSPI_sample` sample.
 
 Bluetooth LE samples
 --------------------

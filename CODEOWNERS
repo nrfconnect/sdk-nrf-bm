@@ -72,6 +72,7 @@
 /samples/boot/                            @nrfconnect/ncs-eris
 /samples/nfc/                             @nrfconnect/ncs-bm
 /samples/peripherals/                     @nrfconnect/ncs-bm
+/samples/softperipherals/                 @nrfconnect/ncs-bm
 /samples/subsys/                          @nrfconnect/ncs-bm
 /samples/subsys/fs/bm_zms/                @nrfconnect/ncs-bm @rghaddab
 

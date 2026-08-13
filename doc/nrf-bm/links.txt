@@ -39,6 +39,13 @@
 
 .. _`nRF54L15 Compatibility Matrix`: https://docs.nordicsemi.com/bundle/comp_matrix_nrf54l15/page/COMP/nrf54l15/nrf54l15_ble_qdid_qual_matrix.html
 
+.. _`Soft Peripherals`: https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrfxlib/softperipheral/README.html
+
+.. _`VPR pin mapping`: https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrf/app_dev/device_guides/coprocessors/rt_peripherals.html#vpr-io-vio
+
+.. _`VPR`: https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrf/app_dev/device_guides/coprocessors/index.html
+.. _`Fast Lightweight Peripheral Processor (FLPR)`: https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrf/app_dev/device_guides/nrf54l/vpr_flpr.html
+
 .. ### Source: SoftDevice doc links
 
 .. _`S115 SoftDevice for nRF54L15/nRF54L10/nRF54L05 API`: ../../s115_nrf54l15/html/topics.html
