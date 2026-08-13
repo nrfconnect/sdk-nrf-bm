@@ -72,6 +72,7 @@
 /samples/boot/                            @nrfconnect/ncs-eris
 /samples/nfc/                             @nrfconnect/ncs-bm
 /samples/peripherals/                     @nrfconnect/ncs-bm
+/samples/softperipherals/                 @nrfconnect/ncs-bm
 /samples/subsys/                          @nrfconnect/ncs-bm
 /samples/subsys/fs/bm_zms/                @nrfconnect/ncs-bm @rghaddab
 
@@ -96,6 +97,7 @@
 /subsys/shell/                            @nrfconnect/ncs-bm
 /subsys/softdevice/                       @nrfconnect/ncs-bm
 /subsys/softdevice_handler/               @nrfconnect/ncs-bm
+/subsys/softperipheral/                   @nrfconnect/ncs-bm
 /subsys/storage/bm_storage/               @nrfconnect/ncs-bm
 /subsys/storage/ble_rmem/                 @nrfconnect/ncs-eris
 /subsys/storage/bm_rmem/                  @nrfconnect/ncs-eris
