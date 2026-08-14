@@ -19,7 +19,7 @@ static uint32_t nus_rx_char_add(struct ble_nus *nus, const struct ble_nus_config
 {
 	ble_uuid_t char_uuid = {
 		.type = nus->uuid_type,
-		.uuid = BLE_UUID_NUS_RX_CHARACTERISTIC,
+		.uuid = BLE_UUID_NUS_RX_CHAR,
 	};
 	ble_gatts_char_md_t char_md = {
 		.char_props = {
@@ -50,7 +50,7 @@ static uint32_t nus_tx_char_add(struct ble_nus *nus, const struct ble_nus_config
 {
 	ble_uuid_t char_uuid = {
 		.type = nus->uuid_type,
-		.uuid = BLE_UUID_NUS_TX_CHARACTERISTIC,
+		.uuid = BLE_UUID_NUS_TX_CHAR,
 	};
 	ble_gatts_attr_md_t cccd_md = {
 		.vloc = BLE_GATTS_VLOC_STACK,
@@ -203,7 +203,7 @@ uint32_t ble_nus_init(struct ble_nus *nus, const struct ble_nus_config *cfg)
 {
 	uint32_t nrf_err;
 	ble_uuid_t ble_uuid;
-	ble_uuid128_t uuid_base = { .uuid128 = BLE_NUS_UUID_BASE };
+	ble_uuid128_t uuid_base = { .uuid128 = BLE_UUID_NUS_BASE };
 
 	if (!nus || !cfg) {
 		return NRF_ERROR_NULL;

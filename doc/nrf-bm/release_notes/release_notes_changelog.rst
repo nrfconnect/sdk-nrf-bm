@@ -147,6 +147,16 @@ Bluetooth LE Services
      The SMP response is split into many notifications, which could fill the SoftDevice notification (HVN) TX queue and cause :c:func:`sd_ble_gatts_hvx` to return :c:macro:`NRF_ERROR_RESOURCES`, dropping the remaining data.
      Notifications that fail with :c:macro:`NRF_ERROR_RESOURCES` are now retransmitted on the :c:macro:`BLE_GATTS_EVT_HVN_TX_COMPLETE` event once the SoftDevice frees queue space.
 
+   * Updated the UUID macro names to align with the naming convention used by other services.
+
+* :ref:`lib_ble_service_nus`:
+
+   * Updated the UUID macro names to align with the naming convention used by other services.
+
+* :ref:`lib_ble_service_nus_client`:
+
+   * Updated the UUID macro names to align with the naming convention used by other services.
+
 * :ref:`lib_ble_service_hrs`:
 
    * Fixed an issue where the :c:func:`on_connect` and :c:func:`on_disconnect` functions would wrongly override the connection handle upon connecting to a different device.
@@ -225,6 +235,10 @@ Bluetooth LE samples
         If your device is using CR, you must set the Kconfig option accordingly.
       * The :kconfig:option:`CONFIG_SAMPLE_UART_EOL_STRIP` Kconfig option to strip the termination before sending over Bluetooth LE.
         This option is disabled by default.
+
+* :ref:`ble_pwr_profiling_sample` sample:
+
+   * Updated the UUID macro names to align with the naming convention used by other services.
 
 * :ref:`ble_nus_central_sample` sample:
 

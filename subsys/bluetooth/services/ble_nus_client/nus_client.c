@@ -39,12 +39,12 @@ void ble_nus_client_on_db_disc_evt(struct ble_nus_client *nus_client,
 	    (db_evt->discovered_db->srv_uuid.type == nus_client->uuid_type)) {
 		for (uint32_t i = 0; i < db_evt->discovered_db->char_count; i++) {
 			switch (chars[i].characteristic.uuid.uuid) {
-			case BLE_UUID_NUS_RX_CHARACTERISTIC:
+			case BLE_UUID_NUS_RX_CHAR:
 				nus_c_evt.discovery_complete.handles.nus_rx_handle =
 					chars[i].characteristic.handle_value;
 				break;
 
-			case BLE_UUID_NUS_TX_CHARACTERISTIC:
+			case BLE_UUID_NUS_TX_CHAR:
 				nus_c_evt.discovery_complete.handles.nus_tx_handle =
 					chars[i].characteristic.handle_value;
 				nus_c_evt.discovery_complete.handles.nus_tx_cccd_handle =
@@ -88,7 +88,7 @@ uint32_t ble_nus_client_init(struct ble_nus_client *nus_client,
 {
 	uint32_t nrf_err;
 	ble_uuid_t uart_uuid;
-	ble_uuid128_t nus_base_uuid = { .uuid128 = BLE_NUS_UUID_BASE };
+	ble_uuid128_t nus_base_uuid = { .uuid128 = BLE_UUID_NUS_BASE };
 
 	if (!nus_client || !nus_client_config || !(nus_client_config->gatt_queue)) {
 		return NRF_ERROR_NULL;

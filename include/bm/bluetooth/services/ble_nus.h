@@ -25,15 +25,15 @@ extern "C" {
 #endif
 
 /** Vendor specific UUID base for the Nordic UART Service. */
-#define BLE_NUS_UUID_BASE { 0x9E, 0xCA, 0xDC, 0x24, 0x0E, 0xE5, 0xA9, 0xE0,                        \
+#define BLE_UUID_NUS_BASE { 0x9E, 0xCA, 0xDC, 0x24, 0x0E, 0xE5, 0xA9, 0xE0,                        \
 			    0x93, 0xF3, 0xA3, 0xB5, 0x00, 0x00, 0x40, 0x6E }
 
 /** Byte 12 and 13 of the Nordic UART Service UUID. */
 #define BLE_UUID_NUS_SERVICE 0x0001
 /** Byte 12 and 13 of the NUS RX Characteristic UUID. */
-#define BLE_UUID_NUS_RX_CHARACTERISTIC 0x0002
+#define BLE_UUID_NUS_RX_CHAR 0x0002
 /** Byte 12 and 13 of the NUS TX Characteristic UUID. */
-#define BLE_UUID_NUS_TX_CHARACTERISTIC 0x0003
+#define BLE_UUID_NUS_TX_CHAR 0x0003
 
 /**
  * @brief Macro for defining a ble_nus instance.

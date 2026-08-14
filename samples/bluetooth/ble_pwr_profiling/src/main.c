@@ -37,13 +37,13 @@
 LOG_MODULE_REGISTER(sample, CONFIG_SAMPLE_BLE_PWR_PROFILING_LOG_LEVEL);
 
 /** Custom UUID base for the Service. */
-#define BLE_UUID_BASE { 0x23, 0xD1, 0xBC, 0xEA, 0x5F, 0x78, 0x23, 0x15, \
-			0xDE, 0xEF, 0x12, 0x12, 0x30, 0x16, 0x00, 0x00 }
+#define BLE_UUID_PWR_BASE { 0x23, 0xD1, 0xBC, 0xEA, 0x5F, 0x78, 0x23, 0x15, \
+			    0xDE, 0xEF, 0x12, 0x12, 0x30, 0x16, 0x00, 0x00 }
 
 /** Byte 12 and 13 of the  Service UUID. */
 #define BLE_UUID_PWR_SERVICE 0x1630
 /** Byte 12 and 13 of the Characteristic UUID. */
-#define BLE_UUID_PWR_CHARACTERISTIC 0x1631
+#define BLE_UUID_PWR_CHAR 0x1631
 
 /* Notification connection timeout. */
 #define NOTIF_CONN_TIMEOUT CONFIG_SAMPLE_BLE_PWR_PROFILING_NOTIF_CONNECTION_TIMEOUT
@@ -147,7 +147,7 @@ static uint32_t ble_pwr_profiling_char_add(const uint8_t uuid_type, uint16_t ser
 {
 	ble_uuid_t char_uuid = {
 		.type = uuid_type,
-		.uuid = BLE_UUID_PWR_CHARACTERISTIC,
+		.uuid = BLE_UUID_PWR_CHAR,
 	};
 	ble_gatts_attr_md_t cccd_md = {
 		.vloc = BLE_GATTS_VLOC_STACK
@@ -424,7 +424,7 @@ static uint32_t ble_service_init(uint16_t *service_handle, uint8_t *uuid_type,
 	uint32_t nrf_err;
 	ble_uuid_t ble_uuid;
 	ble_uuid128_t uuid_base = {
-		.uuid128 = BLE_UUID_BASE
+		.uuid128 = BLE_UUID_PWR_BASE
 	};
 
 	if (!service_handle || !uuid_type) {
