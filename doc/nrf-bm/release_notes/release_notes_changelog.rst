@@ -79,6 +79,10 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 Libraries
 =========
 
+* Added the :ref:`lib_bm_spi_mngr` library for queued SPI controller transactions on a single SPIM instance.
+  Enable it using the :kconfig:option:`CONFIG_BM_SPI_MNGR` Kconfig option.
+  See :ref:`lib_bm_spi_mngr` for an overview and :ref:`SPI transaction manager API reference <api_bm_spi_mngr>` for the full API.
+
 * :ref:`lib_ble_conn_params`:
 
    * Added:
