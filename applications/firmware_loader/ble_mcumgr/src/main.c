@@ -172,7 +172,7 @@ int main(void)
 	};
 	ble_uuid_t adv_uuid_list[] = {
 		{
-			.uuid = BLE_MCUMGR_SERVICE_UUID_SUB,
+			.uuid = BLE_UUID_MCUMGR_SERVICE,
 		},
 	};
 	struct ble_mcumgr_config mcumgr_cfg = {

@@ -125,11 +125,11 @@ void test_ble_nus_client_tx_notif_enable(void)
 		.char_count = 2,
 		.characteristics = {
 			{
-				.characteristic.uuid.uuid = BLE_UUID_NUS_RX_CHARACTERISTIC,
+				.characteristic.uuid.uuid = BLE_UUID_NUS_RX_CHAR,
 				.cccd_handle = 0x100,
 			},
 			{
-				.characteristic.uuid.uuid = BLE_UUID_NUS_TX_CHARACTERISTIC,
+				.characteristic.uuid.uuid = BLE_UUID_NUS_TX_CHAR,
 				.cccd_handle = 0x100,
 			},
 		},
@@ -205,11 +205,11 @@ void test_ble_nus_client_tx_notif_disable(void)
 		.char_count = 2,
 		.characteristics = {
 			{
-				.characteristic.uuid.uuid = BLE_UUID_NUS_RX_CHARACTERISTIC,
+				.characteristic.uuid.uuid = BLE_UUID_NUS_RX_CHAR,
 				.cccd_handle = 0x100,
 			},
 			{
-				.characteristic.uuid.uuid = BLE_UUID_NUS_TX_CHARACTERISTIC,
+				.characteristic.uuid.uuid = BLE_UUID_NUS_TX_CHAR,
 				.cccd_handle = 0x100,
 			},
 		},
@@ -285,11 +285,11 @@ void test_ble_nus_client_string_send(void)
 		.char_count = 2,
 		.characteristics = {
 			{
-				.characteristic.uuid.uuid = BLE_UUID_NUS_RX_CHARACTERISTIC,
+				.characteristic.uuid.uuid = BLE_UUID_NUS_RX_CHAR,
 				.cccd_handle = 0x100,
 			},
 			{
-				.characteristic.uuid.uuid = BLE_UUID_NUS_TX_CHARACTERISTIC,
+				.characteristic.uuid.uuid = BLE_UUID_NUS_TX_CHAR,
 				.cccd_handle = 0x100,
 			},
 		},
@@ -336,11 +336,11 @@ void test_ble_nus_client_string_send_error_no_mem(void)
 		.char_count = 2,
 		.characteristics = {
 			{
-				.characteristic.uuid.uuid = BLE_UUID_NUS_RX_CHARACTERISTIC,
+				.characteristic.uuid.uuid = BLE_UUID_NUS_RX_CHAR,
 				.cccd_handle = 0x100,
 			},
 			{
-				.characteristic.uuid.uuid = BLE_UUID_NUS_TX_CHARACTERISTIC,
+				.characteristic.uuid.uuid = BLE_UUID_NUS_TX_CHAR,
 				.cccd_handle = 0x100,
 			},
 		},
@@ -397,11 +397,11 @@ void test_ble_nus_client_string_send_error_invalid_param(void)
 		.char_count = 2,
 		.characteristics = {
 			{
-				.characteristic.uuid.uuid = BLE_UUID_NUS_RX_CHARACTERISTIC,
+				.characteristic.uuid.uuid = BLE_UUID_NUS_RX_CHAR,
 				.cccd_handle = 0x100,
 			},
 			{
-				.characteristic.uuid.uuid = BLE_UUID_NUS_TX_CHARACTERISTIC,
+				.characteristic.uuid.uuid = BLE_UUID_NUS_TX_CHAR,
 				.cccd_handle = 0x100,
 			},
 		},
@@ -474,10 +474,10 @@ void test_ble_nus_client_handles_assign(void)
 		.char_count = 2,
 		.characteristics = {
 			{
-				.characteristic.uuid.uuid = BLE_UUID_NUS_RX_CHARACTERISTIC,
+				.characteristic.uuid.uuid = BLE_UUID_NUS_RX_CHAR,
 			},
 			{
-				.characteristic.uuid.uuid = BLE_UUID_NUS_TX_CHARACTERISTIC,
+				.characteristic.uuid.uuid = BLE_UUID_NUS_TX_CHAR,
 			},
 		},
 	};
@@ -537,11 +537,11 @@ void test_ble_nus_client_on_ble_evt(void)
 		.char_count = 2,
 		.characteristics = {
 			{
-				.characteristic.uuid.uuid = BLE_UUID_NUS_RX_CHARACTERISTIC,
+				.characteristic.uuid.uuid = BLE_UUID_NUS_RX_CHAR,
 				.characteristic.handle_value = 0x100,
 			},
 			{
-				.characteristic.uuid.uuid = BLE_UUID_NUS_TX_CHARACTERISTIC,
+				.characteristic.uuid.uuid = BLE_UUID_NUS_TX_CHAR,
 				.cccd_handle = 0x200,
 				.characteristic.handle_value = 0x100,
 			},

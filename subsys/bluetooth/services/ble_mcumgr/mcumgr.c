@@ -73,7 +73,7 @@ static uint32_t mcumgr_characteristic_add(struct ble_mcumgr *service,
 
 	ble_uuid_t char_uuid = {
 		.type = service->uuid_type_characteristic,
-		.uuid = BLE_MCUMGR_CHARACTERISTIC_UUID_SUB,
+		.uuid = BLE_UUID_MCUMGR_CHAR,
 	};
 	ble_gatts_attr_md_t cccd_md = {
 		.vloc = BLE_GATTS_VLOC_STACK,
@@ -334,10 +334,10 @@ uint32_t ble_mcumgr_init(const struct ble_mcumgr_config *cfg)
 	uint32_t nrf_err;
 	ble_uuid_t ble_uuid;
 	ble_uuid128_t uuid_base_service = {
-		.uuid128 = BLE_MCUMGR_SERVICE_UUID
+		.uuid128 = BLE_UUID_MCUMGR_SERVICE_BASE
 	};
 	ble_uuid128_t uuid_base_characteristic = {
-		.uuid128 = BLE_MCUMGR_CHARACTERISTIC_UUID
+		.uuid128 = BLE_UUID_MCUMGR_CHAR_BASE
 	};
 
 	if (!cfg) {
@@ -361,7 +361,7 @@ uint32_t ble_mcumgr_init(const struct ble_mcumgr_config *cfg)
 	}
 
 	ble_uuid.type = ble_mcumgr.uuid_type_service;
-	ble_uuid.uuid = BLE_MCUMGR_SERVICE_UUID_SUB;
+	ble_uuid.uuid = BLE_UUID_MCUMGR_SERVICE;
 
 	/* Add the service */
 	nrf_err = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY,
