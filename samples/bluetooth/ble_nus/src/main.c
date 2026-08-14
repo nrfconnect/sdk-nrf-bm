@@ -156,8 +156,8 @@ static void uarte_evt_handler(const nrfx_uarte_event_t *event, void *ctx)
 {
 	switch (event->type) {
 	case NRFX_UARTE_EVT_RX_DONE:
-		LOG_DBG("Received data from UART: %.*s (%d)",
-			event->data.rx.length, event->data.rx.p_buffer, event->data.rx.length);
+		LOG_DBG("Received data from UART (len %d): %.*s", event->data.rx.length,
+			event->data.rx.length, event->data.rx.p_buffer);
 		if (event->data.rx.length > 0) {
 #if defined(CONFIG_SAMPLE_NUS_LPUARTE)
 			lpuarte_rx_handler(event->data.rx.p_buffer, event->data.rx.length);
@@ -437,6 +437,11 @@ static int uarte_init(void)
 		LOG_ERR("Failed to initialize UART, err %d", err);
 		return err;
 	}
+
+	err = bm_lpuarte_rx_enable(&lpu);
+	if (err) {
+		LOG_ERR("UART RX failed, err %d", err);
+	}
 #else
 	err = nrfx_uarte_init(&nus_uarte_inst, &uarte_config, uarte_evt_handler);
 	if (err) {
@@ -456,6 +461,22 @@ static int uarte_init(void)
 					 UARTE_DMA_RX_MATCH_CONFIG_ENABLE1_Msk;
 	reg->INTENSET                  = UARTE_INTENSET_DMARXMATCH0_Msk |
 					 UARTE_INTENSET_DMARXMATCH1_Msk;
+
+	const uint8_t out[] = "UART started.\r\n";
+
+	err = nrfx_uarte_tx(&nus_uarte_inst, out, sizeof(out), NRFX_UARTE_TX_BLOCKING);
+	if (err) {
+		LOG_ERR("UARTE TX failed, err %d", err);
+		return err;
+	}
+
+	/* Continuous mode keeps RX running across buffers. With a second buffer queued,
+	 * an abort on match ends the current one and continues into the other.
+	 */
+	err = nrfx_uarte_rx_enable(&nus_uarte_inst, NRFX_UARTE_RX_ENABLE_CONT);
+	if (err) {
+		LOG_ERR("UART RX failed, err %d", err);
+	}
 #endif /* CONFIG_SAMPLE_NUS_LPUARTE */
 
 	return 0;
@@ -555,29 +576,6 @@ int main(void)
 		LOG_ERR("Failed to initialize advertising, nrf_error %#x", nrf_err);
 		goto idle;
 	}
-
-#if defined(CONFIG_SAMPLE_NUS_LPUARTE)
-	err = bm_lpuarte_rx_enable(&lpu);
-	if (err) {
-		LOG_ERR("UART RX failed, err %d", err);
-	}
-#else
-	const uint8_t out[] = "UART started.\r\n";
-
-	err = nrfx_uarte_tx(&nus_uarte_inst, out, sizeof(out), NRFX_UARTE_TX_BLOCKING);
-	if (err) {
-		LOG_ERR("UARTE TX failed, err %d", err);
-		goto idle;
-	}
-
-	/* Continuous mode keeps RX running across buffers. With a second buffer queued,
-	 * an abort on match ends the current one and continues into the other.
-	 */
-	err = nrfx_uarte_rx_enable(&nus_uarte_inst, NRFX_UARTE_RX_ENABLE_CONT);
-	if (err) {
-		LOG_ERR("UART RX failed, err %d", err);
-	}
-#endif
 
 #if !defined(CONFIG_SAMPLE_NUS_LPUARTE)
 	nrf_gpio_pin_write(BOARD_PIN_LED_0, BOARD_LED_ACTIVE_STATE);
