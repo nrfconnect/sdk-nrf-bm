@@ -17,6 +17,7 @@
 #include <bm/bluetooth/services/ble_nus.h>
 #include <nrf_soc.h>
 #include <nrfx_uarte.h>
+#include <hal/nrf_uarte.h>
 #if defined(CONFIG_SAMPLE_NUS_LPUARTE)
 #include <bm/drivers/bm_lpuarte.h>
 #endif
@@ -61,7 +62,9 @@ static nrfx_uarte_t nus_uarte_inst = NRFX_UARTE_INSTANCE(NUS_UARTE_INST);
  */
 static volatile uint16_t ble_nus_max_data_len = BLE_NUS_MAX_DATA_LEN_CALC(BLE_GATT_ATT_MTU_DEFAULT);
 
-/* Receive buffers used in UART ISR callback. */
+/* Double-buffered RX: one buffer is always queued as "next",
+ * so when the current one is filled or aborted, DMA continues into the other.
+ */
 static uint8_t uarte_rx_buf[2][CONFIG_SAMPLE_NUS_UART_RX_BUF_SIZE];
 static int buf_idx;
 
@@ -162,12 +165,9 @@ static void uarte_evt_handler(const nrfx_uarte_event_t *event, void *ctx)
 			uarte_rx_handler(event->data.rx.p_buffer, event->data.rx.length);
 #endif
 		}
-
-#if !defined(CONFIG_SAMPLE_NUS_LPUARTE)
-		(void)nrfx_uarte_rx_enable(&nus_uarte_inst, 0);
-#endif
 		break;
 	case NRFX_UARTE_EVT_RX_BUF_REQUEST:
+		/* Queue the free buffer immediately so RX keeps running with zero downtime. */
 #if defined(CONFIG_SAMPLE_NUS_LPUARTE)
 		(void)bm_lpuarte_rx_buffer_set(&lpu, uarte_rx_buf[buf_idx],
 					       CONFIG_SAMPLE_NUS_UART_RX_BUF_SIZE);
@@ -355,6 +355,34 @@ static void ble_nus_evt_handler(struct ble_nus *nus, const struct ble_nus_evt *e
 
 ISR_DIRECT_DECLARE(uarte_direct_isr)
 {
+#if !defined(CONFIG_SAMPLE_NUS_LPUARTE)
+	/* The compare-match filter raises MATCH0 on '\r' and MATCH1 on '\n',
+	 * either one ends a line, so both are handled the same way here.
+	 * Clear it and abort the current RX. A second buffer is already queued,
+	 * so reception continues into it without a gap.
+	 */
+	NRF_UARTE_Type *reg = (NRF_UARTE_Type *)nus_uarte_inst.p_reg;
+	bool match = false;
+
+	if (reg->EVENTS_DMA.RX.MATCH[0]) {
+		nrf_uarte_event_clear(
+			reg,
+			(nrf_uarte_event_t)offsetof(NRF_UARTE_Type, EVENTS_DMA.RX.MATCH[0]));
+		match = true;
+	}
+
+	if (reg->EVENTS_DMA.RX.MATCH[1]) {
+		nrf_uarte_event_clear(
+			reg,
+			(nrf_uarte_event_t)offsetof(NRF_UARTE_Type, EVENTS_DMA.RX.MATCH[1]));
+		match = true;
+	}
+
+	if (match) {
+		(void)nrfx_uarte_rx_abort(&nus_uarte_inst, false, false);
+	}
+#endif
+
 	nrfx_uarte_irq_handler(&nus_uarte_inst);
 	return 0;
 }
@@ -415,6 +443,19 @@ static int uarte_init(void)
 		LOG_ERR("Failed to initialize UART, err %d", err);
 		return err;
 	}
+
+	/* Configure the compare-match filter so reception stops on '\r' or '\n':
+	 * CANDIDATE[0] = '\r', CANDIDATE[1] = '\n', both enabled and both raising
+	 * an interrupt (uarte_direct_isr aborts RX on either match).
+	 */
+	NRF_UARTE_Type *reg = (NRF_UARTE_Type *)nus_uarte_inst.p_reg;
+
+	reg->DMA.RX.MATCH.CANDIDATE[0] = '\r';
+	reg->DMA.RX.MATCH.CANDIDATE[1] = '\n';
+	reg->DMA.RX.MATCH.CONFIG       = UARTE_DMA_RX_MATCH_CONFIG_ENABLE0_Msk |
+					 UARTE_DMA_RX_MATCH_CONFIG_ENABLE1_Msk;
+	reg->INTENSET                  = UARTE_INTENSET_DMARXMATCH0_Msk |
+					 UARTE_INTENSET_DMARXMATCH1_Msk;
 #endif /* CONFIG_SAMPLE_NUS_LPUARTE */
 
 	return 0;
@@ -529,7 +570,10 @@ int main(void)
 		goto idle;
 	}
 
-	err = nrfx_uarte_rx_enable(&nus_uarte_inst, 0);
+	/* Continuous mode keeps RX running across buffers. With a second buffer queued,
+	 * an abort on match ends the current one and continues into the other.
+	 */
+	err = nrfx_uarte_rx_enable(&nus_uarte_inst, NRFX_UARTE_RX_ENABLE_CONT);
 	if (err) {
 		LOG_ERR("UART RX failed, err %d", err);
 	}

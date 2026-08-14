@@ -218,6 +218,8 @@ Bluetooth LE samples
 
    * Fixed a bug with the UARTE RX buffer address provided with index 1.
 
+   * Updated UART reception to detect the line terminator in hardware using the UARTE compare-match filter, reporting each line as its own transfer instead of each received byte.
+
 * :ref:`ble_nus_central_sample` sample:
 
    * Updated to use Button 1 to disconnect from the target peripheral to align with other central samples.

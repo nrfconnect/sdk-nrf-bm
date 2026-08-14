@@ -37,8 +37,7 @@ config SAMPLE_NUS_UART_HWFC
 
 config SAMPLE_NUS_UART_RX_BUF_SIZE
 	int "NUS UART receive buffer size"
-	default 128 if SAMPLE_NUS_LPUARTE
-	default 1
+	default 128
 	help
 	  UART RX is double buffered, so the actual buffer will be twice as large.
 
