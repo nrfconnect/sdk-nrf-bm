@@ -65,22 +65,6 @@ static volatile uint16_t ble_nus_max_data_len = BLE_NUS_MAX_DATA_LEN_CALC(BLE_GA
 static uint8_t uarte_rx_buf[2][CONFIG_SAMPLE_NUS_UART_RX_BUF_SIZE];
 static int buf_idx;
 
-/* End-of-line termination for NUS messages (CONFIG_SAMPLE_UART_EOL_*).
- * Used as the line delimiter for UART data sent over BLE,
- * and appended to BLE data before it is written back to the UART.
- */
-#if defined(CONFIG_SAMPLE_UART_EOL_CR)
-#define UART_EOL "\r"
-#define EOL_LABEL "CR ('\\r')"
-#elif defined(CONFIG_SAMPLE_UART_EOL_LF)
-#define UART_EOL "\n"
-#define EOL_LABEL "LF ('\\n')"
-#else
-#define UART_EOL "\r\n"
-#define EOL_LABEL "CR+LF ('\\r\\n')"
-#endif
-#define UART_EOL_LEN (sizeof(UART_EOL) - 1)
-
 /**
  * @brief Handle data received from UART.
  *
@@ -112,7 +96,6 @@ static void uarte_rx_handler(char *data, size_t data_len)
 {
 	uint32_t nrf_err;
 	uint8_t c;
-	bool eol;
 	/* receive buffer used in UART ISR callback. */
 	static char rx_buf[BLE_NUS_MAX_DATA_LEN];
 	static uint16_t rx_buf_idx;
@@ -125,16 +108,7 @@ static void uarte_rx_handler(char *data, size_t data_len)
 			rx_buf[rx_buf_idx++] = c;
 		}
 
-		/* Send once the buffer ends with the configured EOL or the buffer is full. */
-		eol = rx_buf_idx >= UART_EOL_LEN &&
-			memcmp(&rx_buf[rx_buf_idx - UART_EOL_LEN], UART_EOL, UART_EOL_LEN) == 0;
-
-		if (eol || (rx_buf_idx >= ble_nus_max_data_len)) {
-			/* Optionally drop the line ending so the peer gets just the message. */
-			if (eol && IS_ENABLED(CONFIG_SAMPLE_UART_EOL_STRIP)) {
-				rx_buf_idx -= UART_EOL_LEN;
-			}
-
+		if ((c == '\n' || c == '\r') || (rx_buf_idx >= ble_nus_max_data_len)) {
 			if (rx_buf_idx == 0) {
 				/* RX buffer is empty, nothing to send. */
 				continue;
@@ -341,8 +315,7 @@ uint16_t ble_qwr_evt_handler(struct ble_qwr *qwr, const struct ble_qwr_evt *qwr_
  */
 static void ble_nus_evt_handler(struct ble_nus *nus, const struct ble_nus_evt *evt)
 {
-	/* EasyDMA can only transmit from RAM, so use a local (RAM) copy of the EOL. */
-	char eol[] = UART_EOL;
+	const char newline = '\n';
 	int err;
 
 	if (evt->evt_type == BLE_NUS_EVT_ERROR) {
@@ -370,14 +343,12 @@ static void ble_nus_evt_handler(struct ble_nus *nus, const struct ble_nus_evt *e
 	}
 #endif
 
-	/* Append the configured EOL when the peer did not send a line ending. */
-	if (evt->rx_data.data[evt->rx_data.length - 1] != '\n' &&
-	    evt->rx_data.data[evt->rx_data.length - 1] != '\r') {
+
+	if (evt->rx_data.data[evt->rx_data.length - 1] == '\r') {
 #if defined(CONFIG_SAMPLE_NUS_LPUARTE)
-		(void)bm_lpuarte_tx(&lpu, eol, UART_EOL_LEN, 3000);
+		(void)bm_lpuarte_tx(&lpu, &newline, 1, 3000);
 #else
-		(void)nrfx_uarte_tx(&nus_uarte_inst, eol,
-				    UART_EOL_LEN, NRFX_UARTE_TX_BLOCKING);
+		(void)nrfx_uarte_tx(&nus_uarte_inst, &newline, 1, NRFX_UARTE_TX_BLOCKING);
 #endif
 	}
 }
@@ -550,8 +521,8 @@ int main(void)
 		LOG_ERR("UART RX failed, err %d", err);
 	}
 #else
-	const uint8_t out[] = "UART started.\r\n"
-			      "Line terminator set to: " EOL_LABEL "\r\n";
+	const uint8_t out[] = "UART started.\r\n";
+
 	err = nrfx_uarte_tx(&nus_uarte_inst, out, sizeof(out), NRFX_UARTE_TX_BLOCKING);
 	if (err) {
 		LOG_ERR("UARTE TX failed, err %d", err);

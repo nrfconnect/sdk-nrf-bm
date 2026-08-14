@@ -23,34 +23,6 @@ config SAMPLE_NUS_UART_IRQ_PRIO
 config SAMPLE_NUS_UART_PARITY
 	bool "Bluetooth LE UART use parity"
 
-choice SAMPLE_UART_EOL
-	prompt "End-of-line termination"
-	default SAMPLE_UART_EOL_LF
-	help
-	  End-of-line termination used with the UART connected device (for example a PC terminal).
-	  Input from the connected device is forwarded over Bluetooth LE one line at a time,
-	  using this sequence as the delimiter.
-	  Data received over Bluetooth LE has this termination appended before it is written back
-	  to the connected device when it is missing.
-
-config SAMPLE_UART_EOL_CR
-	bool "Carriage return (CR)"
-
-config SAMPLE_UART_EOL_LF
-	bool "Line feed (LF)"
-
-config SAMPLE_UART_EOL_CR_LF
-	bool "Carriage return and line feed (CR+LF)"
-
-endchoice # SAMPLE_UART_EOL
-
-config SAMPLE_UART_EOL_STRIP
-	bool "Strip the end-of-line before sending over Bluetooth LE"
-	help
-	  When enabled, the end-of-line termination is removed before it is sent to the peer,
-	  so the message arrives without a trailing line break.
-	  When disabled, the termination is sent as part of the message.
-
 config SAMPLE_NUS_LPUARTE
 	bool "NUS Low Power UARTE"
 
