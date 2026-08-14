@@ -222,7 +222,10 @@ Bluetooth LE samples
 
 * :ref:`ble_nus_central_sample` sample:
 
-   * Updated to use Button 1 to disconnect from the target peripheral to align with other central samples.
+   * Updated:
+
+      * To use Button 1 to disconnect from the target peripheral to align with other central samples.
+      * UART reception to detect the line terminator in hardware using the UARTE compare-match filter, reporting each line as its own transfer instead of each received byte.
 
    * Fixed:
 
