@@ -5,6 +5,7 @@
  */
 
 #include <stdint.h>
+#include <string.h>
 #include <ble.h>
 #include <bm/bm_buttons.h>
 #include <bm/bm_irq.h>
@@ -28,6 +29,7 @@
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
+#include <zephyr/sys/util.h>
 
 #include <board-config.h>
 
@@ -115,39 +117,26 @@ static void lpuarte_rx_handler(char *data, size_t data_len)
 static void uarte_rx_handler(char *data, size_t data_len)
 {
 	uint32_t nrf_err;
-	uint8_t c;
-	/* Receive buffer used in UART ISR callback. */
-	static char rx_buf[BLE_NUS_MAX_DATA_LEN];
-	static uint16_t rx_buf_idx;
+	uint16_t sent = 0;
 	uint16_t len;
 
-	for (int i = 0; i < data_len; i++) {
-		c = data[i];
+	/* Forward the chunk as received, split only if it exceeds the current
+	 * NUS notification size limit. No bytes are added or dropped.
+	 */
+	while (sent < data_len) {
+		len = MIN(data_len - sent, ble_nus_max_data_len);
+		LOG_INF("Sending NUS data, len %d", len);
 
-		if (rx_buf_idx < sizeof(rx_buf)) {
-			rx_buf[rx_buf_idx++] = c;
-		}
-
-		if ((c == '\n' || c == '\r') || (rx_buf_idx >= ble_nus_max_data_len)) {
-			if (rx_buf_idx == 0) {
-				/* RX buffer is empty, nothing to send. */
-				continue;
+		do {
+			nrf_err = ble_nus_client_string_send(&ble_nus_client, &data[sent], len);
+			if ((nrf_err != NRF_ERROR_INVALID_STATE) &&
+			    (nrf_err != NRF_ERROR_RESOURCES) && nrf_err) {
+				LOG_ERR("Failed to send NUS data, nrf_error %#x", nrf_err);
+				return;
 			}
+		} while (nrf_err == NRF_ERROR_RESOURCES);
 
-			len = rx_buf_idx;
-			LOG_INF("Sending NUS data, len %d", len);
-
-			do {
-				nrf_err = ble_nus_client_string_send(&ble_nus_client, rx_buf,
-									 len);
-				if ((nrf_err != NRF_ERROR_INVALID_STATE) &&
-				    (nrf_err != NRF_ERROR_RESOURCES) && nrf_err) {
-					LOG_ERR("Failed to send NUS data, nrf_error %#x", nrf_err);
-					return;
-				}
-			} while (nrf_err == NRF_ERROR_RESOURCES);
-			rx_buf_idx = 0;
-		}
+		sent += len;
 	}
 }
 #endif /* CONFIG_SAMPLE_NUS_CENTRAL_LPUARTE */
