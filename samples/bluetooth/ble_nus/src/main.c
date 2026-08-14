@@ -315,7 +315,6 @@ uint16_t ble_qwr_evt_handler(struct ble_qwr *qwr, const struct ble_qwr_evt *qwr_
  */
 static void ble_nus_evt_handler(struct ble_nus *nus, const struct ble_nus_evt *evt)
 {
-	const char newline = '\n';
 	int err;
 
 	if (evt->evt_type == BLE_NUS_EVT_ERROR) {
@@ -342,15 +341,6 @@ static void ble_nus_evt_handler(struct ble_nus *nus, const struct ble_nus_evt *e
 		LOG_ERR("nrfx_uarte_tx failed, err %d", err);
 	}
 #endif
-
-
-	if (evt->rx_data.data[evt->rx_data.length - 1] == '\r') {
-#if defined(CONFIG_SAMPLE_NUS_LPUARTE)
-		(void)bm_lpuarte_tx(&lpu, &newline, 1, 3000);
-#else
-		(void)nrfx_uarte_tx(&nus_uarte_inst, &newline, 1, NRFX_UARTE_TX_BLOCKING);
-#endif
-	}
 }
 
 ISR_DIRECT_DECLARE(uarte_direct_isr)
