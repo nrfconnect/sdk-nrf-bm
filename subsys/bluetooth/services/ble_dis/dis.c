@@ -177,10 +177,10 @@ uint32_t ble_dis_init(const struct ble_dis_config *dis_config)
 
 		gatt_char(BLE_UUID_SYSTEM_ID_CHAR,
 			  sys_id_val, sys_id_len),
-		gatt_char(BLE_UUID_PNP_ID_CHAR,
-			  pnp_id_val, pnp_id_len),
 		gatt_char(BLE_UUID_IEEE_REGULATORY_CERTIFICATION_DATA_LIST_CHAR,
 			  reg_cert_val, reg_cert_len),
+		gatt_char(BLE_UUID_PNP_ID_CHAR,
+			  pnp_id_val, pnp_id_len),
 	};
 
 	/* Add service */

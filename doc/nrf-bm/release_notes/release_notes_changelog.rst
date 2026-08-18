@@ -136,10 +136,18 @@ Bluetooth LE Services
 
    * Changed :c:member:`ble_scan_filter_data.addr_filter.addr` and :c:member:`ble_scan_filter_data.name_filter.name` to ``const`` in the :c:struct:`ble_scan_filter_data` structure.
 
+* :ref:`lib_ble_service_bms`:
+
+   * Updated the :c:func:`ble_bms_init` function to add the Bond Management Control Point characteristic before the Bond Management Feature characteristic, matching the order in the BMS specification.
+     This changes the GATT attribute handles assigned to these characteristics.
+
 * :ref:`lib_ble_service_dis`:
 
    * Added support for configuring the Device Information Service characteristics at run time through the new :c:struct:`ble_dis_values` structure, passed using the ``values`` field of :c:struct:`ble_dis_config`.
      When ``values`` is ``NULL``, the service is built from the Kconfig defaults as before.
+
+   * Updated the :c:func:`ble_dis_init` function to add the IEEE Regulatory Certification Data List characteristic before the PnP ID characteristic, matching the order in the DIS specification.
+     This changes the GATT attribute handles assigned to these characteristics.
 
 * :ref:`lib_ble_service_mcumgr`:
 

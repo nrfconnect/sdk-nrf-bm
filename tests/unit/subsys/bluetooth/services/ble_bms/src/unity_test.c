@@ -88,6 +88,11 @@ uint32_t stub_sd_ble_gatts_characteristic_add_feature_char_error_no_mem(
 	 */
 	const uint8_t encoded_feature_expected[BLE_BMS_FEATURE_LEN] = { 0x10, 0x08, 0x02 };
 
+	if (cmock_calls < 1) {
+		/* Earlier calls verified by other tests, return successfully. */
+		return NRF_SUCCESS;
+	}
+
 	TEST_ASSERT_EQUAL(SERVICE_HANDLE, service_handle);
 	TEST_ASSERT_TRUE(p_char_md->char_props.read);
 
@@ -110,11 +115,6 @@ uint32_t stub_sd_ble_gatts_characteristic_add_ctrlpt_char_error_no_mem(
 	const ble_gatts_attr_t *p_attr_char_value, ble_gatts_char_handles_t *p_handles,
 	int cmock_calls)
 {
-	if (cmock_calls < 1) {
-		/* Earlier calls verified by other tests, return successfully. */
-		return NRF_SUCCESS;
-	}
-
 	TEST_ASSERT_EQUAL(SERVICE_HANDLE, service_handle);
 	TEST_ASSERT_TRUE(p_char_md->char_props.write);
 	TEST_ASSERT_FALSE(p_char_md->char_ext_props.reliable_wr);
@@ -138,11 +138,6 @@ uint32_t stub_sd_ble_gatts_characteristic_add(
 	const ble_gatts_attr_t *p_attr_char_value, ble_gatts_char_handles_t *p_handles,
 	int cmock_calls)
 {
-	if (cmock_calls < 1) {
-		/* Earlier calls verified by other tests, return successfully. */
-		return NRF_SUCCESS;
-	}
-
 	p_handles->value_handle = CTRLPT_VALUE_HANDLE;
 
 	return NRF_SUCCESS;

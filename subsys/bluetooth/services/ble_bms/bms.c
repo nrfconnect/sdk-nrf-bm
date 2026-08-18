@@ -459,12 +459,12 @@ uint32_t ble_bms_init(struct ble_bms *bms, struct ble_bms_config *bms_config)
 		return nrf_err;
 	}
 
-	nrf_err = feature_char_add(bms, bms_config);
+	nrf_err = ctrlpt_char_add(bms, bms_config);
 	if (nrf_err) {
 		return nrf_err;
 	}
 
-	nrf_err = ctrlpt_char_add(bms, bms_config);
+	nrf_err = feature_char_add(bms, bms_config);
 	if (nrf_err) {
 		return nrf_err;
 	}
