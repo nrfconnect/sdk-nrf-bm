@@ -32,24 +32,7 @@ The sample supports the following development kits:
 
       .. include:: /includes/supported_boards_all_mcuboot_variants_s145.txt
 
-The sample also requires the following pins to be connected, as defined in the boards :file:`board-config.h` header:
-
-  .. include:: /includes/lpuarte_board_connections.txt
-
-  #. For two-device setup:
-
-    - Device 1 **LPUARTE TX** → Device 2 **LPUARTE RX**
-    - Device 1 **LPUARTE RX** → Device 2 **LPUARTE TX**
-    - Device 1 **LPUARTE REQ** → Device 2 **LPUARTE RDY**
-    - Device 1 **LPUARTE RDY** → Device 2 **LPUARTE REQ**
-    - Connect **GND** between both devices.
-
-  #. For single-device loopback setup:
-
-    - **LPUARTE TX** → **LPUARTE RX**
-    - **LPUARTE REQ** → **LPUARTE RDY**
-
-Additionally, the sample requires a logic analyzer to observe the LPUARTE activity and a current measurement instrument to measure the current.
+The sample requires a logic analyzer to observe the LPUARTE activity and a current measurement instrument to measure the current.
 
 Overview
 ********
@@ -57,6 +40,26 @@ Overview
 The sample initializes the application LPUARTE instance, specified in the :file:`board-config.h` file in the board.
 It then implements a simple loopback using a single LPUARTE instance.
 By default, the console and logging are disabled to demonstrate low power consumption when UART is active.
+
+Wiring
+******
+
+The sample requires the following pins to be connected, as defined in the boards :file:`board-config.h` header:
+
+* Single-device loopback setup:
+
+  * **LPUARTE TX** → **LPUARTE RX**
+  * **LPUARTE REQ** → **LPUARTE RDY**
+
+* Two-device setup:
+
+  * Device 1 **LPUARTE TX** → Device 2 **LPUARTE RX**
+  * Device 1 **LPUARTE RX** → Device 2 **LPUARTE TX**
+  * Device 1 **LPUARTE REQ** → Device 2 **LPUARTE RDY**
+  * Device 1 **LPUARTE RDY** → Device 2 **LPUARTE REQ**
+  * Connect **GND** between both devices.
+
+.. include:: /includes/lpuarte_board_connections.txt
 
 User interface
 **************
@@ -76,6 +79,7 @@ Testing
 
 You can test this sample by performing the following steps:
 
+1. Wire the LPUARTE as described in `Wiring`_.
 #. Compile and program the application.
 #. Connect the logic analyzer to the LPUARTE pins, to confirm UARTE activity.
    The request/response pins are HIGH in the idle state.
