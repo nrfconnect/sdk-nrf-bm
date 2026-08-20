@@ -216,6 +216,36 @@ Select **DK** → **SoC** → **SoftDevice** to view RRAM and SRAM layout diagra
 
       .. tabs::
 
+         .. group-tab:: nRF54LS05A
+
+            Total RRAM: 508 KB | Total SRAM: 64 KB
+
+            .. tabs::
+
+               .. group-tab:: S115
+
+                  .. rubric:: S115
+
+                  .. image:: /boards/images/bm_nrf54ls05dk_nrf54ls05a_cpuapp_s115_softdevice.svg
+                     :alt: nRF54LS05A S115 memory layout
+
+                  .. rubric:: S115 + MCUboot
+
+                  .. image:: /boards/images/bm_nrf54ls05dk_nrf54ls05a_cpuapp_s115_softdevice_mcuboot.svg
+                     :alt: nRF54LS05A S115 + MCUboot memory layout
+
+               .. group-tab:: S145
+
+                  .. rubric:: S145
+
+                  .. image:: /boards/images/bm_nrf54ls05dk_nrf54ls05a_cpuapp_s145_softdevice.svg
+                     :alt: nRF54LS05A S145 memory layout
+
+                  .. rubric:: S145 + MCUboot
+
+                  .. image:: /boards/images/bm_nrf54ls05dk_nrf54ls05a_cpuapp_s145_softdevice_mcuboot.svg
+                     :alt: nRF54LS05A S145 + MCUboot memory layout
+
          .. group-tab:: nRF54LS05B
 
             Total RRAM: 508 KB | Total SRAM: 96 KB

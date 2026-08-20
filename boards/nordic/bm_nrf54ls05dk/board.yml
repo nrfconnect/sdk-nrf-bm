@@ -3,6 +3,16 @@ board:
   full_name: Bare Metal nRF54LS05 DK
   vendor: nordic
   socs:
+    - name: nrf54ls05a
+      variants:
+        - name: s115_softdevice
+          cpucluster: cpuapp
+          variants:
+            - name: mcuboot
+        - name: s145_softdevice
+          cpucluster: cpuapp
+          variants:
+            - name: mcuboot
     - name: nrf54ls05b
       variants:
         - name: s115_softdevice
@@ -22,6 +32,11 @@ runners:
         run: first
         groups:
           - boards:
+              - bm_nrf54ls05dk/nrf54ls05a/cpuapp
+              - bm_nrf54ls05dk/nrf54ls05a/cpuapp/s115_softdevice
+              - bm_nrf54ls05dk/nrf54ls05a/cpuapp/s115_softdevice/mcuboot
+              - bm_nrf54ls05dk/nrf54ls05a/cpuapp/s145_softdevice
+              - bm_nrf54ls05dk/nrf54ls05a/cpuapp/s145_softdevice/mcuboot
               - bm_nrf54ls05dk/nrf54ls05b/cpuapp
               - bm_nrf54ls05dk/nrf54ls05b/cpuapp/s115_softdevice
               - bm_nrf54ls05dk/nrf54ls05b/cpuapp/s115_softdevice/mcuboot
@@ -35,6 +50,11 @@ runners:
         run: first
         groups:
           - boards:
+              - bm_nrf54ls05dk/nrf54ls05a/cpuapp
+              - bm_nrf54ls05dk/nrf54ls05a/cpuapp/s115_softdevice
+              - bm_nrf54ls05dk/nrf54ls05a/cpuapp/s115_softdevice/mcuboot
+              - bm_nrf54ls05dk/nrf54ls05a/cpuapp/s145_softdevice
+              - bm_nrf54ls05dk/nrf54ls05a/cpuapp/s145_softdevice/mcuboot
               - bm_nrf54ls05dk/nrf54ls05b/cpuapp
               - bm_nrf54ls05dk/nrf54ls05b/cpuapp/s115_softdevice
               - bm_nrf54ls05dk/nrf54ls05b/cpuapp/s115_softdevice/mcuboot
@@ -48,6 +68,11 @@ runners:
         run: last
         groups:
           - boards:
+              - bm_nrf54ls05dk/nrf54ls05a/cpuapp
+              - bm_nrf54ls05dk/nrf54ls05a/cpuapp/s115_softdevice
+              - bm_nrf54ls05dk/nrf54ls05a/cpuapp/s115_softdevice/mcuboot
+              - bm_nrf54ls05dk/nrf54ls05a/cpuapp/s145_softdevice
+              - bm_nrf54ls05dk/nrf54ls05a/cpuapp/s145_softdevice/mcuboot
               - bm_nrf54ls05dk/nrf54ls05b/cpuapp
               - bm_nrf54ls05dk/nrf54ls05b/cpuapp/s115_softdevice
               - bm_nrf54ls05dk/nrf54ls05b/cpuapp/s115_softdevice/mcuboot

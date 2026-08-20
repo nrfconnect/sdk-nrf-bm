@@ -34,6 +34,8 @@ SoftDevice Handler
 Boards
 ======
 
+* Added support for the nRF54LS05A SoC, emulated on the nRF54LS05 DK through the ``bm_nrf54ls05dk/nrf54ls05a/cpuapp/*`` board targets.
+
 * Added ``BOARD_EXTERNAL_MEMORY_*`` macros to the :file:`board-config.h` file of the ``bm_nrf54l15dk`` and ``bm_nrf54lm20dk`` board targets  (SPIM instance, SCK/MOSI/MISO/CS and WP#/RST# strap pins) for on-board SPI external flash.
   Other BM development kits do not have external flash memory on the board, so their :file:`board-config.h` files omit these macros.
 

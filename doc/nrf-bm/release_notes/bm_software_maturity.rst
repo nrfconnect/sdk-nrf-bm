@@ -92,6 +92,8 @@ The level of maturity varies per protocol and feature — refer to other tables 
      - `nRF54L15 DK`_
    * - nRF54LM20A
      - `nRF54LM20 DK`_
+   * - nRF54LS05A
+     - `nRF54LS05 DK`_
    * - nRF54LS05B
      - `nRF54LS05 DK`_
    * - nRF54LV10A
@@ -115,6 +117,7 @@ The following table indicates the software maturity levels of the support for ea
      - nRF54L10
      - nRF54L05
      - nRF54LM20A
+     - nRF54LS05A
      - nRF54LS05B
      - nRF54LV10A
    * - **Bluetooth®**
@@ -124,6 +127,7 @@ The following table indicates the software maturity levels of the support for ea
      - Supported
      - Experimental
      - Experimental
+     - Experimental
    * - **NFC**
      - Supported
      - Supported
@@ -131,7 +135,9 @@ The following table indicates the software maturity levels of the support for ea
      - Supported
      - n/a
      - n/a
+     - n/a
    * - **ESB**
+     - --
      - --
      - --
      - --
@@ -158,6 +164,7 @@ The following table indicates SoftDevice compatibility per SoC:
      - nRF54L10
      - nRF54L05
      - nRF54LM20A
+     - nRF54LS05A
      - nRF54LS05B
      - nRF54LV10A
    * - **SoftDevice S115**
@@ -167,11 +174,13 @@ The following table indicates SoftDevice compatibility per SoC:
      - Supported
      - Experimental
      - Experimental
+     - Experimental
    * - **SoftDevice S145**
      - Supported
      - Supported
      - Supported
      - Supported
+     - Experimental
      - Experimental
      - Experimental
 
@@ -234,6 +243,7 @@ The following table indicates the software maturity levels of the support for ea
      - nRF54L10
      - nRF54L05
      - nRF54LM20A
+     - nRF54LS05A
      - nRF54LS05B
      - nRF54LV10A
    * - **NFC Type 2 Tag (read-only)**
@@ -243,11 +253,13 @@ The following table indicates the software maturity levels of the support for ea
      - Supported
      - n/a
      - n/a
+     - n/a
    * - **NFC Type 4 Tag (read/write)**
      - Supported
      - Supported
      - Supported
      - Supported
+     - n/a
      - n/a
      - n/a
    * - **NDEF encoding and decoding**
@@ -257,11 +269,13 @@ The following table indicates the software maturity levels of the support for ea
      - Supported
      - n/a
      - n/a
+     - n/a
    * - **NFC Record Type Definition: URI, text**
      - Supported
      - Supported
      - Supported
      - Supported
+     - n/a
      - n/a
      - n/a
    * - **NFC Connection Handover to Bluetooth carrier, Static and Negotiated Handover**
@@ -271,10 +285,7 @@ The following table indicates the software maturity levels of the support for ea
      - Supported
      - n/a
      - n/a
-
-.. note::
-   The Experimental status of the nRF54LM20A refers to its integration in the |BMlong|.
-   The NFC library itself is production-ready.
+     - n/a
 
 nRF Secure Immutable Bootloader
 *******************************
@@ -297,6 +308,7 @@ The following table indicates the software maturity levels of the support for ea
      - nRF54L10
      - nRF54L05
      - nRF54LM20A
+     - nRF54LS05A
      - nRF54LS05B
      - nRF54LV10A
    * - **Immutable MCUboot as part of build**
@@ -306,11 +318,13 @@ The following table indicates the software maturity levels of the support for ea
      - Supported
      - Experimental
      - Experimental
+     - Experimental
    * - **Hardware cryptography acceleration**
      - Supported
      - Supported
      - Supported
      - Supported
+     - n/a
      - n/a
      - Experimental
    * - **Multiple signature keys**
@@ -318,5 +332,6 @@ The following table indicates the software maturity levels of the support for ea
      - Supported
      - Supported
      - Supported
+     - --
      - --
      - Experimental

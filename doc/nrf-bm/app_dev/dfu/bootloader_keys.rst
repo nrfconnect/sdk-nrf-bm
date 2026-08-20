@@ -13,7 +13,7 @@ Signature type
 
 MCUboot in |BMshort| allow a few signatures types.
 The ED25519 signature type is recommended as supported for nRF54L Series devices with cryptographic hardware support (CRACEN and KMU).
-The ED25519 signature type is available for nRF54LS05B devices as well, but it is supported by software only (``nrf_oberon``).
+The ECDSA P256 signature type is recommended for nRF54LS05A and nRF54LS05B devices as well, but it is supported by software only (``nrf_oberon``).
 It is recommended to use the pure version of the ED25519 signature (:kconfig:option:`SB_CONFIG_BM_BOOT_IMG_HASH_ALG_PURE`).
 The rest of the signature types are for evaluation purpose only and are inherited from the MCUboot project.
 
@@ -54,7 +54,7 @@ KMU (Key Management Unit)
 
 .. note::
    KMU support is available for nRF54L15, nRF54L10, nRF54L05, nRF54LM20 and nRF54LV10 devices.
-   For nRF54LS05B devices, the bootloader will use one embedded key.
+   For nRF54LS05BA and nRF54LS05B devices, the bootloader will use one embedded key.
    For more information, see :ref:`ug_bootloader_keys_embedded`.
 
 Most nRF54L Series devices include the Key Management Unit (KMU) hardware peripheral.
@@ -111,6 +111,6 @@ This file applies to the MCUboot image only and is edited the same way as the :f
 Bootloader built-in Key
 ***********************
 
-For nRF54LS05B devices, the bootloader will use one embedded key.
+For nRF54LS05BA and nRF54LS05B devices, the bootloader will use one embedded key.
 This key is part of the bootloader image and it is unchangeable unless the bootloader is reprogrammed.
 For this method, no additional configuration or other actions are required for the bootloader to use the key.

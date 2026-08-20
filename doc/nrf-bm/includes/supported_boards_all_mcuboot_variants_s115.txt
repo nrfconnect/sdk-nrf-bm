@@ -21,6 +21,9 @@
          * - `nRF54LS05 DK`_
            - PCA10214
            - ``bm_nrf54ls05dk/nrf54ls05b/cpuapp/s115_softdevice/mcuboot``
+         * - `nRF54LS05 DK`_ (emulating nRF54LS05A)
+           - PCA10214
+           - ``bm_nrf54ls05dk/nrf54ls05a/cpuapp/s115_softdevice/mcuboot``
          * - `nRF54LV10 DK`_
            - PCA10188
            - ``bm_nrf54lv10dk/nrf54lv10a/cpuapp/s115_softdevice/mcuboot``
