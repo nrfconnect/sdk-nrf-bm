@@ -182,12 +182,15 @@ Peripheral samples
 Bluetooth LE samples
 --------------------
 
-* Updated the following samples and applications that do not support pairing to call the :c:func:`sd_ble_gatts_sys_attr_set` function only in response to the :c:macro:`BLE_GATTS_EVT_SYS_ATTR_MISSING` event and not as a response to a :c:macro:`BLE_GAP_EVT_CONNECTED` event:
+* Updated:
 
-   * :ref:`ug_dfu_firmware_loader` (Bluetooth LE)
-   * :ref:`ble_lbs_sample`
-   * :ref:`ble_nus_sample`
-   * :ref:`ble_mcuboot_recovery_entry_sample`
+   * All samples that use the :ref:`lib_peer_manager` library to use a minimum encryption key size of 16 bytes in their default security parameters.
+   * The following samples and applications, which do not support pairing, to call the :c:func:`sd_ble_gatts_sys_attr_set` function only in response to the :c:macro:`BLE_GATTS_EVT_SYS_ATTR_MISSING` event, and not in response to the :c:macro:`BLE_GAP_EVT_CONNECTED` event:
+
+      * :ref:`ug_dfu_firmware_loader` (Bluetooth LE)
+      * :ref:`ble_lbs_sample`
+      * :ref:`ble_nus_sample`
+      * :ref:`ble_mcuboot_recovery_entry_sample`
 
 * Removed the authentication status logging from the following samples and applications that do not support pairing (do not use the :ref:`lib_peer_manager` library):
 
