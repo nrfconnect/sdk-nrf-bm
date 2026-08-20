@@ -86,9 +86,6 @@ The sample supports the following development kits:
          * - `nRF54LM20 DK`_
            - PCA10184
            - ``bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice/mcuboot``
-         * - `nRF54LS05 DK`_
-           - PCA10214
-           - ``bm_nrf54ls05dk/nrf54ls05b/cpuapp/s115_softdevice/mcuboot``
 
       **S145**:
 
@@ -123,6 +120,7 @@ The sample initializes a PWM instance that blinks **LED 1** and **LED 3** on the
   This limits which LEDs on a given DK can be used.
   For example, on the nRF54L Series, PWM20/21/22 and GPIO Port P1 share the same domain.
   Therefore, on the nRF54L15 DK, only LEDs connected to P1 work with PWM: **LED 1** and **LED 3**.
+  The nRF54LS05 DK has no LEDs connected to P1, so this sample cannot demonstrate PWM on that DK without modifications and the DK is therefore not listed above.
 
 User interface
 **************

@@ -229,6 +229,7 @@ def _mem_fields_from_text(text: str) -> dict[MemField, int]:
 _SOC = {
     "nrf54lm20a",
     "nrf54lv10a",
+    "nrf54ls05a",
     "nrf54ls05b",
     "nrf54l15",
     "nrf54l10",
