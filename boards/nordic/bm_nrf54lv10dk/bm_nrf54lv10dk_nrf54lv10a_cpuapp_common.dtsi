@@ -46,11 +46,6 @@
 	};
 };
 
-/* Override NCS default to use entire RRAM for application CPU. */
-&cpuapp_rram {
-	reg = <0x0 DT_SIZE_K(1012)>;
-};
-
 &gpregret1 {
 	status = "okay";
 

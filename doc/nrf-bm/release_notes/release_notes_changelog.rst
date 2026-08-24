@@ -46,6 +46,10 @@ Boards
      This improves debugging in VS Code.
    * The number of required board qualifiers (reduced by one), as of changes in upstream Zephyr.
 
+* Removed:
+
+   * The override for ``cpuapp_rram`` size for all boards as RRAM is no longer reserved for the RISC-V core by default.
+
 Build system
 ============
 
