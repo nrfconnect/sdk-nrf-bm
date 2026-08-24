@@ -8,9 +8,6 @@ manifest:
     - name: ncs
       url-base: https://github.com/nrfconnect
 
-  group-filter:
-    - -nrf-bm-internal
-
   projects:
     - name: nrf
       repo-path: sdk-nrf
@@ -33,11 +30,6 @@ manifest:
           - zephyr
           - cmock
           - zcbor
-    - name: sdk-nrf-bm-internal
-      path: nrf-bm-internal
-      revision: 2086b4bb5ee2cc68b824fe5ecd4e2461987e4c5c
-      groups:
-        - nrf-bm-internal
 
   self:
     path: nrf-bm
