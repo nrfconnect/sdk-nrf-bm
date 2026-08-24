@@ -168,8 +168,6 @@ This board target will always enable DFU support when it is used to build the ap
       ...
 
       &cpuapp_rram {
-              status = "okay";
-
               partitions {
                       #address-cells = <1>;
                       #size-cells = <1>;
