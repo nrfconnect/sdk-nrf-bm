@@ -21,12 +21,21 @@ import argparse
 import re
 from dataclasses import dataclass, field
 from enum import Enum
-from functools import cache
 from pathlib import Path
 
 NRF_BM_BASE = Path(__file__).resolve().parents[2]
 BOARDS_DIR = NRF_BM_BASE / "boards" / "nordic"
 OUTPUT_DIR = Path.cwd() / "memory_layouts"
+
+# Extra search paths for ``#include <...>`` directives in dts files.
+# First match wins when the same relative path exists in multiple trees.
+DTS_INCLUDE_PATHS = [
+    NRF_BM_BASE.parent / "nrf" / "dts" / "arm",
+    NRF_BM_BASE.parent / "nrf" / "dts" / "common",
+    NRF_BM_BASE.parent / "zephyr" / "dts" / "arm",
+    NRF_BM_BASE.parent / "zephyr" / "dts" / "vendor",
+    NRF_BM_BASE.parent / "zephyr" / "dts",
+]
 
 # ---------------------------------------------------------------------------
 # Data model
@@ -142,7 +151,7 @@ def _parse_retained_mem(text: str) -> Partition | None:
 
 
 class MemField(Enum):
-    """Fields queryable via get_soc_mem_field().
+    """Memory layout values parsed from expanded DTS text.
 
     Each member corresponds to one value read from a SoC's DTS,
     covering RRAM, SRAM, and the KMU reserved area.
@@ -177,53 +186,27 @@ def _matching_brace(text: str, open_idx: int) -> int:
     return i - 1
 
 
-def _find_node_body(text: str, label: str) -> str | None:
-    """Return the body of the last node matching label.
-
-    Handles both override syntax, ``&label { ... };``,
-    and definition syntax, ``label: type@ADDR { ... };``.
-    Order in the file does not matter,
-    since the last occurrence wins.
-    """
-    pattern = re.compile(_NODE_START_TEMPLATE.format(label=label))
-    bodies = [text[m.end() : _matching_brace(text, m.end() - 1)] for m in pattern.finditer(text)]
-    return bodies[-1] if bodies else None
-
-
 def _node_reg(text: str, label: str) -> tuple[int, int]:
     """Return the (base_addr, size) from label's own reg.
 
     Ignores any reg that belongs to a nested child node,
-    such as a fixed-partitions child.
+    such as a fixed-partitions child.  When the last override
+    block only adds children, falls back to an earlier block.
     """
-    body = _find_node_body(text, label)
-    if body is None:
+    pattern = re.compile(_NODE_START_TEMPLATE.format(label=label))
+    bodies = [text[m.end() : _matching_brace(text, m.end() - 1)] for m in pattern.finditer(text)]
+    for body in reversed(bodies):
+        top_level = body.split("{", 1)[0]  # text before any nested child node
+        m = _REG_RE.search(top_level)
+        if m:
+            return int(m.group(1), 16), _eval_size_expr(m.group(2))
+    if not bodies:
         raise ValueError(f"Node '{label}' not found in DTS")
-    top_level = body.split("{", 1)[0]  # text before any nested child node
-    m = _REG_RE.search(top_level)
-    if not m:
-        raise ValueError(f"Node '{label}' has no top-level reg")
-    return int(m.group(1), 16), _eval_size_expr(m.group(2))
+    raise ValueError(f"Node '{label}' has no top-level reg")
 
 
-@cache
-def _find_common_dtsi(soc: str, dts_path: Path) -> Path:
-    """Return the path to a SoC's common.dtsi file within dts_path."""
-    matches = sorted(dts_path.glob(f"*_{soc}_cpuapp_common.dtsi"))
-    if not matches:
-        raise FileNotFoundError(f"No *_{soc}_cpuapp_common.dtsi found under {dts_path}")
-    return matches[0]
-
-
-@cache
-def _parse_soc_mem_fields(soc: str, dts_path: Path) -> dict[MemField, int]:
-    """Parse every MemField value for one SoC.
-
-    Reads the SoC's common.dtsi once,
-    and returns all fields as a dict, keyed by MemField.
-    """
-    text = _find_common_dtsi(soc, dts_path).read_text()
-
+def _mem_fields_from_text(text: str) -> dict[MemField, int]:
+    """Parse every MemField value from expanded DTS text."""
     kmu_addr, kmu_size = _node_reg(text, "nrf_kmu_reserved_push_area")
     rram_addr, rram_size = _node_reg(text, "cpuapp_rram")
     sram_addr, sram_size = _node_reg(text, "cpuapp_sram")
@@ -236,16 +219,6 @@ def _parse_soc_mem_fields(soc: str, dts_path: Path) -> dict[MemField, int]:
         MemField.RRAM_BASE_ADDR: rram_addr,
         MemField.RRAM_TOTAL: rram_size,
     }
-
-
-def get_soc_mem_field(soc: str, field: MemField, dts_path: Path) -> int:
-    """Look up one memory field for soc, parsed straight from its DTS.
-
-    Example:
-        rram_total = get_soc_mem_field("nrf54l05", MemField.RRAM_TOTAL, dts_path)
-        sram_base  = get_soc_mem_field("nrf54l05", MemField.SRAM_BASE_ADDR, dts_path)
-    """
-    return _parse_soc_mem_fields(soc, dts_path.parent)[field]
 
 
 # ---------------------------------------------------------------------------
@@ -297,10 +270,54 @@ def _find_last_node_block(pattern: str, text: str) -> str | None:
     return matches[-1].group(1) if matches else None
 
 
-def parse_dts(dts_path: Path, common_text: str = "") -> BoardConfig:
+_INCLUDE_RE = re.compile(r'#include\s+(?:"([^"]+)"|<([^>]+)>)')
+
+
+def _collect_dtsi_files(path: Path, seen: set[Path] | None = None) -> list[Path]:
+    """Recursively collect .dtsi files reachable from *path* via ``#include``.
+
+    Returns paths in dependency order: included files first, then *path*.
+    Quoted ``#include "..."`` paths are resolved relative to *path*; angle-bracket
+    ``#include <...>`` paths are resolved via DTS_INCLUDE_PATHS.
+    """
+    if seen is None:
+        seen = set()
+
+    resolved = path.resolve()
+    if resolved in seen:
+        return []
+    seen.add(resolved)
+
+    result: list[Path] = []
+    for m in _INCLUDE_RE.finditer(path.read_text()):
+        quoted, angle = m.group(1), m.group(2)
+        if quoted is not None:
+            include_path = (path.parent / quoted).resolve()
+            if not include_path.is_file():
+                if quoted.endswith(".dtsi"):
+                    print(f"  WARN: could not resolve #include {quoted!r} from {path.name}")
+                include_path = None
+        else:
+            include_path = None
+            for base in DTS_INCLUDE_PATHS:
+                candidate = base / angle
+                if candidate.is_file():
+                    include_path = candidate.resolve()
+                    break
+            if include_path is None and angle.endswith(".dtsi"):
+                print(f"  WARN: could not resolve #include <{angle}> from {path.name}")
+
+        if include_path is not None:
+            result.extend(_collect_dtsi_files(include_path, seen))
+
+    result.append(path)
+    return result
+
+
+def parse_dts(dts_path: Path) -> BoardConfig:
     """Parse a single DTS file into a BoardConfig."""
-    text = dts_path.read_text()
-    full = common_text + "\n" + text
+    full = "\n".join(p.read_text() for p in _collect_dtsi_files(dts_path))
+    mem = _mem_fields_from_text(full)
     stem = dts_path.stem
 
     soc = _detect_soc(stem)
@@ -331,8 +348,8 @@ def parse_dts(dts_path: Path, common_text: str = "") -> BoardConfig:
     rram_parts.sort(key=lambda p: p.offset)
 
     # Fill gaps between partitions
-    rram_total = get_soc_mem_field(soc, MemField.RRAM_TOTAL, dts_path)
-    rram_base_addr = get_soc_mem_field(soc, MemField.RRAM_BASE_ADDR, dts_path)
+    rram_total = mem[MemField.RRAM_TOTAL]
+    rram_base_addr = mem[MemField.RRAM_BASE_ADDR]
     filled: list[Partition] = []
     cursor = 0
     for p in rram_parts:
@@ -349,9 +366,9 @@ def parse_dts(dts_path: Path, common_text: str = "") -> BoardConfig:
     )
 
     # ---- SRAM partitions ----
-    sram_total = get_soc_mem_field(soc, MemField.SRAM_TOTAL, dts_path)
-    sram_base = get_soc_mem_field(soc, MemField.SRAM_BASE_ADDR, dts_path)
-    kmu_size = get_soc_mem_field(soc, MemField.KMU_SIZE, dts_path)
+    sram_total = mem[MemField.SRAM_TOTAL]
+    sram_base = mem[MemField.SRAM_BASE_ADDR]
+    kmu_size = mem[MemField.KMU_SIZE]
 
     sram_body = _find_last_node_block(r"&cpuapp_sram\s*\{(.*?)^\};", full)
     sram_parts_raw = _parse_partitions(sram_body) if sram_body else []
@@ -365,6 +382,7 @@ def parse_dts(dts_path: Path, common_text: str = "") -> BoardConfig:
     if retained:
         retained.offset = retained.offset - sram_base
         sram_parts.append(retained)
+        sram_total += retained.size
 
     sram_parts.sort(key=lambda p: p.offset)
 
@@ -551,13 +569,6 @@ def discover_boards(dts_path: Path) -> dict[str, Path]:
     return result
 
 
-def find_common_dtsi(dts_path: Path, soc: str) -> str:
-    """Read the common .dtsi for a given SoC variant."""
-    pattern = f"*_{soc}_cpuapp_common.dtsi"
-    matches = list(dts_path.glob(pattern))
-    return matches[0].read_text() if matches else ""
-
-
 def process_board(dts_path: Path, output_dir: Path) -> list[BoardConfig]:
     """Process all DTS files for a board and generate SVGs."""
     dts_files = sorted(dts_path.glob("*.dts"))
@@ -565,12 +576,11 @@ def process_board(dts_path: Path, output_dir: Path) -> list[BoardConfig]:
 
     for dts in dts_files:
         try:
-            soc = _detect_soc(dts.stem)
+            _detect_soc(dts.stem)
         except ValueError:
             continue
-        common = find_common_dtsi(dts_path, soc)
         try:
-            cfg = parse_dts(dts, common)
+            cfg = parse_dts(dts)
         except Exception as exc:
             print(f"  WARN: skipping {dts.name}: {exc}")
             continue
