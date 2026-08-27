@@ -80,15 +80,15 @@ Requirement for MCUboot
 MCUboot requires that each firmware image includes metadata both before and after the firmware hex file.
 This metadata is crucial for the validation of the firmware image:
 
-- **Image header**: Placed at the beginning of the firmware image.
-- **TLV area**: Positioned after the firmware image to store metadata used for image validation.
+* **Image header**: Placed at the beginning of the firmware image.
+* **TLV area**: Positioned after the firmware image to store metadata used for image validation.
 
 .. note:: The size reserved for the image header and TLV area must be consistent across all MCUboot images in a project.
 
 Vector table alignment
 **********************
 
-For images that are run as a `main application` that has its own interrupt vector table there is an `Vector table requirement`_ on how to place the interrupt vector table in memory.
+For images that are run as a *main application* that has its own interrupt vector table there is an `Vector table requirement`_ on how to place the interrupt vector table in memory.
 The table must be placed starting at the 2 kB boundary.
 An example of such images are application and firmware loader.
 The SoftDevice is not affected by this requirement.
@@ -101,9 +101,9 @@ SoftDevice placement
 
 The placement of the SoftDevice in memory is predetermined and must align with specific requirements:
 
-- **System Metadata**: Reserves 0.5 kB at the top of the memory.
-- **MCUboot_SD - TLV Area**: Also reserves 0.5 kB.
-- **SD_StartAddr**: See the SoftDevice release notes for details on size and start address.
+* **System Metadata**: Reserves 0.5 kB at the top of the memory.
+* **MCUboot_SD - TLV Area**: Also reserves 0.5 kB.
+* **SD_StartAddr**: See the SoftDevice release notes for details on size and start address.
 
 The size of the SoftDevice is adjusted taking into account the above alignment and space reservations.
 

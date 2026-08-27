@@ -114,18 +114,18 @@ You can test the sample in two ways, depending on the selected UART configuratio
 
          .. include:: /includes/lpuarte_board_connections.txt
 
-         #. For Two-device setup:
+         * For Two-device setup:
 
-            - Device 1 **LPUARTE TX** → Device 2 **LPUARTE RX**
-            - Device 1 **LPUARTE RX** → Device 2 **LPUARTE TX**
-            - Device 1 **LPUARTE REQ** → Device 2 **LPUARTE RDY**
-            - Device 1 **LPUARTE RDY** → Device 2 **LPUARTE REQ**
-            - Connect **GND** between both devices.
+           * Device 1 **LPUARTE TX** → Device 2 **LPUARTE RX**
+           * Device 1 **LPUARTE RX** → Device 2 **LPUARTE TX**
+           * Device 1 **LPUARTE REQ** → Device 2 **LPUARTE RDY**
+           * Device 1 **LPUARTE RDY** → Device 2 **LPUARTE REQ**
+           * Connect **GND** between both devices.
 
-         #. For Single-device loopback setup:
+         * For Single-device loopback setup:
 
-            - **LPUARTE TX** → **LPUARTE RX**
-            - **LPUARTE REQ** → **LPUARTE RDY**
+           * **LPUARTE TX** → **LPUARTE RX**
+           * **LPUARTE REQ** → **LPUARTE RDY**
 
       #. Power on the devices.
       #. Send a message from the device not connected in loopback mode using a terminal emulator.
