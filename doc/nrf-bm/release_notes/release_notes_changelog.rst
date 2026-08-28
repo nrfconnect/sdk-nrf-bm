@@ -127,6 +127,7 @@ Libraries
       * The :c:func:`pm_init` function to clear the default security parameters set with the :c:func:`pm_sec_params_set` function.
       * The :c:func:`pm_register` function to return ``NRF_ERROR_NULL`` when the event handler parameter is ``NULL``.
         The check was documented but was missing.
+      * The LESC key agreement handling to clear the static RAM copy of the ECDH shared secret after the secret have been handed over to the SoftDevice using the :c:func:`sd_ble_gap_lesc_dhkey_reply` function.
 
    * Fixed:
 
