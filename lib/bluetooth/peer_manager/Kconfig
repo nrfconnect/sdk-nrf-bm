@@ -63,8 +63,9 @@ if PM_LESC
 
 config PM_LESC_GENERATE_NEW_KEYS
 	bool "Generate new LESC key pair after every pairing attempt"
+	default y
 	help
-	  New LESC keys are generated on the auth status event.
+	  New LESC keys are generated on every "authentication procedure completed" event.
 
 config PM_LESC_PRIVATE_KEY_EXPORT
 	bool "Export private key for debugging purposes"

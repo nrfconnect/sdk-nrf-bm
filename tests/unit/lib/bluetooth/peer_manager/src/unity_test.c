@@ -237,7 +237,6 @@ static const mbedtls_svc_key_id_t key_pair_id = 0x2A;
 #define PSA_GENERATE_ECDH_KEYS_AND_EXPORT_PUBLIC_KEY_MOCKS(_key_pair_id)                           \
 	psa_key_attributes_t key_attributes_mock = PSA_KEY_ATTRIBUTES_INIT;                        \
 												   \
-	__cmock_psa_crypto_init_ExpectAndReturn(PSA_SUCCESS);                                      \
 	__cmock_psa_destroy_key_ExpectAnyArgsAndReturn(PSA_ERROR_INVALID_HANDLE);                  \
 												   \
 	__cmock_psa_set_key_usage_flags_ExpectWithArray(                                           \
@@ -369,6 +368,7 @@ void peer_manager_initialize_success(void)
 	__cmock_bm_zms_mount_Stub(stub_bm_zms_mount_success);
 	__cmock_bm_zms_read_Stub(stub_bm_zms_read_pm_init);
 
+	__cmock_psa_crypto_init_ExpectAndReturn(PSA_SUCCESS);
 	PSA_GENERATE_ECDH_KEYS_AND_EXPORT_PUBLIC_KEY_MOCKS(key_pair_id);
 
 	__cmock_bm_timer_init_Stub(stub_bm_timer_init_ast);
@@ -598,6 +598,7 @@ void test_pm_init_success(void)
 	__cmock_bm_zms_mount_Stub(stub_bm_zms_mount_success);
 	__cmock_bm_zms_read_Stub(stub_bm_zms_read_pm_init);
 
+	__cmock_psa_crypto_init_ExpectAndReturn(PSA_SUCCESS);
 	PSA_GENERATE_ECDH_KEYS_AND_EXPORT_PUBLIC_KEY_MOCKS(key_pair_id);
 
 	__cmock_bm_timer_init_Stub(stub_bm_timer_init_ast);
@@ -1151,8 +1152,11 @@ void test_pm_conn_secure_peripheral_pair_success(void)
 	TEST_ASSERT_TRUE(conn_sec_status.lesc);
 
 	/* On a BLE_GAP_EVT_AUTH_STATUS, expect peer manager to finish up the pairing request.
-	 * Not much is done in response to this event when simply pairing (no bonding).
+	 *
+	 * Expect a new ECDH key to be generated because CONFIG_PM_LESC_GENERATE_NEW_KEYS is set.
 	 */
+	PSA_GENERATE_ECDH_KEYS_AND_EXPORT_PUBLIC_KEY_MOCKS(key_pair_id);
+
 	evt.header.evt_id = BLE_GAP_EVT_AUTH_STATUS;
 	evt.evt.gap_evt.params.auth_status = (ble_gap_evt_auth_status_t) {
 		.auth_status = BLE_GAP_SEC_STATUS_SUCCESS,
@@ -1346,6 +1350,8 @@ void test_pm_conn_secure_peripheral_pair_and_bond_success(void)
 	 * Expect the bonding data storage to be iterated to check if the paired peer already have
 	 * bonding data. No duplicate bonding data is to be found.
 	 * Next, expect new bonding data to be stored.
+	 *
+	 * Expect a new ECDH key to be generated because CONFIG_PM_LESC_GENERATE_NEW_KEYS is set.
 	 */
 	entry.data_id = PM_PEER_DATA_ID_BONDING;
 	entry.peer_id = 0;
@@ -1362,6 +1368,8 @@ void test_pm_conn_secure_peripheral_pair_and_bond_success(void)
 	__cmock_bm_zms_write_ExpectAndReturn(zms_fs, entry.id, PTR_IGNORE,
 					     sizeof(struct pm_peer_data_bonding), 0);
 	__cmock_bm_zms_write_IgnoreArg_data();
+
+	PSA_GENERATE_ECDH_KEYS_AND_EXPORT_PUBLIC_KEY_MOCKS(key_pair_id);
 
 	evt.header.evt_id = BLE_GAP_EVT_AUTH_STATUS;
 	evt.evt.gap_evt.params.auth_status = (ble_gap_evt_auth_status_t) {
@@ -1744,8 +1752,11 @@ void test_pm_conn_secure_peripheral_pair_again_with_bonding_data_present_success
 	TEST_ASSERT_TRUE(conn_sec_status.lesc);
 
 	/* On a BLE_GAP_EVT_AUTH_STATUS, expect peer manager to finish up the pairing request.
-	 * Not much is done in response to this event when simply pairing (no bonding).
+	 *
+	 * Expect a new ECDH key to be generated because CONFIG_PM_LESC_GENERATE_NEW_KEYS is set.
 	 */
+	PSA_GENERATE_ECDH_KEYS_AND_EXPORT_PUBLIC_KEY_MOCKS(key_pair_id);
+
 	evt.header.evt_id = BLE_GAP_EVT_AUTH_STATUS;
 	evt.evt.gap_evt.params.auth_status = (ble_gap_evt_auth_status_t) {
 		.auth_status = BLE_GAP_SEC_STATUS_SUCCESS,
@@ -1933,8 +1944,11 @@ void test_pm_conn_secure_central_pair_success(void)
 	TEST_ASSERT_TRUE(conn_sec_status.lesc);
 
 	/* On a BLE_GAP_EVT_AUTH_STATUS, expect peer manager to finish up the pairing request.
-	 * Not much is done in response to this event when simply pairing (no bonding).
+	 *
+	 * Expect a new ECDH key to be generated because CONFIG_PM_LESC_GENERATE_NEW_KEYS is set.
 	 */
+	PSA_GENERATE_ECDH_KEYS_AND_EXPORT_PUBLIC_KEY_MOCKS(key_pair_id);
+
 	evt.header.evt_id = BLE_GAP_EVT_AUTH_STATUS;
 	evt.evt.gap_evt.params.auth_status = (ble_gap_evt_auth_status_t) {
 		.auth_status = BLE_GAP_SEC_STATUS_SUCCESS,
@@ -2125,8 +2139,11 @@ void test_pm_conn_secure_central_pair_and_bond_success(void)
 	TEST_ASSERT_TRUE(conn_sec_status.lesc);
 
 	/* On a BLE_GAP_EVT_AUTH_STATUS, expect peer manager to finish up the pairing request.
-	 * Not much is done in response to this event when simply pairing (no bonding).
+	 *
+	 * Expect a new ECDH key to be generated because CONFIG_PM_LESC_GENERATE_NEW_KEYS is set.
 	 */
+	PSA_GENERATE_ECDH_KEYS_AND_EXPORT_PUBLIC_KEY_MOCKS(key_pair_id);
+
 	evt.header.evt_id = BLE_GAP_EVT_AUTH_STATUS;
 	evt.evt.gap_evt.params.auth_status = (ble_gap_evt_auth_status_t) {
 		.auth_status = BLE_GAP_SEC_STATUS_SUCCESS,
