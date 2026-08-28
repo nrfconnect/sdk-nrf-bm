@@ -128,6 +128,8 @@ Libraries
       * The :c:func:`pm_register` function to return ``NRF_ERROR_NULL`` when the event handler parameter is ``NULL``.
         The check was documented but was missing.
       * The LESC key agreement handling to clear the static RAM copy of the ECDH shared secret after the secret have been handed over to the SoftDevice using the :c:func:`sd_ble_gap_lesc_dhkey_reply` function.
+      * The :kconfig:option:`CONFIG_PM_LESC_GENERATE_NEW_KEYS` Kconfig option to be enabled by default.
+        This option forces the use of new ECDH key pair for each pairing procedure.
 
    * Fixed:
 
