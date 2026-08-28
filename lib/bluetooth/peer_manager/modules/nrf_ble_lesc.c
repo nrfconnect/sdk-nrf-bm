@@ -237,6 +237,7 @@ void nrf_ble_lesc_peer_oob_data_handler_set(nrf_ble_lesc_peer_oob_data_handler h
  */
 static uint32_t compute_and_give_dhkey(struct lesc_peer_pub_key *peer_public_key)
 {
+	uint32_t nrf_err;
 	psa_status_t status = PSA_ERROR_BAD_STATE;
 	uint8_t *shared_secret = lesc_dh_key.key;
 	size_t shared_secret_size;
@@ -278,7 +279,12 @@ static uint32_t compute_and_give_dhkey(struct lesc_peer_pub_key *peer_public_key
 	LOG_INF("Calling sd_ble_gap_lesc_dhkey_reply(sec_status: %#x) on conn_handle: %d",
 		sec_status, peer_public_key->conn_handle);
 
-	return sd_ble_gap_lesc_dhkey_reply(peer_public_key->conn_handle, sec_status, p_dh_key);
+	nrf_err = sd_ble_gap_lesc_dhkey_reply(peer_public_key->conn_handle, sec_status, p_dh_key);
+
+	/* Discard the key immediately after handing it over to the SoftDevice. */
+	memset(lesc_dh_key.key, 0, sizeof(lesc_dh_key.key));
+
+	return nrf_err;
 }
 
 uint32_t nrf_ble_lesc_request_handler(void)
