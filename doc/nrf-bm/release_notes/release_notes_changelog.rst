@@ -156,11 +156,14 @@ Libraries
       * The :file:`peer_manager_handler.c` file with missing logging and asserts where the ``APP_ERROR_CHECK`` macro was used in nRF5 SDK.
       * The sources of the :c:enumerator:`PM_EVT_CONN_SEC_CONFIG_REQ` event to fill the peer ID field.
         Use the value of the peer ID field instead of calling the :c:func:`pm_peer_id_get` function when handling this event.
+      * The write buffer release function in the peer database submodule to erase the contents of the write buffer record on release.
 
    * Fixed:
 
       * An issue where calling the :c:func:`pm_init` function two or more times would cause some of the internal asynchronous operation flags to have incorrect states.
       * The :c:func:`pm_address_resolve` function to return ``false`` instead of ``NRF_ERROR_INVALID_STATE`` when Peer Manager is not initialized.
+      * An issue where the write buffer that holds bonding data before NVM writes was not released in all situations.
+        The impact was minor, as new connections were able to reuse the already-allocated buffer(s).
 
 * ``Zephyr queue`` library:
 
