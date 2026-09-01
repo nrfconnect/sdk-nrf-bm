@@ -577,14 +577,19 @@ static void auth_status_success_process(const ble_gap_evt_t *gap_evt)
 
 	pm_conn_state_user_flag_set(conn_handle, flag_sec_proc, false);
 
-	if (!gap_evt->params.auth_status.bonded) {
-		pairing_success_evt_send(gap_evt, false);
-		return;
-	}
-
 	nrf_err = pdb_temp_peer_id_get(conn_handle, &temp_peer_id);
 	if (nrf_err == NRF_SUCCESS) {
 		nrf_err = pdb_write_buf_get(temp_peer_id, PM_PEER_DATA_ID_BONDING, 1, &peer_data);
+	}
+
+	if (!gap_evt->params.auth_status.bonded) {
+		pairing_success_evt_send(gap_evt, false);
+
+		if (nrf_err == NRF_SUCCESS) {
+			(void)pdb_write_buf_release(temp_peer_id, PM_PEER_DATA_ID_BONDING);
+		}
+
+		return;
 	}
 
 	if (nrf_err) {
@@ -611,6 +616,8 @@ static void auth_status_success_process(const ble_gap_evt_t *gap_evt)
 				send_config_req(conn_handle);
 				if (!allow_repairing(conn_handle)) {
 					pairing_success_evt_send(gap_evt, false);
+					(void)pdb_write_buf_release(temp_peer_id,
+								    PM_PEER_DATA_ID_BONDING);
 					return;
 				}
 			}
@@ -623,6 +630,7 @@ static void auth_status_success_process(const ble_gap_evt_t *gap_evt)
 			LOG_ERR("Could not allocate new peer_id for incoming bond.");
 			send_unexpected_error(conn_handle, NRF_ERROR_NO_MEM);
 			pairing_success_evt_send(gap_evt, false);
+			(void)pdb_write_buf_release(temp_peer_id, PM_PEER_DATA_ID_BONDING);
 			return;
 		}
 		im_new_peer_id(conn_handle, peer_id);
