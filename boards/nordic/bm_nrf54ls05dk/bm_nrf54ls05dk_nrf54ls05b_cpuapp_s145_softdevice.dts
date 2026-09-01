@@ -55,9 +55,6 @@
 			label = "softdevice";
 			reg = <0x0005c800 DT_SIZE_K(137)>;
 		};
-		/* Area from 0x7ec00 to end of nvm (1 kB) is unused
-		 * due to placement of SD to fit with DFU
-		 */
 	};
 };
 
