@@ -198,7 +198,14 @@ static struct pdb_buffer_record *write_buffer_record_find_unused(void)
  */
 static void write_buffer_record_release(struct pdb_buffer_record *write_buffer_record)
 {
+	uint8_t *ptr;
+
 	for (uint32_t i = 0; i < write_buffer_record->n_bufs; i++) {
+		ptr = pm_buffer_ptr_get(&write_buffer, write_buffer_record->buffer_block_id + i);
+		if (ptr != NULL) {
+			memset(ptr, 0, write_buffer.block_size);
+		}
+
 		pm_buffer_release(&write_buffer, write_buffer_record->buffer_block_id + i);
 	}
 
