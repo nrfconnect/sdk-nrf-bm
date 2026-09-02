@@ -5,11 +5,13 @@
  */
 
 #include <stdint.h>
+#include <string.h>
 #include <ble.h>
 #include <bm/bm_buttons.h>
 #include <bm/bm_irq.h>
 #include <hal/nrf_gpio.h>
 #include <nrfx_uarte.h>
+#include <hal/nrf_uarte.h>
 #if defined(CONFIG_SAMPLE_NUS_CENTRAL_LPUARTE)
 #include <bm/drivers/bm_lpuarte.h>
 #endif
@@ -27,6 +29,7 @@
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
+#include <zephyr/sys/util.h>
 
 #include <board-config.h>
 
@@ -72,7 +75,9 @@ static nrfx_uarte_t nus_uarte_inst = NRFX_UARTE_INSTANCE(NUS_UARTE_INST);
  */
 static uint16_t ble_nus_max_data_len = BLE_NUS_CLIENT_MAX_DATA_LEN_CALC(BLE_GATT_ATT_MTU_DEFAULT);
 
-/* Receive buffers used in UART ISR callback. */
+/* Double-buffered RX: one buffer is always queued as "next",
+ * so when the current one is filled or aborted, DMA continues into the other.
+ */
 static uint8_t uarte_rx_buf[2][CONFIG_SAMPLE_NUS_CENTRAL_UART_RX_BUF_SIZE];
 static int buf_idx;
 
@@ -112,39 +117,26 @@ static void lpuarte_rx_handler(char *data, size_t data_len)
 static void uarte_rx_handler(char *data, size_t data_len)
 {
 	uint32_t nrf_err;
-	uint8_t c;
-	/* Receive buffer used in UART ISR callback. */
-	static char rx_buf[BLE_NUS_MAX_DATA_LEN];
-	static uint16_t rx_buf_idx;
+	uint16_t sent = 0;
 	uint16_t len;
 
-	for (int i = 0; i < data_len; i++) {
-		c = data[i];
+	/* Forward the chunk as received, split only if it exceeds the current
+	 * NUS notification size limit. No bytes are added or dropped.
+	 */
+	while (sent < data_len) {
+		len = MIN(data_len - sent, ble_nus_max_data_len);
+		LOG_INF("Sending NUS data, len %d", len);
 
-		if (rx_buf_idx < sizeof(rx_buf)) {
-			rx_buf[rx_buf_idx++] = c;
-		}
-
-		if ((c == '\n' || c == '\r') || (rx_buf_idx >= ble_nus_max_data_len)) {
-			if (rx_buf_idx == 0) {
-				/* RX buffer is empty, nothing to send. */
-				continue;
+		do {
+			nrf_err = ble_nus_client_string_send(&ble_nus_client, &data[sent], len);
+			if ((nrf_err != NRF_ERROR_INVALID_STATE) &&
+			    (nrf_err != NRF_ERROR_RESOURCES) && nrf_err) {
+				LOG_ERR("Failed to send NUS data, nrf_error %#x", nrf_err);
+				return;
 			}
+		} while (nrf_err == NRF_ERROR_RESOURCES);
 
-			len = rx_buf_idx;
-			LOG_INF("Sending NUS data, len %d", len);
-
-			do {
-				nrf_err = ble_nus_client_string_send(&ble_nus_client, rx_buf,
-									 len);
-				if ((nrf_err != NRF_ERROR_INVALID_STATE) &&
-				    (nrf_err != NRF_ERROR_RESOURCES) && nrf_err) {
-					LOG_ERR("Failed to send NUS data, nrf_error %#x", nrf_err);
-					return;
-				}
-			} while (nrf_err == NRF_ERROR_RESOURCES);
-			rx_buf_idx = 0;
-		}
+		sent += len;
 	}
 }
 #endif /* CONFIG_SAMPLE_NUS_CENTRAL_LPUARTE */
@@ -153,8 +145,8 @@ static void uarte_evt_handler(const nrfx_uarte_event_t *event, void *ctx)
 {
 	switch (event->type) {
 	case NRFX_UARTE_EVT_RX_DONE:
-		LOG_INF("Received data from UART: %.*s (%d)", event->data.rx.length,
-			event->data.rx.p_buffer, event->data.rx.length);
+		LOG_DBG("Received data from UART (len %d): %.*s", event->data.rx.length,
+			event->data.rx.length, event->data.rx.p_buffer);
 		if (event->data.rx.length > 0) {
 #if defined(CONFIG_SAMPLE_NUS_CENTRAL_LPUARTE)
 			lpuarte_rx_handler(event->data.rx.p_buffer, event->data.rx.length);
@@ -162,11 +154,9 @@ static void uarte_evt_handler(const nrfx_uarte_event_t *event, void *ctx)
 			uarte_rx_handler(event->data.rx.p_buffer, event->data.rx.length);
 #endif
 		}
-#if !defined(CONFIG_SAMPLE_NUS_CENTRAL_LPUARTE)
-		(void)nrfx_uarte_rx_enable(&nus_uarte_inst, 0);
-#endif
 		break;
 	case NRFX_UARTE_EVT_RX_BUF_REQUEST:
+		/* Queue the free buffer immediately so RX keeps running with zero downtime. */
 #if defined(CONFIG_SAMPLE_NUS_CENTRAL_LPUARTE)
 		(void)bm_lpuarte_rx_buffer_set(&lpu, uarte_rx_buf[buf_idx],
 					       CONFIG_SAMPLE_NUS_CENTRAL_UART_RX_BUF_SIZE);
@@ -363,6 +353,34 @@ static void button_handler_disconnect(uint8_t pin, uint8_t action)
 
 ISR_DIRECT_DECLARE(uarte_direct_isr)
 {
+#if !defined(CONFIG_SAMPLE_NUS_CENTRAL_LPUARTE)
+	/* The compare-match filter raises MATCH0 on '\r' and MATCH1 on '\n',
+	 * either one ends a line, so both are handled the same way here.
+	 * Clear it and abort the current RX. A second buffer is already queued,
+	 * so reception continues into it without a gap.
+	 */
+	NRF_UARTE_Type *reg = (NRF_UARTE_Type *)nus_uarte_inst.p_reg;
+	bool match = false;
+
+	if (reg->EVENTS_DMA.RX.MATCH[0]) {
+		nrf_uarte_event_clear(
+			reg,
+			(nrf_uarte_event_t)offsetof(NRF_UARTE_Type, EVENTS_DMA.RX.MATCH[0]));
+		match = true;
+	}
+
+	if (reg->EVENTS_DMA.RX.MATCH[1]) {
+		nrf_uarte_event_clear(
+			reg,
+			(nrf_uarte_event_t)offsetof(NRF_UARTE_Type, EVENTS_DMA.RX.MATCH[1]));
+		match = true;
+	}
+
+	if (match) {
+		(void)nrfx_uarte_rx_abort(&nus_uarte_inst, false, false);
+	}
+#endif
+
 	nrfx_uarte_irq_handler(&nus_uarte_inst);
 	return 0;
 }
@@ -424,7 +442,32 @@ static int uarte_init(void)
 		LOG_ERR("Failed to initialize UART, err %d", err);
 		return err;
 	}
-	err = nrfx_uarte_rx_enable(&nus_uarte_inst, 0);
+
+	/* Configure the compare-match filter so reception stops on '\r' or '\n':
+	 * CANDIDATE[0] = '\r', CANDIDATE[1] = '\n', both enabled and both raising
+	 * an interrupt (uarte_direct_isr aborts RX on either match).
+	 */
+	NRF_UARTE_Type *reg = (NRF_UARTE_Type *)nus_uarte_inst.p_reg;
+
+	reg->DMA.RX.MATCH.CANDIDATE[0] = '\r';
+	reg->DMA.RX.MATCH.CANDIDATE[1] = '\n';
+	reg->DMA.RX.MATCH.CONFIG       = UARTE_DMA_RX_MATCH_CONFIG_ENABLE0_Msk |
+					 UARTE_DMA_RX_MATCH_CONFIG_ENABLE1_Msk;
+	reg->INTENSET                  = UARTE_INTENSET_DMARXMATCH0_Msk |
+					 UARTE_INTENSET_DMARXMATCH1_Msk;
+
+	const uint8_t out[] = "UART started.\r\n";
+
+	err = nrfx_uarte_tx(&nus_uarte_inst, out, sizeof(out), NRFX_UARTE_TX_BLOCKING);
+	if (err) {
+		LOG_ERR("UARTE TX failed, err %d", err);
+		return err;
+	}
+
+	/* Continuous mode keeps RX running across buffers. With a second buffer queued,
+	 * an abort on match ends the current one and continues into the other.
+	 */
+	err = nrfx_uarte_rx_enable(&nus_uarte_inst, NRFX_UARTE_RX_ENABLE_CONT);
 	if (err) {
 		LOG_ERR("UART RX failed, err %d", err);
 	}
