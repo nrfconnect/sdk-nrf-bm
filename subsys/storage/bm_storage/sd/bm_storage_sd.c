@@ -22,7 +22,7 @@
 #define SD_PROGRAM_UNIT_BYTES sizeof(uint32_t)
 
 /* RRAM word line size in bytes, derived from hardware definition (in bits). */
-#define SD_WRITE_BLOCK_SIZE (RRAMC_NRRAMWORDSIZE / BITS_PER_BYTE)
+#define SD_WRITE_BLOCK_SIZE (RRAMC_NRRAMDATAUNITSIZE / BITS_PER_BYTE)
 
 BUILD_ASSERT(IS_ALIGNED(CONFIG_BM_STORAGE_BACKEND_SD_MAX_WRITE_SIZE, SD_PROGRAM_UNIT_BYTES),
 	     "_SD_MAX_WRITE_SIZE must be a multiple of the program unit");
