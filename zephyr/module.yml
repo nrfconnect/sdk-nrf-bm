@@ -12,3 +12,4 @@ build:
     module_ext_root: .
   depends:
     - nrf
+    - memfault-firmware-sdk

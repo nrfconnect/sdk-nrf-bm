@@ -55,7 +55,10 @@ Boards
 Build system
 ============
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Updated:
+
+  * The :file:`west.yml` file to add ``memfault-firmware-sdk`` to the |NCS| manifest allowlist.
+  * The :file:`zephyr/module.yml` file to declare a build dependency on ``memfault-firmware-sdk``.
 
 Interrupts
 ==========
@@ -84,6 +87,14 @@ Filesystem
 ----------
 
 No changes since the latest nRF Connect SDK Bare Metal release.
+
+Memfault
+--------
+
+* Added Memfault platform support in :file:`subsys/memfault/`:
+
+  * :kconfig:option:`CONFIG_BM_MEMFAULT_LOCK` - ``irq_lock()``-based ``memfault_lock()`` / ``memfault_unlock()`` for builds without Zephyr multithreading (default when ``NCS_BM && MEMFAULT && !MULTITHREADING``).
+    Enabling this option also excludes the ``k_mutex``-based ``memfault_platform_lock.c`` file of the Memfault SDK from the build, so that Memfault links without :kconfig:option:`CONFIG_MULTITHREADING`.
 
 Libraries
 =========
@@ -141,6 +152,8 @@ Libraries
 Bluetooth LE Services
 ---------------------
 
+* Added the :ref:`lib_ble_service_mds` service for exporting Memfault diagnostic chunks over Bluetooth LE.
+
 * :ref:`lib_ble_scan`:
 
    * Changed :c:member:`ble_scan_filter_data.addr_filter.addr` and :c:member:`ble_scan_filter_data.name_filter.name` to ``const`` in the :c:struct:`ble_scan_filter_data` structure.
@@ -191,7 +204,9 @@ Peripheral samples
 Bluetooth LE samples
 --------------------
 
-* Updated:
+* Added the :ref:`ble_mds_sample` sample.
+
+* Updated the following samples and applications that do not support pairing to call the :c:func:`sd_ble_gatts_sys_attr_set` function only in response to the :c:macro:`BLE_GATTS_EVT_SYS_ATTR_MISSING` event and not as a response to a :c:macro:`BLE_GAP_EVT_CONNECTED` event:
 
    * All samples that use the :ref:`lib_peer_manager` library to use a minimum encryption key size of 16 bytes in their default security parameters.
    * The following samples and applications, which do not support pairing, to call the :c:func:`sd_ble_gatts_sys_attr_set` function only in response to the :c:macro:`BLE_GATTS_EVT_SYS_ATTR_MISSING` event, and not in response to the :c:macro:`BLE_GAP_EVT_CONNECTED` event:
@@ -264,3 +279,10 @@ Documentation
 =============
 
 * Updated the memory layout diagram generation script to parse RRAM and SRAM sizes directly from devicetree instead of hardcoded per-SoC values.
+
+* Added:
+
+  * The :ref:`memfault_bm` page, which documents the Memfault integration on bare metal, including platform locking, the rules for calling Memfault APIs from ISR and main loop context, and the Memfault cloud prerequisites.
+  * The :ref:`lib_ble_service_mds` library page.
+  * The :ref:`ble_mds_sample` page, which includes the steps for getting started with Memfault.
+  * The :ref:`api_ble_mds` API reference.
