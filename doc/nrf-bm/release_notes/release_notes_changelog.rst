@@ -85,6 +85,14 @@ Filesystem
 
 No changes since the latest nRF Connect SDK Bare Metal release.
 
+Memfault
+--------
+
+* Added Memfault platform support in :file:`subsys/memfault/`:
+
+  * :kconfig:option:`CONFIG_BM_MEMFAULT_LOCK` - ``irq_lock()``-based ``memfault_lock()`` / ``memfault_unlock()`` for builds without Zephyr multithreading (default when ``NCS_BM && MEMFAULT && !MULTITHREADING``).
+    Enabling this option also excludes the ``k_mutex``-based ``memfault_platform_lock.c`` file of the Memfault SDK from the build, so that Memfault links without :kconfig:option:`CONFIG_MULTITHREADING`.
+
 Libraries
 =========
 

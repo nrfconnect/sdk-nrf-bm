@@ -1,0 +1,19 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+config BM_MEMFAULT_LOCK
+	bool "NCS BM Memfault platform lock (irq_lock-based)"
+	default y
+	depends on NCS_BM && MEMFAULT && !MULTITHREADING
+	help
+	  Use an irq_lock()-based implementation of memfault_lock()/memfault_unlock()
+	  for bare-metal builds without Zephyr multithreading.
+
+	  Memfault calls may originate from both the main loop and ISRs. This option
+	  replaces the default Zephyr k_mutex-based lock with a critical-section lock.
+
+	  See doc/nrf-bm/libraries/memfault.rst for rules on which Memfault APIs
+	  may be called from each execution context.
