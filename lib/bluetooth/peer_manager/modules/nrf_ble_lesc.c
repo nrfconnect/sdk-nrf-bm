@@ -284,6 +284,13 @@ static uint32_t compute_and_give_dhkey(struct lesc_peer_pub_key *peer_public_key
 	/* Discard the key immediately after handing it over to the SoftDevice. */
 	memset(lesc_dh_key.key, 0, sizeof(lesc_dh_key.key));
 
+	if (nrf_err == BLE_ERROR_INVALID_CONN_HANDLE) {
+		/* The peer disconnected before the SoftDevice was handed the LESC DHKey.
+		 * The LESC DHKey is no longer needed by SoftDevice, so treat this as a success.
+		 */
+		nrf_err = NRF_SUCCESS;
+	}
+
 	return nrf_err;
 }
 
