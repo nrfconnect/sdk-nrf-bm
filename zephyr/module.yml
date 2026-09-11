@@ -13,3 +13,5 @@ build:
   depends:
     - nrf
     - memfault-firmware-sdk
+samples:
+  - samples
