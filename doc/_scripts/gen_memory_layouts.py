@@ -227,6 +227,7 @@ def _mem_fields_from_text(text: str) -> dict[MemField, int]:
 
 # Keep longer SoC names first, it is necessary for matching
 _SOC = {
+    "nrf54lc10a",
     "nrf54lm20a",
     "nrf54lv10a",
     "nrf54ls05a",
