@@ -31,6 +31,8 @@
 
 .. _`nRF54LV10 DK`: https://docs.nordicsemi.com/bundle/ug_nrf54lv10_dk/page/UG/nRF54LV10_DK/intro/intro.html
 
+.. _`nRF54LC10 DK`: https://www.nordicsemi.com/Products/Development-hardware/nRF54LC10-DK
+
 .. _`nRF54LS05 DK`: https://www.nordicsemi.com/Products/Development-hardware/nRF54LS05-DK
 
 .. _`v3.2.0 software maturity levels`: https://nrfconnectdocs.nordicsemi.com/ncs/3.2.0/nrf/releases_and_maturity/software_maturity.html

@@ -62,7 +62,7 @@ Two-device setup:
 .. note:: Board-specific behavior
 
    * **nRF54L15 DK** — The SPI controller pins overlap with **LED 3** (P1.14, flickers during transfers) and **Button 0** (P1.13, do not press during transfers).
-   * **nRF54LV10 DK** — The SPI target pins (P0.00-P0.03) are shared with one of the debugger's virtual serial ports.
+   * **nRF54LV10 DK** and **nRF54LC10 DK** — The SPI target pins (P0.00-P0.03) are shared with one of the debugger's virtual serial ports.
      Before running the sample, open the `Board Configurator`_ app in `nRF Connect for Desktop`_ and disable the **Connect port VCOM** entry that is mapped to pins **P0.00-P0.03**, to release these pins from the debugger.
      Leave the other **Connect port VCOM** entry (mapped to pins **P1.04-P1.07**) enabled, since it is the virtual serial port used to read the sample's log output.
 

@@ -1,0 +1,9 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+choice NRF_GRTC_TIMER_SOURCE
+	default NRF_GRTC_TIMER_SOURCE_LFLPRC if !$(dt_nodelabel_enabled,lfxo)
+endchoice
