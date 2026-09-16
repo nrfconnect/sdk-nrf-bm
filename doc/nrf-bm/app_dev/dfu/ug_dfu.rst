@@ -246,8 +246,10 @@ This board target will always enable DFU support when it is used to build the ap
 
    .. code-block:: kconfig
 
-      config ROM_START_OFFSET
-              default 0x800 if BOOTLOADER_MCUBOOT
+        choice NRF_GRTC_TIMER_SOURCE
+                default NRF_GRTC_TIMER_SOURCE_LFLPRC if !$(dt_nodelabel_enabled,lfxo)
+        endchoice
+
 
 #. Edit the :file:`Kconfig.sysbuild` file with the following:
 
