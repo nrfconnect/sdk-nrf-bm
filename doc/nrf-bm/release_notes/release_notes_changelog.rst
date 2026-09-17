@@ -154,6 +154,8 @@ Libraries
       * The :kconfig:option:`CONFIG_PM_LESC_GENERATE_NEW_KEYS` Kconfig option to be enabled by default.
         This option forces the use of new ECDH key pair for each pairing procedure.
       * The :file:`peer_manager_handler.c` file with missing logging and asserts where the ``APP_ERROR_CHECK`` macro was used in nRF5 SDK.
+      * The sources of the :c:enumerator:`PM_EVT_CONN_SEC_CONFIG_REQ` event to fill the peer ID field.
+        Use the value of the peer ID field instead of calling the :c:func:`pm_peer_id_get` function when handling this event.
 
    * Fixed:
 
