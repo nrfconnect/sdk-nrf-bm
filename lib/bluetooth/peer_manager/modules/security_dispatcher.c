@@ -75,8 +75,6 @@ static inline bool allow_repairing(uint16_t conn_handle)
  */
 static void evt_send(struct pm_evt *event)
 {
-	event->peer_id = im_peer_id_get_by_conn_handle(event->conn_handle);
-
 	for (uint32_t i = 0; i < SMD_EVENT_HANDLERS_CNT; i++) {
 		evt_handlers[i](event);
 	}
@@ -93,6 +91,7 @@ static void sec_start_send(uint16_t conn_handle, enum pm_conn_sec_procedure proc
 	struct pm_evt evt = {
 		.evt_id = PM_EVT_CONN_SEC_START,
 		.conn_handle = conn_handle,
+		.peer_id = im_peer_id_get_by_conn_handle(conn_handle),
 		.conn_sec_start = {
 			.procedure = procedure,
 		},
@@ -112,6 +111,7 @@ static void send_unexpected_error(uint16_t conn_handle, uint32_t nrf_err)
 	struct pm_evt error_evt = {
 		.evt_id = PM_EVT_ERROR_UNEXPECTED,
 		.conn_handle = conn_handle,
+		.peer_id = im_peer_id_get_by_conn_handle(conn_handle),
 		.error_unexpected = {
 			.error = nrf_err,
 		},
@@ -127,7 +127,11 @@ static void send_unexpected_error(uint16_t conn_handle, uint32_t nrf_err)
  */
 static void send_storage_full_evt(uint16_t conn_handle)
 {
-	struct pm_evt evt = {.evt_id = PM_EVT_STORAGE_FULL, .conn_handle = conn_handle};
+	struct pm_evt evt = {
+		.evt_id = PM_EVT_STORAGE_FULL,
+		.conn_handle = conn_handle,
+		.peer_id = im_peer_id_get_by_conn_handle(conn_handle),
+	};
 
 	evt_send(&evt);
 }
@@ -146,6 +150,7 @@ static void conn_sec_failure(uint16_t conn_handle, enum pm_conn_sec_procedure pr
 	struct pm_evt evt = {
 		.evt_id = PM_EVT_CONN_SEC_FAILED,
 		.conn_handle = conn_handle,
+		.peer_id = im_peer_id_get_by_conn_handle(conn_handle),
 		.conn_sec_failed = {
 			.procedure = procedure,
 			.error = error,
@@ -365,7 +370,8 @@ static void sec_request_process(const ble_gap_evt_t *gap_evt)
 
 	struct pm_evt evt = {
 		.evt_id = PM_EVT_PERIPHERAL_SECURITY_REQ,
-		.conn_handle = gap_evt->conn_handle
+		.conn_handle = gap_evt->conn_handle,
+		.peer_id = im_peer_id_get_by_conn_handle(gap_evt->conn_handle),
 	};
 
 	memcpy(&evt.peripheral_security_req, &gap_evt->params.sec_request,
@@ -465,14 +471,13 @@ static void sec_info_request_process(const ble_gap_evt_t *gap_evt)
  *
  * @param[in]  conn_handle  The connection the sec parameters are needed for.
  */
-static void send_config_req(uint16_t conn_handle)
+static void send_config_req(uint16_t conn_handle, uint16_t peer_id)
 {
-	struct pm_evt evt;
-
-	memset(&evt, 0, sizeof(evt));
-
-	evt.evt_id = PM_EVT_CONN_SEC_CONFIG_REQ;
-	evt.conn_handle = conn_handle;
+	struct pm_evt evt = {
+		.evt_id = PM_EVT_CONN_SEC_CONFIG_REQ,
+		.conn_handle = conn_handle,
+		.peer_id = peer_id,
+	};
 
 	evt_send(&evt);
 }
@@ -512,6 +517,7 @@ static void send_params_req(uint16_t conn_handle, const ble_gap_sec_params_t *pe
 	struct pm_evt evt = {
 		.evt_id = PM_EVT_CONN_SEC_PARAMS_REQ,
 		.conn_handle = conn_handle,
+		.peer_id = im_peer_id_get_by_conn_handle(conn_handle),
 		.conn_sec_params_req = {
 			.peer_params = peer_params,
 		},
@@ -550,6 +556,7 @@ static void pairing_success_evt_send(const ble_gap_evt_t *gap_evt, bool data_sto
 	struct pm_evt evt = {
 		.evt_id = PM_EVT_CONN_SEC_SUCCEEDED,
 		.conn_handle = gap_evt->conn_handle,
+		.peer_id = im_peer_id_get_by_conn_handle(gap_evt->conn_handle),
 		.conn_sec_succeeded = {
 			.procedure = gap_evt->params.auth_status.bonded
 				? PM_CONN_SEC_PROCEDURE_BONDING : PM_CONN_SEC_PROCEDURE_PAIRING,
@@ -603,17 +610,17 @@ static void auth_status_success_process(const ble_gap_evt_t *gap_evt)
 							 PM_PEER_ID_INVALID);
 
 		if (peer_id != PM_PEER_ID_INVALID) {
-			/* The peer has been identified as someone we have already bonded with. */
-			im_new_peer_id(conn_handle, peer_id);
-
 			/* If the flag is true, the configuration has been requested before. */
 			if (!allow_repairing(conn_handle)) {
-				send_config_req(conn_handle);
+				send_config_req(conn_handle, peer_id);
 				if (!allow_repairing(conn_handle)) {
 					pairing_success_evt_send(gap_evt, false);
 					return;
 				}
 			}
+
+			/* The peer has been identified as someone we have already bonded with. */
+			im_new_peer_id(conn_handle, peer_id);
 		}
 	}
 
@@ -705,6 +712,7 @@ static void conn_sec_update_process(const ble_gap_evt_t *gap_evt)
 			struct pm_evt evt = {
 				.evt_id = PM_EVT_CONN_SEC_SUCCEEDED,
 				.conn_handle = gap_evt->conn_handle,
+				.peer_id = im_peer_id_get_by_conn_handle(gap_evt->conn_handle),
 				.conn_sec_succeeded = {
 					.procedure = PM_CONN_SEC_PROCEDURE_ENCRYPTION,
 					.data_stored = false,
@@ -820,9 +828,10 @@ uint32_t smd_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *sec_params
 {
 	__ASSERT_NO_MSG(module_initialized);
 
-	uint8_t role = pm_conn_state_role(conn_handle);
 	uint32_t nrf_err = NRF_SUCCESS;
+	uint8_t role = pm_conn_state_role(conn_handle);
 	uint8_t sec_status = BLE_GAP_SEC_STATUS_SUCCESS;
+	uint16_t peer_id;
 	ble_gap_sec_keyset_t sec_keyset;
 
 	memset(&sec_keyset, 0, sizeof(ble_gap_sec_keyset_t));
@@ -850,12 +859,13 @@ uint32_t smd_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *sec_params
 			sec_status = BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP;
 		} else {
 #if defined(CONFIG_SOFTDEVICE_PERIPHERAL)
-			if ((im_peer_id_get_by_conn_handle(conn_handle) != PM_PEER_ID_INVALID) &&
-			    (role == BLE_GAP_ROLE_PERIPH) && !allow_repairing(conn_handle)) {
+			peer_id = im_peer_id_get_by_conn_handle(conn_handle);
+			if ((peer_id != PM_PEER_ID_INVALID) && (role == BLE_GAP_ROLE_PERIPH) &&
+			    !allow_repairing(conn_handle)) {
 				/* Bond already exists. Reject the pairing request if the user
 				 * doesn't intervene.
 				 */
-				send_config_req(conn_handle);
+				send_config_req(conn_handle, peer_id);
 				if (!allow_repairing(conn_handle)) {
 					/* Reject pairing. */
 					sec_status = BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP;
