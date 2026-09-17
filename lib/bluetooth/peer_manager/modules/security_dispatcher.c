@@ -465,7 +465,7 @@ static void sec_info_request_process(const ble_gap_evt_t *gap_evt)
  *
  * @param[in]  conn_handle  The connection the sec parameters are needed for.
  */
-static void send_config_req(uint16_t conn_handle)
+static void send_config_req(uint16_t conn_handle, uint16_t peer_id)
 {
 	struct pm_evt evt;
 
@@ -473,6 +473,7 @@ static void send_config_req(uint16_t conn_handle)
 
 	evt.evt_id = PM_EVT_CONN_SEC_CONFIG_REQ;
 	evt.conn_handle = conn_handle;
+	evt.peer_id = peer_id;
 
 	evt_send(&evt);
 }
@@ -603,17 +604,17 @@ static void auth_status_success_process(const ble_gap_evt_t *gap_evt)
 							 PM_PEER_ID_INVALID);
 
 		if (peer_id != PM_PEER_ID_INVALID) {
-			/* The peer has been identified as someone we have already bonded with. */
-			im_new_peer_id(conn_handle, peer_id);
-
 			/* If the flag is true, the configuration has been requested before. */
 			if (!allow_repairing(conn_handle)) {
-				send_config_req(conn_handle);
+				send_config_req(conn_handle, peer_id);
 				if (!allow_repairing(conn_handle)) {
 					pairing_success_evt_send(gap_evt, false);
 					return;
 				}
 			}
+
+			/* The peer has been identified as someone we have already bonded with. */
+			im_new_peer_id(conn_handle, peer_id);
 		}
 	}
 
@@ -820,9 +821,10 @@ uint32_t smd_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *sec_params
 {
 	__ASSERT_NO_MSG(module_initialized);
 
-	uint8_t role = pm_conn_state_role(conn_handle);
 	uint32_t nrf_err = NRF_SUCCESS;
+	uint8_t role = pm_conn_state_role(conn_handle);
 	uint8_t sec_status = BLE_GAP_SEC_STATUS_SUCCESS;
+	uint16_t peer_id;
 	ble_gap_sec_keyset_t sec_keyset;
 
 	memset(&sec_keyset, 0, sizeof(ble_gap_sec_keyset_t));
@@ -850,12 +852,13 @@ uint32_t smd_params_reply(uint16_t conn_handle, ble_gap_sec_params_t *sec_params
 			sec_status = BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP;
 		} else {
 #if defined(CONFIG_SOFTDEVICE_PERIPHERAL)
-			if ((im_peer_id_get_by_conn_handle(conn_handle) != PM_PEER_ID_INVALID) &&
-			    (role == BLE_GAP_ROLE_PERIPH) && !allow_repairing(conn_handle)) {
+			peer_id = im_peer_id_get_by_conn_handle(conn_handle);
+			if ((peer_id != PM_PEER_ID_INVALID) && (role == BLE_GAP_ROLE_PERIPH) &&
+			    !allow_repairing(conn_handle)) {
 				/* Bond already exists. Reject the pairing request if the user
 				 * doesn't intervene.
 				 */
-				send_config_req(conn_handle);
+				send_config_req(conn_handle, peer_id);
 				if (!allow_repairing(conn_handle)) {
 					/* Reject pairing. */
 					sec_status = BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP;
