@@ -53,7 +53,7 @@ KMU (Key Management Unit)
 *************************
 
 .. note::
-   KMU support is available for nRF54L15, nRF54L10, nRF54L05, nRF54LM20 and nRF54LV10 devices.
+   KMU support is available for nRF54L15, nRF54L10, nRF54L05, nRF54LM20, nRF54LV10 and nRF54LC10 devices.
    For nRF54LS05BA and nRF54LS05B devices, the bootloader will use one embedded key.
    For more information, see :ref:`ug_bootloader_keys_embedded`.
 

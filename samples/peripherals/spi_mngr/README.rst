@@ -109,8 +109,8 @@ The sample supports the following development kits with on-board SPI external fl
            - ``bm_nrf54lm20dk/nrf54lm20a/cpuapp/s145_softdevice/mcuboot``
 
 .. note::
-   The `nRF54LV10 DK`_ and `nRF54LS05 DK`_ do not have on-board external flash memory and are out of scope for this sample.
-   However, the :ref:`lib_bm_spi_mngr` library itself is fully supported on the nRF54LV10 and nRF54LS05 SoCs.
+   The `nRF54LV10 DK`_, `nRF54LC10 DK`_ and `nRF54LS05 DK`_ do not have on-board external flash memory and are out of scope for this sample.
+   However, the :ref:`lib_bm_spi_mngr` library itself is fully supported on the nRF54LV10, nRF54LC10 and nRF54LS05 SoCs.
    You can still use the SPI manager feature on these boards by connecting an external SPI target device (for example, an external NOR flash) to the SPI pins of the SoC and adapting the sample configuration accordingly (pin assignments in the :file:`board-config.h` file, command set, and timing parameters to match your device).
 
 .. important::
