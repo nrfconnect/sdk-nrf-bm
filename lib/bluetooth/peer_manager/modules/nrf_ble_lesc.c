@@ -11,6 +11,7 @@
 #include <bm/softdevice_handler/nrf_sdh_ble.h>
 #include <psa/crypto.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/sys/atomic.h>
 #include <zephyr/sys/byteorder.h>
 #include <zephyr/sys/util.h>
 #include <zephyr/sys/printk.h>
@@ -20,14 +21,20 @@
 
 LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
+#define STATE_IDLE 0
+#define STATE_REQUESTED 1
+#define STATE_PROCESSING 2
+
 /** @brief Descriptor of the peer public key. */
 struct lesc_peer_pub_key {
 	/** @brief Peer public key. Stored in little-endian. */
 	uint8_t value[BLE_GAP_LESC_P256_PK_LEN];
 	/** @brief Peer connection handle. */
 	uint16_t conn_handle;
-	/** @brief Flag indicating that the public key has been requested to compute DH key. */
-	bool is_requested;
+	/** @brief State variable indicating whether the DH key computation have been requested
+	 *         or is currently being processed.
+	 */
+	atomic_t state;
 };
 
 /**
@@ -103,7 +110,7 @@ uint32_t nrf_ble_lesc_keypair_generate(void)
 
 	/* Check if any DH computation is pending */
 	for (uint16_t i = 0; i < ARRAY_SIZE(peer_keys); i++) {
-		if (peer_keys[i].is_requested) {
+		if (atomic_get(&peer_keys[i].state) != STATE_IDLE) {
 			return NRF_ERROR_BUSY;
 		}
 	}
@@ -284,6 +291,13 @@ static uint32_t compute_and_give_dhkey(struct lesc_peer_pub_key *peer_public_key
 	/* Discard the key immediately after handing it over to the SoftDevice. */
 	memset(lesc_dh_key.key, 0, sizeof(lesc_dh_key.key));
 
+	if (nrf_err == BLE_ERROR_INVALID_CONN_HANDLE) {
+		/* The peer disconnected before the SoftDevice was handed the LESC DHKey.
+		 * The LESC DHKey is no longer needed by SoftDevice, so treat this as a success.
+		 */
+		nrf_err = NRF_SUCCESS;
+	}
+
 	return nrf_err;
 }
 
@@ -297,9 +311,9 @@ uint32_t nrf_ble_lesc_request_handler(void)
 	}
 
 	for (uint16_t i = 0; i < NRF_BLE_LESC_LINK_COUNT; i++) {
-		if (peer_keys[i].is_requested) {
+		if (atomic_cas(&peer_keys[i].state, STATE_REQUESTED, STATE_PROCESSING)) {
 			nrf_err = compute_and_give_dhkey(&peer_keys[i]);
-			peer_keys[i].is_requested = false;
+			(void)atomic_set(&peer_keys[i].state, STATE_IDLE);
 
 			if (nrf_err) {
 				return nrf_err;
@@ -322,9 +336,11 @@ static void on_dhkey_request(uint16_t conn_handle, int idx,
 {
 	const uint8_t *const public_raw = dhkey_request->p_pk_peer->pk;
 
-	memcpy(peer_keys[idx].value, public_raw, BLE_GAP_LESC_P256_PK_LEN);
-	peer_keys[idx].conn_handle = conn_handle;
-	peer_keys[idx].is_requested = true;
+	if (atomic_get(&peer_keys[idx].state) == STATE_IDLE) {
+		memcpy(peer_keys[idx].value, public_raw, BLE_GAP_LESC_P256_PK_LEN);
+		peer_keys[idx].conn_handle = conn_handle;
+		atomic_set(&peer_keys[idx].state, STATE_REQUESTED);
+	}
 }
 
 /**
@@ -360,8 +376,7 @@ void nrf_ble_lesc_on_ble_evt(const ble_evt_t *ble_evt)
 
 	switch (ble_evt->header.evt_id) {
 	case BLE_GAP_EVT_DISCONNECTED:
-		peer_keys[idx].is_requested = false;
-
+		(void)atomic_cas(&peer_keys[idx].state, STATE_REQUESTED, STATE_IDLE);
 		break;
 
 	case BLE_GAP_EVT_LESC_DHKEY_REQUEST:
