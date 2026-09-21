@@ -139,116 +139,91 @@ uint32_t gscm_local_db_cache_update(uint16_t conn_handle)
 {
 	__ASSERT_NO_MSG(module_initialized);
 
-	uint16_t peer_id = im_peer_id_get_by_conn_handle(conn_handle);
-	uint32_t nrf_err;
+	const uint16_t peer_id = im_peer_id_get_by_conn_handle(conn_handle);
 
 	if (peer_id == PM_PEER_ID_INVALID) {
 		return BLE_ERROR_INVALID_CONN_HANDLE;
 	}
 
-	struct pm_peer_data peer_data;
 	uint16_t n_bufs = 1;
-	bool retry_with_bigger_buffer = false;
+	uint32_t nrf_err;
+	uint32_t nrf_err_rls;
+	uint8_t local_gatt_db_buf[PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE] = {0};
+	uint32_t local_gatt_db_size = PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE;
+	struct pm_peer_data_local_gatt_db *local_gatt_db;
+	struct pm_peer_data_local_gatt_db *const curr_local_gatt_db =
+		(struct pm_peer_data_local_gatt_db *)local_gatt_db_buf;
+	struct pm_peer_data peer_data;
+	struct pm_peer_data curr_peer_data = {.local_gatt_db = curr_local_gatt_db};
+	bool retry_with_bigger_buffer;
 
 	do {
 		retry_with_bigger_buffer = false;
 
 		nrf_err = pdb_write_buf_get(peer_id, PM_PEER_DATA_ID_GATT_LOCAL, n_bufs++,
 					    &peer_data);
-		if (nrf_err == NRF_SUCCESS) {
-			struct pm_peer_data_local_gatt_db *local_gatt_db =
-				peer_data.local_gatt_db;
-
-			local_gatt_db->flags = SYS_ATTR_BOTH;
-
-			nrf_err = sd_ble_gatts_sys_attr_get(
-				conn_handle, &local_gatt_db->data[0],
-				&local_gatt_db->len, local_gatt_db->flags);
-
-			if (nrf_err == NRF_SUCCESS) {
-				uint8_t local_gatt_db_buf[PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE] = {
-					0
-				};
-				uint32_t local_gatt_db_size = PM_PEER_DATA_LOCAL_GATT_DB_MAX_SIZE;
-				struct pm_peer_data_local_gatt_db *curr_local_gatt_db =
-					(struct pm_peer_data_local_gatt_db *)local_gatt_db_buf;
-				struct pm_peer_data curr_peer_data;
-
-				curr_peer_data.all_data = local_gatt_db_buf;
-
-				nrf_err = pds_peer_data_read(peer_id,
-							     PM_PEER_DATA_ID_GATT_LOCAL,
-							     &curr_peer_data,
-							     &local_gatt_db_size);
-
-				if ((nrf_err != NRF_SUCCESS) &&
-				    (nrf_err != NRF_ERROR_NOT_FOUND)) {
-					LOG_ERR("pds_peer_data_read() returned %s "
-						"for conn_handle: %d",
-						nrf_strerror_get(nrf_err),
-						conn_handle);
-					return NRF_ERROR_INTERNAL;
-				}
-
-				if ((nrf_err == NRF_ERROR_NOT_FOUND) ||
-				    (local_gatt_db->len != curr_local_gatt_db->len) ||
-				    (memcmp(local_gatt_db->data, curr_local_gatt_db->data,
-					    local_gatt_db->len) != 0)) {
-					nrf_err = pdb_write_buf_store(peer_id,
-								      PM_PEER_DATA_ID_GATT_LOCAL,
-								      peer_id);
-				} else {
-					LOG_DBG("Local db is already up to date, "
-						"skipping write.");
-					uint32_t nrf_err_release = pdb_write_buf_release(
-						peer_id, PM_PEER_DATA_ID_GATT_LOCAL);
-
-					if (nrf_err_release == NRF_SUCCESS) {
-						nrf_err = NRF_ERROR_INVALID_DATA;
-					} else {
-						LOG_ERR("Did another thread manipulate "
-							"PM_PEER_DATA_ID_GATT_LOCAL for "
-							"peer_id %d at the same time? "
-							"pdb_write_buf_release() returned "
-							"%s.",
-							peer_id,
-							nrf_strerror_get(nrf_err_release));
-						nrf_err = NRF_ERROR_INTERNAL;
-					}
-				}
-			} else {
-				if (nrf_err == NRF_ERROR_DATA_SIZE) {
-					/* The sys attributes are bigger than the requested
-					 * write buffer.
-					 */
-					retry_with_bigger_buffer = true;
-				} else if (nrf_err == NRF_ERROR_NOT_FOUND) {
-					/* There are no sys attributes in the GATT db, so
-					 * nothing needs to be stored.
-					 */
-					nrf_err = NRF_SUCCESS;
-				}
-
-				uint32_t nrf_err_release = pdb_write_buf_release(
-					peer_id, PM_PEER_DATA_ID_GATT_LOCAL);
-
-				if (nrf_err_release) {
-					LOG_ERR("Did another thread manipulate "
-						"PM_PEER_DATA_ID_GATT_LOCAL for "
-						"peer_id %d at the same time? "
-						"pdb_write_buf_release() returned %s.",
-						peer_id,
-						nrf_strerror_get(nrf_err_release));
-					nrf_err = NRF_ERROR_INTERNAL;
-				}
+		if (nrf_err) {
+			if (nrf_err == NRF_ERROR_INVALID_PARAM) {
+				/* The sys attributes are bigger than the entire write buffer. */
+				nrf_err = NRF_ERROR_DATA_SIZE;
 			}
-		} else if (nrf_err == NRF_ERROR_INVALID_PARAM) {
-			/* The sys attributes are bigger than the entire write buffer. */
-			nrf_err = NRF_ERROR_DATA_SIZE;
+
+			return nrf_err;
+		}
+
+		local_gatt_db = peer_data.local_gatt_db;
+		local_gatt_db->flags = SYS_ATTR_BOTH;
+
+		nrf_err = sd_ble_gatts_sys_attr_get(conn_handle, &local_gatt_db->data[0],
+						    &local_gatt_db->len, local_gatt_db->flags);
+		if (nrf_err) {
+			if (nrf_err == NRF_ERROR_DATA_SIZE) {
+				/* The sys attributes are bigger than the requested write buffer. */
+				retry_with_bigger_buffer = true;
+			} else if (nrf_err == NRF_ERROR_NOT_FOUND) {
+				/* No sys attributes in the GATT db. Nothing needs to be stored. */
+				nrf_err = NRF_SUCCESS;
+			}
+
+			nrf_err_rls = pdb_write_buf_release(peer_id, PM_PEER_DATA_ID_GATT_LOCAL);
+			if (nrf_err_rls) {
+				LOG_ERR("Did another thread manipulate PM_PEER_DATA_ID_GATT_LOCAL "
+					"for peer_id %d at the same time? pdb_write_buf_release() "
+					"returned %s", peer_id, nrf_strerror_get(nrf_err_rls));
+				nrf_err = NRF_ERROR_INTERNAL;
+			}
+
+			if (!retry_with_bigger_buffer) {
+				return nrf_err;
+			}
 		}
 	} while (retry_with_bigger_buffer);
 
-	return nrf_err;
+	nrf_err = pds_peer_data_read(peer_id, PM_PEER_DATA_ID_GATT_LOCAL, &curr_peer_data,
+				     &local_gatt_db_size);
+	if ((nrf_err != NRF_SUCCESS) && (nrf_err != NRF_ERROR_NOT_FOUND)) {
+		LOG_ERR("pds_peer_data_read() returned %s for conn_handle %d",
+			nrf_strerror_get(nrf_err), conn_handle);
+		return NRF_ERROR_INTERNAL;
+	}
+
+	if ((nrf_err == NRF_SUCCESS) &&
+	    (local_gatt_db->len == curr_local_gatt_db->len) &&
+	    (memcmp(local_gatt_db->data, curr_local_gatt_db->data, local_gatt_db->len) == 0)) {
+		LOG_DBG("Local db is already up to date, skipping write");
+
+		nrf_err_rls = pdb_write_buf_release(peer_id, PM_PEER_DATA_ID_GATT_LOCAL);
+		if (nrf_err_rls) {
+			LOG_ERR("Did another thread manipulate PM_PEER_DATA_ID_GATT_LOCAL "
+				"for peer_id %d at the same time? pdb_write_buf_release() "
+				"returned %s", peer_id, nrf_strerror_get(nrf_err_rls));
+			return NRF_ERROR_INTERNAL;
+		}
+
+		return NRF_ERROR_INVALID_DATA;
+	}
+
+	return pdb_write_buf_store(peer_id, PM_PEER_DATA_ID_GATT_LOCAL, peer_id);
 }
 
 uint32_t gscm_local_db_cache_apply(uint16_t conn_handle)
