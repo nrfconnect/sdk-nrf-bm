@@ -63,10 +63,10 @@ static const char *const event_str[] = {
 };
 
 static const char *const data_id_str[] = {
-	"Outdated (0)",	    "Service changed pending flag",
-	"Outdated (2)",	    "Outdated (3)",
+	"Outdated (0)",     "Service changed pending flag",
+	"Outdated (2)",     "Outdated (3)",
 	"Application data", "Remote database",
-	"Peer rank",	    "Bonding data",
+	"Peer rank",        "Bonding data",
 	"Local database",   "Central address resolution",
 };
 
@@ -100,9 +100,9 @@ static const char *sec_err_string_get(uint16_t error)
 	}
 
 	(void)snprintf(errstr, sizeof(errstr), "%s 0x%hx",
-			   (error < PM_CONN_SEC_ERROR_BASE) ? "BLE_GAP_SEC_STATUS"
-							    : "PM_CONN_SEC_ERROR",
-			   error);
+		       (error < PM_CONN_SEC_ERROR_BASE) ? "BLE_GAP_SEC_STATUS"
+							: "PM_CONN_SEC_ERROR",
+		       error);
 	return errstr;
 }
 
@@ -121,41 +121,50 @@ static void conn_secure_impl(uint16_t conn_handle, bool force)
 
 		/* If the link is already secured, don't initiate security procedure. */
 		if (status.encrypted) {
-			LOG_DBG("Already encrypted, skipping security.");
+			LOG_DBG("Already encrypted, skipping security");
 			return;
 		}
 	}
 
 	nrf_err = pm_conn_secure(conn_handle, false);
-
-	if ((nrf_err == NRF_SUCCESS) || (nrf_err == NRF_ERROR_BUSY)) {
+	switch (nrf_err) {
+	case NRF_SUCCESS:
+	case NRF_ERROR_BUSY:
 		/* Success. */
-	} else if (nrf_err == NRF_ERROR_TIMEOUT) {
+		break;
+
+	case NRF_ERROR_TIMEOUT:
 		LOG_WRN("pm_conn_secure() failed because an SMP timeout is preventing security on "
-			"the link. Disconnecting conn_handle %d.",
+			"the link. Disconnecting conn_handle %#x",
 			conn_handle);
 
 		nrf_err = sd_ble_gap_disconnect(conn_handle,
 						BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
 		if (nrf_err) {
-			LOG_WRN("sd_ble_gap_disconnect() returned %s on conn_handle %d.",
-				nrf_strerror_get(nrf_err), conn_handle);
+			LOG_WRN("Failed to disconnect conn_handle %#x, nrf_error %#x",
+				conn_handle, nrf_err);
 		}
-	} else if (nrf_err == NRF_ERROR_INVALID_DATA) {
-		LOG_WRN("pm_conn_secure() failed because the stored data for conn_handle %d does "
-			"not have a valid key.",
+		break;
+
+	case NRF_ERROR_INVALID_DATA:
+		LOG_WRN("pm_conn_secure() failed because the stored data for conn_handle %#x does "
+			"not have a valid key", conn_handle);
+		break;
+
+	case BLE_ERROR_INVALID_CONN_HANDLE:
+		LOG_WRN("pm_conn_secure() failed because conn_handle %#x is not a valid connection",
 			conn_handle);
-	} else if (nrf_err == BLE_ERROR_INVALID_CONN_HANDLE) {
-		LOG_WRN("pm_conn_secure() failed because conn_handle %d is not a valid connection.",
-			conn_handle);
-	} else {
-		LOG_ERR("pm_conn_secure() returned %s on conn_handle %d",
-			nrf_strerror_get(nrf_err), conn_handle);
+		break;
+
+	default:
+		LOG_ERR("pm_conn_secure() failed, conn_handle %#x, nrf_error %#x",
+			conn_handle, nrf_err);
+		break;
 	}
 }
 
 #if CONFIG_PM_HANDLER_SEC_DELAY_MS > 0
-static struct bm_timer secure_delay_timer;
+static struct bm_timer conn_secure_delay_timer;
 
 union conn_secure_context {
 	struct {
@@ -190,7 +199,7 @@ static void conn_secure(uint16_t conn_handle, bool force)
 	};
 
 	if (!created) {
-		err = bm_timer_init(&secure_delay_timer, BM_TIMER_MODE_SINGLE_SHOT,
+		err = bm_timer_init(&conn_secure_delay_timer, BM_TIMER_MODE_SINGLE_SHOT,
 				    delayed_conn_secure);
 		if (err) {
 			LOG_ERR("Failed to initialize delayed conn secure timer, err %d", err);
@@ -201,9 +210,9 @@ static void conn_secure(uint16_t conn_handle, bool force)
 
 	/* The conn_secure_context is smaller than a pointer and is copied into the context
 	 * argument itself. The passed context pointer is not a valid address, it is data.
-	   It is fine for sec_context to go out of scope because the values are copied.
+	 * It is fine for sec_context to go out of scope because the values are copied.
 	 */
-	err = bm_timer_start(&secure_delay_timer,
+	err = bm_timer_start(&conn_secure_delay_timer,
 			     BM_TIMER_MS_TO_TICKS(CONFIG_PM_HANDLER_SEC_DELAY_MS),
 			     sec_context.ptr);
 	if (err) {
@@ -252,82 +261,54 @@ void pm_handler_flash_clean(const struct pm_evt *pm_evt)
 	static bool flash_write_after_gc = true;
 
 /* Size of rank_queue. */
-#define RANK_QUEUE_SIZE	  8
-/* Initial value of rank_queue. */
-#define RANK_QUEUE_INIT PM_PEER_ID_INVALID,
+#define RANK_QUEUE_SIZE 8
 
 	/* Queue of rank_highest calls that failed because of full flash. */
-	static uint16_t rank_queue[8] = {[0 ... RANK_QUEUE_SIZE - 1] = RANK_QUEUE_INIT};
+	static uint16_t rank_queue[RANK_QUEUE_SIZE] = {
+		[0 ... RANK_QUEUE_SIZE - 1] = PM_PEER_ID_INVALID,
+	};
 	/* Write pointer for rank_queue. */
 	static int rank_queue_wr;
 
 	switch (pm_evt->evt_id) {
 	case PM_EVT_BONDED_PEER_CONNECTED:
 		nrf_err = pm_peer_rank_highest(pm_evt->peer_id);
-		if ((nrf_err == NRF_ERROR_RESOURCES) || (nrf_err == NRF_ERROR_BUSY)) {
-			/* Queue pm_peer_rank_highest() call and attempt to clean flash. */
-			rank_queue[rank_queue_wr] = pm_evt->peer_id;
-			rank_queue_wr = (rank_queue_wr + 1) % RANK_QUEUE_SIZE;
-			pm_handler_flash_clean_on_return();
-		} else if ((nrf_err != NRF_ERROR_NOT_SUPPORTED) &&
-			   (nrf_err != NRF_ERROR_INVALID_PARAM) &&
-			   (nrf_err != NRF_ERROR_DATA_SIZE)) {
-			if (nrf_err != NRF_SUCCESS) {
-				LOG_ERR("pm_peer_rank_highest() returned %s for peer id %d",
-				nrf_strerror_get(nrf_err), pm_evt->peer_id);
+		if (nrf_err) {
+			if ((nrf_err == NRF_ERROR_RESOURCES) || (nrf_err == NRF_ERROR_BUSY)) {
+				/* Queue pm_peer_rank_highest() call and attempt to clean flash. */
+				rank_queue[rank_queue_wr] = pm_evt->peer_id;
+				rank_queue_wr = (rank_queue_wr + 1) % RANK_QUEUE_SIZE;
+				pm_handler_flash_clean_on_return();
+			} else if ((nrf_err == NRF_ERROR_NOT_SUPPORTED) ||
+				   (nrf_err == NRF_ERROR_INVALID_PARAM) ||
+				   (nrf_err == NRF_ERROR_DATA_SIZE)) {
+				LOG_DBG("pm_peer_rank_highest() failed, peer_id %d, nrf_error %#x",
+					pm_evt->peer_id, nrf_err);
+			} else {
+				LOG_ERR("pm_peer_rank_highest() failed, peer_id %d, nrf_error %#x",
+					pm_evt->peer_id, nrf_err);
 			}
-		} else {
-			LOG_DBG("pm_peer_rank_highest() returned %s for peer id %d",
-				nrf_strerror_get(nrf_err), pm_evt->peer_id);
 		}
-		break;
-
-	case PM_EVT_CONN_SEC_START:
 		break;
 
 	case PM_EVT_CONN_SEC_SUCCEEDED:
 		/* PM_CONN_SEC_PROCEDURE_ENCRYPTION in case peer was not recognized at connection
 		 * time.
 		 */
-		if ((pm_evt->conn_sec_succeeded.procedure ==
-		     PM_CONN_SEC_PROCEDURE_BONDING) ||
-		    (pm_evt->conn_sec_succeeded.procedure ==
-		     PM_CONN_SEC_PROCEDURE_ENCRYPTION)) {
+		if ((pm_evt->conn_sec_succeeded.procedure == PM_CONN_SEC_PROCEDURE_BONDING) ||
+		    (pm_evt->conn_sec_succeeded.procedure == PM_CONN_SEC_PROCEDURE_ENCRYPTION)) {
 			rank_highest(pm_evt->peer_id);
 		}
-		break;
-
-	case PM_EVT_CONN_SEC_FAILED:
-	case PM_EVT_CONN_SEC_CONFIG_REQ:
-	case PM_EVT_CONN_SEC_PARAMS_REQ:
-		break;
-
-	case PM_EVT_STORAGE_FULL:
-		break;
-
-	case PM_EVT_ERROR_UNEXPECTED:
 		break;
 
 	case PM_EVT_PEER_DATA_UPDATE_SUCCEEDED:
 		flash_write_after_gc = true;
 		break;
 
-	case PM_EVT_PEER_DATA_UPDATE_FAILED:
-		break;
-
 	case PM_EVT_PEER_DELETE_SUCCEEDED:
 		flash_write_after_gc = true;
 		break;
 
-	case PM_EVT_PEER_DELETE_FAILED:
-	case PM_EVT_PEERS_DELETE_SUCCEEDED:
-	case PM_EVT_PEERS_DELETE_FAILED:
-	case PM_EVT_LOCAL_DB_CACHE_APPLIED:
-	case PM_EVT_LOCAL_DB_CACHE_APPLY_FAILED:
-	case PM_EVT_SERVICE_CHANGED_IND_SENT:
-	case PM_EVT_SERVICE_CHANGED_IND_CONFIRMED:
-	case PM_EVT_PERIPHERAL_SECURITY_REQ:
-		break;
 	default:
 		break;
 	}
@@ -339,9 +320,9 @@ void pm_handler_pm_evt_log(const struct pm_evt *pm_evt)
 
 	switch (pm_evt->evt_id) {
 	case PM_EVT_BONDED_PEER_CONNECTED:
-		LOG_DBG("Previously bonded peer connected: role: %s, conn_handle: %d, peer_id: %d",
-			roles_str[pm_conn_state_role(pm_evt->conn_handle)],
-			pm_evt->conn_handle, pm_evt->peer_id);
+		LOG_DBG("Previously bonded peer connected, role: %s, conn_handle: %#x, peer_id: %d",
+			roles_str[pm_conn_state_role(pm_evt->conn_handle)], pm_evt->conn_handle,
+			pm_evt->peer_id);
 		break;
 
 	case PM_EVT_CONN_CONFIG_REQ:
@@ -349,29 +330,25 @@ void pm_handler_pm_evt_log(const struct pm_evt *pm_evt)
 		break;
 
 	case PM_EVT_CONN_SEC_START:
-		LOG_DBG("Connection security procedure started: role: %s, conn_handle: %d, "
+		LOG_DBG("Connection security procedure started, role: %s, conn_handle: %#x, "
 			"procedure: %s",
-			roles_str[pm_conn_state_role(pm_evt->conn_handle)],
-			pm_evt->conn_handle,
+			roles_str[pm_conn_state_role(pm_evt->conn_handle)], pm_evt->conn_handle,
 			sec_procedure_str[pm_evt->conn_sec_start.procedure]);
 		break;
 
 	case PM_EVT_CONN_SEC_SUCCEEDED:
-		LOG_INF("Connection secured: role: %s, conn_handle: %d, procedure: %s",
-			roles_str[pm_conn_state_role(pm_evt->conn_handle)],
-			pm_evt->conn_handle,
+		LOG_INF("Connection secured, role: %s, conn_handle: %#x, procedure: %s",
+			roles_str[pm_conn_state_role(pm_evt->conn_handle)], pm_evt->conn_handle,
 			sec_procedure_str[pm_evt->conn_sec_start.procedure]);
 		break;
 
 	case PM_EVT_CONN_SEC_FAILED:
-		LOG_INF("Connection security failed: role: %s, conn_handle: %#x, procedure: "
-			"%s, error: %d",
-			roles_str[pm_conn_state_role(pm_evt->conn_handle)],
-			pm_evt->conn_handle,
+		LOG_INF("Connection security failed, role: %s, conn_handle: %#x, procedure: %s, "
+			"nrf_error: %#x",
+			roles_str[pm_conn_state_role(pm_evt->conn_handle)], pm_evt->conn_handle,
 			sec_procedure_str[pm_evt->conn_sec_start.procedure],
 			pm_evt->conn_sec_failed.error);
-		LOG_DBG("Error (decoded): %s",
-			sec_err_string_get(pm_evt->conn_sec_failed.error));
+		LOG_DBG("Error (decoded) %s", sec_err_string_get(pm_evt->conn_sec_failed.error));
 		break;
 
 	case PM_EVT_CONN_SEC_CONFIG_REQ:
@@ -387,81 +364,79 @@ void pm_handler_pm_evt_log(const struct pm_evt *pm_evt)
 		break;
 
 	case PM_EVT_ERROR_UNEXPECTED:
-		LOG_ERR("Unexpected fatal error occurred: error: %s",
+		LOG_ERR("Unexpected fatal error occurred, nrf_error %#x (%s)",
+			pm_evt->error_unexpected.error,
 			nrf_strerror_get(pm_evt->error_unexpected.error));
 		break;
 
 	case PM_EVT_PEER_DATA_UPDATE_SUCCEEDED:
-		LOG_INF("Peer data updated in flash: peer_id: %d, data_id: %s, action: %s%s",
-			pm_evt->peer_id,
-			data_id_str[pm_evt->peer_data_update_succeeded.data_id],
+		LOG_INF("Peer data updated in flash, peer_id: %d, data_id: %s, action: %s%s",
+			pm_evt->peer_id, data_id_str[pm_evt->peer_data_update_succeeded.data_id],
 			data_action_str[pm_evt->peer_data_update_succeeded.action],
-			pm_evt->peer_data_update_succeeded.flash_changed
-				? ""
-				: ", no change");
+			pm_evt->peer_data_update_succeeded.flash_changed ? "" : ", no change");
 		break;
 
 	case PM_EVT_PEER_DATA_UPDATE_FAILED:
 		/* This can happen if the SoftDevice is too busy with BLE operations. */
-		LOG_WRN("Peer data updated failed: peer_id: %d, data_id: %s, action: %s, error: %s",
-			pm_evt->peer_id,
-			data_id_str[pm_evt->peer_data_update_failed.data_id],
+		LOG_WRN("Peer data update failed, peer_id: %d, data_id: %s, action: %s, "
+			"nrf_error: %s",
+			pm_evt->peer_id, data_id_str[pm_evt->peer_data_update_failed.data_id],
 			data_action_str[pm_evt->peer_data_update_succeeded.action],
 			nrf_strerror_get(pm_evt->peer_data_update_failed.error));
 		break;
 
 	case PM_EVT_PEER_DELETE_SUCCEEDED:
-		LOG_INF("Peer deleted successfully: peer_id: %d", pm_evt->peer_id);
+		LOG_INF("Peer deleted successfully, peer_id %d", pm_evt->peer_id);
 		break;
 
 	case PM_EVT_PEER_DELETE_FAILED:
-		LOG_ERR("Peer deletion failed: peer_id: %d, error: %s", pm_evt->peer_id,
+		LOG_ERR("Peer deletion failed, peer_id %d, nrf_error: %s", pm_evt->peer_id,
 			nrf_strerror_get(pm_evt->peer_delete_failed.error));
 		break;
 
 	case PM_EVT_PEERS_DELETE_SUCCEEDED:
-		LOG_INF("All peers deleted.");
+		LOG_INF("All peers deleted");
 		break;
 
 	case PM_EVT_PEERS_DELETE_FAILED:
-		LOG_ERR("All peer deletion failed: error: %s",
+		LOG_ERR("All peer deletion failed, nrf_error: %s",
 			nrf_strerror_get(pm_evt->peers_delete_failed_evt.error));
 		break;
 
 	case PM_EVT_LOCAL_DB_CACHE_APPLIED:
-		LOG_DBG("Previously stored local DB applied: conn_handle: %d, peer_id: %d",
+		LOG_DBG("Previously stored local DB applied, conn_handle %#x, peer_id %d",
 			pm_evt->conn_handle, pm_evt->peer_id);
 		break;
 
 	case PM_EVT_LOCAL_DB_CACHE_APPLY_FAILED:
 		/* This can happen when the local DB has changed. */
-		LOG_WRN("Local DB could not be applied: conn_handle: %d, peer_id: %d",
+		LOG_WRN("Local DB could not be applied, conn_handle %#x, peer_id %d",
 			pm_evt->conn_handle, pm_evt->peer_id);
 		break;
 
 	case PM_EVT_SERVICE_CHANGED_IND_SENT:
-		LOG_DBG("Sending Service Changed indication.");
+		LOG_DBG("Sending Service Changed indication");
 		break;
 
 	case PM_EVT_SERVICE_CHANGED_IND_CONFIRMED:
-		LOG_DBG("Service Changed indication confirmed.");
+		LOG_DBG("Service Changed indication confirmed");
 		break;
 
 	case PM_EVT_PERIPHERAL_SECURITY_REQ:
-		LOG_DBG("Security Request received from peer.");
+		LOG_DBG("Security Request received from peer");
 		break;
 
 	case PM_EVT_FLASH_GARBAGE_COLLECTED:
-		LOG_DBG("Flash garbage collection complete.");
+		LOG_DBG("Flash garbage collection complete");
 		break;
 
 	case PM_EVT_FLASH_GARBAGE_COLLECTION_FAILED:
-		LOG_WRN("Flash garbage collection failed with error %s.",
+		LOG_WRN("Flash garbage collection failed with error %s",
 			nrf_strerror_get(pm_evt->garbage_collection_failed.error));
 		break;
 
 	default:
-		LOG_WRN("Unexpected PM event ID: %#x.", pm_evt->evt_id);
+		LOG_WRN("Unexpected PM event, evt_id %#x", pm_evt->evt_id);
 		break;
 	}
 }
@@ -470,32 +445,41 @@ void pm_handler_disconnect_on_sec_failure(const struct pm_evt *pm_evt)
 {
 	uint32_t nrf_err;
 
-	if (pm_evt->evt_id == PM_EVT_CONN_SEC_FAILED) {
-		LOG_WRN("Disconnecting conn_handle %d.", pm_evt->conn_handle);
-		nrf_err = sd_ble_gap_disconnect(pm_evt->conn_handle,
-						BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
-		if ((nrf_err != NRF_SUCCESS) && (nrf_err != NRF_ERROR_INVALID_STATE) &&
-		    (nrf_err != BLE_ERROR_INVALID_CONN_HANDLE)) {
-			LOG_ERR("Failed to disconnect conn_handle %#x, nrf_error %#x",
-				pm_evt->conn_handle, nrf_err);
-		}
+	if (pm_evt->evt_id != PM_EVT_CONN_SEC_FAILED) {
+		return;
+	}
+
+	LOG_WRN("Disconnecting conn_handle %#x", pm_evt->conn_handle);
+
+	nrf_err = sd_ble_gap_disconnect(pm_evt->conn_handle,
+					BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
+	if ((nrf_err != NRF_SUCCESS) && (nrf_err != NRF_ERROR_INVALID_STATE) &&
+	    (nrf_err != BLE_ERROR_INVALID_CONN_HANDLE)) {
+		LOG_ERR("Failed to disconnect conn_handle %#x, nrf_error %#x",
+			pm_evt->conn_handle, nrf_err);
 	}
 }
 
 void pm_handler_disconnect_on_insufficient_sec(const struct pm_evt *pm_evt,
 					       struct pm_conn_sec_status *min_conn_sec)
 {
-	if (pm_evt->evt_id == PM_EVT_CONN_SEC_SUCCEEDED) {
-		if (!pm_sec_is_sufficient(pm_evt->conn_handle, min_conn_sec)) {
-			LOG_WRN("Connection security is insufficient, disconnecting.");
-			uint32_t nrf_err = sd_ble_gap_disconnect(
-				pm_evt->conn_handle, BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
+	uint32_t nrf_err;
 
-			if (nrf_err) {
-				LOG_ERR("Failed to disconnect conn_handle %#x, nrf_error %#x",
-					pm_evt->conn_handle, nrf_err);
-			}
-		}
+	if (pm_evt->evt_id != PM_EVT_CONN_SEC_SUCCEEDED) {
+		return;
+	}
+
+	if (pm_sec_is_sufficient(pm_evt->conn_handle, min_conn_sec)) {
+		return;
+	}
+
+	LOG_WRN("Security is insufficient, disconnecting conn_handle %#x", pm_evt->conn_handle);
+
+	nrf_err = sd_ble_gap_disconnect(pm_evt->conn_handle,
+					BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
+	if (nrf_err) {
+		LOG_ERR("Failed to disconnect conn_handle %#x, nrf_error %#x",
+			pm_evt->conn_handle, nrf_err);
 	}
 }
 
@@ -503,14 +487,14 @@ void pm_handler_secure_on_connection(const ble_evt_t *ble_evt)
 {
 	switch (ble_evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:
-		LOG_DBG("Connected, securing connection. conn_handle: %d",
+		LOG_DBG("Connected, securing connection, conn_handle %#x",
 			ble_evt->evt.gap_evt.conn_handle);
 		conn_secure(ble_evt->evt.gap_evt.conn_handle, false);
 		break;
 
 #if CONFIG_PM_HANDLER_SEC_DELAY_MS > 0
 	case BLE_GAP_EVT_DISCONNECTED: {
-		int err = bm_timer_stop(&secure_delay_timer);
+		int err = bm_timer_stop(&conn_secure_delay_timer);
 
 		if (err) {
 			LOG_ERR("Failed to stop delayed conn secure timer, err %d", err);
@@ -525,17 +509,16 @@ void pm_handler_secure_on_connection(const ble_evt_t *ble_evt)
 
 void pm_handler_secure_on_error(const ble_evt_t *ble_evt)
 {
-	if ((ble_evt->header.evt_id >= BLE_GATTC_EVT_BASE) &&
-	    (ble_evt->header.evt_id <= BLE_GATTC_EVT_LAST)) {
-		if ((ble_evt->evt.gattc_evt.gatt_status ==
-		     BLE_GATT_STATUS_ATTERR_INSUF_ENCRYPTION) ||
-		    (ble_evt->evt.gattc_evt.gatt_status ==
-		     BLE_GATT_STATUS_ATTERR_INSUF_AUTHENTICATION)) {
-			LOG_INF("GATTC procedure (evt id %#x) failed because it needs "
-				"encryption. Bonding conn_handle: %d",
-				ble_evt->header.evt_id,
-				ble_evt->evt.gattc_evt.conn_handle);
-			conn_secure(ble_evt->evt.gattc_evt.conn_handle, true);
-		}
+	if ((ble_evt->header.evt_id < BLE_GATTC_EVT_BASE) ||
+	    (ble_evt->header.evt_id > BLE_GATTC_EVT_LAST)) {
+		return;
+	}
+
+	if ((ble_evt->evt.gattc_evt.gatt_status == BLE_GATT_STATUS_ATTERR_INSUF_ENCRYPTION) ||
+	    (ble_evt->evt.gattc_evt.gatt_status == BLE_GATT_STATUS_ATTERR_INSUF_AUTHENTICATION)) {
+		LOG_INF("GATT client procedure (evt_id %#x) failed because it needs encryption. "
+			"Bonding conn_handle %#x",
+			ble_evt->header.evt_id, ble_evt->evt.gattc_evt.conn_handle);
+		conn_secure(ble_evt->evt.gattc_evt.conn_handle, true);
 	}
 }
