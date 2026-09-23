@@ -19,10 +19,9 @@
 #endif
 
 #include <zephyr/logging/log.h>
+#include <zephyr/sys/__assert.h>
 
 LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
-
-#define APP_ERROR_CHECK(err) (void)(err)
 
 static const char *const roles_str[] = {
 	"Invalid Role",
@@ -115,8 +114,9 @@ static void conn_secure_impl(uint16_t conn_handle, bool force)
 		struct pm_conn_sec_status status;
 
 		nrf_err = pm_conn_sec_status_get(conn_handle, &status);
-		if (nrf_err != BLE_ERROR_INVALID_CONN_HANDLE) {
-			APP_ERROR_CHECK(nrf_err);
+		if (nrf_err != NRF_SUCCESS && nrf_err != BLE_ERROR_INVALID_CONN_HANDLE) {
+			LOG_ERR("pm_conn_sec_status_get failed with nrf_error %#x", nrf_err);
+			return;
 		}
 
 		/* If the link is already secured, don't initiate security procedure. */
@@ -149,9 +149,8 @@ static void conn_secure_impl(uint16_t conn_handle, bool force)
 		LOG_WRN("pm_conn_secure() failed because conn_handle %d is not a valid connection.",
 			conn_handle);
 	} else {
-		LOG_ERR("Asserting. pm_conn_secure() returned %s on conn_handle %d.",
+		LOG_ERR("pm_conn_secure() returned %s on conn_handle %d",
 			nrf_strerror_get(nrf_err), conn_handle);
-		APP_ERROR_CHECK(nrf_err);
 	}
 }
 
@@ -193,7 +192,10 @@ static void conn_secure(uint16_t conn_handle, bool force)
 	if (!created) {
 		err = bm_timer_init(&secure_delay_timer, BM_TIMER_MODE_SINGLE_SHOT,
 				    delayed_conn_secure);
-		APP_ERROR_CHECK(err);
+		if (err) {
+			LOG_ERR("Failed to initialize delayed conn secure timer, err %d", err);
+			return;
+		}
 		created = true;
 	}
 
@@ -204,7 +206,9 @@ static void conn_secure(uint16_t conn_handle, bool force)
 	err = bm_timer_start(&secure_delay_timer,
 			     BM_TIMER_MS_TO_TICKS(CONFIG_PM_HANDLER_SEC_DELAY_MS),
 			     sec_context.ptr);
-	APP_ERROR_CHECK(err);
+	if (err) {
+		LOG_ERR("Failed to start delayed conn secure timer, err %d", err);
+	}
 #else
 	conn_secure_impl(conn_handle, force);
 #endif
@@ -217,8 +221,8 @@ void pm_handler_on_pm_evt(const struct pm_evt *pm_evt)
 	if (pm_evt->evt_id == PM_EVT_BONDED_PEER_CONNECTED) {
 		conn_secure(pm_evt->conn_handle, false);
 	} else if (pm_evt->evt_id == PM_EVT_ERROR_UNEXPECTED) {
-		LOG_ERR("Asserting.");
-		APP_ERROR_CHECK(pm_evt->error_unexpected.error);
+		LOG_ERR("PM unexpected error, nrf_error %#x", pm_evt->error_unexpected.error);
+		__ASSERT_NO_MSG(false);
 	}
 }
 
@@ -268,7 +272,10 @@ void pm_handler_flash_clean(const struct pm_evt *pm_evt)
 		} else if ((nrf_err != NRF_ERROR_NOT_SUPPORTED) &&
 			   (nrf_err != NRF_ERROR_INVALID_PARAM) &&
 			   (nrf_err != NRF_ERROR_DATA_SIZE)) {
-			APP_ERROR_CHECK(nrf_err);
+			if (nrf_err != NRF_SUCCESS) {
+				LOG_ERR("pm_peer_rank_highest() returned %s for peer id %d",
+				nrf_strerror_get(nrf_err), pm_evt->peer_id);
+			}
 		} else {
 			LOG_DBG("pm_peer_rank_highest() returned %s for peer id %d",
 				nrf_strerror_get(nrf_err), pm_evt->peer_id);
@@ -467,9 +474,10 @@ void pm_handler_disconnect_on_sec_failure(const struct pm_evt *pm_evt)
 		LOG_WRN("Disconnecting conn_handle %d.", pm_evt->conn_handle);
 		nrf_err = sd_ble_gap_disconnect(pm_evt->conn_handle,
 						BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
-		if ((nrf_err != NRF_ERROR_INVALID_STATE) &&
+		if ((nrf_err != NRF_SUCCESS) && (nrf_err != NRF_ERROR_INVALID_STATE) &&
 		    (nrf_err != BLE_ERROR_INVALID_CONN_HANDLE)) {
-			APP_ERROR_CHECK(nrf_err);
+			LOG_ERR("Failed to disconnect conn_handle %#x, nrf_error %#x",
+				pm_evt->conn_handle, nrf_err);
 		}
 	}
 }
@@ -482,8 +490,11 @@ void pm_handler_disconnect_on_insufficient_sec(const struct pm_evt *pm_evt,
 			LOG_WRN("Connection security is insufficient, disconnecting.");
 			uint32_t nrf_err = sd_ble_gap_disconnect(
 				pm_evt->conn_handle, BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
-			APP_ERROR_CHECK(nrf_err);
-			LOG_ERR("sd_ble_gap_disconnect() error %#x", nrf_err);
+
+			if (nrf_err) {
+				LOG_ERR("Failed to disconnect conn_handle %#x, nrf_error %#x",
+					pm_evt->conn_handle, nrf_err);
+			}
 		}
 	}
 }
@@ -501,7 +512,9 @@ void pm_handler_secure_on_connection(const ble_evt_t *ble_evt)
 	case BLE_GAP_EVT_DISCONNECTED: {
 		int err = bm_timer_stop(&secure_delay_timer);
 
-		APP_ERROR_CHECK(err);
+		if (err) {
+			LOG_ERR("Failed to stop delayed conn secure timer, err %d", err);
+		}
 	} break;
 #endif
 
