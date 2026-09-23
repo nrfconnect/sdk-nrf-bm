@@ -231,6 +231,7 @@ Bluetooth LE samples
 
 * :ref:`ble_hrs_sample` sample:
 
+   * Fixed the button configuration structure to be static so it does not go out of scope when returning from the button initialization function.
    * Removed redundant logging of authentication status from the main source file.
      Authentication status is logged by :ref:`lib_peer_manager` library.
 
