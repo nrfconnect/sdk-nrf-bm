@@ -11,8 +11,8 @@
 /delete-node/ &cpuapp_sram;
 
 / {
-	compatible = "nordic,bm_nrf54ls05dk_nrf54ls05a_enga-cpuapp";
-	model = "Nordic Bare Metal nRF54LS05 DK nRF54LS05A_ENGA Application MCU";
+	compatible = "nordic,bm_nrf54ls05dk_nrf54ls05a-cpuapp";
+	model = "Nordic Bare Metal nRF54LS05 DK nRF54LS05A Application MCU";
 
 	chosen {
 		zephyr,flash-controller = &rram_controller;
