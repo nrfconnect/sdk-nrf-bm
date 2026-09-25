@@ -202,17 +202,16 @@ int nrf_sdh_enable_request(void)
 {
 	bool busy;
 	uint8_t enabled;
+	int err;
 
 	(void)sd_softdevice_is_enabled(&enabled);
 	if (enabled) {
 		return -EALREADY;
 	}
 
-	if (sdh_transition) {
+	if (!atomic_cas(&sdh_transition, false, true)) {
 		return -EINPROGRESS;
 	}
-
-	atomic_set(&sdh_transition, true);
 
 	/* Assume all observers to be busy */
 	TYPE_SECTION_FOREACH(struct nrf_sdh_state_evt_observer,
@@ -226,11 +225,17 @@ int nrf_sdh_enable_request(void)
 		return -EBUSY;
 	}
 
-	return nrf_sdh_enable();
+	err = nrf_sdh_enable();
+	if (err) {
+		atomic_set(&sdh_transition, false);
+	}
+
+	return err;
 }
 
 int nrf_sdh_disable_request(void)
 {
+	int err;
 	bool busy;
 	uint8_t enabled;
 
@@ -239,11 +244,9 @@ int nrf_sdh_disable_request(void)
 		return -EALREADY;
 	}
 
-	if (sdh_transition) {
+	if (!atomic_cas(&sdh_transition, false, true)) {
 		return -EINPROGRESS;
 	}
-
-	atomic_set(&sdh_transition, true);
 
 	/* Assume all observers to be busy */
 	TYPE_SECTION_FOREACH(struct nrf_sdh_state_evt_observer,
@@ -257,7 +260,12 @@ int nrf_sdh_disable_request(void)
 		return -EBUSY;
 	}
 
-	return nrf_sdh_disable();
+	err = nrf_sdh_disable();
+	if (err) {
+		atomic_set(&sdh_transition, false);
+	}
+
+	return err;
 }
 
 int nrf_sdh_observer_ready(struct nrf_sdh_state_evt_observer *obs)
@@ -269,7 +277,7 @@ int nrf_sdh_observer_ready(struct nrf_sdh_state_evt_observer *obs)
 	if (!obs) {
 		return -EFAULT;
 	}
-	if (!sdh_transition) {
+	if (!atomic_get(&sdh_transition)) {
 		return -EPERM;
 	}
 	if (!obs->is_busy) {
@@ -295,10 +303,13 @@ int nrf_sdh_observer_ready(struct nrf_sdh_state_evt_observer *obs)
 		err = nrf_sdh_enable();
 	}
 
-	__ASSERT(!err, "Failed to change SoftDevice state");
-	(void) err;
+	if (err) {
+		atomic_set(&sdh_transition, false);
+	}
 
-	return 0;
+	__ASSERT(!err, "Failed to change SoftDevice state");
+
+	return err;
 }
 
 void nrf_sdh_suspend(void)
