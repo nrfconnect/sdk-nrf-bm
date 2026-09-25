@@ -143,11 +143,14 @@ Libraries
       * The LESC key agreement handling to clear the static RAM copy of the ECDH shared secret after the secret have been handed over to the SoftDevice using the :c:func:`sd_ble_gap_lesc_dhkey_reply` function.
       * The :kconfig:option:`CONFIG_PM_LESC_GENERATE_NEW_KEYS` Kconfig option to be enabled by default.
         This option forces the use of new ECDH key pair for each pairing procedure.
+      * The write buffer release function in the peer database submodule to erase the contents of the write buffer record on release.
 
    * Fixed:
 
       * An issue where calling the :c:func:`pm_init` function two or more times would cause some of the internal asynchronous operation flags to have incorrect states.
       * The :c:func:`pm_address_resolve` function to return ``false`` instead of ``NRF_ERROR_INVALID_STATE`` when Peer Manager is not initialized.
+      * An issue where the write buffer that holds bonding data prior to NVM writes was not released in all situations.
+        The impact was minor, as new connections were able to reuse the already-allocated buffer(s).
 
 Bluetooth LE Services
 ---------------------
