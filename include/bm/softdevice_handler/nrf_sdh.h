@@ -205,6 +205,7 @@ struct nrf_sdh_stack_evt_observer {
  * @retval 0 If the SoftDevice has been enabled.
  * @retval -EALREADY If the SoftDevice is already enabled.
  * @retval -EINPROGRESS If a state change has already been requested.
+ * @retval -EINVAL If sd_softdevice_enable() returned an error.
  * @retval -EBUSY The request was sent, but one or more observer were busy.
  *		  Once all observers have become ready, the SoftDevice will change state
  *		  and the @ref NRF_SDH_STATE_EVT_ENABLED event is sent.
@@ -221,6 +222,7 @@ int nrf_sdh_enable_request(void);
  * @retval 0 If the SoftDevice has been disabled.
  * @retval -EALREADY If the SoftDevice is already disabled.
  * @retval -EINPROGRESS If a state change has already been requested.
+ * @retval -EINVAL If sd_softdevice_disable() returned an error.
  * @retval -EBUSY The request was sent, but one or more observer were busy.
  *		  Once all observers have become ready, the SoftDevice will change state
  *		  and the @ref NRF_SDH_STATE_EVT_DISABLED event is sent.
@@ -239,6 +241,7 @@ int nrf_sdh_disable_request(void);
  * @retval 0 The observer is marked as ready.
  * @retval -EFAULT If @p observer is @c NULL.
  * @retval -EPERM If called when no request to change the SoftDevice state was made.
+ * @retval -EINVAL If sd_softdevice_enable() or sd_softdevice_disable() returned an error.
  */
 int nrf_sdh_observer_ready(struct nrf_sdh_state_evt_observer *observer);
 
