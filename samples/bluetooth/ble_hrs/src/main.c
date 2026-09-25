@@ -305,7 +305,7 @@ static void ble_hrs_evt_handler(struct ble_hrs *hrs, const struct ble_hrs_evt *e
 static int buttons_init(bool *erase_bonds)
 {
 	int err;
-	const struct bm_buttons_config cfg[] = {
+	static const struct bm_buttons_config cfg[] = {
 		{
 			.pin_number = BOARD_PIN_BTN_1,
 			.active_state = BM_BUTTONS_ACTIVE_LOW,
