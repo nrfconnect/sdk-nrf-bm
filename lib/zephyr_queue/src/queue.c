@@ -21,6 +21,7 @@
 #include <zephyr/internal/syscall_handler.h>
 #include <kernel_internal.h>
 #include <zephyr/sys/check.h>
+#include <zephyr/sys/__assert.h>
 
 struct alloc_node {
 	sys_sfnode_t node;
@@ -245,9 +246,10 @@ void *z_impl_k_queue_get(struct k_queue *queue, k_timeout_t timeout)
 		return NULL;
 	}
 
-	SYS_PORT_TRACING_OBJ_FUNC_EXIT(k_queue, get, queue, timeout,
-		(ret != 0) ? NULL : _current->base.swap_data);
-	return _current->base.swap_data;
+	SYS_PORT_TRACING_OBJ_FUNC_EXIT(k_queue, get, queue, timeout, NULL);
+
+	__ASSERT(false, "Blocking queue_get not supported");
+	return NULL;
 }
 
 bool k_queue_remove(struct k_queue *queue, void *data)
