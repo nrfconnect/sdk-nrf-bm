@@ -143,6 +143,8 @@ Libraries
       * The LESC key agreement handling to clear the static RAM copy of the ECDH shared secret after the secret have been handed over to the SoftDevice using the :c:func:`sd_ble_gap_lesc_dhkey_reply` function.
       * The :kconfig:option:`CONFIG_PM_LESC_GENERATE_NEW_KEYS` Kconfig option to be enabled by default.
         This option forces the use of new ECDH key pair for each pairing procedure.
+      * The sources of the :c:enumerator:`PM_EVT_CONN_SEC_CONFIG_REQ` event to fill the peer ID field.
+        The value of the peer ID field should be used instead of calling the :c:func:`pm_peer_id_get` function when handling this event.
 
    * Fixed:
 
