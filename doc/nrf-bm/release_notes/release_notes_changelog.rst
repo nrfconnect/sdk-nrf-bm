@@ -28,8 +28,12 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 SoftDevice Handler
 ==================
 
-* Fixed an issue where using the :kconfig:option:`CONFIG_NRF_SDH_LOG_SD_INFO` Kconfig option for MCUboot board targets would log invalid SoftDevice version data.
-  The logging now takes the SoftDevice partition offset into account for those board targets.
+* Fixed:
+
+   * An issue where using the :kconfig:option:`CONFIG_NRF_SDH_LOG_SD_INFO` Kconfig option for MCUboot board targets would log invalid SoftDevice version data.
+     The logging now takes the SoftDevice partition offset into account for those board targets.
+   * An issue with the SoftDevice handler transition state that was not cleared on errors enabling or disabling the SoftDevice.
+     This resulted in the next call to enable or disable the SoftDevice returned ``-EINPROGRESS``.
 
 Boards
 ======
