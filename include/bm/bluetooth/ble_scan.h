@@ -559,7 +559,8 @@ uint32_t ble_scan_filter_get(const struct ble_scan *scan, struct ble_scan_filter
  * @retval NRF_SUCCESS If the filter is added successfully.
  * @retval NRF_ERROR_NULL If a NULL pointer is passed as input.
  * @retval NRF_ERROR_DATA_SIZE If the name filter length is too long. Maximum name filter
- *                             length corresponds to @ref NRF_BLE_SCAN_NAME_MAX_LEN.
+ *                             length corresponds to @ref NRF_BLE_SCAN_NAME_MAX_LEN,
+ *                             including NULL-termination.
  * @retval NRF_ERROR_NO_MEM If the number of available filters is exceeded.
  * @retval NRF_ERROR_INVALID_PARAM If the filter type is incorrect. Available filter types:
  *                                 @ref ble_scan_filter_type.

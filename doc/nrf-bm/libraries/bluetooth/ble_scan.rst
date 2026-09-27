@@ -35,8 +35,8 @@ To enable the library, set the :kconfig:option:`CONFIG_BLE_SCAN` Kconfig option.
 The library provides the following Kconfig configuration options:
 
 * :kconfig:option:`CONFIG_BLE_SCAN_BUFFER_SIZE` - Maximum size of an advertising event.
-* :kconfig:option:`CONFIG_BLE_SCAN_NAME_MAX_LEN` - Maximum size of the name to search for in the advertisement report.
-* :kconfig:option:`CONFIG_BLE_SCAN_SHORT_NAME_MAX_LEN` - Maximum size of the short name to search for in the advertisement report.
+* :kconfig:option:`CONFIG_BLE_SCAN_NAME_MAX_LEN` - Maximum size of the name to search for in the advertisement report, including NULL-termination.
+* :kconfig:option:`CONFIG_BLE_SCAN_SHORT_NAME_MAX_LEN` - Maximum size of the short name to search for in the advertisement report, including NULL-termination.
 * :kconfig:option:`CONFIG_BLE_SCAN_FILTER` - Enables filters for the scan library.
 * :kconfig:option:`CONFIG_BLE_SCAN_NAME_COUNT` - Maximum number of name filters.
 * :kconfig:option:`CONFIG_BLE_SCAN_APPEARANCE_COUNT` - Maximum number of appearance filters.
@@ -165,10 +165,10 @@ If the filter matching is enabled and no filter is matched, an :c:macro:`NRF_BLE
 The available filter types are:
 
 * Name - Filter set to the target name.
-   The maximum length of the name corresponds to :kconfig:option:`CONFIG_BLE_SCAN_NAME_MAX_LEN`.
+   The maximum length of the name corresponds to :kconfig:option:`CONFIG_BLE_SCAN_NAME_MAX_LEN`, including NULL-termination.
    The maximum number of filters of this type corresponds to :kconfig:option:`CONFIG_BLE_SCAN_NAME_COUNT`.
 * Short name - Filter set to the short target name.
-   The maximum length of the name corresponds to :kconfig:option:`CONFIG_BLE_SCAN_SHORT_NAME_MAX_LEN`.
+   The maximum length of the name corresponds to :kconfig:option:`CONFIG_BLE_SCAN_SHORT_NAME_MAX_LEN`, including NULL-termination.
    The maximum number of filters of this type corresponds to :kconfig:option:`CONFIG_BLE_SCAN_SHORT_NAME_COUNT`.
 * Address - Filter set to the target address.
    The maximum number of filters of this type corresponds to :kconfig:option:`CONFIG_BLE_SCAN_ADDRESS_COUNT`.
