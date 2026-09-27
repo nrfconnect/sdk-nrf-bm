@@ -286,8 +286,8 @@ void test_ble_scan_filter_add_name_error_data_size(void)
 	};
 
 	struct ble_scan_filter_data filter_data_too_long = {
-		/* Provide length of 33, which is larger than the max */
-		.name_filter.name = "abcdefghijklmnopqrstuvwxyz1234567",
+		/* Provide length of 32, which is larger than the max */
+		.name_filter.name = "abcdefghijklmnopqrstuvwxyz123456",
 	};
 
 	test_ble_scan_init();

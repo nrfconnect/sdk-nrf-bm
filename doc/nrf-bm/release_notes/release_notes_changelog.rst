@@ -132,6 +132,10 @@ Libraries
       * Support for filtering by manufacturer-specific data using the :c:macro:`BLE_SCAN_MANUFACTURER_DATA_FILTER` filter type.
       * The :kconfig:option:`CONFIG_BLE_SCAN_MANUFACTURER_DATA_COUNT` and :kconfig:option:`CONFIG_BLE_SCAN_MANUFACTURER_DATA_MAX_LEN` Kconfig options to configure the manufacturer data filter capacity and maximum payload length.
 
+   * Fixed:
+
+      * Replaced the use of the :c:func:`strlen` and :c:func:`strcmp` functions with the :c:func:`strnlen` and :c:func:`strncmp` functions respectively, to avoid out-of-bounds reads and false matches.
+
 * :ref:`lib_peer_manager` library:
 
    * Updated:

@@ -4,6 +4,9 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
+#undef _POSIX_C_SOURCE
+#define _POSIX_C_SOURCE 200809L
+
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
@@ -153,7 +156,7 @@ static bool advdata_name_find(const uint8_t *encoded_data, uint16_t data_len,
 	parsed_name = &encoded_data[data_offset];
 
 	if ((data_offset != 0) && (parsed_name_len != 0) &&
-	    (strlen(target_name) == parsed_name_len) &&
+	    (strnlen(target_name, CONFIG_BLE_SCAN_NAME_MAX_LEN) == parsed_name_len) &&
 	    (memcmp(target_name, parsed_name, parsed_name_len) == 0)) {
 		return true;
 	}
@@ -179,16 +182,19 @@ static int name_filter_add(struct ble_scan *scan, const struct ble_scan_filter_d
 {
 	const char *name = data->name_filter.name;
 	uint8_t *counter = &scan->scan_filters.name_filter.name_cnt;
-	uint8_t name_len = strlen(name);
+	uint8_t name_len = strnlen(name, CONFIG_BLE_SCAN_NAME_MAX_LEN);
 
 	/* Check the name length. */
-	if ((name_len == 0) || (name_len > CONFIG_BLE_SCAN_NAME_MAX_LEN)) {
+	if ((name_len == 0) || (name_len >= CONFIG_BLE_SCAN_NAME_MAX_LEN)) {
 		return NRF_ERROR_DATA_SIZE;
 	}
 
+	/* Include NULL-termination in name_len when doing string compare and copy. */
+	name_len++;
+
 	/* Check for duplicated filter. */
 	for (uint8_t i = 0; i < CONFIG_BLE_SCAN_NAME_COUNT; i++) {
-		if (!strcmp(scan->scan_filters.name_filter.target_name[i], name)) {
+		if (!strncmp(scan->scan_filters.name_filter.target_name[i], name, name_len)) {
 			return NRF_SUCCESS;
 		}
 	}
@@ -199,7 +205,7 @@ static int name_filter_add(struct ble_scan *scan, const struct ble_scan_filter_d
 	}
 
 	/* Add name to filter. */
-	memcpy(scan->scan_filters.name_filter.target_name[(*counter)++], name, strlen(name));
+	memcpy(scan->scan_filters.name_filter.target_name[(*counter)++], name, name_len);
 
 	LOG_DBG("Adding filter on %s name", name);
 
@@ -232,19 +238,23 @@ static int short_name_filter_add(struct ble_scan *scan,
 	uint8_t *counter = &scan->scan_filters.short_name_filter.name_cnt;
 	struct ble_scan_short_name_filter *short_name_filter =
 		&scan->scan_filters.short_name_filter;
-	uint8_t name_len = strlen(data->short_name_filter.short_name);
+	uint8_t name_len = strnlen(data->short_name_filter.short_name,
+				   CONFIG_BLE_SCAN_SHORT_NAME_MAX_LEN);
 
 	/* Check the name length. */
 	if ((name_len == 0) ||
-	    (name_len > CONFIG_BLE_SCAN_SHORT_NAME_MAX_LEN) ||
+	    (name_len >= CONFIG_BLE_SCAN_SHORT_NAME_MAX_LEN) ||
 	    (name_len < data->short_name_filter.short_name_min_len)) {
 		return NRF_ERROR_DATA_SIZE;
 	}
 
+	/* Include NULL-termination in name_len when doing string compare and copy. */
+	name_len++;
+
 	/* Check for duplicated filter. */
 	for (uint8_t i = 0; i < CONFIG_BLE_SCAN_SHORT_NAME_COUNT; i++) {
-		if (!strcmp(short_name_filter->short_name[i].short_target_name,
-			    data->short_name_filter.short_name)) {
+		if (!strncmp(short_name_filter->short_name[i].short_target_name,
+			    data->short_name_filter.short_name, name_len)) {
 			return NRF_SUCCESS;
 		}
 	}
@@ -258,7 +268,7 @@ static int short_name_filter_add(struct ble_scan *scan,
 	short_name_filter->short_name[(*counter)].short_name_min_len =
 		data->short_name_filter.short_name_min_len;
 	memcpy(short_name_filter->short_name[(*counter)++].short_target_name,
-	       data->short_name_filter.short_name, strlen(data->short_name_filter.short_name));
+	       data->short_name_filter.short_name, name_len);
 
 	LOG_DBG("Adding filter on %s name", data->short_name_filter.short_name);
 

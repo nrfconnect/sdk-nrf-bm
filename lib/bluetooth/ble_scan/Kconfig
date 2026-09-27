@@ -22,13 +22,15 @@ config BLE_SCAN_NAME_MAX_LEN
 	int "Scan name maximum length"
 	default 32
 	help
-	  Maximum size for the name to search in the advertisement report.
+	  Maximum size for the name to search in the advertisement report,
+	  including NULL-termination.
 
 config BLE_SCAN_SHORT_NAME_MAX_LEN
 	int "Scan short name maximum length"
 	default 32
 	help
-	  Maximum size of the short name to search for in the advertisement report.
+	  Maximum size of the short name to search for in the advertisement report,
+	  including NULL-termination.
 
 config BLE_SCAN_MANUFACTURER_DATA_MAX_LEN
 	int "Scan manufacturer data maximum length"
