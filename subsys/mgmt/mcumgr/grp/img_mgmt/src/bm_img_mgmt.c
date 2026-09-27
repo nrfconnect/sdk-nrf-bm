@@ -169,8 +169,13 @@ int img_mgmt_write_image_data(unsigned int offset, const void *data, unsigned in
 
 	storage_init();
 	if (offset == 0) {
+		if (atomic_get(&ongoing)) {
+			LOG_WRN("New image write attempted while previous is ongoing");
+			return MGMT_ERR_EBUSY;
+		}
 		/* New image. */
 		write_offset = 0;
+		ring_buf_reset(&ring_buf);
 	}
 
 	if ((offset + num_bytes) > S0_SIZE) {
