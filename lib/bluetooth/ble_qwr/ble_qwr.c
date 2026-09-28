@@ -228,7 +228,8 @@ static void on_prepare_write(struct ble_qwr *qwr, const ble_gatts_evt_write_t *w
 
 	if (auth_reply.params.write.gatt_status != BLE_GATT_STATUS_SUCCESS) {
 		for (i = 0; i < qwr->nb_registered_attr; i++) {
-			if (qwr->attr_handles[i] == write_evt->handle) {
+			if (qwr->attr_handles[i] == write_evt->handle &&
+				qwr->nb_written_handles < CONFIG_BLE_QWR_MAX_ATTR) {
 				auth_reply.params.write.gatt_status = BLE_GATT_STATUS_SUCCESS;
 				qwr->written_attr_handles[qwr->nb_written_handles++] =
 					write_evt->handle;
