@@ -204,6 +204,14 @@ uint32_t gscm_local_db_cache_update(uint16_t conn_handle)
 	if ((nrf_err != NRF_SUCCESS) && (nrf_err != NRF_ERROR_NOT_FOUND)) {
 		LOG_ERR("pds_peer_data_read() returned %s for conn_handle %d",
 			nrf_strerror_get(nrf_err), conn_handle);
+
+		nrf_err_rls = pdb_write_buf_release(peer_id, PM_PEER_DATA_ID_GATT_LOCAL);
+		if (nrf_err_rls) {
+			LOG_ERR("Did another thread manipulate PM_PEER_DATA_ID_GATT_LOCAL "
+				"for peer_id %d at the same time? pdb_write_buf_release() "
+				"returned %s", peer_id, nrf_strerror_get(nrf_err_rls));
+		}
+
 		return NRF_ERROR_INTERNAL;
 	}
 
