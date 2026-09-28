@@ -151,7 +151,10 @@ Libraries
 
 * :ref:`lib_ble_queued_writes` library:
 
-   * Fixed an issue where nb_written_handles could write outside of the array.
+   * Fixed:
+
+      * An issue where nb_written_handles could write outside of the array.
+      * An issue where the :c:func:`ble_qwr_value_get` could write beyond the ``mem_buffer`` buffer.
 
 * ``Zephyr queue`` library:
 

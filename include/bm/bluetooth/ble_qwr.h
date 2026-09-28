@@ -223,6 +223,7 @@ uint32_t ble_qwr_attr_register(struct ble_qwr *qwr, uint16_t attr_handle);
  * @retval NRF_ERROR_NO_MEM If the provided buffer was smaller than the received data.
  * @retval NRF_ERROR_NULL If @p qwr, @p mem or @p len is @c NULL.
  * @retval NRF_ERROR_INVALID_STATE If the given @p qwr instance has not been initialized.
+ * @retval NRF_ERROR_INVALID_DATA If the given QWR-data is not valid.
  */
 uint32_t ble_qwr_value_get(struct ble_qwr *qwr, uint16_t attr_handle, uint8_t *mem, uint16_t *len);
 #endif /* (CONFIG_BLE_QWR_MAX_ATTR > 0) */

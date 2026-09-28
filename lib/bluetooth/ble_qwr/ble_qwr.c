@@ -16,6 +16,8 @@
 /* Non-zero value used to make sure the given structure has been initialized by the module. */
 #define BLE_QWR_INITIALIZED 0xAABBCCDD
 
+#define QWR_TUPLE_HEADER_SIZE  (sizeof(uint16_t) * 3U)
+
 /**
  * @brief Function for decoding a uint16 value.
  *
@@ -26,6 +28,11 @@
 static inline uint16_t uint16_decode(const uint8_t *encoded_data)
 {
 	return sys_get_le16(encoded_data);
+}
+
+static bool qwr_mem_bounds_ok(uint16_t offset, uint16_t need, uint16_t len)
+{
+	return ((uint32_t)offset + need) <= len;
 }
 
 uint32_t ble_qwr_init(struct ble_qwr *qwr, const struct ble_qwr_config *qwr_config)
@@ -86,6 +93,7 @@ uint32_t ble_qwr_value_get(
 	uint16_t val_len = 0;
 	uint16_t val_offset = 0;
 	uint32_t cur_len = 0;
+	uint16_t buf_len;
 
 	if (!qwr || !mem || !len) {
 		return NRF_ERROR_NULL;
@@ -95,29 +103,52 @@ uint32_t ble_qwr_value_get(
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	do {
+	buf_len = qwr->mem_buffer.len;
+
+	if (qwr->mem_buffer.p_mem == NULL || buf_len < sizeof(uint16_t)) {
+		return NRF_ERROR_INVALID_DATA;
+	}
+
+	while (i < buf_len) {
+		if (!qwr_mem_bounds_ok(i, sizeof(uint16_t), buf_len)) {
+			return NRF_ERROR_INVALID_DATA;
+		}
+
 		handle = uint16_decode(&(qwr->mem_buffer.p_mem[i]));
 		if (handle == BLE_GATT_HANDLE_INVALID) {
 			break;
 		}
 
 		i += sizeof(uint16_t);
+
+		if (!qwr_mem_bounds_ok(i, QWR_TUPLE_HEADER_SIZE - sizeof(uint16_t), buf_len)) {
+			return NRF_ERROR_INVALID_DATA;
+		}
+
 		val_offset = uint16_decode(&(qwr->mem_buffer.p_mem[i]));
 		i += sizeof(uint16_t);
 		val_len = uint16_decode(&(qwr->mem_buffer.p_mem[i]));
 		i += sizeof(uint16_t);
 
+		if (!qwr_mem_bounds_ok(i, val_len, buf_len)) {
+			return NRF_ERROR_INVALID_DATA;
+		}
+
 		if (handle == attr_handle) {
+			if ((val_offset + val_len) > UINT16_MAX) {
+				return NRF_ERROR_INVALID_DATA;
+			}
+
 			cur_len = val_offset + val_len;
-			if (cur_len <= *len) {
-				memcpy((mem + val_offset), &(qwr->mem_buffer.p_mem[i]), val_len);
-			} else {
+			if (cur_len > *len) {
 				return NRF_ERROR_NO_MEM;
 			}
+
+			memcpy((mem + val_offset), &(qwr->mem_buffer.p_mem[i]), val_len);
 		}
 
 		i += val_len;
-	} while (i < qwr->mem_buffer.len);
+	}
 
 	*len = cur_len;
 	return NRF_SUCCESS;
