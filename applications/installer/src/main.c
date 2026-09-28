@@ -70,11 +70,11 @@ int main(void)
 		.fa_size = PROCESS_SECTOR_SIZE,
 		.fa_dev = DEVICE_DT_GET(DT_CHOSEN(zephyr_flash_controller)),
 	};
+	/* Erase and write buffer with maximum process size with maximum padding. */
+	static uint8_t erase_write_buf[PROCESS_SECTOR_SIZE + WRITE_BLOCK_SIZE] = { 0x00 };
+
 #if defined(CONFIG_FLASH_HAS_EXPLICIT_ERASE)
-	static uint8_t erase_buffer[PROCESS_SECTOR_SIZE];
 	const struct flash_parameters *fparams;
-#else
-	static uint8_t write_buffer[CONFIG_ROM_START_OFFSET] = { 0x00 };
 #endif
 
 	update_data = (struct bm_installs_update *)((int)&_flash_used + LOAD_OFFSET);
@@ -134,7 +134,7 @@ int main(void)
 
 #if defined(CONFIG_FLASH_HAS_EXPLICIT_ERASE)
 	fparams = flash_get_parameters(DEVICE_DT_GET(DT_CHOSEN(zephyr_flash_controller)));
-	memset(erase_buffer, fparams->erase_value, sizeof(erase_buffer));
+	memset(erase_write_buf, fparams->erase_value, sizeof(erase_write_buf));
 #endif
 
 	i = 0;
@@ -176,18 +176,20 @@ int main(void)
 		replacement_metadata.images[i].image_size = update_data->images[i].image_size;
 
 		while (pos < update_data->images[i].data_image_size) {
-			uint32_t process_size = update_data->images[i].data_image_size - pos;
+			uint32_t data_size = update_data->images[i].data_image_size - pos;
+			const uint8_t *write_src;
+			uint32_t write_len;
 
-			if (process_size > PROCESS_SECTOR_SIZE) {
-				process_size = PROCESS_SECTOR_SIZE;
+			if (data_size > PROCESS_SECTOR_SIZE) {
+				data_size = PROCESS_SECTOR_SIZE;
 			}
 
 			LOG_DBG("Write to: %p, read from: %p, size: %d", (void *)write_pos,
-				(void *)read_pos, process_size);
+				(void *)read_pos, data_size);
 
-			if (memcmp((void *)write_pos, (void *)read_pos, process_size)) {
+			if (memcmp((void *)write_pos, (void *)read_pos, data_size)) {
 #if defined(CONFIG_FLASH_HAS_EXPLICIT_ERASE)
-				if (memcmp((void *)write_pos, erase_buffer, process_size)) {
+				if (memcmp((void *)write_pos, erase_write_buf, data_size)) {
 					rc = flash_area_erase(&fa, pos, PROCESS_SECTOR_SIZE);
 
 					if (rc) {
@@ -201,25 +203,42 @@ int main(void)
 				}
 #endif
 
-				int pad = (WRITE_BLOCK_SIZE - (process_size % WRITE_BLOCK_SIZE)) %
+				write_src = (const uint8_t *)read_pos;
+				write_len = data_size;
+
+				int pad = (WRITE_BLOCK_SIZE - (data_size % WRITE_BLOCK_SIZE)) %
 					   WRITE_BLOCK_SIZE;
 
-				process_size += pad;
+				if (pad > 0) {
+					memcpy(erase_write_buf, (const void *)read_pos, data_size);
+					memcpy(erase_write_buf + data_size,
+					       (const void *)(write_pos + data_size),
+					       pad);
+					write_src = erase_write_buf;
+					write_len = data_size + pad;
+				}
 
-				rc = flash_area_write(&fa, pos, (void *)read_pos, process_size);
+				rc = flash_area_write(&fa, pos, (void *)write_src, write_len);
 
 				if (rc) {
 					LOG_ERR("Write failed: %d, at: %#x, size: %d", rc, pos,
-						process_size);
+						write_len);
 					goto erase_header;
 				} else {
-					LOG_DBG("Write OK at: %#x, size: %d", pos, process_size);
+					LOG_DBG("Write OK at: %#x, size: %d", pos, write_len);
 				}
+
+#if defined(CONFIG_FLASH_HAS_EXPLICIT_ERASE)
+				if (pad > 0) {
+					memset(erase_write_buf, fparams->erase_value,
+					       sizeof(erase_write_buf));
+				}
+#endif
 			}
 
-			pos += process_size;
-			read_pos += process_size;
-			write_pos += process_size;
+			pos += data_size;
+			read_pos += data_size;
+			write_pos += data_size;
 
 			/* Delay for reliability verification purpose */
 			VERIFICATION_DELAY(CONFIG_APP_BM_INSTALLER_INTER_IMAGE_CHUNK_COPY_DELAY_MS,
@@ -257,12 +276,8 @@ erase_header:
 	VERIFICATION_DELAY(CONFIG_APP_BM_INSTALLER_PRIOR_SELF_DESTRUCTION_DELAY_MS,
 			   "V_DELAY_SELF_DESTRUCTION");
 
-#if defined(CONFIG_FLASH_HAS_EXPLICIT_ERASE)
-	memset(erase_buffer, 0, sizeof(erase_buffer));
-	rc = flash_area_write(&fa_installer, 0, erase_buffer, CONFIG_ROM_START_OFFSET);
-#else
-	rc = flash_area_write(&fa_installer, 0, write_buffer, CONFIG_ROM_START_OFFSET);
-#endif
+	memset(erase_write_buf, 0, sizeof(erase_write_buf));
+	rc = flash_area_write(&fa_installer, 0, erase_write_buf, CONFIG_ROM_START_OFFSET);
 
 	if (rc) {
 		LOG_ERR("Clear installer header failed: %d", rc);
