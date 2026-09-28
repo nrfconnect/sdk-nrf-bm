@@ -170,6 +170,12 @@ Libraries
       * An issue where the write buffer that holds bonding data before NVM writes was not released in all situations.
         The impact was minor, as new connections were able to reuse the already-allocated buffer(s).
 
+* :ref:`lib_ble_queued_writes` library:
+
+   * Fixed:
+
+      * An issue where the :c:func:`ble_qwr_value_get` could write beyond the supplied output buffer.
+
 * ``Zephyr queue`` library:
 
    * Updated to return ``NULL`` on blocking calls to the :c:func:`z_impl_k_queue_get` function.
