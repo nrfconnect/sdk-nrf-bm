@@ -149,6 +149,12 @@ Libraries
       * An issue where calling the :c:func:`pm_init` function two or more times would cause some of the internal asynchronous operation flags to have incorrect states.
       * The :c:func:`pm_address_resolve` function to return ``false`` instead of ``NRF_ERROR_INVALID_STATE`` when Peer Manager is not initialized.
 
+* :ref:`lib_ble_queued_writes` library:
+
+   * Fixed:
+
+      * An issue where the :c:func:`ble_qwr_value_get` could write beyond the supplied output buffer.
+
 * ``Zephyr queue`` library:
 
    * Updated to return ``NULL`` on blocking calls to the :c:func:`z_impl_k_queue_get` function.
