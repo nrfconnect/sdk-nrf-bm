@@ -70,8 +70,8 @@ int main(void)
 		.fa_size = PROCESS_SECTOR_SIZE,
 		.fa_dev = DEVICE_DT_GET(DT_CHOSEN(zephyr_flash_controller)),
 	};
-	/* Erase and write buffer with maximum process size with maximum padding. */
-	static uint8_t erase_write_buf[PROCESS_SECTOR_SIZE + WRITE_BLOCK_SIZE] = { 0x00 };
+	/* Erase and write buffer with maximum process size. */
+	static uint8_t erase_write_buf[PROCESS_SECTOR_SIZE] = { 0x00 };
 
 #if defined(CONFIG_FLASH_HAS_EXPLICIT_ERASE)
 	const struct flash_parameters *fparams;
@@ -177,8 +177,7 @@ int main(void)
 
 		while (pos < update_data->images[i].data_image_size) {
 			uint32_t data_size = update_data->images[i].data_image_size - pos;
-			const uint8_t *write_src;
-			uint32_t write_len;
+			uint32_t first_wr_len;
 
 			if (data_size > PROCESS_SECTOR_SIZE) {
 				data_size = PROCESS_SECTOR_SIZE;
@@ -202,36 +201,60 @@ int main(void)
 					}
 				}
 #endif
-
-				write_src = (const uint8_t *)read_pos;
-				write_len = data_size;
+				first_wr_len = data_size;
 
 				int pad = (WRITE_BLOCK_SIZE - (data_size % WRITE_BLOCK_SIZE)) %
 					   WRITE_BLOCK_SIZE;
 
 				if (pad > 0) {
-					memcpy(erase_write_buf, (const void *)read_pos, data_size);
-					memcpy(erase_write_buf + data_size,
-					       (const void *)(write_pos + data_size),
-					       pad);
-					write_src = erase_write_buf;
-					write_len = data_size + pad;
+					/* Write full blocks directly first.
+					 * data_size + padding is a multiple of WRITE_BLOCK_SIZE.
+					 */
+					first_wr_len = data_size - (WRITE_BLOCK_SIZE - pad);
 				}
 
-				rc = flash_area_write(&fa, pos, (void *)write_src, write_len);
+				if (first_wr_len >= WRITE_BLOCK_SIZE) {
+					/* Write whole blocks. */
+					rc = flash_area_write(&fa, pos, (void *)read_pos,
+							      first_wr_len);
+					if (rc) {
+						LOG_ERR("Write failed: %d, at: %#x, size: %d",
+							rc, pos, first_wr_len);
+						goto erase_header;
+					} else {
+						LOG_DBG("Write OK at: %#x, size: %d",
+							pos, first_wr_len);
+					}
+				}
 
-				if (rc) {
-					LOG_ERR("Write failed: %d, at: %#x, size: %d", rc, pos,
-						write_len);
-					goto erase_header;
-				} else {
-					LOG_DBG("Write OK at: %#x, size: %d", pos, write_len);
+
+				if (pad > 0) {
+					/* Write last block with padding. */
+					memcpy(erase_write_buf,
+					       (const void *)(read_pos + first_wr_len),
+					       (WRITE_BLOCK_SIZE - pad));
+					memcpy(erase_write_buf + (WRITE_BLOCK_SIZE - pad),
+					       (const void *)(write_pos + data_size),
+					       pad);
+
+					rc = flash_area_write(&fa, pos + first_wr_len,
+							      (void *)erase_write_buf,
+							      WRITE_BLOCK_SIZE);
+
+					if (rc) {
+						LOG_ERR("Write failed: %d, at: %#x, size: %d",
+							rc, pos + first_wr_len, WRITE_BLOCK_SIZE);
+						goto erase_header;
+					} else {
+						LOG_DBG("Write OK at: %#x, size: %d",
+							pos + first_wr_len, WRITE_BLOCK_SIZE);
+					}
 				}
 
 #if defined(CONFIG_FLASH_HAS_EXPLICIT_ERASE)
 				if (pad > 0) {
 					memset(erase_write_buf, fparams->erase_value,
-					       sizeof(erase_write_buf));
+					       WRITE_BLOCK_SIZE);
 				}
 #endif
 			}
