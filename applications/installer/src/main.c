@@ -76,6 +76,7 @@ int main(void)
 #else
 	static uint8_t write_buffer[CONFIG_ROM_START_OFFSET] = { 0x00 };
 #endif
+	static uint8_t pad_buffer[WRITE_BLOCK_SIZE];
 
 	update_data = (struct bm_installs_update *)((int)&_flash_used + LOAD_OFFSET);
 
@@ -200,12 +201,16 @@ int main(void)
 					}
 				}
 #endif
+				/* Split write into a WRITE_BLOCK_SIZE-multiple write and a padded
+				 * write if (process_size != N * WRITE_BLOCK_SIZE).
+				 */
+				const int remainder = process_size % WRITE_BLOCK_SIZE;
 
-				int pad = (WRITE_BLOCK_SIZE - (process_size % WRITE_BLOCK_SIZE)) %
-					   WRITE_BLOCK_SIZE;
+				if (remainder > 0) {
+					process_size -= remainder;
+				}
 
-				process_size += pad;
-
+				/* Write in full block sizes. */
 				rc = flash_area_write(&fa, pos, (void *)read_pos, process_size);
 
 				if (rc) {
@@ -214,6 +219,29 @@ int main(void)
 					goto erase_header;
 				} else {
 					LOG_DBG("Write OK at: %#x, size: %d", pos, process_size);
+				}
+
+				/* Write last block with padding if any remaining data. */
+				if (remainder > 0) {
+					memcpy(&pad_buffer[0],
+					       (void *)(read_pos + process_size),
+					       remainder);
+					memcpy(&pad_buffer[remainder],
+					       (void *)(write_pos + process_size + remainder),
+					       WRITE_BLOCK_SIZE - remainder);
+
+					rc = flash_area_write(&fa, pos + process_size, pad_buffer,
+							      WRITE_BLOCK_SIZE);
+					if (rc) {
+						LOG_ERR("Write failed: %d, at: %#x, size: %d", rc,
+							pos + process_size, remainder);
+						goto erase_header;
+					} else {
+						LOG_DBG("Write OK at: %#x, size: %d",
+							pos + process_size, remainder);
+					}
+
+					process_size += remainder;
 				}
 			}
 
