@@ -180,6 +180,7 @@ Bluetooth LE Services
 
       * The :c:member:`ble_scan_filter_data.addr_filter.addr` and :c:member:`ble_scan_filter_data.name_filter.name` to be ``const`` in the :c:struct:`ble_scan_filter_data` structure.
       * The connection parameter Kconfig defaults to align with the Kconfig defaults in the :ref:`lib_ble_conn_params` library.
+      * The :c:macro:`BLE_SCAN_CONN_PARAMS_DEFAULT` macro to use the :kconfig:option:`CONFIG_BLE_SCAN_SUPERVISION_TIMEOUT` Kconfig option for the supervision timeout.
 
 * :ref:`lib_ble_service_dis`:
 

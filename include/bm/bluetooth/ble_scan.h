@@ -379,7 +379,7 @@ struct ble_scan_filters {
 /** @brief Default connection parameters for scan configuration. */
 #define BLE_SCAN_CONN_PARAMS_DEFAULT                                                               \
 {                                                                                                  \
-	.conn_sup_timeout = BLE_GAP_CP_CONN_SUP_TIMEOUT_MIN,                                       \
+	.conn_sup_timeout = CONFIG_BLE_SCAN_SUPERVISION_TIMEOUT,                                   \
 	.min_conn_interval = CONFIG_BLE_SCAN_MIN_CONNECTION_INTERVAL,                              \
 	.max_conn_interval = CONFIG_BLE_SCAN_MAX_CONNECTION_INTERVAL,                              \
 	.slave_latency = (uint16_t)CONFIG_BLE_SCAN_PERIPHERAL_LATENCY,                             \
