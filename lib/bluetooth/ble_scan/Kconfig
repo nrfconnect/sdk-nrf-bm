@@ -85,51 +85,66 @@ config BLE_SCAN_MANUFACTURER_DATA_COUNT
 endif # BLE_SCAN_FILTER
 
 config BLE_SCAN_INTERVAL
-	int "Scanning interval"
+	int "Scanning interval (0.625 ms units)"
+	range 4 65535
 	default 160
 	help
-	  Determines the scan interval in units of 0.625 millisecond.
+	  The scan interval in 0.625-millisecond units. Min 2.5 ms. Max 40.96 sec.
+	  This value is used when default scan parameters are configured.
 
 config BLE_SCAN_DURATION
-	int "Scan duration"
-	default 0
+	int "Scanning duration (10 ms units)"
 	range 0 65535
+	default 0
 	help
-	  Duration of a scanning session in units of 10 ms.
+	  Duration of a scanning session in 10-millisecond units. Min 10 ms. Max 655.35 sec.
 	  If set to 0, the scanning continues until it is explicitly disabled.
+	  This value is used when default scan parameters are configured.
 
 config BLE_SCAN_WINDOW
-	int "Scanning window"
+	int "Scanning window (0.625 ms units)"
+	range 4 BLE_SCAN_INTERVAL
 	default 80
 	help
-	  Determines the scanning window in units of 0.625 milliseconds.
+	  The scan window in 0.625-millisecond units. Min 2.5 ms. Max CONFIG_BLE_SCAN_INTERVAL.
+	  This value is used when default scan parameters are configured.
+
+menu "Connection parameters for new connections (defaults)"
 
 config BLE_SCAN_PERIPHERAL_LATENCY
-	int "Scan peripheral latency"
+	int "Peripheral latency"
+	range 0 499
 	default 0
 	help
-	  Determines the peripheral latency in counts of connection events.
+	  Number of connection events that peripheral is allowed to skip.
+	  This value is used for new connections when default connection parameters are configured.
 
 config BLE_SCAN_MIN_CONNECTION_INTERVAL
-	int "Minimum connection interval"
-	default 6
+	int "Minimum connection interval (1.25 ms units)"
 	range 6 3200
+	default 6
 	help
-	  Determines the minimum connection interval in units of 1.25 milliseconds.
+	  Minimum connection interval in 1.25-millisecond units. Min 7.5 ms. Max 4 sec.
+	  This value is used for new connections when default connection parameters are configured.
 
 config BLE_SCAN_MAX_CONNECTION_INTERVAL
-	int "Maximum connection interval"
+	int "Maximum connection interval (1.25 ms units)"
+	range BLE_SCAN_MIN_CONNECTION_INTERVAL 3200
 	default 256
-	range 6 3200
 	help
-	  Determines the maximum connection interval in units of 1.25 milliseconds.
+	  Maximum connection interval in 1.25-millisecond units.
+	  Min CONFIG_BLE_SCAN_MIN_CONNECTION_INTERVAL. Max 4 sec.
+	  This value is used for new connections when default connection parameters are configured.
 
 config BLE_SCAN_SUPERVISION_TIMEOUT
-	int "Scan supervision timeout"
-	default 100
+	int "Connection supervision timeout (10 ms units)"
 	range 10 3200
+	default 100
 	help
-	  Determines the supervision time-out in units of 10 millisecond.
+	  Connection supervision timeout in 10-millisecond units. Min 100 ms. Max 32 sec.
+	  This value is used for new connections when default connection parameters are configured.
+
+endmenu
 
 module=BLE_SCAN
 module-str=BLE Scan
