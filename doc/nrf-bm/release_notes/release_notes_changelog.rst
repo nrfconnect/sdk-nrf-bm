@@ -176,7 +176,11 @@ Bluetooth LE Services
 
 * :ref:`lib_ble_scan`:
 
-   * Changed :c:member:`ble_scan_filter_data.addr_filter.addr` and :c:member:`ble_scan_filter_data.name_filter.name` to ``const`` in the :c:struct:`ble_scan_filter_data` structure.
+   * Updated:
+
+      * The :c:member:`ble_scan_filter_data.addr_filter.addr` and :c:member:`ble_scan_filter_data.name_filter.name` to be ``const`` in the :c:struct:`ble_scan_filter_data` structure.
+      * The connection parameter Kconfig defaults to align with the Kconfig defaults in the :ref:`lib_ble_conn_params` library.
+      * The :c:macro:`BLE_SCAN_CONN_PARAMS_DEFAULT` macro to use the :kconfig:option:`CONFIG_BLE_SCAN_SUPERVISION_TIMEOUT` Kconfig option for the supervision timeout.
 
 * :ref:`lib_ble_service_dis`:
 
@@ -257,6 +261,12 @@ Bluetooth LE samples
 
 * :ref:`ble_hrs_central_sample` sample:
 
+   * Updated:
+
+      * The scanning to use the :c:macro:`BLE_SCAN_SCAN_PARAMS_DEFAULT` default for the scan parameters.
+        This fixes an issue where microseconds was incorrectly used where 0.625-millisecond units should have been used.
+        As a result, the scan interval and scan window are now shorter.
+
    * Fixed:
 
       * The disconnect button handler to only disconnect on button press, and not on button release.
@@ -269,7 +279,12 @@ Bluetooth LE samples
 
 * :ref:`ble_nus_central_sample` sample:
 
-   * Updated to use Button 1 to disconnect from the target peripheral to align with other central samples.
+   * Updated:
+
+      * To use Button 1 to disconnect from the target peripheral to align with other central samples.
+      * The scanning to use the :c:macro:`BLE_SCAN_SCAN_PARAMS_DEFAULT` default for the scan parameters.
+        This fixes an issue where microseconds was incorrectly used where 0.625-millisecond units should have been used.
+        As a result, the scan interval and scan window are now shorter.
 
    * Fixed:
 
