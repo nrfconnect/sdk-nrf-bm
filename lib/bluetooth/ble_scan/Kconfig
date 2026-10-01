@@ -119,14 +119,14 @@ config BLE_SCAN_MIN_CONNECTION_INTERVAL
 
 config BLE_SCAN_MAX_CONNECTION_INTERVAL
 	int "Maximum connection interval"
-	default 24
+	default 256
 	range 6 3200
 	help
 	  Determines the maximum connection interval in units of 1.25 milliseconds.
 
 config BLE_SCAN_SUPERVISION_TIMEOUT
 	int "Scan supervision timeout"
-	default 3200
+	default 100
 	range 10 3200
 	help
 	  Determines the supervision time-out in units of 10 millisecond.
