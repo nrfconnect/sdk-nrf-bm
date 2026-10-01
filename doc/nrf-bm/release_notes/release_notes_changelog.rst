@@ -261,6 +261,12 @@ Bluetooth LE samples
 
 * :ref:`ble_hrs_central_sample` sample:
 
+   * Updated:
+
+      * The scanning to use the :c:macro:`BLE_SCAN_SCAN_PARAMS_DEFAULT` default for the scan parameters.
+        This fixes an issue where microseconds was incorrectly used where 0.625-millisecond units should have been used.
+        As a result, the scan interval and scan window are now shorter.
+
    * Fixed:
 
       * The disconnect button handler to only disconnect on button press, and not on button release.
@@ -273,7 +279,12 @@ Bluetooth LE samples
 
 * :ref:`ble_nus_central_sample` sample:
 
-   * Updated to use Button 1 to disconnect from the target peripheral to align with other central samples.
+   * Updated:
+
+      * To use Button 1 to disconnect from the target peripheral to align with other central samples.
+      * The scanning to use the :c:macro:`BLE_SCAN_SCAN_PARAMS_DEFAULT` default for the scan parameters.
+        This fixes an issue where microseconds was incorrectly used where 0.625-millisecond units should have been used.
+        As a result, the scan interval and scan window are now shorter.
 
    * Fixed:
 

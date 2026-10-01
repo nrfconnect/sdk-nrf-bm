@@ -483,14 +483,7 @@ static uint32_t scan_init(void)
 {
 	uint32_t nrf_err;
 	struct ble_scan_config scan_cfg = {
-		.scan_params = {
-			.active = 0x01,
-			.interval = BLE_GAP_SCAN_INTERVAL_US_MIN * 6,
-			.window = BLE_GAP_SCAN_WINDOW_US_MIN * 6,
-			.filter_policy = BLE_GAP_SCAN_FP_ACCEPT_ALL,
-			.timeout = BLE_GAP_SCAN_TIMEOUT_UNLIMITED,
-			.scan_phys = BLE_GAP_PHY_AUTO,
-		},
+		.scan_params = BLE_SCAN_SCAN_PARAMS_DEFAULT,
 		.conn_params = BLE_SCAN_CONN_PARAMS_DEFAULT,
 		.connect_if_match = true,
 		.conn_cfg_tag = CONFIG_NRF_SDH_BLE_CONN_TAG,
