@@ -176,7 +176,10 @@ Bluetooth LE Services
 
 * :ref:`lib_ble_scan`:
 
-   * Changed :c:member:`ble_scan_filter_data.addr_filter.addr` and :c:member:`ble_scan_filter_data.name_filter.name` to ``const`` in the :c:struct:`ble_scan_filter_data` structure.
+   * Updated:
+
+      * The :c:member:`ble_scan_filter_data.addr_filter.addr` and :c:member:`ble_scan_filter_data.name_filter.name` to be ``const`` in the :c:struct:`ble_scan_filter_data` structure.
+      * The connection parameter Kconfig defaults to align with the Kconfig defaults in the :ref:`lib_ble_conn_params` library.
 
 * :ref:`lib_ble_service_dis`:
 
