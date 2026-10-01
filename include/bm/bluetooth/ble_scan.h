@@ -369,20 +369,20 @@ struct ble_scan_filters {
 #define BLE_SCAN_SCAN_PARAMS_DEFAULT                                                               \
 {                                                                                                  \
 	.active = 1,                                                                               \
+	.filter_policy = BLE_GAP_SCAN_FP_ACCEPT_ALL,                                               \
+	.scan_phys = BLE_GAP_PHY_1MBPS,                                                            \
 	.interval = CONFIG_BLE_SCAN_INTERVAL,                                                      \
 	.window = CONFIG_BLE_SCAN_WINDOW,                                                          \
 	.timeout = CONFIG_BLE_SCAN_DURATION,                                                       \
-	.filter_policy = BLE_GAP_SCAN_FP_ACCEPT_ALL,                                               \
-	.scan_phys = BLE_GAP_PHY_1MBPS,                                                            \
 }
 
 /** @brief Default connection parameters for scan configuration. */
 #define BLE_SCAN_CONN_PARAMS_DEFAULT                                                               \
 {                                                                                                  \
-	.conn_sup_timeout = CONFIG_BLE_SCAN_SUPERVISION_TIMEOUT,                                   \
 	.min_conn_interval = CONFIG_BLE_SCAN_MIN_CONNECTION_INTERVAL,                              \
 	.max_conn_interval = CONFIG_BLE_SCAN_MAX_CONNECTION_INTERVAL,                              \
-	.slave_latency = (uint16_t)CONFIG_BLE_SCAN_PERIPHERAL_LATENCY,                             \
+	.slave_latency = CONFIG_BLE_SCAN_PERIPHERAL_LATENCY,                                       \
+	.conn_sup_timeout = CONFIG_BLE_SCAN_SUPERVISION_TIMEOUT,                                   \
 }
 
 /**

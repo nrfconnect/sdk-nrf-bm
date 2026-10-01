@@ -38,6 +38,31 @@ config BLE_SCAN_MANUFACTURER_DATA_MAX_LEN
 	help
 	  Maximum size for the manufacturer data to search in the advertisement report.
 
+config BLE_SCAN_INTERVAL
+	int "Scanning interval (0.625 ms units)"
+	range 4 65535
+	default 160
+	help
+	  The scan interval in 0.625-millisecond units. Min 2.5 ms. Max 40.96 sec.
+	  This value is used when default scan parameters are configured.
+
+config BLE_SCAN_WINDOW
+	int "Scanning window (0.625 ms units)"
+	range 4 BLE_SCAN_INTERVAL
+	default 80
+	help
+	  The scan window in 0.625-millisecond units. Min 2.5 ms. Max CONFIG_BLE_SCAN_INTERVAL.
+	  This value is used when default scan parameters are configured.
+
+config BLE_SCAN_DURATION
+	int "Scanning duration (10 ms units)"
+	range 0 65535
+	default 0
+	help
+	  Duration of a scanning session in 10-millisecond units. Min 10 ms. Max 655.35 sec.
+	  If set to 0, the scanning continues until it is explicitly disabled.
+	  This value is used when default scan parameters are configured.
+
 config BLE_SCAN_FILTER
 	bool "Scan filter"
 	default y
@@ -84,40 +109,7 @@ config BLE_SCAN_MANUFACTURER_DATA_COUNT
 
 endif # BLE_SCAN_FILTER
 
-config BLE_SCAN_INTERVAL
-	int "Scanning interval (0.625 ms units)"
-	range 4 65535
-	default 160
-	help
-	  The scan interval in 0.625-millisecond units. Min 2.5 ms. Max 40.96 sec.
-	  This value is used when default scan parameters are configured.
-
-config BLE_SCAN_DURATION
-	int "Scanning duration (10 ms units)"
-	range 0 65535
-	default 0
-	help
-	  Duration of a scanning session in 10-millisecond units. Min 10 ms. Max 655.35 sec.
-	  If set to 0, the scanning continues until it is explicitly disabled.
-	  This value is used when default scan parameters are configured.
-
-config BLE_SCAN_WINDOW
-	int "Scanning window (0.625 ms units)"
-	range 4 BLE_SCAN_INTERVAL
-	default 80
-	help
-	  The scan window in 0.625-millisecond units. Min 2.5 ms. Max CONFIG_BLE_SCAN_INTERVAL.
-	  This value is used when default scan parameters are configured.
-
 menu "Connection parameters for new connections (defaults)"
-
-config BLE_SCAN_PERIPHERAL_LATENCY
-	int "Peripheral latency"
-	range 0 499
-	default 0
-	help
-	  Number of connection events that peripheral is allowed to skip.
-	  This value is used for new connections when default connection parameters are configured.
 
 config BLE_SCAN_MIN_CONNECTION_INTERVAL
 	int "Minimum connection interval (1.25 ms units)"
@@ -134,6 +126,14 @@ config BLE_SCAN_MAX_CONNECTION_INTERVAL
 	help
 	  Maximum connection interval in 1.25-millisecond units.
 	  Min CONFIG_BLE_SCAN_MIN_CONNECTION_INTERVAL. Max 4 sec.
+	  This value is used for new connections when default connection parameters are configured.
+
+config BLE_SCAN_PERIPHERAL_LATENCY
+	int "Peripheral latency"
+	range 0 499
+	default 0
+	help
+	  Number of connection events that peripheral is allowed to skip.
 	  This value is used for new connections when default connection parameters are configured.
 
 config BLE_SCAN_SUPERVISION_TIMEOUT
