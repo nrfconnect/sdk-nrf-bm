@@ -66,6 +66,11 @@ Build system
   * The :file:`west.yml` file to add ``memfault-firmware-sdk`` to the |NCS| manifest allowlist.
   * The :file:`zephyr/module.yml` file to declare a build dependency on ``memfault-firmware-sdk``.
 
+DFU
+===
+
+* Updated the installer application to prevent Out-Of-Bound reads and writes of the new firmware image.
+
 Interrupts
 ==========
 
