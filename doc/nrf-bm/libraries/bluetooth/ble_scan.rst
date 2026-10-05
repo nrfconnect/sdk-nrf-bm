@@ -37,19 +37,21 @@ The library provides the following Kconfig configuration options:
 * :kconfig:option:`CONFIG_BLE_SCAN_BUFFER_SIZE` - Maximum size of an advertising event.
 * :kconfig:option:`CONFIG_BLE_SCAN_NAME_MAX_LEN` - Maximum size of the name to search for in the advertisement report, including NULL-termination.
 * :kconfig:option:`CONFIG_BLE_SCAN_SHORT_NAME_MAX_LEN` - Maximum size of the short name to search for in the advertisement report, including NULL-termination.
+* :kconfig:option:`CONFIG_BLE_SCAN_INTERVAL` - Default scan interval in units of 0.625 ms.
+* :kconfig:option:`CONFIG_BLE_SCAN_WINDOW` - Default scan window in units of 0.625 ms.
+* :kconfig:option:`CONFIG_BLE_SCAN_DURATION` - Default duration of a scanning session in units of 10 ms.
+  If set to 0, the scanning continues until it is explicitly disabled.
 * :kconfig:option:`CONFIG_BLE_SCAN_FILTER` - Enables filters for the scan library.
 * :kconfig:option:`CONFIG_BLE_SCAN_NAME_COUNT` - Maximum number of name filters.
 * :kconfig:option:`CONFIG_BLE_SCAN_APPEARANCE_COUNT` - Maximum number of appearance filters.
 * :kconfig:option:`CONFIG_BLE_SCAN_ADDRESS_COUNT` - Maximum number of address filters.
 * :kconfig:option:`CONFIG_BLE_SCAN_SHORT_NAME_COUNT` - Maximum number of short name filters.
-* :kconfig:option:`CONFIG_BLE_SCAN_UUID_COUNT` - Maximum number of filters for UUIDs.
-* :kconfig:option:`CONFIG_BLE_SCAN_INTERVAL` - Determines the scan interval in units of 0.625 ms.
-* :kconfig:option:`CONFIG_BLE_SCAN_DURATION` - Duration of a scanning session in units of 10 ms, if set to 0, the scanning continues until it is explicitly disabled.
-* :kconfig:option:`CONFIG_BLE_SCAN_WINDOW` - Determines the scanning window in units of 0.625 ms.
-* :kconfig:option:`CONFIG_BLE_SCAN_PERIPHERAL_LATENCY` - Determines the peripheral latency in counts of connection events.
-* :kconfig:option:`CONFIG_BLE_SCAN_MIN_CONNECTION_INTERVAL` - Determines the minimum connection interval in units of 1.25 ms.
-* :kconfig:option:`CONFIG_BLE_SCAN_MAX_CONNECTION_INTERVAL` - Determines the maximum connection interval in units of 1.25 ms.
-* :kconfig:option:`CONFIG_BLE_SCAN_SUPERVISION_TIMEOUT` - Determines the supervision time-out in units of 10 ms.
+* :kconfig:option:`CONFIG_BLE_SCAN_UUID_COUNT` - Maximum number of UUID filters.
+* :kconfig:option:`CONFIG_BLE_SCAN_MANUFACTURER_DATA_COUNT` - Maximum number of manufacturer data filters.
+* :kconfig:option:`CONFIG_BLE_SCAN_MIN_CONNECTION_INTERVAL` - Default minimum connection interval in units of 1.25 ms, for new connections initiated with this library.
+* :kconfig:option:`CONFIG_BLE_SCAN_MAX_CONNECTION_INTERVAL` - Default maximum connection interval in units of 1.25 ms, for new connections initiated with this library.
+* :kconfig:option:`CONFIG_BLE_SCAN_PERIPHERAL_LATENCY` - Default peripheral latency in number of connection events, for new connections initiated with this library.
+* :kconfig:option:`CONFIG_BLE_SCAN_SUPERVISION_TIMEOUT` - Default supervision time-out in units of 10 ms, for new connections initiated with this library.
 
 Initialization
 ==============
@@ -96,11 +98,11 @@ Example code:
    uint32_t nrf_err;
    struct ble_scan_config scan_cfg = {
            .scan_params = {
-                   .active = 0x01,
-                   .interval = NRF_BLE_SCAN_INTERVAL,
-                   .window = NRF_BLE_SCAN_WINDOW,
+                   .active = 1,
+                   .interval = 96, /* 60 ms */
+                   .window = 48, /* 30 ms */
                    .filter_policy = BLE_GAP_SCAN_FP_WHITELIST,
-                   .timeout = SCAN_DURATION,
+                   .timeout = 1000, /* 10 sec */
                    .scan_phys = BLE_GAP_PHY_1MBPS,
                    .extended = true,
            },
@@ -142,7 +144,7 @@ Allow list
 
 The allow list (formerly known as whitelist) stores information about all the device connections and bonding.
 If you enable the allow list, the application receives advertising packets only from the devices that are on the allow list.
-An advertising package from an allow-listed device generates an :c:macro:`BLE_SCAN_EVT_ALLOW_LIST_ADV_REPORT` event.
+An advertising package from an allow-listed device generates an :c:enumerator:`BLE_SCAN_EVT_ALLOW_LIST_ADV_REPORT` event.
 
 .. note::
 
@@ -151,7 +153,7 @@ An advertising package from an allow-listed device generates an :c:macro:`BLE_SC
 .. caution::
 
    If you use the allow list, you must pass the event handler during the library initialization.
-   The initial scanning with allow list generates an :c:macro:`BLE_SCAN_EVT_ALLOW_LIST_REQUEST` event.
+   The initial scanning with allow list generates an :c:enumerator:`BLE_SCAN_EVT_ALLOW_LIST_REQUEST` event.
    The application must react to this event by either setting up the allow list or switching off the allow list scan.
    Otherwise, an error is reported when the scan starts.
 
@@ -159,8 +161,8 @@ Filters
 =======
 
 The library can set scanning filters of different type and mode.
-When a filter is matched, it generates an :c:macro:`NRF_BLE_SCAN_EVT_FILTER_MATCH` event to the main application.
-If the filter matching is enabled and no filter is matched, an :c:macro:`NRF_BLE_SCAN_EVT_NOT_FOUND` event is generated.
+When a filter is matched, it generates an :c:enumerator:`BLE_SCAN_EVT_FILTER_MATCH` event to the main application.
+If the filter matching is enabled and no filter is matched, an :c:enumerator:`BLE_SCAN_EVT_NOT_FOUND` event is generated.
 
 The available filter types are:
 
@@ -182,19 +184,19 @@ The following two filter modes are available:
 * Normal - Only one of the filters set, regardless of the type, must be matched to generate an event.
 * Multifilter - At least one filter from each filter type you set must be matched to generate an event.
   For UUID filters, all specified UUIDs must match in this mode.
-  To enabled multifilter, set the :c:macro:`match_all` argument to true when calling the :c:func:`ble_scan_filters_enable` function.
+  To enable multifilter, set the ``match_all`` argument to ``true`` when calling the :c:func:`ble_scan_filters_enable` function.
 
 Multifilter example:
 
 Several filters are set for name, address, UUID, and appearance.
-To generate the :c:macro:`NRF_BLE_SCAN_EVT_FILTER_MATCH` event, the following types must match:
+To generate the :c:enumerator:`BLE_SCAN_EVT_FILTER_MATCH` event, the following types must match:
 
 * One of the address filters.
 * One of the name filters.
 * One of the appearance filters.
 * All UUID filters.
 
-Otherwise, the :c:macro:`NRF_BLE_SCAN_EVT_NOT_FOUND` event is generated.
+Otherwise, the :c:enumerator:`BLE_SCAN_EVT_NOT_FOUND` event is generated.
 
 You can enable filters by calling the :c:func:`ble_scan_filters_enable` function after initialization.
 You can activate filters for one filter type, or for a combination of several filter types.
@@ -218,14 +220,14 @@ Example code:
    }
 
    /* Add address to scan filter */
-	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_ADDR_FILTER, filter_data);
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_ADDR_FILTER, &filter_data);
    if (nrf_err) {
            LOG_ERR("Failed to add address scan filter, nrf_error %#x", nrf_err);
    }
 
    /* Add name to scan filter */
    filter_data.name_filter.name = "my_device";
-	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_NAME_FILTER, filter_data);
+	nrf_err = ble_scan_filter_add(&ble_scan, BLE_SCAN_NAME_FILTER, &filter_data);
 	if (nrf_err) {
            LOG_ERR("Failed to add name scan filter, nrf_error %#x", nrf_err);
    }
