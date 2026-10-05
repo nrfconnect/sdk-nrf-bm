@@ -24,7 +24,7 @@
 
 LOG_MODULE_REGISTER(ble_cgms, CONFIG_BLE_CGMS_LOG_LEVEL);
 
-/* GATT errors and nrf_ble_gq errors event handler. */
+/* GATT errors and ble_gq errors event handler. */
 static void ble_gq_evt_handler(const struct ble_gq_req *req, struct ble_gq_evt *gq_evt)
 {
 	struct ble_cgms_evt evt = {

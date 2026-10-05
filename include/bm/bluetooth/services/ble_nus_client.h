@@ -223,7 +223,7 @@ void ble_nus_client_on_ble_evt(const ble_evt_t *ble_evt, void *ble_nus_client);
  * @retval NRF_SUCCESS On success.
  * @retval NRF_ERROR_NULL If @c nus_client is NULL.
  * @return In addition, this function may return any error returned by the following functions:
- *        - @ref nrf_ble_gq_item_add()
+ *        - @ref ble_gq_item_add()
  */
 uint32_t ble_nus_client_tx_notif_enable(struct ble_nus_client *nus_client);
 
@@ -238,7 +238,7 @@ uint32_t ble_nus_client_tx_notif_enable(struct ble_nus_client *nus_client);
  * @retval NRF_SUCCESS On success.
  * @retval NRF_ERROR_NULL If @c nus_client is NULL.
  * @return In addition, this function may return any error returned by the following functions:
- *        - @ref nrf_ble_gq_item_add()
+ *        - @ref ble_gq_item_add()
  */
 uint32_t ble_nus_client_tx_notif_disable(struct ble_nus_client *nus_client);
 
@@ -277,7 +277,7 @@ uint32_t ble_nus_client_string_send(struct ble_nus_client *nus_client, const uin
  * @retval NRF_SUCCESS On success.
  * @retval NRF_ERROR_NULL If @c nus_client or @c peer_handles is NULL.
  * @return In addition, this function may return any error returned by the following functions:
- *         - @ref nrf_ble_gq_item_add()
+ *         - @ref ble_gq_item_add()
  */
 uint32_t ble_nus_client_handles_assign(struct ble_nus_client *nus_client, uint16_t conn_handle,
 				      const struct ble_nus_client_handles *peer_handles);
