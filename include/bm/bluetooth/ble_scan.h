@@ -549,7 +549,7 @@ uint32_t ble_scan_filter_get(const struct ble_scan *scan, struct ble_scan_filter
  *          The filter will be added if the number of filters of a given type does not exceed @ref
  *          CONFIG_BLE_SCAN_UUID_COUNT, @ref CONFIG_BLE_SCAN_NAME_COUNT, @ref
  *          CONFIG_BLE_SCAN_ADDRESS_COUNT, @ref CONFIG_BLE_SCAN_APPEARANCE_COUNT,
- *          or @ref BLE_SCAN_MANUFACTURER_DATA_COUNT, depending on the filter type,
+ *          or @ref CONFIG_BLE_SCAN_MANUFACTURER_DATA_COUNT, depending on the filter type,
  *          and if the same filter has not already been set.
  *
  * @param[in,out] scan Scan library instance.
@@ -559,7 +559,7 @@ uint32_t ble_scan_filter_get(const struct ble_scan *scan, struct ble_scan_filter
  * @retval NRF_SUCCESS If the filter is added successfully.
  * @retval NRF_ERROR_NULL If a NULL pointer is passed as input.
  * @retval NRF_ERROR_DATA_SIZE If the name filter length is too long. Maximum name filter
- *                             length corresponds to @ref NRF_BLE_SCAN_NAME_MAX_LEN,
+ *                             length corresponds to @ref CONFIG_BLE_SCAN_NAME_MAX_LEN,
  *                             including NULL-termination.
  * @retval NRF_ERROR_NO_MEM If the number of available filters is exceeded.
  * @retval NRF_ERROR_INVALID_PARAM If the filter type is incorrect. Available filter types:
