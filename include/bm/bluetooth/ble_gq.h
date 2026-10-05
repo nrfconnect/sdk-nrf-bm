@@ -216,17 +216,17 @@ struct ble_gq_req {
 		} gattc_srv_disc;
 		/**
 		 * @brief GATTC characteristic discovery parameters.
-		 *        Type @ref NRF_BLE_GQ_REQ_CHAR_DISCOVERY.
+		 *        Type @ref BLE_GQ_REQ_CHAR_DISCOVERY.
 		 */
 		ble_gattc_handle_range_t gattc_char_disc;
 		/**
 		 * @brief GATTC characteristic descriptor discovery parameters.
-		 *        Type @ref NRF_BLE_GQ_REQ_DESC_DISCOVERY.
+		 *        Type @ref BLE_GQ_REQ_DESC_DISCOVERY.
 		 */
 		ble_gattc_handle_range_t gattc_desc_disc;
 		/**
 		 * @brief GATTS handle value notification or indication parameters.
-		 *        Type @ref NRF_BLE_GQ_REQ_GATTS_HVX.
+		 *        Type @ref BLE_GQ_REQ_GATTS_HVX.
 		 */
 		ble_gatts_hvx_params_t gatts_hvx;
 	};

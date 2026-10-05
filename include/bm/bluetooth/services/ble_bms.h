@@ -329,14 +329,14 @@ uint32_t ble_bms_init(struct ble_bms *bms, struct ble_bms_config *bms_config);
 void ble_bms_on_ble_evt(const ble_evt_t *ble_evt, void *ble_bms);
 
 /**
- * @brief Handle events from the @ref nrf_ble_qwr.
+ * @brief Handle events from the @ref ble_qwr.
  *
  * @param[in] bms BMS structure.
  * @param[in] qwr Queued Write structure.
  * @param[in] evt Event received from the Queued Writes module.
  *
  * @retval BLE_GATT_STATUS_SUCCESS If the received event is accepted.
- * @retval NRF_BLE_QWR_REJ_REQUEST_ERR_CODE If the received event is not relevant for any of this
+ * @retval BLE_QWR_REJ_REQUEST_ERR_CODE If the received event is not relevant for any of this
  *         module's attributes.
  * @retval BLE_BMS_OPCODE_NOT_SUPPORTED If the received opcode is not supported.
  * @retval BLE_GATT_STATUS_ATTERR_INSUF_AUTHORIZATION If the application handler returns that the
