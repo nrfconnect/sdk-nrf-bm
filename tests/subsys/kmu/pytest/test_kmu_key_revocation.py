@@ -198,14 +198,14 @@ def test_if_previous_key_is_revoked_when_flashing_new_image(
     pytest.LineMatcher(lines).fnmatch_lines(LINES_FOR_CORRECT_BOOT)
 
     logger.info("Flash DUT with the second image")
-    west_flash(build_dir_2, dut.device_config.id)
+    west_flash(build_dir_2, dut.device_config.id, extra_args="--no-reset")
     dut.clear_buffer()
     reset_board(dut.device_config.id)
     lines = dut.readlines_until(regex="Hello World!", print_output=True, timeout=20)
     pytest.LineMatcher(lines).fnmatch_lines(LINES_FOR_CORRECT_BOOT)
 
     logger.info("Flash DUT with the first image")
-    west_flash(build_dir_1, dut.device_config.id)
+    west_flash(build_dir_1, dut.device_config.id, extra_args="--no-reset")
     dut.clear_buffer()
     reset_board(dut.device_config.id)
 
