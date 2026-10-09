@@ -86,6 +86,7 @@ uint32_t ble_qwr_value_get(
 	uint16_t val_len = 0;
 	uint16_t val_offset = 0;
 	uint32_t cur_len = 0;
+	uint16_t buf_len;
 
 	if (!qwr || !mem || !len) {
 		return NRF_ERROR_NULL;
@@ -95,29 +96,52 @@ uint32_t ble_qwr_value_get(
 		return NRF_ERROR_INVALID_STATE;
 	}
 
-	do {
+	buf_len = qwr->mem_buffer.len;
+
+	if (qwr->mem_buffer.p_mem == NULL || buf_len < sizeof(uint16_t)) {
+		return NRF_ERROR_INVALID_DATA;
+	}
+
+	while (i < buf_len) {
+		if ((i + sizeof(uint16_t)) > buf_len) {
+			return NRF_ERROR_INVALID_DATA;
+		}
+
 		handle = uint16_decode(&(qwr->mem_buffer.p_mem[i]));
 		if (handle == BLE_GATT_HANDLE_INVALID) {
 			break;
 		}
 
 		i += sizeof(uint16_t);
+
+		if ((i + (2 * sizeof(uint16_t))) > buf_len) {
+			return NRF_ERROR_INVALID_DATA;
+		}
+
 		val_offset = uint16_decode(&(qwr->mem_buffer.p_mem[i]));
 		i += sizeof(uint16_t);
 		val_len = uint16_decode(&(qwr->mem_buffer.p_mem[i]));
 		i += sizeof(uint16_t);
 
+		if ((i + val_len) > buf_len) {
+			return NRF_ERROR_INVALID_DATA;
+		}
+
 		if (handle == attr_handle) {
+			if ((val_offset + val_len) > UINT16_MAX) {
+				return NRF_ERROR_INVALID_DATA;
+			}
+
 			cur_len = val_offset + val_len;
-			if (cur_len <= *len) {
-				memcpy((mem + val_offset), &(qwr->mem_buffer.p_mem[i]), val_len);
-			} else {
+			if (cur_len > *len) {
 				return NRF_ERROR_NO_MEM;
 			}
+
+			memcpy(mem + val_offset, &(qwr->mem_buffer.p_mem[i]), val_len);
 		}
 
 		i += val_len;
-	} while (i < qwr->mem_buffer.len);
+	}
 
 	*len = cur_len;
 	return NRF_SUCCESS;
@@ -228,7 +252,8 @@ static void on_prepare_write(struct ble_qwr *qwr, const ble_gatts_evt_write_t *w
 
 	if (auth_reply.params.write.gatt_status != BLE_GATT_STATUS_SUCCESS) {
 		for (i = 0; i < qwr->nb_registered_attr; i++) {
-			if (qwr->attr_handles[i] == write_evt->handle) {
+			if ((qwr->attr_handles[i] == write_evt->handle) &&
+			    (qwr->nb_written_handles < CONFIG_BLE_QWR_MAX_ATTR)) {
 				auth_reply.params.write.gatt_status = BLE_GATT_STATUS_SUCCESS;
 				qwr->written_attr_handles[qwr->nb_written_handles++] =
 					write_evt->handle;
