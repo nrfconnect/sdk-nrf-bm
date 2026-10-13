@@ -126,6 +126,8 @@ Libraries
       * The :c:func:`ble_conn_params_phy_radio_mode_set` function to return :c:macro:`NRF_ERROR_INVALID_PARAM` if the ``phy_pref`` parameter contains PHY modes not supported by the SoftDevice.
       * The :c:func:`ble_conn_params_override` function to allow runtime overrides of the acceptable connection parameter window used when validating peripheral requests to change the connection parameters.
         Previously, this window was set statically by Kconfig options and was not possible to override at runtime.
+      * The data length extension handling after deprecation of the :c:enumerator:`BLE_GAP_EVT_DATA_LENGTH_UPDATE_REQUEST`.
+        The SoftDevice now responds to a peer's data length update procedure automatically based on the ATT MTU value configured when enabling the SoftDevice.
 
    * Fixed:
 

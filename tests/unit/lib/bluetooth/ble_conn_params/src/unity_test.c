@@ -297,57 +297,6 @@ void test_ble_conn_params_data_length_set(void)
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
-void test_ble_conn_params_data_length_set_busy(void)
-{
-	uint32_t nrf_err;
-	struct ble_conn_params_data_length dl = {
-		.rx = BLE_GAP_DATA_LENGTH_DEFAULT,
-		.tx = BLE_GAP_DATA_LENGTH_DEFAULT,
-	};
-
-	ble_gap_data_length_params_t dlp_expected = {
-		.max_tx_octets = BLE_GAP_DATA_LENGTH_DEFAULT,
-		.max_rx_octets = BLE_GAP_DATA_LENGTH_DEFAULT,
-		.max_tx_time_us = BLE_GAP_DATA_LENGTH_AUTO,
-		.max_rx_time_us = BLE_GAP_DATA_LENGTH_AUTO,
-	};
-	ble_gap_data_length_limitation_t dll_expected = {0};
-
-	ble_evt_t ble_evt = {
-		.evt.common_evt.conn_handle = CONN_HANDLE,
-	};
-
-	__cmock_sd_ble_gap_data_length_update_ExpectWithArrayAndReturn(
-		CONN_HANDLE, &dlp_expected, 1, &dll_expected, 1, NRF_ERROR_BUSY);
-	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
-
-	nrf_err = ble_conn_params_data_length_set(CONN_HANDLE, dl);
-	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
-
-	/* Inject SoftDevice event to retrigger the request */
-
-	/* Calls from BLE observers. */
-	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
-	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
-	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
-	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
-
-	__cmock_sd_ble_gap_data_length_update_ExpectWithArrayAndReturn(
-		CONN_HANDLE, &dlp_expected, 1, &dll_expected, 1, NRF_SUCCESS);
-
-	sdh_evt_dispatch_ble(&ble_evt);
-
-	/* Event is processed, not called again */
-
-	/* Calls from BLE observers. */
-	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
-	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
-	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
-	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
-
-	sdh_evt_dispatch_ble(&ble_evt);
-}
-
 void test_ble_conn_params_data_length_set_resources(void)
 {
 	uint32_t nrf_err;
@@ -1070,42 +1019,6 @@ void test_ble_evt_data_length_update(void)
 	TEST_ASSERT_EQUAL(CONN_HANDLE, app_evt.conn_handle);
 	TEST_ASSERT_EQUAL(1, app_evt.data_length.rx);
 	TEST_ASSERT_EQUAL(3, app_evt.data_length.tx);
-}
-
-void test_ble_evt_data_length_update_request(void)
-{
-
-	ble_evt_t ble_evt = {
-		.header.evt_id = BLE_GAP_EVT_DATA_LENGTH_UPDATE_REQUEST,
-		.evt.gap_evt = {
-			.conn_handle = CONN_HANDLE,
-			.params.data_length_update_request.peer_params = {
-				.max_tx_octets = BLE_GAP_DATA_LENGTH_DEFAULT,
-				.max_rx_octets = BLE_GAP_DATA_LENGTH_DEFAULT,
-				.max_tx_time_us = BLE_GAP_DATA_LENGTH_AUTO,
-				.max_rx_time_us = BLE_GAP_DATA_LENGTH_AUTO,
-			},
-		},
-	};
-
-	ble_gap_data_length_params_t dlp_expected = {
-		.max_tx_octets = BLE_GAP_DATA_LENGTH_DEFAULT,
-		.max_rx_octets = BLE_GAP_DATA_LENGTH_DEFAULT,
-		.max_tx_time_us = BLE_GAP_DATA_LENGTH_AUTO,
-		.max_rx_time_us = BLE_GAP_DATA_LENGTH_AUTO,
-	};
-	ble_gap_data_length_limitation_t dll_expected = {0};
-
-	/* Calls from BLE observers. */
-	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
-	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
-	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
-	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(CONN_HANDLE, 0);
-
-	__cmock_sd_ble_gap_data_length_update_ExpectWithArrayAndReturn(
-		CONN_HANDLE, &dlp_expected, 1, &dll_expected, 1, NRF_SUCCESS);
-
-	sdh_evt_dispatch_ble(&ble_evt);
 }
 
 void test_ble_evt_phy_update(void)
