@@ -7,9 +7,9 @@
 # This file provides a basic set of Kconfig requirements for samples in this repo
 
 # All these samples shall run without multithreading
-config MULTITHREADING
+configdefault MULTITHREADING
 	default n if (!UNITY && !(ZTEST && BOARD_NATIVE_SIM))
 
 # Software ISR table is not needed if multithreading is not used
-config GEN_SW_ISR_TABLE
+configdefault GEN_SW_ISR_TABLE
 	default n if !MULTITHREADING

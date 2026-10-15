@@ -69,5 +69,5 @@ endif
 
 endmenu
 
-config CLOCK_CONTROL
+configdefault CLOCK_CONTROL
 	default n if SOFTDEVICE
