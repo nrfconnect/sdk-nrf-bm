@@ -1,67 +1,17 @@
 # Copyright (c) 2016-2025 Nordic Semiconductor ASA
 # SPDX-License-Identifier: Apache-2.0
 
-# This file overrides the configuration to allow for the nrfx Kconfig options to be set
-# without having the peripheral defined in Device Tree. The file contains references to periperals
-# for SoCs outside of those supported in Bare Metal.
-
-config HAS_NRFX
-	bool
+# This file partially overrides the nrfx Kconfigs in zephyr/modules/hal_nordic/nrfx/Konfig to allow
+# all options to be set without having the peripherals defined in Device Tree.
 
 menu "nrfx drivers"
 	depends on HAS_NRFX
 
-config NRFX_ADC
-	bool "ADC driver"
-	depends on SOC_SERIES_NRF51
-
 config NRFX_CLOCK
 	bool "CLOCK driver"
 
-if NRFX_CLOCK
-
-config NRFX_CLOCK_USE_LFRC_CALIBRATION
-	bool "Extend NRFX_CLOCK to use LFRC peripheral"
-
-config NRFX_CLOCK_LFXO_TWO_STAGE_ENABLED
-	bool "Two stage start sequence of the low frequency clock"
-
-config NRFX_CLOCK_LF_CAL_ENABLED
-	bool "LFRC Calibration enabled"
-
-config NRFX_CLOCK_LF_SRC_RC
-	bool "RC Oscillator"
-
-config NRFX_CLOCK_LF_SRC_XTAL
-	bool "Crystal Oscillator"
-
-config NRFX_CLOCK_LF_SRC_SYNTH
-	depends on !SOC_SERIES_NRF91
-	bool "Synthesized from HFCLK"
-
-config NRFX_CLOCK_LF_SRC_LOW_SWING
-	depends on SOC_SERIES_NRF52
-	bool "External low swing"
-
-config NRFX_CLOCK_LF_SRC_FULL_SWING
-	depends on SOC_SERIES_NRF52
-	bool "External full swing"
-
-endif # NRFX_CLOCK
-
 config NRFX_COMP
 	bool "COMP driver"
-
-config NRFX_CRACEN
-	bool "CRACEN drivers"
-	depends on SOC_COMPATIBLE_NRF54LX || SOC_COMPATIBLE_NRF71
-	select NRFX_CRACEN_BSIM_SUPPORT if SOC_SERIES_BSIM_NRFXX
-
-config NRFX_CRACEN_BSIM_SUPPORT
-	bool
-
-config NRFX_EGU
-	bool
 
 config NRFX_EGU0
 	bool "EGU0 driver instance"
@@ -103,50 +53,11 @@ config NRFX_EGU130
 	bool "EGU130 driver instance"
 	select NRFX_EGU
 
-config NRFX_GPIOTE
-	bool "GPIOTE driver"
-
-config NRFX_GPIOTE_NUM_OF_EVT_HANDLERS
-	int "Number of event handlers"
-	depends on NRFX_GPIOTE
-	range 1 15
-	help
-	  Specifies number of handlers that can be registered to nrfx_gpiote driver
-	  by the user.
-
-config NRFX_GPPI
-	bool "Generic PPI layer"
-	help
-	   Enable the nrfx_gppi utilities providing unified API for creating PPI
-	   connections across SoC families.
-
-config NRFX_GPPI_V1
-	bool "GPPI layer legacy"
-	depends on NRFX_GPPI
-	help
-	  When enabled then legacy version of Generic PPI layer is used.
-
-config NRFX_GPPI_SD2PPI_GLOBAL
-	bool
-	depends on NRFX_GPPI && !NRFX_GPPI_V1
-	help
-	  Indicates GPPI implementation for SD^2PPI (Secure multi-Domain DPPI) architecture.
-	  SD^2PPI architecture is using multiple instances of DPPI controllers and Ironside service
-	  to configure the security and ownership of the PPI resources.
-
 config NRFX_GRTC
 	bool "GRTC driver"
 
-config NRFX_I2S
-	bool "I2S driver"
-
 config NRFX_IPC
 	bool "IPC driver"
-
-config NRFX_KMU
-	bool "Key Management Unit driver"
-	help
-	   Enable the nrfx_kmu driver.
 
 config NRFX_LPCOMP
 	bool "LPCOMP driver"
@@ -162,17 +73,8 @@ config NRFX_NFCT
 config NRFX_NVMC
 	bool "NVMC driver"
 
-config NRFX_PDM
-	bool "PDM driver"
-
 config NRFX_POWER
 	bool "POWER driver"
-
-config NRFX_PWM
-	bool "PWM driver"
-
-config NRFX_QDEC
-	bool "QDEC driver"
 
 config NRFX_QSPI
 	bool "QSPI driver"
@@ -183,15 +85,9 @@ config NRFX_RNG
 config NRFX_RRAMC
 	bool "RRAMC driver"
 
-config NRFX_RTC
-	bool "RTC driver"
-
 config NRFX_SAADC
 	bool "SAADC driver"
 	depends on !SOC_SERIES_NRF51
-
-config NRFX_SPI
-	bool "SPI driver"
 
 config NRFX_SPIM
 	bool "SPIM driver"
@@ -199,112 +95,16 @@ config NRFX_SPIM
 config NRFX_SPIS
 	bool "SPIS driver"
 
-config NRFX_SYSTICK
-	bool "SYSTICK driver"
-	depends on CPU_CORTEX_M_HAS_SYSTICK
-
 config NRFX_TBM
 	bool "TBM driver"
 
-config NRFX_TDM
-	bool "TDM driver"
-
 config NRFX_TEMP
 	bool "TEMP driver"
-
-config NRFX_TIMER
-	bool "TIMER driver"
-
-config NRFX_TWI
-	bool "NRFX driver for TWI peripheral"
-
-config NRFX_TWIM
-	bool "NRFX driver for TWIM peripheral"
-
-config NRFX_TWIS
-	bool "NRFX driver for TWIS peripheral"
-
-config NRFX_UART
-	bool "UART driver"
-
-config NRFX_UARTE
-	bool "UARTE driver"
-
-config NRFX_UARTE_CONFIG_SKIP_GPIO_CONFIG
-	bool "UARTE GPIO configuration support"
-	depends on NRFX_UARTE
-
-config NRFX_UARTE_CONFIG_SKIP_PSEL_CONFIG
-	bool "UARTE PSEL configuration support"
-	depends on NRFX_UARTE
-
-config NRFX_UARTE_CONFIG_TX_LINK
-	bool "UARTE TX transfer linking support"
-	depends on NRFX_UARTE
-
-config NRFX_UARTE_CONFIG_RX_CACHE_ENABLED
-	bool "UARTE RX caching support"
-	depends on NRFX_UARTE
-	help
-	  Feature might be enabled on platforms which has limitations regarding addresses
-	  to which receiver can write data. If enabled then internal driver buffers
-	  (cache buffers) are used for DMA transfers and data is copied to the user buffer.
 
 config NRFX_USBREG
 	bool "USBREG driver"
 
 config NRFX_WDT
 	bool "WDT driver"
-
-menu "Peripheral Resource Sharing module"
-
-config NRFX_PRS
-	bool
-
-config NRFX_PRS_BOX_0
-	bool "PRS box 0"
-	select NRFX_PRS
-
-config NRFX_PRS_BOX_1
-	bool "PRS box 1"
-	select NRFX_PRS
-
-config NRFX_PRS_BOX_2
-	bool "PRS box 2"
-	select NRFX_PRS
-
-config NRFX_PRS_BOX_3
-	bool "PRS box 3"
-	select NRFX_PRS
-
-config NRFX_PRS_BOX_4
-	bool "PRS box 4"
-	select NRFX_PRS
-
-config NRFX_PRS_BOX_5
-	bool "PRS box 5"
-	select NRFX_PRS
-
-config NRFX_PRS_BOX_6
-	bool "PRS box 6"
-	select NRFX_PRS
-
-config NRFX_PRS_BOX_7
-	bool "PRS box 7"
-	select NRFX_PRS
-
-config NRFX_PRS_BOX_8
-	bool "PRS box 8"
-	select NRFX_PRS
-
-config NRFX_PRS_BOX_9
-	bool "PRS box 9"
-	select NRFX_PRS
-
-endmenu
-
-config NRFX_RESERVED_RESOURCES_HEADER
-	string
-	default "nrfx_reserved_resources_ncs.h"
 
 endmenu # "nrfx drivers"
