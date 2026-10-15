@@ -13,12 +13,15 @@ menu "nrfx drivers"
 
 config NRFX_ADC
 	bool "ADC driver"
-	depends on SOC_SERIES_NRF51X
+	depends on SOC_SERIES_NRF51
 
 config NRFX_CLOCK
 	bool "CLOCK driver"
 
 if NRFX_CLOCK
+
+config NRFX_CLOCK_USE_LFRC_CALIBRATION
+	bool "Extend NRFX_CLOCK to use LFRC peripheral"
 
 config NRFX_CLOCK_LFXO_TWO_STAGE_ENABLED
 	bool "Two stage start sequence of the low frequency clock"
@@ -33,15 +36,15 @@ config NRFX_CLOCK_LF_SRC_XTAL
 	bool "Crystal Oscillator"
 
 config NRFX_CLOCK_LF_SRC_SYNTH
-	depends on !SOC_SERIES_NRF91X
+	depends on !SOC_SERIES_NRF91
 	bool "Synthesized from HFCLK"
 
 config NRFX_CLOCK_LF_SRC_LOW_SWING
-	depends on SOC_SERIES_NRF52X
+	depends on SOC_SERIES_NRF52
 	bool "External low swing"
 
 config NRFX_CLOCK_LF_SRC_FULL_SWING
-	depends on SOC_SERIES_NRF52X
+	depends on SOC_SERIES_NRF52
 	bool "External full swing"
 
 endif # NRFX_CLOCK
@@ -51,7 +54,11 @@ config NRFX_COMP
 
 config NRFX_CRACEN
 	bool "CRACEN drivers"
-	depends on SOC_COMPATIBLE_NRF54LX
+	depends on SOC_COMPATIBLE_NRF54LX || SOC_COMPATIBLE_NRF71
+	select NRFX_CRACEN_BSIM_SUPPORT if SOC_SERIES_BSIM_NRFXX
+
+config NRFX_CRACEN_BSIM_SUPPORT
+	bool
 
 config NRFX_EGU
 	bool
@@ -97,31 +104,7 @@ config NRFX_EGU130
 	select NRFX_EGU
 
 config NRFX_GPIOTE
-	bool
-
-config NRFX_GPIOTE0
-	bool "GPIOTE0 driver instance"
-	select NRFX_GPIOTE
-
-config NRFX_GPIOTE1
-	bool "GPIOTE1 driver instance"
-	select NRFX_GPIOTE
-
-config NRFX_GPIOTE20
-	bool "NRFX_GPIOTE20 driver instance"
-	select NRFX_GPIOTE
-
-config NRFX_GPIOTE30
-	bool "NRFX_GPIOTE30 driver instance"
-	select NRFX_GPIOTE
-
-config NRFX_GPIOTE130
-	bool "NRFX_GPIOTE130 driver instance"
-	select NRFX_GPIOTE
-
-config NRFX_GPIOTE131
-	bool "NRFX_GPIOTE131 driver instance"
-	select NRFX_GPIOTE
+	bool "GPIOTE driver"
 
 config NRFX_GPIOTE_NUM_OF_EVT_HANDLERS
 	int "Number of event handlers"
@@ -137,6 +120,20 @@ config NRFX_GPPI
 	   Enable the nrfx_gppi utilities providing unified API for creating PPI
 	   connections across SoC families.
 
+config NRFX_GPPI_V1
+	bool "GPPI layer legacy"
+	depends on NRFX_GPPI
+	help
+	  When enabled then legacy version of Generic PPI layer is used.
+
+config NRFX_GPPI_SD2PPI_GLOBAL
+	bool
+	depends on NRFX_GPPI && !NRFX_GPPI_V1
+	help
+	  Indicates GPPI implementation for SD^2PPI (Secure multi-Domain DPPI) architecture.
+	  SD^2PPI architecture is using multiple instances of DPPI controllers and Ironside service
+	  to configure the security and ownership of the PPI resources.
+
 config NRFX_GRTC
 	bool "GRTC driver"
 
@@ -145,6 +142,11 @@ config NRFX_I2S
 
 config NRFX_IPC
 	bool "IPC driver"
+
+config NRFX_KMU
+	bool "Key Management Unit driver"
+	help
+	   Enable the nrfx_kmu driver.
 
 config NRFX_LPCOMP
 	bool "LPCOMP driver"
@@ -182,52 +184,20 @@ config NRFX_RRAMC
 	bool "RRAMC driver"
 
 config NRFX_RTC
-	bool
-
-config NRFX_RTC0
-	bool "RTC0 driver instance"
-	select NRFX_RTC
-
-config NRFX_RTC1
-	bool "RTC1 driver instance"
-	select NRFX_RTC
-
-config NRFX_RTC2
-	bool "RTC2 driver instance"
-	select NRFX_RTC
-
-config NRFX_RTC130
-	bool "RTC130 driver instance"
-	select NRFX_RTC
-
-config NRFX_RTC131
-	bool "RTC131 driver instance"
-	select NRFX_RTC
+	bool "RTC driver"
 
 config NRFX_SAADC
 	bool "SAADC driver"
-	depends on !SOC_SERIES_NRF51X
+	depends on !SOC_SERIES_NRF51
 
 config NRFX_SPI
-	bool
-
-config NRFX_SPI0
-	bool "SPI0 driver instance"
-	select NRFX_SPI
-
-config NRFX_SPI1
-	bool "SPI1 driver instance"
-	select NRFX_SPI
-
-config NRFX_SPI2
-	bool "SPI2 driver instance"
-	select NRFX_SPI
-
-config NRFX_SPIS
-	bool "SPIS driver"
+	bool "SPI driver"
 
 config NRFX_SPIM
 	bool "SPIM driver"
+
+config NRFX_SPIS
+	bool "SPIS driver"
 
 config NRFX_SYSTICK
 	bool "SYSTICK driver"
@@ -236,6 +206,9 @@ config NRFX_SYSTICK
 config NRFX_TBM
 	bool "TBM driver"
 
+config NRFX_TDM
+	bool "TDM driver"
+
 config NRFX_TEMP
 	bool "TEMP driver"
 
@@ -243,17 +216,7 @@ config NRFX_TIMER
 	bool "TIMER driver"
 
 config NRFX_TWI
-	bool
-
-config NRFX_TWI0
-	bool "TWI0 driver instance"
-	depends on SOC_SERIES_NRF51X || SOC_SERIES_NRF52X
-	select NRFX_TWI
-
-config NRFX_TWI1
-	bool "TWI1 driver instance"
-	depends on SOC_SERIES_NRF51X || SOC_SERIES_NRF52X
-	select NRFX_TWI
+	bool "NRFX driver for TWI peripheral"
 
 config NRFX_TWIM
 	bool "NRFX driver for TWIM peripheral"
@@ -262,12 +225,7 @@ config NRFX_TWIS
 	bool "NRFX driver for TWIS peripheral"
 
 config NRFX_UART
-	bool
-
-config NRFX_UART0
-	bool "UART0 driver instance"
-	depends on SOC_SERIES_NRF51X || SOC_SERIES_NRF52X
-	select NRFX_UART
+	bool "UART driver"
 
 config NRFX_UARTE
 	bool "UARTE driver"
@@ -333,6 +291,14 @@ config NRFX_PRS_BOX_6
 
 config NRFX_PRS_BOX_7
 	bool "PRS box 7"
+	select NRFX_PRS
+
+config NRFX_PRS_BOX_8
+	bool "PRS box 8"
+	select NRFX_PRS
+
+config NRFX_PRS_BOX_9
+	bool "PRS box 9"
 	select NRFX_PRS
 
 endmenu
