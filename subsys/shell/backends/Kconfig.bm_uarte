@@ -44,16 +44,16 @@ config SHELL_BACKEND_BM_UARTE_PARITY_INCLUDED
 	bool "Use parity"
 
 # Disable zephyrs default serial (UART) backend
-config SHELL_BACKEND_SERIAL
+configdefault SHELL_BACKEND_SERIAL
 	default n
 
 # Only minimal subset of shell is supported without threads
-config SHELL_MINIMAL
+configdefault SHELL_MINIMAL
 	default y
 
 # Workaround for added build assert in zephyr that should only be checked when multithreading is
 # enabled. Kconfig is not used with multithreading disabled.
-config SHELL_STACK_SIZE
+configdefault SHELL_STACK_SIZE
 	default 32
 
 endif
