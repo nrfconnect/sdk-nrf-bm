@@ -6,6 +6,10 @@
 
 menu "Backends"
 
+if SHELL_BACKENDS
+
 rsource "Kconfig.bm_uarte"
+
+endif # SHELL_BACKENDS
 
 endmenu

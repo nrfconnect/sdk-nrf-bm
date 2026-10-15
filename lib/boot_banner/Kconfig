@@ -34,4 +34,4 @@ config NCS_BARE_METAL_ZEPHYR_BOOT_BANNER_STRING
 	default "Zephyr OS [no multithreading]"
 	depends on NCS_BARE_METAL_ZEPHYR_BOOT_BANNER
 
-endif # NCS_BOOT_BANNER
+endif # NCS_BARE_METAL_BOOT_BANNER
