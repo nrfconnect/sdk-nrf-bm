@@ -46,4 +46,4 @@ backend = BM_UARTE
 backend-str = Bare Metal uarte
 source "subsys/logging/Kconfig.template.log_format_config"
 
-endif # BM_UARTE_CONSOLE
+endif # LOG_BACKEND_BM_UARTE
