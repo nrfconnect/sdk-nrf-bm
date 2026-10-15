@@ -13,10 +13,6 @@ menuconfig LOG_BACKEND_BM_UARTE
 
 if LOG_BACKEND_BM_UARTE
 
-# Disable the zephyr UART backend by default when the Bare Metal UARTE log backend is used.
-config LOG_BACKEND_UART
-	default n
-
 config LOG_BACKEND_BM_UARTE_BUFFER_SIZE
 	int "Maximum number of bytes to buffer in RAM before flushing"
 	default 200

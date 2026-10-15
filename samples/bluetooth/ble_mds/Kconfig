@@ -22,27 +22,27 @@ source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
 
 endmenu # "Bluetooth LE MDS sample"
 
-config MEMFAULT_NCS_FW_VERSION
+configdefault MEMFAULT_NCS_FW_VERSION
 	default "$(APPVERSION)"
 
-config BLE_DIS_FW_REVISION
+configdefault BLE_DIS_FW_REVISION
 	default MEMFAULT_NCS_FW_VERSION
 
-config MEMFAULT_NCS_FW_TYPE
+configdefault MEMFAULT_NCS_FW_TYPE
 	default "app"
 
-config BLE_DIS_SW_REVISION
+configdefault BLE_DIS_SW_REVISION
 	default MEMFAULT_NCS_FW_TYPE
 
-config MEMFAULT_NCS_HW_VERSION
+configdefault MEMFAULT_NCS_HW_VERSION
 	default "hw 54.15.0"
 
-config BLE_DIS_HW_REVISION
+configdefault BLE_DIS_HW_REVISION
 	default MEMFAULT_NCS_HW_VERSION
 
 # Handle increased buffersize when MEMFAULT Logging is enabled
 
-config MEMFAULT_LOGGING_RAM_SIZE
+configdefault MEMFAULT_LOGGING_RAM_SIZE
 	default 1024 if MEMFAULT_LOGGING_ENABLE
 
 source "Kconfig.zephyr"
