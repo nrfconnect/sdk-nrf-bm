@@ -33,9 +33,7 @@ config BM_UARTE_CONSOLE_ADD_CR_BEFORE_LF
 	bool "Add carriage return before linefeed"
 	default y
 
-#
 # Console termination
-#
 choice
 	prompt "Termination mode"
 	default BM_UARTE_CONSOLE_CR_LF_TERMINATION

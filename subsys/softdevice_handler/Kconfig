@@ -51,8 +51,8 @@ choice
 	default NRF_SDH_CLOCK_LF_SRC_RC
 
 config NRF_SDH_CLOCK_LF_SRC_RC
-	depends on NRF_GRTC_TIMER_SOURCE_LFLPRC
 	bool "LFRC"
+	depends on NRF_GRTC_TIMER_SOURCE_LFLPRC
 
 config NRF_SDH_CLOCK_LF_SRC_XO
 	bool "LFXO"
