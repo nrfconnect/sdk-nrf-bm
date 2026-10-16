@@ -19,6 +19,9 @@
 #include <bm/bm_timer.h>
 #include <bm/bluetooth/ble_adv.h>
 #include <bm/bluetooth/ble_conn_params.h>
+#include <bm/bluetooth/peer_manager/nrf_ble_lesc.h>
+#include <bm/bluetooth/peer_manager/peer_manager.h>
+#include <bm/bluetooth/peer_manager/peer_manager_handler.h>
 #include <bm/bluetooth/services/ble_bas.h>
 #include <bm/bluetooth/services/ble_dis.h>
 #include <bm/bluetooth/services/ble_mds.h>
@@ -157,8 +160,6 @@ static void battery_level_timeout_handler(void *context)
 
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {
-	uint32_t nrf_err;
-
 	ARG_UNUSED(ctx);
 
 	switch (evt->header.evt_id) {
@@ -166,11 +167,6 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		LOG_INF("Peer connected");
 		conn_handle = evt->evt.gap_evt.conn_handle;
 		nrf_gpio_pin_write(CONN_STATUS_LED, BOARD_LED_ACTIVE_STATE);
-
-		nrf_err = sd_ble_gatts_sys_attr_set(conn_handle, NULL, 0, 0);
-		if (nrf_err) {
-			LOG_ERR("Failed to set system attributes, nrf_error %#x", nrf_err);
-		}
 		break;
 
 	case BLE_GAP_EVT_DISCONNECTED:
@@ -187,22 +183,9 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 			evt->evt.gap_evt.params.auth_status.auth_status);
 		break;
 
-	case BLE_GAP_EVT_SEC_PARAMS_REQUEST:
-		/* Pairing is not required by this sample. */
-		nrf_err = sd_ble_gap_sec_params_reply(evt->evt.gap_evt.conn_handle,
-						      BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP,
-						      NULL, NULL);
-		if (nrf_err) {
-			LOG_ERR("Failed to reply with security params, nrf_error %#x", nrf_err);
-		}
-		break;
-
-	case BLE_GATTS_EVT_SYS_ATTR_MISSING:
-		nrf_err = sd_ble_gatts_sys_attr_set(evt->evt.gatts_evt.conn_handle, NULL, 0, 0);
-		if (nrf_err) {
-			LOG_ERR("Failed to set missing system attributes, nrf_error %#x",
-				nrf_err);
-		}
+	case BLE_GAP_EVT_PASSKEY_DISPLAY:
+		LOG_INF("Passkey: %.*s", BLE_GAP_PASSKEY_LEN,
+			evt->evt.gap_evt.params.passkey_display.passkey);
 		break;
 
 	default:
@@ -241,6 +224,92 @@ static void on_conn_params_evt(const struct ble_conn_params_evt *evt)
 	default:
 		break;
 	}
+}
+
+static void delete_bonds(void)
+{
+	uint32_t nrf_err;
+
+	LOG_INF("Erase bonds!");
+
+	nrf_err = pm_peers_delete();
+	if (nrf_err) {
+		LOG_ERR("Failed to delete peers, nrf_error %#x", nrf_err);
+	}
+}
+
+static void advertising_start(bool erase_bonds)
+{
+	uint32_t nrf_err;
+
+	if (erase_bonds) {
+		delete_bonds();
+	} else {
+		nrf_err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
+		if (nrf_err) {
+			LOG_ERR("Failed to start advertising, nrf_error %#x", nrf_err);
+		} else {
+			LOG_INF("Advertising as %s", CONFIG_SAMPLE_BLE_DEVICE_NAME);
+		}
+	}
+}
+
+static void pm_evt_handler(const struct pm_evt *evt)
+{
+	pm_handler_on_pm_evt(evt);
+	pm_handler_disconnect_on_sec_failure(evt);
+	pm_handler_flash_clean(evt);
+
+	switch (evt->evt_id) {
+	case PM_EVT_PEERS_DELETE_SUCCEEDED:
+		advertising_start(false);
+		break;
+	default:
+		break;
+	}
+}
+
+static uint32_t peer_manager_init(void)
+{
+	ble_gap_sec_params_t sec_param;
+	uint32_t nrf_err;
+
+	nrf_err = pm_init();
+	if (nrf_err) {
+		return nrf_err;
+	}
+
+	memset(&sec_param, 0, sizeof(ble_gap_sec_params_t));
+
+	/* Security parameters to be used for all security procedures. */
+	sec_param = (ble_gap_sec_params_t) {
+		.bond = 1,
+		.mitm = 0,
+		.lesc = 1,
+		.keypress = 0,
+		.io_caps = BLE_GAP_IO_CAPS_DISPLAY_ONLY,
+		.oob = 0,
+		.min_key_size = 16,
+		.max_key_size = 16,
+		.kdist_own.enc = 1,
+		.kdist_own.id = 1,
+		.kdist_peer.enc = 1,
+		.kdist_peer.id = 1,
+	};
+
+	nrf_err = pm_sec_params_set(&sec_param);
+	if (nrf_err) {
+		LOG_ERR("pm_sec_params_set() failed, nrf_error %#x", nrf_err);
+		return nrf_err;
+	}
+
+	nrf_err = pm_register(pm_evt_handler);
+	if (nrf_err) {
+		LOG_ERR("pm_register() failed, nrf_error %#x", nrf_err);
+		return nrf_err;
+	}
+
+	return NRF_SUCCESS;
 }
 
 static void ble_adv_evt_handler(struct ble_adv *adv, const struct ble_adv_evt *evt)
@@ -336,6 +405,7 @@ int main(void)
 {
 	int err;
 	uint32_t nrf_err;
+	bool erase_bonds = false;
 	ble_gap_conn_sec_mode_t device_name_write_sec;
 	struct bm_buttons_config button_configs[] = {
 		{
@@ -423,6 +493,8 @@ int main(void)
 		goto idle;
 	}
 
+	erase_bonds = bm_buttons_is_pressed(BOARD_PIN_BTN_1);
+
 	err = nrf_sdh_enable_request();
 	if (err) {
 		LOG_ERR("Failed to enable SoftDevice, err %d", err);
@@ -446,6 +518,14 @@ int main(void)
 		LOG_ERR("Failed to set device name, nrf_error %#x", nrf_err);
 		goto idle;
 	}
+
+	nrf_err = peer_manager_init();
+	if (nrf_err) {
+		LOG_ERR("Failed to initialize Peer Manager, nrf_error %#x", nrf_err);
+		goto idle;
+	}
+
+	LOG_INF("Peer Manager initialized");
 
 	nrf_err = ble_conn_params_evt_handler_set(on_conn_params_evt);
 	if (nrf_err) {
@@ -493,16 +573,11 @@ int main(void)
 
 	nrf_gpio_pin_write(RUN_STATUS_LED, BOARD_LED_ACTIVE_STATE);
 
-	nrf_err = ble_adv_start(&ble_adv, BLE_ADV_MODE_FAST);
-	if (nrf_err) {
-		LOG_ERR("Failed to start advertising, nrf_error %#x", nrf_err);
-		goto idle;
-	}
-
-	LOG_INF("Advertising as %s", CONFIG_SAMPLE_BLE_DEVICE_NAME);
+	advertising_start(erase_bonds);
 
 idle:
 	while (true) {
+		(void)nrf_ble_lesc_request_handler();
 #if IS_ENABLED(CONFIG_MEMFAULT_METRICS_TIMER_CUSTOM)
 		/* With CONFIG_MEMFAULT_METRICS_TIMER_CUSTOM, Memfault's own internal
 		 * `timer_boot` implementation is disabled so we need to drive the heartbeat.
