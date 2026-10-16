@@ -97,10 +97,9 @@ Use :c:macro:`BLE_MDS_CONFIG_SEC_MODE_DEFAULT` or populate :c:struct:`ble_mds_co
 
 .. note::
 
-   The :c:macro:`BLE_MDS_CONFIG_SEC_MODE_DEFAULT` macro sets every characteristic to :c:macro:`BLE_GAP_CONN_SEC_MODE_OPEN`.
-   Any connected central can then read the Memfault project key and the diagnostic data.
-   In applications that support pairing, populate the :c:struct:`ble_mds_config` structure with a mode that requires encryption, such as :c:macro:`BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM`, instead of using the default macro.
-   The :ref:`ble_mds_sample` sample uses the open configuration because it does not support pairing.
+   The :c:macro:`BLE_MDS_CONFIG_SEC_MODE_DEFAULT` macro sets every characteristic to :c:macro:`BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM`.
+   A central must pair and establish an encrypted link before it can read the Memfault project key or stream diagnostic data.
+   The :ref:`ble_mds_sample` sample uses this default and enables LE Secure Connections pairing through :ref:`lib_peer_manager`.
 
 After initialization, include the MDS UUID type returned by :c:func:`ble_mds_service_uuid_type` in the advertising UUID list if the service should be discoverable before connection.
 

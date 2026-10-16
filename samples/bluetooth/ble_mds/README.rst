@@ -75,6 +75,18 @@ After reboot, reconnect with an MDS gateway to transfer the collected coredump d
 
 For more information about coredumps, see `Memfault: Coredumps`_.
 
+Security
+========
+
+The sample uses :ref:`lib_peer_manager` to support LE Secure Connections (LESC) pairing and bonding.
+All MDS GATT characteristics require an encrypted link, so a gateway must pair before it can read the Memfault upload URI, authorization header, or stream diagnostic chunks.
+
+When a central accesses an encrypted MDS characteristic, pairing is triggered automatically.
+`nRF Connect Device Manager`_ handles this during the diagnostics workflow.
+
+Hold **Button 2** while resetting the kit to erase all stored bonds.
+The device starts advertising again after the bonds are deleted.
+
 User interface
 **************
 
@@ -93,7 +105,8 @@ Button 1:
    Records the ``button_state_changed`` trace event on press and release.
 
 Button 2:
-   Increments the ``button_press_count`` metric.
+   Increments the ``button_press_count`` metric when pressed during normal operation.
+   Hold while resetting to erase stored bonds.
 
 Button 3:
    Simulates a crash by triggering a HardFault exception.
@@ -166,7 +179,9 @@ Test this sample with `nRF Connect Device Manager`_ after completing the :ref:`M
 #. Observe that the ``Advertising as nRF BM Memfault`` message is printed.
    You can configure this name using the :kconfig:option:`CONFIG_SAMPLE_BLE_DEVICE_NAME` Kconfig option.
 #. Open `nRF Connect Device Manager`_ and scan for devices.
-#. Connect to the device and open the diagnostics view.
+#. Connect to the device.
+   Pairing is initiated automatically when the gateway accesses the encrypted MDS characteristics.
+#. Open the diagnostics view.
 #. Use the buttons to generate metrics, trace events, and a coredump.
 #. Upload the symbol file generated from your build to your Memfault project, so that Memfault can decode the data that the device uploads.
    The symbol file is located in the build folder: :file:`<build>/ble_mds/zephyr/zephyr.elf`.
@@ -192,6 +207,7 @@ This sample uses the following |BMshort| libraries:
 * :ref:`lib_ble_service_bas`
 * :ref:`lib_ble_service_dis`
 * :ref:`lib_ble_service_mds`
+* :ref:`lib_peer_manager`
 * :ref:`lib_bm_buttons`
 * :ref:`lib_bm_timer`
 * :ref:`lib_nrf_sdh`
