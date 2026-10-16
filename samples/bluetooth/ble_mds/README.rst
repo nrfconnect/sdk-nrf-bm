@@ -92,11 +92,60 @@ Button 0:
 Button 1:
    Records the ``button_state_changed`` trace event on press and release.
 
+   Keep the button pressed while resetting the board to delete bonding information for all peers stored on the device.
+
 Button 2:
    Increments the ``button_press_count`` metric.
 
 Button 3:
    Simulates a crash by triggering a HardFault exception.
+
+Security
+********
+The sample integrates :ref:`lib_peer_manager` (backed by :ref:`lib_bm_zms` for persistent storage) to support pairing and bonding.
+
+The following security parameters are configured:
+
+.. list-table:: Peer Manager security parameters
+   :header-rows: 1
+
+   * - Parameter
+     - Value
+     - Effect
+   * - Bonding
+     - True
+     - Supports storing of pairing information (bonding data).
+   * - MITM protection
+     - False
+     - Man-in-the-middle protection not required.
+   * - LE Secure Connections
+     - True
+     - Supports LESC pairing.
+   * - I/O capabilities
+     - Display only
+     - Determines local I/O capability, actual pairing method depends on negotiation with peer.
+
+This sample configures the following services and their characteristics with these specific operation modes and required security levels:
+
++-----------------------------+---------------------+--------------+-------------------------------+-----------------------------------------------------------------------------------------------------------+
+| Service                     | Characteristic      | Operation    | Required security level       | Effect                                                                                                    |
++=============================+=====================+==============+===============================+===========================================================================================================+
+| Memfault Diagnostic Service | Supported Features  | Read         | Encryption, no authentication | Connection must be encrypted to read which optional MDS features the device supports.                     |
++                             +---------------------+--------------+-------------------------------+-----------------------------------------------------------------------------------------------------------+
+|                             | Device Identifier   | Read         | Encryption, no authentication | Connection must be encrypted to read the device ID that identifies the device in the Memfault fleet.      |
++                             +---------------------+--------------+-------------------------------+-----------------------------------------------------------------------------------------------------------+
+|                             | Data URI            | Read         | Encryption, no authentication | Connection must be encrypted to read the Memfault URI that the gateway uploads diagnostic chunks to.      |
++                             +---------------------+--------------+-------------------------------+-----------------------------------------------------------------------------------------------------------+
+|                             | Authorization       | Read         | Encryption, no authentication | Connection must be encrypted to read the Memfault project key that the gateway uses to authorize uploads. |
++                             +---------------------+--------------+-------------------------------+-----------------------------------------------------------------------------------------------------------+
+|                             | Data Export         | Write/Notify | Encryption, no authentication | Connection must be encrypted to start or stop streaming and to receive diagnostic chunk notifications.    |
++-----------------------------+---------------------+--------------+-------------------------------+-----------------------------------------------------------------------------------------------------------+
+| Device Information Service  | All characteristics | Read         | Open, no security             | Any connected device can read device information such as the manufacturer name and firmware version.      |
++-----------------------------+---------------------+--------------+-------------------------------+-----------------------------------------------------------------------------------------------------------+
+| Battery Service             | Battery Level       | Read/Notify  | Open, no security             | Any connected device can read the battery level and subscribe to battery level notifications.             |
++-----------------------------+---------------------+--------------+-------------------------------+-----------------------------------------------------------------------------------------------------------+
+
+See `Testing`_ for the pairing and bonding steps.
 
 Configuration
 *************
@@ -166,7 +215,15 @@ Test this sample with `nRF Connect Device Manager`_ after completing the :ref:`M
 #. Observe that the ``Advertising as nRF BM Memfault`` message is printed.
    You can configure this name using the :kconfig:option:`CONFIG_SAMPLE_BLE_DEVICE_NAME` Kconfig option.
 #. Open `nRF Connect Device Manager`_ and scan for devices.
-#. Connect to the device and open the diagnostics view.
+#. :guilabel:`Connect` to your device.
+
+   The terminal output in |VSC| indicates ``Peer connected``.
+
+   After having connected, your computer or mobile phone may attempt to pair or bond with your device in order to encrypt the link.
+
+   You may be prompted to enter a passkey as part of the authentication step.
+   If prompted, provide the passkey from the terminal output.
+#. Open the diagnostics view.
 #. Use the buttons to generate metrics, trace events, and a coredump.
 #. Upload the symbol file generated from your build to your Memfault project, so that Memfault can decode the data that the device uploads.
    The symbol file is located in the build folder: :file:`<build>/ble_mds/zephyr/zephyr.elf`.
@@ -192,6 +249,7 @@ This sample uses the following |BMshort| libraries:
 * :ref:`lib_ble_service_bas`
 * :ref:`lib_ble_service_dis`
 * :ref:`lib_ble_service_mds`
+* :ref:`lib_peer_manager`
 * :ref:`lib_bm_buttons`
 * :ref:`lib_bm_timer`
 * :ref:`lib_nrf_sdh`
