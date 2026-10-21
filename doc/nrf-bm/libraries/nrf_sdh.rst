@@ -229,7 +229,11 @@ Controls the diagnostic output the SoftDevice handler produces, trading a small 
 * :kconfig:option:`CONFIG_NRF_SDH_LOG_SD_INFO` - Log SoftDevice information when the SoftDevice is enabled, including its ID, version, firmware ID, and unique string, as well as the Link Layer version when Bluetooth LE is enabled.
   This option also logs a warning if the SoftDevice found on the device differs from the one the application was compiled against, which is useful for catching version mismatches during development.
 * :kconfig:option:`CONFIG_NRF_SDH_BLE_LOG_SD_RAM_USAGE` - Log the amount of RAM the SoftDevice requires and where its RAM region ends when Bluetooth is enabled.
-  Enable this when tuning the Bluetooth Kconfig options above to confirm the application reserves enough RAM for the SoftDevice and to reclaim any RAM left unused.
+  Use this option when you tune the Bluetooth Kconfig options above.
+  The log shows the lowest application RAM start address that the current configuration allows.
+  To apply it, set the ``softdevice_ram`` size and the ``app_ram`` start address to this value in the Devicetree.
+  If the SoftDevice needs more RAM than reserved, an error with the required address is logged even when this option is disabled.
+  See :ref:`board_memory_layouts` for the RAM layout of each board.
 
 Usage
 *****
