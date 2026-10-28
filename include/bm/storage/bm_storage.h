@@ -282,7 +282,6 @@ int bm_storage_read(const struct bm_storage *storage, uint32_t src, void *dest, 
  * @retval -EFAULT The storage instance @p storage or @p src is @c NULL.
  * @retval -EPERM The storage instance @p storage is not initialized.
  * @retval -EINVAL The @p dest or @p len parameters are unaligned.
- * @retval -ENOMEM Out of memory to perform the requested operation.
  * @retval -EBUSY The operation could not be accepted at this time.
  * @retval -EIO An internal error has occurred.
  */
@@ -308,7 +307,6 @@ int bm_storage_write(const struct bm_storage *storage, uint32_t dest, const void
  * @retval -EFAULT The storage instance @p storage is @c NULL.
  * @retval -EPERM The storage instance @p storage is not initialized.
  * @retval -EINVAL The @p addr or @p len parameters are unaligned.
- * @retval -ENOMEM Out of memory to perform the requested operation.
  * @retval -EBUSY The operation could not be accepted at this time.
  * @retval -EIO An internal error has occurred.
  */
