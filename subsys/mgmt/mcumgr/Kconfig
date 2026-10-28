@@ -11,10 +11,6 @@ menuconfig NCS_BM_MCUMGR
 
 if NCS_BM_MCUMGR
 
-module = NCS_BM_MCUMGR
-module-str = ncs_bm_mcumgr
-source "subsys/logging/Kconfig.template.log_config"
-
 rsource "mgmt/Kconfig"
 
 rsource "smp/Kconfig"
