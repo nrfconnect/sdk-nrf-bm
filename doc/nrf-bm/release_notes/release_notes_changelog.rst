@@ -212,6 +212,8 @@ Bluetooth LE Services
         The SMP response is split into many notifications, which could fill the SoftDevice notification (HVN) TX queue and cause the :c:func:`sd_ble_gatts_hvx` function to return :c:macro:`NRF_ERROR_RESOURCES`, dropping the remaining data.
         Notifications that fail with :c:macro:`NRF_ERROR_RESOURCES` are now retransmitted on the :c:macro:`BLE_GATTS_EVT_HVN_TX_COMPLETE` event once the SoftDevice frees queue space.
       * An issue where a negative errno return value from the :c:func:`smp_reassembly_collect` function was compared against a positive nRF error.
+      * An issue where the content of an SMP reassembly buffer was not dropped when disconnecting from the Bluetooth peer during upload of a firmware image.
+        This resulted in a timeout on the `nRF Connect Device Manager`_ mobile application side when trying to resume the upload after a disconnect.
 
 * :ref:`lib_ble_service_hrs`:
 
