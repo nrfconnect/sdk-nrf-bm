@@ -92,7 +92,9 @@ Subsystems
 Storage
 -------
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+:ref:`lib_storage`:
+
+   * Updated the SoftDevice storage backend to return ``-EBUSY`` instead of ``-ENOMEM`` when the operation queue is full.
 
 Filesystem
 ----------

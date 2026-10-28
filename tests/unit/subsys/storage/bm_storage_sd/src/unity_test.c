@@ -630,7 +630,7 @@ void test_bm_storage_sd_write_queued_disabled_eio(void)
 	TEST_ASSERT_EQUAL(0, err);
 }
 
-void test_bm_storage_sd_write_enomem(void)
+void test_bm_storage_sd_write_ebusy(void)
 {
 	int err;
 	uint8_t buf[BLOCK_SIZE];
@@ -663,7 +663,7 @@ void test_bm_storage_sd_write_enomem(void)
 	}
 
 	err = bm_storage_write(&storage, 0, buf, sizeof(buf), NULL);
-	TEST_ASSERT_EQUAL(-ENOMEM, err);
+	TEST_ASSERT_EQUAL(-EBUSY, err);
 
 	for (size_t i = 0; i < CONFIG_BM_STORAGE_BACKEND_SD_QUEUE_SIZE + 1; i++) {
 		/* Each system events triggers the next operation in the queue */
@@ -1291,7 +1291,7 @@ void test_bm_storage_sd_erase_odd(void)
 	TEST_ASSERT_FALSE(is_busy);
 }
 
-void test_bm_storage_sd_erase_enomem(void)
+void test_bm_storage_sd_erase_ebusy(void)
 {
 	int err;
 	struct bm_storage storage = {0};
@@ -1327,7 +1327,7 @@ void test_bm_storage_sd_erase_enomem(void)
 
 	err = bm_storage_erase(&storage, 0,
 			       storage.nvm_info->wear_unit, NULL);
-	TEST_ASSERT_EQUAL(-ENOMEM, err);
+	TEST_ASSERT_EQUAL(-EBUSY, err);
 
 	for (size_t i = 0; i < CONFIG_BM_STORAGE_BACKEND_SD_QUEUE_SIZE + 1; i++) {
 		/* Each system events triggers the next operation in the queue */
