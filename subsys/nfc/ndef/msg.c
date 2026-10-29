@@ -5,6 +5,7 @@
  */
 
 #include <bm/nfc/ndef/msg.h>
+#include <zephyr/sys/__assert.h>
 #include <zephyr/sys/byteorder.h>
 #include <errno.h>
 
@@ -60,6 +61,8 @@ int nfc_ndef_msg_encode(struct nfc_ndef_msg_desc const *ndef_msg_desc, uint8_t *
 		if (err) {
 			return err;
 		}
+
+		__ASSERT_NO_MSG(temp_len <= (*msg_len - sum_of_len));
 
 		sum_of_len += temp_len;
 
