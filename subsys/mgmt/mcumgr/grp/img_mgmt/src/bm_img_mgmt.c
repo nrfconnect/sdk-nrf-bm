@@ -24,7 +24,7 @@
 
 #include <mgmt/mcumgr/grp/img_mgmt/img_mgmt_priv.h>
 
-LOG_MODULE_DECLARE(mcumgr_img_grp_data, CONFIG_MCUMGR_GRP_IMG_LOG_LEVEL);
+LOG_MODULE_DECLARE(mcumgr_img_grp, CONFIG_MCUMGR_GRP_IMG_LOG_LEVEL);
 
 #define S0_START PARTITION_ADDRESS(slot0_partition)
 #define S0_SIZE PARTITION_SIZE(slot0_partition)
