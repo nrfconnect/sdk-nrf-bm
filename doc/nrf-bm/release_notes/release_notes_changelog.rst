@@ -75,6 +75,10 @@ DFU
 
 * Updated the installer application to prevent Out-Of-Bound reads and writes of the new firmware image.
 
+* Fixed an issue where an interrupted image upload left the hash of the previous image in place.
+  DFU clients then reported the previous image as already present and skipped the upload, leaving a broken image.
+  The image management now erases the image tail when a new upload starts.
+
 Interrupts
 ==========
 
