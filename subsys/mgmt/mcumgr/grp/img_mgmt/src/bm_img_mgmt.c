@@ -124,6 +124,16 @@ static int claim_and_write(void)
 
 static void bm_storage_evt_handler_writes(struct bm_storage_evt *evt)
 {
+	/* Erase events are not part of the ring buffer writes,
+	 * so they must not update the ring buffer or the write offset.
+	 */
+	if (evt->id == BM_STORAGE_EVT_ERASE_RESULT) {
+		if (evt->result) {
+			LOG_WRN("Tail erase failed at offset %#x (err %d)", evt->addr, evt->result);
+		}
+		return;
+	}
+
 	ring_buf_get_finish(&ring_buf, evt->len);
 	write_offset += evt->len;
 
@@ -166,9 +176,13 @@ int img_mgmt_write_image_data(unsigned int offset, const void *data, unsigned in
 			      bool last)
 {
 	int rb_space;
+	int err;
 
 	storage_init();
 	if (offset == 0) {
+		const struct image_header *hdr = data;
+		unsigned int tail;
+
 		if (atomic_get(&ongoing)) {
 			LOG_WRN("New image write attempted while previous is ongoing");
 			return MGMT_ERR_EBUSY;
@@ -176,6 +190,17 @@ int img_mgmt_write_image_data(unsigned int offset, const void *data, unsigned in
 		/* New image. */
 		write_offset = 0;
 		ring_buf_reset(&ring_buf);
+
+		/* Erase the TLVs where the new header points,
+		 * so that an interrupted upload is not reported with the hash of a previous image.
+		 */
+		tail = ROUND_DOWN(hdr->ih_hdr_size + hdr->ih_img_size, storage_wear_unit);
+		if ((tail + storage_wear_unit) <= S0_SIZE) {
+			err = bm_storage_erase(&s0_storage, tail, storage_wear_unit, NULL);
+			if (err) {
+				LOG_WRN("Tail erase request failed at %#x (err %d)", tail, err);
+			}
+		}
 	}
 
 	if ((offset + num_bytes) > S0_SIZE) {
