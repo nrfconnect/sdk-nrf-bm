@@ -132,7 +132,7 @@ static void on_write(struct ble_mcumgr *service, const ble_evt_t *ble_evt)
 		 * Collection can fail only due to failing to allocate memory or by receiving
 		 * more data than expected.
 		 */
-		if (ret == NRF_ERROR_NO_MEM) {
+		if (ret == -ENOMEM) {
 			/* Failed to collect the buffer */
 			LOG_ERR("Failed to collect buffer");
 			return;
