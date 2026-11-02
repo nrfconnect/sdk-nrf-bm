@@ -111,7 +111,7 @@ static void queue_process(void)
 
 	while (true) {
 		if (queue_process_start) {
-			/* If the storage operation has ended, reset the flag. */
+			/* If the storage operation has ended. */
 			atomic_set(&queue_process_start, false);
 		} else {
 			/* We get here when the backend is asynchronous. */
@@ -121,6 +121,8 @@ static void queue_process(void)
 		if (prev_result) {
 			/* If the previous operation failed, we need to break the loop. */
 			result = prev_result;
+			/* Clear the current operation result. */
+			atomic_set(&cur_op_result, 0);
 			goto completed;
 		}
 
