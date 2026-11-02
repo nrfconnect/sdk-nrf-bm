@@ -186,16 +186,25 @@ int bm_rmem_init(struct bm_retained_clipboard_ctx *ctx)
 int bm_rmem_data_get(struct bm_retained_clipboard_ctx *ctx, struct bm_rmem_data_desc *desc)
 {
 	uint8_t *ptr;
+	uint8_t *end;
 	struct bm_rmem_tlv *tlv;
 
-	if (ctx->offset < CRC_TLV_SIZE) {
+	if ((ctx->offset < CRC_TLV_SIZE) || (ctx->max_offset > bm_clipboard_inst.size)) {
 		return -EINVAL;
 	}
 
 	ptr = bm_clipboard_inst.address + ctx->offset;
+	end = bm_clipboard_inst.address + ctx->max_offset;
 
-	while (ptr < bm_clipboard_inst.address + ctx->max_offset) {
+	while (ptr < end) {
+		if ((end - ptr) < sizeof(struct bm_rmem_tlv)) {
+			return -EINVAL;
+		}
+
 		tlv = (struct bm_rmem_tlv *)ptr;
+		if ((end - ptr - sizeof(struct bm_rmem_tlv)) < tlv->len) {
+			return -EINVAL;
+		}
 
 		if (desc->type == tlv->type) {
 			desc->len = tlv->len;
