@@ -87,6 +87,11 @@ int img_mgmt_upload_inspect(const struct img_mgmt_upload_req *req,
 	if (req->off == 0) {
 		/* First upload chunk. */
 
+		if (req->img_data.len > req->size) {
+			IMG_MGMT_UPLOAD_ACTION_SET_RC_RSN(action, img_mgmt_err_str_data_overrun);
+			return IMG_MGMT_ERR_INVALID_IMAGE_DATA_OVERRUN;
+		}
+
 		if (req->img_data.len < sizeof(struct image_header)) {
 			/*  Image header is the first thing in the image */
 			IMG_MGMT_UPLOAD_ACTION_SET_RC_RSN(action, img_mgmt_err_str_hdr_malformed);
@@ -183,15 +188,12 @@ int img_mgmt_upload_inspect(const struct img_mgmt_upload_req *req,
 				img_mgmt_state.off);
 			return IMG_MGMT_ERR_OK;
 		}
+	}
 
-		if (req->img_data.len > action->size ||
-		    (action->size - req->img_data.len) < req->off) {
-			/* Data overrun, the amount of data written would be more than the size
-			 * of the image that the client originally sent
-			 */
+	if (req->img_data.len > 0) {
+		if (req->off > action->size ||
+		    req->img_data.len > action->size - req->off) {
 			IMG_MGMT_UPLOAD_ACTION_SET_RC_RSN(action, img_mgmt_err_str_data_overrun);
-			LOG_DBG("Data overrun: %u + %u > %llu", req->off, req->img_data.len,
-				action->size);
 			return IMG_MGMT_ERR_INVALID_IMAGE_DATA_OVERRUN;
 		}
 	}
