@@ -19,6 +19,7 @@
 #include <ksched.h>
 #include <zephyr/init.h>
 #include <zephyr/internal/syscall_handler.h>
+#include <zephyr/irq.h>
 #include <kernel_internal.h>
 #include <zephyr/sys/check.h>
 #include <zephyr/sys/__assert.h>
@@ -82,11 +83,9 @@ static inline void handle_poll_events(struct k_queue *queue, uint32_t state)
 static int32_t queue_insert(struct k_queue *queue, void *prev, void *data,
 			    bool alloc, bool is_append)
 {
-	SYS_PORT_TRACING_OBJ_FUNC_ENTER(k_queue, queue_insert, queue, alloc);
+	unsigned int key;
 
-	if (is_append) {
-		prev = sys_sflist_peek_tail(&queue->data_q);
-	}
+	SYS_PORT_TRACING_OBJ_FUNC_ENTER(k_queue, queue_insert, queue, alloc);
 
 	/* Only need to actually allocate if no threads are pending */
 	if (alloc) {
@@ -106,9 +105,16 @@ static int32_t queue_insert(struct k_queue *queue, void *prev, void *data,
 		sys_sfnode_init(data, 0x0);
 	}
 
+	key = irq_lock();
+	if (is_append) {
+		prev = sys_sflist_peek_tail(&queue->data_q);
+	}
+
 	SYS_PORT_TRACING_OBJ_FUNC_BLOCKING(k_queue, queue_insert, queue, alloc, K_FOREVER);
 
 	sys_sflist_insert(&queue->data_q, prev, data);
+	irq_unlock(key);
+
 	handle_poll_events(queue, K_POLL_STATE_DATA_AVAILABLE);
 
 	SYS_PORT_TRACING_OBJ_FUNC_EXIT(k_queue, queue_insert, queue, alloc, 0);
@@ -167,18 +173,24 @@ int32_t z_impl_k_queue_alloc_prepend(struct k_queue *queue, void *data)
 
 int k_queue_append_list(struct k_queue *queue, void *head, void *tail)
 {
+	unsigned int key;
+
 	SYS_PORT_TRACING_OBJ_FUNC_ENTER(k_queue, append_list, queue);
 
+	key = irq_lock();
 	/* invalid head or tail of list */
 	CHECKIF((head == NULL) || (tail == NULL)) {
 		SYS_PORT_TRACING_OBJ_FUNC_EXIT(k_queue, append_list, queue, -EINVAL);
 
+		irq_unlock(key);
 		return -EINVAL;
 	}
 
 	if (head != NULL) {
 		sys_sflist_append_list(&queue->data_q, head, tail);
 	}
+
+	irq_unlock(key);
 
 	SYS_PORT_TRACING_OBJ_FUNC_EXIT(k_queue, append_list, queue, 0);
 
@@ -224,10 +236,13 @@ int k_queue_merge_slist(struct k_queue *queue, sys_slist_t *list)
 void *z_impl_k_queue_get(struct k_queue *queue, k_timeout_t timeout)
 {
 	void *data;
+	unsigned int key;
 
 	__ASSERT(K_TIMEOUT_EQ(timeout, K_NO_WAIT), "Blocking queue_get not supported");
 
 	SYS_PORT_TRACING_OBJ_FUNC_ENTER(k_queue, get, queue, timeout);
+
+	key = irq_lock();
 
 	if (likely(!sys_sflist_is_empty(&queue->data_q))) {
 		sys_sfnode_t *node;
@@ -237,6 +252,7 @@ void *z_impl_k_queue_get(struct k_queue *queue, k_timeout_t timeout)
 
 		SYS_PORT_TRACING_OBJ_FUNC_EXIT(k_queue, get, queue, timeout, data);
 
+		irq_unlock(key);
 		return data;
 	}
 
@@ -245,21 +261,28 @@ void *z_impl_k_queue_get(struct k_queue *queue, k_timeout_t timeout)
 	if (K_TIMEOUT_EQ(timeout, K_NO_WAIT)) {
 		SYS_PORT_TRACING_OBJ_FUNC_EXIT(k_queue, get, queue, timeout, NULL);
 
+		irq_unlock(key);
 		return NULL;
 	}
 
 	SYS_PORT_TRACING_OBJ_FUNC_EXIT(k_queue, get, queue, timeout, NULL);
 
+	irq_unlock(key);
 	return NULL;
 }
 
 bool k_queue_remove(struct k_queue *queue, void *data)
 {
+	unsigned int key;
+
+	key = irq_lock();
 	SYS_PORT_TRACING_OBJ_FUNC_ENTER(k_queue, remove, queue);
 
 	bool ret = sys_sflist_find_and_remove(&queue->data_q, (sys_sfnode_t *)data);
 
 	SYS_PORT_TRACING_OBJ_FUNC_EXIT(k_queue, remove, queue, ret);
+
+	irq_unlock(key);
 
 	return ret;
 }
@@ -269,16 +292,29 @@ bool k_queue_unique_append(struct k_queue *queue, void *data)
 	SYS_PORT_TRACING_OBJ_FUNC_ENTER(k_queue, unique_append, queue);
 
 	sys_sfnode_t *test;
+	unsigned int key;
+	void *prev;
+	bool ret;
+
+	key = irq_lock();
 
 	SYS_SFLIST_FOR_EACH_NODE(&queue->data_q, test) {
 		if (test == (sys_sfnode_t *) data) {
 			SYS_PORT_TRACING_OBJ_FUNC_EXIT(k_queue, unique_append, queue, false);
 
+			irq_unlock(key);
 			return false;
 		}
 	}
 
-	k_queue_append(queue, data);
+	sys_sfnode_init(data, 0x0);
+
+	prev = sys_sflist_peek_tail(&queue->data_q);
+
+	sys_sflist_insert(&queue->data_q, prev, data);
+	irq_unlock(key);
+
+	handle_poll_events(queue, K_POLL_STATE_DATA_AVAILABLE);
 
 	SYS_PORT_TRACING_OBJ_FUNC_EXIT(k_queue, unique_append, queue, true);
 
@@ -287,7 +323,11 @@ bool k_queue_unique_append(struct k_queue *queue, void *data)
 
 void *z_impl_k_queue_peek_head(struct k_queue *queue)
 {
+	unsigned int key;
+
+	key = irq_lock();
 	void *ret = z_queue_node_peek(sys_sflist_peek_head(&queue->data_q), false);
+	irq_unlock(key);
 
 	SYS_PORT_TRACING_OBJ_FUNC(k_queue, peek_head, queue, ret);
 
@@ -296,7 +336,11 @@ void *z_impl_k_queue_peek_head(struct k_queue *queue)
 
 void *z_impl_k_queue_peek_tail(struct k_queue *queue)
 {
+	unsigned int key;
+
+	key = irq_lock();
 	void *ret = z_queue_node_peek(sys_sflist_peek_tail(&queue->data_q), false);
+	irq_unlock(key);
 
 	SYS_PORT_TRACING_OBJ_FUNC(k_queue, peek_tail, queue, ret);
 
