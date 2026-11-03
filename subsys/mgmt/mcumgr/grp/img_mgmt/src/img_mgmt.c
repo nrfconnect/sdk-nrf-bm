@@ -312,12 +312,20 @@ img_mgmt_upload(struct smp_streamer *ctxt)
 	/* Write the image data to flash. */
 	if (req.img_data.len != 0) {
 		/* If this is the last chunk */
+		if ((img_mgmt_state.off > img_mgmt_state.size) ||
+		    (req.img_data.len > img_mgmt_state.size - img_mgmt_state.off)) {
+			IMG_MGMT_UPLOAD_ACTION_SET_RC_RSN(&action, img_mgmt_err_str_data_overrun);
+			ok = smp_add_cmd_err(zse, MGMT_GROUP_ID_IMAGE,
+					     IMG_MGMT_ERR_INVALID_IMAGE_DATA_OVERRUN);
+			goto end;
+		}
+
 		if (img_mgmt_state.off + req.img_data.len == img_mgmt_state.size) {
 			last = true;
 		}
 
 		rc = img_mgmt_write_image_data(req.off, req.img_data.value, action.write_bytes,
-						    last);
+					       last);
 		if (rc == 0 || rc == MGMT_ERR_EBUSY) {
 			if (rc == 0) {
 				img_mgmt_state.off += action.write_bytes;

@@ -178,7 +178,7 @@ int img_mgmt_write_image_data(unsigned int offset, const void *data, unsigned in
 		ring_buf_reset(&ring_buf);
 	}
 
-	if ((offset + num_bytes) > S0_SIZE) {
+	if (num_bytes > S0_SIZE || offset > S0_SIZE - num_bytes) {
 		return IMG_MGMT_ERR_INVALID_IMAGE_TOO_LARGE;
 	}
 
