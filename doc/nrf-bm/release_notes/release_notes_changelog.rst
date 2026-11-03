@@ -190,6 +190,8 @@ Libraries
 
 * ``Zephyr queue`` library:
 
+   * Added interrupt locking around list operations to prevent a race condition where the list head could be permanently lost.
+
    * Updated to return ``NULL`` on blocking calls to the :c:func:`z_impl_k_queue_get` function.
 
 Bluetooth LE Services
