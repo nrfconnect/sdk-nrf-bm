@@ -398,7 +398,7 @@ void nrf_ble_lesc_on_ble_evt(const ble_evt_t *ble_evt)
 	case BLE_GAP_EVT_AUTH_STATUS:
 		/* Generate new pairing keys. */
 		nrf_err = nrf_ble_lesc_keypair_generate();
-		if (nrf_err) {
+		if (nrf_err != NRF_SUCCESS && nrf_err != NRF_ERROR_BUSY) {
 			ble_lesc_internal_error = true;
 		}
 
