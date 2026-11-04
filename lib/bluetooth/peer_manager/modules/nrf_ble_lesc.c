@@ -24,6 +24,7 @@ LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 #define STATE_IDLE 0
 #define STATE_REQUESTED 1
 #define STATE_PROCESSING 2
+#define STATE_REPLY_PENDING 3
 
 /** @brief Descriptor of the peer public key. */
 struct lesc_peer_pub_key {
@@ -110,7 +111,9 @@ uint32_t nrf_ble_lesc_keypair_generate(void)
 
 	/* Check if any DH computation is pending */
 	for (uint16_t i = 0; i < ARRAY_SIZE(peer_keys); i++) {
-		if (atomic_get(&peer_keys[i].state) != STATE_IDLE) {
+		atomic_val_t state = atomic_get(&peer_keys[i].state);
+
+		if (state != STATE_IDLE && state != STATE_REPLY_PENDING) {
 			return NRF_ERROR_BUSY;
 		}
 	}
@@ -282,6 +285,8 @@ static uint32_t compute_and_give_dhkey(struct lesc_peer_pub_key *peer_public_key
 	} else {
 		LOG_ERR("psa_raw_key_agreement() returned status %d", status);
 	}
+
+	(void)atomic_set(&peer_public_key->state, STATE_REPLY_PENDING);
 
 	LOG_INF("Calling sd_ble_gap_lesc_dhkey_reply(sec_status: %#x) on conn_handle: %d",
 		sec_status, peer_public_key->conn_handle);
