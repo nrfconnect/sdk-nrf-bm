@@ -43,12 +43,12 @@
 
 .. _`S115 SoftDevice for nRF54L15/nRF54L10/nRF54L05 API`: ../../s115_nrf54l15/html/topics.html
 .. _`S115 SoftDevice for nRF54LM20 API`: ../../s115_nrf54lm20/html/topics.html
-.. _`S115 SoftDevice for nRF54LV10 API`: ../../s115_nrf54lv10/html/topics.html
+.. _`S115 SoftDevice for nRF54LV10 and nRF54LC10 API`: ../../s115_nrf54lv10_nrf54lc10/html/topics.html
 .. _`S115 SoftDevice for nRF54LS05 API`: ../../s115_nrf54ls05/html/topics.html
 
 .. _`S145 SoftDevice for nRF54L15/nRF54L10/nRF54L05 API`: ../../s145_nrf54l15/html/topics.html
 .. _`S145 SoftDevice for nRF54LM20 API`: ../../s145_nrf54lm20/html/topics.html
-.. _`S145 SoftDevice for nRF54LV10 API`: ../../s145_nrf54lv10/html/topics.html
+.. _`S145 SoftDevice for nRF54LV10 and nRF54LC10 API`: ../../s145_nrf54lv10_nrf54lc10/html/topics.html
 .. _`S145 SoftDevice for nRF54LS05 API`: ../../s145_nrf54ls05/html/topics.html
 
 .. _`S115 SoftDevice Specification`: https://docs.nordicsemi.com/bundle/sds_s115/page/SDS/s1xx/s115.html

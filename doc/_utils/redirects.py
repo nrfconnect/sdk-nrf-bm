@@ -21,4 +21,9 @@ Examples:
     ("even/newer/index", "absolutely/newer/index"),
 """
 
-NRF_BM = ()
+NRF_BM = (
+    # S115 SoftDevice for nRF54LV10 and nRF54LC10
+    ("softdevice/s115_nrf54lv10", "softdevice/s115_nrf54lv10_nrf54lc10"),
+    # S145 SoftDevice for nRF54LV10 and nRF54LC10
+    ("softdevice/s145_nrf54lv10", "softdevice/s145_nrf54lv10_nrf54lc10"),
+)

@@ -80,8 +80,8 @@ external_content_contents = [
     (SOFTDEVICE_DIR, "nrf54lm/s145/doc/s145*.main.rst"),
     (SOFTDEVICE_DIR, "nrf54ls/s115/doc/s115*.main.rst"),
     (SOFTDEVICE_DIR, "nrf54ls/s145/doc/s145*.main.rst"),
-    (SOFTDEVICE_DIR, "nrf54lv/s115/doc/s115*.main.rst"),
-    (SOFTDEVICE_DIR, "nrf54lv/s145/doc/s145*.main.rst"),
+    (SOFTDEVICE_DIR, "nrf54lv_nrf54lc/s115/doc/s115*.main.rst"),
+    (SOFTDEVICE_DIR, "nrf54lv_nrf54lc/s145/doc/s145*.main.rst"),
 ]
 
 external_content_keep = [
@@ -118,8 +118,8 @@ doxybridge_projects = {
     "s145_nrf54lm20": utils.get_builddir() / "html" / "s145_nrf54lm20",
     "s115_nrf54ls05": utils.get_builddir() / "html" / "s115_nrf54ls05",
     "s145_nrf54ls05": utils.get_builddir() / "html" / "s145_nrf54ls05",
-    "s115_nrf54lv10": utils.get_builddir() / "html" / "s115_nrf54lv10",
-    "s145_nrf54lv10": utils.get_builddir() / "html" / "s145_nrf54lv10",
+    "s115_nrf54lv10_nrf54lc10": utils.get_builddir() / "html" / "s115_nrf54lv10_nrf54lc10",
+    "s145_nrf54lv10_nrf54lc10": utils.get_builddir() / "html" / "s145_nrf54lv10_nrf54lc10",
 }
 
 # Options for html_redirect ----------------------------------------------------
