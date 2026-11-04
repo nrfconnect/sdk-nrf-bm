@@ -17,7 +17,7 @@ S115 SoftDevice variants
 
 * `S115 SoftDevice for nRF54L15/nRF54L10/nRF54L05 API`_
 * `S115 SoftDevice for nRF54LM20 API`_
-* `S115 SoftDevice for nRF54LV10 API`_
+* `S115 SoftDevice for nRF54LV10 and nRF54LC10 API`_
 * `S115 SoftDevice for nRF54LS05 API`_
 
 S145 SoftDevice variants
@@ -25,7 +25,7 @@ S145 SoftDevice variants
 
 * `S145 SoftDevice for nRF54L15/nRF54L10/nRF54L05 API`_
 * `S145 SoftDevice for nRF54LM20 API`_
-* `S145 SoftDevice for nRF54LV10 API`_
+* `S145 SoftDevice for nRF54LV10 and nRF54LC10 API`_
 * `S145 SoftDevice for nRF54LS05 API`_
 
 .. _api_libs:

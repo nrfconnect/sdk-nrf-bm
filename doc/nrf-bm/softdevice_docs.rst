@@ -20,7 +20,7 @@ S115 SoftDevice
    softdevice/s115_nrf54l15.rst
    softdevice/s115_nrf54lm20.rst
    softdevice/s115_nrf54ls05.rst
-   softdevice/s115_nrf54lv10.rst
+   softdevice/s115_nrf54lv10_nrf54lc10.rst
 
 .. _s145_docs:
 
@@ -35,4 +35,4 @@ S145 SoftDevice
    softdevice/s145_nrf54l15.rst
    softdevice/s145_nrf54lm20.rst
    softdevice/s145_nrf54ls05.rst
-   softdevice/s145_nrf54lv10.rst
+   softdevice/s145_nrf54lv10_nrf54lc10.rst

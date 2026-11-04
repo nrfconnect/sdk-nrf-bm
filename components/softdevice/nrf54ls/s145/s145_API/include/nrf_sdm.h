@@ -60,13 +60,13 @@ extern "C" {
  * @{ */
 
 /** @brief The major version for the SoftDevice binary distributed with this header file. */
-#define SD_MAJOR_VERSION  (10)
+#define SD_MAJOR_VERSION  (11)
 
 /** @brief The minor version for the SoftDevice binary distributed with this header file. */
 #define SD_MINOR_VERSION  (0)
 
 /** @brief The bugfix version for the SoftDevice binary distributed with this header file. */
-#define SD_BUGFIX_VERSION (1)
+#define SD_BUGFIX_VERSION (0)
 
 /** @brief The SoftDevice variant of this firmware. */
 #define SD_VARIANT_ID 145

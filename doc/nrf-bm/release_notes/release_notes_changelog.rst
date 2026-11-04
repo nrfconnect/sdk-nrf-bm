@@ -18,12 +18,16 @@ No changes since the latest nRF Connect SDK Bare Metal release.
 S115 SoftDevice
 ===============
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Updated the SoftDevice to v11.0.0-1.prototype.
+  See the :ref:`SoftDevice release notes <softdevice_docs>` for details.
+  Note that the ``components/softdevice/nrf54lv`` folder was renamed to ``components/softdevice/nrf54lv_nrf54lc``.
 
 S145 SoftDevice
 ===============
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* Updated the SoftDevice to v11.0.0-1.prototype.
+  See the :ref:`SoftDevice release notes <softdevice_docs>` for details.
+  Note that the ``components/softdevice/nrf54lv`` folder was renamed to ``components/softdevice/nrf54lv_nrf54lc``.
 
 SoftDevice Handler
 ==================
