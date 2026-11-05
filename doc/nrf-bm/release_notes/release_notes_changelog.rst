@@ -218,6 +218,8 @@ Bluetooth LE Services
       * An issue where a negative errno return value from the :c:func:`smp_reassembly_collect` function was compared against a positive nRF error.
       * An issue where the content of an SMP reassembly buffer was not dropped when disconnecting from the Bluetooth peer during upload of a firmware image.
         This resulted in a timeout on the `nRF Connect Device Manager`_ mobile application side when trying to resume the upload after a disconnect.
+      * An issue where an MCUmgr SMP response notification was always sent to the most recently connected peer when multiple peers were connected.
+        Responses are now sent to the peer that sent the request.
 
 * :ref:`lib_ble_service_hrs`:
 
