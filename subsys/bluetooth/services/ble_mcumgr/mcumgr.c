@@ -28,22 +28,15 @@
 
 LOG_MODULE_REGISTER(mcumgr, CONFIG_BLE_MCUMGR_LOG_LEVEL);
 
-/**
- * @brief Macro for calculating maximum length of data (in bytes) that can be transmitted to
- *        the peer in one ATT write or notification packet, given the ATT MTU size.
+/* Macro for calculating maximum length of data (in bytes) that can be transmitted to
+ * the peer in one ATT write or notification packet, given the ATT MTU size.
  */
 #define BLE_GATT_MAX_DATA_LEN_CALC(mtu_size) ((mtu_size) - ATT_OPCODE_LEN - ATT_HANDLE_LEN)
 
-/**
- * @brief Maximum length of data (in bytes) that can be transmitted to the peer over GATT
- */
+/* Maximum length of data (in bytes) that can be transmitted to the peer over GATT. */
 #define BLE_GATT_MAX_DATA_LEN BLE_GATT_MAX_DATA_LEN_CALC(CONFIG_NRF_SDH_BLE_GATT_MAX_MTU_SIZE)
 
-/**
- * @brief MCUmgr Bluetooth service structure.
- *
- * @details This structure contains status information related to the service.
- */
+/* MCUmgr Bluetooth service structure. */
 struct ble_mcumgr {
 	/** UUID types for MCUmgr Bluetooth service Base UUID and characteristic UUID */
 	uint8_t uuid_type_service;
@@ -54,24 +47,27 @@ struct ble_mcumgr {
 	ble_gatts_char_handles_t characteristic_handle;
 };
 
-static uint16_t requesting_conn_handle = BLE_CONN_HANDLE_INVALID;
+/* MCUmgr Bluetooth service single instance definition. */
 static struct ble_mcumgr ble_mcumgr;
+
+/* SMP transport instance. */
 static struct smp_transport smp_ncs_bm_bt_transport;
+
+/* Connection handle used for request-response matching. */
+static uint16_t requesting_conn_handle = BLE_CONN_HANDLE_INVALID;
+
 /* SMP response buffer currently being sent to the peer as MTU-sized notifications.
  * Held so a transfer paused by a full TX queue can be resumed later.
- * NULL = nothing pending
+ * NULL = nothing pending.
  */
 static struct net_buf *pending_tx;
 
-static uint32_t mcumgr_characteristic_add(struct ble_mcumgr *service,
-					  const struct ble_mcumgr_config *cfg)
+static uint32_t mcumgr_characteristic_add(const struct ble_mcumgr_config *cfg)
 {
-
-	__ASSERT(service, "cfg is NULL");
 	__ASSERT(cfg, "cfg is NULL");
 
 	ble_uuid_t char_uuid = {
-		.type = service->uuid_type_characteristic,
+		.type = ble_mcumgr.uuid_type_characteristic,
 		.uuid = BLE_MCUMGR_CHARACTERISTIC_UUID_SUB,
 	};
 	ble_gatts_attr_md_t cccd_md = {
@@ -100,27 +96,21 @@ static uint32_t mcumgr_characteristic_add(struct ble_mcumgr *service,
 		.max_len = BLE_GATT_MAX_DATA_LEN,
 	};
 
-	return sd_ble_gatts_characteristic_add(service->service_handle, &char_md, &attr_char_value,
-					       &service->characteristic_handle);
+	return sd_ble_gatts_characteristic_add(ble_mcumgr.service_handle, &char_md,
+					       &attr_char_value, &ble_mcumgr.characteristic_handle);
 }
 
-/**
- * @brief Function for handling the @ref BLE_GATTS_EVT_WRITE event from the SoftDevice.
- *
- * @param[in] service MCUmgr service structure.
- * @param[in] ble_evt Pointer to the event received from BLE stack.
- */
-static void on_write(struct ble_mcumgr *service, const ble_evt_t *ble_evt)
+/* Handle the BLE_GATTS_EVT_WRITE event from the SoftDevice. */
+static void on_write(const ble_gatts_evt_t *gatts_evt)
 {
-	const ble_gatts_evt_write_t *evt_write = &ble_evt->evt.gatts_evt.params.write;
+	const ble_gatts_evt_write_t *evt_write = &gatts_evt->params.write;
 
-	if (evt_write->handle == service->characteristic_handle.value_handle) {
-		/* When reassembly of a new request have started, only accept
-		 * writes from the same peer until the whole request have been received
-		 * and a response have been sent.
+	if (evt_write->handle == ble_mcumgr.characteristic_handle.value_handle) {
+		/* When reassembly of a new request have started, only accept writes from the same
+		 * peer until the whole request have been received and a response have been sent.
 		 */
 		if (requesting_conn_handle != BLE_CONN_HANDLE_INVALID &&
-		    requesting_conn_handle != ble_evt->evt.gatts_evt.conn_handle) {
+		    requesting_conn_handle != gatts_evt->conn_handle) {
 			LOG_DBG("Busy with conn_handle %#x, dropping request from conn_handle %#x",
 				requesting_conn_handle, gatts_evt->conn_handle);
 			return;
@@ -138,12 +128,11 @@ static void on_write(struct ble_mcumgr *service, const ble_evt_t *ble_evt)
 					     evt_write->len);
 		LOG_DBG("Collect: %d", ret);
 
-		/*
-		 * Collection can fail only due to failing to allocate memory or by receiving
+		/* Collection can fail only due to failing to allocate memory or by receiving
 		 * more data than expected.
 		 */
 		if (ret == -ENOMEM) {
-			/* Failed to collect the buffer */
+			/* Failed to collect the buffer. */
 			LOG_ERR("Failed to collect buffer");
 			return;
 		} else if (ret < 0) {
@@ -157,10 +146,10 @@ static void on_write(struct ble_mcumgr *service, const ble_evt_t *ble_evt)
 		}
 
 		if (!started && ret >= 0) {
-			requesting_conn_handle = ble_evt->evt.gatts_evt.conn_handle;
+			requesting_conn_handle = gatts_evt->conn_handle;
 		}
 
-		/* No more bytes are expected for this packet */
+		/* No more bytes are expected for this packet. */
 		if (ret == 0) {
 			smp_reassembly_complete(&smp_ncs_bm_bt_transport, false);
 		}
@@ -181,39 +170,12 @@ static void on_write(struct ble_mcumgr *service, const ble_evt_t *ble_evt)
 			return;
 		}
 
-		requesting_conn_handle = ble_evt->evt.gatts_evt.conn_handle;
+		requesting_conn_handle = gatts_evt->conn_handle;
 
 		net_buf_add_mem(nb, evt_write->data, evt_write->len);
 		smp_rx_req(&smp_ncs_bm_bt_transport, nb);
 #endif
 	}
-}
-
-static uint32_t ble_mcumgr_data_send(uint8_t *data, uint16_t *len)
-{
-	uint32_t nrf_err;
-	ble_gatts_hvx_params_t hvx_params = {
-		.handle = ble_mcumgr.characteristic_handle.value_handle,
-		.p_data = data,
-		.p_len = len,
-		.type = BLE_GATT_HVX_NOTIFICATION
-	};
-
-	if (!data || !len) {
-		return NRF_ERROR_NULL;
-	}
-
-	nrf_err = sd_ble_gatts_hvx(requesting_conn_handle, &hvx_params);
-	if (nrf_err == NRF_ERROR_RESOURCES) {
-		/* SoftDevice notification queue is full.
-		 * Retry upon receiving a BLE_GATTS_EVT_HVN_TX_COMPLETE event.
-		 */
-		LOG_DBG("Notification queue full, will retry");
-	} else if (nrf_err) {
-		LOG_ERR("Failed to send MCUmgr data, nrf_error %#x", nrf_err);
-	}
-
-	return nrf_err;
 }
 
 /* Manage the pending SMP transfer:
@@ -249,15 +211,23 @@ static void mcumgr_tx_service(void)
 	while (pending_tx->len > 0) {
 		send_size = (pending_tx->len > hvn_size_max) ? hvn_size_max : pending_tx->len;
 
-		nrf_err = ble_mcumgr_data_send(pending_tx->data, &send_size);
+		const ble_gatts_hvx_params_t hvx_params = {
+			.handle = ble_mcumgr.characteristic_handle.value_handle,
+			.p_data = pending_tx->data,
+			.p_len = &send_size,
+			.type = BLE_GATT_HVX_NOTIFICATION
+		};
 
+		nrf_err = sd_ble_gatts_hvx(requesting_conn_handle, &hvx_params);
 		if (nrf_err == NRF_ERROR_RESOURCES) {
 			/* SoftDevice notification queue is full.
 			 * Retry upon receiving a BLE_GATTS_EVT_HVN_TX_COMPLETE event.
 			 */
+			LOG_DBG("Notification queue full, will retry");
 			return;
 		} else if (nrf_err) {
 			/* Unrecoverable, give up on this response. */
+			LOG_ERR("Failed to send MCUmgr data, nrf_error %#x", nrf_err);
 			break;
 		}
 
@@ -271,6 +241,95 @@ finish:
 	smp_packet_free(pending_tx);
 	pending_tx = NULL;
 	requesting_conn_handle = BLE_CONN_HANDLE_INVALID;
+}
+
+static void on_ble_evt(const ble_evt_t *evt, void *ctx)
+{
+	ARG_UNUSED(ctx);
+	__ASSERT(evt, "BLE event is NULL");
+
+	if (evt == NULL) {
+		return;
+	}
+
+	switch (evt->header.evt_id) {
+	case BLE_GAP_EVT_DISCONNECTED:
+		if (requesting_conn_handle == evt->evt.gap_evt.conn_handle) {
+			/* Link is down, release any pending buffer. */
+			requesting_conn_handle = BLE_CONN_HANDLE_INVALID;
+			mcumgr_tx_service();
+#ifdef CONFIG_MCUMGR_TRANSPORT_REASSEMBLY
+			/* Drop a partially received request when requesting peer disconnects. */
+			(void)smp_reassembly_drop(&smp_ncs_bm_bt_transport);
+#endif
+		}
+		break;
+
+	case BLE_GATTS_EVT_WRITE:
+		on_write(&evt->evt.gatts_evt);
+		break;
+
+	case BLE_GATTS_EVT_HVN_TX_COMPLETE:
+		/* There should be room in the SoftDevice notification queue. Resume transfer. */
+		mcumgr_tx_service();
+		break;
+
+	default:
+		break;
+	};
+}
+
+NRF_SDH_BLE_OBSERVER(sdh_ble, on_ble_evt, NULL, HIGH);
+
+uint32_t ble_mcumgr_init(const struct ble_mcumgr_config *cfg)
+{
+	uint32_t nrf_err;
+	ble_uuid_t ble_uuid;
+	const ble_uuid128_t uuid_base_service = {.uuid128 = BLE_MCUMGR_SERVICE_UUID};
+	const ble_uuid128_t uuid_base_characteristic = {.uuid128 = BLE_MCUMGR_CHARACTERISTIC_UUID};
+
+	if (!cfg) {
+		return NRF_ERROR_NULL;
+	}
+
+	/* Add MCUmgr service/characteristic UUIDs. */
+	nrf_err = sd_ble_uuid_vs_add(&uuid_base_service, &ble_mcumgr.uuid_type_service);
+	if (nrf_err) {
+		LOG_ERR("sd_ble_uuid_vs_add failed, nrf_error %#x", nrf_err);
+		return NRF_ERROR_INVALID_PARAM;
+	}
+
+	nrf_err = sd_ble_uuid_vs_add(&uuid_base_characteristic,
+				     &ble_mcumgr.uuid_type_characteristic);
+	if (nrf_err) {
+		LOG_ERR("sd_ble_uuid_vs_add failed, nrf_error %#x", nrf_err);
+		return NRF_ERROR_INVALID_PARAM;
+	}
+
+	ble_uuid.type = ble_mcumgr.uuid_type_service;
+	ble_uuid.uuid = BLE_MCUMGR_SERVICE_UUID_SUB;
+
+	/* Add the service. */
+	nrf_err = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY, &ble_uuid,
+					   &ble_mcumgr.service_handle);
+	if (nrf_err) {
+		LOG_ERR("Failed to add MCUmgr service, nrf_error %#x", nrf_err);
+		return NRF_ERROR_INVALID_PARAM;
+	}
+
+	/* Add MCUmgr characteristic. */
+	nrf_err = mcumgr_characteristic_add(cfg);
+	if (nrf_err) {
+		LOG_ERR("mcumgr_characteristic_add failed, nrf_error %#x", nrf_err);
+		return NRF_ERROR_INVALID_PARAM;
+	}
+
+	return 0;
+}
+
+uint8_t ble_mcumgr_service_uuid_type(void)
+{
+	return ble_mcumgr.uuid_type_service;
 }
 
 /* mcumgr transport "output" callback:
@@ -295,110 +354,6 @@ static int smp_ncs_bm_bt_tx_pkt(struct net_buf *nb)
 	return err;
 }
 
-/**
- * @brief BLE event handler.
- *
- * @param[in] evt BLE event.
- * @param[in] ctx Context.
- */
-static void on_ble_evt(const ble_evt_t *evt, void *ctx)
-{
-	struct ble_mcumgr *mcumgr_data = (struct ble_mcumgr *)ctx;
-
-	__ASSERT(evt, "BLE event is NULL");
-	__ASSERT(ctx, "context is NULL");
-
-	if (ctx == NULL || evt == NULL) {
-		return;
-	}
-
-	switch (evt->header.evt_id) {
-	case BLE_GAP_EVT_DISCONNECTED:
-	{
-		if (requesting_conn_handle == evt->evt.gap_evt.conn_handle) {
-			/* Link is down, release any pending buffer. */
-			requesting_conn_handle = BLE_CONN_HANDLE_INVALID;
-			mcumgr_tx_service();
-#ifdef CONFIG_MCUMGR_TRANSPORT_REASSEMBLY
-			/* Drop a partially received request when requesting peer disconnects. */
-			(void)smp_reassembly_drop(&smp_ncs_bm_bt_transport);
-#endif
-		}
-		break;
-	}
-
-	case BLE_GATTS_EVT_WRITE:
-	{
-		on_write(mcumgr_data, evt);
-		break;
-	}
-
-	case BLE_GATTS_EVT_HVN_TX_COMPLETE:
-	{
-		/* There should be room in the SoftDevice notification queue. Resume transfer. */
-		mcumgr_tx_service();
-		break;
-	}
-	};
-}
-
-NRF_SDH_BLE_OBSERVER(sdh_ble, on_ble_evt, &ble_mcumgr, HIGH);
-
-uint32_t ble_mcumgr_init(const struct ble_mcumgr_config *cfg)
-{
-	uint32_t nrf_err;
-	ble_uuid_t ble_uuid;
-	ble_uuid128_t uuid_base_service = {
-		.uuid128 = BLE_MCUMGR_SERVICE_UUID
-	};
-	ble_uuid128_t uuid_base_characteristic = {
-		.uuid128 = BLE_MCUMGR_CHARACTERISTIC_UUID
-	};
-
-	if (!cfg) {
-		return NRF_ERROR_NULL;
-	}
-
-	/* Add MCUmgr service/characteristic UUIDs */
-	nrf_err = sd_ble_uuid_vs_add(&uuid_base_service, &ble_mcumgr.uuid_type_service);
-
-	if (nrf_err) {
-		LOG_ERR("sd_ble_uuid_vs_add failed, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
-	}
-
-	nrf_err = sd_ble_uuid_vs_add(&uuid_base_characteristic,
-				     &ble_mcumgr.uuid_type_characteristic);
-
-	if (nrf_err) {
-		LOG_ERR("sd_ble_uuid_vs_add failed, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
-	}
-
-	ble_uuid.type = ble_mcumgr.uuid_type_service;
-	ble_uuid.uuid = BLE_MCUMGR_SERVICE_UUID_SUB;
-
-	/* Add the service */
-	nrf_err = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY,
-					   &ble_uuid,
-					   &ble_mcumgr.service_handle);
-
-	if (nrf_err) {
-		LOG_ERR("Failed to add MCUmgr service, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
-	}
-
-	/* Add MCUmgr characteristic */
-	nrf_err = mcumgr_characteristic_add(&ble_mcumgr, cfg);
-
-	if (nrf_err) {
-		LOG_ERR("mcumgr_characteristic_add failed, nrf_error %#x", nrf_err);
-		return NRF_ERROR_INVALID_PARAM;
-	}
-
-	return 0;
-}
-
 static uint16_t smp_ncs_bm_bt_get_mtu(const struct net_buf *nb)
 {
 	return BLE_GATT_MAX_DATA_LEN;
@@ -412,11 +367,6 @@ static void smp_ncs_bm_bt_setup(void)
 	smp_ncs_bm_bt_transport.functions.get_mtu = smp_ncs_bm_bt_get_mtu;
 
 	rc = smp_transport_init(&smp_ncs_bm_bt_transport);
-}
-
-uint8_t ble_mcumgr_service_uuid_type(void)
-{
-	return ble_mcumgr.uuid_type_service;
 }
 
 MCUMGR_HANDLER_DEFINE(smp_ncs_bm_bt, smp_ncs_bm_bt_setup);
