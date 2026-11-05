@@ -54,8 +54,7 @@ struct ble_mcumgr {
 	ble_gatts_char_handles_t characteristic_handle;
 };
 
-/** Handle of the current connection */
-static uint16_t conn_handle = BLE_CONN_HANDLE_INVALID;
+static uint16_t requesting_conn_handle = BLE_CONN_HANDLE_INVALID;
 static struct ble_mcumgr ble_mcumgr;
 static struct smp_transport smp_ncs_bm_bt_transport;
 /* SMP response buffer currently being sent to the peer as MTU-sized notifications.
@@ -116,6 +115,15 @@ static void on_write(struct ble_mcumgr *service, const ble_evt_t *ble_evt)
 	const ble_gatts_evt_write_t *evt_write = &ble_evt->evt.gatts_evt.params.write;
 
 	if (evt_write->handle == service->characteristic_handle.value_handle) {
+		/* When reassembly of a new request have started, only accept
+		 * writes from the same peer until the whole request have been received
+		 * and a response have been sent.
+		 */
+		if (requesting_conn_handle != BLE_CONN_HANDLE_INVALID &&
+		    requesting_conn_handle != ble_evt->evt.gatts_evt.conn_handle) {
+			return;
+		}
+
 #ifdef CONFIG_MCUMGR_TRANSPORT_REASSEMBLY
 		int ret;
 		bool started;
@@ -140,9 +148,14 @@ static void on_write(struct ble_mcumgr *service, const ble_evt_t *ble_evt)
 			/* Failed operation on already allocated buffer, drop the packet and report
 			 * error.
 			 */
+			requesting_conn_handle = BLE_CONN_HANDLE_INVALID;
 			smp_reassembly_drop(&smp_ncs_bm_bt_transport);
 			LOG_ERR("Failed with operation on buffer");
 			return;
+		}
+
+		if (!started && ret >= 0) {
+			requesting_conn_handle = ble_evt->evt.gatts_evt.conn_handle;
 		}
 
 		/* No more bytes are expected for this packet */
@@ -166,6 +179,8 @@ static void on_write(struct ble_mcumgr *service, const ble_evt_t *ble_evt)
 			return;
 		}
 
+		requesting_conn_handle = ble_evt->evt.gatts_evt.conn_handle;
+
 		net_buf_add_mem(nb, evt_write->data, evt_write->len);
 		smp_rx_req(&smp_ncs_bm_bt_transport, nb);
 #endif
@@ -186,7 +201,7 @@ static uint32_t ble_mcumgr_data_send(uint8_t *data, uint16_t *len)
 		return NRF_ERROR_NULL;
 	}
 
-	nrf_err = sd_ble_gatts_hvx(conn_handle, &hvx_params);
+	nrf_err = sd_ble_gatts_hvx(requesting_conn_handle, &hvx_params);
 	if (nrf_err == NRF_ERROR_RESOURCES) {
 		/* SoftDevice notification queue is full.
 		 * Retry upon receiving a BLE_GATTS_EVT_HVN_TX_COMPLETE event.
@@ -216,12 +231,12 @@ static void mcumgr_tx_service(void)
 	}
 
 	/* Link is down, release any pending buffer. */
-	if (conn_handle == BLE_CONN_HANDLE_INVALID) {
+	if (requesting_conn_handle == BLE_CONN_HANDLE_INVALID) {
 		goto finish;
 	}
 
 	/* Need the current MTU to size each notification. */
-	nrf_err = ble_conn_params_att_mtu_get(conn_handle, &hvn_size_max);
+	nrf_err = ble_conn_params_att_mtu_get(requesting_conn_handle, &hvn_size_max);
 	if (nrf_err) {
 		goto finish;
 	}
@@ -253,6 +268,7 @@ static void mcumgr_tx_service(void)
 finish:
 	smp_packet_free(pending_tx);
 	pending_tx = NULL;
+	requesting_conn_handle = BLE_CONN_HANDLE_INVALID;
 }
 
 /* mcumgr transport "output" callback:
@@ -263,7 +279,7 @@ static int smp_ncs_bm_bt_tx_pkt(struct net_buf *nb)
 {
 	int err = 0;
 
-	if (conn_handle == BLE_CONN_HANDLE_INVALID) {
+	if (requesting_conn_handle == BLE_CONN_HANDLE_INVALID) {
 		err = -ENOENT;
 	}
 
@@ -295,19 +311,15 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 	}
 
 	switch (evt->header.evt_id) {
-	case BLE_GAP_EVT_CONNECTED:
-	{
-		conn_handle = evt->evt.gap_evt.conn_handle;
-		break;
-	}
-
 	case BLE_GAP_EVT_DISCONNECTED:
 	{
-		if (conn_handle == evt->evt.gap_evt.conn_handle) {
-			conn_handle = BLE_CONN_HANDLE_INVALID;
-
+		if (requesting_conn_handle == evt->evt.gap_evt.conn_handle) {
 			/* Link is down, release any pending buffer. */
+			requesting_conn_handle = BLE_CONN_HANDLE_INVALID;
 			mcumgr_tx_service();
+#ifdef CONFIG_MCUMGR_TRANSPORT_REASSEMBLY
+			(void)smp_reassembly_drop(&smp_ncs_bm_bt_transport);
+#endif
 		}
 		break;
 	}
