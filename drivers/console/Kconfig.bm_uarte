@@ -12,10 +12,6 @@ menuconfig BM_UARTE_CONSOLE
 
 if BM_UARTE_CONSOLE
 
-config DEPRECATED_UART_NRFX_UARTE_LEGACY_SHIM
-	bool
-	default n
-
 config BM_UARTE_CONSOLE_UARTE_IRQ_PRIO
 	int "IRQ priority"
 	range 5 7 if SOFTDEVICE
@@ -37,9 +33,7 @@ config BM_UARTE_CONSOLE_ADD_CR_BEFORE_LF
 	bool "Add carriage return before linefeed"
 	default y
 
-#
 # Console termination
-#
 choice
 	prompt "Termination mode"
 	default BM_UARTE_CONSOLE_CR_LF_TERMINATION
