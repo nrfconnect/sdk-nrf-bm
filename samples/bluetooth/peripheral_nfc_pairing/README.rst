@@ -12,12 +12,8 @@ You can use it to test the touch-to-pair feature between Nordic Semiconductor's 
 
 The sample provides minimal Bluetooth functionality in Peripheral role and on GATT level it implements only the Device Information Service.
 
-The sample supports pairing in one of the following modes:
-
-* LE Secure Connections Just Works pairing
-* LE Secure Connections OOB pairing
-* Legacy OOB pairing
-* Legacy Just Works pairing
+The sample supports only LE Secure Connections OOB pairing.
+Pairing requests without the OOB data from the NFC tag are rejected.
 
 Requirements
 ************
