@@ -308,6 +308,9 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 
 			/* Link is down, release any pending buffer. */
 			mcumgr_tx_service();
+#ifdef CONFIG_MCUMGR_TRANSPORT_REASSEMBLY
+			(void)smp_reassembly_drop(&smp_ncs_bm_bt_transport);
+#endif
 		}
 		break;
 	}
