@@ -52,6 +52,7 @@ static const char device_name[] = CONFIG_SAMPLE_BLE_DEVICE_NAME;
 /* Buffer used to hold an NFC NDEF message. */
 static uint8_t ndef_msg_buf[NDEF_MSG_BUF_SIZE];
 
+static void nfc_oob_data_update(void);
 
 static void led_init(void)
 {
@@ -224,6 +225,16 @@ static void pm_evt_handler(const struct pm_evt *evt)
 						 evt->conn_sec_params_req.context);
 			break;
 		}
+
+		/* Our own OOB data must match the current key. Without it, we cannot
+		 * check that the peer really read the tag.
+		 */
+		if (!nrf_ble_lesc_own_oob_data_get()) {
+			LOG_WRN("NFC OOB data is out of date, rejecting");
+			pm_conn_sec_params_reply(evt->conn_handle, NULL,
+						 evt->conn_sec_params_req.context);
+			break;
+		}
 		break;
 	}
 
@@ -308,6 +319,14 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 
 	case BLE_GAP_EVT_AUTH_KEY_REQUEST:
 		LOG_INF("Pairing request.");
+		break;
+
+	case BLE_GAP_EVT_AUTH_STATUS:
+		/* The Peer Manager generates a new LESC key pair on this event,
+		 * so the OOB data on the tag must be updated to match the new key.
+		 * Otherwise, the next peer cannot pair through NFC.
+		 */
+		nfc_oob_data_update();
 		break;
 
 	default:
@@ -470,6 +489,48 @@ static int nfc_init(void)
 	LOG_INF("NFC configuration done");
 
 	return err;
+}
+
+static void nfc_oob_data_update(void)
+{
+	int err;
+	uint32_t nrf_err;
+	uint32_t len = sizeof(ndef_msg_buf);
+
+	/* The payload can only be changed while emulation is stopped. */
+	err = nfc_t4t_emulation_stop();
+	if (err) {
+		LOG_ERR("Cannot stop emulation, err %d", err);
+		return;
+	}
+
+	nrf_err = nrf_ble_lesc_own_oob_data_generate();
+	if (nrf_err) {
+		LOG_ERR("Cannot generate LESC OOB data, nrf_err %#x", nrf_err);
+		return;
+	}
+
+	nrf_err = tk_value_generate();
+	if (nrf_err) {
+		return;
+	}
+
+	err = pairing_msg_generate(&len);
+	if (err) {
+		LOG_ERR("Cannot encode pairing message!");
+		return;
+	}
+
+	err = nfc_t4t_ndef_staticpayload_set(ndef_msg_buf, len);
+	if (err) {
+		LOG_ERR("Cannot set payload!");
+		return;
+	}
+
+	err = nfc_t4t_emulation_start();
+	if (err) {
+		LOG_ERR("Cannot start emulation!");
+	}
 }
 
 static int board_buttons_init(void)
