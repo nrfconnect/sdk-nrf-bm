@@ -209,6 +209,24 @@ static void pm_evt_handler(const struct pm_evt *evt)
 		}
 		break;
 
+	case PM_EVT_CONN_SEC_PARAMS_REQ: {
+		const ble_gap_sec_params_t *peer = evt->conn_sec_params_req.peer_params;
+
+		/* No peer params when we start security, so check the peer's request later. */
+		if (!peer) {
+			break;
+		}
+
+		/* Reject Just Works and legacy pairing, only LESC OOB through NFC is allowed. */
+		if (!peer->oob || !peer->lesc) {
+			LOG_WRN("Pairing without NFC OOB data, rejecting");
+			pm_conn_sec_params_reply(evt->conn_handle, NULL,
+						 evt->conn_sec_params_req.context);
+			break;
+		}
+		break;
+	}
+
 	case PM_EVT_CONN_SEC_CONFIG_REQ:
 		/* Allow any bonded peer to pair again. */
 		struct pm_conn_sec_config sec_config = {.allow_repairing = true};
