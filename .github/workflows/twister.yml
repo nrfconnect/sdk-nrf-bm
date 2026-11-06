@@ -14,7 +14,7 @@ jobs:
       - runner=64cpu-linux-x64
       - volume=32gb
     # Keep aligned with target NCS version
-    container: ghcr.io/nrfconnect/sdk-nrf-toolchain:v3.4.1
+    container: ghcr.io/nrfconnect/sdk-nrf-toolchain:v3.4.2
     defaults:
       run:
         # Bash shell is needed to set toolchain related environment variables in docker container
