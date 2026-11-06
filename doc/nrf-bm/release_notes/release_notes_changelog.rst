@@ -303,6 +303,7 @@ Bluetooth LE samples
 * :ref:`peripheral_nfc_pairing_sample` sample:
 
    * Updated to reject pairing requests that do not use LE Secure Connections with OOB data.
+   * Updated to write new OOB data to the NFC tag after each pairing attempt, and to reject pairing if the OOB data is out of date.
 
 NFC samples
 -----------
