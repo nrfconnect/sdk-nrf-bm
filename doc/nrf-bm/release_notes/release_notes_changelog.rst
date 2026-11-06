@@ -200,9 +200,13 @@ Bluetooth LE Services
 
 * :ref:`lib_ble_service_mcumgr`:
 
-   * Fixed an issue where a DFU over Bluetooth LE could stall when using small ATT MTU or data length values.
-     The SMP response is split into many notifications, which could fill the SoftDevice notification (HVN) TX queue and cause :c:func:`sd_ble_gatts_hvx` to return :c:macro:`NRF_ERROR_RESOURCES`, dropping the remaining data.
-     Notifications that fail with :c:macro:`NRF_ERROR_RESOURCES` are now retransmitted on the :c:macro:`BLE_GATTS_EVT_HVN_TX_COMPLETE` event once the SoftDevice frees queue space.
+   * Fixed:
+
+      * An issue where a DFU over Bluetooth LE could stall when using small ATT MTU or data length values.
+        The SMP response is split into many notifications, which could fill the SoftDevice notification (HVN) TX queue and cause :c:func:`sd_ble_gatts_hvx` to return :c:macro:`NRF_ERROR_RESOURCES`, dropping the remaining data.
+        Notifications that fail with :c:macro:`NRF_ERROR_RESOURCES` are now retransmitted on the :c:macro:`BLE_GATTS_EVT_HVN_TX_COMPLETE` event once the SoftDevice frees queue space.
+      * An issue where an MCUMgr SMP response notification was always sent to the last connected peer in a multi connection configuration.
+        Responses are now sent to the requesting peer.
 
 * :ref:`lib_ble_service_hrs`:
 
