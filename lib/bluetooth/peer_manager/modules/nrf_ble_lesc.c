@@ -21,9 +21,30 @@
 
 LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 
+/** @name LESC DHKey slot states (per link index).
+ *
+ * Each connection index has one slot.
+ * State tells whether that link is waiting for DHKey work, busy with it, or done with crypto
+ * and only waiting to hand the result to the SoftDevice.
+ *
+ * - IDLE: Nothing queued for this link. A new LESC DHKey request can be stored here.
+ *
+ * - REQUESTED: SoftDevice asked for a DHKey and we saved the peer public key.
+ *   Work is queued but ECDH has not started. If the link drops,
+ *   this slot can go back to IDLE because that connection is gone until the next connect.
+ *
+ * - PROCESSING: ECDH is in progress for this slot. The local key pair must not be rotated yet.
+ *   This state must run to completion before the slot is free again.
+ *
+ * - REPLY_PENDING: ECDH is finished and the shared secret is ready for the SoftDevice.
+ *   The reply has not been sent yet. The local key pair may be rotated now,
+ *   because the old private key is no longer needed for this answer.
+ *   The slot stays busy until the reply is done and the state returns to IDLE.
+ */
 #define STATE_IDLE 0
 #define STATE_REQUESTED 1
 #define STATE_PROCESSING 2
+#define STATE_REPLY_PENDING 3
 
 /** @brief Descriptor of the peer public key. */
 struct lesc_peer_pub_key {
@@ -108,9 +129,14 @@ uint32_t nrf_ble_lesc_keypair_generate(void)
 	uint8_t pub_key[ECC_PUB_KEY_EXPORT_SIZE];
 	size_t pub_key_len = 0;
 
-	/* Check if any DH computation is pending */
+	/* Do not rotate keys while any slot is REQUESTED or PROCESSING.
+	 * ECDH still needs the current private key.
+	 * REPLY_PENDING is ok, the shared secret is already computed and only the reply is left.
+	 */
 	for (uint16_t i = 0; i < ARRAY_SIZE(peer_keys); i++) {
-		if (atomic_get(&peer_keys[i].state) != STATE_IDLE) {
+		atomic_val_t state = atomic_get(&peer_keys[i].state);
+
+		if (state != STATE_IDLE && state != STATE_REPLY_PENDING) {
 			return NRF_ERROR_BUSY;
 		}
 	}
@@ -283,6 +309,8 @@ static uint32_t compute_and_give_dhkey(struct lesc_peer_pub_key *peer_public_key
 		LOG_ERR("psa_raw_key_agreement() returned status %d", status);
 	}
 
+	(void)atomic_set(&peer_public_key->state, STATE_REPLY_PENDING);
+
 	LOG_INF("Calling sd_ble_gap_lesc_dhkey_reply(sec_status: %#x) on conn_handle: %d",
 		sec_status, peer_public_key->conn_handle);
 
@@ -376,6 +404,12 @@ void nrf_ble_lesc_on_ble_evt(const ble_evt_t *ble_evt)
 
 	switch (ble_evt->header.evt_id) {
 	case BLE_GAP_EVT_DISCONNECTED:
+		/* Disconnect is handled from the BLE event path.
+		 * If the slot is only REQUESTED, cancel to IDLE.
+		 * If the slot is PROCESSING or REPLY_PENDING,
+		 * the in-flight work must finish and clear the slot itself.
+		 * Forcing IDLE here would fight that path.
+		 */
 		(void)atomic_cas(&peer_keys[idx].state, STATE_REQUESTED, STATE_IDLE);
 		break;
 
@@ -398,7 +432,7 @@ void nrf_ble_lesc_on_ble_evt(const ble_evt_t *ble_evt)
 	case BLE_GAP_EVT_AUTH_STATUS:
 		/* Generate new pairing keys. */
 		nrf_err = nrf_ble_lesc_keypair_generate();
-		if (nrf_err) {
+		if (nrf_err != NRF_SUCCESS && nrf_err != NRF_ERROR_BUSY) {
 			ble_lesc_internal_error = true;
 		}
 

@@ -46,8 +46,9 @@ uint32_t nrf_ble_lesc_init(void);
  *          procedures.
  *
  * @retval NRF_SUCCESS         If the operation was successful.
- * @retval NRF_ERROR_BUSY      If any pending request needs to be processed by @ref
- *                             nrf_ble_lesc_request_handler.
+ * @retval NRF_ERROR_BUSY      If a link is still running LESC DHKey work that uses the local
+ *                             private key for ECDH. Call again after nrf_ble_lesc_request_handler()
+ *                             has finished that work.
  * @retval NRF_ERROR_INTERNAL  If @ref psa_generate_key, or @ref psa_export_public_key failed.
  * @return Other error codes might be returned.
  */
