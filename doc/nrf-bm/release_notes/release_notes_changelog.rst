@@ -92,7 +92,9 @@ Subsystems
 Storage
 -------
 
-No changes since the latest nRF Connect SDK Bare Metal release.
+* :ref:`lib_bm_zms`:
+
+   * Fixed an issue where a failing operation result would not be cleared before processing the next operation.
 
 Filesystem
 ----------
