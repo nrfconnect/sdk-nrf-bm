@@ -169,6 +169,8 @@ Libraries
       * The :c:func:`pm_address_resolve` function to return ``false`` instead of ``NRF_ERROR_INVALID_STATE`` when Peer Manager is not initialized.
       * An issue where the write buffer that holds bonding data before NVM writes was not released in all situations.
         The impact was minor, as new connections were able to reuse the already-allocated buffer(s).
+      * An issue where the :c:func:`pm_allow_list_set` function wrote past the end of the internal allow list when given more peers than :c:macro:`BLE_GAP_WHITELIST_ADDR_MAX_COUNT`.
+        The function now returns ``NRF_ERROR_DATA_SIZE``, as documented.
 
 * :ref:`lib_ble_queued_writes` library:
 
