@@ -567,6 +567,10 @@ uint32_t im_allow_list_get(ble_gap_addr_t *addrs, uint32_t *addr_cnt, ble_gap_ir
  */
 uint32_t im_allow_list_set(const uint16_t *peers, uint32_t peer_cnt)
 {
+	if (peer_cnt > BLE_GAP_WHITELIST_ADDR_MAX_COUNT) {
+		return NRF_ERROR_DATA_SIZE;
+	}
+
 	/* Clear the cache of allow listed peers. */
 	memset(allow_listed_peers, 0x00, sizeof(allow_listed_peers));
 
