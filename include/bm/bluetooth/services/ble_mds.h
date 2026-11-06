@@ -68,20 +68,20 @@ void ble_mds_on_ble_evt(const ble_evt_t *ble_evt, void *context);
 #define BLE_MDS_CONFIG_SEC_MODE_DEFAULT                                                            \
 	{                                                                                          \
 		.feature_char = {                                                                  \
-			.read = BLE_GAP_CONN_SEC_MODE_OPEN,                                        \
+			.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                                 \
 		},                                                                                 \
 		.device_id_char = {                                                                \
-			.read = BLE_GAP_CONN_SEC_MODE_OPEN,                                        \
+			.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                                 \
 		},                                                                                 \
 		.data_uri_char = {                                                                 \
-			.read = BLE_GAP_CONN_SEC_MODE_OPEN,                                        \
+			.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                                 \
 		},                                                                                 \
 		.auth_char = {                                                                     \
-			.read = BLE_GAP_CONN_SEC_MODE_OPEN,                                        \
+			.read = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                                 \
 		},                                                                                 \
 		.data_export_char = {                                                              \
-			.write = BLE_GAP_CONN_SEC_MODE_OPEN,                                       \
-			.cccd_write = BLE_GAP_CONN_SEC_MODE_OPEN,                                  \
+			.write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                                \
+			.cccd_write = BLE_GAP_CONN_SEC_MODE_ENC_NO_MITM,                           \
 		},                                                                                 \
 	}
 
