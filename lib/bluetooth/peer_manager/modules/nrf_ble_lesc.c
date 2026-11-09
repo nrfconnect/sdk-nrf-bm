@@ -27,46 +27,45 @@ LOG_MODULE_DECLARE(peer_manager, CONFIG_PEER_MANAGER_LOG_LEVEL);
 #define STATE_REQUESTED 1
 #define STATE_PROCESSING 2
 
-/** @brief Descriptor of the peer public key. */
+/* DH key request descriptor. */
 struct lesc_peer_pub_key {
-	/** @brief Peer public key. Stored in little-endian. */
+	/* Peer public key. Stored in little-endian. */
 	uint8_t value[BLE_GAP_LESC_P256_PK_LEN];
-	/** @brief Peer connection handle. */
+	/* Peer connection handle. */
 	uint16_t conn_handle;
-	/** @brief State variable indicating whether the DH key computation have been requested
-	 *         or is currently being processed.
+	/* State variable indicating whether the DH key computation have been requested or is
+	 * currently being processed.
 	 */
 	atomic_t state;
-	/** @brief LESC OOB data required. */
+	/* Whether LESC OOB data is required. */
 	bool oobd_req;
 };
 
-/**
- * @brief The maximum number of peripheral and central connections combined.
- *        This value is based on what the SoftDevice handler module uses.
+/* The maximum number of peripheral and central connections combined.
+ * This value is based on what the SoftDevice handler module uses.
  */
 #define NRF_BLE_LESC_LINK_COUNT CONFIG_NRF_SDH_BLE_TOTAL_LINK_COUNT
 
-/** LESC ECC Public Key. */
+/* LESC ECC Public Key. */
 __aligned(4) static ble_gap_lesc_p256_pk_t lesc_public_key;
-/** LESC ECC DH Key. */
+/* LESC ECC DH Key. */
 __aligned(4) static ble_gap_lesc_dhkey_t lesc_dh_key;
 
-/** Flag indicating that the local ECDH key pair is valid. */
+/* Flag indicating that the local ECC key pair is valid. */
 static bool keypair_generated;
-/** Flag indicating that the local ECC key pair should be generated/swapped. */
+/* Flag indicating that the local ECC key pair should be generated/swapped. */
 static bool keypair_renew;
-/** Reference count to avoid generating/swapping the ECC key pair when it is in use. */
+/* Reference count to avoid generating/swapping the ECC key pair when it is in use. */
 static atomic_t keypair_ref_num;
 
-/** ID of ECC private/public key pair. */
+/* ID of ECC private/public key pair. */
 static psa_key_id_t keypair_id;
-/** Array of peer public key descriptors, used for LESC DH generation. */
+/* Array of DH key request descriptors used for deferring LESC DH key generation. */
 static struct lesc_peer_pub_key peer_keys[NRF_BLE_LESC_LINK_COUNT];
 
-/** LESC own OOB data is valid. */
+/* LESC own OOB data is valid. */
 static bool lesc_oobd_own_generated;
-/** LESC OOB data used in LESC OOB pairing mode. */
+/* LESC OOB data used in LESC OOB pairing mode. */
 static ble_gap_lesc_oob_data_t ble_lesc_oobd_own;
 static nrf_ble_lesc_peer_oob_data_handler lesc_oobd_peer_handler;
 
@@ -124,7 +123,7 @@ uint32_t nrf_ble_lesc_keypair_generate(void)
 	uint8_t pub_key[ECC_PUB_KEY_EXPORT_SIZE];
 	size_t pub_key_len = 0;
 
-	/* Update flag to indicate that there is no valid private key. */
+	/* Update flag to indicate that there is no valid ECC key pair. */
 	keypair_generated = false;
 	lesc_oobd_own_generated = false;
 
@@ -179,7 +178,6 @@ uint32_t nrf_ble_lesc_keypair_generate(void)
 
 		printk("\n\n");
 	}
-
 #endif
 
 	/* Convert from big-endian to little-endian.
@@ -187,7 +185,7 @@ uint32_t nrf_ble_lesc_keypair_generate(void)
 	 */
 	ecc_public_key_byte_order_invert(&pub_key[1], lesc_public_key.pk);
 
-	/* Set the flag to indicate that there is a valid ECDH key pair generated. */
+	/* Set the flag to indicate that there is a valid ECC key pair generated. */
 	keypair_generated = true;
 	keypair_renew = false;
 
@@ -247,6 +245,7 @@ void nrf_ble_lesc_peer_oob_data_handler_set(nrf_ble_lesc_peer_oob_data_handler h
 	lesc_oobd_peer_handler = handler;
 }
 
+/* Respond with LESC OOB data to a DH key request that requires OOB data. */
 static uint32_t lesc_oob_data_set(uint16_t conn_handle)
 {
 	ble_gap_lesc_oob_data_t *lesc_oobd_own;
@@ -259,14 +258,8 @@ static uint32_t lesc_oob_data_set(uint16_t conn_handle)
 	return sd_ble_gap_lesc_oob_data_set(conn_handle, lesc_oobd_own, lesc_oobd_peer);
 }
 
-/**
- * @brief Function for calculating a DH key and responding to the DH key request.
- *
- * @param[in]  peer_public_key  ECC peer public key, used to compute shared secret.
- *
- * @retval NRF_SUCCESS        If the operation was successful.
- * @return Other error codes might be returned by @ref sd_ble_gap_lesc_dhkey_reply.
- * functions.
+/* Function for calculating a DH key from own ECC private key and peers public ECC key, before
+ * responding to SoftDevice's DH key request with sd_ble_gap_lesc_dhkey_reply().
  */
 static uint32_t compute_and_give_dhkey(struct lesc_peer_pub_key *peer_public_key)
 {
@@ -386,12 +379,9 @@ uint32_t nrf_ble_lesc_request_handler(void)
 	return NRF_SUCCESS;
 }
 
-/**
- * @brief Function for handling a DH key request event.
+/* Defer the DH key request to the nrf_ble_lesc_request_handler() function (main thread).
  *
- * @param[in]  conn_handle    Connection handle.
- * @param[in]  idx            Data index assigned to the connection handle.
- * @param[in]  dhkey_request  DH key request descriptor.
+ * Parameter idx is the data index associated with the connection handle.
  */
 static void on_dhkey_request(uint16_t conn_handle, int idx,
 			     const ble_gap_evt_lesc_dhkey_request_t *dhkey_request)
