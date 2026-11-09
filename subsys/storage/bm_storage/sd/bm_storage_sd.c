@@ -241,10 +241,14 @@ static void queue_process(void)
 
 	for (;;) {
 		if (bm_storage_sd.operation_state == OP_NONE) {
+			unsigned int key = irq_lock();
+
 			if (!queue_load_next()) {
 				bm_storage_sd.queue_state = QUEUE_IDLE;
+				irq_unlock(key);
 				return;
 			}
+			irq_unlock(key);
 		}
 
 		ret = 0;
