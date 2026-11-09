@@ -435,6 +435,10 @@ void pm_handler_pm_evt_log(const struct pm_evt *pm_evt)
 			nrf_strerror_get(pm_evt->garbage_collection_failed.error));
 		break;
 
+	case PM_EVT_LESC_ECC_KEYPAIR_RENEWED:
+		LOG_INF("LESC ECC key pair renewed");
+		break;
+
 	default:
 		LOG_WRN("Unexpected PM event, evt_id %#x", pm_evt->evt_id);
 		break;
