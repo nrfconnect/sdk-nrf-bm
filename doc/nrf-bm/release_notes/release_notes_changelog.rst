@@ -100,6 +100,8 @@ Storage
 
    * Updated the SoftDevice storage backend to return ``-EBUSY`` instead of ``-ENOMEM`` when the operation queue is full.
 
+   * Fixed a SoftDevice backend issue where a write queued from an interrupt could remain pending until another operation or SoC event started the queue again.
+
 Filesystem
 ----------
 
