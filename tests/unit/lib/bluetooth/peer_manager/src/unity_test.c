@@ -370,6 +370,10 @@ void peer_manager_initialize_success(void)
 
 	__cmock_psa_crypto_init_ExpectAndReturn(PSA_SUCCESS);
 	PSA_GENERATE_ECDH_KEYS_AND_EXPORT_PUBLIC_KEY_MOCKS(key_pair_id);
+	__cmock_sd_ble_gap_lesc_oob_data_get_ExpectAndReturn(BLE_CONN_HANDLE_INVALID, PTR_IGNORE,
+							     PTR_IGNORE, NRF_SUCCESS);
+	__cmock_sd_ble_gap_lesc_oob_data_get_IgnoreArg_p_pk_own();
+	__cmock_sd_ble_gap_lesc_oob_data_get_IgnoreArg_p_oobd_own();
 
 	__cmock_bm_timer_init_Stub(stub_bm_timer_init_ast);
 
@@ -600,6 +604,10 @@ void test_pm_init_success(void)
 
 	__cmock_psa_crypto_init_ExpectAndReturn(PSA_SUCCESS);
 	PSA_GENERATE_ECDH_KEYS_AND_EXPORT_PUBLIC_KEY_MOCKS(key_pair_id);
+	__cmock_sd_ble_gap_lesc_oob_data_get_ExpectAndReturn(BLE_CONN_HANDLE_INVALID, PTR_IGNORE,
+							     PTR_IGNORE, NRF_SUCCESS);
+	__cmock_sd_ble_gap_lesc_oob_data_get_IgnoreArg_p_pk_own();
+	__cmock_sd_ble_gap_lesc_oob_data_get_IgnoreArg_p_oobd_own();
 
 	__cmock_bm_timer_init_Stub(stub_bm_timer_init_ast);
 
@@ -1151,12 +1159,7 @@ void test_pm_conn_secure_peripheral_pair_success(void)
 	TEST_ASSERT_TRUE(conn_sec_status.mitm_protected);
 	TEST_ASSERT_TRUE(conn_sec_status.lesc);
 
-	/* On a BLE_GAP_EVT_AUTH_STATUS, expect peer manager to finish up the pairing request.
-	 *
-	 * Expect a new ECDH key to be generated because CONFIG_PM_LESC_GENERATE_NEW_KEYS is set.
-	 */
-	PSA_GENERATE_ECDH_KEYS_AND_EXPORT_PUBLIC_KEY_MOCKS(key_pair_id);
-
+	/* On a BLE_GAP_EVT_AUTH_STATUS, expect peer manager to finish up the pairing request. */
 	evt.header.evt_id = BLE_GAP_EVT_AUTH_STATUS;
 	evt.evt.gap_evt.params.auth_status = (ble_gap_evt_auth_status_t) {
 		.auth_status = BLE_GAP_SEC_STATUS_SUCCESS,
@@ -1169,12 +1172,29 @@ void test_pm_conn_secure_peripheral_pair_success(void)
 
 	sdh_evt_dispatch_ble(&evt);
 
+	/* Expect a new ECC key pair to be generated when next running nrf_ble_lesc_request_handler
+	 * because CONFIG_PM_LESC_GENERATE_NEW_KEYS is set.
+	 * Expect own oob data to be generated/fetched again from SoftDevice.
+	 */
+	PSA_GENERATE_ECDH_KEYS_AND_EXPORT_PUBLIC_KEY_MOCKS(key_pair_id);
+	__cmock_sd_ble_gap_lesc_oob_data_get_ExpectAndReturn(BLE_CONN_HANDLE_INVALID, PTR_IGNORE,
+							     PTR_IGNORE, NRF_SUCCESS);
+	__cmock_sd_ble_gap_lesc_oob_data_get_IgnoreArg_p_pk_own();
+	__cmock_sd_ble_gap_lesc_oob_data_get_IgnoreArg_p_oobd_own();
+
+	nrf_err = nrf_ble_lesc_request_handler();
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
 	TEST_ASSERT_EQUAL(0, pm_peer_count());
 
 	pm_evt = on_pm_evt_find_last(PM_EVT_CONN_SEC_SUCCEEDED);
 	TEST_ASSERT_NOT_NULL(pm_evt);
 	TEST_ASSERT_EQUAL(PM_CONN_SEC_PROCEDURE_PAIRING, pm_evt->conn_sec_succeeded.procedure);
-	TEST_ASSERT_EQUAL(1, on_pm_evt_test_ctx.capture.count);
+
+	pm_evt = on_pm_evt_find_last(PM_EVT_LESC_ECC_KEYPAIR_RENEWED);
+	TEST_ASSERT_NOT_NULL(pm_evt);
+
+	TEST_ASSERT_EQUAL(2, on_pm_evt_test_ctx.capture.count);
 }
 
 void test_pm_conn_secure_peripheral_pair_and_bond_success(void)
@@ -1350,8 +1370,6 @@ void test_pm_conn_secure_peripheral_pair_and_bond_success(void)
 	 * Expect the bonding data storage to be iterated to check if the paired peer already have
 	 * bonding data. No duplicate bonding data is to be found.
 	 * Next, expect new bonding data to be stored.
-	 *
-	 * Expect a new ECDH key to be generated because CONFIG_PM_LESC_GENERATE_NEW_KEYS is set.
 	 */
 	entry.data_id = PM_PEER_DATA_ID_BONDING;
 	entry.peer_id = 0;
@@ -1369,8 +1387,6 @@ void test_pm_conn_secure_peripheral_pair_and_bond_success(void)
 					     sizeof(struct pm_peer_data_bonding), 0);
 	__cmock_bm_zms_write_IgnoreArg_data();
 
-	PSA_GENERATE_ECDH_KEYS_AND_EXPORT_PUBLIC_KEY_MOCKS(key_pair_id);
-
 	evt.header.evt_id = BLE_GAP_EVT_AUTH_STATUS;
 	evt.evt.gap_evt.params.auth_status = (ble_gap_evt_auth_status_t) {
 		.auth_status = BLE_GAP_SEC_STATUS_SUCCESS,
@@ -1382,6 +1398,19 @@ void test_pm_conn_secure_peripheral_pair_and_bond_success(void)
 	};
 
 	sdh_evt_dispatch_ble(&evt);
+
+	/* Expect a new ECC key pair to be generated when next running nrf_ble_lesc_request_handler
+	 * because CONFIG_PM_LESC_GENERATE_NEW_KEYS is set.
+	 * Expect own oob data to be generated/fetched again from SoftDevice.
+	 */
+	PSA_GENERATE_ECDH_KEYS_AND_EXPORT_PUBLIC_KEY_MOCKS(key_pair_id);
+	__cmock_sd_ble_gap_lesc_oob_data_get_ExpectAndReturn(BLE_CONN_HANDLE_INVALID, PTR_IGNORE,
+							     PTR_IGNORE, NRF_SUCCESS);
+	__cmock_sd_ble_gap_lesc_oob_data_get_IgnoreArg_p_pk_own();
+	__cmock_sd_ble_gap_lesc_oob_data_get_IgnoreArg_p_oobd_own();
+
+	nrf_err = nrf_ble_lesc_request_handler();
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 
 	TEST_ASSERT_EQUAL(1, pm_peer_count());
 
@@ -1396,7 +1425,11 @@ void test_pm_conn_secure_peripheral_pair_and_bond_success(void)
 	pm_evt = on_pm_evt_find_last(PM_EVT_CONN_SEC_SUCCEEDED);
 	TEST_ASSERT_NOT_NULL(pm_evt);
 	TEST_ASSERT_EQUAL(PM_CONN_SEC_PROCEDURE_BONDING, pm_evt->conn_sec_succeeded.procedure);
-	TEST_ASSERT_EQUAL(1, on_pm_evt_test_ctx.capture.count);
+
+	pm_evt = on_pm_evt_find_last(PM_EVT_LESC_ECC_KEYPAIR_RENEWED);
+	TEST_ASSERT_NOT_NULL(pm_evt);
+
+	TEST_ASSERT_EQUAL(2, on_pm_evt_test_ctx.capture.count);
 }
 
 void test_pm_conn_secure_peripheral_with_bonding_data_success(void)
@@ -1751,12 +1784,7 @@ void test_pm_conn_secure_peripheral_pair_again_with_bonding_data_present_success
 	TEST_ASSERT_TRUE(conn_sec_status.mitm_protected);
 	TEST_ASSERT_TRUE(conn_sec_status.lesc);
 
-	/* On a BLE_GAP_EVT_AUTH_STATUS, expect peer manager to finish up the pairing request.
-	 *
-	 * Expect a new ECDH key to be generated because CONFIG_PM_LESC_GENERATE_NEW_KEYS is set.
-	 */
-	PSA_GENERATE_ECDH_KEYS_AND_EXPORT_PUBLIC_KEY_MOCKS(key_pair_id);
-
+	/* On a BLE_GAP_EVT_AUTH_STATUS, expect peer manager to finish up the pairing request. */
 	evt.header.evt_id = BLE_GAP_EVT_AUTH_STATUS;
 	evt.evt.gap_evt.params.auth_status = (ble_gap_evt_auth_status_t) {
 		.auth_status = BLE_GAP_SEC_STATUS_SUCCESS,
@@ -1769,10 +1797,27 @@ void test_pm_conn_secure_peripheral_pair_again_with_bonding_data_present_success
 
 	sdh_evt_dispatch_ble(&evt);
 
+	/* Expect a new ECC key pair to be generated when next running nrf_ble_lesc_request_handler
+	 * because CONFIG_PM_LESC_GENERATE_NEW_KEYS is set.
+	 * Expect own oob data to be generated/fetched again from SoftDevice.
+	 */
+	PSA_GENERATE_ECDH_KEYS_AND_EXPORT_PUBLIC_KEY_MOCKS(key_pair_id);
+	__cmock_sd_ble_gap_lesc_oob_data_get_ExpectAndReturn(BLE_CONN_HANDLE_INVALID, PTR_IGNORE,
+							     PTR_IGNORE, NRF_SUCCESS);
+	__cmock_sd_ble_gap_lesc_oob_data_get_IgnoreArg_p_pk_own();
+	__cmock_sd_ble_gap_lesc_oob_data_get_IgnoreArg_p_oobd_own();
+
+	nrf_err = nrf_ble_lesc_request_handler();
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
 	pm_evt = on_pm_evt_find_last(PM_EVT_CONN_SEC_SUCCEEDED);
 	TEST_ASSERT_NOT_NULL(pm_evt);
 	TEST_ASSERT_EQUAL(PM_CONN_SEC_PROCEDURE_PAIRING, pm_evt->conn_sec_succeeded.procedure);
-	TEST_ASSERT_EQUAL(1, on_pm_evt_test_ctx.capture.count);
+
+	pm_evt = on_pm_evt_find_last(PM_EVT_LESC_ECC_KEYPAIR_RENEWED);
+	TEST_ASSERT_NOT_NULL(pm_evt);
+
+	TEST_ASSERT_EQUAL(2, on_pm_evt_test_ctx.capture.count);
 }
 void test_pm_conn_secure_central_pair_success(void)
 {
@@ -1943,12 +1988,7 @@ void test_pm_conn_secure_central_pair_success(void)
 	TEST_ASSERT_TRUE(conn_sec_status.mitm_protected);
 	TEST_ASSERT_TRUE(conn_sec_status.lesc);
 
-	/* On a BLE_GAP_EVT_AUTH_STATUS, expect peer manager to finish up the pairing request.
-	 *
-	 * Expect a new ECDH key to be generated because CONFIG_PM_LESC_GENERATE_NEW_KEYS is set.
-	 */
-	PSA_GENERATE_ECDH_KEYS_AND_EXPORT_PUBLIC_KEY_MOCKS(key_pair_id);
-
+	/* On a BLE_GAP_EVT_AUTH_STATUS, expect peer manager to finish up the pairing request. */
 	evt.header.evt_id = BLE_GAP_EVT_AUTH_STATUS;
 	evt.evt.gap_evt.params.auth_status = (ble_gap_evt_auth_status_t) {
 		.auth_status = BLE_GAP_SEC_STATUS_SUCCESS,
@@ -1961,12 +2001,29 @@ void test_pm_conn_secure_central_pair_success(void)
 
 	sdh_evt_dispatch_ble(&evt);
 
+	/* Expect a new ECC key pair to be generated when next running nrf_ble_lesc_request_handler
+	 * because CONFIG_PM_LESC_GENERATE_NEW_KEYS is set.
+	 * Expect own oob data to be generated/fetched again from SoftDevice.
+	 */
+	PSA_GENERATE_ECDH_KEYS_AND_EXPORT_PUBLIC_KEY_MOCKS(key_pair_id);
+	__cmock_sd_ble_gap_lesc_oob_data_get_ExpectAndReturn(BLE_CONN_HANDLE_INVALID, PTR_IGNORE,
+							     PTR_IGNORE, NRF_SUCCESS);
+	__cmock_sd_ble_gap_lesc_oob_data_get_IgnoreArg_p_pk_own();
+	__cmock_sd_ble_gap_lesc_oob_data_get_IgnoreArg_p_oobd_own();
+
+	nrf_err = nrf_ble_lesc_request_handler();
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
 	TEST_ASSERT_EQUAL(0, pm_peer_count());
 
 	pm_evt = on_pm_evt_find_last(PM_EVT_CONN_SEC_SUCCEEDED);
 	TEST_ASSERT_NOT_NULL(pm_evt);
 	TEST_ASSERT_EQUAL(PM_CONN_SEC_PROCEDURE_PAIRING, pm_evt->conn_sec_succeeded.procedure);
-	TEST_ASSERT_EQUAL(1, on_pm_evt_test_ctx.capture.count);
+
+	pm_evt = on_pm_evt_find_last(PM_EVT_LESC_ECC_KEYPAIR_RENEWED);
+	TEST_ASSERT_NOT_NULL(pm_evt);
+
+	TEST_ASSERT_EQUAL(2, on_pm_evt_test_ctx.capture.count);
 }
 
 void test_pm_conn_secure_central_pair_and_bond_success(void)
@@ -2138,12 +2195,7 @@ void test_pm_conn_secure_central_pair_and_bond_success(void)
 	TEST_ASSERT_TRUE(conn_sec_status.mitm_protected);
 	TEST_ASSERT_TRUE(conn_sec_status.lesc);
 
-	/* On a BLE_GAP_EVT_AUTH_STATUS, expect peer manager to finish up the pairing request.
-	 *
-	 * Expect a new ECDH key to be generated because CONFIG_PM_LESC_GENERATE_NEW_KEYS is set.
-	 */
-	PSA_GENERATE_ECDH_KEYS_AND_EXPORT_PUBLIC_KEY_MOCKS(key_pair_id);
-
+	/* On a BLE_GAP_EVT_AUTH_STATUS, expect peer manager to finish up the pairing request. */
 	evt.header.evt_id = BLE_GAP_EVT_AUTH_STATUS;
 	evt.evt.gap_evt.params.auth_status = (ble_gap_evt_auth_status_t) {
 		.auth_status = BLE_GAP_SEC_STATUS_SUCCESS,
@@ -2156,12 +2208,29 @@ void test_pm_conn_secure_central_pair_and_bond_success(void)
 
 	sdh_evt_dispatch_ble(&evt);
 
+	/* Expect a new ECC key pair to be generated when next running nrf_ble_lesc_request_handler
+	 * because CONFIG_PM_LESC_GENERATE_NEW_KEYS is set.
+	 * Expect own oob data to be generated/fetched again from SoftDevice.
+	 */
+	PSA_GENERATE_ECDH_KEYS_AND_EXPORT_PUBLIC_KEY_MOCKS(key_pair_id);
+	__cmock_sd_ble_gap_lesc_oob_data_get_ExpectAndReturn(BLE_CONN_HANDLE_INVALID, PTR_IGNORE,
+							     PTR_IGNORE, NRF_SUCCESS);
+	__cmock_sd_ble_gap_lesc_oob_data_get_IgnoreArg_p_pk_own();
+	__cmock_sd_ble_gap_lesc_oob_data_get_IgnoreArg_p_oobd_own();
+
+	nrf_err = nrf_ble_lesc_request_handler();
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
 	TEST_ASSERT_EQUAL(0, pm_peer_count());
 
 	pm_evt = on_pm_evt_find_last(PM_EVT_CONN_SEC_SUCCEEDED);
 	TEST_ASSERT_NOT_NULL(pm_evt);
 	TEST_ASSERT_EQUAL(PM_CONN_SEC_PROCEDURE_PAIRING, pm_evt->conn_sec_succeeded.procedure);
-	TEST_ASSERT_EQUAL(1, on_pm_evt_test_ctx.capture.count);
+
+	pm_evt = on_pm_evt_find_last(PM_EVT_LESC_ECC_KEYPAIR_RENEWED);
+	TEST_ASSERT_NOT_NULL(pm_evt);
+
+	TEST_ASSERT_EQUAL(2, on_pm_evt_test_ctx.capture.count);
 }
 
 void test_pm_conn_secure_central_with_bonding_data_success(void)

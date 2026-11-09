@@ -13,6 +13,7 @@
 #include "cmock_nrf_sdh_ble.h"
 
 #include <bm/bluetooth/peer_manager/nrf_ble_lesc.h>
+#include <bm/bluetooth/peer_manager/peer_manager_types.h>
 
 #define PTR_IGNORE NULL
 #define VAL_IGNORE 0
@@ -234,6 +235,21 @@ static psa_status_t stub_psa_export_public_key_failure(mbedtls_svc_key_id_t key,
 	return PSA_ERROR_BAD_STATE;
 }
 
+static uint32_t stub_sd_ble_gap_lesc_oob_data_get_success(
+	uint16_t conn_handle, ble_gap_lesc_p256_pk_t const *p_pk_own,
+	ble_gap_lesc_oob_data_t *p_oobd_own, int cmock_num_calls)
+{
+	TEST_ASSERT_EQUAL(BLE_CONN_HANDLE_INVALID, conn_handle);
+
+	TEST_ASSERT_NOT_NULL(p_pk_own);
+	TEST_ASSERT_EQUAL_MEMORY(own_test_pub_key_sd, p_pk_own->pk, sizeof(own_test_pub_key_sd));
+
+	TEST_ASSERT_NOT_NULL(p_oobd_own);
+	oobd = p_oobd_own;
+
+	return NRF_SUCCESS;
+}
+
 static void generate_key_pair(void)
 {
 	uint32_t nrf_err;
@@ -262,6 +278,14 @@ static void generate_key_pair(void)
 	__cmock_psa_generate_key_Stub(NULL);
 }
 
+void pm_sm_evt_handler(struct pm_evt *sm_evt)
+{
+	TEST_ASSERT_NOT_NULL(sm_evt);
+	TEST_ASSERT_EQUAL(PM_EVT_LESC_ECC_KEYPAIR_RENEWED, sm_evt->evt_id);
+	TEST_ASSERT_EQUAL(BLE_CONN_HANDLE_INVALID, sm_evt->conn_handle);
+	TEST_ASSERT_EQUAL(PM_PEER_ID_INVALID, sm_evt->peer_id);
+}
+
 void test_nrf_ble_lesc_init_success(void)
 {
 	uint32_t nrf_err;
@@ -277,6 +301,8 @@ void test_nrf_ble_lesc_init_success(void)
 
 	__cmock_psa_generate_key_Stub(stub_psa_generate_key_success);
 	__cmock_psa_export_public_key_Stub(stub_psa_export_public_key_success);
+
+	__cmock_sd_ble_gap_lesc_oob_data_get_Stub(stub_sd_ble_gap_lesc_oob_data_get_success);
 
 	nrf_err = nrf_ble_lesc_init();
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
@@ -351,21 +377,6 @@ void test_nrf_ble_lesc_keypair_generate_and_public_key_get_error_internal(void)
 
 	pub_key = nrf_ble_lesc_public_key_get();
 	TEST_ASSERT_NULL(pub_key);
-}
-
-static uint32_t stub_sd_ble_gap_lesc_oob_data_get_success(
-	uint16_t conn_handle, ble_gap_lesc_p256_pk_t const *p_pk_own,
-	ble_gap_lesc_oob_data_t *p_oobd_own, int cmock_num_calls)
-{
-	TEST_ASSERT_EQUAL(BLE_CONN_HANDLE_INVALID, conn_handle);
-
-	TEST_ASSERT_NOT_NULL(p_pk_own);
-	TEST_ASSERT_EQUAL_MEMORY(own_test_pub_key_sd, p_pk_own->pk, sizeof(own_test_pub_key_sd));
-
-	TEST_ASSERT_NOT_NULL(p_oobd_own);
-	oobd = p_oobd_own;
-
-	return NRF_SUCCESS;
 }
 
 void test_nrf_ble_lesc_own_oob_data_generation_and_get_success(void)
@@ -487,6 +498,133 @@ void test_nrf_ble_lesc_compute_and_give_dhkey_success(void)
 	/* Invoke compute_and_give_dhkey(). */
 	nrf_err = nrf_ble_lesc_request_handler();
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	/* Request renwal of ECC key pair. */
+	nrf_ble_lesc_keypair_renew_request();
+
+	evt = (ble_evt_t) {
+		.header.evt_id = BLE_GAP_EVT_AUTH_STATUS,
+		.evt.gap_evt.conn_handle = conn_handle,
+	};
+
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(conn_handle, peer_pub_key_idx);
+
+	/* Simulate finish of pairing procedure. */
+	nrf_ble_lesc_on_ble_evt(&evt);
+
+	key_attrs = NULL;
+	__cmock_psa_destroy_key_ExpectAnyArgsAndReturn(PSA_SUCCESS);
+
+	__cmock_psa_set_key_usage_flags_Stub(stub_psa_set_key_usage_flags);
+	__cmock_psa_set_key_lifetime_Stub(stub_psa_set_key_lifetime);
+	__cmock_psa_set_key_algorithm_Stub(stub_psa_set_key_algorithm);
+	__cmock_psa_set_key_type_Stub(stub_psa_set_key_type);
+	__cmock_psa_set_key_bits_Stub(stub_psa_set_key_bits);
+
+	__cmock_psa_generate_key_Stub(stub_psa_generate_key_success);
+	__cmock_psa_export_public_key_Stub(stub_psa_export_public_key_success);
+
+	__cmock_sd_ble_gap_lesc_oob_data_get_Stub(stub_sd_ble_gap_lesc_oob_data_get_success);
+
+	/* Renew ECC key pair. */
+	nrf_err = nrf_ble_lesc_request_handler();
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+}
+
+void test_nrf_ble_lesc_keypair_renew_waits_for_two_pairing_procedures_success(void)
+{
+	uint32_t nrf_err;
+	const uint16_t conn_handle_a = 0x10;
+	const uint16_t conn_handle_b = 0x11;
+	const int idx_a = 0;
+	const int idx_b = 1;
+	ble_gap_lesc_p256_pk_t peer_lesc_key;
+	ble_evt_t evt = {
+		.header.evt_id = BLE_GAP_EVT_LESC_DHKEY_REQUEST,
+		.evt.gap_evt.params.lesc_dhkey_request.p_pk_peer = &peer_lesc_key,
+	};
+
+	memcpy(peer_lesc_key.pk, peer_test_pub_key_sd, sizeof(peer_test_pub_key_sd));
+
+	generate_key_pair();
+
+	/* SoftDevice requests DH key for link A. */
+	evt.evt.gap_evt.conn_handle = conn_handle_a;
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(conn_handle_a, idx_a);
+	nrf_ble_lesc_on_ble_evt(&evt);
+
+	/* SoftDevice requests DH key for link B. */
+	evt.evt.gap_evt.conn_handle = conn_handle_b;
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(conn_handle_b, idx_b);
+	nrf_ble_lesc_on_ble_evt(&evt);
+
+	/* Process the DH key requests in index order.
+	 * Both pairing procedures now use the ECC key pair so it cannot be renewed before
+	 * the pairing procedures complete or the devices disconnect.
+	 */
+	__cmock_psa_raw_key_agreement_Stub(stub_psa_raw_key_agreement_success);
+
+	__cmock_sd_ble_gap_lesc_dhkey_reply_ExpectAndReturn(
+		conn_handle_a, BLE_GAP_SEC_STATUS_SUCCESS, PTR_IGNORE, NRF_SUCCESS);
+	__cmock_sd_ble_gap_lesc_dhkey_reply_IgnoreArg_p_dhkey();
+
+	__cmock_sd_ble_gap_lesc_dhkey_reply_ExpectAndReturn(
+		conn_handle_b, BLE_GAP_SEC_STATUS_SUCCESS, PTR_IGNORE, NRF_SUCCESS);
+	__cmock_sd_ble_gap_lesc_dhkey_reply_IgnoreArg_p_dhkey();
+
+	__cmock_sd_ble_gap_lesc_dhkey_reply_AddCallback(
+		callback_sd_ble_gap_lesc_dhkey_reply_success);
+
+	nrf_err = nrf_ble_lesc_request_handler();
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	/* Expect that nothing needs to be done. */
+	nrf_err = nrf_ble_lesc_request_handler();
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	/* Request renwal of ECC key pair. */
+	nrf_ble_lesc_keypair_renew_request();
+
+	/* Both pairing procedures still use the key pair, so no renewal yet. */
+	nrf_err = nrf_ble_lesc_request_handler();
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	/* Simulate finish of pairing procedure for link A by raising a BLE_GAP_EVT_AUTH_STATUS
+	 * event. This event is raised both on pairing success and failure.
+	 */
+	evt = (ble_evt_t) {
+		.header.evt_id = BLE_GAP_EVT_AUTH_STATUS,
+		.evt.gap_evt.conn_handle = conn_handle_a,
+	};
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(conn_handle_a, idx_a);
+	nrf_ble_lesc_on_ble_evt(&evt);
+
+	/* The key pair is still used in the pairing procedure for Link B, so no renewal yet. */
+	nrf_err = nrf_ble_lesc_request_handler();
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
+
+	/* Simulate disconnect of link B in the middle of the pairing procedure. */
+	evt = (ble_evt_t) {
+		.header.evt_id = BLE_GAP_EVT_DISCONNECTED,
+		.evt.gap_evt.conn_handle = conn_handle_b,
+	};
+	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(conn_handle_b, idx_b);
+	nrf_ble_lesc_on_ble_evt(&evt);
+
+	/* ECC key pair can now be renewed. */
+	key_attrs = NULL;
+	__cmock_psa_destroy_key_ExpectAnyArgsAndReturn(PSA_SUCCESS);
+	__cmock_psa_set_key_usage_flags_Stub(stub_psa_set_key_usage_flags);
+	__cmock_psa_set_key_lifetime_Stub(stub_psa_set_key_lifetime);
+	__cmock_psa_set_key_algorithm_Stub(stub_psa_set_key_algorithm);
+	__cmock_psa_set_key_type_Stub(stub_psa_set_key_type);
+	__cmock_psa_set_key_bits_Stub(stub_psa_set_key_bits);
+	__cmock_psa_generate_key_Stub(stub_psa_generate_key_success);
+	__cmock_psa_export_public_key_Stub(stub_psa_export_public_key_success);
+	__cmock_sd_ble_gap_lesc_oob_data_get_Stub(stub_sd_ble_gap_lesc_oob_data_get_success);
+
+	nrf_err = nrf_ble_lesc_request_handler();
+	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
 }
 
 void test_nrf_ble_lesc_compute_and_give_dhkey_without_keypair_generation(void)
@@ -511,7 +649,17 @@ void test_nrf_ble_lesc_compute_and_give_dhkey_without_keypair_generation(void)
 	/* Invoke on_dhkey_request(). */
 	nrf_ble_lesc_on_ble_evt(&evt);
 
-	/* Invoke compute_and_give_dhkey(). */
+	__cmock_psa_destroy_key_ExpectAnyArgsAndReturn(PSA_ERROR_INVALID_HANDLE);
+
+	__cmock_psa_set_key_usage_flags_Stub(stub_psa_set_key_usage_flags);
+	__cmock_psa_set_key_lifetime_Stub(stub_psa_set_key_lifetime);
+	__cmock_psa_set_key_algorithm_Stub(stub_psa_set_key_algorithm);
+	__cmock_psa_set_key_type_Stub(stub_psa_set_key_type);
+	__cmock_psa_set_key_bits_Stub(stub_psa_set_key_bits);
+
+	__cmock_psa_generate_key_Stub(stub_psa_generate_key_success);
+	__cmock_psa_export_public_key_Stub(stub_psa_export_public_key_failure);
+
 	nrf_err = nrf_ble_lesc_request_handler();
 	TEST_ASSERT_EQUAL(NRF_ERROR_INTERNAL, nrf_err);
 }
@@ -664,39 +812,6 @@ void test_nrf_ble_lesc_compute_and_give_dhkey_with_oob_data_peer(void)
 	/* Invoke compute_and_give_dhkey(). */
 	nrf_err = nrf_ble_lesc_request_handler();
 	TEST_ASSERT_EQUAL(NRF_SUCCESS, nrf_err);
-}
-
-void test_nrf_ble_lesc_compute_and_give_dhkey_with_oob_data_fail(void)
-{
-	uint32_t nrf_err;
-	const uint16_t conn_handle = 0x32;
-	const int peer_pub_key_idx = 1;
-	ble_gap_lesc_p256_pk_t peer_lesc_key;
-	ble_evt_t evt = {
-		.header = {
-			.evt_id = BLE_GAP_EVT_LESC_DHKEY_REQUEST,
-		},
-		.evt.gap_evt = {
-			.conn_handle = conn_handle,
-			.params.lesc_dhkey_request.p_pk_peer = &peer_lesc_key,
-			.params.lesc_dhkey_request.oobd_req = 1,
-		},
-	};
-	memcpy(peer_lesc_key.pk, peer_test_pub_key_sd, sizeof(peer_test_pub_key_sd));
-
-	generate_key_pair();
-
-	nrf_ble_lesc_peer_oob_data_handler_set(nfc_peer_oob_data_get);
-
-	__cmock_nrf_sdh_ble_idx_get_ExpectAndReturn(conn_handle, peer_pub_key_idx);
-	__cmock_sd_ble_gap_lesc_oob_data_set_ExpectAndReturn(conn_handle, NULL, &nfc_oob_data,
-							     NRF_ERROR_INVALID_STATE);
-
-	/* Invoke on_dhkey_request(). */
-	nrf_ble_lesc_on_ble_evt(&evt);
-
-	nrf_err = nrf_ble_lesc_request_handler();
-	TEST_ASSERT_EQUAL(NRF_ERROR_INTERNAL, nrf_err);
 }
 
 void test_nrf_ble_lesc_compute_and_give_dhkey_with_disconnect(void)

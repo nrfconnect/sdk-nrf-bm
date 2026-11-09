@@ -346,6 +346,8 @@ enum pm_evt_id {
 	PM_EVT_FLASH_GARBAGE_COLLECTED,
 	/** @brief Garbage collection was attempted but failed. */
 	PM_EVT_FLASH_GARBAGE_COLLECTION_FAILED,
+	/** @brief LESC ECC key pair renewed. */
+	PM_EVT_LESC_ECC_KEYPAIR_RENEWED,
 };
 
 /** @brief Parameters specific to the @ref PM_EVT_CONN_CONFIG_REQ event. */
