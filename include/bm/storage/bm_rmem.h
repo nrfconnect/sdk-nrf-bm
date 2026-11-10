@@ -57,7 +57,7 @@ int bm_rmem_crc32_write(struct bm_retained_clipboard_ctx *ctx);
 /**
  * @brief Verify the CRC32 of the retained clipboard.
  *
- * @retval 0 or positive length of content covered by CRC when valid.
+ * @return 0 or positive length of content covered by CRC when valid.
  *         Negative error code on failure.
  */
 int bm_rmem_crc32_verify(void);
@@ -79,6 +79,7 @@ int bm_rmem_data_get(struct bm_retained_clipboard_ctx *ctx, struct bm_rmem_data_
  *
  * @param[in,out] ctx Runtime context for the retained clipboard instance.
  * @retval 0 on success.
+ * @return Negative error code on failure.
  */
 int bm_rmem_init(struct bm_retained_clipboard_ctx *ctx);
 
@@ -90,6 +91,7 @@ int bm_rmem_init(struct bm_retained_clipboard_ctx *ctx);
  *
  * @param[in,out] ctx Run-time context for the retained clipboard instance.
  * @retval 0 on success.
+ * @return Negative error code on failure.
  */
 int bm_rmem_init_empty(struct bm_retained_clipboard_ctx *ctx);
 
@@ -101,6 +103,7 @@ int bm_rmem_init_empty(struct bm_retained_clipboard_ctx *ctx);
  * @param[in,out] ctx Run-time context for the retained clipboard instance.
  *
  * @retval 0 on success.
+ * @return Negative error code on failure.
  */
 int bm_rmem_clear(struct bm_retained_clipboard_ctx *ctx);
 

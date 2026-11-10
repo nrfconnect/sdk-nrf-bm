@@ -91,6 +91,10 @@ int bm_rmem_data_write(struct bm_retained_clipboard_ctx *ctx, uint16_t type, con
 	uint8_t *ptr;
 	struct bm_rmem_tlv *tlv;
 
+	if (!ctx || !data) {
+		return -EFAULT;
+	}
+
 	if (ctx->max_offset < CRC_TLV_SIZE) {
 		return -ESPIPE;
 	}
@@ -116,6 +120,10 @@ int bm_rmem_crc32_write(struct bm_retained_clipboard_ctx *ctx)
 	uint32_t checksum;
 	uint8_t *ptr;
 	struct bm_rmem_tlv *tlv;
+
+	if (!ctx) {
+		return -EFAULT;
+	}
 
 	if (ctx->max_offset < CRC_TLV_SIZE) {
 		return -EINVAL;
@@ -172,6 +180,10 @@ int bm_rmem_init(struct bm_retained_clipboard_ctx *ctx)
 {
 	int ret;
 
+	if (!ctx) {
+		return -EFAULT;
+	}
+
 	ctx->offset = CRC_TLV_SIZE;
 	ctx->max_offset = CRC_TLV_SIZE;
 
@@ -188,6 +200,10 @@ int bm_rmem_data_get(struct bm_retained_clipboard_ctx *ctx, struct bm_rmem_data_
 	uint8_t *ptr;
 	uint8_t *end;
 	struct bm_rmem_tlv *tlv;
+
+	if (!ctx || !desc) {
+		return -EFAULT;
+	}
 
 	if ((ctx->offset < CRC_TLV_SIZE) || (ctx->max_offset > bm_clipboard_inst.size)) {
 		return -EINVAL;
@@ -224,6 +240,10 @@ int bm_rmem_data_get(struct bm_retained_clipboard_ctx *ctx, struct bm_rmem_data_
 
 int bm_rmem_clear(struct bm_retained_clipboard_ctx *ctx)
 {
+	if (!ctx) {
+		return -EFAULT;
+	}
+
 	memset(bm_clipboard_inst.address, 0, bm_clipboard_inst.size);
 	ctx->offset = CRC_TLV_SIZE;
 	ctx->max_offset = CRC_TLV_SIZE;
