@@ -96,24 +96,9 @@ static uint32_t tk_value_generate(void)
 	return NRF_SUCCESS;
 }
 
-static uint32_t paring_key_generate(void)
+static uint32_t pairing_data_generate(void)
 {
-	uint32_t nrf_err;
-
-	LOG_INF("Generating new pairing keys");
-
-	nrf_err = nrf_ble_lesc_keypair_generate();
-
-	if (nrf_err != NRF_SUCCESS) {
-		LOG_ERR("Error while generating LESC key pair, nrf_err %#x", nrf_err);
-		return nrf_err;
-	}
-
-	nrf_err = nrf_ble_lesc_own_oob_data_generate();
-	if (nrf_err != NRF_SUCCESS) {
-		LOG_ERR("Error while generating LESC own OOB data, nrf_err %#x", nrf_err);
-		return nrf_err;
-	}
+	LOG_INF("Generating new pairing data");
 
 	oob_local = nrf_ble_lesc_own_oob_data_get();
 	if (oob_local == NULL) {
@@ -245,6 +230,13 @@ static void pm_evt_handler(const struct pm_evt *evt)
 		pm_conn_sec_config_reply(evt->conn_handle, &sec_config);
 		break;
 
+	case PM_EVT_LESC_ECC_KEYPAIR_RENEWED:
+		/* Update the out-of-band data on the tag to match the new ECC key pair.
+		 * Avoids that pairing through NFC uses outdated OOB data.
+		 */
+		nfc_oob_data_update();
+		break;
+
 	default:
 		break;
 	}
@@ -319,14 +311,6 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 
 	case BLE_GAP_EVT_AUTH_KEY_REQUEST:
 		LOG_INF("Pairing request.");
-		break;
-
-	case BLE_GAP_EVT_AUTH_STATUS:
-		/* The Peer Manager generates a new LESC key pair on this event,
-		 * so the OOB data on the tag must be updated to match the new key.
-		 * Otherwise, the next peer cannot pair through NFC.
-		 */
-		nfc_oob_data_update();
 		break;
 
 	default:
@@ -504,14 +488,9 @@ static void nfc_oob_data_update(void)
 		return;
 	}
 
-	nrf_err = nrf_ble_lesc_own_oob_data_generate();
+	nrf_err = pairing_data_generate();
 	if (nrf_err) {
-		LOG_ERR("Cannot generate LESC OOB data, nrf_err %#x", nrf_err);
-		return;
-	}
-
-	nrf_err = tk_value_generate();
-	if (nrf_err) {
+		LOG_ERR("Cannot generate pairing data, nrf_error %#x", nrf_err);
 		return;
 	}
 
@@ -644,7 +623,7 @@ int main(void)
 		goto fail;
 	}
 
-	nrf_err = paring_key_generate();
+	nrf_err = pairing_data_generate();
 	if (nrf_err != NRF_SUCCESS) {
 		goto fail;
 	}
