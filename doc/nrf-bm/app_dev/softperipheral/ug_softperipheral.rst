@@ -5,6 +5,7 @@ Using Soft peripherals
 
 Soft peripherals implement digital peripherals in firmware running on the `Fast Lightweight Peripheral Processor (FLPR)`_, a dedicated `VPR`_ CPU based on the RISC-V architecture in the fast domain.
 This guide describes what you need to add to an application developed with |BMlong| to use a Soft Peripheral, using sQSPI as an example.
+The |BMshort| subsystem also supports the sCAN and sEMMC soft peripherals, but this guide does not include integration examples for them.
 For the driver API, firmware versions, and the full porting guide of each Soft Peripheral, see `Soft peripherals`_.
 For a sample implementation, see the :ref:`sQSPI_sample` sample.
 
@@ -15,11 +16,20 @@ Before you integrate a Soft Peripheral, make sure of the following:
 
 * The Soft Peripheral firmware supports your SoC.
   See `Soft peripherals`_ for the list of supported SoCs and firmware versions.
-* FLPR is not used by another component in your application.
+* The `Fast Lightweight Peripheral Processor (FLPR)`_ is not used by another component in your application.
 * The pins you want to use can be controlled by FLPR.
   See `VPR pin mapping`_ for the pins available on your SoC.
 
-To add the sQSPI driver to your application, enable the :kconfig:option:`CONFIG_BM_SOFTPERIPHERAL` and :kconfig:option:`CONFIG_BM_SQSPI` Kconfig options.
+Project configuration
+*********************
+
+Enable the :kconfig:option:`CONFIG_BM_SOFTPERIPHERAL` Kconfig option to enable the Soft Peripheral subsystem in |BMshort|.
+
+Enable one of the following Kconfig options to select the soft peripheral driver:
+
+* :kconfig:option:`CONFIG_BM_SOFTPERIPHERAL_SCAN` Selects the sCAN driver for Controller Area Network
+* :kconfig:option:`CONFIG_BM_SOFTPERIPHERAL_SEMMC` - Selects the sEMMC driver for embedded Multimedia Card
+* :kconfig:option:`CONFIG_BM_SOFTPERIPHERAL_SQSPI` - Selects the sQSPI driver for Quad Serial Peripheral Interface
 
 Memory reservation
 ******************

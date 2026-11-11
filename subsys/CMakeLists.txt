@@ -12,11 +12,11 @@ add_subdirectory(logging)
 add_subdirectory(memfault)
 add_subdirectory(nfc)
 add_subdirectory(shell)
+add_subdirectory(softperipheral)
 add_subdirectory(storage)
 # zephyr-keep-sorted-stop
 
 # zephyr-keep-sorted-start
-add_subdirectory_ifdef(CONFIG_BM_SOFTPERIPHERAL softperipheral)
 add_subdirectory_ifdef(CONFIG_NCS_BM_MCUMGR mgmt/mcumgr)
 add_subdirectory_ifdef(CONFIG_NRF_SDH softdevice_handler)
 add_subdirectory_ifdef(CONFIG_SOFTDEVICE softdevice)

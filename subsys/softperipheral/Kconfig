@@ -4,14 +4,29 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-menuconfig BM_SOFTPERIPHERAL
-	bool "Soft peripheral is present"
+choice BM_SOFTPERIPHERAL
+	prompt "Soft peripheral selection"
+	default BM_SOFTPERIPHERAL_NONE
 	depends on NRFX_GPIOTE
 
-if BM_SOFTPERIPHERAL
+config BM_SOFTPERIPHERAL_NONE
+	bool "None"
 
-config BM_SQSPI
-	bool "Softperipheral QSPI"
-	depends on BM_SOFTPERIPHERAL
+config BM_SOFTPERIPHERAL_SCAN
+	bool "sCAN"
 
-endif # BM_SOFTPERIPHERAL
+config BM_SOFTPERIPHERAL_SEMMC
+	bool "sEMMC"
+
+config BM_SOFTPERIPHERAL_SQSPI
+	bool "sQSPI"
+
+endchoice # BM_SOFTPERIPHERAL
+
+if !BM_SOFTPERIPHERAL_NONE
+
+rsource "scan/Kconfig"
+rsource "semmc/Kconfig"
+rsource "sqspi/Kconfig"
+
+endif # !BM_SOFTPERIPHERAL_NONE
