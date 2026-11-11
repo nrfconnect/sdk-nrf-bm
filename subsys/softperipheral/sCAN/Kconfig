@@ -1,0 +1,21 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+if BM_SOFTPERIPHERAL_SCAN
+
+menu "sCAN"
+
+config BM_SOFTPERIPHERAL_SCAN_RXFILTER_MAX_BUFFER_SIZE
+	int "Maximum size of the RXFILTER buffer"
+	default 4
+
+config BM_SOFTPERIPHERAL_SCAN_MAX_DATA_LENGTH
+	int "Maximum number of bytes to send in a TX attempt"
+	default 8
+
+endmenu
+
+endif # BM_SOFTPERIPHERAL_SCAN

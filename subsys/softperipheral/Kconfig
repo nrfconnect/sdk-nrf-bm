@@ -10,8 +10,26 @@ menuconfig BM_SOFTPERIPHERAL
 
 if BM_SOFTPERIPHERAL
 
-config BM_SQSPI
-	bool "Softperipheral QSPI"
-	depends on BM_SOFTPERIPHERAL
+choice BM_SOFTPERIPHERAL_SELECTION
+	prompt "Softperipheral selection"
+	default BM_SOFTPERIPHERAL_NONE
+
+config BM_SOFTPERIPHERAL_NONE
+	bool "None"
+
+config BM_SOFTPERIPHERAL_SCAN
+	bool "sCAN"
+
+config BM_SOFTPERIPHERAL_SEMMC
+	bool "sEMMC"
+
+config BM_SOFTPERIPHERAL_SQSPI
+	bool "sQSPI"
+
+endchoice # BM_SOFTPERIPHERAL_SELECTION
+
+rsource "sCAN/Kconfig"
+rsource "sEMMC/Kconfig"
+rsource "sQSPI/Kconfig"
 
 endif # BM_SOFTPERIPHERAL
