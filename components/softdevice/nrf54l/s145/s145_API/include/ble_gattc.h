@@ -372,7 +372,7 @@ typedef struct
 /**@brief UUID discovery option.
  *
  * @details Used with @ref sd_ble_opt_set to enable and disable automatic insertion of discovered 128-bit UUIDs to the
- *          Vendor Specific UUID table. Disabled by default.
+ *          Vendor Specific UUID table. Enabled by default.
  *          - When disabled, if a procedure initiated by
  *            @ref sd_ble_gattc_primary_services_discover,
  *            @ref sd_ble_gattc_relationships_discover,
