@@ -34,12 +34,15 @@ typedef ble_gap_lesc_oob_data_t *(*nrf_ble_lesc_peer_oob_data_handler)(uint16_t 
  *
  * @retval NRF_SUCCESS         If the operation was successful.
  * @retval NRF_ERROR_INTERNAL  If @ref psa_crypto_init failed.
- * @return Other error codes might be returned by the @ref nrf_ble_lesc_keypair_generate function.
+ * @return Other error codes might be returned.
  */
 uint32_t nrf_ble_lesc_init(void);
 
 /**
  * @brief Generate ECC keypair used for the LESC procedure.
+ *
+ * @deprecated Use @ref nrf_ble_lesc_keypair_renew_request instead and then wait for
+ *             the @ref PM_EVT_LESC_ECC_KEYPAIR_RENEWED event.
  *
  * @details This function generates an ECC key pair, which consists of a private and public key.
  *          The generation is deferred to @ref nrf_ble_lesc_request_handler if called from an ISR.
@@ -54,6 +57,10 @@ uint32_t nrf_ble_lesc_keypair_generate(void);
 
 /**
  * @brief Generate LESC OOB data.
+ *
+ * @deprecated Use @ref nrf_ble_lesc_keypair_renew_request instead and then wait for
+ *             the @ref PM_EVT_LESC_ECC_KEYPAIR_RENEWED event. The OOB data is generated as part of
+ *             the key pair renewal and can be fetched with @ref nrf_ble_lesc_own_oob_data_get.
  *
  * @details This function generates LESC OOB data, which can be transmitted Out-Of-Band to the peer
  *          device and used during LESC procedure. It is required to generate ECC keypair with @ref
@@ -88,9 +95,8 @@ ble_gap_lesc_p256_pk_t *nrf_ble_lesc_public_key_get(void);
 /**
  * @brief Get the LESC Out-of-Band data.
  *
- * @details This function can be used to access LESC OOB data that is associated with this device.
- *          It is required to regenerate LESC OOB data with @ref nrf_ble_lesc_own_oob_data_generate,
- *          after each change of ECC keypair with @ref nrf_ble_lesc_keypair_generate.
+ * @details This function can be used to access LESC OOB data that is associated with this device,
+ *          which can be transmitted Out-Of-Band to the peer device and used during LESC procedure.
  *
  * @return Pointer to the LESC OOB data or NULL if the data has not been generated yet or is no
  *         no longer valid.
@@ -108,7 +114,7 @@ void nrf_ble_lesc_peer_oob_data_handler_set(nrf_ble_lesc_peer_oob_data_handler h
  * @brief Respond to DH key requests.
  *
  * @details This function calculates DH keys and supplies them to the SoftDevice if there are any
- *          pending requests for keys. When needed, the function will renew the ECC key pair.
+ *          pending requests for keys. When requested, the function will renew the ECC key pair.
  *
  * @note This function should be called systematically (e.g. in the main application loop) to handle
  *       any pending DH key requests.

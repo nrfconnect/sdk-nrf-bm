@@ -180,6 +180,9 @@ Libraries
       * The LESC module to renew the ECC key pair from the :c:func:`nrf_ble_lesc_request_handler` function to avoid calling PSA API functions from ISR.
         Following this change, the registered :c:func:`nrf_ble_lesc_peer_oob_data_handler` handler function is no longer called from ISR and is instead called as part of the :c:func:`nrf_ble_lesc_request_handler` function.
 
+   * Deprecated the :c:func:`nrf_ble_lesc_keypair_generate` and the :c:func:`nrf_ble_lesc_own_oob_data_generate` functions.
+     Use the :c:func:`nrf_ble_lesc_keypair_renew_request` function and the :c:enumerator:`PM_EVT_LESC_ECC_KEYPAIR_RENEWED` event instead when you need to regenerate the ECC key pair and OOB data.
+
    * Fixed:
 
       * An issue where calling the :c:func:`pm_init` function two or more times would cause some of the internal asynchronous operation flags to have incorrect states.
