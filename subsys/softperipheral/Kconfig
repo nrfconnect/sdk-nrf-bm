@@ -1,0 +1,35 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menuconfig BM_SOFTPERIPHERAL
+	bool "Softperipheral is present"
+	depends on NRFX_GPIOTE
+
+if BM_SOFTPERIPHERAL
+
+choice BM_SOFTPERIPHERAL_SELECTION
+	prompt "Softperipheral selection"
+	default BM_SOFTPERIPHERAL_NONE
+
+config BM_SOFTPERIPHERAL_NONE
+	bool "None"
+
+config BM_SOFTPERIPHERAL_SCAN
+	bool "sCAN"
+
+config BM_SOFTPERIPHERAL_SEMMC
+	bool "sEMMC"
+
+config BM_SOFTPERIPHERAL_SQSPI
+	bool "sQSPI"
+
+endchoice # BM_SOFTPERIPHERAL_SELECTION
+
+rsource "sCAN/Kconfig"
+rsource "sEMMC/Kconfig"
+rsource "sQSPI/Kconfig"
+
+endif # BM_SOFTPERIPHERAL
