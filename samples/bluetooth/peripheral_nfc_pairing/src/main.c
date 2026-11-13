@@ -37,8 +37,6 @@ LOG_MODULE_REGISTER(sample, CONFIG_SAMPLE_BLE_PERIPHERAL_NFC_PAIRING_LOG_LEVEL);
 #define CONN_STATUS_LED		BOARD_PIN_LED_1
 #define NFC_FIELD_LED		BOARD_PIN_LED_2
 
-#define BUTTON_BOND_REMOVE_PIN	BOARD_PIN_BTN_1
-
 /* BLE Advertising library instance */
 BLE_ADV_DEF(ble_adv);
 
@@ -55,50 +53,10 @@ static uint8_t ndef_msg_buf[NDEF_MSG_BUF_SIZE];
 
 static void nfc_oob_data_update(void);
 
-static void led_init(void)
-{
-	nrf_gpio_cfg_output(DEV_INITIALIZED_LED);
-	nrf_gpio_cfg_output(CONN_STATUS_LED);
-	nrf_gpio_cfg_output(NFC_FIELD_LED);
-	nrf_gpio_pin_write(DEV_INITIALIZED_LED, !BOARD_LED_ACTIVE_STATE);
-	nrf_gpio_pin_write(CONN_STATUS_LED, !BOARD_LED_ACTIVE_STATE);
-	nrf_gpio_pin_write(NFC_FIELD_LED, !BOARD_LED_ACTIVE_STATE);
-}
-
-static void nfc_field_led_on(void)
-{
-	nrf_gpio_pin_write(NFC_FIELD_LED, BOARD_LED_ACTIVE_STATE);
-}
-
-static void nfc_field_led_off(void)
-{
-	nrf_gpio_pin_write(NFC_FIELD_LED, !BOARD_LED_ACTIVE_STATE);
-}
-
-static void conn_status_led_on(void)
-{
-	nrf_gpio_pin_write(CONN_STATUS_LED, BOARD_LED_ACTIVE_STATE);
-}
-
-static void conn_status_led_off(void)
-{
-	nrf_gpio_pin_write(CONN_STATUS_LED, !BOARD_LED_ACTIVE_STATE);
-}
-
-static uint32_t tk_value_generate(void)
-{
-	uint32_t nrf_err = sd_rand_application_vector_get(tk_value, sizeof(tk_value));
-
-	if (nrf_err != NRF_SUCCESS) {
-		LOG_ERR("Random TK value generation failed, nrf_err %#x", nrf_err);
-		return nrf_err;
-	}
-
-	return NRF_SUCCESS;
-}
-
 static uint32_t pairing_data_generate(void)
 {
+	uint32_t nrf_err;
+
 	LOG_INF("Generating new pairing data");
 
 	oob_local = nrf_ble_lesc_own_oob_data_get();
@@ -107,7 +65,12 @@ static uint32_t pairing_data_generate(void)
 		return NRF_ERROR_NULL;
 	}
 
-	return tk_value_generate();
+	nrf_err = sd_rand_application_vector_get(tk_value, sizeof(tk_value));
+	if (nrf_err) {
+		LOG_ERR("Random TK value generation failed, nrf_err %#x", nrf_err);
+	}
+
+	return nrf_err;
 }
 
 static uint32_t allow_list_set(enum pm_peer_id_list_skip skip)
@@ -338,7 +301,9 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 	case BLE_GAP_EVT_CONNECTED:
 		LOG_INF("Peer connected");
 		conn_cnt++;
-		conn_status_led_on();
+		if (conn_cnt == 1) {
+			nrf_gpio_pin_write(CONN_STATUS_LED, BOARD_LED_ACTIVE_STATE);
+		}
 		if (conn_cnt >= CONFIG_NRF_SDH_BLE_PERIPHERAL_LINK_COUNT) {
 			err = nfc_t4t_emulation_stop();
 			if (err && err != -NRF_EOPNOTSUPP) {
@@ -356,7 +321,7 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 			evt->evt.gap_evt.params.disconnected.reason);
 		conn_cnt--;
 		if (conn_cnt == 0) {
-			conn_status_led_off();
+			nrf_gpio_pin_write(CONN_STATUS_LED, !BOARD_LED_ACTIVE_STATE);
 		}
 		if (conn_cnt < CONFIG_NRF_SDH_BLE_PERIPHERAL_LINK_COUNT) {
 			err = nfc_t4t_emulation_start();
@@ -411,29 +376,33 @@ static void ble_adv_evt_handler(struct ble_adv *ble_adv, const struct ble_adv_ev
 	case BLE_ADV_EVT_PEER_ADDR_REQUEST:
 		struct pm_peer_data_bonding peer_bonding_data;
 
-		/* Only Give peer address if we have a handle to the bonded peer. */
-		if (peer_id != PM_PEER_ID_INVALID) {
-			nrf_err = pm_peer_data_bonding_load(peer_id, &peer_bonding_data);
+		/* Only give peer address if we have a handle to the bonded peer. */
+		if (peer_id == PM_PEER_ID_INVALID) {
+			break;
+		}
+
+		nrf_err = pm_peer_data_bonding_load(peer_id, &peer_bonding_data);
+		if (nrf_err) {
 			if (nrf_err != NRF_ERROR_NOT_FOUND) {
-				if (nrf_err) {
-					LOG_ERR("Failed to load bonding data, nrf_error %#x",
-						nrf_err);
-				}
-
-				/* Manipulate identities to exclude peers with no
-				 * Central Address Resolution.
-				 */
-				identities_set(PM_PEER_ID_LIST_SKIP_ALL);
-
-				peer_addr = &(peer_bonding_data.peer_ble_id.id_addr_info);
-				nrf_err = ble_adv_peer_addr_reply(ble_adv, peer_addr);
-				if (nrf_err) {
-					LOG_ERR("Failed to reply peer address, nrf_error %#x",
-						nrf_err);
-				}
+				LOG_ERR("Failed to load bonding data, nrf_error %#x", nrf_err);
 			}
+			break;
+		}
+
+		/* Manipulate identities to exclude peers with no Central Address Resolution. */
+		identities_set(PM_PEER_ID_LIST_SKIP_ALL);
+
+		peer_addr = &(peer_bonding_data.peer_ble_id.id_addr_info);
+		LOG_DBG("Direct advertising to %02X:%02X:%02X:%02X:%02X:%02X",
+			peer_addr->addr[5], peer_addr->addr[4], peer_addr->addr[3],
+			peer_addr->addr[2], peer_addr->addr[1], peer_addr->addr[0]);
+
+		nrf_err = ble_adv_peer_addr_reply(ble_adv, peer_addr);
+		if (nrf_err) {
+			LOG_ERR("Failed to reply peer address, nrf_error %#x", nrf_err);
 		}
 		break;
+
 	default:
 		break;
 	}
@@ -452,10 +421,10 @@ static void nfc_callback(void *context,
 
 	switch (event) {
 	case NFC_T4T_EVENT_FIELD_ON:
-		nfc_field_led_on();
+		nrf_gpio_pin_write(NFC_FIELD_LED, BOARD_LED_ACTIVE_STATE);
 		break;
 	case NFC_T4T_EVENT_FIELD_OFF:
-		nfc_field_led_off();
+		nrf_gpio_pin_write(NFC_FIELD_LED, !BOARD_LED_ACTIVE_STATE);
 		break;
 	case NFC_T4T_EVENT_NDEF_READ:
 		advertising_start(false);
@@ -546,7 +515,7 @@ static int nfc_init(void)
 	/* Start sensing NFC field */
 	err = nfc_t4t_emulation_start();
 	if (err) {
-		LOG_ERR("Cannot start emulation!");
+		LOG_ERR("Cannot start NFC emulation!");
 		return err;
 	}
 	LOG_INF("NFC configuration done");
@@ -607,16 +576,10 @@ static void button_start_adv_handler(uint8_t pin, enum bm_buttons_evt_type actio
 	advertising_start(true);
 }
 
-static int board_buttons_init(void)
+static int buttons_leds_init(void)
 {
 	int err;
-
-	static const struct bm_buttons_config configs[4] = {
-		{
-			.pin_number = BOARD_PIN_BTN_0,
-			.active_state = BM_BUTTONS_ACTIVE_LOW,
-			.pull_config = BM_BUTTONS_PIN_PULLUP,
-		},
+	static const struct bm_buttons_config configs[] = {
 		{
 			.pin_number = BOARD_PIN_BTN_1,
 			.active_state = BM_BUTTONS_ACTIVE_LOW,
@@ -628,21 +591,28 @@ static int board_buttons_init(void)
 			.pull_config = BM_BUTTONS_PIN_PULLUP,
 			.handler = button_start_adv_handler,
 		},
-		{
-			.pin_number = BOARD_PIN_BTN_3,
-			.active_state = BM_BUTTONS_ACTIVE_LOW,
-			.pull_config = BM_BUTTONS_PIN_PULLUP,
-		},
 	};
 
 	err = bm_buttons_init(configs, ARRAY_SIZE(configs), BM_BUTTONS_DETECTION_DELAY_MIN_US);
 	if (err) {
+		LOG_ERR("Failed to initialize buttons, err %d", err);
 		return err;
 	}
 
 	err = bm_buttons_enable();
+	if (err) {
+		LOG_ERR("Failed to enable buttons, err %d", err);
+		return err;
+	}
 
-	return err;
+	nrf_gpio_cfg_output(DEV_INITIALIZED_LED);
+	nrf_gpio_cfg_output(CONN_STATUS_LED);
+	nrf_gpio_cfg_output(NFC_FIELD_LED);
+	nrf_gpio_pin_write(DEV_INITIALIZED_LED, !BOARD_LED_ACTIVE_STATE);
+	nrf_gpio_pin_write(CONN_STATUS_LED, !BOARD_LED_ACTIVE_STATE);
+	nrf_gpio_pin_write(NFC_FIELD_LED, !BOARD_LED_ACTIVE_STATE);
+
+	return 0;
 }
 
 int main(void)
@@ -666,16 +636,12 @@ int main(void)
 
 	LOG_INF("BLE Peripheral NFC Pairing sample started.");
 
-	/* Configure LED-pins as outputs. */
-	led_init();
-
-	err = board_buttons_init();
+	err = buttons_leds_init();
 	if (err) {
-		LOG_ERR("Buttons init error %d", err);
 		goto fail;
 	}
 
-	erase_bonds = bm_buttons_is_pressed(BUTTON_BOND_REMOVE_PIN);
+	erase_bonds = bm_buttons_is_pressed(BOARD_PIN_BTN_1);
 
 	err = nrf_sdh_enable_request();
 	if (err) {
@@ -696,31 +662,31 @@ int main(void)
 	BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&device_name_write_sec);
 	nrf_err = sd_ble_gap_device_name_set(&device_name_write_sec, device_name,
 					     strlen(device_name));
-	if (nrf_err != NRF_SUCCESS) {
+	if (nrf_err) {
 		LOG_ERR("Failed to set device name, nrf_error %#x", nrf_err);
 		goto fail;
 	}
 
 	nrf_err = peer_manager_init();
-	if (nrf_err != NRF_SUCCESS) {
+	if (nrf_err) {
 		LOG_ERR("Failed to initialize Peer Manager, nrf_error %#x", nrf_err);
 		goto fail;
 	}
 
 	nrf_err = ble_dis_init(&dis_config);
-	if (nrf_err != NRF_SUCCESS) {
+	if (nrf_err) {
 		LOG_ERR("Failed to initialize device information service, nrf_error %#x", nrf_err);
 		goto fail;
 	}
 
 	nrf_err = ble_adv_init(&ble_adv, &ble_adv_cfg);
-	if (nrf_err != NRF_SUCCESS) {
+	if (nrf_err) {
 		LOG_ERR("Failed to initialize BLE advertising, nrf_error %#x", nrf_err);
 		goto fail;
 	}
 
 	nrf_err = pairing_data_generate();
-	if (nrf_err != NRF_SUCCESS) {
+	if (nrf_err) {
 		goto fail;
 	}
 
@@ -734,8 +700,6 @@ int main(void)
 	} else {
 		peer_id = pm_next_peer_id_get(PM_PEER_ID_INVALID);
 		if (peer_id != PM_PEER_ID_INVALID) {
-			LOG_INF("Found existing bond for peer id %d, starting advertising",
-				peer_id);
 			advertising_start(true);
 		}
 	}
