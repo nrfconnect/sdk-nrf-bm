@@ -159,6 +159,11 @@ Libraries
 
 * :ref:`lib_peer_manager` library:
 
+   * Added:
+
+      * The :c:enumerator:`PM_EVT_LESC_ECC_KEYPAIR_RENEWED` event, which notifies the application that the ECC key pair and the OOB data has changed.
+      * The :c:func:`nrf_ble_lesc_keypair_renew_request` function for requesting that the ECC key pair should be renewed from the :c:func:`nrf_ble_lesc_request_handler` function.
+
    * Updated:
 
       * The :c:func:`pm_init` function to clear the list of event handlers registered with the :c:func:`pm_register` function.
@@ -167,11 +172,16 @@ Libraries
         The check was documented but was missing.
       * The LESC key agreement handling to clear the static RAM copy of the ECDH shared secret after the secret have been handed over to the SoftDevice using the :c:func:`sd_ble_gap_lesc_dhkey_reply` function.
       * The :kconfig:option:`CONFIG_PM_LESC_GENERATE_NEW_KEYS` Kconfig option to be enabled by default.
-        This option forces the use of new ECDH key pair for each pairing procedure.
+        This option forces the use of new ECC key pair for each pairing procedure.
       * The :file:`peer_manager_handler.c` file with missing logging and asserts where the ``APP_ERROR_CHECK`` macro was used in nRF5 SDK.
       * The sources of the :c:enumerator:`PM_EVT_CONN_SEC_CONFIG_REQ` event to fill the peer ID field.
         Use the value of the peer ID field instead of calling the :c:func:`pm_peer_id_get` function when handling this event.
       * The write buffer release function in the peer database submodule to erase the contents of the write buffer record on release.
+      * The LESC module to renew the ECC key pair from the :c:func:`nrf_ble_lesc_request_handler` function to avoid calling PSA API functions from ISR.
+        Following this change, the registered :c:func:`nrf_ble_lesc_peer_oob_data_handler` handler function is no longer called from ISR and is instead called as part of the :c:func:`nrf_ble_lesc_request_handler` function.
+
+   * Deprecated the :c:func:`nrf_ble_lesc_keypair_generate` and the :c:func:`nrf_ble_lesc_own_oob_data_generate` functions.
+     Use the :c:func:`nrf_ble_lesc_keypair_renew_request` function and the :c:enumerator:`PM_EVT_LESC_ECC_KEYPAIR_RENEWED` event instead when you need to regenerate the ECC key pair and OOB data.
 
    * Fixed:
 
@@ -325,6 +335,8 @@ Bluetooth LE samples
 
       * To reject pairing requests that do not use LE Secure Connections with OOB data.
       * To write new OOB data to the NFC tag after each pairing attempt, and to reject pairing if the OOB data is out of date.
+      * To let the :ref:`lib_peer_manager` library handle the generation of the ECC key pair and OOB data.
+      * To use the new :c:enumerator:`PM_EVT_LESC_ECC_KEYPAIR_RENEWED` peer manager event for updating the NFC OOB data when the ECC key pair is updated.
 
 NFC samples
 -----------
