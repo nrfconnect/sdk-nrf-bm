@@ -537,6 +537,15 @@ static void nfc_oob_data_update(void)
 	}
 }
 
+static void button_start_adv_handler(uint8_t pin, enum bm_buttons_evt_type action)
+{
+	if (action != BM_BUTTONS_PRESS) {
+		return;
+	}
+
+	advertising_start();
+}
+
 static int board_buttons_init(void)
 {
 	int err;
@@ -556,6 +565,7 @@ static int board_buttons_init(void)
 			.pin_number = BOARD_PIN_BTN_2,
 			.active_state = BM_BUTTONS_ACTIVE_LOW,
 			.pull_config = BM_BUTTONS_PIN_PULLUP,
+			.handler = button_start_adv_handler,
 		},
 		{
 			.pin_number = BOARD_PIN_BTN_3,
