@@ -120,7 +120,8 @@ Overview
 ********
 
 When the application starts, it initializes and starts the NFCT peripheral that is used for pairing.
-The application does not start advertising immediately, but only when the NFC tag is read by an NFC polling device, for example a smartphone or a tablet with NFC support.
+The application primarily uses allow list advertising and only allows bonded devices to connect.
+When the NFC tag is read by an NFC polling device, for example, a smartphone or a tablet with NFC support, the application advertises without the allow list to allow non-bonded devices to connect.
 The message that the tag sends to the NFC device contains the data required to initiate pairing.
 To start the NFC data transfer, the NFC device must touch the NFC antenna that is connected to the development kit.
 
@@ -139,7 +140,7 @@ Button 1:
    Keep the button pressed while resetting the board to delete bonding information for all peers stored on the device.
 
 Button 2:
-   Start advertising.
+   Start advertising, allowing already bonded devices to connect.
 
 LED 0:
    Lit when the device is initialized.
@@ -205,6 +206,13 @@ Testing
 #. Touch the NFC antenna with the smartphone or tablet and observe that **LED 2** is lit.
 #. Confirm pairing with :guilabel:`nRF_BM_Nordic_NFC_pairing` in a pop-up window on the smartphone or tablet and observe that **LED 1** lights up.
 #. Move the smartphone or tablet away from the NFC antenna and observe that **LED 2** turns off.
+#. Disconnect and then reconnect the smartphone or tablet to the device.
+   Observe that the connection is accepted.
+   Use **Button 2** to start advertising if it stops.
+#. Disconnect, delete the bond information on the smartphone or tablet, and attempt to reconnect.
+   Observe that the connection is rejected or pairing fails.
+   Connection requests from non-bonded devices are rejected.
+#. To be able to connect again, pair the smartphone or tablet with the device using NFC.
 
 Dependencies
 ************

@@ -110,7 +110,7 @@ static uint32_t pairing_data_generate(void)
 	return tk_value_generate();
 }
 
-static void allow_list_set(enum pm_peer_id_list_skip skip)
+static uint32_t allow_list_set(enum pm_peer_id_list_skip skip)
 {
 	uint32_t nrf_err;
 	uint16_t peer_ids[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
@@ -119,6 +119,7 @@ static void allow_list_set(enum pm_peer_id_list_skip skip)
 	nrf_err = pm_peer_id_list(peer_ids, &peer_id_count, PM_PEER_ID_INVALID, skip);
 	if (nrf_err) {
 		LOG_ERR("Failed to get peer id list, nrf_error %#x", nrf_err);
+		return 0;
 	}
 
 	LOG_INF("%d peers added to the allow list, max %d",
@@ -128,6 +129,8 @@ static void allow_list_set(enum pm_peer_id_list_skip skip)
 	if (nrf_err) {
 		LOG_ERR("Failed to set allow list, nrf_error %#x", nrf_err);
 	}
+
+	return peer_id_count;
 }
 
 static void identities_set(enum pm_peer_id_list_skip skip)
@@ -159,7 +162,7 @@ static void delete_bonds(void)
 	}
 }
 
-static void advertising_start(void)
+static void advertising_start(bool use_allow_list)
 {
 	uint32_t nrf_err;
 
@@ -173,12 +176,31 @@ static void advertising_start(void)
 		return;
 	}
 
-	allow_list_set(PM_PEER_ID_LIST_SKIP_NO_ID_ADDR);
+	const uint32_t allow_list_entries_num = allow_list_set(PM_PEER_ID_LIST_SKIP_NO_ID_ADDR);
+
+	if (use_allow_list && allow_list_entries_num == 0) {
+		LOG_INF("Allow list empty, advertising not started");
+		return;
+	}
 
 	nrf_err = ble_adv_start(&ble_adv, BLE_ADV_MODE_DIRECTED);
 	if (nrf_err) {
 		LOG_ERR("Failed to start advertising, nrf_error %#x", nrf_err);
+		return;
 	}
+
+	if (use_allow_list) {
+		LOG_INF("Advertising (with allow list)");
+		return;
+	}
+
+	nrf_err = ble_adv_restart_without_allow_list(&ble_adv);
+	if (nrf_err) {
+		LOG_ERR("Failed restart advertising without allow list, nrf_error %#x", nrf_err);
+		return;
+	}
+
+	LOG_INF("Advertising (without allow list)");
 }
 
 static void pm_evt_handler(const struct pm_evt *evt)
@@ -203,7 +225,7 @@ static void pm_evt_handler(const struct pm_evt *evt)
 			/* Note: You should check on what kind of allow list policy your
 			 * application should use.
 			 */
-			allow_list_set(PM_PEER_ID_LIST_SKIP_NO_ID_ADDR);
+			(void)allow_list_set(PM_PEER_ID_LIST_SKIP_NO_ID_ADDR);
 		}
 		break;
 
@@ -341,10 +363,29 @@ static void ble_adv_evt_handler(struct ble_adv *ble_adv, const struct ble_adv_ev
 {
 	uint32_t nrf_err;
 	ble_gap_addr_t *peer_addr;
+	ble_gap_addr_t allow_list_addrs[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
+	ble_gap_irk_t allow_list_irks[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
+	uint32_t addr_cnt = BLE_GAP_WHITELIST_ADDR_MAX_COUNT;
+	uint32_t irk_cnt = BLE_GAP_WHITELIST_ADDR_MAX_COUNT;
 
 	switch (evt->evt_type) {
 	case BLE_ADV_EVT_ERROR:
 		LOG_ERR("Advertising error %#x", evt->error.reason);
+		break;
+
+	case BLE_ADV_EVT_ALLOW_LIST_REQUEST:
+		nrf_err = pm_allow_list_get(allow_list_addrs, &addr_cnt, allow_list_irks, &irk_cnt);
+		if (nrf_err) {
+			LOG_ERR("Failed to get allow list, nrf_error %#x", nrf_err);
+		}
+
+		identities_set(PM_PEER_ID_LIST_SKIP_NO_IRK);
+
+		nrf_err = ble_adv_allow_list_reply(ble_adv, allow_list_addrs, addr_cnt,
+						   allow_list_irks, irk_cnt);
+		if (nrf_err) {
+			LOG_ERR("Failed to reply with allow list, nrf_error %#x", nrf_err);
+		}
 		break;
 
 	case BLE_ADV_EVT_PEER_ADDR_REQUEST:
@@ -397,7 +438,7 @@ static void nfc_callback(void *context,
 		nfc_field_led_off();
 		break;
 	case NFC_T4T_EVENT_NDEF_READ:
-		advertising_start();
+		advertising_start(false);
 		break;
 	default:
 		break;
@@ -543,7 +584,7 @@ static void button_start_adv_handler(uint8_t pin, enum bm_buttons_evt_type actio
 		return;
 	}
 
-	advertising_start();
+	advertising_start(true);
 }
 
 static int board_buttons_init(void)
@@ -675,7 +716,7 @@ int main(void)
 		if (peer_id != PM_PEER_ID_INVALID) {
 			LOG_INF("Found existing bond for peer id %d, starting advertising",
 				peer_id);
-			advertising_start();
+			advertising_start(true);
 		}
 	}
 
