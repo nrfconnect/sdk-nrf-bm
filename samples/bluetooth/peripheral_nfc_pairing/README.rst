@@ -138,6 +138,9 @@ User interface
 Button 1:
    Keep the button pressed while resetting the board to delete bonding information for all peers stored on the device.
 
+Button 2:
+   Start advertising.
+
 LED 0:
    Lit when the device is initialized.
 

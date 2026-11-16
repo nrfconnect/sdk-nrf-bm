@@ -353,6 +353,7 @@ Bluetooth LE samples
       * To write new OOB data to the NFC tag after each pairing attempt, and to reject pairing if the OOB data is out of date.
       * To let the :ref:`lib_peer_manager` library handle the generation of the ECC key pair and OOB data.
       * To use the new :c:enumerator:`PM_EVT_LESC_ECC_KEYPAIR_RENEWED` peer manager event for updating the NFC OOB data when the ECC key pair is updated.
+      * To use **Button 2** to start advertising.
 
 NFC samples
 -----------
