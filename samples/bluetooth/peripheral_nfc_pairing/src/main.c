@@ -317,6 +317,19 @@ static uint32_t peer_manager_init(void)
 	return NRF_SUCCESS;
 }
 
+static bool peer_is_bonded(uint16_t conn_handle)
+{
+	struct pm_peer_data_bonding peer_bonding_data;
+	uint16_t peer_id = PM_PEER_ID_INVALID;
+
+	(void)pm_peer_id_get(conn_handle, &peer_id);
+	if (peer_id == PM_PEER_ID_INVALID) {
+		return false;
+	}
+
+	return (pm_peer_data_bonding_load(peer_id, &peer_bonding_data) == NRF_SUCCESS);
+}
+
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {
 	int err;
@@ -336,7 +349,9 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		}
 		break;
 
-	case BLE_GAP_EVT_DISCONNECTED:
+	case BLE_GAP_EVT_DISCONNECTED: {
+		const bool bonded_peer = peer_is_bonded(evt->evt.gap_evt.conn_handle);
+
 		LOG_INF("Peer disconnected, reason %d",
 			evt->evt.gap_evt.params.disconnected.reason);
 		conn_cnt--;
@@ -351,7 +366,12 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 				LOG_INF("NFC emulation started");
 			}
 		}
+
+		if (bonded_peer) {
+			advertising_start(true);
+		}
 		break;
+	}
 
 	default:
 		break;
