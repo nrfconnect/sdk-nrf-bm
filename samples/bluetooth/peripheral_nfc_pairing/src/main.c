@@ -301,18 +301,6 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		}
 		break;
 
-	case BLE_GAP_EVT_PASSKEY_DISPLAY:
-		LOG_INF("Passkey: %.*s", BLE_GAP_PASSKEY_LEN,
-			evt->evt.gap_evt.params.passkey_display.passkey);
-		if (evt->evt.gap_evt.params.passkey_display.match_request) {
-			LOG_INF("Pairing request.");
-		}
-		break;
-
-	case BLE_GAP_EVT_AUTH_KEY_REQUEST:
-		LOG_INF("Pairing request.");
-		break;
-
 	default:
 		break;
 	}
