@@ -38,7 +38,7 @@ The sample supports the following development kits:
          * - `nRF54L15 DK`_ (emulating nRF54L05)
            - PCA10156
            - ``bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice``
-         * - `nRF54LM20 DK`_
+         * - `nRF54LM20 DK`_ (emulating nRF54LM20A)
            - PCA10184
            - ``bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice``
 
@@ -59,7 +59,7 @@ The sample supports the following development kits:
          * - `nRF54L15 DK`_ (emulating nRF54L05)
            - PCA10156
            - ``bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice``
-         * - `nRF54LM20 DK`_
+         * - `nRF54LM20 DK`_ (emulating nRF54LM20A)
            - PCA10184
            - ``bm_nrf54lm20dk/nrf54lm20a/cpuapp/s145_softdevice``
 
@@ -84,7 +84,7 @@ The sample supports the following development kits:
          * - `nRF54L15 DK`_ (emulating nRF54L05)
            - PCA10156
            - ``bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot``
-         * - `nRF54LM20 DK`_
+         * - `nRF54LM20 DK`_ (emulating nRF54LM20A)
            - PCA10184
            - ``bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice/mcuboot``
 
@@ -105,7 +105,7 @@ The sample supports the following development kits:
          * - `nRF54L15 DK`_ (emulating nRF54L05)
            - PCA10156
            - ``bm_nrf54l15dk/nrf54l05/cpuapp/s145_softdevice/mcuboot``
-         * - `nRF54LM20 DK`_
+         * - `nRF54LM20 DK`_ (emulating nRF54LM20A)
            - PCA10184
            - ``bm_nrf54lm20dk/nrf54lm20a/cpuapp/s145_softdevice/mcuboot``
 
