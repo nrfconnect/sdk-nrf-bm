@@ -70,6 +70,11 @@ Build system
   * The :file:`west.yml` file to add ``memfault-firmware-sdk`` to the |NCS| manifest allowlist.
   * The :file:`zephyr/module.yml` file to declare a build dependency on ``memfault-firmware-sdk``.
 
+Bootloader
+==========
+
+* Fixed an issue where the :kconfig:option:`SB_CONFIG_BM_BOOT_BOOTCONF_LOCK_WRITES` sysbuild Kconfig option could not be enabled on the nRF54LM20A and nRF54LS05B SoCs.
+
 DFU
 ===
 
