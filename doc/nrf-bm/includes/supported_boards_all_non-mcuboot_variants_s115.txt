@@ -18,7 +18,7 @@
          * - `nRF54LC10 DK`_
            - PCA10226
            - ``bm_nrf54lc10dk/nrf54lc10a/cpuapp/s115_softdevice``
-         * - `nRF54LM20 DK`_
+         * - `nRF54LM20 DK`_ (emulating nRF54LM20A)
            - PCA10184
            - ``bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice``
          * - `nRF54LS05 DK`_
