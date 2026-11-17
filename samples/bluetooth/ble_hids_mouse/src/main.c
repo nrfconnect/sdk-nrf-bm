@@ -74,8 +74,6 @@ BLE_QWR_DEF(ble_qwr);
 /* BLE Connection handle */
 static uint16_t conn_handle = BLE_CONN_HANDLE_INVALID;
 
-static uint16_t peer_id;
-
 static void identities_set(enum pm_peer_id_list_skip skip);
 
 static bool boot_mode;
@@ -128,8 +126,6 @@ NRF_SDH_BLE_OBSERVER(sdh_ble, on_ble_evt, NULL, USER_LOW);
 static void ble_adv_evt_handler(struct ble_adv *ble_adv, const struct ble_adv_evt *evt)
 {
 	uint32_t nrf_err;
-	ble_gap_addr_t *peer_addr;
-	struct pm_peer_data_bonding peer_bonding_data;
 	ble_gap_addr_t allow_list_addrs[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
 	ble_gap_irk_t allow_list_irks[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
 	uint32_t addr_cnt = BLE_GAP_WHITELIST_ADDR_MAX_COUNT;
@@ -167,31 +163,6 @@ static void ble_adv_evt_handler(struct ble_adv *ble_adv, const struct ble_adv_ev
 						   allow_list_irks, irk_cnt);
 		if (nrf_err) {
 			LOG_ERR("Failed to set allow list, nrf_error %#x", nrf_err);
-		}
-		break;
-
-	case BLE_ADV_EVT_PEER_ADDR_REQUEST:
-		/* Only Give peer address if we have a handle to the bonded peer. */
-		if (peer_id != PM_PEER_ID_INVALID) {
-			nrf_err = pm_peer_data_bonding_load(peer_id, &peer_bonding_data);
-			if (nrf_err != NRF_ERROR_NOT_FOUND) {
-				if (nrf_err) {
-					LOG_ERR("Failed to load bonding data, nrf_error %#x",
-						nrf_err);
-				}
-
-				/* Manipulate identities to exclude peers with no
-				 * Central Address Resolution.
-				 */
-				identities_set(PM_PEER_ID_LIST_SKIP_ALL);
-
-				peer_addr = &(peer_bonding_data.peer_ble_id.id_addr_info);
-				nrf_err = ble_adv_peer_addr_reply(ble_adv, peer_addr);
-				if (nrf_err) {
-					LOG_ERR("Failed to reply peer address, nrf_error %#x",
-						nrf_err);
-				}
-			}
 		}
 		break;
 	default:
@@ -538,10 +509,6 @@ static void pm_evt_handler(const struct pm_evt *evt)
 	pm_handler_flash_clean(evt);
 
 	switch (evt->evt_id) {
-	case PM_EVT_CONN_SEC_SUCCEEDED:
-		peer_id = evt->peer_id;
-		break;
-
 	case PM_EVT_PEERS_DELETE_SUCCEEDED:
 		advertising_start(false);
 		break;

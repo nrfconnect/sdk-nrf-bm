@@ -306,6 +306,13 @@ Bluetooth LE samples
     * :ref:`ble_pwr_profiling_sample`
     * :ref:`ble_mcuboot_recovery_entry_sample`
 
+  * The handling of the :c:enumerator:`BLE_ADV_EVT_PEER_ADDR_REQUEST` event, that was not used, from the following samples:
+
+    * :ref:`ble_bms_sample`
+    * :ref:`ble_cgms_sample`
+    * :ref:`ble_hids_keyboard_sample`
+    * :ref:`ble_hids_mouse_sample`
+
 * :ref:`ble_cgms_sample` sample:
 
   * Removed the call to the :c:func:`sd_ble_gatts_sys_attr_set` function from the main source file.
