@@ -1,0 +1,15 @@
+#
+# Copyright (c) 2026 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "BLE SMP updater sample"
+
+module=SAMPLE_BLE_SMP_UPDATER
+module-str=BLE SMP updater sample
+source "$(ZEPHYR_BASE)/subsys/logging/Kconfig.template.log_config"
+
+endmenu # "BLE SMP updater sample"
+
+source "Kconfig.zephyr"

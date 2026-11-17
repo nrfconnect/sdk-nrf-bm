@@ -1,0 +1,11 @@
+sample:
+  name: Bluetooth LE SMP updater sample
+tests:
+  sample.ble_smp_updater:
+    sysbuild: true
+    build_only: true
+    integration_platforms:
+      - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice
+    platform_allow:
+      - bm_nrf54lm20dk/nrf54lm20a/cpuapp/s115_softdevice
+    tags: ci_build
