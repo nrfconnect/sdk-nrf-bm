@@ -252,6 +252,11 @@ Bluetooth LE Services
 
    * Added the :c:enumerator:`BLE_HRS_CLIENT_EVT_BSL_UPDATE` event to the :c:enum:`ble_hrs_client_evt_type` enum.
 
+* :ref:`lib_ble_service_cgms`:
+
+   * Fixed an issue where writes to the Session Start Time characteristic with an invalid length got a success reply.
+     The service now replies with the ``BLE_GATT_STATUS_ATTERR_INVALID_ATT_VAL_LENGTH`` status, so the central knows that the value was not updated.
+
 Libraries for NFC
 -----------------
 

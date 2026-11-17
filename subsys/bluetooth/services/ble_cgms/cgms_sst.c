@@ -125,6 +125,13 @@ static void on_sst_value_write(struct ble_cgms *cgms, const ble_gatts_evt_write_
 		.conn_handle = cgms->conn_handle,
 	};
 
+	/* Reject a write with an invalid length, so the peer knows the value was not set. */
+	if ((evt_write->len != BLE_CGMS_SST_LEN) &&
+	    (evt_write->len != BLE_CGMS_SST_LEN - CRC_LEN)) {
+		auth_reply.params.write.gatt_status = BLE_GATT_STATUS_ATTERR_INVALID_ATT_VAL_LENGTH;
+		auth_reply.params.write.update = 0;
+	}
+
 	nrf_err = sd_ble_gatts_rw_authorize_reply(cgms->conn_handle, &auth_reply);
 	if (nrf_err) {
 		if (cgms->evt_handler != NULL) {
