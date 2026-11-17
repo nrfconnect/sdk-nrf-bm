@@ -294,7 +294,6 @@ bool k_queue_unique_append(struct k_queue *queue, void *data)
 	sys_sfnode_t *test;
 	unsigned int key;
 	void *prev;
-	bool ret;
 
 	key = irq_lock();
 
