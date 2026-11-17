@@ -282,13 +282,16 @@ img_mgmt_upload(struct smp_streamer *ctxt)
 		 * New upload.
 		 */
 
+		/*
+		 * We do not accept trimmed SHA since it can cause hash collisions
+		 */
+		if (req.data_sha.len != IMG_MGMT_DATA_SHA_LEN) {
+			LOG_ERR("Invalid SHA length, len = %zu", req.data_sha.len);
+			return MGMT_ERR_EINVAL;
+		}
+
 		img_mgmt_state.off = 0;
 
-		/*
-		 * We accept SHA trimmed to any length by client since it's up to client
-		 * to make sure provided data are good enough to avoid collisions when
-		 * resuming upload.
-		 */
 		img_mgmt_state.data_sha_len = req.data_sha.len;
 		memcpy(img_mgmt_state.data_sha, req.data_sha.value, req.data_sha.len);
 		memset(&img_mgmt_state.data_sha[req.data_sha.len], 0,
