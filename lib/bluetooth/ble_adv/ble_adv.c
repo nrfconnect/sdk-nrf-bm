@@ -83,6 +83,7 @@ static void on_connected(struct ble_adv *ble_adv, const ble_evt_t *ble_evt)
 {
 	if (ble_evt->evt.gap_evt.params.connected.role == BLE_GAP_ROLE_PERIPH) {
 		ble_adv->conn_handle = ble_evt->evt.gap_evt.conn_handle;
+		ble_adv->mode_current = BLE_ADV_MODE_IDLE;
 	}
 }
 
