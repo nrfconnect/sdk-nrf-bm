@@ -57,12 +57,12 @@ The following code snippets show how to generate a Launch App message.
 
    Provide the following parameters:
 
-    * Android package name string
-    * Length of Android package name string
-    * Universal Link string
-    * Length of the Universal Link string
-    * Message buffer
-    * Size of the available memory in the buffer
+   * Android package name string
+   * Length of Android package name string
+   * Universal Link string
+   * Length of the Universal Link string
+   * Message buffer
+   * Size of the available memory in the buffer
 
 
 Supported features
