@@ -7,6 +7,7 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 
+#include <nrf_nfc_errno.h>
 #include <nfc_t4t_lib.h>
 #include <bm/nfc/t4t/ndef_file.h>
 #include <bm/nfc/ndef/msg.h>
@@ -285,11 +286,21 @@ static uint32_t peer_manager_init(void)
 
 static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 {
+	int err;
+
 	switch (evt->header.evt_id) {
 	case BLE_GAP_EVT_CONNECTED:
 		LOG_INF("Peer connected");
 		conn_cnt++;
 		conn_status_led_on();
+		if (conn_cnt >= CONFIG_NRF_SDH_BLE_PERIPHERAL_LINK_COUNT) {
+			err = nfc_t4t_emulation_stop();
+			if (err && err != -NRF_EOPNOTSUPP) {
+				LOG_ERR("Cannot stop NFC emulation, err %d", err);
+			} else {
+				LOG_INF("NFC emulation stopped");
+			}
+		}
 		break;
 
 	case BLE_GAP_EVT_DISCONNECTED:
@@ -298,6 +309,14 @@ static void on_ble_evt(const ble_evt_t *evt, void *ctx)
 		conn_cnt--;
 		if (conn_cnt == 0) {
 			conn_status_led_off();
+		}
+		if (conn_cnt < CONFIG_NRF_SDH_BLE_PERIPHERAL_LINK_COUNT) {
+			err = nfc_t4t_emulation_start();
+			if (err && err != -NRF_EOPNOTSUPP) {
+				LOG_ERR("Cannot start NFC emulation, err %d", err);
+			} else {
+				LOG_INF("NFC emulation started");
+			}
 		}
 		break;
 
@@ -468,12 +487,17 @@ static void nfc_oob_data_update(void)
 	int err;
 	uint32_t nrf_err;
 	uint32_t len = sizeof(ndef_msg_buf);
+	bool restart_nfc = false;
 
 	/* The payload can only be changed while emulation is stopped. */
 	err = nfc_t4t_emulation_stop();
 	if (err) {
-		LOG_ERR("Cannot stop emulation, err %d", err);
-		return;
+		if (err != -NRF_EOPNOTSUPP) {
+			LOG_ERR("Cannot stop NFC emulation, err %d", err);
+			return;
+		}
+	} else {
+		restart_nfc = true;
 	}
 
 	nrf_err = pairing_data_generate();
@@ -494,9 +518,11 @@ static void nfc_oob_data_update(void)
 		return;
 	}
 
-	err = nfc_t4t_emulation_start();
-	if (err) {
-		LOG_ERR("Cannot start emulation!");
+	if (restart_nfc && (conn_cnt < CONFIG_NRF_SDH_BLE_PERIPHERAL_LINK_COUNT)) {
+		err = nfc_t4t_emulation_start();
+		if (err && err != -NRF_EOPNOTSUPP) {
+			LOG_ERR("Cannot start NFC emulation, err %d", err);
+		}
 	}
 }
 
