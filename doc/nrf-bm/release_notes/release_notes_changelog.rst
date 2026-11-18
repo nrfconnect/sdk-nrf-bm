@@ -34,10 +34,10 @@ SoftDevice Handler
 
 * Fixed:
 
-   * An issue where using the :kconfig:option:`CONFIG_NRF_SDH_LOG_SD_INFO` Kconfig option for MCUboot board targets would log invalid SoftDevice version data.
-     The logging now takes the SoftDevice partition offset into account for those board targets.
-   * An issue where the SoftDevice handler did not clear its in-progress state after a failed enable or disable operation.
-     Subsequent enable or disable requests then incorrectly returned ``-EINPROGRESS``.
+  * An issue where using the :kconfig:option:`CONFIG_NRF_SDH_LOG_SD_INFO` Kconfig option for MCUboot board targets would log invalid SoftDevice version data.
+    The logging now takes the SoftDevice partition offset into account for those board targets.
+  * An issue where the SoftDevice handler did not clear its in-progress state after a failed enable or disable operation.
+    Subsequent enable or disable requests then incorrectly returned ``-EINPROGRESS``.
 
 Boards
 ======
@@ -51,16 +51,16 @@ Added:
 
 * Updated:
 
-   * All boards to use ``zephyr,mapped-partition`` instead of ``zephyr,fixed-partitions`` and ``zephyr,fixed-subpartitions``.
-     When referencing partition nodes, the code now uses ``PARTITION_*`` macros instead of ``DT_*`` and ``FIXED_PARTITION_*`` macros.
-     The use of the :kconfig:option:`CONFIG_FLASH_LOAD_OFFSET` Kconfig option is also replaced by ``PARTITION_*`` macros.
-   * All boards to use specific J-Link devices from the nRF54L series.
-     This improves debugging in VS Code.
-   * The number of required board qualifiers (reduced by one), as of changes in upstream Zephyr.
+  * All boards to use ``zephyr,mapped-partition`` instead of ``zephyr,fixed-partitions`` and ``zephyr,fixed-subpartitions``.
+    When referencing partition nodes, the code now uses ``PARTITION_*`` macros instead of ``DT_*`` and ``FIXED_PARTITION_*`` macros.
+    The use of the :kconfig:option:`CONFIG_FLASH_LOAD_OFFSET` Kconfig option is also replaced by ``PARTITION_*`` macros.
+  * All boards to use specific J-Link devices from the nRF54L series.
+    This improves debugging in VS Code.
+  * The number of required board qualifiers (reduced by one), as of changes in upstream Zephyr.
 
 * Removed:
 
-   * The override for ``cpuapp_rram`` size for all boards as RRAM is no longer reserved for the RISC-V core by default.
+  * The override for ``cpuapp_rram`` size for all boards as RRAM is no longer reserved for the RISC-V core by default.
 
 Build system
 ============
@@ -107,16 +107,16 @@ Storage
 
 * :ref:`lib_storage`:
 
-   * Updated the SoftDevice storage backend to return ``-EBUSY`` instead of ``-ENOMEM`` when the operation queue is full.
+  * Updated the SoftDevice storage backend to return ``-EBUSY`` instead of ``-ENOMEM`` when the operation queue is full.
 
-   * Fixed a SoftDevice backend issue where a write queued from an interrupt could remain pending until another operation or SoC event started the queue again.
+  * Fixed a SoftDevice backend issue where a write queued from an interrupt could remain pending until another operation or SoC event started the queue again.
 
 Filesystem
 ----------
 
 * :ref:`lib_bm_zms`:
 
-   * Fixed an issue where a failing operation result would not be cleared before processing the next operation.
+  * Fixed an issue where a failing operation result would not be cleared before processing the next operation.
 
 Memfault
 --------
@@ -135,83 +135,83 @@ Libraries
 
 * :ref:`lib_ble_conn_params`:
 
-   * Added:
+  * Added:
 
-      * Support for selecting more than one PHY mode (1M, 2M, and Coded) when setting the PHY mode preference with Kconfig.
-      * Support for the :c:macro:`BLE_GAP_EVT_CONN_PARAM_UPDATE_REQUEST` SoftDevice event.
+    * Support for selecting more than one PHY mode (1M, 2M, and Coded) when setting the PHY mode preference with Kconfig.
+    * Support for the :c:macro:`BLE_GAP_EVT_CONN_PARAM_UPDATE_REQUEST` SoftDevice event.
 
-   * Updated:
+  * Updated:
 
-      * The :c:func:`ble_conn_params_phy_radio_mode_set` function to return :c:macro:`NRF_ERROR_INVALID_PARAM` if the ``phy_pref`` parameter contains PHY modes not supported by the SoftDevice.
-      * The :c:func:`ble_conn_params_override` function to allow runtime overrides of the acceptable connection parameter window used when validating peripheral requests to change the connection parameters.
-        Previously, this window was set statically by Kconfig options and was not possible to override at runtime.
+    * The :c:func:`ble_conn_params_phy_radio_mode_set` function to return :c:macro:`NRF_ERROR_INVALID_PARAM` if the ``phy_pref`` parameter contains PHY modes not supported by the SoftDevice.
+    * The :c:func:`ble_conn_params_override` function to allow runtime overrides of the acceptable connection parameter window used when validating peripheral requests to change the connection parameters.
+      Previously, this window was set statically by Kconfig options and was not possible to override at runtime.
 
-   * Fixed:
+  * Fixed:
 
-      * An issue where the :c:func:`ble_conn_params_phy_radio_mode_get` function would incorrectly return the PHY mode mask of a pending update rather than the currently active PHY mode if a PHY update initiated by the :c:func:`ble_conn_params_phy_radio_mode_set` function was still in progress.
-      * An issue where the SoftDevice define :c:macro:`BLE_GAP_PHYS_SUPPORTED` was used instead of the PHY preferences set with Kconfig when initiating or responding to a PHY update procedure.
+    * An issue where the :c:func:`ble_conn_params_phy_radio_mode_get` function would incorrectly return the PHY mode mask of a pending update rather than the currently active PHY mode if a PHY update initiated by the :c:func:`ble_conn_params_phy_radio_mode_set` function was still in progress.
+    * An issue where the SoftDevice define :c:macro:`BLE_GAP_PHYS_SUPPORTED` was used instead of the PHY preferences set with Kconfig when initiating or responding to a PHY update procedure.
 
 * :ref:`lib_ble_adv` library:
 
-   * Added the :c:func:`ble_adv_data_manufacturer_data_find` function to locate manufacturer-specific data in an advertising payload and prefix-match it against a target value.
+  * Added the :c:func:`ble_adv_data_manufacturer_data_find` function to locate manufacturer-specific data in an advertising payload and prefix-match it against a target value.
 
 * :ref:`lib_ble_scan` library:
 
-   * Added:
+  * Added:
 
-      * Support for filtering by manufacturer-specific data using the :c:macro:`BLE_SCAN_MANUFACTURER_DATA_FILTER` filter type.
-      * The :kconfig:option:`CONFIG_BLE_SCAN_MANUFACTURER_DATA_COUNT` and :kconfig:option:`CONFIG_BLE_SCAN_MANUFACTURER_DATA_MAX_LEN` Kconfig options to configure the manufacturer data filter capacity and maximum payload length.
+    * Support for filtering by manufacturer-specific data using the :c:macro:`BLE_SCAN_MANUFACTURER_DATA_FILTER` filter type.
+    * The :kconfig:option:`CONFIG_BLE_SCAN_MANUFACTURER_DATA_COUNT` and :kconfig:option:`CONFIG_BLE_SCAN_MANUFACTURER_DATA_MAX_LEN` Kconfig options to configure the manufacturer data filter capacity and maximum payload length.
 
-   * Fixed:
+  * Fixed:
 
-      * Replaced the use of the :c:func:`strlen` and :c:func:`strcmp` functions with the :c:func:`strnlen` and :c:func:`strncmp` functions respectively, to avoid out-of-bounds reads and false matches.
+    * Replaced the use of the :c:func:`strlen` and :c:func:`strcmp` functions with the :c:func:`strnlen` and :c:func:`strncmp` functions respectively, to avoid out-of-bounds reads and false matches.
 
 * :ref:`lib_peer_manager` library:
 
-   * Added:
+  * Added:
 
-      * The :c:enumerator:`PM_EVT_LESC_ECC_KEYPAIR_RENEWED` event, which notifies the application that the ECC key pair and the OOB data has changed.
-      * The :c:func:`nrf_ble_lesc_keypair_renew_request` function for requesting that the ECC key pair should be renewed from the :c:func:`nrf_ble_lesc_request_handler` function.
+    * The :c:enumerator:`PM_EVT_LESC_ECC_KEYPAIR_RENEWED` event, which notifies the application that the ECC key pair and the OOB data has changed.
+    * The :c:func:`nrf_ble_lesc_keypair_renew_request` function for requesting that the ECC key pair should be renewed from the :c:func:`nrf_ble_lesc_request_handler` function.
 
-   * Updated:
+  * Updated:
 
-      * The :c:func:`pm_init` function to clear the list of event handlers registered with the :c:func:`pm_register` function.
-      * The :c:func:`pm_init` function to clear the default security parameters set with the :c:func:`pm_sec_params_set` function.
-      * The :c:func:`pm_register` function to return ``NRF_ERROR_NULL`` when the event handler parameter is ``NULL``.
-        The check was documented but was missing.
-      * The LESC key agreement handling to clear the static RAM copy of the ECDH shared secret after the secret have been handed over to the SoftDevice using the :c:func:`sd_ble_gap_lesc_dhkey_reply` function.
-      * The :kconfig:option:`CONFIG_PM_LESC_GENERATE_NEW_KEYS` Kconfig option to be enabled by default.
-        This option forces the use of new ECC key pair for each pairing procedure.
-      * The :file:`peer_manager_handler.c` file with missing logging and asserts where the ``APP_ERROR_CHECK`` macro was used in nRF5 SDK.
-      * The sources of the :c:enumerator:`PM_EVT_CONN_SEC_CONFIG_REQ` event to fill the peer ID field.
-        Use the value of the peer ID field instead of calling the :c:func:`pm_peer_id_get` function when handling this event.
-      * The write buffer release function in the peer database submodule to erase the contents of the write buffer record on release.
-      * The LESC module to renew the ECC key pair from the :c:func:`nrf_ble_lesc_request_handler` function to avoid calling PSA API functions from ISR.
-        Following this change, the registered :c:func:`nrf_ble_lesc_peer_oob_data_handler` handler function is no longer called from ISR and is instead called as part of the :c:func:`nrf_ble_lesc_request_handler` function.
+    * The :c:func:`pm_init` function to clear the list of event handlers registered with the :c:func:`pm_register` function.
+    * The :c:func:`pm_init` function to clear the default security parameters set with the :c:func:`pm_sec_params_set` function.
+    * The :c:func:`pm_register` function to return ``NRF_ERROR_NULL`` when the event handler parameter is ``NULL``.
+      The check was documented but was missing.
+    * The LESC key agreement handling to clear the static RAM copy of the ECDH shared secret after the secret have been handed over to the SoftDevice using the :c:func:`sd_ble_gap_lesc_dhkey_reply` function.
+    * The :kconfig:option:`CONFIG_PM_LESC_GENERATE_NEW_KEYS` Kconfig option to be enabled by default.
+      This option forces the use of new ECC key pair for each pairing procedure.
+    * The :file:`peer_manager_handler.c` file with missing logging and asserts where the ``APP_ERROR_CHECK`` macro was used in nRF5 SDK.
+    * The sources of the :c:enumerator:`PM_EVT_CONN_SEC_CONFIG_REQ` event to fill the peer ID field.
+      Use the value of the peer ID field instead of calling the :c:func:`pm_peer_id_get` function when handling this event.
+    * The write buffer release function in the peer database submodule to erase the contents of the write buffer record on release.
+    * The LESC module to renew the ECC key pair from the :c:func:`nrf_ble_lesc_request_handler` function to avoid calling PSA API functions from ISR.
+      Following this change, the registered :c:func:`nrf_ble_lesc_peer_oob_data_handler` handler function is no longer called from ISR and is instead called as part of the :c:func:`nrf_ble_lesc_request_handler` function.
 
-   * Deprecated the :c:func:`nrf_ble_lesc_keypair_generate` and the :c:func:`nrf_ble_lesc_own_oob_data_generate` functions.
-     Use the :c:func:`nrf_ble_lesc_keypair_renew_request` function and the :c:enumerator:`PM_EVT_LESC_ECC_KEYPAIR_RENEWED` event instead when you need to regenerate the ECC key pair and OOB data.
+  * Deprecated the :c:func:`nrf_ble_lesc_keypair_generate` and the :c:func:`nrf_ble_lesc_own_oob_data_generate` functions.
+    Use the :c:func:`nrf_ble_lesc_keypair_renew_request` function and the :c:enumerator:`PM_EVT_LESC_ECC_KEYPAIR_RENEWED` event instead when you need to regenerate the ECC key pair and OOB data.
 
-   * Fixed:
+  * Fixed:
 
-      * An issue where calling the :c:func:`pm_init` function two or more times would cause some of the internal asynchronous operation flags to have incorrect states.
-      * The :c:func:`pm_address_resolve` function to return ``false`` instead of ``NRF_ERROR_INVALID_STATE`` when Peer Manager is not initialized.
-      * An issue where the write buffer that holds bonding data before NVM writes was not released in all situations.
-        The impact was minor, as new connections were able to reuse the already-allocated buffer(s).
-      * An issue where the :c:func:`pm_allow_list_set` function wrote past the end of the internal allow list when given more peers than :c:macro:`BLE_GAP_WHITELIST_ADDR_MAX_COUNT`.
-        The function now returns ``NRF_ERROR_DATA_SIZE``, as documented.
+    * An issue where calling the :c:func:`pm_init` function two or more times would cause some of the internal asynchronous operation flags to have incorrect states.
+    * The :c:func:`pm_address_resolve` function to return ``false`` instead of ``NRF_ERROR_INVALID_STATE`` when Peer Manager is not initialized.
+    * An issue where the write buffer that holds bonding data before NVM writes was not released in all situations.
+      The impact was minor, as new connections were able to reuse the already-allocated buffer(s).
+    * An issue where the :c:func:`pm_allow_list_set` function wrote past the end of the internal allow list when given more peers than :c:macro:`BLE_GAP_WHITELIST_ADDR_MAX_COUNT`.
+      The function now returns ``NRF_ERROR_DATA_SIZE``, as documented.
 
 * :ref:`lib_ble_queued_writes` library:
 
-   * Fixed:
+  * Fixed:
 
-      * An issue where the :c:func:`ble_qwr_value_get` could write beyond the supplied output buffer.
+    * An issue where the :c:func:`ble_qwr_value_get` could write beyond the supplied output buffer.
 
 * ``Zephyr queue`` library:
 
-   * Added interrupt locking around list operations to prevent a race condition where the list head could be permanently lost.
+  * Added interrupt locking around list operations to prevent a race condition where the list head could be permanently lost.
 
-   * Updated to return ``NULL`` on blocking calls to the :c:func:`z_impl_k_queue_get` function.
+  * Updated to return ``NULL`` on blocking calls to the :c:func:`z_impl_k_queue_get` function.
 
 Bluetooth LE Services
 ---------------------
@@ -220,42 +220,42 @@ Bluetooth LE Services
 
 * :ref:`lib_ble_scan`:
 
-   * Updated:
+  * Updated:
 
-      * The :c:member:`ble_scan_filter_data.addr_filter.addr` and :c:member:`ble_scan_filter_data.name_filter.name` to be ``const`` in the :c:struct:`ble_scan_filter_data` structure.
-      * The connection parameter Kconfig defaults to align with the Kconfig defaults in the :ref:`lib_ble_conn_params` library.
-      * The :c:macro:`BLE_SCAN_CONN_PARAMS_DEFAULT` macro to use the :kconfig:option:`CONFIG_BLE_SCAN_SUPERVISION_TIMEOUT` Kconfig option for the supervision timeout.
+    * The :c:member:`ble_scan_filter_data.addr_filter.addr` and :c:member:`ble_scan_filter_data.name_filter.name` to be ``const`` in the :c:struct:`ble_scan_filter_data` structure.
+    * The connection parameter Kconfig defaults to align with the Kconfig defaults in the :ref:`lib_ble_conn_params` library.
+    * The :c:macro:`BLE_SCAN_CONN_PARAMS_DEFAULT` macro to use the :kconfig:option:`CONFIG_BLE_SCAN_SUPERVISION_TIMEOUT` Kconfig option for the supervision timeout.
 
 * :ref:`lib_ble_service_dis`:
 
-   * Added support for configuring the Device Information Service characteristics at run time through the new :c:struct:`ble_dis_values` structure, passed using the ``values`` field of :c:struct:`ble_dis_config`.
-     When ``values`` is ``NULL``, the service is built from the Kconfig defaults as before.
+  * Added support for configuring the Device Information Service characteristics at run time through the new :c:struct:`ble_dis_values` structure, passed using the ``values`` field of :c:struct:`ble_dis_config`.
+    When ``values`` is ``NULL``, the service is built from the Kconfig defaults as before.
 
 * :ref:`lib_ble_service_mcumgr`:
 
-   * Fixed:
+  * Fixed:
 
-      * An issue where a DFU over Bluetooth LE could stall when using small ATT MTU or data length values.
-        The SMP response is split into many notifications, which could fill the SoftDevice notification (HVN) TX queue and cause the :c:func:`sd_ble_gatts_hvx` function to return :c:macro:`NRF_ERROR_RESOURCES`, dropping the remaining data.
-        Notifications that fail with :c:macro:`NRF_ERROR_RESOURCES` are now retransmitted on the :c:macro:`BLE_GATTS_EVT_HVN_TX_COMPLETE` event once the SoftDevice frees queue space.
-      * An issue where a negative errno return value from the :c:func:`smp_reassembly_collect` function was compared against a positive nRF error.
-      * An issue where the content of an SMP reassembly buffer was not dropped when disconnecting from the Bluetooth peer during upload of a firmware image.
-        This resulted in a timeout on the `nRF Connect Device Manager`_ mobile application side when trying to resume the upload after a disconnect.
-      * An issue where an MCUmgr SMP response notification was always sent to the most recently connected peer when multiple peers were connected.
-        Responses are now sent to the peer that sent the request.
+    * An issue where a DFU over Bluetooth LE could stall when using small ATT MTU or data length values.
+      The SMP response is split into many notifications, which could fill the SoftDevice notification (HVN) TX queue and cause the :c:func:`sd_ble_gatts_hvx` function to return :c:macro:`NRF_ERROR_RESOURCES`, dropping the remaining data.
+      Notifications that fail with :c:macro:`NRF_ERROR_RESOURCES` are now retransmitted on the :c:macro:`BLE_GATTS_EVT_HVN_TX_COMPLETE` event once the SoftDevice frees queue space.
+    * An issue where a negative errno return value from the :c:func:`smp_reassembly_collect` function was compared against a positive nRF error.
+    * An issue where the content of an SMP reassembly buffer was not dropped when disconnecting from the Bluetooth peer during upload of a firmware image.
+      This resulted in a timeout on the `nRF Connect Device Manager`_ mobile application side when trying to resume the upload after a disconnect.
+    * An issue where an MCUmgr SMP response notification was always sent to the most recently connected peer when multiple peers were connected.
+      Responses are now sent to the peer that sent the request.
 
 * :ref:`lib_ble_service_hrs`:
 
-   * Fixed an issue where the :c:func:`on_connect` and :c:func:`on_disconnect` functions would wrongly override the connection handle upon connecting to a different device.
+  * Fixed an issue where the :c:func:`on_connect` and :c:func:`on_disconnect` functions would wrongly override the connection handle upon connecting to a different device.
 
 * :ref:`lib_ble_service_hrs_client`:
 
-   * Added the :c:enumerator:`BLE_HRS_CLIENT_EVT_BSL_UPDATE` event to the :c:enum:`ble_hrs_client_evt_type` enum.
+  * Added the :c:enumerator:`BLE_HRS_CLIENT_EVT_BSL_UPDATE` event to the :c:enum:`ble_hrs_client_evt_type` enum.
 
 * :ref:`lib_ble_service_cgms`:
 
-   * Fixed an issue where writes to the Session Start Time characteristic with an invalid length got a success reply.
-     The service now replies with the ``BLE_GATT_STATUS_ATTERR_INVALID_ATT_VAL_LENGTH`` status, so the central knows that the value was not updated.
+  * Fixed an issue where writes to the Session Start Time characteristic with an invalid length got a success reply.
+    The service now replies with the ``BLE_GATT_STATUS_ATTERR_INVALID_ATT_VAL_LENGTH`` status, so the central knows that the value was not updated.
 
 Libraries for NFC
 -----------------
@@ -275,11 +275,11 @@ Samples
 Peripheral samples
 ------------------
 
-   * Added:
+* Added:
 
-      * The :ref:`radio_test` sample.
-      * The :ref:`spi_mngr_sample` sample, demonstrating read, page program, and sector erase on the on-board external NOR flash using the :ref:`lib_bm_spi_mngr` library.
-      * The :ref:`bm_spi_sample` sample.
+  * The :ref:`radio_test` sample.
+  * The :ref:`spi_mngr_sample` sample, demonstrating read, page program, and sector erase on the on-board external NOR flash using the :ref:`lib_bm_spi_mngr` library.
+  * The :ref:`bm_spi_sample` sample.
 
 Bluetooth LE samples
 --------------------
@@ -288,75 +288,77 @@ Bluetooth LE samples
 
 * Updated:
 
-   * All samples that use the :ref:`lib_peer_manager` library to use a minimum encryption key size of 16 bytes in their default security parameters.
-   * The following samples and applications, which do not support pairing, to call the :c:func:`sd_ble_gatts_sys_attr_set` function only in response to the :c:macro:`BLE_GATTS_EVT_SYS_ATTR_MISSING` event, and not in response to the :c:macro:`BLE_GAP_EVT_CONNECTED` event:
+  * All samples that use the :ref:`lib_peer_manager` library to use a minimum encryption key size of 16 bytes in their default security parameters.
+  * The following samples and applications, which do not support pairing, to call the :c:func:`sd_ble_gatts_sys_attr_set` function only in response to the :c:macro:`BLE_GATTS_EVT_SYS_ATTR_MISSING` event, and not in response to the :c:macro:`BLE_GAP_EVT_CONNECTED` event:
 
-      * :ref:`ug_dfu_firmware_loader` (Bluetooth LE)
-      * :ref:`ble_lbs_sample`
-      * :ref:`ble_nus_sample`
-      * :ref:`ble_mcuboot_recovery_entry_sample`
+    * :ref:`ug_dfu_firmware_loader` (Bluetooth LE)
+    * :ref:`ble_lbs_sample`
+    * :ref:`ble_nus_sample`
+    * :ref:`ble_mcuboot_recovery_entry_sample`
 
-* Removed the authentication status logging from the following samples and applications that do not support pairing (do not use the :ref:`lib_peer_manager` library):
+* Removed:
 
-   * :ref:`ug_dfu_firmware_loader` (Bluetooth LE)
-   * :ref:`ble_lbs_sample`
-   * :ref:`ble_nus_sample`
-   * :ref:`ble_pwr_profiling_sample`
-   * :ref:`ble_mcuboot_recovery_entry_sample`
+  * The authentication status logging from the following samples and applications that do not support pairing (do not use the :ref:`lib_peer_manager` library):
+
+    * :ref:`ug_dfu_firmware_loader` (Bluetooth LE)
+    * :ref:`ble_lbs_sample`
+    * :ref:`ble_nus_sample`
+    * :ref:`ble_pwr_profiling_sample`
+    * :ref:`ble_mcuboot_recovery_entry_sample`
 
 * :ref:`ble_cgms_sample` sample:
 
-   * Removed the call to the :c:func:`sd_ble_gatts_sys_attr_set` function from the main source file.
-     The :ref:`lib_peer_manager` library takes care of calling this function when :ref:`lib_peer_manager` is used.
+  * Removed the call to the :c:func:`sd_ble_gatts_sys_attr_set` function from the main source file.
+    The :ref:`lib_peer_manager` library takes care of calling this function when :ref:`lib_peer_manager` is used.
 
 * :ref:`ble_hrs_sample` sample:
 
-   * Fixed the button configuration structure to static so it does not go out of scope when returning from the button initialization function.
-   * Removed redundant logging of authentication status from the main source file.
-     Authentication status is logged by :ref:`lib_peer_manager` library.
+  * Fixed the button configuration structure to static so it does not go out of scope when returning from the button initialization function.
+  * Removed redundant logging of authentication status from the main source file.
+    Authentication status is logged by :ref:`lib_peer_manager` library.
 
 * :ref:`ble_hrs_central_sample` sample:
 
-   * Updated the scanning to use the :c:macro:`BLE_SCAN_SCAN_PARAMS_DEFAULT` default for the scan parameters.
-     This fixes an issue where microseconds were incorrectly used instead of 0.625-millisecond units.
-     As a result, the scan interval and scan window are now shorter.
+  * Updated the scanning to use the :c:macro:`BLE_SCAN_SCAN_PARAMS_DEFAULT` default for the scan parameters.
+    This fixes an issue where microseconds were incorrectly used instead of 0.625-millisecond units.
+    As a result, the scan interval and scan window are now shorter.
 
-   * Fixed:
+  * Fixed:
 
-      * The disconnect button handler to only disconnect on button press, and not on button release.
-      * The allow list disabling button to only trigger on button press, and not on button release.
-      * An issue with the endianness of the target peripheral address when displaying the address on a :c:enumerator:`BLE_SCAN_EVT_CONNECTED` event and when supplying the scan filter address with the :kconfig:option:`CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR` Kconfig option.
+    * The disconnect button handler to only disconnect on button press, and not on button release.
+    * The allow list disabling button to only trigger on button press, and not on button release.
+    * An issue with the endianness of the target peripheral address when displaying the address on a :c:enumerator:`BLE_SCAN_EVT_CONNECTED` event and when supplying the scan filter address with the :kconfig:option:`CONFIG_SAMPLE_TARGET_PERIPHERAL_ADDR` Kconfig option.
 
 * :ref:`ble_nus_sample` sample:
 
-   * Fixed a bug with the UARTE RX buffer address provided with index 1.
+  * Fixed a bug with the UARTE RX buffer address provided with index 1.
 
 * :ref:`ble_nus_central_sample` sample:
 
-   * Updated:
+  * Updated:
 
-      * To use **Button 1** to disconnect from the target peripheral to align with other central samples.
-      * The scanning to use the :c:macro:`BLE_SCAN_SCAN_PARAMS_DEFAULT` default for the scan parameters.
-        This fixes an issue where microseconds were incorrectly used instead of 0.625-millisecond units.
-        As a result, the scan interval and scan window are now shorter.
+    * To use **Button 1** to disconnect from the target peripheral to align with other central samples.
+    * The scanning to use the :c:macro:`BLE_SCAN_SCAN_PARAMS_DEFAULT` default for the scan parameters.
+      This fixes an issue where microseconds were incorrectly used instead of 0.625-millisecond units.
+      As a result, the scan interval and scan window are now shorter.
 
-   * Fixed:
+  * Fixed:
 
-      * The disconnect button handler to only disconnect on button press, and not on button release.
-      * A bug with the UARTE RX buffer address provided with index 1.
+    * The disconnect button handler to only disconnect on button press, and not on button release.
+    * A bug with the UARTE RX buffer address provided with index 1.
 
 * :ref:`peripheral_nfc_pairing_sample` sample:
 
-   * Updated:
+  * Updated:
 
-      * To reject pairing requests that do not use LE Secure Connections with OOB data.
-      * To write new OOB data to the NFC tag after each pairing attempt, and to reject pairing if the OOB data is out of date.
-      * To let the :ref:`lib_peer_manager` library handle the generation of the ECC key pair and OOB data.
-      * To use the new :c:enumerator:`PM_EVT_LESC_ECC_KEYPAIR_RENEWED` peer manager event for updating the NFC OOB data when the ECC key pair is updated.
-      * To use **Button 2** to start advertising.
-      * To restrict connections to bonded peers only.
-        Advertising now uses allow list, so new devices must first pair using OOB data exchanged over NFC.
-        After bonding, they can reconnect without NFC.
+    * To reject pairing requests that do not use LE Secure Connections with OOB data.
+    * To write new OOB data to the NFC tag after each pairing attempt, and to reject pairing if the OOB data is out of date.
+    * To let the :ref:`lib_peer_manager` library handle the generation of the ECC key pair and OOB data.
+    * To use the new :c:enumerator:`PM_EVT_LESC_ECC_KEYPAIR_RENEWED` peer manager event for updating the NFC OOB data when the ECC key pair is updated.
+    * To use **Button 2** to start advertising.
+    * To restrict connections to bonded peers only.
+      Advertising now uses allow list, so new devices must first pair using OOB data exchanged over NFC.
+      After bonding, they can reconnect without NFC.
 
 NFC samples
 -----------
