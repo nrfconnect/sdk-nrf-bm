@@ -80,9 +80,9 @@ The following is the workflow for testing the DFU mechanism on an application de
 .. note::
    The preparation below here describes how to add a MCUboot board variant to a custom board, for |BMshort| there already are MCUboot board variants for the ``bm_nrf54l15dk`` board:
 
-      * ``bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot`` for nRF54L15 (emulating nRF54L05) with S115 softdevice
-      * ``bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot`` for nRF54L15 (emulating nRF54L10) with S115 softdevice
-      * ``bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot`` for nRF54L15 with S115 softdevice
+   * ``bm_nrf54l15dk/nrf54l05/cpuapp/s115_softdevice/mcuboot`` for nRF54L15 (emulating nRF54L05) with S115 softdevice
+   * ``bm_nrf54l15dk/nrf54l10/cpuapp/s115_softdevice/mcuboot`` for nRF54L15 (emulating nRF54L10) with S115 softdevice
+   * ``bm_nrf54l15dk/nrf54l15/cpuapp/s115_softdevice/mcuboot`` for nRF54L15 with S115 softdevice
 
    To test DFU with one of these default board targets, skip to the :ref:`ug_dfu_building_running` section.
 

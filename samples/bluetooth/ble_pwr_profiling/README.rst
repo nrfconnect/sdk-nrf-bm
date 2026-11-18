@@ -75,10 +75,10 @@ See the device documentation for details about preparing your development kit fo
 
 The following parameters have an impact on power consumption:
 
-   * Connection interval
-   * Advertising duration
-   * Latency
-   * Notifications data size and interval
+* Connection interval
+* Advertising duration
+* Latency
+* Notifications data size and interval
 
 You can configure these parameters with the Kconfig options.
 If your central device is the `Bluetooth Low Energy app`_ from `nRF Connect for Desktop`_, you can use it to change the current connection parameters.
