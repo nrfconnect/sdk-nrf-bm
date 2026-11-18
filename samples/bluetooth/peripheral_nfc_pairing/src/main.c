@@ -161,10 +161,21 @@ static void delete_bonds(void)
 
 static void advertising_start(void)
 {
+	uint32_t nrf_err;
+
+	nrf_err = ble_adv_stop(&ble_adv);
+	if (nrf_err) {
+		LOG_ERR("Failed to stop advertising, nrf_error %#x", nrf_err);
+	}
+
+	if (conn_cnt >= CONFIG_NRF_SDH_BLE_PERIPHERAL_LINK_COUNT) {
+		LOG_INF("Connection limit reached, advertising disabled");
+		return;
+	}
+
 	allow_list_set(PM_PEER_ID_LIST_SKIP_NO_ID_ADDR);
 
-	uint32_t nrf_err = ble_adv_start(&ble_adv, BLE_ADV_MODE_DIRECTED);
-
+	nrf_err = ble_adv_start(&ble_adv, BLE_ADV_MODE_DIRECTED);
 	if (nrf_err) {
 		LOG_ERR("Failed to start advertising, nrf_error %#x", nrf_err);
 	}
