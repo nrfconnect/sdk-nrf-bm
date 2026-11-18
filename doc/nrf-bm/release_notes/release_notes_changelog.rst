@@ -54,7 +54,7 @@ Added:
   * All boards to use ``zephyr,mapped-partition`` instead of ``zephyr,fixed-partitions`` and ``zephyr,fixed-subpartitions``.
     When referencing partition nodes, the code now uses ``PARTITION_*`` macros instead of ``DT_*`` and ``FIXED_PARTITION_*`` macros.
     The use of the :kconfig:option:`CONFIG_FLASH_LOAD_OFFSET` Kconfig option is also replaced by ``PARTITION_*`` macros.
-  * All boards to use specific J-Link devices from the nRF54L series.
+  * All boards to use specific J-Link devices from the nRF54L Series devices.
     This improves debugging in VS Code.
   * The number of required board qualifiers (reduced by one), as of changes in upstream Zephyr.
 
@@ -196,7 +196,7 @@ Libraries
 
     * An issue where calling the :c:func:`pm_init` function two or more times would cause some of the internal asynchronous operation flags to have incorrect states.
     * The :c:func:`pm_address_resolve` function to return ``false`` instead of ``NRF_ERROR_INVALID_STATE`` when Peer Manager is not initialized.
-    * An issue where the write buffer that holds bonding data before NVM writes was not released in all situations.
+    * An issue where the write buffer holding the bonding data before NVM writes was not released in all situations.
       The impact was minor, as new connections were able to reuse the already-allocated buffer(s).
     * An issue where the :c:func:`pm_allow_list_set` function wrote past the end of the internal allow list when given more peers than :c:macro:`BLE_GAP_WHITELIST_ADDR_MAX_COUNT`.
       The function now returns ``NRF_ERROR_DATA_SIZE``, as documented.
@@ -289,7 +289,7 @@ Bluetooth LE samples
 * Updated:
 
   * All samples that use the :ref:`lib_peer_manager` library to use a minimum encryption key size of 16 bytes in their default security parameters.
-  * The following samples and applications, which do not support pairing, to call the :c:func:`sd_ble_gatts_sys_attr_set` function only in response to the :c:macro:`BLE_GATTS_EVT_SYS_ATTR_MISSING` event, and not in response to the :c:macro:`BLE_GAP_EVT_CONNECTED` event:
+  * The following samples and applications to call the :c:func:`sd_ble_gatts_sys_attr_set` function only in response to the :c:macro:`BLE_GATTS_EVT_SYS_ATTR_MISSING` event:
 
     * :ref:`ug_dfu_firmware_loader` (Bluetooth LE)
     * :ref:`ble_lbs_sample`
@@ -298,7 +298,7 @@ Bluetooth LE samples
 
 * Removed:
 
-  * The authentication status logging from the following samples and applications that do not support pairing (do not use the :ref:`lib_peer_manager` library):
+  * The authentication status logging from the following samples and applications:
 
     * :ref:`ug_dfu_firmware_loader` (Bluetooth LE)
     * :ref:`ble_lbs_sample`
