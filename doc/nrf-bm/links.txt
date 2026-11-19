@@ -119,6 +119,7 @@
 .. ### DFU
 
 .. _`MCUboot`: https://nrfconnectdocs.nordicsemi.com/ncs/latest/mcuboot/wrapper.html
+.. _`MCUboot downgrade prevention`: https://nrfconnectdocs.nordicsemi.com/ncs/latest/mcuboot/design.html#downgrade-prevention
 .. _`MCUmgr`: https://docs.zephyrproject.org/latest/services/device_mgmt/mcumgr.html
 .. _`DTS`: https://docs.zephyrproject.org/latest/build/dts/index.html
 .. _`System reset`: https://docs.zephyrproject.org/latest/services/device_mgmt/smp_groups/smp_group_0.html#system-reset
