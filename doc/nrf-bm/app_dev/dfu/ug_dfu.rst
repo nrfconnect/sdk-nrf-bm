@@ -12,6 +12,9 @@ Firmware updates are transferred to a device using `MCUmgr`_, which has transpor
 
 More detailed information about specific concepts can be found in :ref:`dfu_memory_partitioning` and :ref:`ug_bootloader_keys` sections.
 
+.. note::
+   `MCUboot downgrade prevention`_ is not supported in |BMshort|.
+
 Partition Configuration
 ***********************
 
