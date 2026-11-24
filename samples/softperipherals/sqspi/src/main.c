@@ -223,19 +223,21 @@ static void sqspi_xfer_done_cb(nrf_sqspi_t const *qspi, nrf_sqspi_evt_t *evt, vo
 		break;
 	}
 
-	/* Operation complete, no active command. */
-	atomic_set(&xfer_in_progress, 0);
-
 	if ((status_reg & current_xfer.sr_mask) != current_xfer.sr_state) {
 		/* Wait for internal operation to complete, schedule last operation again. */
 
 		err = nrf_sqspi_xfer(qspi, &current_xfer.sqspi_xfer, 1, 0);
 		if (err != NRFX_SUCCESS) {
 			LOG_ERR("Failed to read status register, err = %d", err);
+			sqspi_cmd_abort();
+			(void)sqspi_cmd_xfer_next(qspi);
 		}
 
 		return;
 	}
+
+	/* Operation complete, no active command. */
+	atomic_set(&xfer_in_progress, 0);
 
 	(void)sqspi_cmd_xfer_next(qspi);
 }
