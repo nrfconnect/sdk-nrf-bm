@@ -57,6 +57,7 @@ Added:
   * All boards to use specific J-Link devices from the nRF54L Series devices.
     This improves debugging in VS Code.
   * The number of required board qualifiers (reduced by one), as of changes in upstream Zephyr.
+  * The emulated board targets to include erratas that were previously not used due to unexpected values in FICR.
 
 * Removed:
 
