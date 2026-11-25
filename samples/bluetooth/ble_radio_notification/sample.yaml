@@ -1,5 +1,5 @@
 sample:
-  name: Bluetooth Radio Notification Sample
+  name: Bluetooth LE Radio Notification Sample
 tests:
   sample.ble_radio_ntf:
     build_only: true

@@ -1,6 +1,6 @@
 sample:
-  description: Bluetooth Low Energy Peripheral NFC Pairing reference sample
-  name: Bluetooth Low Energy Peripheral NFC Pairing reference
+  description: Bluetooth LE Peripheral NFC Pairing reference sample
+  name: Bluetooth LE Peripheral NFC Pairing Sample
 tests:
   sample.ble.peripheral_nfc_pairing:
     sysbuild: true
