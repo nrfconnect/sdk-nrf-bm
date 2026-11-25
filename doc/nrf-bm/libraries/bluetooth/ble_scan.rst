@@ -144,7 +144,7 @@ Allow list
 
 The allow list (formerly known as whitelist) stores information about all the device connections and bonding.
 If you enable the allow list, the application receives advertising packets only from the devices that are on the allow list.
-An advertising package from an allow-listed device generates an :c:enumerator:`BLE_SCAN_EVT_ALLOW_LIST_ADV_REPORT` event.
+An advertising packet from an allow-listed device generates an :c:enumerator:`BLE_SCAN_EVT_ALLOW_LIST_ADV_REPORT` event.
 
 .. note::
 
