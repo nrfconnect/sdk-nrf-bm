@@ -206,6 +206,11 @@ enum BLE_GAP_TX_POWER_ROLES
 #define BLE_GAP_MAX_PRIVATE_ADDR_CYCLE_INTERVAL_S     (41400) /* 11 hours 30 minutes. */
 
 
+#define BLE_GAP_DEFAULT_MITM        1 /**< Recommended enabling of Man In The Middle protection. */
+#define BLE_GAP_DEFAULT_LESC        1 /**< Recommended enabling of LE Secure Connections. */
+#define BLE_GAP_DEFAULT_KEY_SIZE   16 /**< Recommended LTK length (octets), mitigates key size downgrade. */
+
+
 /** @brief BLE address length. */
 #define BLE_GAP_ADDR_LEN (6)
 
@@ -784,8 +789,8 @@ typedef struct
 typedef struct
 {
   uint8_t               bond      : 1;             /**< Perform bonding. */
-  uint8_t               mitm      : 1;             /**< Enable Man In The Middle protection. */
-  uint8_t               lesc      : 1;             /**< Enable LE Secure Connection pairing. */
+  uint8_t               mitm      : 1;             /**< Enable Man In The Middle protection. @ref BLE_GAP_DEFAULT_MITM recommended. */
+  uint8_t               lesc      : 1;             /**< Enable LE Secure Connection pairing. @ref BLE_GAP_DEFAULT_LESC recommended. */
   uint8_t               keypress  : 1;             /**< Enable generation of keypress notifications. */
   uint8_t               io_caps   : 3;             /**< IO capabilities, see @ref BLE_GAP_IO_CAPS. */
   uint8_t               oob       : 1;             /**< The OOB data flag.
@@ -793,8 +798,8 @@ typedef struct
                                                           The OOB method is used if both of the devices have out of band authentication data.
                                                         - In LE Secure Connections pairing, this flag is set if a device has the peer device's out of band authentication data.
                                                           The OOB method is used if at least one device has the peer device's OOB data available. */
-  uint8_t               min_key_size;              /**< Minimum encryption key size in octets between 7 and 16. If 0 then not applicable in this instance. */
-  uint8_t               max_key_size;              /**< Maximum encryption key size in octets between min_key_size and 16. */
+  uint8_t               min_key_size;              /**< Minimum encryption key size in octets between 7 and 16. @ref BLE_GAP_DEFAULT_KEY_SIZE recommended. */
+  uint8_t               max_key_size;              /**< Maximum encryption key size in octets between min_key_size and 16. @ref BLE_GAP_DEFAULT_KEY_SIZE recommended. */
   ble_gap_sec_kdist_t   kdist_own;                 /**< Key distribution bitmap: keys that the local device will distribute. */
   ble_gap_sec_kdist_t   kdist_peer;                /**< Key distribution bitmap: keys that the remote device will distribute. */
 } ble_gap_sec_params_t;
