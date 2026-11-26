@@ -111,10 +111,8 @@ typedef enum {
 
 typedef enum {
 	ZMS_OP_WRITE_SUB_STEP_NONE,
-	ZMS_OP_WRITE_SUB_STEP_DATA1,
-	ZMS_OP_WRITE_SUB_STEP_DATA2,
-	ZMS_OP_WRITE_SUB_STEP_ATE1,
-	ZMS_OP_WRITE_SUB_STEP_ATE2,
+	ZMS_OP_WRITE_SUB_STEP_DATA,
+	ZMS_OP_WRITE_SUB_STEP_ATE,
 } zms_write_sub_step_t;
 
 typedef enum {
@@ -150,15 +148,12 @@ typedef struct {
 typedef struct __aligned(4) {
 	__aligned(4) struct zms_ate ate_entry; /* ATE entry to write */
 	__aligned(4) const void *data;	       /* Pointer to the data to write. */
-	__aligned(4) const void *app_data;     /* Pointer to the application data. */
 	zms_op_code_t op_code;		       /* The opcode for the operation. */
 	uint32_t required_space;	       /* Required space for the operation. */
 	zms_write_step_t step;		       /* The current step the operation is at. */
 	zms_write_sub_step_t sub_step;	       /* The current sub-step the operation is at. */
-	size_t len;			       /* Length of the current write. */
 	size_t data_len;		       /* Length of the data to write. */
 	uint32_t id;			       /* BM_ZMS ATE ID */
-	uint64_t addr;
 	struct bm_zms_fs *fs;		       /* Pointer to the file system. */
 	gc_context_t gc;		       /* Garbage collection context */
 	init_context_t init;		       /* Initialization context */
