@@ -19,6 +19,17 @@ list(APPEND kmu_json_commands
 )
 list(APPEND kmu_json_dependencies ${mcuboot_signature_key_file})
 
+set(mcuboot_default_signature_files
+  $(ZEPHYR_MCUBOOT_MODULE_DIR)/root-ec-p256.pem
+  ${ZEPHYR_MCUBOOT_MODULE_DIR}/root-ed25519.pem
+  $(ZEPHYR_MCUBOOT_MODULE_DIR)/root-rsa-2048.pem
+)
+
+# Emit a warning if using default MCUboot key file
+if(${mcuboot_signature_key_file} IN_LIST mcuboot_default_signature_files)
+  message(WARNING "WARNING: Using default MCUboot signing key file, this file is for debug use only and is not secure!")
+endif()
+
 # --- Add custom command to generate/update keyfile.json ---
 if(NOT kmu_json_commands STREQUAL "")
   add_custom_command(
