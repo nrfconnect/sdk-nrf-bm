@@ -62,13 +62,16 @@ Added:
 
   * The override for ``cpuapp_rram`` size for all boards as RRAM is no longer reserved for the RISC-V core by default.
 
-Build system
-============
+Build and configuration system
+==============================
 
 * Updated:
 
   * The :file:`west.yml` file to add ``memfault-firmware-sdk`` to the |NCS| manifest allowlist.
   * The :file:`zephyr/module.yml` file to declare a build dependency on ``memfault-firmware-sdk``.
+
+* Removed the internal Lumos platform abstractions from the Nordic SoC integration.
+  All references to the :kconfig:option:`CONFIG_NRF_PLATFORM_LUMOS` Kconfig option has been replaced with the :kconfig:option:`CONFIG_SOC_SERIES_NRF54L` Kconfig option.
 
 Bootloader
 ==========

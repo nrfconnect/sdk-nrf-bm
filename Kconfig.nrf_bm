@@ -19,6 +19,11 @@ configdefault MULTITHREADING
 configdefault GEN_SW_ISR_TABLE
 	default n
 
+# This option is enabled in Zephyr for backward compatibility for the nRF54l series.
+# Disable it by default to remove a build warning.
+configdefault NRF_PLATFORM_LUMOS
+	default n
+
 # zephyr-keep-sorted-start
 rsource "drivers/Kconfig"
 rsource "lib/Kconfig"
