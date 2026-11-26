@@ -111,8 +111,8 @@ typedef enum {
 
 typedef enum {
 	ZMS_OP_WRITE_SUB_STEP_NONE,
-	ZMS_OP_WRITE_SUB_STEP_DATA1,
-	ZMS_OP_WRITE_SUB_STEP_ATE1,
+	ZMS_OP_WRITE_SUB_STEP_DATA,
+	ZMS_OP_WRITE_SUB_STEP_ATE,
 } zms_write_sub_step_t;
 
 typedef enum {

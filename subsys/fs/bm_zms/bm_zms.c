@@ -438,7 +438,7 @@ static inline uint64_t zms_close_ate_addr(struct bm_zms_fs *fs, uint64_t addr)
 static void zms_next_state_common(zms_write_step_t next_step, zms_write_step_t default_state)
 {
 	switch (cur_op.sub_step) {
-	case ZMS_OP_WRITE_SUB_STEP_ATE1:
+	case ZMS_OP_WRITE_SUB_STEP_ATE:
 		cur_op.step = next_step;
 		cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_NONE;
 		break;
@@ -453,10 +453,10 @@ static void zms_next_state_common(zms_write_step_t next_step, zms_write_step_t d
 static void zms_next_state_write_execute(void)
 {
 	switch (cur_op.sub_step) {
-	case ZMS_OP_WRITE_SUB_STEP_DATA1:
-		cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_ATE1;
+	case ZMS_OP_WRITE_SUB_STEP_DATA:
+		cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_ATE;
 		break;
-	case ZMS_OP_WRITE_SUB_STEP_ATE1:
+	case ZMS_OP_WRITE_SUB_STEP_ATE:
 		cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_NONE;
 		cur_op.step = ZMS_OP_WRITE_DONE;
 		break;
@@ -539,8 +539,8 @@ static void zms_next_state_gc(void)
 static void zms_next_state_common_gc(void)
 {
 	switch (cur_op.sub_step) {
-	case ZMS_OP_WRITE_SUB_STEP_ATE1:
-	case ZMS_OP_WRITE_SUB_STEP_DATA1:
+	case ZMS_OP_WRITE_SUB_STEP_ATE:
+	case ZMS_OP_WRITE_SUB_STEP_DATA:
 		zms_next_state_gc();
 		cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_NONE;
 		break;
@@ -668,7 +668,7 @@ static int zms_flash_rd(struct bm_zms_fs *fs, uint64_t addr, void *data, size_t 
 static int zms_flash_ate_wrt(struct bm_zms_fs *fs, uint64_t addr)
 {
 	if (cur_op.sub_step == ZMS_OP_WRITE_SUB_STEP_NONE) {
-		cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_ATE1;
+		cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_ATE;
 	}
 	return zms_flash_al_wrt(fs, addr, &cur_op.ate_entry, sizeof(struct zms_ate));
 }
@@ -677,7 +677,7 @@ static int zms_flash_ate_wrt(struct bm_zms_fs *fs, uint64_t addr)
 static int zms_flash_data_wrt(struct bm_zms_fs *fs, const void *data, size_t len)
 {
 	if (cur_op.sub_step == ZMS_OP_WRITE_SUB_STEP_NONE) {
-		cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_DATA1;
+		cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_DATA;
 	}
 
 	return zms_flash_al_wrt(fs, fs->data_wra, data, len);
@@ -965,14 +965,14 @@ static int zms_flash_write_entry(struct bm_zms_fs *fs)
 	if (cur_op.sub_step == ZMS_OP_WRITE_SUB_STEP_NONE) {
 		if (cur_op.data_len > ZMS_DATA_IN_ATE_SIZE) {
 			/* data_len is greater than 8 bytes, write data separately */
-			cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_DATA1;
+			cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_DATA;
 		} else {
 			/* data_len is less than or equal to 8 bytes, write data in ATE */
-			cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_ATE1;
+			cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_ATE;
 		}
 	}
 
-	if (cur_op.sub_step == ZMS_OP_WRITE_SUB_STEP_ATE1) {
+	if (cur_op.sub_step == ZMS_OP_WRITE_SUB_STEP_ATE) {
 		/* Initialize all members to 0 */
 		memset(&cur_op.ate_entry, 0, sizeof(struct zms_ate));
 
@@ -995,9 +995,9 @@ static int zms_flash_write_entry(struct bm_zms_fs *fs)
 	}
 
 	switch (cur_op.sub_step) {
-	case ZMS_OP_WRITE_SUB_STEP_DATA1:
+	case ZMS_OP_WRITE_SUB_STEP_DATA:
 		return zms_flash_data_wrt(fs, cur_op.data, cur_op.data_len);
-	case ZMS_OP_WRITE_SUB_STEP_ATE1:
+	case ZMS_OP_WRITE_SUB_STEP_ATE:
 		return zms_flash_ate_wrt(fs, fs->ate_wra);
 	default:
 		break;
@@ -1989,9 +1989,9 @@ static void zms_verify_space(zms_op_t *op)
 	    (SECTOR_OFFSET(fs->ate_wra - fs->ate_size) || !op->data_len)) {
 		op->step = ZMS_OP_WRITE_EXECUTE;
 		if (op->data_len > ZMS_DATA_IN_ATE_SIZE) {
-			op->sub_step = ZMS_OP_WRITE_SUB_STEP_DATA1;
+			op->sub_step = ZMS_OP_WRITE_SUB_STEP_DATA;
 		} else {
-			op->sub_step = ZMS_OP_WRITE_SUB_STEP_ATE1;
+			op->sub_step = ZMS_OP_WRITE_SUB_STEP_ATE;
 		}
 		op->gc.gc_count = 0;
 	} else {
