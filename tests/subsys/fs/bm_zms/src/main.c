@@ -738,3 +738,44 @@ ZTEST_F(bm_zms, test_bm_zms_write_prime)
 	zassert_mem_equal(wr_buf, rd_buf, sizeof(rd_buf),
 			  "RD buff should be equal to the WR buff");
 }
+
+/*
+ * Test that a write which triggers GC is stored with its full length.
+ */
+ZTEST_F(bm_zms, test_zms_gc_write_len)
+{
+	int err;
+	ssize_t len;
+	/* Above 8 bytes, so the data is not stored in the ATE and GC moves it in blocks. */
+	uint8_t wr_buf[104];
+	uint8_t rd_buf[104];
+	/* Written once, so GC must move it. */
+	const uint32_t moved_id = 1;
+	/* Rewritten until one of the writes triggers GC. */
+	const uint32_t rewrite_id = 2;
+
+	memset(wr_buf, 0xAB, sizeof(wr_buf));
+
+	err = bm_zms_mount(&fixture->fs, &fixture->config);
+	wait_for_mount();
+	zassert_true(err == 0, "bm_zms_mount call failure");
+
+	len = bm_zms_write(&fixture->fs, moved_id, wr_buf, sizeof(wr_buf));
+	wait_for_write();
+	zassert_equal(len, sizeof(wr_buf), "bm_zms_write failed");
+
+	for (int i = 0; i < 100; i++) {
+		len = bm_zms_write(&fixture->fs, rewrite_id, wr_buf, sizeof(wr_buf));
+		wait_for_write();
+		zassert_equal(len, sizeof(wr_buf), "bm_zms_write failed");
+
+		len = bm_zms_get_data_length(&fixture->fs, rewrite_id);
+		zassert_equal(len, sizeof(wr_buf), "write %d stored %d of %d bytes", i, len,
+			      sizeof(wr_buf));
+	}
+
+	/* The entry moved by GC must still be intact. */
+	len = bm_zms_read(&fixture->fs, moved_id, rd_buf, sizeof(rd_buf));
+	zassert_equal(len, sizeof(rd_buf), "bm_zms_read unexpected failure");
+	zassert_mem_equal(wr_buf, rd_buf, sizeof(rd_buf), "moved entry changed");
+}
