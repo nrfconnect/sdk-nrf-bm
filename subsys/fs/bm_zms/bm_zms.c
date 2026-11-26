@@ -155,10 +155,6 @@ static void queue_process(void)
 		case ZMS_OP_WRITE:
 			if ((cur_op.gc.step == ZMS_OP_WRITE_GC_BLK_MOVE) &&
 			    (cur_op.gc.blk_mv_len)) {
-				/* If we are still moving data, a previous block write succeeded .
-				 * Increase the data write address by the size of the block.
-				 */
-				cur_op.fs->data_wra += zms_al_size(cur_op.fs, ZMS_BLOCK_SIZE);
 				/* If we are in the garbage collection step, we need to move the
 				 * block.
 				 */
@@ -674,13 +670,13 @@ static int zms_flash_ate_wrt(struct bm_zms_fs *fs, uint64_t addr)
 }
 
 /* data write */
-static int zms_flash_data_wrt(struct bm_zms_fs *fs, const void *data, size_t len)
+static int zms_flash_data_wrt(struct bm_zms_fs *fs, uint64_t addr, const void *data, size_t len)
 {
 	if (cur_op.sub_step == ZMS_OP_WRITE_SUB_STEP_NONE) {
 		cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_DATA;
 	}
 
-	return zms_flash_al_wrt(fs, fs->data_wra, data, len);
+	return zms_flash_al_wrt(fs, addr, data, len);
 }
 
 /* flash ate read */
@@ -746,14 +742,15 @@ static int zms_flash_cmp_const(struct bm_zms_fs *fs, uint64_t addr, uint8_t valu
 	return 0;
 }
 
-/* flash block move: move a block at addr to the current data write location
- * and updates the data write location.
+/* flash block move: move the next block of the entry to the current data write location.
+ * The data write location is updated once the whole entry is moved.
  */
 static int zms_flash_block_move(struct bm_zms_fs *fs)
 {
 	int rc;
 	size_t bytes_to_copy;
 	size_t block_size;
+	uint64_t addr;
 
 	static __aligned(4) uint8_t buf_gc[ZMS_BLOCK_SIZE];
 
@@ -766,9 +763,10 @@ static int zms_flash_block_move(struct bm_zms_fs *fs)
 			return rc;
 		}
 
+		addr = fs->data_wra + (cur_op.ate_entry.len - cur_op.gc.blk_mv_len);
 		cur_op.gc.blk_mv_len -= bytes_to_copy;
 		cur_op.gc.blk_mv_addr += bytes_to_copy;
-		return zms_flash_data_wrt(fs, buf_gc, bytes_to_copy);
+		return zms_flash_data_wrt(fs, addr, buf_gc, bytes_to_copy);
 	}
 	return 0;
 }
@@ -996,7 +994,7 @@ static int zms_flash_write_entry(struct bm_zms_fs *fs)
 
 	switch (cur_op.sub_step) {
 	case ZMS_OP_WRITE_SUB_STEP_DATA:
-		return zms_flash_data_wrt(fs, cur_op.data, cur_op.data_len);
+		return zms_flash_data_wrt(fs, fs->data_wra, cur_op.data, cur_op.data_len);
 	case ZMS_OP_WRITE_SUB_STEP_ATE:
 		return zms_flash_ate_wrt(fs, fs->ate_wra);
 	default:
