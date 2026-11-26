@@ -34,7 +34,6 @@ static inline size_t zms_lookup_cache_pos(uint32_t id);
 #endif
 static void zms_event_handler(struct bm_storage_evt *evt);
 static int zms_init(void);
-static int zms_flash_al_wrt(struct bm_zms_fs *fs);
 static int zms_write_execute(void);
 static inline size_t zms_al_size(struct bm_zms_fs *fs, size_t len);
 static int zms_flash_block_move(struct bm_zms_fs *fs);
@@ -154,14 +153,8 @@ static void queue_process(void)
 			break;
 
 		case ZMS_OP_WRITE:
-			if ((cur_op.sub_step == ZMS_OP_WRITE_SUB_STEP_ATE2) ||
-			    (cur_op.sub_step == ZMS_OP_WRITE_SUB_STEP_DATA2)) {
-				/* If we are in the second sub-step, we need to write the second
-				 * part.
-				 */
-				result = zms_flash_al_wrt(cur_op.fs);
-			} else if ((cur_op.gc.step == ZMS_OP_WRITE_GC_BLK_MOVE) &&
-				   (cur_op.gc.blk_mv_len)) {
+			if ((cur_op.gc.step == ZMS_OP_WRITE_GC_BLK_MOVE) &&
+			    (cur_op.gc.blk_mv_len)) {
 				/* If we are still moving data, a previous block write succeeded .
 				 * Increase the data write address by the size of the block.
 				 */
@@ -446,15 +439,6 @@ static void zms_next_state_common(zms_write_step_t next_step, zms_write_step_t d
 {
 	switch (cur_op.sub_step) {
 	case ZMS_OP_WRITE_SUB_STEP_ATE1:
-		if (cur_op.len) {
-			cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_ATE2;
-			cur_op.addr = cur_op.fs->ate_wra;
-		} else {
-			cur_op.step = next_step;
-			cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_NONE;
-		}
-		break;
-	case ZMS_OP_WRITE_SUB_STEP_ATE2:
 		cur_op.step = next_step;
 		cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_NONE;
 		break;
@@ -470,26 +454,9 @@ static void zms_next_state_write_execute(void)
 {
 	switch (cur_op.sub_step) {
 	case ZMS_OP_WRITE_SUB_STEP_DATA1:
-		if (cur_op.len) {
-			cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_DATA2;
-			cur_op.addr = cur_op.fs->data_wra;
-		} else {
-			cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_ATE1;
-		}
-		break;
-	case ZMS_OP_WRITE_SUB_STEP_DATA2:
 		cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_ATE1;
 		break;
 	case ZMS_OP_WRITE_SUB_STEP_ATE1:
-		if (cur_op.len) {
-			cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_ATE2;
-			cur_op.addr = cur_op.fs->ate_wra;
-		} else {
-			cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_NONE;
-			cur_op.step = ZMS_OP_WRITE_DONE;
-		}
-		break;
-	case ZMS_OP_WRITE_SUB_STEP_ATE2:
 		cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_NONE;
 		cur_op.step = ZMS_OP_WRITE_DONE;
 		break;
@@ -548,7 +515,6 @@ static void zms_next_state_gc(void)
 		break;
 	case ZMS_OP_WRITE_GC_DONE_EMPTY_SECTOR:
 		if (cur_op.op_code == ZMS_OP_WRITE) {
-			cur_op.data = cur_op.app_data;
 			zms_verify_space(&cur_op);
 			if (cur_op.step == ZMS_OP_WRITE_EXECUTE) {
 				cur_op.gc.step = ZMS_OP_WRITE_GC_NONE;
@@ -574,28 +540,7 @@ static void zms_next_state_common_gc(void)
 {
 	switch (cur_op.sub_step) {
 	case ZMS_OP_WRITE_SUB_STEP_ATE1:
-		if (cur_op.len) {
-			cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_ATE2;
-			cur_op.addr = cur_op.fs->ate_wra;
-		} else {
-			zms_next_state_gc();
-			cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_NONE;
-		}
-		break;
-	case ZMS_OP_WRITE_SUB_STEP_ATE2:
-		zms_next_state_gc();
-		cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_NONE;
-		break;
 	case ZMS_OP_WRITE_SUB_STEP_DATA1:
-		if (cur_op.len) {
-			cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_DATA2;
-			cur_op.addr = cur_op.fs->data_wra;
-		} else {
-			zms_next_state_gc();
-			cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_NONE;
-		}
-		break;
-	case ZMS_OP_WRITE_SUB_STEP_DATA2:
 		zms_next_state_gc();
 		cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_NONE;
 		break;
@@ -693,36 +638,20 @@ static void zms_al_wrt_next_op(struct bm_zms_fs *fs)
 }
 
 /* Aligned memory write */
-static int zms_flash_al_wrt(struct bm_zms_fs *fs)
+static int zms_flash_al_wrt(struct bm_zms_fs *fs, uint64_t addr, const void *data, size_t len)
 {
-	const uint8_t *data8;
 	off_t offset;
-	size_t len;
 
-	if (!cur_op.len) {
+	if (!len) {
 		zms_al_wrt_next_op(fs);
 		/* Nothing to write, avoid changing the flash protection */
 		return 0;
 	}
 
-	if ((cur_op.sub_step == ZMS_OP_WRITE_SUB_STEP_ATE1) ||
-	    (cur_op.sub_step == ZMS_OP_WRITE_SUB_STEP_ATE2)) {
-		/* If this is an ATE write set the data8 pointer to the ATE. */
-		data8 = (const uint8_t *)&cur_op.ate_entry;
-	} else {
-		/* If this is a data write set the data8 pointer to the actual data to write.
-		 * This could be either a data from the App or from an internal buffer.
-		 */
-		data8 = (const uint8_t *)cur_op.data;
-	}
-
-	offset = zms_addr_to_offset(fs, cur_op.addr);
-	len = cur_op.len;
-
-	cur_op.len = 0;
+	offset = zms_addr_to_offset(fs, addr);
 
 	zms_al_wrt_next_op(fs);
-	return bm_storage_write(&fs->zms_bm_storage, offset, data8, len, (void *)&cur_op);
+	return bm_storage_write(&fs->zms_bm_storage, offset, data, len, (void *)&cur_op);
 }
 
 /* basic flash read from bm_zms address */
@@ -736,24 +665,22 @@ static int zms_flash_rd(struct bm_zms_fs *fs, uint64_t addr, void *data, size_t 
 }
 
 /* allocation entry write */
-static int zms_flash_ate_wrt(struct bm_zms_fs *fs)
+static int zms_flash_ate_wrt(struct bm_zms_fs *fs, uint64_t addr)
 {
 	if (cur_op.sub_step == ZMS_OP_WRITE_SUB_STEP_NONE) {
 		cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_ATE1;
-		cur_op.len = sizeof(struct zms_ate);
 	}
-	return zms_flash_al_wrt(fs);
+	return zms_flash_al_wrt(fs, addr, &cur_op.ate_entry, sizeof(struct zms_ate));
 }
 
 /* data write */
-static int zms_flash_data_wrt(struct bm_zms_fs *fs)
+static int zms_flash_data_wrt(struct bm_zms_fs *fs, const void *data, size_t len)
 {
 	if (cur_op.sub_step == ZMS_OP_WRITE_SUB_STEP_NONE) {
 		cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_DATA1;
 	}
-	cur_op.addr = fs->data_wra;
 
-	return zms_flash_al_wrt(fs);
+	return zms_flash_al_wrt(fs, fs->data_wra, data, len);
 }
 
 /* flash ate read */
@@ -841,9 +768,7 @@ static int zms_flash_block_move(struct bm_zms_fs *fs)
 
 		cur_op.gc.blk_mv_len -= bytes_to_copy;
 		cur_op.gc.blk_mv_addr += bytes_to_copy;
-		cur_op.data = buf_gc;
-		cur_op.len = bytes_to_copy;
-		return zms_flash_data_wrt(fs);
+		return zms_flash_data_wrt(fs, buf_gc, bytes_to_copy);
 	}
 	return 0;
 }
@@ -1047,8 +972,7 @@ static int zms_flash_write_entry(struct bm_zms_fs *fs)
 		}
 	}
 
-	if ((cur_op.sub_step == ZMS_OP_WRITE_SUB_STEP_ATE1) ||
-	    (cur_op.sub_step == ZMS_OP_WRITE_SUB_STEP_ATE2)) {
+	if (cur_op.sub_step == ZMS_OP_WRITE_SUB_STEP_ATE1) {
 		/* Initialize all members to 0 */
 		memset(&cur_op.ate_entry, 0, sizeof(struct zms_ate));
 
@@ -1072,17 +996,9 @@ static int zms_flash_write_entry(struct bm_zms_fs *fs)
 
 	switch (cur_op.sub_step) {
 	case ZMS_OP_WRITE_SUB_STEP_DATA1:
-		cur_op.len = cur_op.data_len;
-		cur_op.addr = fs->data_wra;
-		return zms_flash_data_wrt(fs);
-	case ZMS_OP_WRITE_SUB_STEP_DATA2:
-		cur_op.addr = fs->data_wra;
-		return zms_flash_data_wrt(fs);
+		return zms_flash_data_wrt(fs, cur_op.data, cur_op.data_len);
 	case ZMS_OP_WRITE_SUB_STEP_ATE1:
-	case ZMS_OP_WRITE_SUB_STEP_ATE2:
-		cur_op.addr = fs->ate_wra;
-		cur_op.len = sizeof(struct zms_ate);
-		return zms_flash_ate_wrt(fs);
+		return zms_flash_ate_wrt(fs, fs->ate_wra);
 	default:
 		break;
 	}
@@ -1220,9 +1136,7 @@ static int zms_sector_close(struct bm_zms_fs *fs)
 		memset(&cur_op.ate_entry, fs->nvm_info->erase_value,
 		       sizeof(struct zms_ate));
 		if (SECTOR_OFFSET(fs->ate_wra) && (fs->ate_wra > fs->data_wra)) {
-			cur_op.len = sizeof(struct zms_ate);
-			cur_op.addr = fs->ate_wra;
-			return zms_flash_ate_wrt(fs);
+			return zms_flash_ate_wrt(fs, fs->ate_wra);
 		}
 		cur_op.step = ZMS_OP_WRITE_CLOSE_SECTOR_ATE;
 	}
@@ -1236,9 +1150,7 @@ static int zms_sector_close(struct bm_zms_fs *fs)
 		zms_ate_crc8_update(&cur_op.ate_entry);
 		fs->ate_ra = fs->ate_wra;
 		fs->ate_wra = zms_close_ate_addr(fs, fs->ate_wra);
-		cur_op.addr = fs->ate_wra;
-		cur_op.len = sizeof(struct zms_ate);
-		return zms_flash_ate_wrt(fs);
+		return zms_flash_ate_wrt(fs, fs->ate_wra);
 	}
 
 	return 0;
@@ -1276,9 +1188,7 @@ static int zms_add_gc_done_ate(struct bm_zms_fs *fs)
 
 	zms_ate_crc8_update(&cur_op.ate_entry);
 
-	cur_op.len = sizeof(struct zms_ate);
-	cur_op.addr = fs->ate_wra;
-	return zms_flash_ate_wrt(fs);
+	return zms_flash_ate_wrt(fs, fs->ate_wra);
 }
 
 /* This function verifies that the cycle_cnt of the close ATE will not be equal
@@ -1319,8 +1229,10 @@ static int zms_add_empty_ate(struct bm_zms_fs *fs, uint64_t addr)
 {
 	uint8_t cycle_cnt;
 	int rc = 0;
+	uint64_t empty_addr;
 
 	addr &= ADDR_SECT_MASK;
+	empty_addr = zms_empty_ate_addr(fs, addr);
 
 	cur_op.ate_entry.id = ZMS_HEAD_ID;
 	cur_op.ate_entry.len = 0xffff;
@@ -1345,9 +1257,7 @@ static int zms_add_empty_ate(struct bm_zms_fs *fs, uint64_t addr)
 	cur_op.ate_entry.cycle_cnt = cycle_cnt;
 	zms_ate_crc8_update(&cur_op.ate_entry);
 
-	cur_op.addr = zms_empty_ate_addr(fs, addr);
-	cur_op.len = sizeof(struct zms_ate);
-	return zms_flash_ate_wrt(fs);
+	return zms_flash_ate_wrt(fs, empty_addr);
 }
 
 static int zms_get_sector_cycle(struct bm_zms_fs *fs, uint64_t addr, uint8_t *cycle_cnt)
@@ -1585,9 +1495,7 @@ ate_copy:
 		}
 		cur_op.ate_entry.cycle_cnt = cur_op.gc.previous_cycle;
 		zms_ate_crc8_update(&cur_op.ate_entry);
-		cur_op.len = sizeof(struct zms_ate);
-		cur_op.addr = fs->ate_wra;
-		return zms_flash_ate_wrt(fs);
+		return zms_flash_ate_wrt(fs, fs->ate_wra);
 	}
 
 gc_done:
@@ -1661,7 +1569,6 @@ int bm_zms_clear(struct bm_zms_fs *fs)
 	cur_clear_op.op_code = ZMS_OP_CLEAR;
 	cur_clear_op.step = ZMS_OP_CLEAR_START;
 	cur_clear_op.clear_sector = 0U;
-	cur_clear_op.addr = 0U;
 
 	rc = ring_buf_put(&zms_fifo, (uint8_t *)&cur_clear_op, sizeof(zms_op_t));
 	irq_unlock(key);
@@ -2142,10 +2049,8 @@ ssize_t bm_zms_write(struct bm_zms_fs *fs, uint32_t id, const void *data, size_t
 	cur_write_op.fs = fs;
 	cur_write_op.op_code = ZMS_OP_WRITE;
 	cur_write_op.step = ZMS_OP_WRITE_STARTUP;
-	cur_write_op.len = len;
 	cur_write_op.data_len = len;
 	cur_write_op.data = data;
-	cur_write_op.app_data = data;
 	cur_write_op.id = id;
 	cur_write_op.required_space = required_space;
 
