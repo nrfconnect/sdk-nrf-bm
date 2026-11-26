@@ -779,3 +779,47 @@ ZTEST_F(bm_zms, test_zms_gc_write_len)
 	zassert_equal(len, sizeof(rd_buf), "bm_zms_read unexpected failure");
 	zassert_mem_equal(wr_buf, rd_buf, sizeof(rd_buf), "moved entry changed");
 }
+
+/*
+ * Test that entries moved by GC in several blocks stay intact.
+ */
+ZTEST_F(bm_zms, test_zms_gc_move_blocks)
+{
+	int err;
+	ssize_t len;
+	/* Above 32 bytes, so GC moves each entry in more than one block. */
+	uint8_t wr_buf[104];
+	uint8_t rd_buf[104];
+	/* IDs 1 to moved_count are written once, so GC must move them. */
+	const uint32_t moved_count = 5;
+	/* Rewritten until GC moves the other entries. */
+	const uint32_t rewrite_id = 10;
+
+	err = bm_zms_mount(&fixture->fs, &fixture->config);
+	wait_for_mount();
+	zassert_true(err == 0, "bm_zms_mount call failure");
+
+	/* Each moved ID is filled with its own ID value. */
+	for (uint32_t id = 1; id <= moved_count; id++) {
+		memset(wr_buf, id, sizeof(wr_buf));
+		len = bm_zms_write(&fixture->fs, id, wr_buf, sizeof(wr_buf));
+		wait_for_write();
+		zassert_equal(len, sizeof(wr_buf), "bm_zms_write failed");
+	}
+
+	for (int i = 0; i < 100; i++) {
+		memset(wr_buf, 0xAA, sizeof(wr_buf));
+		len = bm_zms_write(&fixture->fs, rewrite_id, wr_buf, sizeof(wr_buf));
+		wait_for_write();
+		zassert_equal(len, sizeof(wr_buf), "bm_zms_write failed");
+
+		for (uint32_t id = 1; id <= moved_count; id++) {
+			memset(wr_buf, id, sizeof(wr_buf));
+			len = bm_zms_read(&fixture->fs, id, rd_buf, sizeof(rd_buf));
+			zassert_equal(len, sizeof(rd_buf), "write %d: ID %d read %d bytes", i, id,
+				      len);
+			zassert_mem_equal(wr_buf, rd_buf, sizeof(rd_buf), "write %d: ID %d changed",
+					  i, id);
+		}
+	}
+}
