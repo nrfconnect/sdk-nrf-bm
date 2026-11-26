@@ -751,9 +751,6 @@ static int zms_flash_data_wrt(struct bm_zms_fs *fs)
 	if (cur_op.sub_step == ZMS_OP_WRITE_SUB_STEP_NONE) {
 		cur_op.sub_step = ZMS_OP_WRITE_SUB_STEP_DATA1;
 	}
-	if (cur_op.sub_step == ZMS_OP_WRITE_SUB_STEP_DATA1) {
-		cur_op.len = cur_op.data_len;
-	}
 	cur_op.addr = fs->data_wra;
 
 	return zms_flash_al_wrt(fs);
@@ -845,7 +842,6 @@ static int zms_flash_block_move(struct bm_zms_fs *fs)
 		cur_op.gc.blk_mv_len -= bytes_to_copy;
 		cur_op.gc.blk_mv_addr += bytes_to_copy;
 		cur_op.data = buf_gc;
-		cur_op.data_len = bytes_to_copy;
 		cur_op.len = bytes_to_copy;
 		return zms_flash_data_wrt(fs);
 	}
@@ -1076,6 +1072,9 @@ static int zms_flash_write_entry(struct bm_zms_fs *fs)
 
 	switch (cur_op.sub_step) {
 	case ZMS_OP_WRITE_SUB_STEP_DATA1:
+		cur_op.len = cur_op.data_len;
+		cur_op.addr = fs->data_wra;
+		return zms_flash_data_wrt(fs);
 	case ZMS_OP_WRITE_SUB_STEP_DATA2:
 		cur_op.addr = fs->data_wra;
 		return zms_flash_data_wrt(fs);
